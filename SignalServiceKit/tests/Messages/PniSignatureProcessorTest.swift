@@ -85,14 +85,14 @@ final class PniSignatureProcessorTest: XCTestCase {
         }
         identityManager.recipientIdentities = [
             aciRecipient.uniqueId: OWSRecipientIdentity(
-                recipientUniqueId: aciRecipient.uniqueId,
+                uniqueId: aciRecipient.uniqueId,
                 identityKey: Data(aciIdentityKeyPair.identityKey.publicKey.keyBytes),
                 isFirstKnownKey: true,
                 createdAt: Date(),
                 verificationState: .default
             ),
             pniRecipient.uniqueId: OWSRecipientIdentity(
-                recipientUniqueId: pniRecipient.uniqueId,
+                uniqueId: pniRecipient.uniqueId,
                 identityKey: Data(pniIdentityKeyPair.identityKey.publicKey.keyBytes),
                 isFirstKnownKey: true,
                 createdAt: Date(),

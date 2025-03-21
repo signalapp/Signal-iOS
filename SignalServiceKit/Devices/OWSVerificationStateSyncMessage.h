@@ -4,7 +4,7 @@
 //
 
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
-#import <SignalServiceKit/OWSRecipientIdentity.h>
+#import <SignalServiceKit/OWSVerificationState.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

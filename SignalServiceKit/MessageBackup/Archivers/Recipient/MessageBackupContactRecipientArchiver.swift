@@ -170,13 +170,9 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
             let identity: OWSRecipientIdentity?
             do {
-                // Read directly from the OWSRecipientIdentity table, bypassing
-                // OWSIdentityManager, as we already are working directly
-                // with the SignalRecipient and don't need serviceId-based checks.
-                identity = try RecipientIdentityRecord
-                    .filter(Column(RecipientIdentityRecord.CodingKeys.uniqueId) == recipient.uniqueId)
+                identity = try OWSRecipientIdentity
+                    .filter(Column(OWSRecipientIdentity.CodingKeys.uniqueId) == recipient.uniqueId)
                     .fetchOne(context.tx.database)
-                    .map { try OWSRecipientIdentity.fromRecord($0) }
             } catch let error {
                 errors.append(.archiveFrameError(
                     .unableToFetchRecipientIdentity(error),
@@ -699,14 +695,14 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             // OWSIdentityManager, as we already are working directly
             // with the SignalRecipient and don't need serviceId-based checks.
             let identity = OWSRecipientIdentity(
-                recipientUniqueId: recipient.uniqueId,
+                uniqueId: recipient.uniqueId,
                 identityKey: identityKey,
                 isFirstKnownKey: true,
                 createdAt: dateProvider(),
                 verificationState: verificationState
             )
             do {
-                try identity.asRecord().insert(context.tx.database)
+                try identity.insert(context.tx.database)
             } catch {
                 return .failure([.restoreFrameError(
                     .databaseInsertionFailed(error),

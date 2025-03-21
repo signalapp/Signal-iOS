@@ -17,9 +17,6 @@ class DebugUISessionState: DebugUIPage {
 
         if let contactThread = thread as? TSContactThread {
             items += [
-                OWSTableItem(title: "Log All Recipient Identities", actionBlock: {
-                    OWSRecipientIdentity.printAllIdentities()
-                }),
                 OWSTableItem(title: "Toggle Key Change", actionBlock: {
                     DebugUISessionState.toggleKeyChange(for: contactThread)
                 }),
@@ -132,7 +129,7 @@ class DebugUISessionState: DebugUIPage {
             return
         }
         let name = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
-        let message = "\(name) is currently marked as \(OWSVerificationStateToString(identity.verificationState))"
+        let message = "\(name) is currently marked as \(identity.verificationState)"
 
         let stateSelection = ActionSheetController(title: "Select a verification state", message: message)
         stateSelection.addAction(OWSActionSheets.cancelAction)

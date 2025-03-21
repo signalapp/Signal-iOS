@@ -69,13 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction
 {
-    OWSAssertDebug(self.identityKey.length == OWSIdentityManagerObjCBridge.identityKeyLength);
-    OWSAssertDebug(self.verificationForRecipientAddress.isValid);
-
-    // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
-    // will figure that out on it's own.
-    OWSAssertDebug(self.verificationState != OWSVerificationStateNoLongerVerified);
-
     // We add the same amount of padding in the VerificationStateSync message and it's corresponding NullMessage so that
     // the sync message is indistinguishable from an outgoing Sent transcript corresponding to the NullMessage. We pad
     // the NullMessage so as to obscure it's content. The sync message (like all sync messages) will be *additionally*
@@ -83,12 +76,17 @@ NS_ASSUME_NONNULL_BEGIN
     // verification sync which is ~1-512 bytes larger then that.
     OWSAssertDebug(self.paddingBytesLength != 0);
 
-    SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProtoWithAddress(
-        self.verificationForRecipientAddress, self.identityKey, self.verificationState, self.paddingBytesLength);
-    if (!verifiedProto) {
-        OWSFailDebug(@"could not build protobuf.");
+    AciObjC *verificationForRecipientAci = (AciObjC *)self.verificationForRecipientAddress.serviceIdObjC;
+    if (![verificationForRecipientAci isKindOfClass:[AciObjC class]]) {
+        OWSFailDebug(@"couldn't get verified aci");
         return nil;
     }
+
+    SSKProtoVerified *verifiedProto =
+        [OWSRecipientIdentity buildVerifiedProtoWithDestinationAci:verificationForRecipientAci
+                                                       identityKey:self.identityKey
+                                                 verificationState:self.verificationState
+                                                paddingBytesLength:self.paddingBytesLength];
 
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
     [syncMessageBuilder setVerified:verifiedProto];
@@ -97,19 +95,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (size_t)unpaddedVerifiedLength
 {
-    OWSAssertDebug(self.identityKey.length == OWSIdentityManagerObjCBridge.identityKeyLength);
-    OWSAssertDebug(self.verificationForRecipientAddress.isValid);
-
-    // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
-    // will figure that out on it's own.
-    OWSAssertDebug(self.verificationState != OWSVerificationStateNoLongerVerified);
-
-    SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProtoWithAddress(
-        self.verificationForRecipientAddress, self.identityKey, self.verificationState, 0);
-    if (!verifiedProto) {
-        OWSFailDebug(@"could not build protobuf.");
+    AciObjC *verificationForRecipientAci = (AciObjC *)self.verificationForRecipientAddress.serviceIdObjC;
+    if (![verificationForRecipientAci isKindOfClass:[AciObjC class]]) {
+        OWSFailDebug(@"couldn't get verified aci");
         return 0;
     }
+
+    SSKProtoVerified *verifiedProto =
+        [OWSRecipientIdentity buildVerifiedProtoWithDestinationAci:verificationForRecipientAci
+                                                       identityKey:self.identityKey
+                                                 verificationState:self.verificationState
+                                                paddingBytesLength:0];
+
     NSError *error;
     NSData *_Nullable verifiedData = [verifiedProto serializedDataAndReturnError:&error];
     if (error || !verifiedData) {

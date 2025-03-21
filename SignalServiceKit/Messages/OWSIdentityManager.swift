@@ -268,7 +268,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     }
 
     public func groupContainsUnverifiedMember(_ groupUniqueID: String, tx: DBReadTransaction) -> Bool {
-        return OWSRecipientIdentity.groupContainsUnverifiedMember(groupUniqueID, transaction: SDSDB.shimOnlyBridge(tx))
+        return OWSRecipientIdentity.groupContainsUnverifiedMember(groupUniqueID, transaction: tx)
     }
 
     public func fireIdentityStateChangeNotification(after tx: DBWriteTransaction) {
@@ -295,11 +295,11 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     }
 
     public func recipientIdentity(for recipientUniqueId: RecipientUniqueId, tx: DBReadTransaction) -> OWSRecipientIdentity? {
-        return OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: SDSDB.shimOnlyBridge(tx))
+        return OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: tx)
     }
 
     public func removeRecipientIdentity(for recipientUniqueId: RecipientUniqueId, tx: DBWriteTransaction) {
-        recipientIdentity(for: recipientUniqueId, tx: tx)?.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+        recipientIdentity(for: recipientUniqueId, tx: tx)?.anyRemove(transaction: tx)
     }
 
     // MARK: - Local Identity
@@ -340,7 +340,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     private func _identityKey(for recipientUniqueId: RecipientUniqueId, tx: DBReadTransaction) -> Data? {
         owsAssertDebug(!recipientUniqueId.isEmpty)
-        return OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: SDSDB.shimOnlyBridge(tx))?.identityKey
+        return OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: tx)?.identityKey
     }
 
     @discardableResult
@@ -352,16 +352,16 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     private func _saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, recipientUniqueId: RecipientUniqueId, tx: DBWriteTransaction) -> Bool {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
 
-        let existingIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: SDSDB.shimOnlyBridge(tx))
+        let existingIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: tx)
         guard let existingIdentity else {
             Logger.info("Saving first-use identity for \(serviceId)")
             OWSRecipientIdentity(
-                recipientUniqueId: recipientUniqueId,
+                uniqueId: recipientUniqueId,
                 identityKey: identityKey,
                 isFirstKnownKey: true,
                 createdAt: Date(),
                 verificationState: .default
-            ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+            ).anyInsert(transaction: tx)
             // Cancel any pending verification state sync messages for this recipient.
             clearSyncMessage(for: recipientUniqueId, tx: tx)
             fireIdentityStateChangeNotification(after: tx)
@@ -383,12 +383,12 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         Logger.info("Saving new identity for \(serviceId): \(existingIdentity.verificationState) -> \(verificationState)")
         insertIdentityChangeInfoMessage(for: serviceId, wasIdentityVerified: existingIdentity.wasIdentityVerified, tx: tx)
         OWSRecipientIdentity(
-            recipientUniqueId: recipientUniqueId,
+            uniqueId: recipientUniqueId,
             identityKey: identityKey,
             isFirstKnownKey: false,
             createdAt: Date(),
             verificationState: verificationState.rawValue
-        ).anyUpsert(transaction: SDSDB.shimOnlyBridge(tx))
+        ).anyUpsert(transaction: tx)
         aciProtocolStore.sessionStore.archiveAllSessions(for: serviceId, tx: tx)
         // Cancel any pending verification state sync messages for this recipient.
         clearSyncMessage(for: recipientUniqueId, tx: tx)
@@ -403,24 +403,24 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     ) {
         let contactThread = TSContactThread.getOrCreateThread(
             withContactAddress: SignalServiceAddress(serviceId),
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
         let contactThreadMessage: TSErrorMessage = .nonblockingIdentityChange(
             thread: contactThread,
             address: SignalServiceAddress(serviceId),
             wasIdentityVerified: wasIdentityVerified
         )
-        contactThreadMessage.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+        contactThreadMessage.anyInsert(transaction: tx)
 
-        for groupThread in TSGroupThread.groupThreads(with: SignalServiceAddress(serviceId), transaction: SDSDB.shimOnlyBridge(tx)) {
+        for groupThread in TSGroupThread.groupThreads(with: SignalServiceAddress(serviceId), transaction: tx) {
             TSErrorMessage.nonblockingIdentityChange(
                 thread: groupThread,
                 address: SignalServiceAddress(serviceId),
                 wasIdentityVerified: wasIdentityVerified
-            ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+            ).anyInsert(transaction: tx)
         }
 
-        notificationPresenter.notifyUser(forErrorMessage: contactThreadMessage, thread: contactThread, transaction: SDSDB.shimOnlyBridge(tx))
+        notificationPresenter.notifyUser(forErrorMessage: contactThreadMessage, thread: contactThread, transaction: tx)
         fireIdentityStateChangeNotification(after: tx)
     }
 
@@ -429,7 +429,6 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         phoneNumber: String?,
         tx: DBWriteTransaction
     ) {
-        let tx = SDSDB.shimOnlyBridge(tx)
         guard let contactThread = TSContactThread.getWithContactAddress(recipient.address, transaction: tx) else {
             return
         }
@@ -443,21 +442,21 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     public func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction) {
         let recipientPair = MergePair(fromValue: recipient, intoValue: targetRecipient)
         let recipientIdentity = recipientPair.map {
-            OWSRecipientIdentity.anyFetch(uniqueId: $0.uniqueId, transaction: SDSDB.shimOnlyBridge(tx))
+            OWSRecipientIdentity.anyFetch(uniqueId: $0.uniqueId, transaction: tx)
         }
         guard let fromValue = recipientIdentity.fromValue else {
             return
         }
         if recipientIdentity.intoValue == nil {
             OWSRecipientIdentity(
-                recipientUniqueId: targetRecipient.uniqueId,
+                uniqueId: targetRecipient.uniqueId,
                 identityKey: fromValue.identityKey,
                 isFirstKnownKey: fromValue.isFirstKnownKey,
                 createdAt: fromValue.createdAt,
                 verificationState: fromValue.verificationState
-            ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+            ).anyInsert(transaction: tx)
         }
-        fromValue.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+        fromValue.anyRemove(transaction: tx)
     }
 
     // MARK: - Trust
@@ -517,7 +516,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             }
             let recipientIdentity = OWSRecipientIdentity.anyFetch(
                 uniqueId: recipientUniqueId,
-                transaction: SDSDB.shimOnlyBridge(tx)
+                transaction: tx
             )
             if let recipientIdentity, recipientIdentity.identityKey != identityKey.publicKey.keyBytes.asData {
                 Logger.warn("Key mismatch for \(serviceId)")
@@ -556,7 +555,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             // window elapses without any explicit action from the local user.
             let untrustedThreshold = untrustedThreshold ?? Date(timeIntervalSinceNow: -Constants.defaultUntrustedInterval)
             guard recipientIdentity.createdAt <= untrustedThreshold else {
-                Logger.warn("Not trusting new identity for \(recipientIdentity.accountId)")
+                Logger.warn("Not trusting new identity for \(recipientIdentity.uniqueId)")
                 return false
             }
             return true
@@ -567,7 +566,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         case .noLongerVerified:
             // This user was previously verified and their key has changed. We will not trust
             // them again until the user explicitly acknowledges the key change.
-            Logger.warn("Not trusting no-longer-verified identity for \(recipientIdentity.accountId)")
+            Logger.warn("Not trusting no-longer-verified identity for \(recipientIdentity.uniqueId)")
             return false
         }
     }
@@ -654,7 +653,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             return nil
         }
 
-        let recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: SDSDB.shimOnlyBridge(tx))
+        let recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: tx)
 
         guard let recipientIdentity else {
             owsFailDebug("Couldn't load recipient identity for \(recipientUniqueId)")
@@ -675,7 +674,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             return nil
         }
 
-        guard let recipient = SignalRecipient.anyFetch(uniqueId: recipientUniqueId, transaction: SDSDB.shimOnlyBridge(tx)) else {
+        guard let recipient = SignalRecipient.anyFetch(uniqueId: recipientUniqueId, transaction: tx) else {
             return nil
         }
 
@@ -684,7 +683,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             verificationState: recipientIdentity.verificationState,
             identityKey: identityKey.serialize().asData,
             verificationForRecipientAddress: recipient.address,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
@@ -700,7 +699,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             let nullMessage = OWSOutgoingNullMessage(
                 contactThread: contactThread,
                 verificationStateSyncMessage: message,
-                transaction: SDSDB.shimOnlyBridge(tx)
+                transaction: tx
             )
             let preparedMessage = PreparedOutgoingMessage.preprepared(
                 transientMessageWithoutAttachments: nullMessage
@@ -709,7 +708,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                 .promise,
                 message: preparedMessage,
                 limitToCurrentProcessLifetime: true,
-                transaction: SDSDB.shimOnlyBridge(tx)
+                transaction: tx
             )
         }
 
@@ -723,7 +722,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                     .promise,
                     message: preparedMessage,
                     limitToCurrentProcessLifetime: true,
-                    transaction: SDSDB.shimOnlyBridge(tx)
+                    transaction: tx
                 )
             }
             syncMessagePromise.done(on: self.schedulers.global()) {
@@ -756,9 +755,9 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     ) -> ChangeVerificationStateResult {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
 
-        let recipient = OWSAccountIdFinder.ensureRecipient(forAddress: address, transaction: SDSDB.shimOnlyBridge(tx))
+        let recipient = OWSAccountIdFinder.ensureRecipient(forAddress: address, transaction: tx)
         let recipientUniqueId = recipient.uniqueId
-        let recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: SDSDB.shimOnlyBridge(tx))
+        let recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: tx)
         guard let recipientIdentity else {
             owsFailDebug("Missing OWSRecipientIdentity.")
             return .error
@@ -787,7 +786,8 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         }
 
         Logger.info("setVerificationState for \(recipientUniqueId): \(recipientIdentity.verificationState) -> \(verificationState)")
-        recipientIdentity.update(with: verificationState.rawValue, transaction: SDSDB.shimOnlyBridge(tx))
+        recipientIdentity.verificationState = verificationState.rawValue
+        recipientIdentity.anyOverwritingUpdate(transaction: tx)
 
         switch (oldVerificationState, verificationState) {
         case (.implicit, .implicit):
@@ -859,15 +859,12 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     ) {
         let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
         let recipientUniqueId = recipient.uniqueId
-        var recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: SDSDB.shimOnlyBridge(tx))
+        var recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: tx)
 
         let shouldSaveIdentityKey: Bool
         let shouldInsertChangeMessages: Bool
 
         if let recipientIdentity {
-            if recipientIdentity.accountId != recipientUniqueId {
-                return owsFailDebug("Unexpected recipientUniqueId for \(aci)")
-            }
             let didChangeIdentityKey = recipientIdentity.identityKey != identityKey.publicKey.keyBytes.asData
             if didChangeIdentityKey, !overwriteOnConflict {
                 // The conflict case where we receive a verification sync message whose
@@ -890,14 +887,11 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             // Ensure a remote identity exists for this key. We may be learning about
             // it for the first time.
             saveIdentityKey(identityKey, for: aci, tx: tx)
-            recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: SDSDB.shimOnlyBridge(tx))
+            recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: tx)
         }
 
         guard let recipientIdentity else {
             return owsFailDebug("Missing expected identity for \(aci)")
-        }
-        guard recipientIdentity.accountId == recipientUniqueId else {
-            return owsFailDebug("Unexpected recipientUniqueId for \(aci)")
         }
         guard recipientIdentity.identityKey == identityKey.publicKey.keyBytes.asData else {
             return owsFailDebug("Unexpected identityKey for \(aci)")
@@ -924,7 +918,8 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         }
 
         Logger.info("for \(aci): \(oldVerificationState) -> \(newVerificationState)")
-        recipientIdentity.update(with: newVerificationState.rawValue, transaction: SDSDB.shimOnlyBridge(tx))
+        recipientIdentity.verificationState = newVerificationState.rawValue
+        recipientIdentity.anyOverwritingUpdate(transaction: tx)
 
         if shouldInsertChangeMessages {
             saveChangeMessages(for: recipient, verificationState: newVerificationState, isLocalChange: false, tx: tx)
@@ -940,8 +935,8 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         let address = signalRecipient.address
 
         var relevantThreads = [TSThread]()
-        relevantThreads.append(TSContactThread.getOrCreateThread(withContactAddress: address, transaction: SDSDB.shimOnlyBridge(tx)))
-        relevantThreads.append(contentsOf: TSGroupThread.groupThreads(with: address, transaction: SDSDB.shimOnlyBridge(tx)))
+        relevantThreads.append(TSContactThread.getOrCreateThread(withContactAddress: address, transaction: tx))
+        relevantThreads.append(contentsOf: TSGroupThread.groupThreads(with: address, transaction: tx))
 
         for thread in relevantThreads {
             OWSVerificationStateChangeMessage(
@@ -950,7 +945,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                 recipientAddress: address,
                 verificationState: verificationState.rawValue,
                 isLocalChange: isLocalChange
-            ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+            ).anyInsert(transaction: tx)
         }
     }
 

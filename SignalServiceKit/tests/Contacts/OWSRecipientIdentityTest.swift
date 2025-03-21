@@ -6,6 +6,7 @@
 import Foundation
 import GRDB
 import LibSignalClient
+import Testing
 import XCTest
 
 @testable import SignalServiceKit
@@ -166,5 +167,58 @@ class OWSRecipientIdentityTest: SSKBaseTest {
         read { tx in
             XCTAssertFalse(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx))
         }
+    }
+}
+
+struct RecipientIdentityTest2 {
+    @Test
+    func testEncoder() throws {
+        let recipientIdentity = OWSRecipientIdentity(
+            uniqueId: "00000000-0000-4000-8000-000000000000",
+            identityKey: IdentityKeyPair.generate().publicKey.keyBytes.asData,
+            isFirstKnownKey: true,
+            createdAt: Date(timeIntervalSince1970: 1234567890),
+            verificationState: .verified
+        )
+        let db = InMemoryDB()
+        db.write { tx in try! recipientIdentity.insert(tx.database) }
+        let row = try #require(db.read { tx in
+            return try Row.fetchOne(tx.database, sql: "SELECT * FROM model_OWSRecipientIdentity")
+        })
+        #expect(row["uniqueId"] == recipientIdentity.uniqueId)
+        #expect(row["accountId"] == recipientIdentity.uniqueId)
+        #expect(row["identityKey"] == recipientIdentity.identityKey)
+        #expect(row["isFirstKnownKey"] == recipientIdentity.isFirstKnownKey)
+        #expect(row["createdAt"] == recipientIdentity.createdAt.timeIntervalSince1970)
+        #expect(row["verificationState"] == recipientIdentity.verificationState.rawValue)
+    }
+
+    @Test
+    func testDecoder() throws {
+        let uniqueId = "00000000-0000-4000-8000-00000000000A"
+        let identityKey = IdentityKeyPair.generate().publicKey.keyBytes.asData
+        let isFirstKnownKey = false
+        let createdAt = 1324567890
+        let verificationState = OWSVerificationState.defaultAcknowledged.rawValue
+
+        let db = InMemoryDB()
+        db.write { tx in
+            try! tx.database.execute(
+                sql: """
+                INSERT INTO model_OWSRecipientIdentity (
+                    recordType, uniqueId, accountId, identityKey, isFirstKnownKey, createdAt, verificationState
+                ) VALUES (38, ?, ?, ?, ?, ?, ?)
+                """,
+                arguments: [uniqueId, uniqueId, identityKey, isFirstKnownKey, createdAt, verificationState]
+            )
+        }
+        let recipientIdentity = try #require(db.read { tx in
+            return try OWSRecipientIdentity.fetchOne(tx.database)
+        })
+        #expect(recipientIdentity.uniqueId == uniqueId)
+        #expect(recipientIdentity.identityKey == identityKey)
+        #expect(recipientIdentity.isFirstKnownKey == isFirstKnownKey)
+        #expect(recipientIdentity.createdAt.timeIntervalSince1970 == TimeInterval(createdAt))
+        #expect(recipientIdentity.verificationState == OWSVerificationState(rawValue: verificationState))
     }
 }

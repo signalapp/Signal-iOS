@@ -259,7 +259,7 @@ public extension DatabaseRecovery {
         static let tablesToCopyWithBestEffort: [String] = [
             // We should try to copy thread data.
             OWSReaction.databaseTableName,
-            OWSRecipientIdentity.table.tableName,
+            OWSRecipientIdentity.databaseTableName,
             OWSUserProfile.databaseTableName,
             SignalAccount.databaseTableName,
             SignalRecipient.databaseTableName,

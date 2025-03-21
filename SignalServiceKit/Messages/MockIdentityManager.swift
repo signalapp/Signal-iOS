@@ -47,7 +47,7 @@ open class MockIdentityManager: OWSIdentityManager {
         }
         if recipientIdentities[targetRecipient.uniqueId] == nil {
             recipientIdentities[targetRecipient.uniqueId] = OWSRecipientIdentity(
-                recipientUniqueId: targetRecipient.uniqueId,
+                uniqueId: targetRecipient.uniqueId,
                 identityKey: fromValue.identityKey,
                 isFirstKnownKey: fromValue.isFirstKnownKey,
                 createdAt: fromValue.createdAt,
