@@ -4546,8 +4546,8 @@ private extension Usernames.UsernameLink {
 
 private extension TSRequest {
     var authPassword: String {
-        let httpHeaders = OWSHttpHeaders()
-        self.applyAuth(to: httpHeaders, willSendViaWebSocket: false)
+        var httpHeaders = OWSHttpHeaders()
+        self.applyAuth(to: &httpHeaders, willSendViaWebSocket: false)
         let authHeader = httpHeaders.value(forHeader: "Authorization")!
         owsPrecondition(authHeader.hasPrefix("Basic "))
         let authValue = String(data: Data(base64Encoded: String(authHeader.dropFirst(6)))!, encoding: .utf8)!

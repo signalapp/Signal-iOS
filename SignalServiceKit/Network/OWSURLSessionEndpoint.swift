@@ -46,7 +46,7 @@ public class OWSURLSessionEndpoint {
         var request = URLRequest(url: url)
         request.httpMethod = method.methodName
 
-        let httpHeaders = OWSHttpHeaders()
+        var httpHeaders = OWSHttpHeaders()
         httpHeaders.addHeaderMap(headers, overwriteOnConflict: false)
         httpHeaders.addDefaultHeaders()
         httpHeaders.addHeaderMap(extraHeaders, overwriteOnConflict: true)

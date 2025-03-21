@@ -10,17 +10,17 @@ import Foundation
 //
 // HTTP headers are case-insensitive.
 // This class handles conflict resolution.
-public final class OWSHttpHeaders: CustomDebugStringConvertible {
+public struct OWSHttpHeaders: CustomDebugStringConvertible {
     public private(set) var headers = [String: String]()
 
     public init() {}
 
-    public convenience init(httpHeaders: [String: String]?, overwriteOnConflict: Bool) {
+    public init(httpHeaders: [String: String]?, overwriteOnConflict: Bool) {
         self.init()
         addHeaderMap(httpHeaders, overwriteOnConflict: overwriteOnConflict)
     }
 
-    public convenience init(response: HTTPURLResponse) {
+    public init(response: HTTPURLResponse) {
         self.init()
         for (key, value) in response.allHeaderFields {
             guard let key = key as? String, let value = value as? String else {
@@ -41,17 +41,15 @@ public final class OWSHttpHeaders: CustomDebugStringConvertible {
         return headers[header.lowercased()]
     }
 
-    public func removeValueForHeader(_ header: String) {
-        headers = headers.filter { $0.key != header.lowercased() }
-        owsAssertDebug(!hasValueForHeader(header))
+    public mutating func removeValueForHeader(_ header: String) {
+        headers.removeValue(forKey: header.lowercased())
     }
 
-    public func addHeader(_ header: String, value: String, overwriteOnConflict: Bool) {
+    public mutating func addHeader(_ header: String, value: String, overwriteOnConflict: Bool) {
         addHeaderMap([header: value], overwriteOnConflict: overwriteOnConflict)
     }
 
-    public func addHeaderMap(_ newHttpHeaders: [String: String]?,
-                             overwriteOnConflict: Bool) {
+    public mutating func addHeaderMap(_ newHttpHeaders: [String: String]?, overwriteOnConflict: Bool) {
         guard let newHttpHeaders = newHttpHeaders else {
             return
         }
@@ -76,15 +74,11 @@ public final class OWSHttpHeaders: CustomDebugStringConvertible {
                     continue
                 }
             }
-
-            // Clear any existing value with a key with different casing.
-            removeValueForHeader(key)
-
             headers[key] = value
         }
     }
 
-    public func addHeaderList(_ newHttpHeaders: [String]?, overwriteOnConflict: Bool) {
+    public mutating func addHeaderList(_ newHttpHeaders: [String]?, overwriteOnConflict: Bool) {
         guard let newHttpHeaders = newHttpHeaders else {
             return
         }
@@ -159,7 +153,7 @@ public final class OWSHttpHeaders: CustomDebugStringConvertible {
         formatAcceptLanguageHeader(Locale.preferredLanguages)
     }
 
-    public func addDefaultHeaders() {
+    public mutating func addDefaultHeaders() {
         addHeader(Self.userAgentHeaderKey, value: Self.userAgentHeaderValueSignalIos, overwriteOnConflict: false)
         addHeader(Self.acceptLanguageHeaderKey, value: Self.acceptLanguageHeaderValue, overwriteOnConflict: false)
     }
@@ -173,14 +167,14 @@ public final class OWSHttpHeaders: CustomDebugStringConvertible {
         return "Basic " + data.base64EncodedString()
     }
 
-    public func addAuthHeader(username: String, password: String) {
+    public mutating func addAuthHeader(username: String, password: String) {
         let value = Self.authHeaderValue(username: username, password: password)
         addHeader(Self.authHeaderKey, value: value, overwriteOnConflict: true)
     }
 
     public static func fillInMissingDefaultHeaders(request: URLRequest) -> URLRequest {
         var request = request
-        let httpHeaders = OWSHttpHeaders()
+        var httpHeaders = OWSHttpHeaders()
         httpHeaders.addHeaderMap(request.allHTTPHeaderFields, overwriteOnConflict: true)
         httpHeaders.addDefaultHeaders()
         request.set(httpHeaders: httpHeaders)

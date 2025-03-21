@@ -710,10 +710,10 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
                                                                            path: "/\(requestUrl.relativeString)",
                                                                            requestID: requestInfo.requestId)
 
-        let httpHeaders = OWSHttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: false)
+        var httpHeaders = OWSHttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: false)
         httpHeaders.addDefaultHeaders()
 
-        request.applyAuth(to: httpHeaders, willSendViaWebSocket: true)
+        request.applyAuth(to: &httpHeaders, willSendViaWebSocket: true)
 
         if let existingBody = request.httpBody {
             requestBuilder.setBody(existingBody)
@@ -778,7 +778,7 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
 
         ensureBackgroundKeepAlive(.receiveResponse)
 
-        let headers = OWSHttpHeaders()
+        var headers = OWSHttpHeaders()
         headers.addHeaderList(message.headers, overwriteOnConflict: true)
 
         guard let requestInfo = currentWebSocket.popRequestInfo(forRequestId: requestId) else {
@@ -844,7 +844,7 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
             backgroundTask = nil
         }
 
-        let headers = OWSHttpHeaders()
+        var headers = OWSHttpHeaders()
         headers.addHeaderList(message.headers, overwriteOnConflict: true)
 
         var serverDeliveryTimestamp: UInt64 = 0
@@ -1588,10 +1588,10 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
             return
         }
 
-        let httpHeaders = OWSHttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: false)
+        var httpHeaders = OWSHttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: false)
         httpHeaders.addDefaultHeaders()
 
-        request.applyAuth(to: httpHeaders, willSendViaWebSocket: true)
+        request.applyAuth(to: &httpHeaders, willSendViaWebSocket: true)
 
         let body: Data
         if let existingBody = request.httpBody {
@@ -1787,7 +1787,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
 
                     // Skip the full overhead of makeRequest(...).
                     // We don't need keepalives to count as background activity or anything like that.
-                    let httpHeaders = OWSHttpHeaders()
+                    var httpHeaders = OWSHttpHeaders()
                     httpHeaders.addDefaultHeaders()
                     // This 30-second timeout doesn't inherently need to match the send interval above,
                     // but neither do we need an especially tight timeout here either.

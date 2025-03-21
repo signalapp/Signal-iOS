@@ -47,7 +47,7 @@ class OWSHttpHeadersTest: XCTestCase {
     }
 
     func testDebugDescription() {
-        let httpHeaders = OWSHttpHeaders()
+        var httpHeaders = OWSHttpHeaders()
         httpHeaders.addHeader("Retry-After", value: "Wed, 21 Oct 2015 07:28:01 GMT", overwriteOnConflict: true)
         httpHeaders.addHeader("x-signal-timestamp", value: "1669077270", overwriteOnConflict: true)
         httpHeaders.addHeader("Content-Type", value: "text/plain", overwriteOnConflict: true)

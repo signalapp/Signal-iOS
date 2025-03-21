@@ -11,9 +11,9 @@ public struct GroupsV2Request {
     let method: HTTPMethod
     let bodyData: Data?
 
-    let headers = OWSHttpHeaders()
+    var headers = OWSHttpHeaders()
 
-    func addHeader(_ header: String, value: String) {
+    mutating func addHeader(_ header: String, value: String) {
         headers.addHeader(header, value: value, overwriteOnConflict: true)
     }
 }
@@ -95,7 +95,7 @@ public extension StorageService {
         }
         urlComponents.queryItems = queryItems
 
-        let request = try buildGroupV2Request(
+        var request = try buildGroupV2Request(
             protoData: nil,
             urlString: urlComponents.url!.relativePath,
             method: .get,
@@ -172,14 +172,14 @@ public extension StorageService {
         authCredential: AuthCredentialWithPni
     ) throws -> GroupsV2Request {
 
-        let request = GroupsV2Request(urlString: urlString, method: method, bodyData: protoData)
+        var request = GroupsV2Request(urlString: urlString, method: method, bodyData: protoData)
 
         // The censorship circumvention reflectors require a Content-Type
         // even if the body is empty.
         request.addHeader("Content-Type", value: MimeType.applicationXProtobuf.rawValue)
 
         try self.addAuthorizationHeader(
-            to: request,
+            to: &request,
             groupSecretParams: secretParams,
             authCredential: authCredential
         )
@@ -190,7 +190,7 @@ public extension StorageService {
     // MARK: - Authorization Headers
 
     private static func addAuthorizationHeader(
-        to request: GroupsV2Request,
+        to request: inout GroupsV2Request,
         groupSecretParams: GroupSecretParams,
         authCredential: AuthCredentialWithPni
     ) throws {

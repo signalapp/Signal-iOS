@@ -102,7 +102,7 @@ public class TSRequest: NSMutableURLRequest {
 
     public var auth: Auth = .identified(.implicit())
 
-    func applyAuth(to httpHeaders: OWSHttpHeaders, willSendViaWebSocket: Bool) {
+    func applyAuth(to httpHeaders: inout OWSHttpHeaders, willSendViaWebSocket: Bool) {
         switch self.auth {
         case .identified(let auth):
             // If it's sent via the web socket, the "auth" is applied when the
@@ -113,25 +113,25 @@ public class TSRequest: NSMutableURLRequest {
                     let tsAccountManager = DependenciesBridge.shared.tsAccountManager
                     let username = tsAccountManager.storedServerUsernameWithMaybeTransaction ?? ""
                     let password = tsAccountManager.storedServerAuthTokenWithMaybeTransaction ?? ""
-                    self.setAuth(username: username, password: password, for: httpHeaders)
+                    self.setAuth(username: username, password: password, for: &httpHeaders)
                 case .explicit(let username, let password):
-                    self.setAuth(username: username, password: password, for: httpHeaders)
+                    self.setAuth(username: username, password: password, for: &httpHeaders)
                 }
             }
         case .registration((let username, let password)?):
-            self.setAuth(username: username, password: password, for: httpHeaders)
+            self.setAuth(username: username, password: password, for: &httpHeaders)
         case .registration(nil):
             break
         case .anonymous:
             break
         case .sealedSender(let auth):
-            self.setAuth(sealedSender: auth, for: httpHeaders)
+            self.setAuth(sealedSender: auth, for: &httpHeaders)
         case .messageBackup(let auth):
-            auth.apply(to: httpHeaders)
+            auth.apply(to: &httpHeaders)
         }
     }
 
-    private func setAuth(username: String, password: String, for httpHeaders: OWSHttpHeaders) {
+    private func setAuth(username: String, password: String, for httpHeaders: inout OWSHttpHeaders) {
         owsAssertDebug(!username.isEmpty)
         owsAssertDebug(!password.isEmpty)
         httpHeaders.addAuthHeader(username: username, password: password)
@@ -150,7 +150,7 @@ public class TSRequest: NSMutableURLRequest {
         }
     }
 
-    private func setAuth(sealedSender: SealedSenderAuth, for httpHeaders: OWSHttpHeaders) {
+    private func setAuth(sealedSender: SealedSenderAuth, for httpHeaders: inout OWSHttpHeaders) {
         switch sealedSender {
         case .story:
             break

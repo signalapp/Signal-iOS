@@ -413,7 +413,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
             throw OWSHTTPError.invalidAppState
         }
 
-        let httpHeaders = OWSHttpHeaders()
+        var httpHeaders = OWSHttpHeaders()
 
         // Set User-Agent and Accept-Language headers.
         httpHeaders.addDefaultHeaders()
@@ -421,7 +421,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
         // Then apply any custom headers for the request
         httpHeaders.addHeaderMap(rawRequest.allHTTPHeaderFields, overwriteOnConflict: true)
 
-        rawRequest.applyAuth(to: httpHeaders, willSendViaWebSocket: false)
+        rawRequest.applyAuth(to: &httpHeaders, willSendViaWebSocket: false)
 
         let method: HTTPMethod
         do {
