@@ -163,7 +163,7 @@ public class SenderKeyStore {
     public func skdmBytesForThread(
         _ thread: TSThread,
         localAci: Aci,
-        localDeviceId: UInt32,
+        localDeviceId: DeviceId,
         tx: DBWriteTransaction
     ) -> Data? {
         do {
@@ -211,7 +211,7 @@ extension SenderKeyStore: LibSignalClient.SenderKeyStore {
             updatedValue = KeyMetadata(
                 record: record,
                 senderAci: senderAci,
-                senderDeviceId: sender.deviceId,
+                senderDeviceId: sender.deviceIdObj,
                 localIdentifiers: localIdentifiers,
                 localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx),
                 distributionId: distributionId
@@ -408,8 +408,8 @@ private struct KeyRecipient: Codable {
         let deviceId: UInt32
         let registrationId: UInt32?
 
-        init(deviceId: UInt32, registrationId: UInt32?) {
-            self.deviceId = deviceId
+        init(deviceId: DeviceId, registrationId: UInt32?) {
+            self.deviceId = deviceId.uint32Value
             self.registrationId = registrationId
         }
 
@@ -447,19 +447,18 @@ private struct KeyRecipient: Codable {
             throw OWSAssertionError("Invalid device array")
         }
         let deviceIds = recipient.deviceIds
-        let protocolAddresses = deviceIds.map { ProtocolAddress(serviceId, deviceId: $0) }
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-        let devices: [Device] = try protocolAddresses.map {
+        let devices: [Device] = try deviceIds.map { deviceId in
             // We have to fetch the registrationId since deviceIds can be reused.
             // By comparing a set of (deviceId,registrationId) structs, we should be able to detect reused
             // deviceIds that will need an SKDM
             let registrationId = try sessionStore.loadSession(
-                for: $0.serviceId,
-                deviceId: $0.deviceId,
+                for: serviceId,
+                deviceId: deviceId,
                 tx: tx
             )?.remoteRegistrationId()
 
-            return Device(deviceId: $0.deviceId, registrationId: registrationId)
+            return Device(deviceId: deviceId, registrationId: registrationId)
         }
         return KeyRecipient(devices: Set(devices))
     }
@@ -477,7 +476,7 @@ private struct KeyRecipient: Codable {
 private struct KeyMetadata {
     let distributionId: SenderKeyStore.DistributionId
     @AciUuid var ownerAci: Aci
-    let ownerDeviceId: UInt32
+    let ownerDeviceId: DeviceId
 
     var keyId: String { SenderKeyStore.buildKeyId(authorAci: ownerAci, distributionId: distributionId) }
 
@@ -509,9 +508,9 @@ private struct KeyMetadata {
     init(
         record: SenderKeyRecord,
         senderAci: Aci,
-        senderDeviceId: UInt32,
+        senderDeviceId: DeviceId,
         localIdentifiers: LocalIdentifiers,
-        localDeviceId: UInt32,
+        localDeviceId: DeviceId,
         distributionId: SenderKeyStore.DistributionId
     ) {
         self.serializedRecord = Data(record.serialize())
@@ -569,7 +568,7 @@ extension KeyMetadata: Codable {
 
         distributionId = try container.decode(SenderKeyStore.DistributionId.self, forKey: .distributionId)
         _ownerAci = try container.decode(AciUuid.self, forKey: .ownerAci)
-        ownerDeviceId = try container.decode(UInt32.self, forKey: .ownerDeviceId)
+        ownerDeviceId = try container.decode(DeviceId.self, forKey: .ownerDeviceId)
         creationDate = try container.decode(Date.self, forKey: .creationDate)
         isForEncrypting = try container.decode(Bool.self, forKey: .isForEncrypting)
 

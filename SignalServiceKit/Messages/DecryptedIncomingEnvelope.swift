@@ -27,7 +27,7 @@ class DecryptedIncomingEnvelope {
     let timestamp: UInt64
     let serverTimestamp: UInt64
     let sourceAci: Aci
-    let sourceDeviceId: UInt32
+    let sourceDeviceId: DeviceId
     let localIdentity: OWSIdentity
     let wasReceivedByUD: Bool
     let plaintextData: Data
@@ -37,7 +37,7 @@ class DecryptedIncomingEnvelope {
         validatedEnvelope: ValidatedIncomingEnvelope,
         updatedEnvelope: SSKProtoEnvelope,
         sourceAci: Aci,
-        sourceDeviceId: UInt32,
+        sourceDeviceId: DeviceId,
         wasReceivedByUD: Bool,
         plaintextData: Data,
         isPlaintextCipher: Bool?

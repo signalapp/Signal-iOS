@@ -10,7 +10,7 @@ public protocol OWSDeviceService {
     func refreshDevices() async throws -> Bool
 
     /// Unlink the given device.
-    func unlinkDevice(deviceId: Int, auth: ChatServiceAuth) async throws
+    func unlinkDevice(deviceId: DeviceId, auth: ChatServiceAuth) async throws
 
     /// Renames a device with the given encrypted name.
     func renameDevice(
@@ -21,12 +21,16 @@ public protocol OWSDeviceService {
 
 extension OWSDeviceService {
 
-    public func unlinkDevice(deviceId: Int) async throws {
+    public func unlinkDevice(deviceId: DeviceId) async throws {
         try await self.unlinkDevice(deviceId: deviceId, auth: .implicit())
     }
 
     public func unlinkDevice(_ device: OWSDevice, auth: ChatServiceAuth = .implicit()) async throws {
-        try await unlinkDevice(deviceId: device.deviceId, auth: auth)
+        guard let deviceId = UInt32(exactly: device.deviceId) else {
+            // If it's not valid, the device can't exist on the server.
+            return
+        }
+        try await unlinkDevice(deviceId: DeviceId(rawValue: deviceId), auth: auth)
     }
 }
 
@@ -134,7 +138,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
     // MARK: -
 
-    func unlinkDevice(deviceId: Int, auth: ChatServiceAuth) async throws {
+    func unlinkDevice(deviceId: DeviceId, auth: ChatServiceAuth) async throws {
         let request = TSRequest.deleteDevice(deviceId: deviceId)
         request.auth = .identified(auth)
         _ = try await networkManager.asyncRequest(request, canUseWebSocket: false)
@@ -219,7 +223,7 @@ private extension TSRequest {
     }
 
     static func deleteDevice(
-        deviceId: Int
+        deviceId: DeviceId
     ) -> TSRequest {
         return TSRequest(
             url: URL(string: "v1/devices/\(deviceId)")!,

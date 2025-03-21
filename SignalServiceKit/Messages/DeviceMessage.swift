@@ -7,12 +7,12 @@ import Foundation
 
 struct DeviceMessage {
     let type: SSKProtoEnvelopeType
-    let destinationDeviceId: UInt32
+    let destinationDeviceId: DeviceId
     let destinationRegistrationId: UInt32
     let content: Data
 }
 
 struct SentDeviceMessage {
-    var destinationDeviceId: UInt32
+    var destinationDeviceId: DeviceId
     var destinationRegistrationId: UInt32
 }

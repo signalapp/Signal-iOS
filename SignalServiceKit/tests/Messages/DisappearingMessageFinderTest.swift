@@ -227,14 +227,14 @@ final class DisappearingMessageFinderTest: SSKBaseTest {
 
             expiringDeliveredOutgoingMessage.update(
                 withDeliveredRecipient: otherAddress,
-                deviceId: 0,
+                deviceId: DeviceId(rawValue: 0),
                 deliveryTimestamp: now,
                 context: PassthroughDeliveryReceiptContext(),
                 tx: transaction
             )
             expiringDeliveredAndReadOutgoingMessage.update(
                 withReadRecipient: otherAddress,
-                deviceId: 0,
+                deviceId: DeviceId(rawValue: 0),
                 readTimestamp: now,
                 tx: transaction
             )

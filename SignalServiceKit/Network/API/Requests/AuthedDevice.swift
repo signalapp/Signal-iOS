@@ -12,7 +12,7 @@ public enum AuthedDevice {
 
     public enum DeviceId: Equatable {
         case primary
-        case secondary(UInt32)
+        case secondary(SignalServiceKit.DeviceId)
 
         public func authUsername(aci: Aci) -> String {
             switch self {

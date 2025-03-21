@@ -24,9 +24,9 @@ public protocol TSAccountManager {
 
     func storedServerAuthToken(tx: DBReadTransaction) -> String?
 
-    var storedDeviceIdWithMaybeTransaction: UInt32 { get }
+    var storedDeviceIdWithMaybeTransaction: DeviceId { get }
 
-    func storedDeviceId(tx: DBReadTransaction) -> UInt32
+    func storedDeviceId(tx: DBReadTransaction) -> DeviceId
 
     // MARK: - Registration State
 
@@ -108,7 +108,7 @@ public protocol LocalIdentifiersSetter {
         e164: E164,
         aci: Aci,
         pni: Pni,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         serverAuthToken: String,
         tx: DBWriteTransaction
     )

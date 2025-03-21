@@ -31,13 +31,13 @@ public protocol SignalSessionStore: LibSignalClient.SessionStore {
 
     func archiveSession(
         for serviceId: ServiceId,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         tx: DBWriteTransaction
     )
 
     func loadSession(
         for serviceId: ServiceId,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         tx: DBReadTransaction
     ) throws -> SessionRecord?
 

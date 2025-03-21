@@ -46,7 +46,7 @@ final class OWSOutgoingResendResponse: TSOutgoingMessage {
 
     convenience init?(
         aci: Aci,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         failedTimestamp: UInt64,
         didResetSession: Bool,
         tx: DBWriteTransaction

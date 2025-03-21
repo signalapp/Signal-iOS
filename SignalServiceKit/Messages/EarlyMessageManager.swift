@@ -151,11 +151,11 @@ public class EarlyMessageManager {
         }
 
         // PNP0 TODO: This should be an Aci for read/viewed receipts.
-        init(receiptType: SSKProtoReceiptMessageType, sender: ServiceId, senderDeviceId: UInt32, timestamp: UInt64) {
+        init(receiptType: SSKProtoReceiptMessageType, sender: ServiceId, senderDeviceId: DeviceId, timestamp: UInt64) {
             switch receiptType {
-            case .delivery: self = .outgoingMessageDelivered(sender: SignalServiceAddress(sender), deviceId: senderDeviceId, timestamp: timestamp)
-            case .read: self = .outgoingMessageRead(sender: SignalServiceAddress(sender), deviceId: senderDeviceId, timestamp: timestamp)
-            case .viewed: self = .outgoingMessageViewed(sender: SignalServiceAddress(sender), deviceId: senderDeviceId, timestamp: timestamp)
+            case .delivery: self = .outgoingMessageDelivered(sender: SignalServiceAddress(sender), deviceId: senderDeviceId.uint32Value, timestamp: timestamp)
+            case .read: self = .outgoingMessageRead(sender: SignalServiceAddress(sender), deviceId: senderDeviceId.uint32Value, timestamp: timestamp)
+            case .viewed: self = .outgoingMessageViewed(sender: SignalServiceAddress(sender), deviceId: senderDeviceId.uint32Value, timestamp: timestamp)
             }
         }
     }
@@ -229,7 +229,7 @@ public class EarlyMessageManager {
     public func recordEarlyReceiptForOutgoingMessage(
         type: SSKProtoReceiptMessageType,
         senderServiceId: ServiceId,
-        senderDeviceId: UInt32,
+        senderDeviceId: DeviceId,
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
         tx: DBWriteTransaction
@@ -359,7 +359,7 @@ public class EarlyMessageManager {
                 }
                 message.update(
                     withReadRecipient: sender,
-                    deviceId: deviceId,
+                    deviceId: DeviceId(rawValue: deviceId),
                     readTimestamp: timestamp,
                     tx: transaction
                 )
@@ -372,7 +372,7 @@ public class EarlyMessageManager {
                 }
                 message.update(
                     withViewedRecipient: sender,
-                    deviceId: deviceId,
+                    deviceId: DeviceId(rawValue: deviceId),
                     viewedTimestamp: timestamp,
                     tx: transaction
                 )
@@ -385,7 +385,7 @@ public class EarlyMessageManager {
                 }
                 message.update(
                     withDeliveredRecipient: sender,
-                    deviceId: deviceId,
+                    deviceId: DeviceId(rawValue: deviceId),
                     deliveryTimestamp: timestamp,
                     context: PassthroughDeliveryReceiptContext(),
                     tx: transaction

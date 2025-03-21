@@ -711,6 +711,7 @@
 		50EF8DD32A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DD22A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift */; };
 		50EF8DD52A1FE55D00A00935 /* SignalAccountMergeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DD42A1FE55D00A00935 /* SignalAccountMergeObserver.swift */; };
 		50F039C42C6D239500162B99 /* BlockedRecipientStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F039C32C6D239500162B99 /* BlockedRecipientStore.swift */; };
+		50F401CC2D483BF40094CA56 /* DeviceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F401CB2D483BF40094CA56 /* DeviceId.swift */; };
 		50F54C2D2CE3FF7C005765EA /* GroupSendEndorsementStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F54C2C2CE3FF7C005765EA /* GroupSendEndorsementStore.swift */; };
 		50F54C2F2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F54C2E2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift */; };
 		50F75E312AD9F18F0032530F /* RecipientDatabaseTableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F75E302AD9F18F0032530F /* RecipientDatabaseTableTest.swift */; };
@@ -4585,6 +4586,7 @@
 		50EF8DD22A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDisappearingMessagesConfigurationTest.swift; sourceTree = "<group>"; };
 		50EF8DD42A1FE55D00A00935 /* SignalAccountMergeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAccountMergeObserver.swift; sourceTree = "<group>"; };
 		50F039C32C6D239500162B99 /* BlockedRecipientStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedRecipientStore.swift; sourceTree = "<group>"; };
+		50F401CB2D483BF40094CA56 /* DeviceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceId.swift; sourceTree = "<group>"; };
 		50F54C2C2CE3FF7C005765EA /* GroupSendEndorsementStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSendEndorsementStore.swift; sourceTree = "<group>"; };
 		50F54C2E2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSendEndorsementRecord.swift; sourceTree = "<group>"; };
 		50F75E302AD9F18F0032530F /* RecipientDatabaseTableTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientDatabaseTableTest.swift; sourceTree = "<group>"; };
@@ -13958,6 +13960,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CA5F289453B100548EEE /* Model */,
+				50F401CB2D483BF40094CA56 /* DeviceId.swift */,
 				5050A8782B76E2E100E9BFA4 /* PreKeyId.swift */,
 				F9C5CA59289453B100548EEE /* SenderKeyStore.swift */,
 				C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */,
@@ -17494,6 +17497,7 @@
 				D9247EA82BFD28E800DFEF6F /* DeleteForMeSyncMessageReceiver.swift in Sources */,
 				F9C5CC34289453B300548EEE /* DeliveryReceiptContext.swift in Sources */,
 				6698FC1A2980AB45004EFC30 /* DependenciesBridge.swift in Sources */,
+				50F401CC2D483BF40094CA56 /* DeviceId.swift in Sources */,
 				505C2ED629971D4E00C23FB2 /* DeviceLimitExceededError.swift in Sources */,
 				50E5E4B129932D9B00E15A1C /* DeviceMessage.swift in Sources */,
 				F9C5CE0C289453B400548EEE /* DeviceNames.swift in Sources */,

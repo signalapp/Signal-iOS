@@ -37,8 +37,8 @@ public protocol ChangePhoneNumberPniManager {
         forNewE164 newE164: E164,
         localAci: Aci,
         localRecipientUniqueId: String,
-        localDeviceId: UInt32,
-        localUserAllDeviceIds: [UInt32]
+        localDeviceId: DeviceId,
+        localUserAllDeviceIds: [DeviceId]
     ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult>
 
     /// Commits an identity generated for a change number request.
@@ -133,8 +133,8 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         forNewE164 newE164: E164,
         localAci: Aci,
         localRecipientUniqueId: String,
-        localDeviceId: UInt32,
-        localUserAllDeviceIds: [UInt32]
+        localDeviceId: DeviceId,
+        localUserAllDeviceIds: [DeviceId]
     ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult> {
         logger.info("Generating PNI identity!")
 

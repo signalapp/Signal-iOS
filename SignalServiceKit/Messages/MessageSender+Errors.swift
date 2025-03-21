@@ -408,9 +408,9 @@ class MessageDeletedBeforeSentError: CustomNSError, IsRetryableProvider {
 
 class MessageSendEncryptionError: CustomNSError, IsRetryableProvider {
     public let serviceId: ServiceId
-    public let deviceId: UInt32
+    public let deviceId: DeviceId
 
-    init(serviceId: ServiceId, deviceId: UInt32) {
+    init(serviceId: ServiceId, deviceId: DeviceId) {
         self.serviceId = serviceId
         self.deviceId = deviceId
     }

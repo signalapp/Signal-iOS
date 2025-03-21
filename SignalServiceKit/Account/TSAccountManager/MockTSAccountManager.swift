@@ -52,11 +52,11 @@ public class MockTSAccountManager: TSAccountManager {
         return storedServerAuthTokenWithMaybeTransaction
     }
 
-    public var storedDeviceIdMock: (() -> UInt32) = { 1 }
+    public var storedDeviceIdMock: (() -> DeviceId) = { .primary }
 
-    open var storedDeviceIdWithMaybeTransaction: UInt32 { storedDeviceIdMock() }
+    open var storedDeviceIdWithMaybeTransaction: DeviceId { storedDeviceIdMock() }
 
-    open func storedDeviceId(tx: DBReadTransaction) -> UInt32 {
+    open func storedDeviceId(tx: DBReadTransaction) -> DeviceId {
         return storedDeviceIdWithMaybeTransaction
     }
 

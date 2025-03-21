@@ -29,7 +29,7 @@ struct PreKeyBundle: Decodable {
     }
 
     struct PreKeyDeviceBundle: Decodable {
-        let deviceId: Int8
+        let deviceId: DeviceId
         let registrationId: UInt32
         let signedPreKey: SignedPreKey
         let preKey: OneTimePreKey?

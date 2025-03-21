@@ -24,7 +24,7 @@ class WebRTCCallMessageHandler: CallMessageHandler {
     func receivedEnvelope(
         _ envelope: SSKProtoEnvelope,
         callEnvelope: CallEnvelopeType,
-        from caller: (aci: Aci, deviceId: UInt32),
+        from caller: (aci: Aci, deviceId: DeviceId),
         toLocalIdentity localIdentity: OWSIdentity,
         plaintextData: Data,
         wasReceivedByUD: Bool,
@@ -109,8 +109,8 @@ class WebRTCCallMessageHandler: CallMessageHandler {
             DispatchQueue.main.async {
                 self.callService.callManager.receivedCallMessage(
                     senderUuid: caller.aci.rawUUID,
-                    senderDeviceId: caller.deviceId,
-                    localDeviceId: localDeviceId,
+                    senderDeviceId: caller.deviceId.uint32Value,
+                    localDeviceId: localDeviceId.uint32Value,
                     message: message,
                     messageAgeSec: messageAgeSec
                 )

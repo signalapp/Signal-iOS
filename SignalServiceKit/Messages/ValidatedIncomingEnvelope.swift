@@ -69,7 +69,7 @@ class ValidatedIncomingEnvelope {
 
     // MARK: - Source
 
-    func validateSource<T: ServiceId>(_ type: T.Type) throws -> (T, UInt32) {
+    func validateSource<T: ServiceId>(_ type: T.Type) throws -> (T, DeviceId) {
         guard
             let sourceServiceIdString = envelope.sourceServiceID,
             let sourceServiceId = try ServiceId.parseFrom(serviceIdString: sourceServiceIdString) as? T
@@ -79,7 +79,7 @@ class ValidatedIncomingEnvelope {
         guard envelope.hasSourceDevice, envelope.sourceDevice >= 1 else {
             throw OWSAssertionError("Invalid source device.")
         }
-        return (sourceServiceId, envelope.sourceDevice)
+        return (sourceServiceId, DeviceId(rawValue: envelope.sourceDevice))
     }
 
     // MARK: - Destination

@@ -50,7 +50,7 @@ public class CallOfferHandlerImpl {
 
     public func startHandlingOffer(
         caller: Aci,
-        sourceDevice: UInt32,
+        sourceDevice: DeviceId,
         localIdentity: OWSIdentity,
         callId: UInt64,
         callType: SSKProtoCallMessageOfferType,
@@ -200,8 +200,8 @@ public enum CallHangupSender {
         thread: TSContactThread,
         callId: UInt64,
         hangupType: SSKProtoCallMessageHangupType,
-        localDeviceId: UInt32,
-        remoteDeviceId: UInt32?,
+        localDeviceId: DeviceId,
+        remoteDeviceId: DeviceId?,
         tx: DBWriteTransaction
     ) -> Promise<Void> {
         let hangupBuilder = SSKProtoCallMessageHangup.builder(id: callId)
@@ -211,7 +211,7 @@ public enum CallHangupSender {
         if hangupType != .hangupNormal {
             // deviceId is optional and only used when indicated by a hangup due to
             // a call being accepted elsewhere.
-            hangupBuilder.setDeviceID(localDeviceId)
+            hangupBuilder.setDeviceID(localDeviceId.uint32Value)
         }
 
         let hangupMessage: SSKProtoCallMessageHangup
@@ -225,7 +225,7 @@ public enum CallHangupSender {
         let callMessage = OWSOutgoingCallMessage(
             thread: thread,
             hangupMessage: hangupMessage,
-            destinationDeviceId: remoteDeviceId.map(NSNumber.init(value:)),
+            destinationDeviceId: (remoteDeviceId?.uint32Value).map(NSNumber.init(value:)),
             transaction: tx
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(

@@ -78,7 +78,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             e164: e164,
             aci: aci,
             pni: pni,
-            deviceId: OWSDevice.primaryDeviceId,
+            deviceId: .primary,
             serverAuthToken: authToken,
             tx: tx
         )
@@ -96,7 +96,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         aci: Aci,
         pni: Pni,
         authToken: String,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         tx: DBWriteTransaction
     ) {
         tsAccountManager.initializeLocalIdentifiers(
@@ -345,7 +345,7 @@ extension RegistrationStateChangeManagerImpl {
             e164: E164(localIdentifiers.phoneNumber)!,
             aci: localIdentifiers.aci,
             pni: localIdentifiers.pni!,
-            deviceId: OWSDevice.primaryDeviceId,
+            deviceId: .primary,
             serverAuthToken: "",
             tx: tx
         )

@@ -52,7 +52,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     /// it's safe to check it at time-of-fetch and throw an error.
     public var pni: Pni?
     public var phoneNumber: PhoneNumber?
-    fileprivate(set) public var deviceIds: [UInt32]
+    fileprivate(set) public var deviceIds: [DeviceId]
     fileprivate(set) public var unregisteredAtTimestamp: UInt64?
 
     public var aci: Aci? {
@@ -83,7 +83,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         self.init(aci: aci, pni: pni, phoneNumber: phoneNumber, deviceIds: [])
     }
 
-    public convenience init(aci: Aci?, pni: Pni?, phoneNumber: E164?, deviceIds: [UInt32]) {
+    public convenience init(aci: Aci?, pni: Pni?, phoneNumber: E164?, deviceIds: [DeviceId]) {
         self.init(
             id: nil,
             uniqueId: UUID().uuidString,
@@ -106,14 +106,14 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         isRegistered: Bool,
         unregisteredAtTimestamp: UInt64?
     ) -> Self {
-        let deviceIds: [UInt32]
+        let deviceIds: [DeviceId]
         if isRegistered {
             // If we think they are registered, just add the primary device id.
             // When we try and send a message, the server will tell us about
             // any other device ids.
             // ...The server would tell us too if we sent an empty deviceIds array,
             // so there's not really a material difference.
-            deviceIds = [OWSDevice.primaryDeviceId]
+            deviceIds = [.primary]
         } else {
             // Otherwise (including if we don't know if they're registered),
             // use an empty device IDs array. This doesn't make any difference,
@@ -143,7 +143,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         aciString: String?,
         pni: Pni?,
         phoneNumber: PhoneNumber?,
-        deviceIds: [UInt32],
+        deviceIds: [DeviceId],
         unregisteredAtTimestamp: UInt64?
     ) {
         self.id = id
@@ -238,7 +238,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         // If we can't parse the values in the NSOrderedSet, assume the user isn't
         // registered. If they are registered, we'll correct the data store the
         // next time we try to send them a message.
-        deviceIds = deviceArray ?? []
+        deviceIds = deviceArray?.map(DeviceId.init(rawValue:)) ?? []
         unregisteredAtTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .unregisteredAtTimestamp)
     }
 
@@ -251,7 +251,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         try container.encodeIfPresent(pni?.serviceIdUppercaseString, forKey: .pni)
         try container.encodeIfPresent(phoneNumber?.stringValue, forKey: .phoneNumber)
         try container.encodeIfPresent(phoneNumber?.isDiscoverable, forKey: .isPhoneNumberDiscoverable)
-        let deviceSetObjC = NSOrderedSet(array: deviceIds.map { NSNumber(value: $0) })
+        let deviceSetObjC = NSOrderedSet(array: deviceIds.map { NSNumber(value: $0.uint32Value) })
         let encodedDevices = LegacySDSSerializer().serializeAsLegacySDSData(property: deviceSetObjC)
         try container.encode(encodedDevices, forKey: .deviceIds)
         try container.encodeIfPresent(unregisteredAtTimestamp, forKey: .unregisteredAtTimestamp)
@@ -312,7 +312,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
 extension SignalRecipientManagerImpl {
     func setDeviceIds(
-        _ deviceIds: Set<UInt32>,
+        _ deviceIds: Set<DeviceId>,
         for recipient: SignalRecipient,
         shouldUpdateStorageService: Bool
     ) {

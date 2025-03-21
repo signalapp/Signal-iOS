@@ -15,11 +15,11 @@ public protocol TypingIndicators: AnyObject {
 
     func didSendOutgoingMessage(inThread thread: TSThread)
 
-    func didReceiveTypingStartedMessage(inThread thread: TSThread, senderAci: Aci, deviceId: UInt32)
+    func didReceiveTypingStartedMessage(inThread thread: TSThread, senderAci: Aci, deviceId: DeviceId)
 
-    func didReceiveTypingStoppedMessage(inThread thread: TSThread, senderAci: Aci, deviceId: UInt32)
+    func didReceiveTypingStoppedMessage(inThread thread: TSThread, senderAci: Aci, deviceId: DeviceId)
 
-    func didReceiveIncomingMessage(inThread thread: TSThread, senderAci: Aci, deviceId: UInt32)
+    func didReceiveIncomingMessage(inThread thread: TSThread, senderAci: Aci, deviceId: DeviceId)
 
     // Returns the address of the user who should currently be shown typing for a given thread.
     //
@@ -114,19 +114,19 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         outgoingIndicators.didSendOutgoingMessage()
     }
 
-    public func didReceiveTypingStartedMessage(inThread thread: TSThread, senderAci: Aci, deviceId: UInt32) {
+    public func didReceiveTypingStartedMessage(inThread thread: TSThread, senderAci: Aci, deviceId: DeviceId) {
         AssertIsOnMainThread()
         ensureIncomingIndicators(forThread: thread, senderAci: senderAci, deviceId: deviceId)
             .didReceiveTypingStartedMessage()
     }
 
-    public func didReceiveTypingStoppedMessage(inThread thread: TSThread, senderAci: Aci, deviceId: UInt32) {
+    public func didReceiveTypingStoppedMessage(inThread thread: TSThread, senderAci: Aci, deviceId: DeviceId) {
         AssertIsOnMainThread()
         ensureIncomingIndicators(forThread: thread, senderAci: senderAci, deviceId: deviceId)
             .didReceiveTypingStoppedMessage()
     }
 
-    public func didReceiveIncomingMessage(inThread thread: TSThread, senderAci: Aci, deviceId: UInt32) {
+    public func didReceiveIncomingMessage(inThread thread: TSThread, senderAci: Aci, deviceId: DeviceId) {
         AssertIsOnMainThread()
         ensureIncomingIndicators(forThread: thread, senderAci: senderAci, deviceId: deviceId)
             .didReceiveIncomingMessage()
@@ -296,18 +296,18 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     private var incomingIndicatorsMap = [String: [AddressWithDeviceId: IncomingIndicators]]()
     private struct AddressWithDeviceId: Hashable {
         let aci: Aci
-        let deviceId: UInt32
+        let deviceId: DeviceId
     }
 
     private func incomingIndicatorsKey(forThread thread: TSThread) -> String {
-        return String(describing: thread.uniqueId)
+        return thread.uniqueId
     }
 
-    private func incomingIndicatorsKey(aci: Aci, deviceId: UInt32) -> AddressWithDeviceId {
+    private func incomingIndicatorsKey(aci: Aci, deviceId: DeviceId) -> AddressWithDeviceId {
         return AddressWithDeviceId(aci: aci, deviceId: deviceId)
     }
 
-    private func ensureIncomingIndicators(forThread thread: TSThread, senderAci: Aci, deviceId: UInt32) -> IncomingIndicators {
+    private func ensureIncomingIndicators(forThread thread: TSThread, senderAci: Aci, deviceId: DeviceId) -> IncomingIndicators {
         AssertIsOnMainThread()
 
         let threadKey = incomingIndicatorsKey(forThread: thread)
@@ -332,7 +332,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         private weak var delegate: TypingIndicators?
         private let thread: TSThread
         fileprivate let senderAci: Aci
-        private let deviceId: UInt32
+        private let deviceId: DeviceId
         private var displayTypingTimer: Timer?
         fileprivate var startedTypingTimestamp: UInt64?
 
@@ -347,7 +347,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             }
         }
 
-        init(delegate: TypingIndicators, thread: TSThread, senderAci: Aci, deviceId: UInt32) {
+        init(delegate: TypingIndicators, thread: TSThread, senderAci: Aci, deviceId: DeviceId) {
             self.delegate = delegate
             self.thread = thread
             self.senderAci = senderAci

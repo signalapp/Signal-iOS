@@ -52,6 +52,16 @@ extension ServiceId {
     }
 }
 
+extension ProtocolAddress {
+    public convenience init(_ serviceId: ServiceId, deviceId: DeviceId) {
+        self.init(serviceId, deviceId: deviceId.uint32Value)
+    }
+
+    public var deviceIdObj: DeviceId {
+        return DeviceId(rawValue: self.deviceId)
+    }
+}
+
 public struct AtLeastOneServiceId {
     /// Non-Optional because we must have at least an ACI or a PNI.
     public let aciOrElsePni: ServiceId

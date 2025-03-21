@@ -54,7 +54,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
         let (parameters, pendingState) = await generateIdentity(
             e164: e164,
-            linkedDeviceIds: [2, 3]
+            linkedDeviceIds: [DeviceId(rawValue: 2), DeviceId(rawValue: 3)]
         ).awaitable().unwrapSuccess
 
         XCTAssertEqual(e164, pendingState.newE164)
@@ -69,7 +69,8 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         XCTAssertEqual(registrationIdGeneratorMock.generatedRegistrationIds.count, 1)
         XCTAssertEqual(registrationIdGeneratorMock.generatedRegistrationIds.first, pendingState.localDevicePniRegistrationId)
 
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedForDeviceIds, [[1, 2, 3]])
+        let expectedDeviceIds = [DeviceId(rawValue: 1), DeviceId(rawValue: 2), DeviceId(rawValue: 3)]
+        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedForDeviceIds, [expectedDeviceIds])
         XCTAssertTrue(pniDistributionParameterBuilderMock.buildOutcomes.isEmpty)
     }
 
@@ -80,7 +81,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
         let isFailureResult = await generateIdentity(
             e164: e164,
-            linkedDeviceIds: [2, 3]
+            linkedDeviceIds: [DeviceId(rawValue: 2), DeviceId(rawValue: 3)]
         ).awaitable().isError
 
         XCTAssertTrue(isFailureResult)
@@ -89,7 +90,8 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         XCTAssertEqual(signedPreKeyStoreMock.generatedSignedPreKeys.count, 1)
         XCTAssertEqual(registrationIdGeneratorMock.generatedRegistrationIds.count, 1)
 
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedForDeviceIds, [[1, 2, 3]])
+        let expectedDeviceIds = [DeviceId(rawValue: 1), DeviceId(rawValue: 2), DeviceId(rawValue: 3)]
+        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedForDeviceIds, [expectedDeviceIds])
         XCTAssertTrue(pniDistributionParameterBuilderMock.buildOutcomes.isEmpty)
     }
 
@@ -102,7 +104,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
         let (_, pendingState) = await generateIdentity(
             e164: e164,
-            linkedDeviceIds: [2, 3]
+            linkedDeviceIds: [DeviceId(rawValue: 2), DeviceId(rawValue: 3)]
         ).awaitable().unwrapSuccess
 
         db.write { transaction in
@@ -140,12 +142,12 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
     private func generateIdentity(
         e164: E164,
-        linkedDeviceIds: [UInt32]
+        linkedDeviceIds: [DeviceId]
     ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult> {
         let aci = Aci.randomForTesting()
         let recipientUniqueId: String = UUID().uuidString
 
-        let localDeviceId: UInt32 = 1
+        let localDeviceId: DeviceId = .primary
 
         return changeNumberPniManager.generatePniIdentity(
             forNewE164: e164,
@@ -223,13 +225,13 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
     }
 
     var buildOutcomes: [BuildOutcome] = []
-    var buildRequestedForDeviceIds: [[UInt32]] = []
+    var buildRequestedForDeviceIds: [[DeviceId]] = []
 
     func buildPniDistributionParameters(
         localAci: Aci,
         localRecipientUniqueId: String,
-        localDeviceId: UInt32,
-        localUserAllDeviceIds: [UInt32],
+        localDeviceId: DeviceId,
+        localUserAllDeviceIds: [DeviceId],
         localPniIdentityKeyPair: ECKeyPair,
         localE164: E164,
         localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,

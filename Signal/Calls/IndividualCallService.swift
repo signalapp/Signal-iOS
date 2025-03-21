@@ -79,7 +79,7 @@ final class IndividualCallService: CallServiceStateObserver {
         let localDeviceId = tsAccountManager.storedDeviceIdWithMaybeTransaction
 
         do {
-            try callManager.placeCall(call: call, callMediaType: call.individualCall.offerMediaType.asCallMediaType, localDevice: localDeviceId)
+            try callManager.placeCall(call: call, callMediaType: call.individualCall.offerMediaType.asCallMediaType, localDevice: localDeviceId.uint32Value)
         } catch {
             self.handleFailedCall(failedCall: call, error: error, shouldResetUI: true, shouldResetRingRTC: true)
         }
@@ -164,7 +164,7 @@ final class IndividualCallService: CallServiceStateObserver {
      */
     public func handleReceivedOffer(
         caller: Aci,
-        sourceDevice: UInt32,
+        sourceDevice: DeviceId,
         localIdentity: OWSIdentity,
         callId: UInt64,
         opaque: Data?,
@@ -244,12 +244,12 @@ final class IndividualCallService: CallServiceStateObserver {
             do {
                 try self.callManager.receivedOffer(
                     call: newCall,
-                    sourceDevice: sourceDevice,
+                    sourceDevice: sourceDevice.uint32Value,
                     callId: callId,
                     opaque: opaque,
                     messageAgeSec: messageAgeSec,
                     callMediaType: newCall.individualCall.offerMediaType.asCallMediaType,
-                    localDevice: localDeviceId,
+                    localDevice: localDeviceId.uint32Value,
                     senderIdentityKey: partialResult.identityKeys.contactIdentityKey.publicKey.keyBytes.asData,
                     receiverIdentityKey: partialResult.identityKeys.localIdentityKey.publicKey.keyBytes.asData
                 )
@@ -265,7 +265,7 @@ final class IndividualCallService: CallServiceStateObserver {
     public func handleReceivedAnswer(
         caller: Aci,
         callId: UInt64,
-        sourceDevice: UInt32,
+        sourceDevice: DeviceId,
         opaque: Data?,
         tx: DBReadTransaction
     ) {
@@ -285,7 +285,7 @@ final class IndividualCallService: CallServiceStateObserver {
     @MainActor
     private func _handleReceivedAnswer(
         callId: UInt64,
-        sourceDevice: UInt32,
+        sourceDevice: DeviceId,
         opaque: Data,
         identityKeys: CallIdentityKeys?
     ) {
@@ -298,7 +298,7 @@ final class IndividualCallService: CallServiceStateObserver {
 
         do {
             try callManager.receivedAnswer(
-                sourceDevice: sourceDevice,
+                sourceDevice: sourceDevice.uint32Value,
                 callId: callId,
                 opaque: opaque,
                 senderIdentityKey: identityKeys.contactIdentityKey.publicKey.keyBytes.asData,
@@ -315,7 +315,7 @@ final class IndividualCallService: CallServiceStateObserver {
     /**
      * Remote client (could be caller or callee) sent us a connectivity update.
      */
-    public func handleReceivedIceCandidates(caller: Aci, callId: UInt64, sourceDevice: UInt32, candidates: [SSKProtoCallMessageIceUpdate]) {
+    public func handleReceivedIceCandidates(caller: Aci, callId: UInt64, sourceDevice: DeviceId, candidates: [SSKProtoCallMessageIceUpdate]) {
         Logger.info("callId: \(callId), \(caller)")
 
         let iceCandidates = candidates.filter { $0.id == callId && $0.opaque != nil }.map { $0.opaque! }
@@ -330,9 +330,9 @@ final class IndividualCallService: CallServiceStateObserver {
     }
 
     @MainActor
-    private func _handleReceivedIceCandidates(callId: UInt64, sourceDevice: UInt32, iceCandidates: [Data]) {
+    private func _handleReceivedIceCandidates(callId: UInt64, sourceDevice: DeviceId, iceCandidates: [Data]) {
         do {
-            try callManager.receivedIceCandidates(sourceDevice: sourceDevice, callId: callId, candidates: iceCandidates)
+            try callManager.receivedIceCandidates(sourceDevice: sourceDevice.uint32Value, callId: callId, candidates: iceCandidates)
         } catch {
             owsFailDebug("error: \(error)")
             // we don't necessarily want to fail the call just because CallManager errored on an
@@ -343,7 +343,7 @@ final class IndividualCallService: CallServiceStateObserver {
     /**
      * The remote client (caller or callee) ended the call.
      */
-    public func handleReceivedHangup(caller: Aci, callId: UInt64, sourceDevice: UInt32, type: SSKProtoCallMessageHangupType, deviceId: UInt32) {
+    public func handleReceivedHangup(caller: Aci, callId: UInt64, sourceDevice: DeviceId, type: SSKProtoCallMessageHangupType, deviceId: UInt32) {
         Logger.info("callId: \(callId), \(caller)")
 
         let hangupType: HangupType
@@ -361,9 +361,9 @@ final class IndividualCallService: CallServiceStateObserver {
     }
 
     @MainActor
-    private func _handleReceivedHangup(callId: UInt64, sourceDevice: UInt32, hangupType: HangupType, deviceId: UInt32) {
+    private func _handleReceivedHangup(callId: UInt64, sourceDevice: DeviceId, hangupType: HangupType, deviceId: UInt32) {
         do {
-            try callManager.receivedHangup(sourceDevice: sourceDevice, callId: callId, hangupType: hangupType, deviceId: deviceId)
+            try callManager.receivedHangup(sourceDevice: sourceDevice.uint32Value, callId: callId, hangupType: hangupType, deviceId: deviceId)
         } catch {
             owsFailDebug("\(error)")
             if let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId {
@@ -375,7 +375,7 @@ final class IndividualCallService: CallServiceStateObserver {
     /**
      * The callee was already in another call.
      */
-    public func handleReceivedBusy(caller: Aci, callId: UInt64, sourceDevice: UInt32) {
+    public func handleReceivedBusy(caller: Aci, callId: UInt64, sourceDevice: DeviceId) {
         Logger.info("callId: \(callId), \(caller)")
 
         DispatchQueue.main.async {
@@ -384,9 +384,9 @@ final class IndividualCallService: CallServiceStateObserver {
     }
 
     @MainActor
-    private func _handleReceivedBusy(callId: UInt64, sourceDevice: UInt32) {
+    private func _handleReceivedBusy(callId: UInt64, sourceDevice: DeviceId) {
         do {
-            try callManager.receivedBusy(sourceDevice: sourceDevice, callId: callId)
+            try callManager.receivedBusy(sourceDevice: sourceDevice.uint32Value, callId: callId)
         } catch {
             owsFailDebug("\(error)")
             if let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId {
@@ -917,6 +917,8 @@ final class IndividualCallService: CallServiceStateObserver {
 
         Task {
             do {
+                let deviceId = DeviceId(rawValue: deviceId)
+                let destinationDeviceId = destinationDeviceId.map(DeviceId.init(rawValue:))
                 let sendPromise = await self.databaseStorage.awaitableWrite { tx in
                     return CallHangupSender.sendHangup(
                         thread: call.individualCall.thread,
@@ -936,7 +938,7 @@ final class IndividualCallService: CallServiceStateObserver {
                     )
                 }
                 try await sendPromise.awaitable()
-                Logger.debug("sent hangup message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
+                Logger.debug("sent hangup message to \(call.individualCall.thread.contactAddress) device: \(destinationDeviceId as Optional)")
                 try self.callManager.signalingMessageDidSend(callId: callId)
             } catch {
                 Logger.error("failed to send hangup message to \(call.individualCall.thread.contactAddress) with error: \(error)")

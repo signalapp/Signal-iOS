@@ -1111,14 +1111,14 @@ class DebugUIMessages: DebugUIPage {
                 outgoingMessage.updateWithSentRecipient(incomingSenderAci, wasSentByUD: false, transaction: transaction)
                 outgoingMessage.update(
                     withDeliveredRecipient: SignalServiceAddress(incomingSenderAci),
-                    deviceId: 0,
+                    deviceId: .primary,
                     deliveryTimestamp: timestamp,
                     context: PassthroughDeliveryReceiptContext(),
                     tx: transaction
                 )
                 outgoingMessage.update(
                     withReadRecipient: SignalServiceAddress(incomingSenderAci),
-                    deviceId: 0,
+                    deviceId: .primary,
                     readTimestamp: timestamp,
                     tx: transaction
                 )
@@ -1675,7 +1675,7 @@ class DebugUIMessages: DebugUIPage {
                 owsAssertDebug(address.isValid)
                 message.update(
                     withDeliveredRecipient: address,
-                    deviceId: 0,
+                    deviceId: .primary,
                     deliveryTimestamp: Date.ows_millisecondTimestamp(),
                     context: PassthroughDeliveryReceiptContext(),
                     tx: transaction
@@ -1688,7 +1688,7 @@ class DebugUIMessages: DebugUIPage {
                 owsAssertDebug(address.isValid)
                 message.update(
                     withReadRecipient: address,
-                    deviceId: 0,
+                    deviceId: .primary,
                     readTimestamp: Date.ows_millisecondTimestamp(),
                     tx: transaction
                 )

@@ -61,7 +61,7 @@ public protocol RegistrationStateChangeManager {
         aci: Aci,
         pni: Pni,
         authToken: String,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         tx: DBWriteTransaction
     )
 

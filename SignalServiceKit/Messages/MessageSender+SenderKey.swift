@@ -8,7 +8,7 @@ import LibSignalClient
 extension MessageSender {
     struct Recipient {
         let serviceId: ServiceId
-        let devices: [UInt32]
+        let devices: [DeviceId]
         var protocolAddresses: [ProtocolAddress] {
             return devices.map { ProtocolAddress(serviceId, deviceId: $0) }
         }

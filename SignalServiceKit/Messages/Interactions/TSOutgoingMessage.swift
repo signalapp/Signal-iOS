@@ -430,7 +430,7 @@ public extension TSOutgoingMessage {
 
     fileprivate func maybeClearShouldSharePhoneNumber(
         for recipientAddress: SignalServiceAddress,
-        recipientDeviceId deviceId: UInt32,
+        recipientDeviceId deviceId: DeviceId,
         transaction: DBWriteTransaction
     ) {
         guard let aci = recipientAddress.serviceId as? Aci else {
@@ -570,7 +570,7 @@ extension TSOutgoingMessage {
 extension TSOutgoingMessage {
     public func update(
         withDeliveredRecipient recipientAddress: SignalServiceAddress,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         deliveryTimestamp timestamp: UInt64,
         context: DeliveryReceiptContext,
         tx: DBWriteTransaction
@@ -587,7 +587,7 @@ extension TSOutgoingMessage {
 
     public func update(
         withReadRecipient recipientAddress: SignalServiceAddress,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         readTimestamp timestamp: UInt64,
         tx: DBWriteTransaction
     ) {
@@ -602,7 +602,7 @@ extension TSOutgoingMessage {
 
     public func update(
         withViewedRecipient recipientAddress: SignalServiceAddress,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         viewedTimestamp timestamp: UInt64,
         tx: DBWriteTransaction
     ) {
@@ -631,7 +631,7 @@ extension TSOutgoingMessage {
 
     private func handleReceipt(
         from recipientAddress: SignalServiceAddress,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         receiptType: IncomingReceiptType,
         receiptTimestamp: UInt64,
         tryToClearPhoneNumberSharing: Bool = false,
@@ -738,8 +738,7 @@ extension TSOutgoingMessage {
     @objc
     var encryptionStyle: EncryptionStyle { .whisper }
 
-    @objc
-    func clearMessageSendLogEntry(forRecipient address: SignalServiceAddress, deviceId: UInt32, tx: DBWriteTransaction) {
+    func clearMessageSendLogEntry(forRecipient address: SignalServiceAddress, deviceId: DeviceId, tx: DBWriteTransaction) {
         // MSL entries will only exist for addresses with ACIs
         guard let aci = address.serviceId as? Aci else {
             return

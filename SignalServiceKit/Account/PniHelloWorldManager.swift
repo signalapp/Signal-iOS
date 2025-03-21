@@ -101,7 +101,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         var localE164: E164
         var localRecipient: SignalRecipient
         var localPniIdentityKeyPair: ECKeyPair
-        var localDeviceId: UInt32
+        var localDeviceId: DeviceId
         var localDevicePniRegistrationId: UInt32
         var localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord
         var localDevicePniPqLastResortPreKey: SignalServiceKit.KyberPreKeyRecord

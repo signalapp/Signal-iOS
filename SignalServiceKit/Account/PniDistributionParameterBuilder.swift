@@ -22,7 +22,7 @@ public enum PniDistribution {
 
         public static func mock(
             pniIdentityKeyPair: ECKeyPair,
-            localDeviceId: UInt32,
+            localDeviceId: DeviceId,
             localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
             localDevicePniPqLastResortPreKey: KyberPreKeyRecord,
             localDevicePniRegistrationId: UInt32
@@ -40,7 +40,7 @@ public enum PniDistribution {
         #endif
 
         fileprivate mutating func addLocalDevice(
-            localDeviceId: UInt32,
+            localDeviceId: DeviceId,
             signedPreKey: SignalServiceKit.SignedPreKeyRecord,
             pqLastResortPreKey: KyberPreKeyRecord,
             registrationId: UInt32
@@ -51,7 +51,7 @@ public enum PniDistribution {
         }
 
         fileprivate mutating func addLinkedDevice(
-            deviceId: UInt32,
+            deviceId: DeviceId,
             signedPreKey: SignalServiceKit.SignedPreKeyRecord,
             pqLastResortPreKey: KyberPreKeyRecord,
             registrationId: UInt32,
@@ -90,8 +90,8 @@ protocol PniDistributionParamaterBuilder {
     func buildPniDistributionParameters(
         localAci: Aci,
         localRecipientUniqueId: String,
-        localDeviceId: UInt32,
-        localUserAllDeviceIds: [UInt32],
+        localDeviceId: DeviceId,
+        localUserAllDeviceIds: [DeviceId],
         localPniIdentityKeyPair: ECKeyPair,
         localE164: E164,
         localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
@@ -126,8 +126,8 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     func buildPniDistributionParameters(
         localAci: Aci,
         localRecipientUniqueId: String,
-        localDeviceId: UInt32,
-        localUserAllDeviceIds: [UInt32],
+        localDeviceId: DeviceId,
+        localUserAllDeviceIds: [DeviceId],
         localPniIdentityKeyPair: ECKeyPair,
         localE164: E164,
         localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
@@ -170,7 +170,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     /// Bundles parameters concerning linked devices and PNI identity
     /// generation.
     private struct LinkedDevicePniGenerationParams {
-        let deviceId: UInt32
+        let deviceId: DeviceId
         let signedPreKey: SignalServiceKit.SignedPreKeyRecord
         let pqLastResortPreKey: KyberPreKeyRecord
         let registrationId: UInt32
@@ -186,12 +186,12 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     private func buildLinkedDevicePniGenerationParams(
         localAci: Aci,
         localRecipientUniqueId: String,
-        localDeviceId: UInt32,
-        localUserAllDeviceIds: [UInt32],
+        localDeviceId: DeviceId,
+        localUserAllDeviceIds: [DeviceId],
         pniIdentityKeyPair: ECKeyPair,
         e164: E164
     ) async throws -> [LinkedDevicePniGenerationParams] {
-        let localUserLinkedDeviceIds: [UInt32] = localUserAllDeviceIds.filter { deviceId in
+        let localUserLinkedDeviceIds: [DeviceId] = localUserAllDeviceIds.filter { deviceId in
             deviceId != localDeviceId
         }
 
@@ -259,7 +259,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     private func encryptPniDistributionMessage(
         recipientUniqueId: String,
         recipientAci: Aci,
-        recipientDeviceId: UInt32,
+        recipientDeviceId: DeviceId,
         identityKeyPair: ECKeyPair,
         signedPreKey: SignalServiceKit.SignedPreKeyRecord,
         pqLastResortPreKey: KyberPreKeyRecord,
@@ -310,7 +310,7 @@ protocol _PniDistributionParameterBuilder_MessageSender_Shim {
         messageEncryptionStyle: EncryptionStyle,
         recipientUniqueId: String,
         serviceId: ServiceId,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
         isResendRequestMessage: Bool,
@@ -330,7 +330,7 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
         messageEncryptionStyle: EncryptionStyle,
         recipientUniqueId: String,
         serviceId: ServiceId,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
         isResendRequestMessage: Bool,

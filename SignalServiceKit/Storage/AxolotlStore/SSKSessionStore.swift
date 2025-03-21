@@ -246,10 +246,10 @@ public final class SSKSessionStore: SignalSessionStore {
 extension SSKSessionStore {
     public func loadSession(
         for serviceId: ServiceId,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         tx: DBReadTransaction
     ) throws -> SessionRecord? {
-        guard let serializedData = try loadSerializedSession(for: serviceId, deviceId: deviceId, tx: tx) else {
+        guard let serializedData = try loadSerializedSession(for: serviceId, deviceId: deviceId.uint32Value, tx: tx) else {
             return nil
         }
         return try SessionRecord(bytes: serializedData)
@@ -264,13 +264,13 @@ extension SSKSessionStore {
         try storeSerializedSession(Data(record.serialize()), for: serviceId, deviceId: deviceId, tx: tx)
     }
 
-    public func archiveSession(for serviceId: ServiceId, deviceId: UInt32, tx: DBWriteTransaction) {
+    public func archiveSession(for serviceId: ServiceId, deviceId: DeviceId, tx: DBWriteTransaction) {
         do {
             guard let session = try loadSession(for: serviceId, deviceId: deviceId, tx: tx) else {
                 return
             }
             session.archiveCurrentState()
-            try storeSession(session, for: serviceId, deviceId: deviceId, tx: tx)
+            try storeSession(session, for: serviceId, deviceId: deviceId.uint32Value, tx: tx)
         } catch {
             owsFailDebug("\(error)")
         }
@@ -279,7 +279,7 @@ extension SSKSessionStore {
 
 extension SSKSessionStore: LibSignalClient.SessionStore {
     public func loadSession(for address: ProtocolAddress, context: StoreContext) throws -> SessionRecord? {
-        return try loadSession(for: address.serviceId, deviceId: address.deviceId, tx: context.asTransaction)
+        return try loadSession(for: address.serviceId, deviceId: address.deviceIdObj, tx: context.asTransaction)
     }
 
     public func loadExistingSessions(

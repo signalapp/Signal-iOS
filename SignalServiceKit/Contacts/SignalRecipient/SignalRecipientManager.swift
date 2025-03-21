@@ -13,8 +13,8 @@ public protocol SignalRecipientManager {
 
     func modifyAndSave(
         _ recipient: SignalRecipient,
-        deviceIdsToAdd: [UInt32],
-        deviceIdsToRemove: [UInt32],
+        deviceIdsToAdd: [DeviceId],
+        deviceIdsToRemove: [DeviceId],
         shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction
     )
@@ -35,7 +35,7 @@ public enum UnregisteredAt {
 extension SignalRecipientManager {
     public func markAsRegisteredAndSave(
         _ recipient: SignalRecipient,
-        deviceId: UInt32 = OWSDevice.primaryDeviceId,
+        deviceId: DeviceId = .primary,
         shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction
     ) {
@@ -96,19 +96,19 @@ public class SignalRecipientManagerImpl: SignalRecipientManager {
 
     public func modifyAndSave(
         _ recipient: SignalRecipient,
-        deviceIdsToAdd: [UInt32],
-        deviceIdsToRemove: [UInt32],
+        deviceIdsToAdd: [DeviceId],
+        deviceIdsToRemove: [DeviceId],
         shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction
     ) {
         var deviceIdsToAdd = deviceIdsToAdd
         // Always add the primary if any other device is registered.
         if !deviceIdsToAdd.isEmpty {
-            deviceIdsToAdd.append(OWSDevice.primaryDeviceId)
+            deviceIdsToAdd.append(.primary)
         }
 
-        let oldDeviceIds = Set(recipient.deviceIds)
-        let newDeviceIds = oldDeviceIds.union(deviceIdsToAdd).subtracting(deviceIdsToRemove)
+        let oldDeviceIds: Set<DeviceId> = Set(recipient.deviceIds)
+        let newDeviceIds: Set<DeviceId> = oldDeviceIds.union(deviceIdsToAdd).subtracting(deviceIdsToRemove)
 
         if oldDeviceIds == newDeviceIds {
             return

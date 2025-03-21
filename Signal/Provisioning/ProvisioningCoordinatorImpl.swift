@@ -537,12 +537,12 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             throw .genericError(error)
         }
 
-        let deviceId: UInt32
+        let deviceId: DeviceId
         switch authedDevice.deviceId {
         case .primary:
             throw .genericError(OWSAssertionError("Primary device id when provisioning"))
-        case .secondary(let uInt32):
-            deviceId = uInt32
+        case .secondary(let deviceId2):
+            deviceId = deviceId2
         }
 
         await self.db.awaitableWrite { tx in
@@ -706,7 +706,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             throw .genericError(OWSAssertionError("Primary device id?"))
         case .secondary(let deviceId):
             do {
-                try await deviceService.unlinkDevice(deviceId: Int(deviceId), auth: authedDevice.authedAccount.chatServiceAuth)
+                try await deviceService.unlinkDevice(deviceId: deviceId, auth: authedDevice.authedAccount.chatServiceAuth)
             } catch {
                 throw .genericError(error)
             }

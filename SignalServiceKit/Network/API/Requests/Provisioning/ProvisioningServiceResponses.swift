@@ -24,6 +24,6 @@ public enum ProvisioningServiceResponses {
 
     public struct VerifySecondaryDeviceResponse: Codable, Equatable {
         @PniUuid public var pni: Pni
-        public let deviceId: UInt32
+        public let deviceId: DeviceId
     }
 }

@@ -90,11 +90,11 @@ public class TSAccountManagerImpl: TSAccountManager {
         return getOrLoadAccountState(tx: tx).serverAuthToken
     }
 
-    public var storedDeviceIdWithMaybeTransaction: UInt32 {
+    public var storedDeviceIdWithMaybeTransaction: DeviceId {
         return getOrLoadAccountStateWithMaybeTransaction().deviceId
     }
 
-    public func storedDeviceId(tx: DBReadTransaction) -> UInt32 {
+    public func storedDeviceId(tx: DBReadTransaction) -> DeviceId {
         return getOrLoadAccountState(tx: tx).deviceId
     }
 
@@ -193,7 +193,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         e164: E164,
         aci: Aci,
         pni: Pni,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         serverAuthToken: String,
         tx: DBWriteTransaction
     ) {
@@ -211,8 +211,8 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             // Encoded without the "PNI:" prefix for backwards compatibility.
             kvStore.setString(pni.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
 
-            Self.regStateLogger.info("device id is primary? \(deviceId == OWSDevice.primaryDeviceId)")
-            kvStore.setUInt32(deviceId, key: Keys.deviceId, transaction: tx)
+            Self.regStateLogger.info("device id is primary? \(deviceId == .primary)")
+            kvStore.setUInt32(deviceId.uint32Value, key: Keys.deviceId, transaction: tx)
             kvStore.setString(serverAuthToken, key: Keys.serverAuthToken, transaction: tx)
 
             kvStore.setDate(dateProvider(), key: Keys.registrationDate, transaction: tx)
@@ -423,7 +423,7 @@ extension TSAccountManagerImpl {
 
         let localIdentifiers: LocalIdentifiers?
 
-        let deviceId: UInt32
+        let deviceId: DeviceId
 
         let serverAuthToken: String?
 
@@ -466,7 +466,7 @@ extension TSAccountManagerImpl {
                 transaction: tx
             )
             // Assume primary, for backwards compatibility.
-            self.deviceId = persistedDeviceId ?? OWSDevice.primaryDeviceId
+            self.deviceId = DeviceId(rawValue: persistedDeviceId ?? OWSDevice.primaryDeviceId)
 
             self.serverAuthToken = kvStore.getString(Keys.serverAuthToken, transaction: tx)
 

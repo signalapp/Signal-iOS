@@ -14,7 +14,7 @@ class MockClient {
         try! SealedSenderAddress(
             e164: phoneNumber.stringValue,
             uuidString: aci.serviceIdString,
-            deviceId: UInt32(deviceId)
+            deviceId: deviceId.uint32Value
         )
     }
 
@@ -24,7 +24,7 @@ class MockClient {
 
     let aci: Aci
     let phoneNumber: E164
-    let deviceId: UInt32
+    let deviceId: DeviceId
     let registrationId: Int32
 
     let identityKeyPair: IdentityKeyPair
@@ -36,7 +36,7 @@ class MockClient {
     let identityStore: InMemorySignalProtocolStore
     let senderKeyStore: InMemorySignalProtocolStore
 
-    init(aci: Aci, phoneNumber: E164, deviceId: UInt32, registrationId: Int32) {
+    init(aci: Aci, phoneNumber: E164, deviceId: DeviceId, registrationId: Int32) {
         self.aci = aci
         self.phoneNumber = phoneNumber
         self.deviceId = deviceId
@@ -100,7 +100,7 @@ class MockClient {
         // PreKeyBundle bobBundle             = new PreKeyBundle(1, 1, 1, bobPreKey.getPublicKey(), 2, bobSignedPreKey.getKeyPair().getPublicKey(), bobSignedPreKey.getSignature(), bobIdentityKey.getPublicKey());
         let bobBundle = try! PreKeyBundle(
             registrationId: UInt32(bitPattern: bobMockClient.registrationId),
-            deviceId: bobMockClient.deviceId,
+            deviceId: bobMockClient.deviceId.uint32Value,
             prekeyId: bobPreKey.id,
             prekey: try! bobPreKey.publicKey(),
             signedPrekeyId: bobSignedPreKey.id,

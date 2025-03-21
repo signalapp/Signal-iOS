@@ -236,7 +236,7 @@ private class MockDevicesService: OWSDeviceService {
         return true
     }
 
-    func unlinkDevice(deviceId: Int, auth: ChatServiceAuth) async throws {}
+    func unlinkDevice(deviceId: DeviceId, auth: ChatServiceAuth) async throws {}
 
     func renameDevice(device: OWSDevice, toEncryptedName encryptedName: String) async throws {}
 }

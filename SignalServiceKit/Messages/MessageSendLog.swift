@@ -166,7 +166,7 @@ public class MessageSendLog {
 
     func fetchPayload(
         recipientAci: Aci,
-        recipientDeviceId: UInt32,
+        recipientDeviceId: DeviceId,
         timestamp: UInt64,
         tx: DBReadTransaction
     ) -> Payload? {
@@ -185,7 +185,7 @@ public class MessageSendLog {
                 .joining(required: Payload.hasMany(Recipient.self).aliased(recipientAlias))
                 .filter(Column("sentTimestamp") == timestamp)
                 .filter(recipientAlias[Column("recipientUUID")] == recipientAci.serviceIdUppercaseString)
-                .filter(recipientAlias[Column("recipientDeviceId")] == Int64(recipientDeviceId))
+                .filter(recipientAlias[Column("recipientDeviceId")] == Int64(recipientDeviceId.uint32Value))
             existingValue = try fetchUniquePayload(query: request, tx: tx)
         } catch {
             owsFailDebug("\(error)")
@@ -265,14 +265,14 @@ public class MessageSendLog {
         for payloadId: Int64,
         recipientAci: Aci,
         tx: DBReadTransaction
-    ) -> [UInt32?]? {
+    ) -> [DeviceId?]? {
         do {
             return try Recipient
                 .filter(Column("payloadId") == payloadId)
                 .filter(Column("recipientUuid") == recipientAci.serviceIdUppercaseString)
                 .select(Column("recipientDeviceId"), as: Int64.self)
                 .fetchAll(tx.database)
-                .map { UInt32(exactly: $0) }
+                .map { UInt32(exactly: $0).map(DeviceId.init(rawValue:)) }
         } catch {
             owsFailDebug("\(error)")
             return nil
@@ -282,7 +282,7 @@ public class MessageSendLog {
     func recordPendingDelivery(
         payloadId: Int64,
         recipientAci: Aci,
-        recipientDeviceId: UInt32,
+        recipientDeviceId: DeviceId,
         message: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) {
@@ -293,7 +293,7 @@ public class MessageSendLog {
             try Recipient(
                 payloadId: payloadId,
                 recipientUUID: recipientAci.serviceIdUppercaseString,
-                recipientDeviceId: Int64(recipientDeviceId)
+                recipientDeviceId: Int64(recipientDeviceId.uint32Value)
             ).insert(tx.database)
         } catch let error as DatabaseError where error.extendedResultCode == .SQLITE_CONSTRAINT_FOREIGNKEY {
             // There's a tiny race where a recipient could send a delivery receipt before we record an MSL entry
@@ -317,7 +317,7 @@ public class MessageSendLog {
     func recordSuccessfulDelivery(
         message: TSOutgoingMessage,
         recipientAci: Aci,
-        recipientDeviceId: UInt32,
+        recipientDeviceId: DeviceId,
         tx: DBWriteTransaction
     ) {
         guard !RemoteConfig.current.messageResendKillSwitch else {
@@ -332,7 +332,7 @@ public class MessageSendLog {
             try Recipient
                 .filter(Column("payloadId") == payloadId)
                 .filter(Column("recipientUuid") == recipientAci.serviceIdUppercaseString)
-                .filter(Column("recipientDeviceId") == recipientDeviceId)
+                .filter(Column("recipientDeviceId") == Int64(recipientDeviceId.uint32Value))
                 .deleteAll(db)
 
             try deletePayloadIfNecessary(payload, tx: tx)

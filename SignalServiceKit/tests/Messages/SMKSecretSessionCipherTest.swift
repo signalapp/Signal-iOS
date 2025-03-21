@@ -14,14 +14,14 @@ class SMKSecretSessionCipherTest: XCTestCase {
     private lazy var aliceMockClient = MockClient(
         aci: Aci.constantForTesting("aaaaaaaa-7000-11eb-b32a-33b8a8a487a6"),
         phoneNumber: E164("+16505550100")!,
-        deviceId: 1,
+        deviceId: .primary,
         registrationId: 1234
     )
 
     private lazy var bobMockClient = MockClient(
         aci: Aci.constantForTesting("bbbbbbbb-7000-11eb-b32a-33b8a8a487a6"),
         phoneNumber: E164("+16505550101")!,
-        deviceId: 1,
+        deviceId: .primary,
         registrationId: 1234
     )
 
@@ -155,7 +155,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                     originalMessageBytes: knownSenderError.unsealedContent,
                     type: knownSenderError.cipherType,
                     timestamp: 31335,
-                    originalSenderDeviceId: knownSenderError.senderDeviceId
+                    originalSenderDeviceId: knownSenderError.senderDeviceId.uint32Value
                 )
             )
             XCTAssertEqual(knownSenderError.senderAci, aliceMockClient.aci)
@@ -235,7 +235,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                     originalMessageBytes: knownSenderError.unsealedContent,
                     type: knownSenderError.cipherType,
                     timestamp: 31338,
-                    originalSenderDeviceId: knownSenderError.senderDeviceId
+                    originalSenderDeviceId: knownSenderError.senderDeviceId.uint32Value
                 )
             )
             XCTAssertEqual(knownSenderError.senderAci, aliceMockClient.aci)
@@ -421,7 +421,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
             // through decryption failures because of missing a missing sender key. This will
             // help with recovery.
             XCTAssertEqual(knownSenderError.senderAci, aliceMockClient.aci)
-            XCTAssertEqual(knownSenderError.senderDeviceId, UInt32(aliceMockClient.deviceId))
+            XCTAssertEqual(knownSenderError.senderDeviceId, aliceMockClient.deviceId)
             XCTAssertEqual(Data(knownSenderError.groupId!), "inyalowda".data(using: String.Encoding.utf8)!)
             XCTAssertEqual(knownSenderError.contentHint, .resendable)
             XCTAssertNoThrow(
@@ -429,7 +429,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                     originalMessageBytes: knownSenderError.unsealedContent,
                     type: knownSenderError.cipherType,
                     timestamp: 31335,
-                    originalSenderDeviceId: knownSenderError.senderDeviceId
+                    originalSenderDeviceId: knownSenderError.senderDeviceId.uint32Value
                 )
             )
 

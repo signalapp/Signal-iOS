@@ -106,7 +106,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             provisioningVersion: 1
         )
         let deviceName = "test device"
-        let deviceId = UInt32.random(in: 1...5)
+        let deviceId = DeviceId(rawValue: UInt32.random(in: 1...5))
 
         let mockSession = UrlSessionMock()
 
@@ -225,7 +225,7 @@ private class MockOWSDeviceService: OWSDeviceService {
         // do nothing
     }
 
-    func unlinkDevice(deviceId: Int, auth: SignalServiceKit.ChatServiceAuth) async throws {
+    func unlinkDevice(deviceId: DeviceId, auth: SignalServiceKit.ChatServiceAuth) async throws {
         // do nothing
     }
 }

@@ -19,8 +19,8 @@ public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
         forNewE164 newE164: E164,
         localAci: Aci,
         localRecipientUniqueId: String,
-        localDeviceId: UInt32,
-        localUserAllDeviceIds: [UInt32]
+        localDeviceId: DeviceId,
+        localUserAllDeviceIds: [DeviceId]
     ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult> {
         let keyPair = ECKeyPair.generateKeyPair()
         let registrationId = UInt32.random(in: 1...0x3fff)

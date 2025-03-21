@@ -81,7 +81,7 @@ class PniHelloWorldManagerTest: XCTestCase {
                 aci: localIdentifiers.aci,
                 pni: localIdentifiers.pni,
                 phoneNumber: E164(localIdentifiers.phoneNumber)!,
-                deviceIds: [1, 2, 3]
+                deviceIds: [1, 2, 3].map(DeviceId.init(rawValue:))
             ), transaction: tx)
         }
 
@@ -99,7 +99,7 @@ class PniHelloWorldManagerTest: XCTestCase {
         try await runRunRun()
 
         XCTAssert(didMakeNetworkRequest)
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3]])
+        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3].map(DeviceId.init(rawValue:))])
         XCTAssertTrue(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -112,7 +112,7 @@ class PniHelloWorldManagerTest: XCTestCase {
         try await runRunRun()
 
         XCTAssert(didMakeNetworkRequest)
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3]])
+        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3].map(DeviceId.init(rawValue:))])
         XCTAssertTrue(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -175,7 +175,7 @@ class PniHelloWorldManagerTest: XCTestCase {
 
         try? await runRunRun()
 
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3]])
+        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3].map(DeviceId.init(rawValue:))])
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -185,7 +185,7 @@ class PniHelloWorldManagerTest: XCTestCase {
 
         try? await runRunRun()
 
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3]])
+        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3].map(DeviceId.init(rawValue:))])
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 }
@@ -211,13 +211,13 @@ private class PniDistributionParamaterBuilderMock: PniDistributionParamaterBuild
     }
 
     var buildOutcomes: [BuildOutcome] = []
-    var buildRequestedDeviceIds: [[UInt32]] = []
+    var buildRequestedDeviceIds: [[DeviceId]] = []
 
     func buildPniDistributionParameters(
         localAci _: Aci,
         localRecipientUniqueId _: String,
-        localDeviceId: UInt32,
-        localUserAllDeviceIds: [UInt32],
+        localDeviceId: DeviceId,
+        localUserAllDeviceIds: [DeviceId],
         localPniIdentityKeyPair: ECKeyPair,
         localE164: E164,
         localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,

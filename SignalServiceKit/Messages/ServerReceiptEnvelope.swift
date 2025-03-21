@@ -13,7 +13,7 @@ import LibSignalClient
 class ServerReceiptEnvelope {
     let validatedEnvelope: ValidatedIncomingEnvelope
     let sourceServiceId: ServiceId
-    let sourceDeviceId: UInt32
+    let sourceDeviceId: DeviceId
 
     init(_ validatedEnvelope: ValidatedIncomingEnvelope) throws {
         let (sourceServiceId, sourceDeviceId) = try validatedEnvelope.validateSource(ServiceId.self)

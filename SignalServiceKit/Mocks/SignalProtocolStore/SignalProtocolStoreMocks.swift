@@ -25,8 +25,8 @@ class MockSessionStore: SignalSessionStore {
     func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction) { }
     func archiveAllSessions(for serviceId: ServiceId, tx: DBWriteTransaction) { }
     func archiveAllSessions(for address: SignalServiceAddress, tx: DBWriteTransaction) { }
-    func archiveSession(for serviceId: ServiceId, deviceId: UInt32, tx: DBWriteTransaction) { }
-    func loadSession(for serviceId: ServiceId, deviceId: UInt32, tx: DBReadTransaction) throws -> LibSignalClient.SessionRecord? { nil }
+    func archiveSession(for serviceId: ServiceId, deviceId: DeviceId, tx: DBWriteTransaction) { }
+    func loadSession(for serviceId: ServiceId, deviceId: DeviceId, tx: DBReadTransaction) throws -> LibSignalClient.SessionRecord? { nil }
     func loadSession(for address: ProtocolAddress, context: StoreContext) throws -> LibSignalClient.SessionRecord? { nil }
     func resetSessionStore(tx: DBWriteTransaction) { }
     func deleteAllSessions(for serviceId: ServiceId, tx: DBWriteTransaction) { }

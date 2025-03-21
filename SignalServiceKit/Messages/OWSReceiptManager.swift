@@ -883,7 +883,7 @@ extension OWSReceiptManager {
     /// might arrive after the receipts.
     func processDeliveryReceipts(
         from recipientServiceId: ServiceId,
-        recipientDeviceId: UInt32,
+        recipientDeviceId: DeviceId,
         sentTimestamps: [UInt64],
         deliveryTimestamp: UInt64,
         context: DeliveryReceiptContext,
@@ -913,7 +913,7 @@ extension OWSReceiptManager {
     /// might arrive after the receipts.
     func processReadReceipts(
         from recipientAci: Aci,
-        recipientDeviceId: UInt32,
+        recipientDeviceId: DeviceId,
         sentTimestamps: [UInt64],
         readTimestamp: UInt64,
         tx: DBWriteTransaction
@@ -946,7 +946,7 @@ extension OWSReceiptManager {
     /// might arrive after the receipts.
     func processViewedReceipts(
         from recipientAci: Aci,
-        recipientDeviceId: UInt32,
+        recipientDeviceId: DeviceId,
         sentTimestamps: [UInt64],
         viewedTimestamp: UInt64,
         tx: DBWriteTransaction

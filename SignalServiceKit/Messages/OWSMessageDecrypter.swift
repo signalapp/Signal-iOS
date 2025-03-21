@@ -128,7 +128,7 @@ public class OWSMessageDecrypter {
 
     private struct UnsealedEnvelope {
         let sourceAci: Aci
-        let sourceDeviceId: UInt32
+        let sourceDeviceId: DeviceId
         let content: Data?
         let cipherType: CiphertextMessage.MessageType
         let untrustedGroupId: Data?
@@ -305,7 +305,7 @@ public class OWSMessageDecrypter {
                 originalMessageBytes: unsealedContent,
                 type: unsealedEnvelope.cipherType,
                 timestamp: validatedEnvelope.timestamp,
-                originalSenderDeviceId: unsealedEnvelope.sourceDeviceId
+                originalSenderDeviceId: unsealedEnvelope.sourceDeviceId.uint32Value
             )
             return Data(errorMessage.serialize())
         } catch {
@@ -334,7 +334,7 @@ public class OWSMessageDecrypter {
 
     private func resetSessionIfNecessary(
         for sourceAci: Aci,
-        sourceDeviceId: UInt32,
+        sourceDeviceId: DeviceId,
         contactThread: TSContactThread,
         transaction: DBWriteTransaction
     ) -> Bool {
@@ -527,7 +527,7 @@ public class OWSMessageDecrypter {
     func decryptUnidentifiedSenderEnvelope(
         _ validatedEnvelope: ValidatedIncomingEnvelope,
         localIdentifiers: LocalIdentifiers,
-        localDeviceId: UInt32,
+        localDeviceId: DeviceId,
         tx transaction: DBWriteTransaction
     ) throws -> DecryptedIncomingEnvelope {
         let localIdentity = validatedEnvelope.localIdentity
@@ -586,21 +586,19 @@ public class OWSMessageDecrypter {
             DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: transaction)
         }
 
-        let rawSourceDeviceId = decryptResult.senderDeviceId
-        guard rawSourceDeviceId > 0, rawSourceDeviceId < UInt32.max else {
+        guard decryptResult.senderDeviceId.uint32Value > 0 else {
             throw OWSAssertionError("Invalid UD sender device id.")
         }
-        let sourceDeviceId = rawSourceDeviceId
 
         let envelopeBuilder = validatedEnvelope.envelope.asBuilder()
         envelopeBuilder.setSourceServiceID(decryptResult.senderAci.serviceIdString)
-        envelopeBuilder.setSourceDevice(sourceDeviceId)
+        envelopeBuilder.setSourceDevice(decryptResult.senderDeviceId.uint32Value)
 
         let decryptedEnvelope = try DecryptedIncomingEnvelope(
             validatedEnvelope: validatedEnvelope,
             updatedEnvelope: try envelopeBuilder.build(),
             sourceAci: decryptResult.senderAci,
-            sourceDeviceId: sourceDeviceId,
+            sourceDeviceId: decryptResult.senderDeviceId,
             wasReceivedByUD: validatedEnvelope.envelope.sourceServiceID == nil,
             plaintextData: decryptResult.paddedPayload.withoutPadding(),
             isPlaintextCipher: decryptResult.messageType == .plaintext

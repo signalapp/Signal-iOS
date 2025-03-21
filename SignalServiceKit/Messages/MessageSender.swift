@@ -53,7 +53,7 @@ public class MessageSender {
 
     // MARK: - Creating Signal Protocol Sessions
 
-    private func containsValidSession(for serviceId: ServiceId, deviceId: UInt32, tx: DBReadTransaction) throws -> Bool {
+    private func containsValidSession(for serviceId: ServiceId, deviceId: DeviceId, tx: DBReadTransaction) throws -> Bool {
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         do {
             guard let session = try sessionStore.loadSession(for: serviceId, deviceId: deviceId, tx: tx) else {
@@ -74,7 +74,7 @@ public class MessageSender {
     private func ensureRecipientHasSession(
         recipientUniqueId: RecipientUniqueId,
         serviceId: ServiceId,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
         sealedSenderParameters: SealedSenderParameters?
@@ -109,7 +109,7 @@ public class MessageSender {
     private func makePrekeyRequest(
         recipientUniqueId: RecipientUniqueId?,
         serviceId: ServiceId,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
         sealedSenderParameters: SealedSenderParameters?
@@ -182,7 +182,7 @@ public class MessageSender {
         for preKeyBundle: SignalServiceKit.PreKeyBundle,
         recipientUniqueId: String,
         serviceId: ServiceId,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         transaction: DBWriteTransaction
     ) throws {
         assert(!Thread.isMainThread)
@@ -203,7 +203,7 @@ public class MessageSender {
             if let pqPreKey = deviceBundle.pqPreKey {
                 bundle = try LibSignalClient.PreKeyBundle(
                     registrationId: deviceBundle.registrationId,
-                    deviceId: deviceId,
+                    deviceId: deviceId.uint32Value,
                     prekeyId: preKey.keyId,
                     prekey: preKey.publicKey,
                     signedPrekeyId: deviceBundle.signedPreKey.keyId,
@@ -217,7 +217,7 @@ public class MessageSender {
             } else {
                 bundle = try LibSignalClient.PreKeyBundle(
                     registrationId: deviceBundle.registrationId,
-                    deviceId: deviceId,
+                    deviceId: deviceId.uint32Value,
                     prekeyId: preKey.keyId,
                     prekey: preKey.publicKey,
                     signedPrekeyId: deviceBundle.signedPreKey.keyId,
@@ -230,7 +230,7 @@ public class MessageSender {
             if let pqPreKey = deviceBundle.pqPreKey {
                 bundle = try LibSignalClient.PreKeyBundle(
                     registrationId: deviceBundle.registrationId,
-                    deviceId: deviceId,
+                    deviceId: deviceId.uint32Value,
                     signedPrekeyId: deviceBundle.signedPreKey.keyId,
                     signedPrekey: deviceBundle.signedPreKey.publicKey,
                     signedPrekeySignature: deviceBundle.signedPreKey.signature,
@@ -242,7 +242,7 @@ public class MessageSender {
             } else {
                 bundle = try LibSignalClient.PreKeyBundle(
                     registrationId: deviceBundle.registrationId,
-                    deviceId: deviceId,
+                    deviceId: deviceId.uint32Value,
                     signedPrekeyId: deviceBundle.signedPreKey.keyId,
                     signedPrekey: deviceBundle.signedPreKey.publicKey,
                     signedPrekeySignature: deviceBundle.signedPreKey.signature,
@@ -253,7 +253,7 @@ public class MessageSender {
 
         do {
             let identityManager = DependenciesBridge.shared.identityManager
-            let protocolAddress = ProtocolAddress(serviceId, deviceId: deviceId)
+            let protocolAddress = ProtocolAddress(serviceId, deviceId: deviceId.uint32Value)
             try processPreKeyBundle(
                 bundle,
                 for: protocolAddress,
@@ -1382,7 +1382,7 @@ public class MessageSender {
         messageEncryptionStyle: EncryptionStyle,
         recipientUniqueId: RecipientUniqueId,
         serviceId: ServiceId,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
         isResendRequestMessage: Bool,
@@ -1611,8 +1611,8 @@ public class MessageSender {
     }
 
     struct MismatchedDevices: Decodable {
-        let extraDevices: [Int8]
-        let missingDevices: [Int8]
+        let extraDevices: [DeviceId]
+        let missingDevices: [DeviceId]
 
         fileprivate static func parse(_ responseData: Data) throws -> Self {
             return try JSONDecoder().decode(Self.self, from: responseData)
@@ -1620,7 +1620,7 @@ public class MessageSender {
     }
 
     struct StaleDevices: Decodable {
-        let staleDevices: [Int8]
+        let staleDevices: [DeviceId]
 
         fileprivate static func parse(_ responseData: Data) throws -> Self {
             return try JSONDecoder().decode(Self.self, from: responseData)
@@ -1729,28 +1729,28 @@ public class MessageSender {
         )
     }
 
-    func handleMismatchedDevices(serviceId: ServiceId, missingDevices: [Int8], extraDevices: [Int8], tx: DBWriteTransaction) {
+    func handleMismatchedDevices(serviceId: ServiceId, missingDevices: [DeviceId], extraDevices: [DeviceId], tx: DBWriteTransaction) {
         Logger.warn("Mismatched devices for \(serviceId): +\(missingDevices) -\(extraDevices)")
         self.updateDevices(
             serviceId: serviceId,
-            devicesToAdd: missingDevices.compactMap({ UInt32(exactly: $0) }),
-            devicesToRemove: extraDevices.compactMap({ UInt32(exactly: $0) }),
+            devicesToAdd: missingDevices,
+            devicesToRemove: extraDevices,
             transaction: tx
         )
     }
 
-    func handleStaleDevices(serviceId: ServiceId, staleDevices: [Int8], tx: DBWriteTransaction) {
+    func handleStaleDevices(serviceId: ServiceId, staleDevices: [DeviceId], tx: DBWriteTransaction) {
         Logger.warn("Stale devices for \(serviceId): \(staleDevices)")
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-        for staleDeviceId in staleDevices.compactMap({ UInt32(exactly: $0) }) {
+        for staleDeviceId in staleDevices {
             sessionStore.archiveSession(for: serviceId, deviceId: staleDeviceId, tx: tx)
         }
     }
 
     func updateDevices(
         serviceId: ServiceId,
-        devicesToAdd: [UInt32],
-        devicesToRemove: [UInt32],
+        devicesToAdd: [DeviceId],
+        devicesToRemove: [DeviceId],
         transaction: DBWriteTransaction
     ) {
         AssertNotOnMainThread()
@@ -1781,7 +1781,7 @@ public class MessageSender {
     private func encryptMessage(
         plaintextContent plainText: Data,
         serviceId: ServiceId,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         sealedSenderParameters: SealedSenderParameters?,
         transaction: DBWriteTransaction
     ) throws -> DeviceMessage {
@@ -1854,7 +1854,7 @@ public class MessageSender {
 
         return DeviceMessage(
             type: messageType,
-            destinationDeviceId: protocolAddress.deviceId,
+            destinationDeviceId: deviceId,
             destinationRegistrationId: try session.remoteRegistrationId(),
             content: serializedMessage
         )
@@ -1863,7 +1863,7 @@ public class MessageSender {
     private func wrapPlaintextMessage(
         plaintextContent rawPlaintext: Data,
         serviceId: ServiceId,
-        deviceId: UInt32,
+        deviceId: DeviceId,
         isResendRequestMessage: Bool,
         sealedSenderParameters: SealedSenderParameters?,
         transaction: DBWriteTransaction
@@ -1909,7 +1909,7 @@ public class MessageSender {
         let session = try sessionStore.loadSession(for: protocolAddress, context: transaction)!
         return DeviceMessage(
             type: messageType,
-            destinationDeviceId: protocolAddress.deviceId,
+            destinationDeviceId: deviceId,
             destinationRegistrationId: try session.remoteRegistrationId(),
             content: serializedMessage
         )

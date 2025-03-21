@@ -144,7 +144,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: otherAci,
-                recipientDeviceId: 1,
+                recipientDeviceId: DeviceId(rawValue: 1),
                 message: message,
                 tx: transaction
             )
@@ -154,7 +154,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
 
             message.update(
                 withDeliveredRecipient: otherAddress,
-                deviceId: 1,
+                deviceId: DeviceId(rawValue: 1),
                 deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 context: PassthroughDeliveryReceiptContext(),
                 tx: transaction
@@ -184,14 +184,14 @@ class TSOutgoingMessageTest: SSKBaseTest {
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: otherAci,
-                recipientDeviceId: 1,
+                recipientDeviceId: DeviceId(rawValue: 1),
                 message: message,
                 tx: transaction
             )
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: otherAci,
-                recipientDeviceId: 2,
+                recipientDeviceId: DeviceId(rawValue: 2),
                 message: message,
                 tx: transaction
             )
@@ -201,7 +201,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
 
             message.update(
                 withDeliveredRecipient: otherAddress,
-                deviceId: 1,
+                deviceId: DeviceId(rawValue: 1),
                 deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 context: PassthroughDeliveryReceiptContext(),
                 tx: transaction
@@ -212,7 +212,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
 
             message.update(
                 withDeliveredRecipient: otherAddress,
-                deviceId: 2,
+                deviceId: DeviceId(rawValue: 2),
                 deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 context: PassthroughDeliveryReceiptContext(),
                 tx: transaction
@@ -243,7 +243,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: otherAci,
-                recipientDeviceId: 1,
+                recipientDeviceId: DeviceId(rawValue: 1),
                 message: message,
                 tx: transaction
             )
@@ -253,7 +253,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
 
             message.update(
                 withDeliveredRecipient: otherAddress,
-                deviceId: 1,
+                deviceId: DeviceId(rawValue: 1),
                 deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 context: PassthroughDeliveryReceiptContext(),
                 tx: transaction
@@ -283,7 +283,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: otherAci,
-                recipientDeviceId: 1,
+                recipientDeviceId: DeviceId(rawValue: 1),
                 message: message,
                 tx: transaction
             )
@@ -294,7 +294,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
 
             message.update(
                 withDeliveredRecipient: otherAddress,
-                deviceId: 1,
+                deviceId: DeviceId(rawValue: 1),
                 deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 context: PassthroughDeliveryReceiptContext(),
                 tx: transaction
@@ -327,7 +327,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: otherAci,
-                recipientDeviceId: 1,
+                recipientDeviceId: DeviceId(rawValue: 1),
                 message: message,
                 tx: transaction
             )
@@ -354,7 +354,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
 
             message.update(
                 withDeliveredRecipient: otherAddress,
-                deviceId: 1,
+                deviceId: DeviceId(rawValue: 1),
                 deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 context: PassthroughDeliveryReceiptContext(),
                 tx: transaction

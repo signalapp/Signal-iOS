@@ -273,7 +273,7 @@ extension SignalApp {
 
     @MainActor
     static func resetLinkedAppDataWithUI(
-        currentDeviceId: Int,
+        currentDeviceId: DeviceId,
         keyFetcher: GRDBKeyFetcher = SSKEnvironment.shared.databaseStorageRef.keyFetcher
     ) {
         Logger.info("")

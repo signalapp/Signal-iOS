@@ -1066,7 +1066,7 @@ class StorageServiceOperation {
             manifestBuilder.setRecordIkm(manifestRecordIkm)
         }
         manifestBuilder.setKeys(identifiers.map { $0.buildRecord() })
-        manifestBuilder.setSourceDevice(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction)
+        manifestBuilder.setSourceDevice(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction.uint32Value)
         return manifestBuilder.buildInfallibly()
     }
 
