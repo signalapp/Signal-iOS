@@ -375,7 +375,7 @@ private enum DebugLogUploader {
         // We'll accept any 2xx status code.
         guard statusCode/100 == 2 else {
             Logger.error("statusCode: \(statusCode)")
-            Logger.error("headers: \(response.responseHeaders)")
+            Logger.error("headers: \(response.headers)")
             throw OWSAssertionError("Invalid status code: \(statusCode)")
         }
 

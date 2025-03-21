@@ -932,7 +932,7 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
         }
     }
 
-    private var webSocketAuthenticationHeaders: [String: String] {
+    private var webSocketAuthenticationHeaders: HttpHeaders {
         switch type {
         case .unidentified:
             return [:]
@@ -941,9 +941,9 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
             let password = accountManager.storedServerAuthTokenWithMaybeTransaction ?? ""
             owsAssertDebug(login.nilIfEmpty != nil)
             owsAssertDebug(password.nilIfEmpty != nil)
-            let authorizationRawValue = "\(login):\(password)"
-            let authorizationEncoded = Data(authorizationRawValue.utf8).base64EncodedString()
-            return ["Authorization": "Basic \(authorizationEncoded)"]
+            var result = HttpHeaders()
+            result.addAuthHeader(username: login, password: password)
+            return result
         }
     }
 
@@ -976,11 +976,15 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
             signalServiceType = .mainSignalServiceUnidentified
         }
 
+        var extraHeaders = HttpHeaders()
+        extraHeaders.merge(StoryManager.buildStoryHeaders())
+        extraHeaders.merge(webSocketAuthenticationHeaders)
+
         let request = WebSocketRequest(
             signalService: signalServiceType,
             urlPath: "v1/websocket/",
             urlQueryItems: nil,
-            extraHeaders: webSocketAuthenticationHeaders.merging(StoryManager.buildStoryHeaders()) { (old, _) in old }
+            extraHeaders: extraHeaders
         )
 
         guard let webSocket = SSKEnvironment.shared.webSocketFactoryRef.buildSocket(

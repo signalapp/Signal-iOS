@@ -16,7 +16,7 @@ public class OWSURLSessionEndpoint {
 
     /// If there's extra headers that need to be attached to every outgoing
     /// request, they'll be included here.
-    private let extraHeaders: [String: String]
+    private let extraHeaders: HttpHeaders
 
     /// The set of certificates we should use during the TLS handshake.
     let securityPolicy: HttpSecurityPolicy
@@ -25,7 +25,7 @@ public class OWSURLSessionEndpoint {
         baseUrl: URL?,
         frontingInfo: OWSUrlFrontingInfo?,
         securityPolicy: HttpSecurityPolicy,
-        extraHeaders: [String: String]
+        extraHeaders: HttpHeaders
     ) {
         self.baseUrl = baseUrl
         self.frontingInfo = frontingInfo
@@ -37,7 +37,7 @@ public class OWSURLSessionEndpoint {
         _ urlString: String,
         overrideUrlScheme: String? = nil,
         method: HTTPMethod,
-        headers: [String: String]? = nil,
+        headers: HttpHeaders = HttpHeaders(),
         body: Data? = nil
     ) throws -> URLRequest {
         guard let url = buildUrl(urlString, overrideUrlScheme: overrideUrlScheme) else {
@@ -47,9 +47,9 @@ public class OWSURLSessionEndpoint {
         request.httpMethod = method.methodName
 
         var httpHeaders = HttpHeaders()
-        httpHeaders.addHeaderMap(headers, overwriteOnConflict: false)
+        httpHeaders.merge(headers)
         httpHeaders.addDefaultHeaders()
-        httpHeaders.addHeaderMap(extraHeaders, overwriteOnConflict: true)
+        httpHeaders.merge(extraHeaders)
         request.set(httpHeaders: httpHeaders)
 
         request.httpBody = body

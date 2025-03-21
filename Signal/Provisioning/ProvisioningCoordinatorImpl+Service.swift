@@ -41,7 +41,7 @@ extension ProvisioningCoordinatorImpl {
                     .awaitable()
                 return handleVerifySecondaryDeviceResponse(
                     statusCode: response.responseStatusCode,
-                    retryAfterHeader: response.responseHeaders[Constants.retryAfterHeader],
+                    retryAfterHeader: response.headers[Constants.retryAfterHeader],
                     bodyData: response.responseBodyData
                 )
             } catch {
@@ -53,7 +53,7 @@ extension ProvisioningCoordinatorImpl {
                 }
                 return handleVerifySecondaryDeviceResponse(
                     statusCode: error.responseStatusCode,
-                    retryAfterHeader: error.responseHeaders?.value(forHeader: Constants.retryAfterHeader),
+                    retryAfterHeader: error.responseHeaders?[Constants.retryAfterHeader],
                     bodyData: error.httpResponseData
                 )
             }

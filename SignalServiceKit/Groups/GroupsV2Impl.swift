@@ -761,7 +761,7 @@ public class GroupsV2Impl: GroupsV2 {
         }
         let earlyEnd: UInt32?
         if response.responseStatusCode == 206 {
-            let groupRangeHeader = response.responseHeaders["content-range"]
+            let groupRangeHeader = response.headers["content-range"]
             earlyEnd = try Self.parseEarlyEnd(fromGroupRangeHeader: groupRangeHeader)
         } else {
             earlyEnd = nil
@@ -1212,7 +1212,7 @@ public class GroupsV2Impl: GroupsV2 {
             let response = try await urlSession.performRequest(
                 request.urlString,
                 method: request.method,
-                headers: request.headers.headers,
+                headers: request.headers,
                 body: request.bodyData
             )
 

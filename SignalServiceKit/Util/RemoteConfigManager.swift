@@ -980,7 +980,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         }
 
         let config: [[String: Any]] = try parser.required(key: "config")
-        let serverEpochTimeMs = response.responseHeaders["x-signal-timestamp"].flatMap(UInt64.init(_:))
+        let serverEpochTimeMs = response.headers["x-signal-timestamp"].flatMap(UInt64.init(_:))
         owsAssertDebug(serverEpochTimeMs != nil, "Must have X-Signal-Timestamp.")
 
         let items: [String: FetchedRemoteConfigItem] = try config.reduce([:]) { accum, item in

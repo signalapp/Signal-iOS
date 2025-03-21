@@ -113,7 +113,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
         // `curl -A Signal "https://twitter.com/signalapp/status/1280166087577997312?s=20"`
         // If this ever changes, we can switch back to our default User-Agent
         let userAgentString = "WhatsApp/2"
-        let extraHeaders: [String: String] = [HttpHeaders.userAgentHeaderKey: userAgentString]
+        let extraHeaders: HttpHeaders = [HttpHeaders.userAgentHeaderKey: userAgentString]
 
         let urlSession = OWSURLSession(
             securityPolicy: OWSURLSession.defaultSecurityPolicy,

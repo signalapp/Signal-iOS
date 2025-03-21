@@ -588,7 +588,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
                 return handler(
                     e164,
                     response.responseStatusCode,
-                    response.responseHeaders[Constants.retryAfterHeader],
+                    response.headers[Constants.retryAfterHeader],
                     response.responseBodyData
                 )
             }
@@ -602,7 +602,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
                 let response = handler(
                     e164,
                     error.responseStatusCode,
-                    error.responseHeaders?.value(forHeader: Constants.retryAfterHeader),
+                    error.responseHeaders?[Constants.retryAfterHeader],
                     error.httpResponseData
                 )
                 return .value(response)

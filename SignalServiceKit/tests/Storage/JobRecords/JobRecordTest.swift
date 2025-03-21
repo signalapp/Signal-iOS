@@ -176,14 +176,27 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
             break
         case let (.transient(lhsInfo), .transient(rhsInfo)):
             guard
-                lhsInfo == rhsInfo
+                lhsInfo.mimeType == rhsInfo.mimeType,
+                lhsInfo.cdnNumber == rhsInfo.cdnNumber,
+                lhsInfo.encryptionKey == rhsInfo.encryptionKey
             else {
+                throw ValidatableModelError.failedToValidate
+            }
+            switch (lhsInfo.source, rhsInfo.source) {
+            case let (.transitTier(lhsCdnKey, lhsDigest, lhsPlaintextLength), .transitTier(rhsCdnKey, rhsDigest, rhsPlaintextLength)):
+                guard
+                    lhsCdnKey == rhsCdnKey,
+                    lhsDigest == rhsDigest,
+                    lhsPlaintextLength == rhsPlaintextLength
+                else {
+                    throw ValidatableModelError.failedToValidate
+                }
+            default:
                 throw ValidatableModelError.failedToValidate
             }
         case (.invalid, _), (.transient, _):
             throw ValidatableModelError.failedToValidate
         }
-
     }
 }
 

@@ -1225,7 +1225,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
 
-        func additionalHeaders() -> [String: String] {
+        func additionalHeaders() -> HttpHeaders {
             switch self {
             case .backup(let metadata, _):
                 return metadata.cdnAuthHeaders
@@ -1270,7 +1270,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             return type.cdnNumber()
         }
 
-        func additionalHeaders() -> [String: String] {
+        func additionalHeaders() -> HttpHeaders {
             return type.additionalHeaders()
         }
 
@@ -1488,9 +1488,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     let request = try urlSession.endpoint.buildRequest(urlPath, method: .head, headers: headers)
                     let response = try await urlSession.performRequest(request: request, ignoreAppExpiry: true)
                     guard
-                        let contentLengthRaw =
-                            response.responseHeaders["Content-Length"]
-                            ?? response.responseHeaders["content-length"],
+                        let contentLengthRaw = response.headers["Content-Length"],
                         let contentLengthBytes = UInt(contentLengthRaw)
                     else {
                         Logger.error("Missing content length from cdn")

@@ -116,7 +116,7 @@ class AttachmentUploadManagerMockHelper {
         // Create a random, yet identifiable URL.  Helps with debugging the captured requests.
         let location = "https://upload/location/\(UUID().uuidString)"
         authFormRequestBlock.append(.uploadForm({ request, _ in
-            let headers = [ "Auth": authString, ]
+            let headers: HttpHeaders = ["Auth": authString]
             let form = Upload.Form(
                 headers: headers,
                 signedUploadLocation: location,

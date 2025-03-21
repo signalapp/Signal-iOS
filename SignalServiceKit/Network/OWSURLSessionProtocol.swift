@@ -197,7 +197,7 @@ public extension OWSURLSessionProtocol {
     func performUpload(
         _ urlString: String,
         method: HTTPMethod,
-        headers: [String: String]? = nil,
+        headers: HttpHeaders = HttpHeaders(),
         requestData: Data,
         progress: OWSProgressSource? = nil
     ) async throws -> any HTTPResponse {
@@ -208,7 +208,7 @@ public extension OWSURLSessionProtocol {
     func performUpload(
         _ urlString: String,
         method: HTTPMethod,
-        headers: [String: String]? = nil,
+        headers: HttpHeaders = HttpHeaders(),
         fileUrl: URL,
         progress: OWSProgressSource? = nil
     ) async throws -> any HTTPResponse {
@@ -226,7 +226,7 @@ public extension OWSURLSessionProtocol {
     func performRequest(
         _ urlString: String,
         method: HTTPMethod,
-        headers: [String: String]? = nil,
+        headers: HttpHeaders = HttpHeaders(),
         body: Data? = nil,
         ignoreAppExpiry: Bool = false
     ) async throws -> any HTTPResponse {
@@ -239,7 +239,7 @@ public extension OWSURLSessionProtocol {
     func performDownload(
         _ urlString: String,
         method: HTTPMethod,
-        headers: [String: String]? = nil,
+        headers: HttpHeaders = HttpHeaders(),
         body: Data? = nil,
         progress: OWSProgressSource? = nil
     ) async throws -> OWSUrlDownloadResponse {

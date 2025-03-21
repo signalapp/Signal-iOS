@@ -535,15 +535,15 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
     }
 }
 
-private struct CDNReadCredential: Codable, Equatable {
+private struct CDNReadCredential: Codable {
     private static let cdnCredentialLifetimeInSeconds: TimeInterval = .day
 
     let createDate: Date
-    let headers: [String: String]
+    let headers: HttpHeaders
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.headers = try container.decode([String: String].self, forKey: .headers)
+        self.headers = try container.decode(HttpHeaders.self, forKey: .headers)
 
         // createDate will default to current date, but can be overwritten during decodable initialization
         self.createDate = try container.decodeIfPresent(Date.self, forKey: .createDate) ?? Date()
@@ -554,7 +554,7 @@ private struct CDNReadCredential: Codable, Equatable {
     }
 }
 
-public struct MediaTierReadCredential: Equatable {
+public struct MediaTierReadCredential {
 
     public let cdn: Int32
     private let credential: CDNReadCredential
@@ -574,7 +574,7 @@ public struct MediaTierReadCredential: Equatable {
         return credential.isExpired
     }
 
-    var cdnAuthHeaders: [String: String] {
+    var cdnAuthHeaders: HttpHeaders {
         return credential.headers
     }
 
@@ -583,7 +583,7 @@ public struct MediaTierReadCredential: Equatable {
     }
 }
 
-public struct BackupReadCredential: Equatable {
+public struct BackupReadCredential {
 
     private let credential: CDNReadCredential
     private let info: MessageBackupRemoteInfo
@@ -604,7 +604,7 @@ public struct BackupReadCredential: Equatable {
         return info.cdn
     }
 
-    var cdnAuthHeaders: [String: String] {
+    var cdnAuthHeaders: HttpHeaders {
         return credential.headers
     }
 

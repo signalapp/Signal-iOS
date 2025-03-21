@@ -16,7 +16,7 @@ import Foundation
 public protocol HTTPResponse {
     var requestUrl: URL { get }
     var responseStatusCode: Int { get }
-    var responseHeaders: [String: String] { get }
+    var headers: HttpHeaders { get }
     var responseBodyData: Data? { get }
     var responseBodyJson: Any? { get }
     var responseBodyString: String? { get }
@@ -27,7 +27,7 @@ public protocol HTTPResponse {
 public struct HTTPErrorServiceResponse {
     let requestUrl: URL
     let responseStatus: Int
-    let responseHeaders: HttpHeaders
+    let headers: HttpHeaders
     let responseError: Error?
     let responseData: Data?
     let customRetryAfterDate: Date?
@@ -95,7 +95,7 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
                                           customLocalizedRecoverySuggestion: String? = nil) -> OWSHTTPError {
         let serviceResponse = HTTPErrorServiceResponse(requestUrl: requestUrl,
                                                        responseStatus: responseStatus,
-                                                       responseHeaders: responseHeaders,
+                                                       headers: responseHeaders,
                                                        responseError: responseError,
                                                        responseData: responseData,
                                                        customRetryAfterDate: customRetryAfterDate,
@@ -145,7 +145,7 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
         case .networkFailure:
             return "networkFailure"
         case .serviceResponse(let serviceResponse):
-            return "HTTP \(serviceResponse.responseStatus); \(serviceResponse.responseHeaders); \(String(describing: serviceResponse.responseError))"
+            return "HTTP \(serviceResponse.responseStatus); \(serviceResponse.headers); \(String(describing: serviceResponse.responseError))"
         }
     }
 
@@ -193,7 +193,7 @@ extension OWSHTTPError {
         case .missingRequest, .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
             return nil
         case .serviceResponse(let serviceResponse):
-            return serviceResponse.responseHeaders
+            return serviceResponse.headers
         }
     }
 
@@ -216,8 +216,7 @@ extension OWSHTTPError {
     }
 
     public var customRetryAfterDate: Date? {
-        if let responseHeaders = self.responseHeaders,
-           let retryAfterDate = responseHeaders.retryAfterDate {
+        if let responseHeaders = self.responseHeaders, let retryAfterDate = responseHeaders.retryAfterDate {
             return retryAfterDate
         }
 
@@ -347,7 +346,6 @@ public class HTTPResponseImpl {
 
 extension HTTPResponseImpl: HTTPResponse {
     public var responseStatusCode: Int { Int(status) }
-    public var responseHeaders: [String: String] { headers.headers }
     public var responseBodyData: Data? { bodyData }
     public var responseBodyJson: Any? { bodyJson }
     public var responseBodyString: String? {

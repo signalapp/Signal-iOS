@@ -329,7 +329,7 @@ public class MessageFetcherJob {
             throw OWSAssertionError("Missing or invalid JSON")
         }
         guard
-            let timestampString = response.responseHeaders["x-signal-timestamp"],
+            let timestampString = response.headers["x-signal-timestamp"],
             let serverDeliveryTimestamp = UInt64(timestampString)
         else {
             throw OWSAssertionError("Unable to parse server delivery timestamp.")

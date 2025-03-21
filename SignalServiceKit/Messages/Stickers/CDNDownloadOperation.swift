@@ -26,7 +26,7 @@ enum CDNDownloadOperation {
 
         do {
             let urlSession = self.buildUrlSession(maxResponseSize: maxDownloadSize)
-            let headers = ["Content-Type": MimeType.applicationOctetStream.rawValue]
+            let headers: HttpHeaders = ["Content-Type": MimeType.applicationOctetStream.rawValue]
             let response = try await urlSession.performDownload(urlPath, method: .get, headers: headers)
 
             let downloadUrl = response.downloadUrl

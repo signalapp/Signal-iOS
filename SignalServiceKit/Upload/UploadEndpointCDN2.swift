@@ -48,7 +48,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
 
         var headers = uploadForm.headers
         // Remove host header.
-        headers = headers.filter { $0.key.lowercased() != "host" }
+        headers["Host"] = nil
         headers["Content-Length"] = "0"
         headers["Content-Type"] = MimeType.applicationOctetStream.rawValue
 
@@ -64,7 +64,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
                 throw OWSAssertionError("Invalid statusCode: \(response.responseStatusCode).")
             }
             guard
-                let locationHeader = response.responseHeaders["location"],
+                let locationHeader = response.headers["location"],
                 locationHeader.lowercased().hasPrefix("http"),
                 let locationUrl = URL(string: locationHeader)
             else {
@@ -87,7 +87,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
     internal func getResumableUploadProgress<Metadata: UploadMetadata>(
         attempt: Upload.Attempt<Metadata>
     ) async throws -> Upload.ResumeProgress {
-        var headers = [String: String]()
+        var headers = HttpHeaders()
         headers["Content-Length"] = "0"
         headers["Content-Range"] = "bytes */\(attempt.encryptedDataLength)"
 
@@ -119,7 +119,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
         // See: https://cloud.google.com/storage/docs/performing-resumable-uploads#status-check
         let expectedPrefix = "bytes=0-"
         guard
-            let rangeHeader = response.responseHeaders["range"],
+            let rangeHeader = response.headers["range"],
             rangeHeader.hasPrefix(expectedPrefix)
         else {
             // Return zero to restart the upload.
@@ -151,7 +151,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
         progress: OWSProgressSource?
     ) async throws(Upload.Error) {
         let totalDataLength = attempt.encryptedDataLength
-        var headers = [String: String]()
+        var headers = HttpHeaders()
         let fileUrl: URL
         var fileToCleanup: URL?
 

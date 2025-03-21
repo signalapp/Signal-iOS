@@ -97,7 +97,7 @@ public struct WebSocketRequest {
     public let urlQueryItems: [URLQueryItem]?
 
     /// Extra headers that should be sent along with the request.
-    public let extraHeaders: [String: String]
+    public let extraHeaders: HttpHeaders
 
     public func build(for endpoint: OWSURLSessionEndpoint) -> URLRequest? {
         var urlComponents = URLComponents()

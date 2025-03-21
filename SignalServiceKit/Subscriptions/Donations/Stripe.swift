@@ -364,7 +364,7 @@ fileprivate extension Stripe {
         ) async throws -> HTTPResponse {
             let formData = Data(try parameters.encodeStripeQueryParamValueToString().utf8)
 
-            var headers: [String: String] = [
+            var headers: HttpHeaders = [
                 "Content-Type": "application/x-www-form-urlencoded",
                 "Authorization": authorizationHeader
             ]

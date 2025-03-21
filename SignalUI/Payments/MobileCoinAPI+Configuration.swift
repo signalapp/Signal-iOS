@@ -686,22 +686,20 @@ final class MobileCoinHttpRequester: NSObject, HttpRequester {
     func request(
         url: URL,
         method: LibMobileCoin.HTTPMethod,
-        headers: [String: String]?,
+        headers headerMap: [String: String]?,
         body: Data?,
         completion: @escaping (Result<LibMobileCoin.HTTPResponse, Error>) -> Void
     ) {
-        var request = URLRequest(url: url.absoluteURL)
-        request.httpMethod = method.rawValue
-        request.httpBody = body
-        request.allHTTPHeaderFields = headers
-
         let owsUrlSession = OWSURLSession(securityPolicy: securityPolicy, configuration: Self.defaultConfiguration)
+
+        var headers = HttpHeaders()
+        headers.addHeaderMap(headerMap, overwriteOnConflict: true)
 
         let promise = Promise.wrapAsync {
             return try await owsUrlSession.performRequest(url.absoluteString, method: method.sskHTTPMethod, headers: headers, body: body)
         }
         promise.done { response in
-            let headerFields = response.responseHeaders
+            let headerFields = response.headers.headers
             let statusCode = response.responseStatusCode
             let responseData = response.responseBodyData
             let url = response.requestUrl

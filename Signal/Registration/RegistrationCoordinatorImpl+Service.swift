@@ -388,7 +388,7 @@ extension RegistrationCoordinatorImpl {
                 .map(on: schedulers.global()) { (response: HTTPResponse) -> ResponseType in
                     return handler(
                         response.responseStatusCode,
-                        response.responseHeaders[Constants.retryAfterHeader],
+                        response.headers[Constants.retryAfterHeader],
                         response.responseBodyData
                     )
                 }
@@ -401,7 +401,7 @@ extension RegistrationCoordinatorImpl {
                     }
                     let response = handler(
                         error.responseStatusCode,
-                        error.responseHeaders?.value(forHeader: Constants.retryAfterHeader),
+                        error.responseHeaders?[Constants.retryAfterHeader],
                         error.httpResponseData
                     )
                     return .value(response)

@@ -33,7 +33,7 @@ public enum Upload {
             case cdnNumber = "cdn"
         }
 
-        let headers: [String: String]
+        let headers: HttpHeaders
         let signedUploadLocation: String
         let cdnKey: String
         let cdnNumber: UInt32

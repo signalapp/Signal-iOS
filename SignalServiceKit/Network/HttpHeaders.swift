@@ -10,10 +10,16 @@ import Foundation
 //
 // HTTP headers are case-insensitive.
 // This class handles conflict resolution.
-public struct HttpHeaders: CustomDebugStringConvertible {
+public struct HttpHeaders: Codable, CustomDebugStringConvertible, ExpressibleByDictionaryLiteral {
     public private(set) var headers = [String: String]()
 
     public init() {}
+
+    public init(dictionaryLiteral headerElements: (String, String)...) {
+        for (headerKey, headerValue) in headerElements {
+            self[headerKey] = headerValue
+        }
+    }
 
     public init(httpHeaders: [String: String]?, overwriteOnConflict: Bool) {
         self.init()
@@ -33,6 +39,18 @@ public struct HttpHeaders: CustomDebugStringConvertible {
 
     // MARK: -
 
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.headers)
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.addHeaderMap(try container.decode([String: String].self), overwriteOnConflict: true)
+    }
+
+    // MARK: -
+
     public func hasValueForHeader(_ header: String) -> Bool {
         return headers[header.lowercased()] != nil
     }
@@ -47,6 +65,23 @@ public struct HttpHeaders: CustomDebugStringConvertible {
 
     public mutating func addHeader(_ header: String, value: String, overwriteOnConflict: Bool) {
         addHeaderMap([header: value], overwriteOnConflict: overwriteOnConflict)
+    }
+
+    public subscript(_ headerKey: String) -> String? {
+        get {
+            return self.value(forHeader: headerKey)
+        }
+        set {
+            if let newValue {
+                self.addHeader(headerKey, value: newValue, overwriteOnConflict: true)
+            } else {
+                self.removeValueForHeader(headerKey)
+            }
+        }
+    }
+
+    public mutating func merge(_ httpHeaders: HttpHeaders) {
+        self.addHeaderMap(httpHeaders.headers, overwriteOnConflict: true)
     }
 
     public mutating func addHeaderMap(_ newHttpHeaders: [String: String]?, overwriteOnConflict: Bool) {

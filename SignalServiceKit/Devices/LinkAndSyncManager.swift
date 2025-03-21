@@ -915,7 +915,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         static func retryDelayNanoSeconds(_ response: HTTPResponse) -> UInt64 {
             let retryAfter: TimeInterval
             if
-                let retryAfterHeader = response.responseHeaders["retry-after"],
+                let retryAfterHeader = response.headers["retry-after"],
                 let retryAfterTime = TimeInterval(retryAfterHeader)
             {
                 retryAfter = retryAfterTime

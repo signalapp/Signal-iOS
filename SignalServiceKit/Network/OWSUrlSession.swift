@@ -129,7 +129,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
         baseUrl: URL? = nil,
         securityPolicy: HttpSecurityPolicy,
         configuration: URLSessionConfiguration,
-        extraHeaders: [String: String] = [:],
+        extraHeaders: HttpHeaders = HttpHeaders(),
         maxResponseSize: Int? = nil,
         canUseSignalProxy: Bool = false
     ) {
@@ -458,7 +458,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
             request = try self.endpoint.buildRequest(
                 rawRequestUrl.absoluteString,
                 method: method,
-                headers: httpHeaders.headers,
+                headers: httpHeaders,
                 body: requestBody
             )
         } catch {

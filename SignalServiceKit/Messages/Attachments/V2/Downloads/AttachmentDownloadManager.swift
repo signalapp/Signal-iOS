@@ -18,13 +18,13 @@ public enum AttachmentDownloads {
     /// Key for a ``Attachment.IdType`` value.
     public static var attachmentDownloadAttachmentIDKey: String { "attachmentDownloadAttachmentIDKey" }
 
-    public struct DownloadMetadata: Equatable {
+    public struct DownloadMetadata {
         public let mimeType: String
         public let cdnNumber: UInt32
         public let encryptionKey: Data
         public let source: Source
 
-        public enum Source: Equatable {
+        public enum Source {
             case transitTier(cdnKey: String, digest: Data, plaintextLength: UInt32?)
             case mediaTierFullsize(
                 cdnReadCredential: MediaTierReadCredential,

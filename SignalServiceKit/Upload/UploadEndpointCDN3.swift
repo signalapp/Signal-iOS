@@ -65,7 +65,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
         }
 
         guard
-            let bytesAlreadyUploadedString = response.responseHeaders["upload-offset"],
+            let bytesAlreadyUploadedString = response.headers["upload-offset"],
             let bytesAlreadyUploaded = Int(bytesAlreadyUploadedString)
         else {
             owsFailDebug("Missing upload offset data")

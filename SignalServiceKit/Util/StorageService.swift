@@ -658,7 +658,7 @@ public struct StorageService {
             httpResponse = try await urlSession.performRequest(
                 endpoint,
                 method: method,
-                headers: httpHeaders.headers,
+                headers: httpHeaders,
                 body: body
             )
         } catch {

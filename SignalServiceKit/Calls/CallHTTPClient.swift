@@ -45,10 +45,13 @@ extension CallHTTPClient: HTTPDelegate {
 
         Task { @MainActor in
             do {
+                var headers = HttpHeaders()
+                headers.addHeaderMap(request.headers, overwriteOnConflict: true)
+
                 let response = try await session.performRequest(
                     request.url,
                     method: request.method.httpMethod,
-                    headers: request.headers,
+                    headers: headers,
                     body: request.body
                 )
                 self.ringRtcHttpClient.receivedResponse(
