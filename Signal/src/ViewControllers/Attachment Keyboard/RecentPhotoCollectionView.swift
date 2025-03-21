@@ -51,6 +51,21 @@ class RecentPhotosCollectionView: UICollectionView {
     private lazy var collection = photoLibrary.defaultPhotoAlbum()
     private lazy var collectionContents = collection.contents(ascending: false, limit: RecentPhotosCollectionView.maxRecentPhotos)
 
+    private func collectionIndexForIndexPath(_ indexPath: IndexPath) -> Int {
+        if isAccessToPhotosLimited {
+            return indexPath.row - 1
+        } else {
+            return indexPath.row
+        }
+    }
+    private func isManageAccessCell(_ indexPath: IndexPath) -> Bool {
+        if isAccessToPhotosLimited && indexPath.row == 0 {
+            return true
+        } else {
+            return false
+        }
+    }
+
     // Cell Sizing
 
     private static let initialCellSize: CGSize = .square(50)
@@ -317,14 +332,15 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate, UICollectionView
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard fetchingAttachmentIndex == nil else { return }
 
-        guard indexPath.row < collectionContents.assetCount else {
+        let collectionIndex = collectionIndexForIndexPath(indexPath)
+        guard collectionIndex >= 0 && collectionIndex < collectionContents.assetCount else {
             owsFailDebug("Asset does not exist.")
             return
         }
 
         fetchingAttachmentIndex = indexPath
 
-        let asset = collectionContents.asset(at: indexPath.item)
+        let asset = collectionContents.asset(at: collectionIndex)
         collectionContents.outgoingAttachment(
             for: asset
         ).done { [weak self] attachment in
@@ -354,47 +370,47 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate, UICollectionView
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        // Custom size for "manage access" cell.
-        guard indexPath.row < collectionContents.assetCount else {
-            let defaultCellSize = cellSize
-            guard defaultCellSize.isNonEmpty else { return .zero }
-
-            let cellHeight = defaultCellSize.height
-            if let cachedSize = limitedAccessViewCellSizeCache[cellHeight] {
-                return cachedSize
-            }
-
-            let cellMargin: CGFloat = 8
-            let view = limitedAccessView()
-
-            // I couldn't figure out how to make `systemLayoutSizeFitting()` work for multi-line text.
-            // Size (width) that method returns is always for text being one line.
-            // Therefore the logic is as follows:
-            // 1. Check if UI fits standard cell width.
-            // 2a. If it does - all good and we use default cell size.
-            // 2b. If it doesn't - we calculate size (width) with default cell size being restricted.
-            //     Unfortunately in this case width is always for one line of text like I mentioned above.
-            // If you read this and have some free time - feel free to attempt to fix.
-            let size = view.systemLayoutSizeFitting(
-                CGSize(width: defaultCellSize.width - 2*cellMargin, height: .greatestFiniteMagnitude),
-                withHorizontalFittingPriority: .required,
-                verticalFittingPriority: .fittingSizeLevel
-            )
-            let cellWidth: CGFloat
-            if size.height > cellHeight {
-                view.addConstraint(view.heightAnchor.constraint(equalToConstant: cellHeight))
-
-                let widerSize = view.systemLayoutSizeFitting(.square(.greatestFiniteMagnitude))
-                cellWidth = widerSize.width + 2*cellMargin
-            } else {
-                cellWidth = defaultCellSize.width
-            }
-            let cellSize = CGSize(width: cellWidth, height: cellHeight)
-            limitedAccessViewCellSizeCache[cellHeight] = cellSize
+        if !isManageAccessCell(indexPath) {
             return cellSize
         }
 
-        return cellSize
+        // Custom size for "manage access" cell.
+        let defaultCellSize = cellSize
+        guard defaultCellSize.isNonEmpty else { return .zero }
+
+        let cellHeight = defaultCellSize.height
+        if let cachedSize = limitedAccessViewCellSizeCache[cellHeight] {
+            return cachedSize
+        }
+
+        let cellMargin: CGFloat = 8
+        let view = limitedAccessView()
+
+        // I couldn't figure out how to make `systemLayoutSizeFitting()` work for multi-line text.
+        // Size (width) that method returns is always for text being one line.
+        // Therefore the logic is as follows:
+        // 1. Check if UI fits standard cell width.
+        // 2a. If it does - all good and we use default cell size.
+        // 2b. If it doesn't - we calculate size (width) with default cell size being restricted.
+        //     Unfortunately in this case width is always for one line of text like I mentioned above.
+        // If you read this and have some free time - feel free to attempt to fix.
+        let size = view.systemLayoutSizeFitting(
+            CGSize(width: defaultCellSize.width - 2*cellMargin, height: .greatestFiniteMagnitude),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel
+        )
+        let cellWidth: CGFloat
+        if size.height > cellHeight {
+            view.addConstraint(view.heightAnchor.constraint(equalToConstant: cellHeight))
+
+            let widerSize = view.systemLayoutSizeFitting(.square(.greatestFiniteMagnitude))
+            cellWidth = widerSize.width + 2*cellMargin
+        } else {
+            cellWidth = defaultCellSize.width
+        }
+        let customCellSize = CGSize(width: cellWidth, height: cellHeight)
+        limitedAccessViewCellSizeCache[cellHeight] = customCellSize
+        return customCellSize
     }
 }
 
@@ -418,10 +434,8 @@ extension RecentPhotosCollectionView: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard indexPath.row < collectionContents.assetCount else {
-            // If the index is beyond the asset count, we should be rendering the "select more photos" prompt.
-            owsAssertDebug(isAccessToPhotosLimited)
-
+        if isManageAccessCell(indexPath) {
+            // We should render the "select more photos" prompt.
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SelectMorePhotosCell", for: indexPath)
             if cell.contentView.subviews.isEmpty {
                 let limitedAccessView = limitedAccessView()
@@ -437,12 +451,13 @@ extension RecentPhotosCollectionView: UICollectionViewDataSource {
             owsFail("cell was unexpectedly nil")
         }
 
-        let assetItem = collectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
+        let collectionIndex = collectionIndexForIndexPath(indexPath)
+        let assetItem = collectionContents.assetItem(at: collectionIndex, photoMediaSize: photoMediaSize)
         cell.configure(item: assetItem, isLoading: fetchingAttachmentIndex == indexPath)
         #if DEBUG
         // These accessibilityIdentifiers won't be stable, but they
         // should work for the purposes of our automated testing.
-        cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "recent-photo-\(indexPath.row)")
+        cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "recent-photo-\(collectionIndex)")
         #endif
         return cell
     }
