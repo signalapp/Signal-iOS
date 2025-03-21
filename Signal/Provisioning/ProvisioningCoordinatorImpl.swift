@@ -537,21 +537,13 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             throw .genericError(error)
         }
 
-        let deviceId: DeviceId
-        switch authedDevice.deviceId {
-        case .primary:
-            throw .genericError(OWSAssertionError("Primary device id when provisioning"))
-        case .secondary(let deviceId2):
-            deviceId = deviceId2
-        }
-
         await self.db.awaitableWrite { tx in
             self.registrationStateChangeManager.didProvisionSecondary(
                 e164: authedDevice.phoneNumber,
                 aci: authedDevice.aci,
                 pni: authedDevice.pni,
                 authToken: authedDevice.authPassword,
-                deviceId: deviceId,
+                deviceId: authedDevice.deviceId,
                 tx: tx
             )
         }
@@ -689,27 +681,25 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         if pni != verifyDeviceResponse.pni {
             throw .genericError(OWSAssertionError("PNI from primary is out of sync with the server!"))
         }
+        if verifyDeviceResponse.deviceId.isPrimary {
+            throw .genericError(OWSAssertionError("Server is trying to link device as primary!"))
+        }
 
         let authedDevice = AuthedDevice.Explicit(
             aci: aci,
             phoneNumber: phoneNumber,
             pni: pni,
-            deviceId: .secondary(verifyDeviceResponse.deviceId),
+            deviceId: verifyDeviceResponse.deviceId,
             authPassword: serverAuthToken
         )
         return authedDevice
     }
 
     private func undoVerifyAndLinkOnServer(authedDevice: AuthedDevice.Explicit) async throws(CompleteProvisioningError) {
-        switch authedDevice.deviceId {
-        case .primary:
-            throw .genericError(OWSAssertionError("Primary device id?"))
-        case .secondary(let deviceId):
-            do {
-                try await deviceService.unlinkDevice(deviceId: deviceId, auth: authedDevice.authedAccount.chatServiceAuth)
-            } catch {
-                throw .genericError(error)
-            }
+        do {
+            try await deviceService.unlinkDevice(deviceId: authedDevice.deviceId, auth: authedDevice.authedAccount.chatServiceAuth)
+        } catch {
+            throw .genericError(error)
         }
     }
 

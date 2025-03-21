@@ -8,8 +8,6 @@ public import LibSignalClient
 
 public class AuthedAccount: Hashable, Equatable {
 
-    public typealias DeviceId = AuthedDevice.DeviceId
-
     public struct Explicit: Equatable {
         public let aci: Aci
         public let pni: Pni

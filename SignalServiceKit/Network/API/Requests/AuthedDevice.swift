@@ -10,20 +10,6 @@ public enum AuthedDevice {
     case implicit
     case explicit(Explicit)
 
-    public enum DeviceId: Equatable {
-        case primary
-        case secondary(SignalServiceKit.DeviceId)
-
-        public func authUsername(aci: Aci) -> String {
-            switch self {
-            case .primary:
-                return aci.serviceIdString
-            case .secondary(let deviceId):
-                return "\(aci.serviceIdString).\(deviceId)"
-            }
-        }
-    }
-
     public struct Explicit {
         public let aci: Aci
         public let phoneNumber: E164

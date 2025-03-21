@@ -30,6 +30,8 @@ public struct DeviceId: Codable, Comparable, CustomStringConvertible, Hashable {
         try container.encode(self.rawValue)
     }
 
+    public var isPrimary: Bool { self == .primary }
+
     public var description: String { "\(rawValue)" }
 
     public static func < (lhs: Self, rhs: Self) -> Bool {

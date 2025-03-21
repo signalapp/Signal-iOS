@@ -25,14 +25,19 @@ public class ChatServiceAuth: Equatable, Hashable {
         return ChatServiceAuth(.implicit)
     }
 
-    public typealias DeviceId = AuthedDevice.DeviceId
-
     public static func explicit(
         aci: Aci,
         deviceId: DeviceId,
         password: String
     ) -> ChatServiceAuth {
-        return ChatServiceAuth(.explicit(username: deviceId.authUsername(aci: aci), password: password))
+        let authUsername = { () -> String in
+            if deviceId.isPrimary {
+                return aci.serviceIdString
+            } else {
+                return "\(aci.serviceIdString).\(deviceId)"
+            }
+        }()
+        return ChatServiceAuth(.explicit(username: authUsername, password: password))
     }
 
     public func hash(into hasher: inout Hasher) {
