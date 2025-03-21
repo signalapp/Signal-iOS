@@ -54,7 +54,8 @@ public struct AvatarDefaultColorManager {
         case .group(let groupId):
             seedData = groupId
         case .callLink(let rootKey):
-            seedData = rootKey.bytes.prefix(1)
+            // Per spec, these don't go through SHA256 to determine the color.
+            return .forIndex(Int(rootKey.bytes.first!))
         }
 
         // We'll take a SHA256 hash of the seed, and then use the first byte of
