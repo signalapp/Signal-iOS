@@ -4,7 +4,7 @@
 //
 
 import Foundation
-public import LibSignalClient
+import LibSignalClient
 
 extension MessageBackup {
 
@@ -17,32 +17,42 @@ extension MessageBackup {
     /// archiving to be updating the database, just reading from it.
     /// (The exception to this is enqueuing attachment uploads.)
     open class ArchivingContext {
+        struct IncludedContentFilter {
+            /// The minimum amount of time remaining on a message's expiration
+            /// timer, such that it is eligible for inclusion.
+            ///
+            /// For example, this allows callers to require messages to have at
+            /// least 24h before their expiration in order to be included.
+            let minRemainingTimeUntilExpirationMs: UInt64
+
+            /// Whether or not the plaintext SVR PIN should be included.
+            let shouldIncludePin: Bool
+        }
+
+        /// For benchmarking archive steps.
+        let bencher: MessageBackup.ArchiveBencher
+
+        /// Parameters configuring what content is included in this archive.
+        let includedContentFilter: IncludedContentFilter
 
         private let _tx: DBWriteTransaction
-
-        public var tx: DBReadTransaction { _tx }
-
-        /// The purpose for this backup. Determines minor behavior variations, such as
-        /// whether we include expiring messages or not.
-        public let backupPurpose: MessageBackupPurpose
-
-        let bencher: MessageBackup.ArchiveBencher
+        var tx: DBReadTransaction { _tx }
 
         /// Nil if not a paid backups account.
         private let currentBackupAttachmentUploadEra: String?
         private let backupAttachmentUploadManager: BackupAttachmentUploadManager
 
         init(
-            backupPurpose: MessageBackupPurpose,
+            backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: MessageBackup.ArchiveBencher,
             currentBackupAttachmentUploadEra: String?,
-            backupAttachmentUploadManager: BackupAttachmentUploadManager,
+            includedContentFilter: IncludedContentFilter,
             tx: DBWriteTransaction
         ) {
-            self.backupPurpose = backupPurpose
             self.bencher = bencher
-            self.currentBackupAttachmentUploadEra = currentBackupAttachmentUploadEra
             self.backupAttachmentUploadManager = backupAttachmentUploadManager
+            self.currentBackupAttachmentUploadEra = currentBackupAttachmentUploadEra
+            self.includedContentFilter = includedContentFilter
             self._tx = tx
         }
 

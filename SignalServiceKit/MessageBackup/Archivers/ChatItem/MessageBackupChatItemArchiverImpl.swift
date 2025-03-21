@@ -248,23 +248,18 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             return .completeFailure(error)
         }
 
-        switch context.backupPurpose {
-        case .deviceTransfer:
-            // We include soon-to expire messages for
-            // "device transfer" backups.
-            break
-        case .remoteBackup:
-            let minExpireTime = dateProvider().ows_millisecondsSince1970
-                + MessageBackup.Constants.minExpireTimerMs
-            if
-                let expireStartDate = details.expireStartDate,
-                let expiresInMs = details.expiresInMs,
-                expiresInMs > 0, // Only check expiration if `expiresInMs` is set to something interesting.
-                expireStartDate + expiresInMs < minExpireTime
-            {
-                // Skip this message, but count it as a success.
-                return .success
-            }
+        // Check if this message expires soon enough that we should exclude it
+        // from the Backup.
+        let minExpirationDate = dateProvider().ows_millisecondsSince1970
+            + context.includedContentFilter.minRemainingTimeUntilExpirationMs
+        if
+            let expireStartDate = details.expireStartDate,
+            let expiresInMs = details.expiresInMs,
+            expiresInMs > 0, // Only check expiration if `expiresInMs` is set to something interesting.
+            expireStartDate + expiresInMs < minExpirationDate
+        {
+            // Skip this message, but count it as a success.
+            return .success
         }
 
         let chatItem = buildChatItem(

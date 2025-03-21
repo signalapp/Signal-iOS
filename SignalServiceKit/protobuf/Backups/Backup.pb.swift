@@ -30,6 +30,89 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
+/// If unset - computed as the value of the first byte of SHA-256(msg=CONTACT_ID)
+/// modulo the count of colors. Once set the avatar color for a recipient is
+/// never recomputed or changed.
+///
+/// `CONTACT_ID` is the first available identifier from the list:
+/// - ServiceIdToBinary(ACI)
+/// - E164
+/// - ServiceIdToBinary(PNI)
+/// - Group Id
+public enum BackupProto_AvatarColor: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case a100 // = 0
+  case a110 // = 1
+  case a120 // = 2
+  case a130 // = 3
+  case a140 // = 4
+  case a150 // = 5
+  case a160 // = 6
+  case a170 // = 7
+  case a180 // = 8
+  case a190 // = 9
+  case a200 // = 10
+  case a210 // = 11
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .a100
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .a100
+    case 1: self = .a110
+    case 2: self = .a120
+    case 3: self = .a130
+    case 4: self = .a140
+    case 5: self = .a150
+    case 6: self = .a160
+    case 7: self = .a170
+    case 8: self = .a180
+    case 9: self = .a190
+    case 10: self = .a200
+    case 11: self = .a210
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .a100: return 0
+    case .a110: return 1
+    case .a120: return 2
+    case .a130: return 3
+    case .a140: return 4
+    case .a150: return 5
+    case .a160: return 6
+    case .a170: return 7
+    case .a180: return 8
+    case .a190: return 9
+    case .a200: return 10
+    case .a210: return 11
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [BackupProto_AvatarColor] = [
+    .a100,
+    .a110,
+    .a120,
+    .a130,
+    .a140,
+    .a150,
+    .a160,
+    .a170,
+    .a180,
+    .a190,
+    .a200,
+    .a210,
+  ]
+
+}
+
 public enum BackupProto_GroupV2AccessLevel: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
 
@@ -262,6 +345,8 @@ public struct BackupProto_AccountData: @unchecked Sendable {
   public var hasBackupsSubscriberData: Bool {return self._backupsSubscriberData != nil}
   /// Clears the value of `backupsSubscriberData`. Subsequent reads from it will return its default value.
   public mutating func clearBackupsSubscriberData() {self._backupsSubscriberData = nil}
+
+  public var svrPin: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -801,6 +886,15 @@ public struct BackupProto_Contact: @unchecked Sendable {
     set {_uniqueStorage()._systemNickname = newValue}
   }
 
+  public var avatarColor: BackupProto_AvatarColor {
+    get {return _storage._avatarColor ?? .a100}
+    set {_uniqueStorage()._avatarColor = newValue}
+  }
+  /// Returns true if `avatarColor` has been explicitly set.
+  public var hasAvatarColor: Bool {return _storage._avatarColor != nil}
+  /// Clears the value of `avatarColor`. Subsequent reads from it will return its default value.
+  public mutating func clearAvatarColor() {_uniqueStorage()._avatarColor = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, consider the user to be registered
@@ -971,6 +1065,15 @@ public struct BackupProto_Group: @unchecked Sendable {
     get {return _storage._blocked}
     set {_uniqueStorage()._blocked = newValue}
   }
+
+  public var avatarColor: BackupProto_AvatarColor {
+    get {return _storage._avatarColor ?? .a100}
+    set {_uniqueStorage()._avatarColor = newValue}
+  }
+  /// Returns true if `avatarColor` has been explicitly set.
+  public var hasAvatarColor: Bool {return _storage._avatarColor != nil}
+  /// Clears the value of `avatarColor`. Subsequent reads from it will return its default value.
+  public mutating func clearAvatarColor() {_uniqueStorage()._avatarColor = nil}
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1323,9 +1426,20 @@ public struct BackupProto_Self: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  public var avatarColor: BackupProto_AvatarColor {
+    get {return _avatarColor ?? .a100}
+    set {_avatarColor = newValue}
+  }
+  /// Returns true if `avatarColor` has been explicitly set.
+  public var hasAvatarColor: Bool {return self._avatarColor != nil}
+  /// Clears the value of `avatarColor`. Subsequent reads from it will return its default value.
+  public mutating func clearAvatarColor() {self._avatarColor = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
+
+  fileprivate var _avatarColor: BackupProto_AvatarColor? = nil
 }
 
 public struct BackupProto_ReleaseNotes: Sendable {
@@ -5866,6 +5980,23 @@ public struct BackupProto_ChatFolder: Sendable {
 
 fileprivate let _protobuf_package = "signal.backup"
 
+extension BackupProto_AvatarColor: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "A100"),
+    1: .same(proto: "A110"),
+    2: .same(proto: "A120"),
+    3: .same(proto: "A130"),
+    4: .same(proto: "A140"),
+    5: .same(proto: "A150"),
+    6: .same(proto: "A160"),
+    7: .same(proto: "A170"),
+    8: .same(proto: "A180"),
+    9: .same(proto: "A190"),
+    10: .same(proto: "A200"),
+    11: .same(proto: "A210"),
+  ]
+}
+
 extension BackupProto_GroupV2AccessLevel: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "UNKNOWN"),
@@ -6122,6 +6253,7 @@ extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._Message
     7: .same(proto: "donationSubscriberData"),
     9: .same(proto: "accountSettings"),
     10: .same(proto: "backupsSubscriberData"),
+    11: .same(proto: "svrPin"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6139,6 +6271,7 @@ extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._Message
       case 7: try { try decoder.decodeSingularMessageField(value: &self._donationSubscriberData) }()
       case 9: try { try decoder.decodeSingularMessageField(value: &self._accountSettings) }()
       case 10: try { try decoder.decodeSingularMessageField(value: &self._backupsSubscriberData) }()
+      case 11: try { try decoder.decodeSingularStringField(value: &self.svrPin) }()
       default: break
       }
     }
@@ -6176,6 +6309,9 @@ extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._Message
     try { if let v = self._backupsSubscriberData {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
     } }()
+    if !self.svrPin.isEmpty {
+      try visitor.visitSingularStringField(value: self.svrPin, fieldNumber: 11)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -6189,6 +6325,7 @@ extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._Message
     if lhs._donationSubscriberData != rhs._donationSubscriberData {return false}
     if lhs._accountSettings != rhs._accountSettings {return false}
     if lhs._backupsSubscriberData != rhs._backupsSubscriberData {return false}
+    if lhs.svrPin != rhs.svrPin {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -6761,6 +6898,7 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     18: .same(proto: "systemGivenName"),
     19: .same(proto: "systemFamilyName"),
     20: .same(proto: "systemNickname"),
+    21: .same(proto: "avatarColor"),
   ]
 
   fileprivate class _StorageClass {
@@ -6783,6 +6921,7 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     var _systemGivenName: String = String()
     var _systemFamilyName: String = String()
     var _systemNickname: String = String()
+    var _avatarColor: BackupProto_AvatarColor? = nil
 
     #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
@@ -6816,6 +6955,7 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       _systemGivenName = source._systemGivenName
       _systemFamilyName = source._systemFamilyName
       _systemNickname = source._systemNickname
+      _avatarColor = source._avatarColor
     }
   }
 
@@ -6878,6 +7018,7 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         case 18: try { try decoder.decodeSingularStringField(value: &_storage._systemGivenName) }()
         case 19: try { try decoder.decodeSingularStringField(value: &_storage._systemFamilyName) }()
         case 20: try { try decoder.decodeSingularStringField(value: &_storage._systemNickname) }()
+        case 21: try { try decoder.decodeSingularEnumField(value: &_storage._avatarColor) }()
         default: break
         }
       }
@@ -6955,6 +7096,9 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       if !_storage._systemNickname.isEmpty {
         try visitor.visitSingularStringField(value: _storage._systemNickname, fieldNumber: 20)
       }
+      try { if let v = _storage._avatarColor {
+        try visitor.visitSingularEnumField(value: v, fieldNumber: 21)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6983,6 +7127,7 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         if _storage._systemGivenName != rhs_storage._systemGivenName {return false}
         if _storage._systemFamilyName != rhs_storage._systemFamilyName {return false}
         if _storage._systemNickname != rhs_storage._systemNickname {return false}
+        if _storage._avatarColor != rhs_storage._avatarColor {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -7106,6 +7251,7 @@ extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     4: .same(proto: "storySendMode"),
     5: .same(proto: "snapshot"),
     6: .same(proto: "blocked"),
+    7: .same(proto: "avatarColor"),
   ]
 
   fileprivate class _StorageClass {
@@ -7115,6 +7261,7 @@ extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     var _storySendMode: BackupProto_Group.StorySendMode = .default
     var _snapshot: BackupProto_Group.GroupSnapshot? = nil
     var _blocked: Bool = false
+    var _avatarColor: BackupProto_AvatarColor? = nil
 
     #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
@@ -7135,6 +7282,7 @@ extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       _storySendMode = source._storySendMode
       _snapshot = source._snapshot
       _blocked = source._blocked
+      _avatarColor = source._avatarColor
     }
   }
 
@@ -7159,6 +7307,7 @@ extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
         case 4: try { try decoder.decodeSingularEnumField(value: &_storage._storySendMode) }()
         case 5: try { try decoder.decodeSingularMessageField(value: &_storage._snapshot) }()
         case 6: try { try decoder.decodeSingularBoolField(value: &_storage._blocked) }()
+        case 7: try { try decoder.decodeSingularEnumField(value: &_storage._avatarColor) }()
         default: break
         }
       }
@@ -7189,6 +7338,9 @@ extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       if _storage._blocked != false {
         try visitor.visitSingularBoolField(value: _storage._blocked, fieldNumber: 6)
       }
+      try { if let v = _storage._avatarColor {
+        try visitor.visitSingularEnumField(value: v, fieldNumber: 7)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7204,6 +7356,7 @@ extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
         if _storage._storySendMode != rhs_storage._storySendMode {return false}
         if _storage._snapshot != rhs_storage._snapshot {return false}
         if _storage._blocked != rhs_storage._blocked {return false}
+        if _storage._avatarColor != rhs_storage._avatarColor {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -7641,18 +7794,35 @@ extension BackupProto_Group.AccessControl.AccessRequired: SwiftProtobuf._ProtoNa
 
 extension BackupProto_Self: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Self"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "avatarColor"),
+  ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    // Load everything into unknown fields
-    while try decoder.nextFieldNumber() != nil {}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._avatarColor) }()
+      default: break
+      }
+    }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._avatarColor {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: BackupProto_Self, rhs: BackupProto_Self) -> Bool {
+    if lhs._avatarColor != rhs._avatarColor {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

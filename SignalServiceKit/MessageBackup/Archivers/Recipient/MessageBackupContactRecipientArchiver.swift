@@ -18,6 +18,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<RecipientId>
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<RecipientId>
 
+    private let avatarDefaultColorManager: AvatarDefaultColorManager
     private let avatarFetcher: MessageBackupAvatarFetcher
     private let blockingManager: MessageBackup.Shims.BlockingManager
     private let contactManager: MessageBackup.Shims.ContactManager
@@ -34,6 +35,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     private let usernameLookupManager: UsernameLookupManager
 
     public init(
+        avatarDefaultColorManager: AvatarDefaultColorManager,
         avatarFetcher: MessageBackupAvatarFetcher,
         blockingManager: MessageBackup.Shims.BlockingManager,
         contactManager: MessageBackup.Shims.ContactManager,
@@ -49,6 +51,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         tsAccountManager: TSAccountManager,
         usernameLookupManager: UsernameLookupManager
     ) {
+        self.avatarDefaultColorManager = avatarDefaultColorManager
         self.avatarFetcher = avatarFetcher
         self.blockingManager = blockingManager
         self.contactManager = contactManager
@@ -247,6 +250,10 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 signalAccount: self.contactManager.fetchSignalAccount(
                     recipient.address,
                     tx: context.tx
+                ),
+                defaultAvatarColor: self.avatarDefaultColorManager.defaultColor(
+                    useCase: .contact(recipient: recipient),
+                    tx: context.tx
                 )
             )
 
@@ -358,7 +365,11 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                     // We don't have (and can't fetch) identity info for
                     // profile addresses without SignalRecipients.
                     identity: nil,
-                    signalAccount: nil
+                    signalAccount: nil,
+                    defaultAvatarColor: self.avatarDefaultColorManager.defaultColor(
+                        useCase: .contactWithoutRecipient(address: contactAddress.asInteropAddress()),
+                        tx: context.tx
+                    )
                 )
 
                 writeToStream(
@@ -424,7 +435,11 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             registration: .notRegistered(registration),
             userProfile: nil,
             identity: nil,
-            signalAccount: nil
+            signalAccount: nil,
+            defaultAvatarColor: avatarDefaultColorManager.defaultColor(
+                useCase: .contactWithoutRecipient(address: address.asInteropAddress()),
+                tx: context.tx
+            )
         )
 
         let recipientAddress = address.asArchivingAddress()
@@ -465,7 +480,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         registration: BackupProto_Contact.OneOf_Registration,
         userProfile: OWSUserProfile?,
         identity: OWSRecipientIdentity?,
-        signalAccount: SignalAccount?
+        signalAccount: SignalAccount?,
+        defaultAvatarColor: AvatarTheme
     ) -> BackupProto_Contact {
         var contact = BackupProto_Contact()
         contact.blocked = isBlocked
@@ -530,6 +546,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             contact.systemFamilyName = signalAccount.familyName
             contact.systemNickname = signalAccount.nickname
         }
+        contact.avatarColor = defaultAvatarColor.asBackupProtoAvatarColor
 
         return contact
     }
@@ -800,6 +817,21 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             )
 
             contactManager.insertSignalAccount(systemContact, tx: context.tx)
+        }
+
+        if
+            contactProto.hasAvatarColor,
+            let defaultAvatarColor: AvatarTheme = .from(backupProtoAvatarColor: contactProto.avatarColor)
+        {
+            do {
+                try avatarDefaultColorManager.persistDefaultColor(
+                    defaultAvatarColor,
+                    recipientRowId: recipient.id!,
+                    tx: context.tx
+                )
+            } catch let error {
+                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId))
+            }
         }
 
         if partialErrors.isEmpty {

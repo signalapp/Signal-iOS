@@ -244,7 +244,11 @@ extension OWS2FAManager {
         }
     }
 
-    internal func setPinCode(_ pin: String, transaction: DBWriteTransaction) {
+    public func restorePinFromBackup(_ pin: String, transaction: DBWriteTransaction) {
+        Self.keyValueStore.setString(pin, key: kOWS2FAManager_PinCode, transaction: transaction)
+    }
+
+    private func setPinCode(_ pin: String, transaction: DBWriteTransaction) {
         if pin.isEmpty {
             clearLocalPinCode(transaction: transaction)
             return

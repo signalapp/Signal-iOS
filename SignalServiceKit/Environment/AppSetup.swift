@@ -1010,10 +1010,14 @@ public class AppSetup {
             wallpaperStore: wallpaperStore
         )
 
-        let backupStickerPackDownloadStore = BackupStickerPackDownloadStoreImpl()
-        let backupThreadStore = MessageBackupThreadStore(threadStore: threadStore)
         let backupInteractionStore = MessageBackupInteractionStore(interactionStore: interactionStore)
+        let backupRecipientStore = MessageBackupRecipientStore(
+            recipientTable: recipientDatabaseTable,
+            searchableNameIndexer: searchableNameIndexer
+        )
+        let backupStickerPackDownloadStore = BackupStickerPackDownloadStoreImpl()
         let backupStoryStore = MessageBackupStoryStore(storyStore: storyStore)
+        let backupThreadStore = MessageBackupThreadStore(threadStore: threadStore)
 
         let messageBackupErrorPresenter = messageBackupErrorPresenterFactory.build(
             db: db,
@@ -1031,6 +1035,7 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
         let messageBackupContactRecipientArchiver = MessageBackupContactRecipientArchiver(
+            avatarDefaultColorManager: avatarDefaultColorManager,
             avatarFetcher: messageBackupAvatarFetcher,
             blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
             contactManager: MessageBackup.Wrappers.ContactManager(contactManager),
@@ -1039,10 +1044,7 @@ public class AppSetup {
             profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
             recipientHidingManager: recipientHidingManager,
             recipientManager: recipientManager,
-            recipientStore: MessageBackupRecipientStore(
-                recipientTable: recipientDatabaseTable,
-                searchableNameIndexer: searchableNameIndexer
-            ),
+            recipientStore: backupRecipientStore,
             signalServiceAddressCache: signalServiceAddressCache,
             storyStore: backupStoryStore,
             threadStore: backupThreadStore,
@@ -1065,6 +1067,7 @@ public class AppSetup {
                 donationSubscriptionManager: MessageBackup.Wrappers.DonationSubscriptionManager(),
                 linkPreviewSettingStore: linkPreviewSettingStore,
                 localUsernameManager: localUsernameManager,
+                ows2FAManager: MessageBackup.Wrappers.OWS2FAManager(ows2FAManager),
                 phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
                 preferences: MessageBackup.Wrappers.Preferences(preferences: preferences),
                 profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
@@ -1141,6 +1144,7 @@ public class AppSetup {
                 searchableNameIndexer: searchableNameIndexer
             ),
             groupRecipientArchiver: MessageBackupGroupRecipientArchiver(
+                avatarDefaultColorManager: avatarDefaultColorManager,
                 avatarFetcher: messageBackupAvatarFetcher,
                 blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
                 disappearingMessageConfigStore: disappearingMessagesConfigurationStore,
@@ -1152,7 +1156,9 @@ public class AppSetup {
             incrementalTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator,
             localStorage: accountKeyStore,
             localRecipientArchiver: MessageBackupLocalRecipientArchiver(
-                profileManager: MessageBackup.Wrappers.ProfileManager(profileManager)
+                avatarDefaultColorManager: avatarDefaultColorManager,
+                profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
+                recipientStore: backupRecipientStore
             ),
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             messagePipelineSupervisor: messagePipelineSupervisor,

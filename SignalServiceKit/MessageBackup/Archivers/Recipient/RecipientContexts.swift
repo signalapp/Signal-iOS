@@ -131,10 +131,10 @@ extension MessageBackup {
         private let callLinkIdMap = SharedMap<CallLinkRecordId, RecipientId>()
 
         init(
-            backupPurpose: MessageBackupPurpose,
+            backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: MessageBackup.ArchiveBencher,
             currentBackupAttachmentUploadEra: String?,
-            backupAttachmentUploadManager: BackupAttachmentUploadManager,
+            includedContentFilter: IncludedContentFilter,
             localIdentifiers: LocalIdentifiers,
             localRecipientId: RecipientId,
             tx: DBWriteTransaction
@@ -156,10 +156,10 @@ extension MessageBackup {
             }
 
             super.init(
-                backupPurpose: backupPurpose,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
+                includedContentFilter: includedContentFilter,
                 tx: tx
             )
         }

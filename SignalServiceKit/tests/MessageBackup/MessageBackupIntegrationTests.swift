@@ -321,7 +321,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         )
 
         let exportedBackupUrl = try await deps.messageBackupManager
-            .exportPlaintextBackup(localIdentifiers: localIdentifiers, backupPurpose: .remoteBackup, progress: nil)
+            .exportPlaintextBackupForTests(localIdentifiers: localIdentifiers, progress: nil)
 
         try compareViaLibsignal(
             sharedTestCaseBackupUrl: testCaseFileUrl,

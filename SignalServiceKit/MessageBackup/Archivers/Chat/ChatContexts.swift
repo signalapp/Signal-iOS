@@ -103,22 +103,22 @@ extension MessageBackup {
 
         private let threadCache = SharedMap<ChatId, CachedThreadInfo>()
 
-        internal init(
-            backupPurpose: MessageBackupPurpose,
+        init(
+            backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: MessageBackup.ArchiveBencher,
             currentBackupAttachmentUploadEra: String?,
-            backupAttachmentUploadManager: BackupAttachmentUploadManager,
             customChatColorContext: CustomChatColorArchivingContext,
+            includedContentFilter: IncludedContentFilter,
             recipientContext: RecipientArchivingContext,
             tx: DBWriteTransaction
         ) {
             self.customChatColorContext = customChatColorContext
             self.recipientContext = recipientContext
             super.init(
-                backupPurpose: backupPurpose,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
+                includedContentFilter: includedContentFilter,
                 tx: tx
             )
         }
@@ -325,18 +325,18 @@ extension MessageBackup {
         private var currentCustomChatColorId = CustomChatColorId(value: 1)
         private let map = SharedMap<CustomChatColor.Key, CustomChatColorId>()
 
-        internal override init(
-            backupPurpose: MessageBackupPurpose,
+        override init(
+            backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: MessageBackup.ArchiveBencher,
             currentBackupAttachmentUploadEra: String?,
-            backupAttachmentUploadManager: BackupAttachmentUploadManager,
+            includedContentFilter: IncludedContentFilter,
             tx: DBWriteTransaction
         ) {
             super.init(
-                backupPurpose: backupPurpose,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
+                includedContentFilter: includedContentFilter,
                 tx: tx
             )
         }

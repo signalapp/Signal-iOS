@@ -23,6 +23,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<RecipientId>
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<RecipientId>
 
+    private let avatarDefaultColorManager: AvatarDefaultColorManager
     private let avatarFetcher: MessageBackupAvatarFetcher
     private let blockingManager: MessageBackup.Shims.BlockingManager
     private let disappearingMessageConfigStore: DisappearingMessagesConfigurationStore
@@ -34,6 +35,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
     private var logger: MessageBackupLogger { .shared }
 
     public init(
+        avatarDefaultColorManager: AvatarDefaultColorManager,
         avatarFetcher: MessageBackupAvatarFetcher,
         blockingManager: MessageBackup.Shims.BlockingManager,
         disappearingMessageConfigStore: DisappearingMessagesConfigurationStore,
@@ -42,6 +44,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         storyStore: MessageBackupStoryStore,
         threadStore: MessageBackupThreadStore
     ) {
+        self.avatarDefaultColorManager = avatarDefaultColorManager
         self.avatarFetcher = avatarFetcher
         self.blockingManager = blockingManager
         self.disappearingMessageConfigStore = disappearingMessageConfigStore
@@ -146,6 +149,10 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             case .default: return .default
             }
         }()
+        group.avatarColor = avatarDefaultColorManager.defaultColor(
+            useCase: .group(groupId: groupId.value),
+            tx: context.tx
+        ).asBackupProtoAvatarColor
         group.snapshot = { () -> BackupProto_Group.GroupSnapshot in
             var groupSnapshot = BackupProto_Group.GroupSnapshot()
             groupSnapshot.avatarURL = groupModel.avatarUrlPath ?? ""
@@ -390,6 +397,22 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         }
 
         var partialErrors = [MessageBackup.RestoreFrameError<RecipientId>]()
+
+        if
+            groupProto.hasAvatarColor,
+            let defaultAvatarColor: AvatarTheme = .from(backupProtoAvatarColor: groupProto.avatarColor)
+        {
+            do {
+                try avatarDefaultColorManager.persistDefaultColor(
+                    defaultAvatarColor,
+                    groupId: groupContextInfo.groupId,
+                    tx: context.tx
+                )
+            } catch {
+                // Don't fail entirely; colors aren't that important.
+                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId))
+            }
+        }
 
         if groupProto.hideStory {
             // We only need to actively hide, since unhidden is the default.

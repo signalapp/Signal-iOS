@@ -243,3 +243,42 @@ extension AvatarTheme {
         }
     }
 }
+
+// MARK: -
+
+extension AvatarTheme {
+    var asBackupProtoAvatarColor: BackupProto_AvatarColor {
+        return switch self {
+        case .A100: .a100
+        case .A110: .a110
+        case .A120: .a120
+        case .A130: .a130
+        case .A140: .a140
+        case .A150: .a150
+        case .A160: .a160
+        case .A170: .a170
+        case .A180: .a180
+        case .A190: .a190
+        case .A200: .a200
+        case .A210: .a210
+        }
+    }
+
+    static func from(backupProtoAvatarColor: BackupProto_AvatarColor) -> AvatarTheme? {
+        return switch backupProtoAvatarColor {
+        case .a100: .A100
+        case .a110: .A110
+        case .a120: .A120
+        case .a130: .A130
+        case .a140: .A140
+        case .a150: .A150
+        case .a160: .A160
+        case .a170: .A170
+        case .a180: .A180
+        case .a190: .A190
+        case .a200: .A200
+        case .a210: .A210
+        case .UNRECOGNIZED: nil
+        }
+    }
+}

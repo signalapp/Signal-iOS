@@ -50,9 +50,8 @@ open class MessageBackupManagerMock: MessageBackupManager {
         )
     }
 
-    public func exportPlaintextBackup(
+    public func exportPlaintextBackupForTests(
         localIdentifiers: LocalIdentifiers,
-        backupPurpose: MessageBackupPurpose,
         progress: OWSProgressSink?
     ) async throws -> URL {
         let source = await progress?.addSource(withLabel: "", unitCount: 1)

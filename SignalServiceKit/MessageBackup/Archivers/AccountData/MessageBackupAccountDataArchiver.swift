@@ -69,6 +69,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     private let donationSubscriptionManager: MessageBackup.Shims.DonationSubscriptionManager
     private let linkPreviewSettingStore: LinkPreviewSettingStore
     private let localUsernameManager: LocalUsernameManager
+    private let ows2FAManager: MessageBackup.Shims.OWS2FAManager
     private let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
     private let preferences: MessageBackup.Shims.Preferences
     private let profileManager: MessageBackup.Shims.ProfileManager
@@ -87,6 +88,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         donationSubscriptionManager: MessageBackup.Shims.DonationSubscriptionManager,
         linkPreviewSettingStore: LinkPreviewSettingStore,
         localUsernameManager: LocalUsernameManager,
+        ows2FAManager: MessageBackup.Shims.OWS2FAManager,
         phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager,
         preferences: MessageBackup.Shims.Preferences,
         profileManager: MessageBackup.Shims.ProfileManager,
@@ -104,8 +106,10 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         self.donationSubscriptionManager = donationSubscriptionManager
         self.linkPreviewSettingStore = linkPreviewSettingStore
         self.localUsernameManager = localUsernameManager
+        self.ows2FAManager = ows2FAManager
         self.phoneNumberDiscoverabilityManager = phoneNumberDiscoverabilityManager
         self.preferences = preferences
+        self.profileManager = profileManager
         self.receiptManager = receiptManager
         self.reactionManager = reactionManager
         self.sskPreferences = sskPreferences
@@ -114,7 +118,6 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         self.typingIndicators = typingIndicators
         self.udManager = udManager
         self.usernameEducationManager = usernameEducationManager
-        self.profileManager = profileManager
     }
 
     public func archiveAccountData(
@@ -155,6 +158,13 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
                 accountData.accountSettings = accountSettings
             case .failure(let error):
                 return .failure(error)
+            }
+
+            if
+                context.includedContentFilter.shouldIncludePin,
+                let pin = ows2FAManager.getPin(tx: context.tx)
+            {
+                accountData.svrPin = pin
             }
 
             let error = Self.writeFrameToStream(
@@ -424,6 +434,10 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             }
 
             localUsernameManager.setUsernameLinkQRCodeColor(color: usernameLink.color.qrCodeColor, tx: context.tx)
+        }
+
+        if !accountData.svrPin.isEmpty {
+            ows2FAManager.restorePinFromBackup(accountData.svrPin, tx: context.tx)
         }
 
         if partialErrors.isEmpty {

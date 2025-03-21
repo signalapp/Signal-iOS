@@ -14,6 +14,7 @@ extension MessageBackup {
         public typealias BlockingManager = _MessageBackup_BlockingManagerShim
         public typealias ContactManager = _MessageBackup_ContactManagerShim
         public typealias DonationSubscriptionManager = _MessageBackup_DonationSubscriptionManagerShim
+        public typealias OWS2FAManager = _MessageBackup_OWS2FAManagerShim
         public typealias Preferences = _MessageBackup_PreferencesShim
         public typealias ProfileManager = _MessageBackup_ProfileManagerShim
         public typealias ReactionManager = _MessageBackup_ReactionManagerShim
@@ -29,6 +30,7 @@ extension MessageBackup {
         public typealias BlockingManager = _MessageBackup_BlockingManagerWrapper
         public typealias ContactManager = _MessageBackup_ContactManagerWrapper
         public typealias DonationSubscriptionManager = _MessageBackup_DonationSubscriptionManagerWrapper
+        public typealias OWS2FAManager = _MessageBackup_OWS2FAManagerWrapper
         public typealias Preferences = _MessageBackup_PreferencesWrapper
         public typealias ProfileManager = _MessageBackup_ProfileManagerWrapper
         public typealias ReactionManager = _MessageBackup_ReactionManagerWrapper
@@ -148,6 +150,29 @@ public class _MessageBackup_DonationSubscriptionManagerWrapper: _MessageBackup_D
 
     public func setUserManuallyCancelledSubscription(value: Bool, tx: DBWriteTransaction) {
         DonationSubscriptionManager.setUserManuallyCancelledSubscription(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+}
+
+// MARK: - OWS2FAManager
+
+public protocol _MessageBackup_OWS2FAManagerShim {
+    func getPin(tx: DBReadTransaction) -> String?
+    func restorePinFromBackup(_ pin: String, tx: DBWriteTransaction)
+}
+
+public class _MessageBackup_OWS2FAManagerWrapper: _MessageBackup_OWS2FAManagerShim {
+    private let ows2FAManager: OWS2FAManager
+
+    init(_ ows2FAManager: OWS2FAManager) {
+        self.ows2FAManager = ows2FAManager
+    }
+
+    public func getPin(tx: DBReadTransaction) -> String? {
+        ows2FAManager.pinCode(transaction: tx)
+    }
+
+    public func restorePinFromBackup(_ pin: String, tx: DBWriteTransaction) {
+        ows2FAManager.restorePinFromBackup(pin, transaction: tx)
     }
 }
 

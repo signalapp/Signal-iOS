@@ -36,6 +36,13 @@ public class MessageBackupRecipientStore {
         return recipientTable.fetchRecipient(address: address.asInteropAddress(), tx: tx)
     }
 
+    func fetchRecipient(
+        localIdentifiers: LocalIdentifiers,
+        tx: DBReadTransaction
+    ) -> SignalRecipient? {
+        return recipientTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: tx)
+    }
+
     // MARK: - Restoring
 
     func insertRecipient(

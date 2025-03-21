@@ -32,12 +32,14 @@ public protocol MessageBackupManager {
         progress: OWSProgressSink?
     ) async throws -> Upload.EncryptedBackupUploadMetadata
 
-    /// Export a plaintext backup binary at the returned file URL.
-    func exportPlaintextBackup(
+#if TESTABLE_BUILD
+    /// Export a plaintext backup binary at the returned file URL, for use in
+    /// integration tests.
+    func exportPlaintextBackupForTests(
         localIdentifiers: LocalIdentifiers,
-        backupPurpose: MessageBackupPurpose,
         progress: OWSProgressSink?
     ) async throws -> URL
+#endif
 
     // MARK: - Import
 

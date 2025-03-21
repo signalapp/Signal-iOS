@@ -220,9 +220,26 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
+        let includedContentFilter = MessageBackup.ArchivingContext.IncludedContentFilter(
+            minRemainingTimeUntilExpirationMs: {
+                switch backupPurpose {
+                case .deviceTransfer:
+                    // Include all not-currently-expired messages in "device
+                    // transfer" backups, i.e. a Link'n'Sync.
+                    return 0
+                case .remoteBackup:
+                    // Generally, skip messages with less than a day left before
+                    // they expire.
+                    return .dayInMs
+                }
+            }(),
+            shouldIncludePin: true
+        )
+
         return try await _exportBackup<Upload.EncryptedBackupUploadMetadata>(
             localIdentifiers: localIdentifiers,
             backupPurpose: backupPurpose,
+            includedContentFilter: includedContentFilter,
             progressSink: progressSink,
             benchTitle: "Export encrypted Backup",
             openOutputStreamBlock: { exportProgress, tx in
@@ -236,9 +253,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         )
     }
 
-    public func exportPlaintextBackup(
+#if TESTABLE_BUILD
+    public func exportPlaintextBackupForTests(
         localIdentifiers: LocalIdentifiers,
-        backupPurpose: MessageBackupPurpose,
         progress progressSink: OWSProgressSink?
     ) async throws -> URL {
         guard FeatureFlags.messageBackupFileAlpha else {
@@ -246,9 +263,18 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
+        // For the integration tests, don't filter out any content. The premise
+        // of the tests is to verify that round-tripping a Backup file is
+        // idempotent.
+        let includedContentFilter = MessageBackup.ArchivingContext.IncludedContentFilter(
+            minRemainingTimeUntilExpirationMs: 0,
+            shouldIncludePin: true
+        )
+
         return try await _exportBackup<URL>(
             localIdentifiers: localIdentifiers,
-            backupPurpose: backupPurpose,
+            backupPurpose: .remoteBackup,
+            includedContentFilter: includedContentFilter,
             progressSink: progressSink,
             benchTitle: "Export plaintext Backup",
             openOutputStreamBlock: { exportProgress, tx in
@@ -258,10 +284,12 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             }
         )
     }
+#endif
 
     private func _exportBackup<OutputStreamMetadata>(
         localIdentifiers: LocalIdentifiers,
         backupPurpose: MessageBackupPurpose,
+        includedContentFilter: MessageBackup.ArchivingContext.IncludedContentFilter,
         progressSink: OWSProgressSink?,
         benchTitle: String,
         openOutputStreamBlock: (
@@ -317,6 +345,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                             outputStream: outputStream,
                             localIdentifiers: localIdentifiers,
                             backupPurpose: backupPurpose,
+                            includedContentFilter: includedContentFilter,
                             currentAppVersion: appVersion.currentAppVersion,
                             firstAppVersion: appVersion.firstBackupAppVersion ?? appVersion.firstAppVersion,
                             memorySampler: memorySampler,
@@ -340,6 +369,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         outputStream stream: MessageBackupProtoOutputStream,
         localIdentifiers: LocalIdentifiers,
         backupPurpose: MessageBackupPurpose,
+        includedContentFilter: MessageBackup.ArchivingContext.IncludedContentFilter,
         currentAppVersion: String,
         firstAppVersion: String,
         memorySampler: MemorySampler,
@@ -381,10 +411,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             }
 
             let customChatColorContext = MessageBackup.CustomChatColorArchivingContext(
-                backupPurpose: backupPurpose,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
+                includedContentFilter: includedContentFilter,
                 tx: tx
             )
             try autoreleasepool {
@@ -404,7 +434,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
             let localRecipientResult = localRecipientArchiver.archiveLocalRecipient(
                 stream: stream,
-                bencher: bencher
+                bencher: bencher,
+                localIdentifiers: localIdentifiers,
+                tx: tx
             )
 
             try Task.checkCancellation()
@@ -419,10 +451,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             }
 
             let recipientArchivingContext = MessageBackup.RecipientArchivingContext(
-                backupPurpose: backupPurpose,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
+                includedContentFilter: includedContentFilter,
                 localIdentifiers: localIdentifiers,
                 localRecipientId: localRecipientId,
                 tx: tx
@@ -495,11 +527,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             }
 
             let chatArchivingContext = MessageBackup.ChatArchivingContext(
-                backupPurpose: backupPurpose,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 customChatColorContext: customChatColorContext,
+                includedContentFilter: includedContentFilter,
                 recipientContext: recipientArchivingContext,
                 tx: tx
             )
@@ -532,10 +564,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             }
 
             let archivingContext = MessageBackup.ArchivingContext(
-                backupPurpose: backupPurpose,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
+                includedContentFilter: includedContentFilter,
                 tx: tx
             )
             let stickerPackArchiveResult = try stickerPackArchiver.archiveStickerPacks(

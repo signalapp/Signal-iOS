@@ -18,23 +18,48 @@ extension MessageBackup {
 public class MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver {
     private static let localRecipientId = MessageBackup.RecipientId(value: 1)
 
+    private let avatarDefaultColorManager: AvatarDefaultColorManager
     private let profileManager: MessageBackup.Shims.ProfileManager
-    public init(profileManager: MessageBackup.Shims.ProfileManager) {
+    private let recipientStore: MessageBackupRecipientStore
+
+    public init(
+        avatarDefaultColorManager: AvatarDefaultColorManager,
+        profileManager: MessageBackup.Shims.ProfileManager,
+        recipientStore: MessageBackupRecipientStore
+    ) {
+        self.avatarDefaultColorManager = avatarDefaultColorManager
         self.profileManager = profileManager
+        self.recipientStore = recipientStore
     }
 
     /// Archive the local recipient.
     func archiveLocalRecipient(
         stream: MessageBackupProtoOutputStream,
-        bencher: MessageBackup.Bencher
+        bencher: MessageBackup.Bencher,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBReadTransaction
     ) -> MessageBackup.ArchiveLocalRecipientResult {
         return bencher.processFrame { frameBencher in
+            let defaultAvatarColor: AvatarTheme
+            if let localRecipient = recipientStore.fetchRecipient(localIdentifiers: localIdentifiers, tx: tx) {
+                defaultAvatarColor = avatarDefaultColorManager.defaultColor(
+                    useCase: .contact(recipient: localRecipient),
+                    tx: tx
+                )
+            } else {
+                defaultAvatarColor = avatarDefaultColorManager.defaultColor(
+                    useCase: .contactWithoutRecipient(address: localIdentifiers.aciAddress),
+                    tx: tx
+                )
+            }
+
             let error = Self.writeFrameToStream(
                 stream,
                 objectId: MessageBackup.LocalRecipientId(),
                 frameBencher: frameBencher
             ) {
-                let selfRecipient = BackupProto_Self()
+                var selfRecipient = BackupProto_Self()
+                selfRecipient.avatarColor = defaultAvatarColor.asBackupProtoAvatarColor
 
                 var recipient = BackupProto_Recipient()
                 recipient.id = Self.localRecipientId.value
@@ -60,7 +85,38 @@ public class MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver {
         context: MessageBackup.RecipientRestoringContext
     ) -> MessageBackup.RestoreLocalRecipientResult {
         context[recipient.recipientId] = .localAddress
-        profileManager.addToWhitelist(context.localIdentifiers.aciAddress, tx: context.tx)
+
+        let localSignalRecipient = SignalRecipient(
+            aci: context.localIdentifiers.aci,
+            pni: context.localIdentifiers.pni,
+            phoneNumber: E164(context.localIdentifiers.phoneNumber)
+        )
+        do {
+            try recipientStore.insertRecipient(localSignalRecipient, tx: context.tx)
+        } catch {
+            return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId)])
+        }
+
+        if
+            selfRecipientProto.hasAvatarColor,
+            let defaultColor: AvatarTheme = .from(backupProtoAvatarColor: selfRecipientProto.avatarColor)
+        {
+            do {
+                try avatarDefaultColorManager.persistDefaultColor(
+                    defaultColor,
+                    recipientRowId: localSignalRecipient.id!,
+                    tx: context.tx
+                )
+            } catch {
+                return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId)])
+            }
+        }
+
+        profileManager.addToWhitelist(
+            context.localIdentifiers.aciAddress,
+            tx: context.tx
+        )
+
         return .success
     }
 }
