@@ -457,7 +457,6 @@ extension ThreadMerger {
         let threadReplyInfoStore = ThreadReplyInfoStore()
         let wallpaperImageStore = MockWallpaperImageStore()
         let wallpaperStore = WallpaperStore(
-            notificationScheduler: SyncScheduler(),
             wallpaperImageStore: wallpaperImageStore
         )
         let chatColorSettingStore = ChatColorSettingStore(

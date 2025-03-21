@@ -66,16 +66,13 @@ public extension InteractionStore {
     /// Update the joined members and creator of a group call on the associated
     /// group-call interaction.
     ///
-    /// - Parameter notificationScheduler
-    /// A scheduler on which to post a ``GroupCallInteractionUpdatedNotification``
-    /// about the update.
+    /// Posts a ``GroupCallInteractionUpdatedNotification`` on the main thread.
     func updateGroupCallInteractionAcis(
         groupCallInteraction: OWSGroupCallMessage,
         joinedMemberAcis: [Aci],
         creatorAci: Aci,
         callId: UInt64,
         groupThreadRowId: Int64,
-        notificationScheduler: Scheduler,
         tx: DBWriteTransaction
     ) {
         updateInteraction(groupCallInteraction, tx: tx) { groupCallInteraction in
@@ -87,16 +84,17 @@ public extension InteractionStore {
         postUpdatedNotification(
             callId: callId,
             groupThreadRowId: groupThreadRowId,
-            notificationScheduler: notificationScheduler,
             tx: tx
         )
     }
 
+    /// Mark the given group call message as ended.
+    ///
+    /// Posts a ``GroupCallInteractionUpdatedNotification`` on the main thread.
     func markGroupCallInteractionAsEnded(
         groupCallInteraction: OWSGroupCallMessage,
         callId: UInt64,
         groupThreadRowId: Int64,
-        notificationScheduler: Scheduler,
         tx: DBWriteTransaction
     ) {
         updateInteraction(groupCallInteraction, tx: tx) { groupCallInteraction in
@@ -107,7 +105,6 @@ public extension InteractionStore {
         postUpdatedNotification(
             callId: callId,
             groupThreadRowId: groupThreadRowId,
-            notificationScheduler: notificationScheduler,
             tx: tx
         )
     }
@@ -115,14 +112,15 @@ public extension InteractionStore {
     private func postUpdatedNotification(
         callId: UInt64,
         groupThreadRowId: Int64,
-        notificationScheduler: Scheduler,
         tx: DBWriteTransaction
     ) {
-        tx.addAsyncCompletion(on: notificationScheduler) {
-            NotificationCenter.default.post(GroupCallInteractionUpdatedNotification(
-                callId: callId,
-                groupThreadRowId: groupThreadRowId
-            ).asNotification)
+        tx.addSyncCompletion {
+            NotificationCenter.default.postNotificationAsync(
+                GroupCallInteractionUpdatedNotification(
+                    callId: callId,
+                    groupThreadRowId: groupThreadRowId
+                ).asNotification
+            )
         }
     }
 }

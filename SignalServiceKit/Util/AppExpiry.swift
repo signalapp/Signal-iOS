@@ -114,7 +114,7 @@ public class AppExpiryImpl: AppExpiry {
                 owsFailDebug("Error persisting expiration state \(error)")
             }
 
-            transaction.addAsyncCompletion(on: self.schedulers.global()) {
+            transaction.addSyncCompletion {
                 NotificationCenter.default.postNotificationNameAsync(
                     Self.AppExpiryDidChange,
                     object: nil

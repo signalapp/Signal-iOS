@@ -254,7 +254,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             }
         }
 
-        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
+        transaction.addSyncCompletion {
             NotificationCenter.default.postNotificationNameAsync(.syncManagerKeysSyncDidComplete, object: nil)
         }
     }
@@ -612,7 +612,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             let linkPreviewSettingStore = DependenciesBridge.shared.linkPreviewSettingStore
             linkPreviewSettingStore.setAreLinkPreviewsEnabled(syncMessage.linkPreviews, tx: transaction)
         }
-        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
+        transaction.addSyncCompletion {
             NotificationCenter.default.postNotificationNameAsync(.syncManagerConfigurationSyncDidComplete, object: nil)
         }
     }

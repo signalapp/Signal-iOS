@@ -494,7 +494,7 @@ public class ProfileFetcherJob {
                 /// We want to do this in a transaction completion block, since
                 /// it'll read from the database and we want to ensure this
                 /// write has completed.
-                tx.addAsyncCompletion(on: DispatchQueue.global()) { [storageServiceRecordIkmMigrator] in
+                tx.addSyncCompletion { [storageServiceRecordIkmMigrator] in
                     storageServiceRecordIkmMigrator.migrateToManifestRecordIkmIfNecessary()
                 }
             }

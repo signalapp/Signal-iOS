@@ -401,18 +401,15 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         }
         #endif
 
-        var syncCompletions: [DBWriteTransaction.SyncCompletion] = []
-        var asyncCompletions: [DBWriteTransaction.AsyncCompletion] = []
+        var txCompletionBlocks: [DBWriteTransaction.CompletionBlock]!
 
         try pool.writeWithoutTransaction { database in
             try database.inTransaction {
                 let txCompletion: TransactionCompletion<Void> = autoreleasepool {
-                    let transaction = DBWriteTransaction(database: database)
-                    let txComplection = block(transaction)
-                    transaction.finalizeTransaction()
-
-                    syncCompletions = transaction.syncCompletions
-                    asyncCompletions = transaction.asyncCompletions
+                    let tx = DBWriteTransaction(database: database)
+                    let txComplection = block(tx)
+                    tx.finalizeTransaction()
+                    txCompletionBlocks = tx.completionBlocks
 
                     return txComplection
                 }
@@ -427,13 +424,8 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
             }
         }
 
-        // Perform all completions _after_ the write transaction completes.
-        for block in syncCompletions {
+        for block in txCompletionBlocks {
             block()
-        }
-
-        for asyncCompletion in asyncCompletions {
-            asyncCompletion.scheduler.async(asyncCompletion.block)
         }
     }
 

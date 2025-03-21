@@ -145,8 +145,10 @@ extension ThreadUtil {
                 transaction: writeTransaction
             )
             if let persistenceCompletion = persistenceCompletion {
-                writeTransaction.addAsyncCompletion(on: DispatchQueue.main) {
-                    persistenceCompletion()
+                writeTransaction.addSyncCompletion {
+                    Task { @MainActor in
+                        persistenceCompletion()
+                    }
                 }
             }
             _ = promise.done(on: DispatchQueue.global()) {

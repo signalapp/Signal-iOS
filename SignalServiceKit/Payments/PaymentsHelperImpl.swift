@@ -229,18 +229,27 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         // Now that we have activated, they're useless.
         _ = try? TSPaymentsActivationRequestModel.deleteAll(transaction.database)
 
-        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
+        transaction.addSyncCompletion {
             NotificationCenter.default.postNotificationNameAsync(PaymentsConstants.arePaymentsEnabledDidChange, object: nil)
 
-            SSKEnvironment.shared.paymentsEventsRef.paymentsStateDidChange()
+            Task {
+                SSKEnvironment.shared.paymentsEventsRef.paymentsStateDidChange()
 
-            if originatedLocally {
-                // We only need to re-upload the profile if the change originated
-                // locally.
-                Logger.info("Re-uploading local profile due to payments state change.")
-                SSKEnvironment.shared.profileManagerRef.reuploadLocalProfile(authedAccount: .implicit())
+                if originatedLocally {
+                    // We only need to re-upload the profile if the change originated
+                    // locally.
+                    Logger.info("Re-uploading local profile due to payments state change.")
+                    await DependenciesBridge.shared.db.awaitableWrite { tx in
+                        _ = SSKEnvironment.shared.profileManagerRef.reuploadLocalProfile(
+                            unsavedRotatedProfileKey: nil,
+                            mustReuploadAvatar: false,
+                            authedAccount: .implicit(),
+                            tx: tx
+                        )
+                    }
 
-                SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
+                    SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
+                }
             }
         }
     }

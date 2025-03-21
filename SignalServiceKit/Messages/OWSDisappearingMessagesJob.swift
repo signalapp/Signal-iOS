@@ -81,7 +81,7 @@ public final class OWSDisappearingMessagesJob: NSObject {
             message.updateWithExpireStarted(at: expirationStartedAt, transaction: transaction)
         }
 
-        transaction.addAsyncCompletion(on: DispatchQueue.global()) { [self] in
+        transaction.addSyncCompletion { [self] in
             // Necessary that the async expiration run happens *after* the message is saved with it's new
             // expiration configuration.
             scheduleRun(by: message.expiresAt)

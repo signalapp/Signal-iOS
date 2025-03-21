@@ -548,8 +548,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                     givenName: .setTo(record.givenName),
                     familyName: .setTo(record.familyName),
                     userProfileWriter: .storageService,
-                    transaction: SDSDB.shimOnlyBridge(tx),
-                    completion: nil
+                    transaction: SDSDB.shimOnlyBridge(tx)
                 )
             }
         } else if localUserProfile?.givenName != nil && !record.hasGivenName || localUserProfile?.familyName != nil && !record.hasFamilyName {
@@ -1486,8 +1485,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                 familyName: .setTo(normalizedRemoteFamilyName),
                 avatarUrlPath: .setTo(record.avatarURL),
                 userProfileWriter: .storageService,
-                transaction: transaction,
-                completion: nil
+                transaction: transaction
             )
             transaction.addSyncCompletion { [authedAccount, profileManager] in
                 Task {

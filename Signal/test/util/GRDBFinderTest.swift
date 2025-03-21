@@ -212,8 +212,7 @@ class GRDBFinderTest: SignalBaseTest {
                     lastFetchDate: lastFetchDate,
                     lastMessagingDate: lastMessagingDate,
                     userProfileWriter: .metadataUpdate,
-                    transaction: tx,
-                    completion: nil
+                    transaction: tx
                 )
             }
 

@@ -323,7 +323,16 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
     }
 
     public func scheduleReuploadLocalProfile(authedAccount: AuthedAccount) {
-        return manager.reuploadLocalProfile(authedAccount: authedAccount)
+        Task {
+            await DependenciesBridge.shared.db.awaitableWrite { tx in
+                _ = manager.reuploadLocalProfile(
+                    unsavedRotatedProfileKey: nil,
+                    mustReuploadAvatar: false,
+                    authedAccount: authedAccount,
+                    tx: tx
+                )
+            }
+        }
     }
 }
 

@@ -46,9 +46,9 @@ extension NotificationCenter {
         }
     }
 
-    public func postNotificationNameAsync(_ name: Notification.Name, object: Any?) {
+    public func postNotificationAsync(_ notification: Notification) {
         DispatchQueue.main.async {
-            self.post(name: name, object: object)
+            self.post(notification)
         }
     }
 

@@ -44,7 +44,7 @@ public class PhoneNumberDiscoverabilityManagerImpl: PhoneNumberDiscoverabilityMa
         }
 
         if updateStorageService {
-            tx.addAsyncCompletion(on: schedulers.global()) {
+            tx.addSyncCompletion {
                 self.storageServiceManager.recordPendingLocalAccountUpdates()
             }
         }

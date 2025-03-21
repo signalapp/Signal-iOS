@@ -322,8 +322,8 @@ class CallRecordStoreImpl: CallRecordStore {
         updateType: CallRecordStoreNotification.UpdateType,
         tx: DBWriteTransaction
     ) {
-        tx.addAsyncCompletion(on: schedulers.main) {
-            NotificationCenter.default.post(
+        tx.addSyncCompletion {
+            NotificationCenter.default.postNotificationAsync(
                 CallRecordStoreNotification(updateType: updateType).asNotification
             )
         }

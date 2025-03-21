@@ -162,12 +162,14 @@ extension ConversationViewController: ContactShareViewControllerDelegate {
                 setDefaultTimerIfNecessary: true,
                 tx: transaction
             )
-            transaction.addAsyncCompletion(on: DispatchQueue.main) {
-                ThreadUtil.enqueueMessage(withContactShare: contactShareDraft, thread: thread)
-                self.messageWasSent()
+            transaction.addSyncCompletion {
+                Task { @MainActor in
+                    ThreadUtil.enqueueMessage(withContactShare: contactShareDraft, thread: thread)
+                    self.messageWasSent()
 
-                if didAddToProfileWhitelist {
-                    self.ensureBannerState()
+                    if didAddToProfileWhitelist {
+                        self.ensureBannerState()
+                    }
                 }
             }
         }

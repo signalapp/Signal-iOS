@@ -81,7 +81,11 @@ extension StoryReplySheet {
                 thread.donateSendMessageIntent(for: message, transaction: transaction)
             }
 
-            transaction.addAsyncCompletion(on: DispatchQueue.main) { self?.didSendMessage() }
+            transaction.addSyncCompletion {
+                Task { @MainActor in
+                    self?.didSendMessage()
+                }
+            }
         }
     }
 

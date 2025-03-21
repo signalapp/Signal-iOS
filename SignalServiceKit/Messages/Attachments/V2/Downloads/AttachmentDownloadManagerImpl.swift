@@ -271,7 +271,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
         if didEnqueueAnyDownloads {
-            tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+            tx.addSyncCompletion { [weak self] in
                 self?.db.asyncWrite { tx in
                     referencedAttachments.forEach { referencedAttachment in
                         self?.attachmentUpdater.touchOwner(referencedAttachment.reference.owner, tx: tx)
@@ -299,7 +299,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             priority: priority,
             tx: tx
         )
-        tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+        tx.addSyncCompletion { [weak self] in
             self?.beginDownloadingIfNecessary()
         }
     }
@@ -519,7 +519,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
                 }
 
-                tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+                tx.addSyncCompletion { [weak self] in
                     guard let self else { return }
                     self.db.asyncWrite { tx in
                         self.attachmentUpdater.touchAllOwners(
@@ -1909,7 +1909,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         result = .thumbnail(thumbnail)
                     }
 
-                    tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+                    tx.addSyncCompletion { [weak self] in
                         guard let self else { return }
                         self.db.asyncWrite { tx in
                             self.touchAllOwners(attachmentId: attachmentId, tx: tx)
@@ -1981,7 +1981,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     }
 
                     let attachmentId = stream.attachment.id
-                    tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+                    tx.addSyncCompletion { [weak self] in
                         guard let self else { return }
                         self.db.asyncWrite { tx in
                             self.touchAllOwners(attachmentId: attachmentId, tx: tx)

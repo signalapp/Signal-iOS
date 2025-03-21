@@ -80,7 +80,7 @@ public extension GroupsV2Impl {
         // Store the record for restoration.
         storageServiceGroupsToRestore.setData(serializedData, key: key, transaction: transaction)
 
-        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
+        transaction.addSyncCompletion {
             self.enqueueRestoreGroupPass(authedAccount: account)
         }
     }

@@ -73,13 +73,15 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
         // At the risk of losing these errors in a crash (this is internal only, its fine)
         // do the actual write in a separate transaction (that happens synchronously)
         // so it is never rolled back.
-        outerTx.addAsyncCompletion(on: DispatchQueue.global()) { [weak self] in
-            guard let self else { return }
+        outerTx.addSyncCompletion { [weak self] in
+            Task {
+                guard let self else { return }
 
-            self.db.write { innerTx in
-                self.kvStore.setString(stringified, key: Self.stringifiedErrorsKey, transaction: innerTx)
-                self.kvStore.setBool(didFail, key: Self.hadFatalErrorKey, transaction: innerTx)
-                self.kvStore.setBool(false, key: Self.hasBeenDisplayedKey, transaction: innerTx)
+                await self.db.awaitableWrite { innerTx in
+                    self.kvStore.setString(stringified, key: Self.stringifiedErrorsKey, transaction: innerTx)
+                    self.kvStore.setBool(didFail, key: Self.hadFatalErrorKey, transaction: innerTx)
+                    self.kvStore.setBool(false, key: Self.hasBeenDisplayedKey, transaction: innerTx)
+                }
             }
         }
     }

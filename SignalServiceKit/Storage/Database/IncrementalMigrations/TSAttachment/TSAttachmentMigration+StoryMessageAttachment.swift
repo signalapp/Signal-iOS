@@ -134,12 +134,14 @@ extension TSAttachmentMigration {
                 .filter(Column("storyMessageRowId") != nil)
                 .deleteAll(tx.database)
 
-            tx.addAsyncCompletion(on: DispatchQueue.global()) {
-                // Delete the files asynchronously after committing the tx. We can't do it
-                // inside the tx because if the tx is rolled back we DON'T want the files gone.
-                // This does mean we might fail to delete the files; we will delete the whole
-                // TSAttachment folder after migrating everything anyway so its not a huge deal.
-                deletedAttachments.forEach { try? $0.deleteFiles() }
+            tx.addSyncCompletion {
+                Task {
+                    // Delete the files asynchronously after committing the tx. We can't do it
+                    // inside the tx because if the tx is rolled back we DON'T want the files gone.
+                    // This does mean we might fail to delete the files; we will delete the whole
+                    // TSAttachment folder after migrating everything anyway so its not a huge deal.
+                    deletedAttachments.forEach { try? $0.deleteFiles() }
+                }
             }
         }
 

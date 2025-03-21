@@ -75,11 +75,9 @@ public class MessageBackupFullTextSearchIndexerImpl: MessageBackupFullTextSearch
         )
         if let maxInteractionRowId {
             setMaxInteractionRowIdInclusive(maxInteractionRowId, tx: tx)
-            tx.addAsyncCompletion(on: DispatchQueue.global()) {
-                Task {
-                    try await self.taskQueue.enqueue(operation: { [weak self] in
-                        try await self?.runMessagesJobIfNeeded()
-                    }).value
+            tx.addSyncCompletion {
+                self.taskQueue.enqueue { [weak self] in
+                    try await self?.runMessagesJobIfNeeded()
                 }
             }
         }

@@ -25,8 +25,10 @@ class UserProfileMerger: RecipientMergeObserver {
                 userProfile.update(
                     profileKey: .setTo(profileKey),
                     userProfileWriter: .localUser,
-                    transaction: SDSDB.shimOnlyBridge(tx),
-                    completion: {
+                    transaction: tx
+                )
+                tx.addSyncCompletion {
+                    Task {
                         switch userProfile.internalAddress {
                         case .localUser:
                             break
@@ -35,10 +37,10 @@ class UserProfileMerger: RecipientMergeObserver {
                                 return
                             }
                             let profileFetcher = SSKEnvironment.shared.profileFetcherRef
-                            _ = profileFetcher.fetchProfileSync(for: serviceId)
+                            _ = try? await profileFetcher.fetchProfile(for: serviceId)
                         }
                     }
-                )
+                }
             }
         )
     }

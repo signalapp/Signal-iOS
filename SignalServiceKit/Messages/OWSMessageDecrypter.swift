@@ -65,26 +65,31 @@ public class OWSMessageDecrypter {
         Logger.info("Sending null message to reset session after undecryptable message from: \(senderId)")
         store.setDate(Date(), key: senderId, transaction: transaction)
 
-        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread, transaction: transaction)
-                let preparedMessage = PreparedOutgoingMessage.preprepared(
-                    transientMessageWithoutAttachments: nullMessage
-                )
-                SSKEnvironment.shared.messageSenderJobQueueRef.add(
-                    .promise,
-                    message: preparedMessage,
-                    transaction: transaction
-                ).done(on: DispatchQueue.global()) {
-                    Logger.info("Successfully sent null message after session reset " +
+        transaction.addSyncCompletion {
+            Task {
+                let db = DependenciesBridge.shared.db
+                let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
+
+                await db.awaitableWrite { transaction in
+                    let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread, transaction: transaction)
+                    let preparedMessage = PreparedOutgoingMessage.preprepared(
+                        transientMessageWithoutAttachments: nullMessage
+                    )
+                    messageSenderJobQueue.add(
+                        .promise,
+                        message: preparedMessage,
+                        transaction: transaction
+                    ).done(on: DispatchQueue.global()) {
+                        Logger.info("Successfully sent null message after session reset " +
                                     "for undecryptable message from \(senderId)")
-                }.catch(on: DispatchQueue.global()) { error in
-                    if error is UntrustedIdentityError {
-                        Logger.info("Failed to send null message after session reset for " +
+                    }.catch(on: DispatchQueue.global()) { error in
+                        if error is UntrustedIdentityError {
+                            Logger.info("Failed to send null message after session reset for " +
                                         "for undecryptable message from \(senderId) (\(error))")
-                    } else {
-                        owsFailDebug("Failed to send null message after session reset " +
-                                        "for undecryptable message from \(senderId) (\(error))")
+                        } else {
+                            owsFailDebug("Failed to send null message after session reset " +
+                                         "for undecryptable message from \(senderId) (\(error))")
+                        }
                     }
                 }
             }
@@ -490,35 +495,40 @@ public class OWSMessageDecrypter {
 
         // We do this work in an async completion so we don't delay
         // receipt of this message.
-        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
-            let needsReactiveProfileKeyMessage: Bool = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                // This user is whitelisted, they should have our profile key / be sending UD messages
-                // Send them our profile key in case they somehow lost it.
-                if SSKEnvironment.shared.profileManagerRef.isUser(
-                    inProfileWhitelist: SignalServiceAddress(sourceAci),
-                    transaction: transaction
-                ) {
-                    return true
+        transaction.addSyncCompletion {
+            Task {
+                let db = DependenciesBridge.shared.db
+                let profileManager = SSKEnvironment.shared.profileManagerRef
+
+                let needsReactiveProfileKeyMessage: Bool = db.read { transaction in
+                    // This user is whitelisted, they should have our profile key / be sending UD messages
+                    // Send them our profile key in case they somehow lost it.
+                    if profileManager.isUser(
+                        inProfileWhitelist: SignalServiceAddress(sourceAci),
+                        transaction: transaction
+                    ) {
+                        return true
+                    }
+
+                    // If we're in a V2 group with this user, they should also have our profile key /
+                    // be sending UD messages. Send them it in case they somehow lost it.
+                    var needsReactiveProfileKeyMessage = false
+                    TSGroupThread.enumerateGroupThreads(
+                        with: SignalServiceAddress(sourceAci),
+                        transaction: transaction
+                    ) { thread, stop in
+                        guard thread.isGroupV2Thread else { return }
+                        guard thread.isLocalUserFullMember else { return }
+                        stop.pointee = true
+                        needsReactiveProfileKeyMessage = true
+                    }
+                    return needsReactiveProfileKeyMessage
                 }
 
-                // If we're in a V2 group with this user, they should also have our profile key /
-                // be sending UD messages. Send them it in case they somehow lost it.
-                var needsReactiveProfileKeyMessage = false
-                TSGroupThread.enumerateGroupThreads(
-                    with: SignalServiceAddress(sourceAci),
-                    transaction: transaction
-                ) { thread, stop in
-                    guard thread.isGroupV2Thread else { return }
-                    guard thread.isLocalUserFullMember else { return }
-                    stop.pointee = true
-                    needsReactiveProfileKeyMessage = true
-                }
-                return needsReactiveProfileKeyMessage
-            }
-
-            if needsReactiveProfileKeyMessage {
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    self.trySendReactiveProfileKey(to: sourceAci, tx: transaction)
+                if needsReactiveProfileKeyMessage {
+                    await db.awaitableWrite { transaction in
+                        self.trySendReactiveProfileKey(to: sourceAci, tx: transaction)
+                    }
                 }
             }
         }

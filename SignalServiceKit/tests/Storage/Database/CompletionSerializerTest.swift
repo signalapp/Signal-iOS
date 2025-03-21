@@ -23,7 +23,7 @@ private struct CompletionSerializerTest {
     func testOutOfOrder() {
         // If this hangs, somebody probably obsoleted CompletionSerializer.
         let result = runTest(enqueueInOrder: { tx, block in
-            tx.addSyncCompletion(block)
+            tx.addSyncCompletion(block: block)
         })
         #expect(result == [2, 1])
     }

@@ -231,10 +231,12 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
                     tx: transaction
                 )
 
-                transaction.addAsyncCompletion(on: DispatchQueue.main) {
+                transaction.addSyncCompletion {
                     SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedStoryDistributionListIds: [dlistIdentifier])
-                    modal.dismiss {
-                        self.navigationController?.popViewController(animated: true)
+                    Task { @MainActor in
+                        modal.dismiss {
+                            self.navigationController?.popViewController(animated: true)
+                        }
                     }
                 }
             }

@@ -531,7 +531,6 @@ public class AppSetup {
             db: db
         )
         let wallpaperStore = WallpaperStore(
-            notificationScheduler: schedulers.main,
             wallpaperImageStore: wallpaperImageStore
         )
         let chatColorSettingStore = ChatColorSettingStore(
@@ -720,7 +719,7 @@ public class AppSetup {
                 interactionStore: interactionStore,
                 pinnedThreadManager: pinnedThreadManager,
                 profileManager: profileManager,
-                recipientMergeNotifier: RecipientMergeNotifier(scheduler: schedulers.main),
+                recipientMergeNotifier: RecipientMergeNotifier(),
                 signalServiceAddressCache: signalServiceAddressCache,
                 threadAssociatedDataStore: threadAssociatedDataStore,
                 threadRemover: threadRemover,

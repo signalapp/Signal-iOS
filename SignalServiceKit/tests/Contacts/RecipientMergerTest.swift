@@ -161,45 +161,6 @@ class RecipientMergerTest: XCTestCase {
         }
     }
 
-    func testNotifier() {
-        let recipientMergeNotifier = RecipientMergeNotifier(scheduler: SyncScheduler())
-        let d = TestDependencies(observers: [recipientMergeNotifier])
-
-        let aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
-        let phoneNumber = E164("+16505550101")!
-        let pni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
-
-        var notificationCount = 0
-        let observer = NotificationCenter.default.addObserver(
-            forName: .didLearnRecipientAssociation,
-            object: recipientMergeNotifier,
-            queue: nil,
-            using: { note in
-                notificationCount += 1
-            }
-        )
-        d.mockDB.write { tx in
-            _ = d.recipientMerger.applyMergeFromSealedSender(
-                localIdentifiers: .forUnitTests,
-                aci: aci,
-                phoneNumber: nil,
-                tx: tx
-            )
-        }
-        XCTAssertEqual(notificationCount, 0)
-        d.mockDB.write { tx in
-            _ = d.recipientMerger.applyMergeFromContactDiscovery(
-                localIdentifiers: .forUnitTests,
-                phoneNumber: phoneNumber,
-                pni: pni,
-                aci: aci,
-                tx: tx
-            )
-        }
-        XCTAssertEqual(notificationCount, 2)
-        NotificationCenter.default.removeObserver(observer)
-    }
-
     func testAciPhoneNumberSafetyNumberChange() {
         let ac1 = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
         let ac2 = Aci.constantForTesting("00000000-0000-4000-8000-00000000000B")

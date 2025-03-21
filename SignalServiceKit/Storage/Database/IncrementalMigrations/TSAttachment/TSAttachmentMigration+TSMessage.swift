@@ -520,8 +520,10 @@ extension TSAttachmentMigration {
                         )
                     }
                 }
-                tx.addAsyncCompletion(on: DispatchQueue.global()) {
-                    deletedAttachments.forEach { try? $0.deleteFiles() }
+                tx.addSyncCompletion {
+                    Task {
+                        deletedAttachments.forEach { try? $0.deleteFiles() }
+                    }
                 }
             }
 

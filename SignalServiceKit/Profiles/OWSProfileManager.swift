@@ -99,7 +99,7 @@ public class OWSProfileManager: ProfileManagerProtocol {
 
         let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(userProfileWriter: .localUser, tx: transaction)
 
-        localUserProfile.update(profileKey: .setTo(key), userProfileWriter: userProfileWriter, transaction: transaction, completion: nil)
+        localUserProfile.update(profileKey: .setTo(key), userProfileWriter: userProfileWriter, transaction: transaction)
     }
 
     public func normalizeRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: DBWriteTransaction) {
@@ -484,8 +484,7 @@ extension OWSProfileManager: ProfileManager {
             badges: .setTo(profileBadges),
             isPhoneNumberShared: isPhoneNumberSharedChange,
             userProfileWriter: userProfileWriter,
-            transaction: tx,
-            completion: nil
+            transaction: tx
         )
     }
 
@@ -536,27 +535,6 @@ extension OWSProfileManager: ProfileManager {
             }
         }
         return promise
-    }
-
-    public func reuploadLocalProfile(authedAccount: AuthedAccount) {
-        let uploadPromise = SSKEnvironment.shared.databaseStorageRef.write { tx in
-            return reuploadLocalProfile(
-                unsavedRotatedProfileKey: nil,
-                mustReuploadAvatar: false,
-                authedAccount: authedAccount,
-                tx: tx
-            )
-        }
-        Task {
-            do {
-                try await uploadPromise.awaitable()
-                Logger.info("Done.")
-            } catch where error.isNetworkFailureOrTimeout {
-                Logger.warn("\(error)")
-            } catch {
-                owsFailDebug("\(error)")
-            }
-        }
     }
 
     // This will re-upload the existing local profile state.
@@ -652,7 +630,7 @@ extension OWSProfileManager: ProfileManager {
                 if -(lastGroupProfileKeyCheckTimestamp?.timeIntervalSinceNow ?? 0) > .week {
                     SSKEnvironment.shared.groupsV2Ref.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: tx)
                     self.setLastGroupProfileKeyCheckTimestamp(tx: tx)
-                    tx.addAsyncCompletion(on: DispatchQueue.global()) {
+                    tx.addSyncCompletion {
                         SSKEnvironment.shared.groupsV2Ref.processProfileKeyUpdates()
                     }
                 }
@@ -1093,8 +1071,7 @@ extension OWSProfileManager: ProfileManager {
         userProfile.update(
             profileKey: .setTo(profileKey),
             userProfileWriter: userProfileWriter,
-            transaction: SDSDB.shimOnlyBridge(tx),
-            completion: nil
+            transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
 
@@ -1444,8 +1421,7 @@ extension OWSProfileManager: ProfileManager {
                     avatarUrlPath: .setTo(versionedUpdate.avatarUrlPath.orExistingValue(userProfile.avatarUrlPath)),
                     avatarFileName: .setTo(avatarUpdate.filenameChange.orExistingValue(userProfile.avatarFileName)),
                     userProfileWriter: profileChanges.userProfileWriter,
-                    transaction: tx,
-                    completion: nil
+                    transaction: tx
                 )
                 // Notify all our devices that the profile has changed.
                 let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx)
@@ -1688,8 +1664,7 @@ extension OWSProfileManager: ProfileManager {
         userProfile.update(
             lastMessagingDate: .setTo(Date()),
             userProfileWriter: userProfileWriter,
-            transaction: SDSDB.shimOnlyBridge(tx),
-            completion: nil
+            transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
 }
@@ -1924,8 +1899,7 @@ extension OWSProfileManager {
                 newProfile.update(
                     avatarFileName: avatarFilename,
                     userProfileWriter: .avatarDownload,
-                    transaction: tx,
-                    completion: nil
+                    transaction: tx
                 )
                 return (false, true)
             }

@@ -1070,8 +1070,10 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             SSKEnvironment.shared.paymentsHelperRef.enablePayments(transaction: transaction)
 
-            transaction.addAsyncCompletion(on: DispatchQueue.main) {
-                self.showPaymentsActivatedToast()
+            transaction.addSyncCompletion {
+                Task { @MainActor in
+                    self.showPaymentsActivatedToast()
+                }
             }
         }
     }

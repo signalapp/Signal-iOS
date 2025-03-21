@@ -81,9 +81,9 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
 
     public func scheduleAccountAttributesUpdate(authedAccount: AuthedAccount, tx: DBWriteTransaction) {
         self.kvStore.setDate(self.dateProvider(), key: Keys.latestUpdateRequestDate, transaction: tx)
-        tx.addAsyncCompletion(on: schedulers.global()) {
+        tx.addSyncCompletion {
             Task {
-                try? await self.updateAccountAttributesIfNecessaryAttempt(authedAccount: authedAccount)
+                try await self.updateAccountAttributesIfNecessaryAttempt(authedAccount: authedAccount)
             }
         }
     }

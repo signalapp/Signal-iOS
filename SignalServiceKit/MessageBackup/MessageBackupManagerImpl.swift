@@ -600,7 +600,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
             try stream.closeFileStream()
 
-            tx.addAsyncCompletion(on: DispatchQueue.global()) { [backupAttachmentUploadManager] in
+            tx.addSyncCompletion { [backupAttachmentUploadManager] in
                 Task {
                     // TODO: [Backups] this needs to talk to the banner at the top of the chat
                     // list to show progress.
@@ -1147,7 +1147,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             // Record that we've restored a Backup!
             kvStore.setBool(true, key: Constants.keyValueStoreHasRestoredBackupKey, transaction: tx)
 
-            tx.addAsyncCompletion(on: DispatchQueue.global()) { [
+            tx.addSyncCompletion { [
                 avatarFetcher,
                 backupAttachmentDownloadManager,
                 disappearingMessagesJob

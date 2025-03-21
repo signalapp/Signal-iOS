@@ -215,8 +215,10 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
 
                 StoryManager.setAreStoriesEnabled(false, transaction: transaction)
 
-                transaction.addAsyncCompletion(on: DispatchQueue.main) {
-                    modal.dismiss()
+                transaction.addSyncCompletion {
+                    Task { @MainActor in
+                        modal.dismiss()
+                    }
                 }
             }
         }

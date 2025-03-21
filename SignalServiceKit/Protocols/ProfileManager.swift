@@ -85,8 +85,6 @@ public protocol ProfileManager: ProfileManagerProtocol {
     func fetchLocalUsersProfile(authedAccount: AuthedAccount) async throws -> FetchedProfile
     func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: DBReadTransaction) -> [OWSUserProfile?]
 
-    func reuploadLocalProfile(authedAccount: AuthedAccount)
-
     func reuploadLocalProfile(
         unsavedRotatedProfileKey: Aes256Key?,
         mustReuploadAvatar: Bool,

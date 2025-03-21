@@ -353,8 +353,8 @@ extension StoryManager {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
 
-        transaction.addAsyncCompletion(on: DispatchQueue.main) {
-            NotificationCenter.default.post(name: .storiesEnabledStateDidChange, object: nil)
+        transaction.addSyncCompletion {
+            NotificationCenter.default.postNotificationNameAsync(.storiesEnabledStateDidChange, object: nil)
         }
     }
 

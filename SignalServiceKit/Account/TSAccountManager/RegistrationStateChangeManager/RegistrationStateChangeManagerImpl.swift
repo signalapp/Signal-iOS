@@ -85,7 +85,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
         didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, tx: tx)
 
-        tx.addAsyncCompletion(on: schedulers.main) {
+        tx.addSyncCompletion {
             self.postLocalNumberDidChangeNotification()
             self.postRegistrationStateDidChangeNotification()
         }
@@ -109,7 +109,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         )
         didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, tx: tx)
 
-        tx.addAsyncCompletion(on: schedulers.main) {
+        tx.addSyncCompletion {
             self.postLocalNumberDidChangeNotification()
             self.postRegistrationStateDidChangeNotification()
         }
@@ -125,7 +125,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
         didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, tx: tx)
 
-        tx.addAsyncCompletion(on: schedulers.main) {
+        tx.addSyncCompletion {
             self.postLocalNumberDidChangeNotification()
         }
     }
@@ -171,7 +171,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             paymentsEvents.clearState(tx: tx)
         }
 
-        tx.addAsyncCompletion(on: schedulers.main) {
+        tx.addSyncCompletion {
             self.postRegistrationStateDidChangeNotification()
             self.postLocalNumberDidChangeNotification()
         }
@@ -181,7 +181,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         guard tsAccountManager.setIsTransferInProgress(true, tx: tx) else {
             return
         }
-        tx.addAsyncCompletion(on: schedulers.main) {
+        tx.addSyncCompletion {
             self.postRegistrationStateDidChangeNotification()
         }
     }
@@ -194,7 +194,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             return
         }
         if sendStateUpdateNotification {
-            tx.addAsyncCompletion(on: schedulers.main) {
+            tx.addSyncCompletion {
                 self.postRegistrationStateDidChangeNotification()
             }
         }
@@ -204,7 +204,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         guard tsAccountManager.setWasTransferred(true, tx: tx) else {
             return
         }
-        tx.addAsyncCompletion(on: schedulers.main) {
+        tx.addSyncCompletion {
             self.postRegistrationStateDidChangeNotification()
         }
     }

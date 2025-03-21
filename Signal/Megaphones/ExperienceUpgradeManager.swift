@@ -154,8 +154,10 @@ class ExperienceUpgradeManager {
     static func clearExperienceUpgrade(_ manifest: ExperienceUpgradeManifest, transaction: DBWriteTransaction) {
         ExperienceUpgradeFinder.markAsComplete(experienceUpgradeManifest: manifest, transaction: transaction)
 
-        transaction.addAsyncCompletion(on: DispatchQueue.main) {
-            dismissLastPresented(ifMatching: manifest)
+        transaction.addSyncCompletion {
+            Task { @MainActor in
+                dismissLastPresented(ifMatching: manifest)
+            }
         }
     }
 

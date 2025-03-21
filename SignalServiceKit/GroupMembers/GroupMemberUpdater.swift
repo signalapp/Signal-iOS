@@ -143,8 +143,8 @@ class GroupMemberUpdaterTemporaryShimsImpl: GroupMemberUpdaterTemporaryShims {
     }
 
     func didUpdateRecords(groupThreadId: String, transaction: DBWriteTransaction) {
-        SDSDB.shimOnlyBridge(transaction).addAsyncCompletion(on: DispatchQueue.main) {
-            NotificationCenter.default.post(name: TSGroupThread.membershipDidChange, object: groupThreadId)
+        transaction.addSyncCompletion {
+            NotificationCenter.default.postNotificationNameAsync(TSGroupThread.membershipDidChange, object: groupThreadId)
         }
     }
 }

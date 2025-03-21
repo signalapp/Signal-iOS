@@ -168,11 +168,13 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
             var newState = oldState
             newState.pniState = pniState
             try loader.kvStore.setCodable(Mode.changingNumber(newState), key: Constants.modeKey, transaction: transaction)
-            transaction.addAsyncCompletion(on: loader.deps.schedulers.main) { [messagePipelineSupervisor = loader.deps.messagePipelineSupervisor] in
-                if Mode.changingNumber(newState).hasPendingChangeNumber {
-                    messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
-                } else {
-                    messagePipelineSupervisor.unsuspendMessageProcessing(for: .pendingChangeNumber)
+            transaction.addSyncCompletion { [messagePipelineSupervisor = loader.deps.messagePipelineSupervisor] in
+                Task { @MainActor in
+                    if Mode.changingNumber(newState).hasPendingChangeNumber {
+                        messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
+                    } else {
+                        messagePipelineSupervisor.unsuspendMessageProcessing(for: .pendingChangeNumber)
+                    }
                 }
             }
             return newState

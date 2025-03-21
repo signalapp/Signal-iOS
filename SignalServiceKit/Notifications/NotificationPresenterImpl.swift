@@ -1314,7 +1314,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         let pendingTask = Self.pendingTasks.buildPendingTask(label: "NotificationAction")
         let commitGuarantee = tx.map {
             let (guarantee, future) = Guarantee<Void>.pending()
-            $0.addAsyncCompletion(on: DispatchQueue.global()) { future.resolve() }
+            $0.addSyncCompletion { future.resolve() }
             return guarantee
         }
         self.mostRecentTask.update {

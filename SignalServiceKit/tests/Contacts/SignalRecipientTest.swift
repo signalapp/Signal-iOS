@@ -99,8 +99,7 @@ class SignalRecipientTest: SSKBaseTest {
             aciProfile.update(
                 isPhoneNumberShared: .setTo(true),
                 userProfileWriter: .tests,
-                transaction: transaction,
-                completion: nil
+                transaction: transaction
             )
             let recipient = mergeHighTrust(aci: aci, phoneNumber: phoneNumber, transaction: transaction)
             XCTAssertEqual(recipient.aci, aci)
@@ -164,8 +163,7 @@ class SignalRecipientTest: SSKBaseTest {
             oldPhoneNumberProfile.update(
                 isPhoneNumberShared: .setTo(true),
                 userProfileWriter: .tests,
-                transaction: transaction,
-                completion: nil
+                transaction: transaction
             )
             let newPhoneNumberProfile = OWSUserProfile(
                 address: .otherUser(SignalServiceAddress(phoneNumber: newPhoneNumber.stringValue))
@@ -248,8 +246,7 @@ class SignalRecipientTest: SSKBaseTest {
             oldProfile.update(
                 isPhoneNumberShared: .setTo(true),
                 userProfileWriter: .tests,
-                transaction: transaction,
-                completion: nil
+                transaction: transaction
             )
 
             let oldAccount = SignalAccount(address: oldAddress)

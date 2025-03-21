@@ -955,17 +955,13 @@ extension Notification.Name {
 }
 
 public class RecipientMergeNotifier: RecipientMergeObserver {
-    private let scheduler: Scheduler
-
-    public init(scheduler: Scheduler) {
-        self.scheduler = scheduler
-    }
+    public init() {}
 
     func willBreakAssociation(for recipient: SignalRecipient, mightReplaceNonnilPhoneNumber: Bool, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
-        tx.addAsyncCompletion(on: scheduler) {
-            NotificationCenter.default.post(name: .didLearnRecipientAssociation, object: self)
+        tx.addSyncCompletion {
+            NotificationCenter.default.postNotificationNameAsync(.didLearnRecipientAssociation, object: self)
         }
     }
 }

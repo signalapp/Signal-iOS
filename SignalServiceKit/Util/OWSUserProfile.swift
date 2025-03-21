@@ -858,8 +858,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
             userProfile.update(
                 profileKey: .setTo(Aes256Key.generateRandom()),
                 userProfileWriter: userProfileWriter,
-                transaction: tx,
-                completion: nil
+                transaction: tx
             )
         }
         return userProfile
@@ -1118,8 +1117,7 @@ extension OWSUserProfile {
     private func applyChanges(
         _ changes: UserProfileChanges,
         userProfileWriter: UserProfileWriter,
-        tx: DBWriteTransaction,
-        completion: (() -> Void)?
+        tx: DBWriteTransaction
     ) {
         let displayNameBeforeLearningProfileName = displayNameBeforeLearningProfileNameIfNecessary(tx: tx)
 
@@ -1173,10 +1171,6 @@ extension OWSUserProfile {
 
         if !changeSummaries.isEmpty {
             Logger.info("Updated \(internalAddress): \(changeSummaries.joined(separator: ", "))")
-        }
-
-        if let completion {
-            tx.addAsyncCompletion(on: DispatchQueue.global(), block: completion)
         }
 
         if case .localUser = internalAddress, case .setTo = changes.badges {
@@ -1237,7 +1231,7 @@ extension OWSUserProfile {
         }()
 
         if shouldUpdateStorageService {
-            tx.addAsyncCompletion(on: DispatchQueue.global()) {
+            tx.addSyncCompletion {
                 switch internalAddress {
                 case .localUser:
                     SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
@@ -1250,7 +1244,7 @@ extension OWSUserProfile {
         let oldProfileKey = oldInstance?.profileKey
         let newProfileKey = newInstance.profileKey
 
-        tx.addAsyncCompletion(on: DispatchQueue.main) {
+        tx.addSyncCompletion {
             switch internalAddress {
             case .localUser:
                 if oldProfileKey != newProfileKey {
@@ -1372,8 +1366,7 @@ extension OWSUserProfile {
         badges: OptionalChange<[OWSUserProfileBadgeInfo]> = .noChange,
         isPhoneNumberShared: OptionalChange<Bool?> = .noChange,
         userProfileWriter: UserProfileWriter,
-        transaction: DBWriteTransaction,
-        completion: (() -> Void)?
+        transaction: DBWriteTransaction
     ) {
         applyChanges(
             UserProfileChanges(
@@ -1390,34 +1383,9 @@ extension OWSUserProfile {
                 isPhoneNumberShared: isPhoneNumberShared
             ),
             userProfileWriter: userProfileWriter,
-            tx: transaction,
-            completion: completion
+            tx: transaction
         )
     }
-
-    #if USE_DEBUG_UI
-    public func clearProfile(
-        profileKey: Aes256Key,
-        userProfileWriter: UserProfileWriter,
-        transaction: DBWriteTransaction,
-        completion: (() -> Void)?
-    ) {
-        // This is only used for debugging.
-        owsAssertDebug(userProfileWriter == .debugging)
-        update(
-            givenName: .setTo(nil),
-            familyName: .setTo(nil),
-            bio: .setTo(nil),
-            bioEmoji: .setTo(nil),
-            avatarUrlPath: .setTo(nil),
-            avatarFileName: .setTo(nil),
-            profileKey: .setTo(profileKey),
-            userProfileWriter: userProfileWriter,
-            transaction: transaction,
-            completion: completion
-        )
-    }
-    #endif
 }
 
 // MARK: - Update without side effects

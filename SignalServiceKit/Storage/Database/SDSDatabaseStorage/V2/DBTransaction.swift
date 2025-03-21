@@ -26,22 +26,16 @@ public class DBWriteTransaction: DBReadTransaction, LibSignalClient.StoreContext
     }
 
     typealias FinalizationBlock = (DBWriteTransaction) -> Void
-    typealias SyncCompletion = () -> Void
-    struct AsyncCompletion {
-        let scheduler: Scheduler
-        let block: () -> Void
-    }
+    typealias CompletionBlock = () -> Void
 
     private var transactionState: TransactionState
     private var finalizationBlocks: [String: FinalizationBlock]
-    private(set) var syncCompletions: [SyncCompletion]
-    private(set) var asyncCompletions: [AsyncCompletion]
+    private(set) var completionBlocks: [CompletionBlock]
 
     override init(database: Database) {
         self.transactionState = .open
         self.finalizationBlocks = [:]
-        self.syncCompletions = []
-        self.asyncCompletions = []
+        self.completionBlocks = []
 
         super.init(database: database)
     }
@@ -83,14 +77,8 @@ public class DBWriteTransaction: DBReadTransaction, LibSignalClient.StoreContext
     }
 
     /// Run the given block synchronously after the transaction is finalized.
-    public func addSyncCompletion(_ block: @escaping () -> Void) {
-        syncCompletions.append(block)
-    }
-
-    /// Schedule the given block to run on `scheduler` after the transaction is
-    /// finalized.
-    public func addAsyncCompletion(on scheduler: Scheduler, block: @escaping () -> Void) {
-        asyncCompletions.append(AsyncCompletion(scheduler: scheduler, block: block))
+    public func addSyncCompletion(block: @escaping () -> Void) {
+        completionBlocks.append(block)
     }
 }
 

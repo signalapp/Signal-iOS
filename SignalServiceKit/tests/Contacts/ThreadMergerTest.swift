@@ -50,7 +50,6 @@ final class ThreadMergerTest: XCTestCase {
         threadReplyInfoStore = ThreadReplyInfoStore()
         threadStore = MockThreadStore()
         wallpaperStore = WallpaperStore(
-            notificationScheduler: SyncScheduler(),
             wallpaperImageStore: MockWallpaperImageStore()
         )
         chatColorSettingStore = ChatColorSettingStore(

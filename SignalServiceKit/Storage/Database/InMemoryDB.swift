@@ -144,31 +144,19 @@ public final class InMemoryDB: DB {
         block: (DBWriteTransaction) throws -> T,
         rescue: (Error) throws -> Never
     ) rethrows -> T {
-        var thrownError: Error?
-        var syncCompletions: [DBWriteTransaction.SyncCompletion]!
-        var asyncCompletions: [DBWriteTransaction.AsyncCompletion]!
-        let result: T? = try! databaseQueue.write { db in
+        var result: T!
+        var thrown: Error?
+        _writeWithTxCompletion { tx in
             do {
-                let tx = DBWriteTransaction(database: db)
-                defer {
-                    tx.finalizeTransaction()
-                    syncCompletions = tx.syncCompletions
-                    asyncCompletions = tx.asyncCompletions
-                }
-                return try block(tx)
+                result = try block(tx)
             } catch {
-                thrownError = error
-                return nil
+                thrown = error
             }
+            // Always commit, regardless of thrown errors.
+            return .commit(())
         }
-        syncCompletions.forEach {
-            $0()
-        }
-        asyncCompletions.forEach {
-            $0.scheduler.async($0.block)
-        }
-        if let thrownError {
-            try rescue(thrownError)
+        if let thrown {
+            try rescue(thrown)
         }
         return result!
     }
@@ -176,16 +164,14 @@ public final class InMemoryDB: DB {
     private func _writeWithTxCompletion<T>(
         block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) -> T {
-        var syncCompletions: [DBWriteTransaction.SyncCompletion]!
-        var asyncCompletions: [DBWriteTransaction.AsyncCompletion]!
+        var txCompletionBlocks: [DBWriteTransaction.CompletionBlock]!
         let result: T = try! databaseQueue.writeWithoutTransaction { db in
             var result: T!
             try db.inTransaction {
                 let tx = DBWriteTransaction(database: db)
                 defer {
                     tx.finalizeTransaction()
-                    syncCompletions = tx.syncCompletions
-                    asyncCompletions = tx.asyncCompletions
+                    txCompletionBlocks = tx.completionBlocks
                 }
                 switch block(tx) {
                 case .commit(let t):
@@ -198,12 +184,7 @@ public final class InMemoryDB: DB {
             }
             return result
         }
-        syncCompletions.forEach {
-            $0()
-        }
-        asyncCompletions.forEach {
-            $0.scheduler.async($0.block)
-        }
+        txCompletionBlocks.forEach { $0() }
         return result
     }
 

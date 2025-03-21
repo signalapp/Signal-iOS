@@ -459,7 +459,7 @@ extension OWSContactsManager: ContactManager {
         if let contactThread = TSContactThread.getWithContactAddress(address, transaction: tx) {
             SSKEnvironment.shared.databaseStorageRef.touch(thread: contactThread, shouldReindex: false, tx: tx)
         }
-        tx.addAsyncCompletion(on: DispatchQueue.global()) {
+        tx.addSyncCompletion {
             NotificationCenter.default.postNotificationNameAsync(
                 Self.skipContactAvatarBlurDidChange,
                 object: nil,
@@ -488,7 +488,7 @@ extension OWSContactsManager: ContactManager {
         )
         SSKEnvironment.shared.databaseStorageRef.touch(thread: groupThread, shouldReindex: false, tx: transaction)
 
-        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
+        transaction.addSyncCompletion {
             NotificationCenter.default.postNotificationNameAsync(
                 Self.skipGroupAvatarBlurDidChange,
                 object: nil,
@@ -1073,8 +1073,10 @@ extension OWSContactsManager: ContactManager {
 
         Self.unknownAddressFetchDateMap[aci] = Date()
 
-        let profileFetcher = SSKEnvironment.shared.profileFetcherRef
-        _ = profileFetcher.fetchProfileSync(for: aci, context: .init(isOpportunistic: true))
+        Task {
+            let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+            _ = try await profileFetcher.fetchProfile(for: aci, context: .init(isOpportunistic: true))
+        }
     }
 
     // MARK: - System Contacts

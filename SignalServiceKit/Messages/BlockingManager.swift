@@ -352,8 +352,8 @@ public class BlockingManager {
         tx transaction: DBWriteTransaction
     ) {
         Logger.info("")
-        transaction.addAsyncCompletion(on: DispatchQueue.main) {
-            NotificationCenter.default.post(name: Self.blockedSyncDidComplete, object: nil)
+        transaction.addSyncCompletion {
+            NotificationCenter.default.postNotificationNameAsync(Self.blockedSyncDidComplete, object: nil)
         }
 
         var didChange = false

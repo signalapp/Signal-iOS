@@ -240,7 +240,6 @@ public class GroupCallManager {
                 creatorAci: creatorAci,
                 callId: currentCallId.rawValue,
                 groupThreadRowId: groupThreadRowId,
-                notificationScheduler: self.schedulers.main,
                 tx: tx
             )
 
@@ -383,7 +382,6 @@ public class GroupCallManager {
                 groupCallInteraction: unendedCallInteraction,
                 callId: callIdProvider.callId.rawValue,
                 groupThreadRowId: groupThreadRowId,
-                notificationScheduler: schedulers.main,
                 tx: tx
             )
         }

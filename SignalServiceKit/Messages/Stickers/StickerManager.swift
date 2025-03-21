@@ -243,7 +243,7 @@ public class StickerManager: NSObject {
             )
         }
 
-        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
+        transaction.addSyncCompletion {
             packsDidChangeEvent.requestNotify()
         }
     }
@@ -372,7 +372,7 @@ public class StickerManager: NSObject {
             }
         }
 
-        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
+        transaction.addSyncCompletion {
             _ = promise.ensure {
                 packsDidChangeEvent.requestNotify()
             }
@@ -635,11 +635,13 @@ public class StickerManager: NSObject {
         // Cleans up the sticker data on disk. We want to do these deletions
         // after the transaction is complete so that other transactions aren't
         // blocked.
-        transaction.addAsyncCompletion(on: DispatchQueue.sharedUtility) {
-            do {
-                try OWSFileSystem.deleteFileIfExists(url: stickerDataUrl)
-            } catch {
-                owsFailDebug("Error: \(error)")
+        transaction.addSyncCompletion {
+            Task {
+                do {
+                    try OWSFileSystem.deleteFileIfExists(url: stickerDataUrl)
+                } catch {
+                    owsFailDebug("Error: \(error)")
+                }
             }
         }
 
