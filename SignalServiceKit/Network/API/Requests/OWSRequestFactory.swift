@@ -629,7 +629,7 @@ extension DeviceMessage {
     func requestParameters() -> NSDictionary {
         return [
             "type": type.rawValue,
-            "destinationDeviceId": destinationDeviceId,
+            "destinationDeviceId": destinationDeviceId.uint32Value,
             "destinationRegistrationId": Int32(bitPattern: destinationRegistrationId),
             "content": content.base64EncodedString()
         ]
