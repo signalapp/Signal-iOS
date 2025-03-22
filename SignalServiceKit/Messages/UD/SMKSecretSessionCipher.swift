@@ -198,7 +198,7 @@ public class SMKSecretSessionCipher: NSObject {
         }
 
         if localIdentifiers.aci == senderAci && localDeviceId.equals(deviceId) {
-            Logger.info("Discarding self-sent message")
+            Logger.warn("Discarding self-sent message")
             throw SMKSecretSessionCipherError.selfSentMessage
         }
 
