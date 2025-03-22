@@ -898,16 +898,16 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
             owsFailDebug("Unexpected emptyQueueMessage \(currentWebSocket.logPrefix)")
             return
         }
-        // We need to flush the message processing and serial queues
-        // to ensure that all received messages are enqueued and
-        // processed before we: a) mark the queue as empty. b) notify.
+        // We need to "flush" (i.e., "jump through") the message processing queue
+        // to ensure that all received messages (see prior method) are enqueued for
+        // processing before we: a) mark the queue as empty, b) notify.
         //
-        // The socket might close and re-open while we're
-        // flushing the queues. Therefore we capture currentWebSocket
-        // flushing to ensure that we handle this case correctly.
-        Self.messageProcessingQueue.async { [weak self] in
-            self?.serialQueue.async {
-                guard let self = self else { return }
+        // The socket might close and re-open while we're flushing the queue, so we
+        // (implicitly) make sure it's still active before marking the queue as
+        // empty. It's implicit because self.currentWebSocket stops referring to
+        // currentWebSocket once it's no longer active.
+        Self.messageProcessingQueue.async {
+            self.serialQueue.async {
                 if currentWebSocket.hasEmptiedInitialQueue.tryToSetFlag() {
                     self.notifyStatusChange(newState: self.currentState)
                 }
@@ -1862,21 +1862,24 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
     }
 
     func chatConnectionDidReceiveQueueEmpty(_ chat: AuthenticatedChatConnection) {
-        self.serialQueue.async { [self] in
-            guard self.connection.isActive(chat) else {
-                // We have since disconnected from the chat service instance that reported the empty queue.
-                return
-            }
-            let alreadyEmptied = _hasEmptiedInitialQueue.swap(true)
-            Logger.debug("Initial queue emptied")
+        // We need to "flush" (i.e., "jump through") the message processing queue
+        // to ensure that all received messages (see prior method) are enqueued for
+        // processing before we: a) mark the queue as empty, b) notify.
+        //
+        // The socket might close and re-open while we're flushing the queue, so
+        // we make sure it's still active before marking the queue as empty.
+        Self.messageProcessingQueue.async {
+            self.serialQueue.async {
+                guard self.connection.isActive(chat) else {
+                    // We have since disconnected from the chat service instance that reported the empty queue.
+                    return
+                }
+                let alreadyEmptied = self._hasEmptiedInitialQueue.swap(true)
+                Logger.debug("Initial queue emptied")
 
-            Self.messageProcessingQueue.async { [weak self] in
-                guard let self = self else { return }
                 if !alreadyEmptied {
-                    self.serialQueue.async {
-                        // This notification is used to wake up anything waiting for hasEmptiedInitialQueue.
-                        self.notifyStatusChange(newState: self.currentState)
-                    }
+                    // This notification is used to wake up anything waiting for hasEmptiedInitialQueue.
+                    self.notifyStatusChange(newState: self.currentState)
                 }
 
                 // We may have been holding the websocket open, waiting to drain the
