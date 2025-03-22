@@ -913,15 +913,11 @@ final class IndividualCallService: CallServiceStateObserver {
     public func callManager(_ callManager: CallService.CallManagerType, shouldSendHangup callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, hangupType: HangupType, deviceId: UInt32) {
         Logger.info("shouldSendHangup")
 
+        // At time of writing, destinationDeviceId is always nil and deviceId is
+        // sometimes 0.
+
         Task {
             do {
-                guard
-                    let deviceIdObj = DeviceId(validating: deviceId),
-                    let destinationDeviceId,
-                    let destinationDeviceIdObj = DeviceId(validating: destinationDeviceId)
-                else {
-                    throw OWSGenericError("Couldn't send hangup with invalid deviceIds.")
-                }
                 let sendPromise = await self.databaseStorage.awaitableWrite { tx in
                     return CallHangupSender.sendHangup(
                         thread: call.individualCall.thread,
@@ -935,8 +931,8 @@ final class IndividualCallService: CallServiceStateObserver {
                             case .needPermission: return .hangupNeedPermission
                             }
                         }(),
-                        localDeviceId: deviceIdObj,
-                        remoteDeviceId: destinationDeviceIdObj,
+                        localDeviceId: deviceId,
+                        remoteDeviceId: destinationDeviceId,
                         tx: tx
                     )
                 }

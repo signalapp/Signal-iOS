@@ -147,8 +147,8 @@ public class CallOfferHandlerImpl {
                     thread: thread,
                     callId: callId,
                     hangupType: .hangupNeedPermission,
-                    localDeviceId: localDeviceId,
-                    remoteDeviceId: sourceDevice,
+                    localDeviceId: localDeviceId.uint32Value,
+                    remoteDeviceId: sourceDevice.uint32Value,
                     tx: tx
                 )
             case .pni:
@@ -201,12 +201,14 @@ extension OWSIdentityManager {
 }
 
 public enum CallHangupSender {
+    /// - parameter localDeviceId: The localDeviceId or 0 if it's not relevant.
+    /// - parameter remoteDeviceId: The remoteDeviceId or nil if it's not relevant.
     public static func sendHangup(
         thread: TSContactThread,
         callId: UInt64,
         hangupType: SSKProtoCallMessageHangupType,
-        localDeviceId: DeviceId,
-        remoteDeviceId: DeviceId?,
+        localDeviceId: UInt32,
+        remoteDeviceId: UInt32?,
         tx: DBWriteTransaction
     ) -> Promise<Void> {
         let hangupBuilder = SSKProtoCallMessageHangup.builder(id: callId)
@@ -216,7 +218,7 @@ public enum CallHangupSender {
         if hangupType != .hangupNormal {
             // deviceId is optional and only used when indicated by a hangup due to
             // a call being accepted elsewhere.
-            hangupBuilder.setDeviceID(localDeviceId.uint32Value)
+            hangupBuilder.setDeviceID(localDeviceId)
         }
 
         let hangupMessage: SSKProtoCallMessageHangup
@@ -230,7 +232,7 @@ public enum CallHangupSender {
         let callMessage = OWSOutgoingCallMessage(
             thread: thread,
             hangupMessage: hangupMessage,
-            destinationDeviceId: (remoteDeviceId?.uint32Value).map(NSNumber.init(value:)),
+            destinationDeviceId: remoteDeviceId.map(NSNumber.init(value:)),
             transaction: tx
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(
