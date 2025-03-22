@@ -106,7 +106,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             provisioningVersion: 1
         )
         let deviceName = "test device"
-        let deviceId = DeviceId(validating: UInt32.random(in: 1...5))!
+        let deviceId = DeviceId(validating: UInt32.random(in: 2...3))!
 
         let mockSession = UrlSessionMock()
 
