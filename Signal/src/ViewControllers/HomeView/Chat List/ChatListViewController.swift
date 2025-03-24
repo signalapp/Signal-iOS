@@ -72,14 +72,16 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         emptyInboxView.autoAlignAxis(.horizontal, toSameAxisOf: view, withMultiplier: 0.85)
 
         // First Conversation Cue
-        view.addSubview(firstConversationCueView)
-        firstConversationCueView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        // This inset bakes in assumptions about UINavigationBar layout, but I'm not sure
-        // there's a better way to do it, since it isn't safe to use iOS auto layout with
-        // UINavigationBar contents.
-        firstConversationCueView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 6)
-        firstConversationCueView.autoPinEdge(toSuperviewEdge: .leading, withInset: 10, relation: .greaterThanOrEqual)
-        firstConversationCueView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
+        if let navigationController = self.navigationController {
+            navigationController.view.addSubview(firstConversationCueView)
+            
+            // This inset bakes in assumptions about UINavigationBar layout, but I'm not sure
+            // there's a better way to do it, since it isn't safe to use iOS auto layout with
+            // UINavigationBar contents.
+            firstConversationCueView.autoPinEdge(toSuperviewMargin: .top, withInset: 35)
+            firstConversationCueView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 6)
+            firstConversationCueView.autoPinEdge(toSuperviewEdge: .leading, withInset: 10, relation: .greaterThanOrEqual)
+        }
 
         // Search
         navigationItem.searchController = viewState.searchController
@@ -240,6 +242,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         super.viewWillDisappear(animated)
 
         isViewVisible = false
+        firstConversationCueView.isHidden = true
         searchResultsController.viewWillDisappear(animated)
     }
 

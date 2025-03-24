@@ -111,11 +111,11 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         header.autoPinEdge(toSuperviewMargin: .trailing, relation: .lessThanOrEqual)
         header.autoPinEdge(.top, to: .top, of: opaqueBackdrop, withOffset: 8)
 
-        collectionView.preservesSuperviewLayoutMargins = true
         collectionView.autoSetDimension(.height, toSize: 180)
         collectionView.autoPinEdge(.top, to: .bottom, of: header, withOffset: 12)
         collectionView.autoPinWidthToSuperview()
         collectionView.autoPinBottomToSuperviewMargin()
+        collectionView.layoutMargins = UIEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
         collectionView.clipsToBounds = false
 
         self.view = view
