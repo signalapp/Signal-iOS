@@ -21,7 +21,7 @@ class MessageSendLogTests: SSKBaseTest {
 
             // "Send" the message to a recipient
             let serviceId = Aci.randomForTesting()
-            let deviceId = DeviceId(validating: UInt32.random(in: 1...100))!
+            let deviceId = DeviceId(validating: UInt32.random(in: 1...2))!
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: serviceId,
@@ -53,7 +53,7 @@ class MessageSendLogTests: SSKBaseTest {
 
             // "Send" the message to one recipient
             let serviceId = Aci.randomForTesting()
-            let deviceId = DeviceId(validating: UInt32.random(in: 1...100))!
+            let deviceId = DeviceId(validating: UInt32.random(in: 1...2))!
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: serviceId,
@@ -134,7 +134,7 @@ class MessageSendLogTests: SSKBaseTest {
 
             // "Send" the message to a recipient
             let serviceId = Aci.randomForTesting()
-            let deviceId = DeviceId(validating: UInt32.random(in: 1...100))!
+            let deviceId = DeviceId(validating: UInt32.random(in: 1...2))!
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: serviceId,
@@ -397,7 +397,7 @@ class MessageSendLogTests: SSKBaseTest {
 
             // "Send" the message to a recipient
             let serviceId = Aci.randomForTesting()
-            let deviceId = DeviceId(validating: UInt32.random(in: 1...100))!
+            let deviceId = DeviceId(validating: UInt32.random(in: 1...2))!
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: serviceId,
@@ -430,7 +430,7 @@ class MessageSendLogTests: SSKBaseTest {
 
             // "Send" the messages to a recipient
             let serviceId = Aci.randomForTesting()
-            let deviceId = DeviceId(validating: UInt32.random(in: 1...100))!
+            let deviceId = DeviceId(validating: UInt32.random(in: 1...2))!
             for index in [index1, index2, index3] {
                 messageSendLog.recordPendingDelivery(
                     payloadId: index,
