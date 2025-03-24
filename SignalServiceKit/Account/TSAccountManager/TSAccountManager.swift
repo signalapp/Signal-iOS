@@ -70,7 +70,7 @@ public protocol TSAccountManager {
 /// isn't valid. These "device IDs" aren't supported on the server, so these
 /// users consider themselves "deregistered" (or, if they don't, they will
 /// as soon as they try to authenticate).
-public enum LocalDeviceId {
+public enum LocalDeviceId: CustomStringConvertible {
     case valid(DeviceId)
     case invalid
 
@@ -93,6 +93,16 @@ public enum LocalDeviceId {
             return deviceId == otherDeviceId
         case .invalid:
             return false
+        }
+    }
+
+    public var description: String {
+        switch self {
+        case .valid(let deviceId):
+            return "\(deviceId)"
+        case .invalid:
+            // If the device ID isn't valid, represent it as an artibrary invalid device ID.
+            return "0"
         }
     }
 }
