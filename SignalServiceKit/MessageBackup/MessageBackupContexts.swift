@@ -35,6 +35,9 @@ extension MessageBackup {
         /// Parameters configuring what content is included in this archive.
         let includedContentFilter: IncludedContentFilter
 
+        /// The timestamp at which the archiving process started.
+        let startTimestampMs: UInt64
+
         private let _tx: DBWriteTransaction
         var tx: DBReadTransaction { _tx }
 
@@ -47,12 +50,14 @@ extension MessageBackup {
             bencher: MessageBackup.ArchiveBencher,
             currentBackupAttachmentUploadEra: String?,
             includedContentFilter: IncludedContentFilter,
+            startTimestampMs: UInt64,
             tx: DBWriteTransaction
         ) {
             self.bencher = bencher
             self.backupAttachmentUploadManager = backupAttachmentUploadManager
             self.currentBackupAttachmentUploadEra = currentBackupAttachmentUploadEra
             self.includedContentFilter = includedContentFilter
+            self.startTimestampMs = startTimestampMs
             self._tx = tx
         }
 
@@ -71,9 +76,16 @@ extension MessageBackup {
     /// Base context class used for restoring from a backup.
     open class RestoringContext {
 
+        /// The timestamp at which we began restoring.
+        public let startTimestampMs: UInt64
+
         public let tx: DBWriteTransaction
 
-        init(tx: DBWriteTransaction) {
+        init(
+            startTimestampMs: UInt64,
+            tx: DBWriteTransaction
+        ) {
+            self.startTimestampMs = startTimestampMs
             self.tx = tx
         }
     }

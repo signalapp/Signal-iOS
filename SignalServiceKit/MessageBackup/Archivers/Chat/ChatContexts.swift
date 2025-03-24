@@ -110,6 +110,7 @@ extension MessageBackup {
             customChatColorContext: CustomChatColorArchivingContext,
             includedContentFilter: IncludedContentFilter,
             recipientContext: RecipientArchivingContext,
+            startTimestampMs: UInt64,
             tx: DBWriteTransaction
         ) {
             self.customChatColorContext = customChatColorContext
@@ -119,6 +120,7 @@ extension MessageBackup {
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 includedContentFilter: includedContentFilter,
+                startTimestampMs: startTimestampMs,
                 tx: tx
             )
         }
@@ -163,11 +165,15 @@ extension MessageBackup {
         internal init(
             customChatColorContext: CustomChatColorRestoringContext,
             recipientContext: RecipientRestoringContext,
+            startTimestampMs: UInt64,
             tx: DBWriteTransaction
         ) {
             self.customChatColorContext = customChatColorContext
             self.recipientContext = recipientContext
-            super.init(tx: tx)
+            super.init(
+                startTimestampMs: startTimestampMs,
+                tx: tx
+            )
         }
 
         internal subscript(_ recipientId: RecipientId) -> ChatId? {
@@ -330,6 +336,7 @@ extension MessageBackup {
             bencher: MessageBackup.ArchiveBencher,
             currentBackupAttachmentUploadEra: String?,
             includedContentFilter: IncludedContentFilter,
+            startTimestampMs: UInt64,
             tx: DBWriteTransaction
         ) {
             super.init(
@@ -337,6 +344,7 @@ extension MessageBackup {
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 includedContentFilter: includedContentFilter,
+                startTimestampMs: startTimestampMs,
                 tx: tx
             )
         }
@@ -363,8 +371,14 @@ extension MessageBackup {
         /// should be treated as an error at read time when processing all subsequent frames.
         var uploadEra: RestoredAttachmentUploadEra?
 
-        internal override init(tx: DBWriteTransaction) {
-            super.init(tx: tx)
+        override init(
+            startTimestampMs: UInt64,
+            tx: DBWriteTransaction
+        ) {
+            super.init(
+                startTimestampMs: startTimestampMs,
+                tx: tx
+            )
         }
 
         internal subscript(_ chatColorId: CustomChatColorId) -> CustomChatColor.Key? {

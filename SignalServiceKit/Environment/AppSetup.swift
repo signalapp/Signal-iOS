@@ -1005,7 +1005,6 @@ public class AppSetup {
             attachmentStore: attachmentStore,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             chatColorSettingStore: chatColorSettingStore,
-            dateProvider: dateProvider,
             wallpaperStore: wallpaperStore
         )
 
@@ -1038,7 +1037,6 @@ public class AppSetup {
             avatarFetcher: messageBackupAvatarFetcher,
             blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
             contactManager: MessageBackup.Wrappers.ContactManager(contactManager),
-            dateProvider: dateProvider,
             nicknameManager: nicknameManager,
             profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
             recipientHidingManager: recipientHidingManager,
@@ -1108,7 +1106,6 @@ public class AppSetup {
                 backupAttachmentDownloadManager: backupAttachmentDownloadManager,
                 callRecordStore: callRecordStore,
                 contactManager: MessageBackup.Wrappers.ContactManager(contactManager),
-                dateProvider: dateProvider,
                 editMessageStore: editMessageStore,
                 groupCallRecordManager: groupCallRecordManager,
                 groupUpdateItemBuilder: groupUpdateItemBuilder,
@@ -1136,7 +1133,7 @@ public class AppSetup {
             errorPresenter: messageBackupErrorPresenter,
             fullTextSearchIndexer: MessageBackupFullTextSearchIndexerImpl(
                 appReadiness: appReadiness,
-                dateProvider: dateProvider,
+                dateProvider: dateProviderMonotonic,
                 db: db,
                 fullTextSearchIndexer: MessageBackupFullTextSearchIndexerImpl.Wrappers.FullTextSearchIndexer(),
                 interactionStore: interactionStore,

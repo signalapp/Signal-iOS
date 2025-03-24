@@ -24,21 +24,25 @@ extension MessageBackup {
 
     public class ChatItemRestoringContext: RestoringContext {
 
-        let recipientContext: RecipientRestoringContext
         let chatContext: ChatRestoringContext
+        let recipientContext: RecipientRestoringContext
 
         /// Will only be nil if there was no earier AccountData frame to set it, which
         /// should be treated as an error at read time when processing all subsequent frames.
         var uploadEra: RestoredAttachmentUploadEra?
 
         init(
-            recipientContext: RecipientRestoringContext,
             chatContext: ChatRestoringContext,
+            recipientContext: RecipientRestoringContext,
+            startTimestampMs: UInt64,
             tx: DBWriteTransaction
         ) {
             self.recipientContext = recipientContext
             self.chatContext = chatContext
-            super.init(tx: tx)
+            super.init(
+                startTimestampMs: startTimestampMs,
+                tx: tx
+            )
         }
     }
 }

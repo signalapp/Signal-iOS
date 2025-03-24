@@ -10,20 +10,16 @@ class MessageBackupTSIncomingMessageArchiver {
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>
 
     private let contentsArchiver: MessageBackupTSMessageContentsArchiver
-    private let dateProvider: DateProvider
     private let editHistoryArchiver: MessageBackupTSMessageEditHistoryArchiver<TSIncomingMessage>
     private let interactionStore: MessageBackupInteractionStore
 
     init(
         contentsArchiver: MessageBackupTSMessageContentsArchiver,
-        dateProvider: @escaping DateProvider,
         editMessageStore: EditMessageStore,
         interactionStore: MessageBackupInteractionStore
     ) {
         self.contentsArchiver = contentsArchiver
-        self.dateProvider = dateProvider
         self.editHistoryArchiver = MessageBackupTSMessageEditHistoryArchiver(
-            dateProvider: dateProvider,
             editMessageStore: editMessageStore
         )
         self.interactionStore = interactionStore
@@ -289,7 +285,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
             // If marked as read but the chat timer hasn't started,
             // thats a bug on the export side but we can recover
             // from it now by starting the timer now.
-            expireStartDate = dateProvider().ows_millisecondsSince1970
+            expireStartDate = context.startTimestampMs
         } else {
             // 0 = hasn't started expiring.
             expireStartDate = 0

@@ -137,6 +137,7 @@ extension MessageBackup {
             includedContentFilter: IncludedContentFilter,
             localIdentifiers: LocalIdentifiers,
             localRecipientId: RecipientId,
+            startTimestampMs: UInt64,
             tx: DBWriteTransaction
         ) {
             self.localIdentifiers = localIdentifiers
@@ -160,6 +161,7 @@ extension MessageBackup {
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 includedContentFilter: includedContentFilter,
+                startTimestampMs: startTimestampMs,
                 tx: tx
             )
         }
@@ -241,10 +243,14 @@ extension MessageBackup {
 
         init(
             localIdentifiers: LocalIdentifiers,
+            startTimestampMs: UInt64,
             tx: DBWriteTransaction
         ) {
             self.localIdentifiers = localIdentifiers
-            super.init(tx: tx)
+            super.init(
+                startTimestampMs: startTimestampMs,
+                tx: tx
+            )
         }
 
         subscript(_ id: RecipientId) -> Address? {

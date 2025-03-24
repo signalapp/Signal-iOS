@@ -60,14 +60,11 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>
 
-    private let dateProvider: DateProvider
     private let editMessageStore: any EditMessageStore
 
     init(
-        dateProvider: @escaping DateProvider,
         editMessageStore: any EditMessageStore
     ) {
-        self.dateProvider = dateProvider
         self.editMessageStore = editMessageStore
     }
 

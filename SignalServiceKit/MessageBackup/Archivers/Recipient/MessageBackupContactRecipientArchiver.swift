@@ -22,7 +22,6 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     private let avatarFetcher: MessageBackupAvatarFetcher
     private let blockingManager: MessageBackup.Shims.BlockingManager
     private let contactManager: MessageBackup.Shims.ContactManager
-    private let dateProvider: DateProvider
     private let nicknameManager: NicknameManager
     private let profileManager: MessageBackup.Shims.ProfileManager
     private let recipientHidingManager: RecipientHidingManager
@@ -39,7 +38,6 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         avatarFetcher: MessageBackupAvatarFetcher,
         blockingManager: MessageBackup.Shims.BlockingManager,
         contactManager: MessageBackup.Shims.ContactManager,
-        dateProvider: @escaping DateProvider,
         nicknameManager: NicknameManager,
         profileManager: MessageBackup.Shims.ProfileManager,
         recipientHidingManager: RecipientHidingManager,
@@ -55,7 +53,6 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         self.avatarFetcher = avatarFetcher
         self.blockingManager = blockingManager
         self.contactManager = contactManager
-        self.dateProvider = dateProvider
         self.nicknameManager = nicknameManager
         self.profileManager = profileManager
         self.recipientHidingManager = recipientHidingManager
@@ -698,7 +695,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 uniqueId: recipient.uniqueId,
                 identityKey: identityKey,
                 isFirstKnownKey: true,
-                createdAt: dateProvider(),
+                createdAt: Date(millisecondsSince1970: context.startTimestampMs),
                 verificationState: verificationState
             )
             do {

@@ -10,20 +10,16 @@ class MessageBackupTSOutgoingMessageArchiver {
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>
 
     private let contentsArchiver: MessageBackupTSMessageContentsArchiver
-    private let dateProvider: DateProvider
     private let editHistoryArchiver: MessageBackupTSMessageEditHistoryArchiver<TSOutgoingMessage>
     private let interactionStore: MessageBackupInteractionStore
 
     init(
         contentsArchiver: MessageBackupTSMessageContentsArchiver,
-        dateProvider: @escaping DateProvider,
         editMessageStore: EditMessageStore,
         interactionStore: MessageBackupInteractionStore
     ) {
         self.contentsArchiver = contentsArchiver
-        self.dateProvider = dateProvider
         self.editHistoryArchiver = MessageBackupTSMessageEditHistoryArchiver(
-            dateProvider: dateProvider,
             editMessageStore: editMessageStore
         )
         self.interactionStore = interactionStore
@@ -506,7 +502,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
         {
             // If there is an expire timer and the message is eligible to start expiring,
             // set the expire start time to now even if unset in the proto.
-            expireStartDate = dateProvider().ows_millisecondsSince1970
+            expireStartDate = context.startTimestampMs
         } else {
             expireStartDate = 0
         }

@@ -26,7 +26,7 @@ public protocol MessageBackupFullTextSearchIndexer {
 public class MessageBackupFullTextSearchIndexerImpl: MessageBackupFullTextSearchIndexer {
 
     private let appReadiness: AppReadiness
-    private let dateProvider: DateProvider
+    private let dateProvider: DateProviderMonotonic
     private let db: any DB
     private let fullTextSearchIndexer: Shims.FullTextSearchIndexer
     private let interactionStore: InteractionStore
@@ -36,7 +36,7 @@ public class MessageBackupFullTextSearchIndexerImpl: MessageBackupFullTextSearch
 
     public init(
         appReadiness: AppReadiness,
-        dateProvider: @escaping DateProvider,
+        dateProvider: @escaping DateProviderMonotonic,
         db: any DB,
         fullTextSearchIndexer: Shims.FullTextSearchIndexer,
         interactionStore: InteractionStore,
@@ -122,7 +122,7 @@ public class MessageBackupFullTextSearchIndexerImpl: MessageBackupFullTextSearch
         while hasMoreMessages {
             try await Task.sleep(nanoseconds: Constants.batchDelayMs * NSEC_PER_MSEC)
             hasMoreMessages = try await db.awaitableWrite { tx in
-                let startTimeMs = self.dateProvider().ows_millisecondsSince1970
+                let startTime = dateProvider()
 
                 let cursor = try self.interactionStore.fetchCursor(
                     minRowIdExclusive: minInteractionRowIdExclusive,
@@ -133,8 +133,8 @@ public class MessageBackupFullTextSearchIndexerImpl: MessageBackupFullTextSearch
 
                 do {
                     while let interaction = try cursor.next() {
-                        let nowMs = self.dateProvider().ows_millisecondsSince1970
-                        if nowMs - startTimeMs > Constants.batchDurationMs {
+                        let durationMs = dateProvider().millisSince(startTime)
+                        if durationMs > Constants.batchDurationMs {
                             Logger.info("Bailing on batch after \(processedCount) interactions")
                             finalizeBatch(tx: tx)
                             return true

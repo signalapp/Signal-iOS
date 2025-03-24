@@ -380,7 +380,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             memorySampler: memorySampler
         )
 
-        let startTimestamp = dateProvider().ows_millisecondsSince1970
+        let startTimestampMs = dateProvider().ows_millisecondsSince1970
         let backupVersion = Constants.supportedBackupVersion
         let purposeString: String = switch backupPurpose {
         case .deviceTransfer: "LinkNSync"
@@ -389,13 +389,13 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         var errors = [LoggableErrorAndProto]()
         let result = Result<Void, Error>(catching: {
-            Logger.info("Exporting for \(purposeString) with version \(backupVersion), timestamp \(startTimestamp)")
+            Logger.info("Exporting for \(purposeString) with version \(backupVersion), timestamp \(startTimestampMs)")
 
             try autoreleasepool {
                 try writeHeader(
                     stream: stream,
                     backupVersion: backupVersion,
-                    backupTimeMs: startTimestamp,
+                    backupTimeMs: startTimestampMs,
                     currentAppVersion: currentAppVersion,
                     firstAppVersion: firstAppVersion,
                     tx: tx
@@ -415,6 +415,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 includedContentFilter: includedContentFilter,
+                startTimestampMs: startTimestampMs,
                 tx: tx
             )
             try autoreleasepool {
@@ -457,6 +458,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 includedContentFilter: includedContentFilter,
                 localIdentifiers: localIdentifiers,
                 localRecipientId: localRecipientId,
+                startTimestampMs: startTimestampMs,
                 tx: tx
             )
 
@@ -533,6 +535,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 customChatColorContext: customChatColorContext,
                 includedContentFilter: includedContentFilter,
                 recipientContext: recipientArchivingContext,
+                startTimestampMs: startTimestampMs,
                 tx: tx
             )
             let chatArchiveResult = try chatArchiver.archiveChats(
@@ -568,6 +571,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 includedContentFilter: includedContentFilter,
+                startTimestampMs: startTimestampMs,
                 tx: tx
             )
             let stickerPackArchiveResult = try stickerPackArchiver.archiveStickerPacks(
@@ -807,6 +811,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw OWSAssertionError("Restoring from backup twice!")
         }
 
+        let startTimestampMs = dateProvider().ows_millisecondsSince1970
+
         // Drops all indexes on the `TSInteraction` table before doing the
         // import, which dramatically speeds up the import. We'll then recreate
         // all these indexes in bulk afterwards.
@@ -877,30 +883,45 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 var chatItem: MessageBackup.ChatItemRestoringContext
                 let customChatColor: MessageBackup.CustomChatColorRestoringContext
                 let recipient: MessageBackup.RecipientRestoringContext
+                let stickerPack: MessageBackup.RestoringContext
 
-                var all: [MessageBackup.RestoringContext] {
-                    [chat, chatItem, customChatColor, recipient]
-                }
-
-                init(localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {
-                    customChatColor = MessageBackup.CustomChatColorRestoringContext(tx: tx)
+                init(
+                    localIdentifiers: LocalIdentifiers,
+                    startTimestampMs: UInt64,
+                    tx: DBWriteTransaction
+                ) {
+                    customChatColor = MessageBackup.CustomChatColorRestoringContext(
+                        startTimestampMs: startTimestampMs,
+                        tx: tx
+                    )
                     recipient = MessageBackup.RecipientRestoringContext(
                         localIdentifiers: localIdentifiers,
+                        startTimestampMs: startTimestampMs,
                         tx: tx
                     )
                     chat = MessageBackup.ChatRestoringContext(
                         customChatColorContext: customChatColor,
                         recipientContext: recipient,
+                        startTimestampMs: startTimestampMs,
                         tx: tx
                     )
                     chatItem = MessageBackup.ChatItemRestoringContext(
-                        recipientContext: recipient,
                         chatContext: chat,
+                        recipientContext: recipient,
+                        startTimestampMs: startTimestampMs,
+                        tx: tx
+                    )
+                    stickerPack = MessageBackup.RestoringContext(
+                        startTimestampMs: startTimestampMs,
                         tx: tx
                     )
                 }
             }
-            let contexts = Contexts(localIdentifiers: localIdentifiers, tx: tx)
+            let contexts = Contexts(
+                localIdentifiers: localIdentifiers,
+                startTimestampMs: startTimestampMs,
+                tx: tx
+            )
 
             while hasMoreFrames {
                 try Task.checkCancellation()
@@ -1066,7 +1087,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         case .stickerPack(let backupProtoStickerPack):
                             let stickerPackResult = stickerPackArchiver.restore(
                                 backupProtoStickerPack,
-                                context: MessageBackup.RestoringContext(tx: tx)
+                                context: contexts.stickerPack
                             )
                             switch stickerPackResult {
                             case .success:

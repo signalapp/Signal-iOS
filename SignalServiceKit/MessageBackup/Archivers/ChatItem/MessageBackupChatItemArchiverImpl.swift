@@ -14,7 +14,6 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let callRecordStore: CallRecordStore
     private let contactManager: MessageBackup.Shims.ContactManager
-    private let dateProvider: DateProvider
     private let editMessageStore: EditMessageStore
     private let groupCallRecordManager: GroupCallRecordManager
     private let groupUpdateItemBuilder: GroupUpdateItemBuilder
@@ -30,7 +29,6 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         callRecordStore: CallRecordStore,
         contactManager: MessageBackup.Shims.ContactManager,
-        dateProvider: @escaping DateProvider,
         editMessageStore: EditMessageStore,
         groupCallRecordManager: GroupCallRecordManager,
         groupUpdateItemBuilder: GroupUpdateItemBuilder,
@@ -45,7 +43,6 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.callRecordStore = callRecordStore
         self.contactManager = contactManager
-        self.dateProvider = dateProvider
         self.editMessageStore = editMessageStore
         self.groupCallRecordManager = groupCallRecordManager
         self.groupUpdateItemBuilder = groupUpdateItemBuilder
@@ -73,14 +70,12 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private lazy var incomingMessageArchiver =
         MessageBackupTSIncomingMessageArchiver(
             contentsArchiver: contentsArchiver,
-            dateProvider: dateProvider,
             editMessageStore: editMessageStore,
             interactionStore: interactionStore
         )
     private lazy var outgoingMessageArchiver =
         MessageBackupTSOutgoingMessageArchiver(
             contentsArchiver: contentsArchiver,
-            dateProvider: dateProvider,
             editMessageStore: editMessageStore,
             interactionStore: interactionStore
         )
@@ -250,7 +245,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
         // Check if this message expires soon enough that we should exclude it
         // from the Backup.
-        let minExpirationDate = dateProvider().ows_millisecondsSince1970
+        let minExpirationDate = context.startTimestampMs
             + context.includedContentFilter.minRemainingTimeUntilExpirationMs
         if
             let expireStartDate = details.expireStartDate,

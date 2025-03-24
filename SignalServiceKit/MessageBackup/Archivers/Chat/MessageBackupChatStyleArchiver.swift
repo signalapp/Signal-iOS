@@ -11,7 +11,6 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
     private let attachmentStore: AttachmentStore
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let chatColorSettingStore: ChatColorSettingStore
-    private let dateProvider: DateProvider
     private let wallpaperStore: WallpaperStore
 
     public init(
@@ -19,14 +18,12 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
         attachmentStore: AttachmentStore,
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         chatColorSettingStore: ChatColorSettingStore,
-        dateProvider: @escaping DateProvider,
         wallpaperStore: WallpaperStore
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.chatColorSettingStore = chatColorSettingStore
-        self.dateProvider = dateProvider
         self.wallpaperStore = wallpaperStore
     }
 
@@ -111,7 +108,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
         /// in the Backup, we can't use the same timestamp for all colors. To
         /// that end, we'll start with "now" and increment as we create more
         /// colors.
-        var chatColorCreationTimestamp = dateProvider().ows_millisecondsSince1970
+        var chatColorCreationTimestamp = context.startTimestampMs
 
         for chatColorProto in chatColorProtos {
             let customChatColorId = MessageBackup.CustomChatColorId(value: chatColorProto.id)
