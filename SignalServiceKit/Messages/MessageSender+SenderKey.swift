@@ -6,7 +6,7 @@
 import LibSignalClient
 
 extension MessageSender {
-    struct Recipient {
+    private struct Recipient {
         let serviceId: ServiceId
         let devices: [DeviceId]
         var protocolAddresses: [ProtocolAddress] {
@@ -411,7 +411,7 @@ extension MessageSender {
         }
     }
 
-    fileprivate struct SenderKeySendResult {
+    private struct SenderKeySendResult {
         let success: [Recipient]
         let unregistered: [Recipient]
 
@@ -475,7 +475,7 @@ extension MessageSender {
         return result
     }
 
-    fileprivate func _sendSenderKeyRequest(
+    private func _sendSenderKeyRequest(
         encryptedMessageBody: Data,
         timestamp: UInt64,
         isOnline: Bool,
