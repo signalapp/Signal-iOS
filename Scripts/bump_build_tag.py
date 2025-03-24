@@ -3,6 +3,7 @@
 import argparse
 import plistlib
 import subprocess
+import tag_template
 
 INFO_PLIST_PATHS = [
     "Signal/Signal-Info.plist",
@@ -77,7 +78,10 @@ if __name__ == "__main__":
     for path in INFO_PLIST_PATHS:
         set_version(path, version)
 
-    run(["git", "add", *INFO_PLIST_PATHS])
+    changed_paths = []
+    changed_paths.extend(tag_template.write_template())
+
+    run(["git", "add", *INFO_PLIST_PATHS, *changed_paths])
     run(["git", "commit", "-m", f"Bump version to {version.pretty()}"])
     if version.patch == 0:
         run(["git", "tag", f"version-{version.pretty2()}"])
