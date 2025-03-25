@@ -221,15 +221,25 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         let includedContentFilter = MessageBackup.ArchivingContext.IncludedContentFilter(
+            minExpirationTimeMs: {
+                switch backupPurpose {
+                case .deviceTransfer:
+                    // Don't exclude any messages in "device transfer" backups,
+                    // i.e. Link'n'Syncs.
+                    return 0
+                case .remoteBackup:
+                    // Skip messages with timers of less than a day.
+                    return .dayInMs
+                }
+            }(),
             minRemainingTimeUntilExpirationMs: {
                 switch backupPurpose {
                 case .deviceTransfer:
-                    // Include all not-currently-expired messages in "device
-                    // transfer" backups, i.e. a Link'n'Sync.
+                    // Don't exclude any messages in "device transfer" backups,
+                    // i.e. Link'n'Syncs.
                     return 0
                 case .remoteBackup:
-                    // Generally, skip messages with less than a day left before
-                    // they expire.
+                    // Skip messages with less than a day before they'll expire.
                     return .dayInMs
                 }
             }(),
@@ -267,6 +277,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         // of the tests is to verify that round-tripping a Backup file is
         // idempotent.
         let includedContentFilter = MessageBackup.ArchivingContext.IncludedContentFilter(
+            minExpirationTimeMs: 0,
             minRemainingTimeUntilExpirationMs: 0,
             shouldIncludePin: true
         )

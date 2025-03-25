@@ -18,11 +18,20 @@ extension MessageBackup {
     /// (The exception to this is enqueuing attachment uploads.)
     open class ArchivingContext {
         struct IncludedContentFilter {
-            /// The minimum amount of time remaining on a message's expiration
-            /// timer, such that it is eligible for inclusion.
+            /// The minimum absolute expiration time for a message, such that it
+            /// is eligible for inclusion.
             ///
-            /// For example, this allows callers to require messages to have at
-            /// least 24h before their expiration in order to be included.
+            /// For example, a value of 24h will exclude messages with a
+            /// "lifetime" of a day or less, regardless of whether they have
+            /// been read and their expiration timer has started.
+            let minExpirationTimeMs: UInt64
+
+            /// The minimum remaining time before a message will expire, such
+            /// that it is eligible for inclusion.
+            ///
+            /// For example, a value of 24h will exclude messages that will
+            /// expire in the next day, regardless of how long their original
+            /// "lifetime" was.
             let minRemainingTimeUntilExpirationMs: UInt64
 
             /// Whether or not the plaintext SVR PIN should be included.

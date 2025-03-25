@@ -243,17 +243,34 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             return .completeFailure(error)
         }
 
-        // Check if this message expires soon enough that we should exclude it
-        // from the Backup.
-        let minExpirationDate = context.startTimestampMs
-            + context.includedContentFilter.minRemainingTimeUntilExpirationMs
-        if
-            let expireStartDate = details.expireStartDate,
-            let expiresInMs = details.expiresInMs,
-            expiresInMs > 0, // Only check expiration if `expiresInMs` is set to something interesting.
-            expireStartDate + expiresInMs < minExpirationDate
-        {
-            // Skip this message, but count it as a success.
+        // We may skip archiving messages based on their expiration
+        // (disappearing message) details.
+        let shouldSkipBasedOnExpiration: Bool = {
+            guard
+                let expiresInMs = details.expiresInMs,
+                expiresInMs > 0
+            else {
+                // If the message isn't expiring, no reason to skip.
+                return false
+            }
+
+            if expiresInMs <= context.includedContentFilter.minExpirationTimeMs {
+                // If the expire timer was less than our minimum, we can always
+                // skip.
+                return true
+            } else if let expireStartDate = details.expireStartDate {
+                // If the expiration timer has started, check whether the
+                // remaining time before it expires is sufficient.
+                let expirationDate = expireStartDate + expiresInMs
+                let minExpirationDate = context.startTimestampMs + context.includedContentFilter.minRemainingTimeUntilExpirationMs
+
+                return expirationDate <= minExpirationDate
+            } else {
+                return false
+            }
+        }()
+        if shouldSkipBasedOnExpiration {
+            // Skip, but treat as a success.
             return .success
         }
 
