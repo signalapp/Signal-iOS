@@ -60,14 +60,10 @@ extension DonationSubscriptionManager {
     }
 
     /// Fetch donation configuration from the service.
-    public static func fetchDonationConfiguration() -> Promise<DonationConfiguration> {
+    public static func fetchDonationConfiguration() async throws -> DonationConfiguration {
         let request = OWSRequestFactory.donationConfiguration()
-
-        return firstly {
-            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-        }.map(on: DispatchQueue.sharedUserInitiated) { response -> DonationConfiguration in
-            try DonationConfiguration.from(configurationServiceResponse: response.responseBodyJson)
-        }
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+        return try DonationConfiguration.from(configurationServiceResponse: response.responseBodyJson)
     }
 }
 

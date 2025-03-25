@@ -167,11 +167,11 @@ class DonationSettingsViewController: OWSTableViewController2 {
             )
         }
 
-        let subscriptionLevelsPromise = DonationViewsUtil.loadSubscriptionLevels(badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore)
+        let subscriptionLevelsPromise = Promise.wrapAsync { try await DonationViewsUtil.loadSubscriptionLevels(badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore) }
         let currentSubscriptionPromise = Promise.wrapAsync {
             try await DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
         }
-        let profileBadgeLookupPromise = loadProfileBadgeLookup()
+        let profileBadgeLookupPromise = Guarantee.wrapAsync { await self.loadProfileBadgeLookup() }
 
         return profileBadgeLookupPromise.then { profileBadgeLookup -> Guarantee<State> in
             subscriptionLevelsPromise.then { subscriptionLevels -> Promise<State> in
@@ -232,28 +232,25 @@ class DonationSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    private func loadProfileBadgeLookup() -> Guarantee<ProfileBadgeLookup> {
-        return firstly { () -> Promise<DonationSubscriptionManager.DonationConfiguration> in
-            DonationSubscriptionManager.fetchDonationConfiguration()
-        }.map { donationConfiguration -> ProfileBadgeLookup in
-            ProfileBadgeLookup(
-                boostBadge: donationConfiguration.boost.badge,
-                giftBadge: donationConfiguration.gift.badge,
-                subscriptionLevels: donationConfiguration.subscription.levels
-            )
-        }.recover { error -> Guarantee<ProfileBadgeLookup> in
+    private func loadProfileBadgeLookup() async -> ProfileBadgeLookup {
+        let donationConfiguration: DonationSubscriptionManager.DonationConfiguration
+        do {
+            donationConfiguration = try await DonationSubscriptionManager.fetchDonationConfiguration()
+        } catch {
             Logger.warn("[Donations] Failed to fetch donation configuration \(error). Proceeding without it, as it is only cosmetic here.")
-            return .value(ProfileBadgeLookup(
+            return ProfileBadgeLookup(
                 boostBadge: nil,
                 giftBadge: nil,
                 subscriptionLevels: []
-            ))
-        }.then { profileBadgeLookup in
-            return Guarantee.wrapAsync {
-                await profileBadgeLookup.attemptToPopulateBadgeAssets(populateAssetsOnBadge: SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge)
-                return profileBadgeLookup
-            }
+            )
         }
+        let profileBadgeLookup = ProfileBadgeLookup(
+            boostBadge: donationConfiguration.boost.badge,
+            giftBadge: donationConfiguration.gift.badge,
+            subscriptionLevels: donationConfiguration.subscription.levels
+        )
+        await profileBadgeLookup.attemptToPopulateBadgeAssets(populateAssetsOnBadge: SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge)
+        return profileBadgeLookup
     }
 
     private func setUpAvatarView() {

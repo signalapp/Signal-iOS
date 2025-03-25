@@ -308,7 +308,7 @@ private class SendGiftBadgeJobRunner: JobRunner {
             context: receiptCredentialRequestContext,
             request: receiptCredentialRequest,
             logger: PrefixedLogger(prefix: "[Donations]")
-        ).awaitable()
+        )
 
         return try DonationSubscriptionManager.generateReceiptCredentialPresentation(
             receiptCredential: receiptCredential

@@ -503,7 +503,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
 
         try await DonationSubscriptionManager.redeemReceiptCredentialPresentation(
             receiptCredentialPresentation: receiptCredentialPresentation
-        ).awaitable()
+        )
 
         return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             self.donationReceiptCredentialResultStore.clearRequestError(
@@ -536,11 +536,9 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
     private func loadBadge(paymentType: PaymentType) async throws -> ProfileBadge {
         switch paymentType {
         case .oneTimeBoost:
-            return try await DonationSubscriptionManager.getBoostBadge().awaitable()
+            return try await DonationSubscriptionManager.getBoostBadge()
         case let .recurringSubscription(_, targetSubscriptionLevel, _, _):
-            return try await DonationSubscriptionManager.getSubscriptionBadge(
-                subscriptionLevel: targetSubscriptionLevel
-            ).awaitable()
+            return try await DonationSubscriptionManager.getSubscriptionBadge(subscriptionLevel: targetSubscriptionLevel)
         }
     }
 
@@ -577,7 +575,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                 context: configuration.receiptCredentialRequestContext,
                 request: configuration.receiptCredentialRequest,
                 logger: logger
-            ).awaitable()
+            )
 
         case let .recurringSubscription(subscriberId, targetSubscriptionLevel, priorSubscriptionLevel, _):
             logger.info("Durable job requesting receipt for subscription")
@@ -597,7 +595,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                 context: configuration.receiptCredentialRequestContext,
                 request: configuration.receiptCredentialRequest,
                 logger: logger
-            ).awaitable()
+            )
         }
 
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in

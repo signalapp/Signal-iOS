@@ -108,9 +108,11 @@ extension DonateViewController {
             }.then(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Data> in
                 Logger.info("[Donations] Preparing new monthly subscription with PayPal")
 
-                return DonationSubscriptionManager.prepareNewSubscription(
-                    currencyCode: monthly.selectedCurrencyCode
-                )
+                return Promise.wrapAsync {
+                    try await DonationSubscriptionManager.prepareNewSubscription(
+                        currencyCode: monthly.selectedCurrencyCode
+                    )
+                }
             }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId -> Promise<(Data, Paypal.SubscriptionAuthorizationParams)> in
                 Logger.info("[Donations] Creating Signal payment method for new monthly subscription with PayPal")
 
@@ -138,17 +140,14 @@ extension DonateViewController {
     ) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        let finalizePromise: Promise<Void> = firstly { () -> Promise<Subscription> in
+        let finalizePromise: Promise<Void> = Promise.wrapAsync {
             Logger.info("[Donations] Finalizing new subscription for PayPal donation")
-
-            return Promise.wrapAsync {
-                try await DonationSubscriptionManager.finalizeNewSubscription(
-                    forSubscriberId: subscriberId,
-                    paymentType: .paypal(paymentMethodId: paymentMethodId),
-                    subscription: selectedSubscriptionLevel,
-                    currencyCode: monthly.selectedCurrencyCode
-                )
-            }
+            return try await DonationSubscriptionManager.finalizeNewSubscription(
+                forSubscriberId: subscriberId,
+                paymentType: .paypal(paymentMethodId: paymentMethodId),
+                subscription: selectedSubscriptionLevel,
+                currencyCode: monthly.selectedCurrencyCode
+            )
         }.then(on: DispatchQueue.sharedUserInitiated) { _ -> Promise<Void> in
             Logger.info("[Donations] Redeeming monthly receipt for PayPal donation")
 

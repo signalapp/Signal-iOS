@@ -230,11 +230,11 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     }
 
     private static func redeemGiftBadge(incomingMessage: TSIncomingMessage) -> Promise<Void> {
-        return firstly { () -> Promise<Void> in
+        return Promise.wrapAsync {
             guard let giftBadge = incomingMessage.giftBadge else {
                 throw OWSAssertionError("trying to redeem message without a badge")
             }
-            return DonationSubscriptionManager.redeemReceiptCredentialPresentation(
+            return try await DonationSubscriptionManager.redeemReceiptCredentialPresentation(
                 receiptCredentialPresentation: try giftBadge.getReceiptCredentialPresentation()
             )
         }.done(on: DispatchQueue.global()) {

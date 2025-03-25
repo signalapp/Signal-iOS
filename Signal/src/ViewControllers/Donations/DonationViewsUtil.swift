@@ -327,15 +327,16 @@ public final class DonationViewsUtil {
         return try await DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: paymentType.paymentMethod).awaitable()
     }
 
-    public static func loadSubscriptionLevels(badgeStore: BadgeStore) -> Promise<[DonationSubscriptionLevel]> {
-        firstly { () -> Promise<DonationSubscriptionManager.DonationConfiguration> in
-            DonationSubscriptionManager.fetchDonationConfiguration()
-        }.map { donationConfiguration -> [DonationSubscriptionLevel] in
-            donationConfiguration.subscription.levels
-        }.then { (fetchedSubscriptions: [DonationSubscriptionLevel]) -> Promise<[DonationSubscriptionLevel]> in
-            let badgeUpdatePromises = fetchedSubscriptions.map { subscription in Promise.wrapAsync { try await badgeStore.populateAssetsOnBadge(subscription.badge) } }
-            return Promise.when(fulfilled: badgeUpdatePromises).map { fetchedSubscriptions }
+    public static func loadSubscriptionLevels(badgeStore: BadgeStore) async throws -> [DonationSubscriptionLevel] {
+        let levels = try await DonationSubscriptionManager.fetchDonationConfiguration().subscription.levels
+        await withThrowingTaskGroup(of: Void.self) { taskGroup in
+            for level in levels {
+                taskGroup.addTask {
+                    try await badgeStore.populateAssetsOnBadge(level.badge)
+                }
+            }
         }
+        return levels
     }
 
     public static func loadCurrentSubscription(subscriberID: Data?) async throws -> Subscription? {

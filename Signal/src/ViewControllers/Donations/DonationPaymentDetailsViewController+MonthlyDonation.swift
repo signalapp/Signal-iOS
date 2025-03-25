@@ -38,12 +38,13 @@ extension DonationPaymentDetailsViewController {
             }.then(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Data> in
                 Logger.info("[Donations] Preparing new monthly subscription")
 
-                return DonationSubscriptionManager.prepareNewSubscription(currencyCode: currencyCode)
+                return Promise.wrapAsync {
+                    try await DonationSubscriptionManager.prepareNewSubscription(currencyCode: currencyCode)
+                }
             }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId -> Promise<(Data, DonationSubscriptionManager.RecurringSubscriptionPaymentType)> in
-                firstly { () -> Promise<String> in
+                Promise.wrapAsync { () -> String in
                     Logger.info("[Donations] Creating Signal payment method for new monthly subscription")
-
-                    return Stripe.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
+                    return try await Stripe.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
                 }.then(on: DispatchQueue.sharedUserInitiated) { clientSecret -> Promise<DonationSubscriptionManager.RecurringSubscriptionPaymentType> in
                     Logger.info("[Donations] Authorizing payment for new monthly subscription")
 

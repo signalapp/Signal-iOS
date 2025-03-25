@@ -957,8 +957,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         Logger.info("[Donations] showing expiry sheet for expired badge \(expiredBadgeID)")
 
         if BoostBadgeIds.contains(expiredBadgeID) {
-            firstly {
-                DonationSubscriptionManager.getBoostBadge()
+            Promise.wrapAsync {
+                try await DonationSubscriptionManager.getBoostBadge()
             }.done(on: DispatchQueue.global()) { boostBadge in
                 Promise.wrapAsync {
                     try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(boostBadge)
@@ -999,16 +999,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             /// We'll still fetch the subscription, but just for logging
             /// purposes.
 
-            firstly(on: DispatchQueue.global()) { () -> Promise<Subscription?> in
+            Promise.wrapAsync { () -> Subscription? in
                 guard let donationSubscriberID else {
-                    return .value(nil)
+                    return nil
                 }
-
-                return Promise.wrapAsync {
-                    try await DonationSubscriptionManager.getCurrentSubscriptionStatus(
-                        for: donationSubscriberID
-                    )
-                }
+                return try await DonationSubscriptionManager.getCurrentSubscriptionStatus(
+                    for: donationSubscriberID
+                )
             }.done(on: DispatchQueue.global()) { currentSubscription in
                 defer {
                     SSKEnvironment.shared.databaseStorageRef.write { transaction in

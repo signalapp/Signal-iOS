@@ -11,28 +11,26 @@ extension Stripe {
     ///
     /// - Returns
     /// A Stripe secret used to authorize payment for the new subscription.
-    public static func createSignalPaymentMethodForSubscription(subscriberId: Data) -> Promise<String> {
-        return firstly {
-            let request = OWSRequestFactory.subscriptionCreateStripePaymentMethodRequest(subscriberID: subscriberId)
+    public static func createSignalPaymentMethodForSubscription(subscriberId: Data) async throws -> String {
+        let request = OWSRequestFactory.subscriptionCreateStripePaymentMethodRequest(subscriberID: subscriberId)
 
-            return SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            let statusCode = response.responseStatusCode
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
-            guard statusCode == 200 else {
-                throw OWSAssertionError("Got bad response code \(statusCode).")
-            }
+        let statusCode = response.responseStatusCode
 
-            guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
-                throw OWSAssertionError("Missing or invalid response.")
-            }
+        guard statusCode == 200 else {
+            throw OWSAssertionError("Got bad response code \(statusCode).")
+        }
 
-            do {
-                let clientSecret: String = try parser.required(key: "clientSecret")
-                return clientSecret
-            } catch {
-                throw OWSAssertionError("Missing clientID key")
-            }
+        guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
+            throw OWSAssertionError("Missing or invalid response.")
+        }
+
+        do {
+            let clientSecret: String = try parser.required(key: "clientSecret")
+            return clientSecret
+        } catch {
+            throw OWSAssertionError("Missing clientID key")
         }
     }
 

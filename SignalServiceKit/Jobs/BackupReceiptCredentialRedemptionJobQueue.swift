@@ -243,7 +243,7 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                     request: receiptCredentialRequest,
                     networkManager: networkManager,
                     logger: logger
-                ).awaitable()
+                )
             } catch let error as DonationSubscriptionManager.KnownReceiptCredentialRequestError {
                 switch error.errorCode {
                 case .paymentIntentRedeemed:

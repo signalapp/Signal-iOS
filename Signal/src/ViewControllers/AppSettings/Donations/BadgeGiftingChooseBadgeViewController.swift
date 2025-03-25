@@ -63,22 +63,21 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         switch state {
         case .initializing, .loadFailed:
             state = .loading
-            loadData().done { self.state = $0 }
+            Task { @MainActor in
+                self.state = await loadData()
+            }
         case .loading, .loaded:
             break
         }
     }
 
-    private func loadData() -> Guarantee<State> {
-        firstly {
+    private func loadData() async -> State {
+        do {
             Logger.info("[Gifting] Fetching donation configuration...")
-            return DonationSubscriptionManager.fetchDonationConfiguration()
-        }.then { donationConfiguration -> Promise<DonationSubscriptionManager.DonationConfiguration> in
+            let donationConfiguration = try await DonationSubscriptionManager.fetchDonationConfiguration()
             Logger.info("[Gifting] Populating badge assets...")
             let giftBadge = donationConfiguration.gift.badge
-            return Promise.wrapAsync { try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(giftBadge) }
-                .map { donationConfiguration }
-        }.then { donationConfiguration -> Guarantee<State> in
+            try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(giftBadge)
             let defaultCurrencyCode = DonationUtilities.chooseDefaultCurrency(
                 preferred: [
                     Locale.current.currencyCode?.uppercased(),
@@ -90,17 +89,17 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             guard let defaultCurrencyCode = defaultCurrencyCode else {
                 // This indicates a bug, either in the iOS app or the server.
                 owsFailBeta("[Gifting] Successfully loaded data, but a preferred currency could not be found")
-                return Guarantee.value(.loadFailed)
+                return .loadFailed
             }
 
-            return Guarantee.value(.loaded(
+            return .loaded(
                 selectedCurrencyCode: defaultCurrencyCode,
                 giftConfiguration: donationConfiguration.gift,
                 paymentMethodsConfiguration: donationConfiguration.paymentMethods
-            ))
-        }.recover { error -> Guarantee<State> in
+            )
+        } catch {
             Logger.warn("\(error)")
-            return Guarantee.value(.loadFailed)
+            return .loadFailed
         }
     }
 

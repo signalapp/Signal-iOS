@@ -42,14 +42,15 @@ extension DonateViewController {
         }.then(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Data> in
             Logger.info("[Donations] Preparing new monthly subscription with Apple Pay")
 
-            return DonationSubscriptionManager.prepareNewSubscription(
-                currencyCode: monthly.selectedCurrencyCode
-            )
+            return Promise.wrapAsync {
+                try await DonationSubscriptionManager.prepareNewSubscription(
+                    currencyCode: monthly.selectedCurrencyCode
+                )
+            }
         }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId -> Promise<(Data, String)> in
-            firstly { () -> Promise<String> in
+            Promise.wrapAsync { () -> String in
                 Logger.info("[Donations] Creating Signal payment method for new monthly subscription with Apple Pay")
-
-                return Stripe.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
+                return try await Stripe.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
             }.then(on: DispatchQueue.sharedUserInitiated) { clientSecret -> Promise<Stripe.ConfirmedSetupIntent> in
                 Logger.info("[Donations] Authorizing payment for new monthly subscription with Apple Pay")
 

@@ -789,8 +789,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
 
         // Start fetching the donation configuration.
-        let fetchDonationConfigPromise: Promise<DonationConfiguration> = firstly {
-            DonationSubscriptionManager.fetchDonationConfiguration()
+        let fetchDonationConfigPromise: Promise<DonationConfiguration> = Promise.wrapAsync {
+            try await DonationSubscriptionManager.fetchDonationConfiguration()
         }.then(on: DispatchQueue.sharedUserInitiated) { donationConfiguration -> Promise<DonationConfiguration> in
             let boostBadge = donationConfiguration.boost.badge
             let subscriptionBadges = donationConfiguration.subscription.levels.map { $0.badge }

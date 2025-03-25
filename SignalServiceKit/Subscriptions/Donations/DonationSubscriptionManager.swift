@@ -163,32 +163,28 @@ public enum DonationSubscriptionManager {
         }
     }
 
-    // MARK: Subscription management
+// MARK: Subscription management
 
     /// Perform processor-agnostic steps to set up a new subscription, before
     /// payment has been authorized.
     ///
     /// - Returns: The new subscriber ID.
-    public static func prepareNewSubscription(currencyCode: Currency.Code) -> Promise<Data> {
-        firstly {
-            Logger.info("[Donations] Setting up new subscription")
+    public static func prepareNewSubscription(currencyCode: Currency.Code) async throws -> Data {
+        Logger.info("[Donations] Setting up new subscription")
+        let subscriberID = try await setupNewSubscriberID()
+        Logger.info("[Donations] Caching params after setting up new subscription")
 
-            return setupNewSubscriberID()
-        }.map(on: DispatchQueue.sharedUserInitiated) { subscriberID -> Data in
-            Logger.info("[Donations] Caching params after setting up new subscription")
-
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                self.setUserManuallyCancelledSubscription(false, transaction: transaction)
-                self.setSubscriberID(subscriberID, transaction: transaction)
-                self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
-                self.setMostRecentlyExpiredBadgeID(badgeID: nil, transaction: transaction)
-                self.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
-            }
-
-            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
-
-            return subscriberID
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            self.setUserManuallyCancelledSubscription(false, transaction: transaction)
+            self.setSubscriberID(subscriberID, transaction: transaction)
+            self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
+            self.setMostRecentlyExpiredBadgeID(badgeID: nil, transaction: transaction)
+            self.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
         }
+
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
+
+        return subscriberID
     }
 
     /// Finalize a new subscription, after payment has been authorized with the
@@ -206,8 +202,9 @@ public enum DonationSubscriptionManager {
             try await setDefaultIDEALPaymentMethod(
                 for: subscriberId,
                 setupIntentId: setupIntentId
-            ).awaitable()
-        case    .applePay(let paymentMethodId),
+            )
+        case
+                .applePay(let paymentMethodId),
                 .creditOrDebitCard(let paymentMethodId),
                 .paypal(let paymentMethodId),
                 .sepa(let paymentMethodId):
@@ -215,7 +212,7 @@ public enum DonationSubscriptionManager {
                 for: subscriberId,
                 using: paymentType.paymentProcessor,
                 paymentMethodId: paymentMethodId
-            ).awaitable()
+            )
         }
 
         Logger.info("[Donations] Selecting subscription level on service")
@@ -288,27 +285,20 @@ public enum DonationSubscriptionManager {
     /// Generate and register an ID for a new subscriber.
     ///
     /// - Returns the new subscriber ID.
-    private static func setupNewSubscriberID() -> Promise<Data> {
+    private static func setupNewSubscriberID() async throws -> Data {
         Logger.info("[Donations] Setting up new subscriber ID")
 
         let newSubscriberID = Randomness.generateRandomBytes(UInt(32))
-        return firstly {
-            self.postSubscriberID(subscriberID: newSubscriberID)
-        }.map(on: DispatchQueue.global()) { _ in
-            return newSubscriberID
-        }
+        try await postSubscriberID(subscriberID: newSubscriberID)
+        return newSubscriberID
     }
 
-    private static func postSubscriberID(subscriberID: Data) -> Promise<Void> {
+    private static func postSubscriberID(subscriberID: Data) async throws {
         let request = OWSRequestFactory.setSubscriberID(subscriberID)
-        return firstly {
-            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            let statusCode = response.responseStatusCode
-
-            if statusCode != 200 {
-                throw OWSAssertionError("Got bad response code \(statusCode).")
-            }
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+        let statusCode = response.responseStatusCode
+        if statusCode != 200 {
+            throw OWSAssertionError("Got bad response code \(statusCode).")
         }
     }
 
@@ -316,39 +306,34 @@ public enum DonationSubscriptionManager {
         for subscriberId: Data,
         using processor: DonationPaymentProcessor,
         paymentMethodId: String
-    ) -> Promise<Void> {
+    ) async throws {
         let request = OWSRequestFactory.subscriptionSetDefaultPaymentMethod(
             subscriberId: subscriberId,
             processor: processor.rawValue,
             paymentMethodId: paymentMethodId
         )
 
-        return firstly {
-            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            let statusCode = response.responseStatusCode
-            if statusCode != 200 {
-                throw OWSAssertionError("Got bad response code \(statusCode).")
-            }
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+
+        let statusCode = response.responseStatusCode
+        if statusCode != 200 {
+            throw OWSAssertionError("Got bad response code \(statusCode).")
         }
     }
 
     private static func setDefaultIDEALPaymentMethod(
         for subscriberId: Data,
         setupIntentId: String
-    ) -> Promise<Void> {
+    ) async throws {
         let request = OWSRequestFactory.subscriptionSetDefaultIDEALPaymentMethod(
             subscriberId: subscriberId,
             setupIntentId: setupIntentId
         )
 
-        return firstly {
-            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            let statusCode = response.responseStatusCode
-            if statusCode != 200 {
-                throw OWSAssertionError("Got bad response code \(statusCode).")
-            }
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+        let statusCode = response.responseStatusCode
+        if statusCode != 200 {
+            throw OWSAssertionError("Got bad response code \(statusCode).")
         }
     }
 
@@ -498,22 +483,22 @@ public enum DonationSubscriptionManager {
         request: ReceiptCredentialRequest,
         networkManager: NetworkManager = SSKEnvironment.shared.networkManagerRef,
         logger: PrefixedLogger
-    ) throws -> Promise<ReceiptCredential> {
-        return firstly {
+    ) async throws -> ReceiptCredential {
+        do {
             let networkRequest = OWSRequestFactory.subscriptionReceiptCredentialsRequest(
                 subscriberID: subscriberId,
                 request: request.serialize().asData
             )
 
-            return networkManager.makePromise(request: networkRequest)
-        }.map(on: DispatchQueue.global()) { response throws -> ReceiptCredential in
+            let response = try await networkManager.asyncRequest(networkRequest)
+
             return try self.parseReceiptCredentialResponse(
                 httpResponse: response,
                 receiptCredentialRequestContext: context,
                 isValidReceiptLevelPredicate: isValidReceiptLevelPredicate,
                 logger: logger
             )
-        }.recover(on: DispatchQueue.global()) { error throws -> Promise<ReceiptCredential> in
+        } catch {
             throw parseReceiptCredentialPresentationError(error: error)
         }
     }
@@ -525,16 +510,16 @@ public enum DonationSubscriptionManager {
         context: ReceiptCredentialRequestContext,
         request: ReceiptCredentialRequest,
         logger: PrefixedLogger
-    ) throws -> Promise<ReceiptCredential> {
-        return firstly {
+    ) async throws -> ReceiptCredential {
+        do {
             let networkRequest = OWSRequestFactory.boostReceiptCredentials(
                 with: boostPaymentIntentId,
                 for: paymentProcessor.rawValue,
                 request: request.serialize().asData
             )
 
-            return SSKEnvironment.shared.networkManagerRef.makePromise(request: networkRequest)
-        }.map(on: DispatchQueue.global()) { response throws -> ReceiptCredential in
+            let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(networkRequest)
+
             return try self.parseReceiptCredentialResponse(
                 httpResponse: response,
                 receiptCredentialRequestContext: context,
@@ -543,7 +528,7 @@ public enum DonationSubscriptionManager {
                 },
                 logger: logger
             )
-        }.recover(on: DispatchQueue.global()) { error throws -> Promise<ReceiptCredential> in
+        } catch {
             throw parseReceiptCredentialPresentationError(error: error)
         }
     }
@@ -648,7 +633,7 @@ public enum DonationSubscriptionManager {
 
     public static func redeemReceiptCredentialPresentation(
         receiptCredentialPresentation: ReceiptCredentialPresentation
-    ) -> Promise<Void> {
+    ) async throws {
         let expiresAtForLogging: String = {
             guard let result = try? receiptCredentialPresentation.getReceiptExpirationTime() else { return "UNKNOWN" }
             return String(result)
@@ -660,19 +645,13 @@ public enum DonationSubscriptionManager {
         let request = OWSRequestFactory.subscriptionRedeemReceiptCredential(
             receiptCredentialPresentation: receiptCredentialPresentationData
         )
-        return firstly(on: DispatchQueue.global()) {
-            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            let statusCode = response.responseStatusCode
-            if statusCode != 200 {
-                Logger.warn("[Donations] Receipt credential presentation request failed with status code \(statusCode)")
-                throw OWSRetryableSubscriptionError()
-            }
-        }.then(on: DispatchQueue.global()) {
-            Promise.wrapAsync {
-                _ = try await SSKEnvironment.shared.profileManagerImplRef.fetchLocalUsersProfile(authedAccount: .implicit())
-            }
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+        let statusCode = response.responseStatusCode
+        if statusCode != 200 {
+            Logger.warn("[Donations] Receipt credential presentation request failed with status code \(statusCode)")
+            throw OWSRetryableSubscriptionError()
         }
+        _ = try await SSKEnvironment.shared.profileManagerImplRef.fetchLocalUsersProfile(authedAccount: .implicit())
     }
 
     private static func generateReceiptSerial() throws -> ReceiptSerial {
@@ -950,47 +929,38 @@ extension DonationSubscriptionManager {
         return cachedBadge
     }
 
-    public static func getBoostBadge() -> Promise<ProfileBadge> {
-        firstly {
-            getOneTimeBadge(level: .boostBadge)
-        }.map { profileBadge in
-            guard let profileBadge = profileBadge else {
-                owsFail("No badge for this level was found")
+    public static func getBoostBadge() async throws -> ProfileBadge {
+        let profileBadge = try await getOneTimeBadge(level: .boostBadge)
+        guard let profileBadge else {
+            owsFail("No badge for this level was found")
+        }
+        return profileBadge
+    }
+
+    public static func getOneTimeBadge(level: OneTimeBadgeLevel) async throws -> ProfileBadge? {
+        let donationConfiguration = try await fetchDonationConfiguration()
+        switch level {
+        case .boostBadge:
+            return donationConfiguration.boost.badge
+        case .giftBadge(let level):
+            guard donationConfiguration.gift.level == level.rawLevel else {
+                Logger.warn("Requested gift badge with level \(level), which did not match known gift badge with level \(donationConfiguration.gift.level)")
+                return nil
             }
-            return profileBadge
+
+            return donationConfiguration.gift.badge
         }
     }
 
-    public static func getOneTimeBadge(level: OneTimeBadgeLevel) -> Promise<ProfileBadge?> {
-        firstly { () -> Promise<DonationConfiguration> in
-            fetchDonationConfiguration()
-        }.map { donationConfiguration -> ProfileBadge? in
-            switch level {
-            case .boostBadge:
-                return donationConfiguration.boost.badge
-            case .giftBadge(let level):
-                guard donationConfiguration.gift.level == level.rawLevel else {
-                    Logger.warn("Requested gift badge with level \(level), which did not match known gift badge with level \(donationConfiguration.gift.level)")
-                    return nil
-                }
-
-                return donationConfiguration.gift.badge
-            }
+    public static func getSubscriptionBadge(subscriptionLevel levelRawValue: UInt) async throws -> ProfileBadge {
+        let donationConfiguration = try await fetchDonationConfiguration()
+        guard let matchingLevel = donationConfiguration.subscription.levels.first(where: {
+            $0.level == levelRawValue
+        }) else {
+            throw OWSAssertionError("Missing requested subscription level!")
         }
-    }
 
-    public static func getSubscriptionBadge(subscriptionLevel levelRawValue: UInt) -> Promise<ProfileBadge> {
-        firstly { () -> Promise<DonationConfiguration> in
-            fetchDonationConfiguration()
-        }.map { donationConfiguration throws -> ProfileBadge in
-            guard let matchingLevel = donationConfiguration.subscription.levels.first(where: {
-                $0.level == levelRawValue
-            }) else {
-                throw OWSAssertionError("Missing requested subscription level!")
-            }
-
-            return matchingLevel.badge
-        }
+        return matchingLevel.badge
     }
 }
 
