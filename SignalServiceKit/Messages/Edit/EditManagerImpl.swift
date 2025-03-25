@@ -148,6 +148,13 @@ public class EditManagerImpl: EditManager {
             return .messageTypeNotSupported
         }
 
+        // isVoiceMessage is only available on outgoing messages, so make this check
+        // here instead of in 'editMessageTypeSupported'.  For incoming edits, this
+        // voice message check is done by inspecting the incoming attachments.
+        if message.isVoiceMessage {
+            return .messageTypeNotSupported
+        }
+
         if !thread.isNoteToSelf {
             let (result, isOverflow) = interaction.timestamp.addingReportingOverflow(Constants.editSendWindowMilliseconds)
             guard !isOverflow && Date.ows_millisecondTimestamp() <= result else {
