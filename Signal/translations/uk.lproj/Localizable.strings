@@ -551,7 +551,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Ваш регулярний щомісячний донат було скасовано. %1$@\n\nВаш значок більше не відображається у профілі.";
 
 /* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
-"BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Ваш банківський переказ отримано. Тепер ви можете відобразити в профілі значок, щоб розказати іншим про свою підтримку.";
+"BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Ваш банківський переказ отримано. Тепер ви можете показувати в профілі цей значок, щоб розказати іншим про свою підтримку.";
 
 /* Title for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
 "BADGE_THANKS_BANK_DONATION_COMPLETE_TITLE" = "Донат підтверджено";

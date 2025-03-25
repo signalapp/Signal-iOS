@@ -3095,7 +3095,7 @@
 "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE" = "¿Eliminar a %1$@ de la llamada?";
 
 /* The title of an alert when you've been removed from a group call. */
-"GROUP_CALL_REMOVED" = "Se te ha eliminado de la llamada";
+"GROUP_CALL_REMOVED" = "Ya no estás en la llamada";
 
 /* The message of an alert when you've been removed from a group call. */
 "GROUP_CALL_REMOVED_MESSAGE" = "Alguien te ha eliminado de la llamada.";
@@ -3140,10 +3140,10 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Desconexión en la llamada. Comprueba tu conexión e inténtalo de nuevo.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "Se enviará una notificación a %1$@";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "Se notificará a %1$@";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "Se enviará una notificación a %1$@ y %2$@";
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "Se notificará a %1$@ y %2$@";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
 "GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal sonará en la app de %1$@";
@@ -4601,7 +4601,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Bloquear";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "¿Permitir que %1$@ te envíe mensajes y compartir tu nombre y foto de perfil con esta persona? No sabrá que has recibido sus mensajes hasta que la desbloquees.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "¿Permitir que %1$@ te envíe mensajes y compartir tu nombre y foto de perfil con esta persona? No recibirás ninguno de sus mensajes hasta la desbloquees.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "¿Desbloquear este grupo y compartir tu nombre y foto de perfil con sus participantes? No recibirás ningún mensaje del grupo hasta que lo desbloquees.";
@@ -5135,10 +5135,10 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Verificando código…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Comprueba que tu teléfono tiene señal celular para recibir SMS o llamadas";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Asegúrate de que tu teléfono tenga señal para recibir SMS o llamadas.";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Comprueba que puedes recibir llamadas a ese número";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Confirma que puedes recibir llamadas en ese número.";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
 "ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Comprueba que has introducido tu número de teléfono correctamente";

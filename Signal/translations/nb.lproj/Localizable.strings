@@ -941,7 +941,7 @@
 "CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal-gruppe";
 
 /* Title for the calls list view. */
-"CALLS_LIST_TITLE" = "Samtaler";
+"CALLS_LIST_TITLE" = "Anrop";
 
 /* Label for an entry in the Calls Tab describing a call as incoming. */
 "CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Innkommende";
@@ -1706,7 +1706,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Alle medlemmer";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Velg hvem som kan sende meldinger og starte samtaler i gruppen.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Velg hvem som kan sende meldinger og foreta anrop i gruppen.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Sende meldinger";
@@ -6812,10 +6812,10 @@
 "SETTINGS_BLOCK_LIST_TITLE" = "Blokkert";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Omdiriger alltid samtaler";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Omdiriger alle telefonsamtaler";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Omdiriger alle samtaler via Signal-tjenesten for å unngå å avsløre IP-adressen din til kontakten din. Aktivering vil reduserer samtalekvaliteten.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Omdiriger alle anrop gjennom Signal-tjenesten for å unngå å avsløre IP-adressen din til kontakten din. Aktivering vil redusere samtalekvaliteten.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Endre nummer";
@@ -6869,10 +6869,10 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Bruk mindre data";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Lavere dataforbruk kan forbedre samtaler på dårlig nett.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Lavere dataforbruk kan gi bedre kvalitet i telefonsamtaler på dårlige nettverk.";
 
 /* Section header for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_HEADER" = "Samtaler";
+"SETTINGS_DATA_CALL_SECTION_HEADER" = "Anrop";
 
 /* Footer for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Lydmeldinger, vis-én-gang-media og klistremerker (under 100kb) lastes alltid ned automatisk.";
@@ -6914,7 +6914,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Slett alle dataene";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Er du sikker på at du vil slette alle logger (meldinger, vedlegg, samtaler osv.)? Dette valget kan ikke angres.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Er du sikker på at du vil slette alle logger (meldinger, vedlegg, telefonsamtaler osv.)? Dette valget kan ikke angres.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Slett alt";
@@ -7544,7 +7544,7 @@
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Avansert";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Vis samtaler i \"Sist brukte\"";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Vis anrop i «Nylig»";
 
 /* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "Personvern";
@@ -7583,7 +7583,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Skjul skjermen i appveksleren";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Vis samtaler i \"Sist brukte\"-listen til den innebygde telefonappen i iOS.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Vis anrop i «Nylig»-listen til den innebygde telefonappen på iOS.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Lyder";

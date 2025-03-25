@@ -659,9 +659,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se enviará una notificación a %2$@, %3$@ y %1$d más</string>
+			<string>Se notificará a %2$@, %3$@ y %1$d más</string>
 			<key>other</key>
-			<string>Se enviará una notificación a %2$@, %3$@ y %1$d más</string>
+			<string>Se notificará a %2$@, %3$@ y %1$d más</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
