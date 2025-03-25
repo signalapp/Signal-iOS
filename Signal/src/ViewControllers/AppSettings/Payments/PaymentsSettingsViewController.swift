@@ -317,7 +317,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         super.viewDidAppear(animated)
 
         SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
-        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
+        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversionRates()
 
         startUpdateBalanceTimer()
         let clientOutdated = SSKEnvironment.shared.paymentsHelperRef.isPaymentsVersionOutdated
@@ -538,7 +538,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
         headerStack.addTapGesture {
             SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
-            SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
+            SSKEnvironment.shared.paymentsCurrenciesRef.updateConversionRates()
         }
     }
 
@@ -982,7 +982,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     @objc
     private func didTapConversionRefresh() {
         SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
-        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
+        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversionRates()
     }
 
     @objc

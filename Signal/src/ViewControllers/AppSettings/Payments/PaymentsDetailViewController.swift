@@ -36,7 +36,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
+        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversionRates()
 
         if paymentItem.isUnread {
             SSKEnvironment.shared.databaseStorageRef.asyncWrite { [weak self] tx in

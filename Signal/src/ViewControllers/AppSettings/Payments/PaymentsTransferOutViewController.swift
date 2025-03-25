@@ -71,7 +71,7 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         super.viewDidAppear(animated)
 
         SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
-        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
+        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversionRates()
 
         addressTextfield.becomeFirstResponder()
     }

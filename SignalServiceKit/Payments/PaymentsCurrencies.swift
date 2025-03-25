@@ -16,7 +16,7 @@ public protocol PaymentsCurrencies: AnyObject {
 
     func setCurrentCurrencyCode(_ currencyCode: Currency.Code, transaction: DBWriteTransaction)
 
-    func updateConversationRatesIfStale()
+    func updateConversionRates()
 
     func warmCaches()
 }
@@ -102,7 +102,7 @@ public class MockPaymentsCurrencies: PaymentsCurrenciesSwift, PaymentsCurrencies
 
     public let supportedCurrencyInfosWithCurrencyConversions: [Currency.Info] = []
 
-    public func updateConversationRatesIfStale() {}
+    public func updateConversionRates() {}
 
     public func conversionInfo(forCurrencyCode currencyCode: Currency.Code) -> CurrencyConversionInfo? {
         return nil

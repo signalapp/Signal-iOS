@@ -14,12 +14,12 @@ public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies
         // TODO: Tune.
         let refreshCheckInterval: TimeInterval = .minute * 15
         refreshEvent = RefreshEvent(appReadiness: appReadiness, refreshInterval: refreshCheckInterval) { [weak self] in
-            self?.updateConversationRatesIfStale()
+            self?.updateConversionRates()
         }
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(updateConversationRatesIfStale),
+            selector: #selector(updateConversionRates),
             name: PaymentsConstants.arePaymentsEnabledDidChange,
             object: nil
         )
@@ -139,31 +139,10 @@ public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies
         }
     }
 
-    @objc
-    public func updateConversationRatesIfStale() {
-        let shouldUpdate: Bool = {
-            guard CurrentAppContext().isMainApp,
-                  !CurrentAppContext().isRunningTests else {
-                return false
-            }
-            guard SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled else {
-                return false
-            }
-            guard let conversionRates = self.conversionRates else {
-                return true
-            }
-            let staleInverval: TimeInterval = 5 * .minute
-            return abs(conversionRates.serviceDate.timeIntervalSinceNow) > staleInverval
-        }()
-
-        if shouldUpdate {
-            updateConversationRates()
-        }
-    }
-
     private let isUpdateInFlight = AtomicBool(false, lock: .sharedGlobal)
 
-    func updateConversationRates() {
+    @objc
+    public func updateConversionRates() {
         guard
             appReadiness.isAppReady,
             CurrentAppContext().isMainAppAndActive,

@@ -264,7 +264,7 @@ class PaymentsCurrencyPickerDataSource: NSObject, CurrencyPickerDataSource {
             object: nil
         )
 
-        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
+        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversionRates()
     }
 
     @objc

@@ -81,7 +81,7 @@ class SendPaymentHelper {
         updateCurrentCurrencyConversion()
 
         SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
-        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
+        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversionRates()
     }
 
     public static let minTopVSpacing: CGFloat = 16
