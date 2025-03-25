@@ -210,7 +210,7 @@ public struct AttachmentUpload {
 
             let didUploadMakeProgress = latestUploadProgressBytes > bytesAlreadyUploaded
             if didUploadMakeProgress {
-                attempt.logger.warn("Upload made progress: \(bytesAlreadyUploaded) -> \(latestUploadProgressBytes)\(downloadTimeLogString(UInt64(latestUploadProgressBytes)))")
+                attempt.logger.warn("Upload made progress: \(bytesAlreadyUploaded) -> \(latestUploadProgressBytes) (\(downloadTimeLogString(UInt64(latestUploadProgressBytes))))")
             }
 
             switch failureMode {

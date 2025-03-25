@@ -170,9 +170,9 @@ struct UploadEndpointCDN3: UploadEndpoint {
             let debugInfo: String
             if
                 DebugFlags.internalLogging,
-                error.httpResponseJson.debugDescription.isEmpty.negated
+                let responseData = error.httpResponseData?.nilIfEmpty
             {
-                debugInfo = " [ERROR RESPONSE: \(error.httpResponseJson.debugDescription)]"
+                debugInfo = " [ERROR RESPONSE: \(responseData.base64EncodedString())]"
             } else {
                 debugInfo = ""
             }
