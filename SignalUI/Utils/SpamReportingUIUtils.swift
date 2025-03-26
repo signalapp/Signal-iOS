@@ -101,12 +101,12 @@ public struct ReportSpamUIUtils {
             return owsFailDebug("Unexpected thread type for reporting spam \(type(of: thread))")
         }
 
+        let infoMessage = TSInfoMessage(thread: thread, messageType: .reportedSpam)
+        infoMessage.anyInsert(transaction: tx)
+
         guard let aci else {
             return owsFailDebug("Missing ACI for reporting spam")
         }
-
-        let infoMessage = TSInfoMessage(thread: thread, messageType: .reportedSpam)
-        infoMessage.anyInsert(transaction: tx)
 
         // We only report a selection of the N most recent messages
         // in the conversation.
