@@ -488,7 +488,7 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
             viewModel.shouldShowFinishLinkingSheet = false
 
             let sheet = HeroSheetViewController(
-                heroImage: UIImage(named: "linked-devices")!,
+                hero: .image(UIImage(named: "linked-devices")!),
                 title: OWSLocalizedString(
                     "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE",
                     comment: "Title for a sheet when a user has started linking a device informing them to finish the process on that other device"
@@ -497,7 +497,7 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
                     "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY",
                     comment: "Body text for a sheet when a user has started linking a device informing them to finish the process on that other device"
                 ),
-                buttonTitle: CommonStrings.continueButton
+                primaryButton: .dismissing(title: CommonStrings.continueButton)
             )
             self.finishLinkingSheet = sheet
 
@@ -587,7 +587,7 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
         }
 
         let sheet = HeroSheetViewController(
-            heroImage: UIImage(named: "phone-lock")!,
+            hero: .image(UIImage(named: "phone-lock")!),
             title: OWSLocalizedString(
                 "LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE",
                 comment: "Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device"
@@ -596,13 +596,15 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
                 "LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY",
                 comment: "Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device"
             ),
-            buttonTitle: CommonStrings.continueButton
-        ) { [weak self, context] in
-            self?.dismiss(animated: true)
-            Task {
-                await self?.authenticateThenShowLinkNewDeviceView(context: context)
+            primaryButton: .init(
+                title: CommonStrings.continueButton
+            ) { [weak self, context] in
+                self?.dismiss(animated: true)
+                Task {
+                    await self?.authenticateThenShowLinkNewDeviceView(context: context)
+                }
             }
-        }
+        )
 
         self.present(sheet, animated: true)
     }

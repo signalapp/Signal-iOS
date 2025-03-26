@@ -71,8 +71,7 @@ class LinkDeviceViewController: OWSViewController {
             }
 
             let sheet = HeroSheetViewController(
-                heroAnimationName: animationName,
-                heroAnimationHeight: 192,
+                hero: .animation(named: animationName, height: 192),
                 title: OWSLocalizedString(
                     "LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE",
                     comment: "Title for QR Scanning screen instructions sheet"
@@ -81,7 +80,7 @@ class LinkDeviceViewController: OWSViewController {
                     "LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY",
                     comment: "Title for QR Scanning screen instructions sheet"
                 ),
-                buttonTitle: CommonStrings.okayButton
+                primaryButton: .dismissing(title: CommonStrings.okayButton)
             )
 
             DispatchQueue.main.async {

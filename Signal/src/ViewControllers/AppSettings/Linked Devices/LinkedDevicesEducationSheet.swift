@@ -23,7 +23,7 @@ class LinkedDevicesEducationSheet: StackSheetViewController {
         stackView.setCustomSpacing(20, after: imageView)
 
         let titleLabel = UILabel()
-        titleLabel.font = .dynamicTypeTitle2
+        titleLabel.font = .dynamicTypeTitle2.bold()
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center
         titleLabel.text = OWSLocalizedString(
