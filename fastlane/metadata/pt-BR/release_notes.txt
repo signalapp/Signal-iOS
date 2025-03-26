@@ -1,1 +1,1 @@
-• Now you can zoom in on a view-once image or video. What once was a bug has been fixed once and for all.
+• Agora dá pra dar zoom em fotos e vídeos de visualização única. Isso já foi um problema, mas ficou no passado.

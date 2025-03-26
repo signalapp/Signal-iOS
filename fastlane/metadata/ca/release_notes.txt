@@ -1,1 +1,1 @@
-• Now you can zoom in on a view-once image or video. What once was a bug has been fixed once and for all.
+• Ara pots fer zoom sobre una imatge o vídeo d'una sola visualització.

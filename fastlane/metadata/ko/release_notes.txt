@@ -1,1 +1,1 @@
-• Now you can zoom in on a view-once image or video. What once was a bug has been fixed once and for all.
+• 이제 한 번만 볼 수 있는 이미지나 동영상을 확대할 수 있습니다. 이전에 발생했던 버그를 완전히 해결했습니다.
