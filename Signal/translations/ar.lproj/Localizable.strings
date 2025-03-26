@@ -122,13 +122,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "تم";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "لم يتمكن %1$@ من توصيل رسالة أو مُلصَق أو تفاعل أو وصل القراءة أو وسائط إليك في هذه الدردشة.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "لم يتمكن %1$@ من توصيل رسالة أو مُلصَق أو تفاعُل أو إيصال تأكيد القراءة أو وسائط إليك في هذه الدردشة.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "هناك مشكلة في التوصيل";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "لم يتمكن %1$@ من توصيل رسالة أو مُلصَق أو تفاعل أو وصل القراءة أو ملف وسائط إليك. يُحتمَل أنها أُرسِلت إليك مباشرةً أو أنها قد أُرسِلت في مجموعة.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "لم يتمكن %1$@ من توصيل رسالة أو مُلصَق أو تفاعُل أو إيصال تأكيد القراءة أو ملف وسائط إليك. يُحتمَل أنها أُرسِلت إليك مباشرةً أو أنها قد أُرسِلت في مجموعة.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "تجاهل";
@@ -269,7 +269,7 @@
 "APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "جرِّب طريقة دفع أخرى أو تواصَل مع المصرف الذي تتعامل معه لمزيدٍ من المعلومات.";
 
 /* Apple Pay donation error for decline failures where the user may need to contact their card or bank. */
-"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "يُرجى التحقّق من أن طريقة الدفع الخاصة بك في Apple Pay مُحدَّثة. إن لم تكن كذلك، قُم بتحديثها وحاوِل مُجدَّدًا. إن كُنتَ لازلت تواجه مشاكل، يُرجى الاتصال بالمصرف الذي تتعامل معه.";
+"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "يُرجى التحقّق من أن طريقة الدفع الخاصة بك في Apple Pay مُحدَّثة. إن لم تكن كذلك، قُم بتحديثها وحاوِل مرّة أخرى. إن كُنتَ لازلت تواجه مشاكل، يُرجى الاتصال بالمصرف الذي تتعامل معه.";
 
 /* Apple Pay donation error for decline failures where the card is not supported. */
 "APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "لا تدعم بطاقتك هذا الصنف من المشتريات. حاوِل استخدام طريقة دفع أخرى أو التواصل مع المصرف الذي تتعامل معه للحصول على مزيدٍ من المعلومات.";
@@ -278,7 +278,7 @@
 "APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "انتهت صلاحية بطاقتك. يُرجى التحقُّق من أن طريقة الدفع الخاصة بك في Apple Pay مُحدَّثة. إن لم تكن كذلك، قُم بتحديثها وحاوِل من جديد.";
 
 /* Apple Pay donation error for decline failures where the card number is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "رقم بطاقتك خاطئ. يُرجى التحقُّق من أنك أدخلت طريقة الدفع الخاصة بك في Apple Pay بشكلٍ صحيح. إن لم تكن كذلك، قُم بتحديثها وحاوِل من جديد.";
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "رقم بطاقتك خاطئ. يُرجى التحقُّق من أنك أدخلت طريقة الدفع الخاصة بك في Apple Pay بشكلٍ صحيح. إن لم تكن كذلك، قُم بتحديثها وحاوِل مرّة أخرى.";
 
 /* Apple Pay donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
 "APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "رقم رمز التحقُّق لبطاقتك (CVC) غير صحيح. تحقّق لمعرفة ما إذا كان رقم رمز التحقُّق من بطاقتك (CVC) قد تمَّ إدخاله بشكلٍ صحيح في Apple Pay. إذا لم يكن كذلك، فحدِّثه وحاوِل مرّة أخرى.";
@@ -287,10 +287,10 @@
 "APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "لا يتوفَّر مبالغ كافية لإتمام عملية الشراء هذه. حاوِل استخدام طريقة دفع أخرى أو تواصَل مع المصرف الذي تتعامل معه للمزيد من العملومات.";
 
 /* Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "شهر انتهاء الصلاحية الذي أدخلته في طريقة الدفع الخاصة بك خاطئ. يُرجى تحديثه في Apple Pay والمحاولة من جديد.";
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "شهر انتهاء الصلاحية الذي أدخلته في طريقة الدفع الخاصة بك خاطئ. يُرجى تحديثه في Apple Pay وحاوِل مرّة أخرى.";
 
 /* Apple Pay donation error for decline failures where the expiration year on the payment method is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "سنة انتهاء الصلاحية التي أدخلتها في طريقة الدفع الخاصة بك خاطئة. يُرجى تحديثها في Apple Pay والمحاولة من جديد.";
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "سنة انتهاء الصلاحية التي أدخلتها في طريقة الدفع الخاصة بك خاطئة. يُرجى تحديثها في Apple Pay وحاوِل مرّة أخرى.";
 
 /* Apple Pay donation error for decline failures where the card number is incorrect. */
 "APPLE_PAY_DONATION_ERROR_INVALID_NUMBER" = "رقم بطاقتك غير صحيح. يُرجى تحديثه في Apple Pay والمحاولة مرّة أخرى.";
@@ -302,7 +302,7 @@
 "APPLE_PAY_DONATION_ERROR_OTHER" = "جرِّب طريقة دفع أخرى أو تواصَل مع المصرف الذي تتعامل معه للمزيد من المعلومات.";
 
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
-"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "تحقَّق من أن طريقة الدفع الخاصة بك في Apple Pay مُحدَّثة. إن لم تكن كذلك، قُم بتحديثها وحاوِل مُجدَّدًا.";
+"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "تحقَّق من أن طريقة الدفع الخاصة بك في Apple Pay مُحدَّثة. إن لم تكن كذلك، قُم بتحديثها وحاوِل مرّة أخرى.";
 
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
 "APPLICATION_SHORTCUT_NEW_MESSAGE" = "رِسالة جديدة";
@@ -770,7 +770,7 @@
 "CALL_LINK_CREATE" = "إنشاء رابط المكالمة";
 
 /* Description of sheet presented when call link creation fails. */
-"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "تعذَّر إنشاء رابط المكالمة. تحقَّق من اتصالك بالإنترنت وحاوِل مُجدَّدًا.";
+"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "تعذَّر إنشاء رابط المكالمة. تحقَّق من اتصالك بالإنترنت وحاوِل مرّة أخرى.";
 
 /* Title of sheet presented when call link creation or update fails. */
 "CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "خطأ في الشبكة";
@@ -794,7 +794,7 @@
 "CALL_LINK_EDIT_NAME" = "تعديل اسم المكالمة";
 
 /* Description of sheet presented when joining call from call link sheet fails. */
-"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "تعذَّر الانضمام إلى المكالمة. تحقَّق من اتصالك بالإنترنت وحاوِل مُجدَّدًا.";
+"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "تعذَّر الانضمام إلى المكالمة. تحقَّق من اتصالك بالإنترنت وحاوِل مرّة أخرى.";
 
 /* Button on an action sheet to approve a request to join a call link. */
 "CALL_LINK_JOIN_REQUEST_APPROVE_BUTTON" = "الموافقة على الإدخال";
@@ -836,10 +836,10 @@
 "CALL_LINK_SHARE_VIA_SYSTEM" = "مشاركة الرابط";
 
 /* An error alert that's shown when deleting multiple calls and some of them couldn't be deleted. */
-"CALL_LINK_SOME_NOT_DELETED" = "تعذَّر حذف جميع روابط المكالمات. تحقّق من اتصالك بشبكة الإنترنت ثم حاول مُجدَّدًا.";
+"CALL_LINK_SOME_NOT_DELETED" = "تعذَّر حذف جميع روابط المكالمات. تحقّق من اتصالك بشبكة الإنترنت ثم حاول مرّة أخرى.";
 
 /* Description of sheet presented when call link update fails. */
-"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "تعذَّر تحديث رابط المكالمة. تحقَّق من اتصالك بالإنترنت وحاوِل مُجدَّدًا.";
+"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "تعذَّر تحديث رابط المكالمة. تحقَّق من اتصالك بالإنترنت وحاوِل مرّة أخرى.";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "خفض اليد";
@@ -1619,7 +1619,7 @@
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "الطلبات والدعوات";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "نبّهني دومًا";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "نبِّه دومًا";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "لا تنبّهني إذا كانت الدردشات مكتومة";
@@ -1682,7 +1682,7 @@
 "CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "لا توجد مجموعات مُشتركة";
 
 /* Label for 'permissions' action in conversation settings view. */
-"CONVERSATION_SETTINGS_PERMISSIONS" = "الصلاحيات";
+"CONVERSATION_SETTINGS_PERMISSIONS" = "الأذونات";
 
 /* Label for 'remove from group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "إزالة من المجموعة";
@@ -2084,13 +2084,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "عرض بحجم أصغر";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "تعذّر إتمام عملية النقل. احرص على إبقاء تطبيق سيجنال مفتوح في كلا الجهازين ثمَّ حاوِل مُجدَّدًا.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "تعذّر إتمام عملية النقل. احرص على إبقاء تطبيق سيجنال مفتوح في كلا الجهازين ثمَّ حاوِل مرّة أخرى.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "تعذَّر التحقُّق من جهازك الجديد. يُرجى المحاولة مُجدَّدًا.";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "تعذَّر التحقُّق من جهازك الجديد. يُرجى المحاولة مرّة أخرى.";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "تعذّر إتمام عملية النقل. احرص على أن تكون أجهزتكَ بالقُرب من بعضها البعض ثمَّ حاوِل مُجدَّدًا.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "تعذّر إتمام عملية النقل. احرص على أن تكون أجهزتكَ بالقُرب من بعضها البعض ثمَّ حاوِل مرّة أخرى.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "لإعداد جهاز الآي باد هذا كجهاز مُرتبِط، يجب إجراء المسح الضوي باستخدام جِهاز الآي باد القديم.";
@@ -2237,7 +2237,7 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "سَيتمُّ إخطار المُستلِم بالتبرُّع عبر رسالةٍ مباشرة منك إليه. أضِف رسالتك الخاصة أدناه.";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "إضافة نص";
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "إضافة رسالة";
 
 /* If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat. */
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "منتهية الصلاحية";
@@ -2312,7 +2312,7 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "التبرُّّع مُعلَّق";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "تبرُّعك لمرة واحدة مُعلَّق. ستتمكّن من عرض شارتك %1$@ على حسابك الشخصي فور استلام تبرُّعك.\n\nعادةً ما تستغرق معالجة التحويلات المصرفية ما بين يوم واحد و14 يوم عمل.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "تبرُّعك لمرّة واحدة مُعلَّق. ستتمكّن من عرض شارتك %1$@ على حسابك الشخصي فور استلام تبرُّعك.\n\nعادةً ما تستغرق معالجة التحويلات المصرفية ما بين يوم واحد و14 يوم عمل.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
 "DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "تبرُّعك الشهري مُعلَّق. ستتمكّن من عرض شارتك %1$@ على حسابك الشخصي فور استلام تبرُّعك.\n\nعادةً ما تستغرق معالجة التحويلات المصرفية ما بين يوم واحد و14 يوم عمل.";
@@ -2357,7 +2357,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "تمَّ تشغيل ميزة اختفاء الرسائل لهذه الدردشة. سَتختفي رسالة التبرُّع الخاصة بك بعد %1$@.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "تعذَّر التبرُّع. تحقَّق من اتصالك بالشبكة ثم حاوِل مُجدَّدًا.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "تعذَّر التبرُّع. تحقَّق من اتصالك بالشبكة ثم حاوِل مرّة أخرى.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "تعذَّر التبرُّع";
@@ -2369,7 +2369,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "تعذَّرت معالجة دفعتك ولم يتم تحصيل أي رسوم منك. يُرجى المحاولة مرّة أخرى.";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "فشلت عملية الدّفع";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "فشِلت عملية الدفع";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "تمَّت مُعالجة عملية الدفع لديك، ولكن لم يتمكّن سيجنال من إرسال رسالة التبرُّع الخاصة بك. يُرجى الاتصال بفريق الدعم.";
@@ -2468,10 +2468,10 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "إذا أعدت تثبيت سيجنال، فلن تصبح إيصالات التبرُّعات السابقة متاحة.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user cancels the webview before authrizing the payment. */
-"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "أُلغيَت عملية الدفع. يُرجى إعادة المُحاولة.";
+"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "أُلغيَت عملية الدفع. يُرجى المُحاولة مرّة أخرى.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the callback is in an unexpected format. */
-"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "الاستجابة على عملية الدفع غير صالحة. يُرجى إعادة المُحاولة.";
+"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "الاستجابة على عملية الدفع غير صالحة. يُرجى المُحاولة مرّة أخرى.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
 "DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "رُفِضت عملية الدفع. يُرجى إعادة المُحاولة.";
@@ -2501,7 +2501,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "حاوِل مُجدَّدًا";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "تعذَّر تأكيد تبرُّع iDEAL الخاص بك. تحقَّق من تطبيقك المصرفي لتأكيد تبرُّعك أو حاوِل مُجدَّدًا.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "تعذَّر تأكيد تبرُّع iDEAL الخاص بك. تحقَّق من تطبيقك المصرفي لتأكيد تبرُّعك أو حاوِل مرّة أخرى.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "تحويلك المصرفي مُعلَّق. عادةً ما تستغرق معالجة التحويلات المصرفية ما بين يوم واحد و14 يوم عمل.";
@@ -2522,7 +2522,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "تعذَّرت معالجة تبرُّع iDEAL الخاص بك. جرِّب طريقة دفع أخرى أو تواصَل مع المصرف الذي تتعامل معه لمزيدٍ من المعلومات.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "تعذَّر تأكيد تبرُّع iDEAL %1$@ لِمرة واحدة. تفقَّد تطبيق مصرفك لتأكيد عملية دفع iDEAL الخاصة بك.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "تعذَّر تأكيد تبرُّع iDEAL %1$@ لِمرّة واحدة. تفقَّد تطبيق مصرفك لتأكيد عملية دفع iDEAL الخاصة بك.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "تعذَّرت معالجة تبرُّع iDEAL الشهري الخاص بك. يُرجى محاولة طريقة أخرى للدفع أو الاتصال بمصرفك للمزيد من المعلومات..";
@@ -2726,7 +2726,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "إجابة غير صالحة من الخدمة.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "خطأ في الخادم. يُرجى المحاولة لاحقًا مُجدَّدًا.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "خطأ في الخادم. يُرجى المحاولة مُجدَّدًا لاحقًا.";
 
 /* Description for errors returned from the server due to suspected spam. */
 "ERROR_DESCRIPTION_SUSPECTED_SPAM" = "يحتاج الخادم إلى التحقُّق من المستخدم قبل إرسال الرسالة.";
@@ -2825,7 +2825,7 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "تغيَّر رقم الأمان الخاص بك مع %1$@ مؤخَّرًا. قد ترغب بالتحقُّق منه قبل إرسال هذه الرسالة مُجدَّدًا.";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "تعذَّر استخدام تبرُّعك. تحقّق من اتصالك بالشبكة ثم حاوِل مُجدَّدًا.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "تعذَّر استخدام تبرُّعك. تحقّق من اتصالك بالشبكة ثم حاوِل مرّة أخرى.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
 "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "تعذَّر استخدام التبرُّع";
@@ -2891,7 +2891,7 @@
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "أُرسِلت الرسائل";
 
 /* Indicates that the user can add a text message to forwarded messages. */
-"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "إضافة نص";
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "إضافة رسالة";
 
 /* Title for the 'forward message(s)' view. */
 "FORWARD_MESSAGE_TITLE" = "إعادة التوجيه إلى";
@@ -2951,13 +2951,13 @@
 "GO_TO_SETTINGS_BUTTON" = "انتقِل إلى الإعدادات";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "أنتَ غيَّرتَ من يمكنه تعديل معلومات المجموعة إلى \"%1$@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%1$@”.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "غيَّرَ %1$@ مَن يُمكنه تعديل معلومات المجموعة إلى \"%2$@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@”.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "يُمكن لـ \"%1$@\" التعديل على معلومات المجموعة.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%1$@”.";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "للمُشرِفين فقط";
@@ -2975,13 +2975,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "مُعطَّل";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "أنتَ غيَّرتَ من يمكنه تعديل عُضوية المجموعة إلى \"%1$@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%1$@”.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "غيَّرَ %1$@ مَن يُمكنه تعديل عُضوية المجموعة إلى \"%2$@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@”.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "يُمكن تغيير عُضوية المجموعة بواسطة \"%1$@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%1$@”.";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "المُشرفون فقط يُمكنهم تعديل هذا الإعداد.";
@@ -3083,7 +3083,7 @@
 "GROUP_CALL_PRESENTING_FORMAT" = "يقوم %1$@ بالتقديم";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
-"GROUP_CALL_RECONNECTING" = "تجري إعادة الاتصال";
+"GROUP_CALL_RECONNECTING" = "جارٍ إعادة الاتصال...";
 
 /* Label for a button to block a member from a group call. */
 "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_BLOCK_ACTION" = "حظر من المكالمة";
@@ -3137,7 +3137,7 @@
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ و %2$@ في هذه المُكالمة";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "قُطِعَ اتصالك بهذه المُكالمة. يُرجى التحقُّق من اتصالك بالشبكة ثم المُحاولة مرّة أخرى.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "قُطِعَ اتصالك بهذه المُكالمة. تحقَّق من اتصالك بالشبكة ثم حاوِل مرّة أخرى.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
 "GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "سَيتمُّ إشعار %1$@";
@@ -3290,10 +3290,10 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_MESSAGE" = "لتستطيع الانضمام إلى هذه المجموعة، يجب أن يوافق مُشرِف من هذه المجموعة على طلب انضمامك. عندما ترسل طلب انضمام، ستتمُّ مشاركة اسمك وصورتك مع أعضاء المجموعة.";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "يُرجى التأكُّد من اتصالك بالإنترنت ثم حاوِل مرّة أُخرى.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "تأكَّد من اتصالك بالإنترنت ثم حاوِل مرّة أُخرى.";
 
 /* Error message the attempt to request to join the group failed. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "يُرجى إعادة المُحاولة.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "يُرجى المُحاولة مرّة أخرى.";
 
 /* Message for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "رابط المجموعة هذا غير صالح. تأكَّد من سلامة وصحة الرابط بأكمله قبل مُحاولة الانضمام.";
@@ -3638,10 +3638,10 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "أزالَ %1$@ اسم المجموعة.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "غيَّرتَ اسم المجموعة إلى \"%1$@\".";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%1$@”.";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "غيَّرَ %1$@ اِسم المجموعة إلى \"%2$@\".";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@”.";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "الآن اسم المجموعة هو \"%1$@\".";
@@ -3740,7 +3740,7 @@
 "HIDE_RECIPIENT_CONFIRMATION_TOAST" = "تمَّ حذف %1$@.";
 
 /* An explanation of why a user was not successfully removed and what to do. */
-"HIDE_RECIPIENT_ERROR_ACTION_SHEET_EXPLANATION" = "تحقَّق من اتصالك بالشبكة ثم حاوِل مُجدَّدًا.";
+"HIDE_RECIPIENT_ERROR_ACTION_SHEET_EXPLANATION" = "تحقَّق من اتصالك بالشبكة ثم حاوِل مرّة أخرى.";
 
 /* Title for an action sheet indicating that the user was not successfully removed. Embeds {{name of user we attempted to hide}}. */
 "HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "لا يمكن إزالة %1$@";
@@ -3752,7 +3752,7 @@
 "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "لا يمكن إزالة %1$@";
 
 /* An explanation of why the user cannot be removed on a linked device. */
-"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "هذا الشخص محفوظ في جهات اتصالك. احذفه من جهات اتصالك على هاتفك وحاوِل مُجدَّدًا.";
+"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "هذا الشخص محفوظ في جهات اتصالك. احذفه من جهات اتصالك على هاتفك وحاوِل مرّة أخرى.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "الدردشات المؤرشفة";
@@ -4142,7 +4142,7 @@
 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "جارٍ التحضير…";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "قُم بربط ربط جهاز جديد";
+"LINK_NEW_DEVICE_TITLE" = "ربط جهاز جديد";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "مُعاينة الرابط";
@@ -4748,7 +4748,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "لا يمكنك ربط المزيد من الأجهزة.";
 
 /* A recovery suggestion shown as the body of an alert when try to link a new device & the user is already at the limit. */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "بلغتَ الحد الأقصى لِما يمكنك ربطه من أجهزة بحسابك. أزِل جهازًا وحاوِل مُجدَّدًا.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "بلغتَ الحد الأقصى لِما يمكنك ربطه من أجهزة بحسابك. أزِل جهازًا وحاوِل مرّة أخرى.";
 
 /* Text for a toast confirming that the mic has been muted for a call. */
 "MUTE_CONFIRMATION_TOAST_LABEL" = "الميكروفون غير مُفعَّل";
@@ -5081,10 +5081,10 @@
 "ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "الإشعارات";
 
 /* Preamble of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_PREAMBLE" = "يرغبُ سيجنال بطلب الصلاحيات التالية.";
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "يرغبُ سيجنال بطلب الأذونات التالية.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "منح الصلاحية للأذونات";
+"ONBOARDING_PERMISSIONS_TITLE" = "السماح بالأذونات";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "اختر من يُمكنه إيجادك على سيجنال بواسطة رقم الهاتف الخاص بك %1$@";
@@ -5366,7 +5366,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "تعذَّرت المُصادَقة على قفل عمليات الدفع.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "تعذَّر إتمام الدفع لأن رصيدك غير متاح. يُرجى التحقُّق من اتصالك بالانترنت ثم حاوِل مُجدَّدًا.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "تعذَّر إتمام الدفع لأن رصيدك غير متاح. يُرجى التحقُّق من اتصالك بالانترنت ثم حاوِل مرّة أخرى.";
 
 /* Label for the 'payment estimated fee' indicator. */
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "رسوم الشبكة";
@@ -5540,19 +5540,19 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "لا توجد دعوات لتعرضها.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "تمَّت إضافة \"%1$@\".";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%1$@”.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "عرض الطلبات";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "تمَّ رفض \"%1$@\".";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%1$@”.";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "إلغاء الدعوة";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "هل تُريد إلغاء دعوة المجموعة إلى \"%1$@\"؟";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%1$@”?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "لا يتم إظهار تفاصيل الأشخاص المدعوين مِن قِبَل أعضاء المجموعة الآخرين. إذا اختار المدعوون الانضمام، حينها ستتمُّ مُشاركة معلوماتهم مع المجموعة. لن يستطيعوا رؤية أي رِسالة في المجموعة حتى ينضموا.";
@@ -5684,7 +5684,7 @@
 "PIN_ACTION" = "تثبيت";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "تعذَّر إنشاء رقم التعريف الشخصي (PIN) الجديد الخاص بك. عُطِّل رقم التعريف الشخصي الحالي. تحقَّق من اتصالك وحاوِل مُجدَّدًا.";
+"PIN_CHANGE_ERROR_MESSAGE" = "تعذَّر إنشاء رقم التعريف الشخصي (PIN) الجديد الخاص بك. عُطِّل رقم التعريف الشخصي الحالي. تحقَّق من اتصالك وحاوِل مرّة أخرى.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
 "PIN_CHANGE_ERROR_TITLE" = "فشل تغيير رقم التعريف الشخصي (PIN)";
@@ -5693,7 +5693,7 @@
 "PIN_CREATION_ALPHANUMERIC_HINT" = "رقم التعريف الشخصي (PIN) يجب أن يحوي أربعة رموز على الأقل.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "تغيير رقم التعريف الشخصي (PIN)";
+"PIN_CREATION_CHANGING_TITLE" = "تغيير رقم الـ PIN";
 
 /* Title of the 'pin creation' confirmation view. */
 "PIN_CREATION_CONFIRM_TITLE" = "تأكيد رقم التعريف الشخصي (PIN)";
@@ -5708,7 +5708,7 @@
 "PIN_CREATION_CREATE_NUMERIC" = "إنشاء رقم تعريف شخصي (PIN) من أرقام";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "تعطيل رقم التعريف الشخصي (PIN)";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "تعطيل رقم الـ PIN";
 
 /* Message of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "إذا عطَّلتَ رقم التعريف الشخصي (PIN)، ستفقد جميع البيانات عند إعادة التسجيل في سيجنال إلّا إذا قُمتَ بنقلِها مِن جهاز  iOS آخر. لا يُمكنُك تفعيل قفل التسجيل أثناء تعطيل رقم التعريف الشخصي (PIN).";
@@ -5732,7 +5732,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "رقم التعريف الشخصي (PIN) غير مُطابِق. حاوِل مرّة أُخرى.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "تحقق من اتصالك بالشبكة ثم حاول مجددًا.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "تحقَّق من اتصالك بالشبكة ثم حاوِل مرّة أخرى.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
 "PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "لا يوجد اتصال بالشبكة";
@@ -5759,16 +5759,16 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "هل تُريد إيقاف قفل التسجيل؟";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "أُنشِئَ رقم التعريف الشخصي (PIN) بنجاح، لكن قفل التسجيل تعذَّر تفعيله. تحقَّق من اتصالك وحاوِل مُجدَّدًا.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "أُنشِئَ رقم التعريف الشخصي (PIN) بنجاح، لكن قفل التسجيل تعذَّر تفعيله. تحقَّق من اتصالك وحاوِل مرّة أخرى.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
 "PIN_CREATION_REGLOCK_ERROR_TITLE" = "فشل تفعيل قفل التسجيل";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "تعطيل رقم التعريف الشخصي (PIN)";
+"PIN_CREATION_SKIP" = "تعطيل رقم الـ PIN";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "إنشاء رقم التعريف الشخصي (PIN)";
+"PIN_CREATION_TITLE" = "إنشاء رقم الـ PIN";
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "اختر رقم تعريف شخصي (PIN) أقوى";
@@ -5789,7 +5789,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "فشل إنشاء رقم التعريف الشخصي (PIN)";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "تعذَّر إنشاء رقم التعريف الشخصي (PIN). تحقَّق من اتصالك وحاوِل مُجدَّدًا.";
+"PIN_RECRETION_ERROR_MESSAGE" = "تعذَّر إنشاء رقم التعريف الشخصي (PIN). تحقَّق من اتصالك وحاوِل مرّة أخرى.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "لمُساعدتك في حفظ رقم التعريف الشخصي (PIN) الخاص بك، سوف نسألك لإدخاله من حينٍ لآخر. سنسألك عنه بشكلٍ أقل مع مرور الوقت.";
@@ -5867,7 +5867,7 @@
 "PRIVACY_TAP_TO_SCAN" = "يُرجى اللمس من أجل المسح الضوئي";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "انقر للمسح";
+"PRIVACY_UNVERIFY_BUTTON" = "إزالة التحقُّق";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "لا يبدو هذا رقم الأمان الخاص بك مع %1$@. هل تتحقَّق من جهة الاتصال الصحيحة؟";
@@ -6248,13 +6248,22 @@
 "REGISTRATION_LOCK_TIMEOUT_TITLE" = "تمَّ قَفل الحِساب";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_BODY" = "للمُتابعة، تأكَّد من أنَّ الهاتف الخاص بك مُتَّصل بالإنترنت ثم حاول مرّة أخرى.";
+"REGISTRATION_NETWORK_ERROR_BODY" = "للمُتابعة، تأكَّد من أنَّ الهاتف الخاص بك مُتَّصل بالإنترنت ثم حاوِل مرّة أخرى.";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
 "REGISTRATION_NETWORK_ERROR_TITLE" = "تحقَّق من الاتصال";
 
 /* Title of button to tap if you do not have a backup key during registration. */
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "ليس بمتناولك مفتاح النسخة الاحتياطية؟";
+
+/* Body text on a sheet with info for what to do if you don't have a backup key */
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-digit recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
+
+/* Title for sheet with info for what to do if you don't have a backup key */
+"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "No Backup Key?";
+
+/* Title for button on sheet for when you don't have a backup key */
+"REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Skip & Don’t Restore";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "أدخِل رقم هاتفك للبدء.";
@@ -6311,7 +6320,7 @@
 "REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "لا يُمكن لسيجنال إرسال كود عبر رسالة نصية قصيرة نظرًا لمشاكل في مُزوِّد الرسائل القصيرة.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "تعذَّر على سيجنال إرسال كود عبر رسالة نصية قصيرة نظرًا لمشاكل في مُزوِّد الرسائل القصيرة. حاوِل من جديد في بضع ساعات.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "تعذَّر على سيجنال إرسال كود عبر رسالة نصية قصيرة نظرًا لمشاكل في مُزوِّد الرسائل القصيرة. حاوِل مرّة أخرى في بضع ساعات.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "يجب عليك التسجيل قبل أن تتمكن من إرسال رسالة.";
@@ -6335,13 +6344,13 @@
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "تعذّر إرسال كود التحقُّق عبر رسالة SMS. حاوِل الحصول على الكود الخاص بك عبر مكالمة صوتية بدلًا من ذلك.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "قُمتَ بمحاولاتٍ كثيرة لإدخال الكود. يُرجى إعادة إرسال الكود والمحاولة من جديد.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "قُمتَ بمحاولاتٍ كثيرة لإدخال الكود. يُرجى إعادة إرسال الكود والمحاولة مرّة أخرى.";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "قُمتَ بمحاولاتٍ كثيرة لإدخال الكود. حاوِل مُجدَّدًا في %1$@";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "قُمتَ بمحاولاتٍ كثيرة لإدخال الكود. حاوِل مرّة أخرى في %1$@";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "الكود الذي أدخلته غير صحيح. يُرجى إعادة إرسال الكود والمحاولة من جديد.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "الكود الذي أدخلته غير صحيح. يُرجى إعادة إرسال الكود والمحاولة مرّة أخرى.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "يُرجى إدخال رقم هاتف صالح للتسجيل.";
@@ -6503,7 +6512,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "فشلت المُصادَقة.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "عدد كبير من مُحاولات المُصادقة فاشلة. يُرجى مُعاودة المُحاولة في وقتٍ لاحق.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "عدد كبير من مُحاولات المُصادقة فاشلة. يُرجى المُحاولة مرّة أخرى في وقتٍ لاحق.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "يجب عليك تمكين رمز المرور في إعدادات iOS الخاصة بك من أجل استخدام قفل الشاشة.";
@@ -6572,10 +6581,10 @@
 "SECONDARY_LINKING_SYNCING_ERROR_TITLE" = "حدث خطأ أثناء نقل رسائلك.";
 
 /* Message for action sheet when secondary device fails to sync messages due to network error. */
-"SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE" = "تعذَّر نقل رسائلك. تحقَّق من اتصالك بالإنترنت وحاوِل مُجدَّدًا.";
+"SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE" = "تعذَّر نقل رسائلك. تحقَّق من اتصالك بالإنترنت وحاوِل مرّة أخرى.";
 
 /* Message for action sheet when secondary device fails to sync messages due to an unspecified error. */
-"SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE" = "تعذَّر نقل رسائلك بسبب حدوث خطأ. حاوِل من جديد من خلال إعادة ربط هذا الجهاز.";
+"SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE" = "تعذَّر نقل رسائلك بسبب حدوث خطأ. حاوِل مرّة أخرى من خلال إعادة ربط هذا الجهاز.";
 
 /* Button on an action sheet to open Signal on the App Store. */
 "SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_CHECK_FOR_UPDATE_BUTTON" = "تحقّق من وجود تحديثات";
@@ -6635,7 +6644,7 @@
 "SEND_FAILED_NOTIFICATION_BODY" = "فشل إرسال رسالتك.";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "فشل إرسال الدعوة. يُرجى إعادة المحاولة لاحقًا.";
+"SEND_INVITE_FAILURE" = "فشل إرسال الدعوة. يُرجى إعادة المحاولة مرّة أخرى.";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "تجاهُل الوسائط";
@@ -6668,7 +6677,7 @@
 "SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS" = "لا يتضمن الحساب البنكي الذي أدخلته مبالغ كافية لإتمام عملية الشراء هذه. يُرجى المحاولة مرّة أخرى أو الاتصال بمصرفك للمزيد من المعلومات.";
 
 /* SEPA bank account donation error for missing or incorrect mandate information. */
-"SEPA_DONATION_ERROR_NOT_AUTHORIZED" = "حدث خطأ أثناء معالجة عملية الدفع هذه. يُرجى إعادة المُحاولة لاحقًا.";
+"SEPA_DONATION_ERROR_NOT_AUTHORIZED" = "حدث خطأ أثناء معالجة عملية الدفع هذه. يُرجى المُحاولة مرّة أخرى.";
 
 /* SEPA bank account donation error for the account details not being able to be processed. */
 "SEPA_DONATION_ERROR_NOT_PROCESSED" = "تعذَّرت معالجة المعلومات المصرفية المُقدَّمة. يُرجى الاتصال بمصرفك للمزيد من المعلومات.";
@@ -6758,7 +6767,7 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "الإعدادات المُتقدِّمة لرقم الـ PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "تعطيل رقم PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "تعطيل رقم الـ PIN";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "تفعيل رقم PIN";
@@ -6977,7 +6986,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "الفيديوهات";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "مشاهدة ومشاركة متى تُكتَب الرسائل وتُقرَأ. إذا كانت مُعَطَّلَة، أنت لن ترى إيصالات القراءة أو مُؤشِر الكتابة من الآخرين.";
+"SETTINGS_MESSAGING_FOOTER" = "مشاهدة ومشاركة متى تُكتَب الرسائل وتُقرَأ. إذا كانت مُعَطَّلَة، أنت لن ترى إيصالات تأكيد القراءة أو مُؤشِر الكتابة من الآخرين.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "الإعدادات";
@@ -7127,7 +7136,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "عندما يرتفع الرصيد إلى مبلغٍ كبير، قد تكون لديك الحاجة إلى زيادة حماية حسابك عبر تحديث رقم التعريفي الشخصي (PIN) الخاص بك ليكون مُكوَّنًا من أرقام وحروف.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "تحديث رقم PIN الخاص بك";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "تحديث رقم الـ PIN";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "عنوان المحفظة غير صحيح";
@@ -7529,7 +7538,7 @@
 "SETTINGS_PINS_FOOTER" = "أرقام التعريف الشخصي (PIN) تُبقي المعلومات المحفوظة مع سيجنال مُشفَّرة، بحيث تستطيع أنت فقط الوصول إليها. لا يمكن استرداد رقم التعريف الشخصي (PIN) الخاص بك. سيتم استرجاع حسابك الشخصي، والإعدادات وجهات الاتصال عندما تُعيد تثبيت سيجنال.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
-"SETTINGS_PINS_ITEM" = "تغيير رقم التعريف الشخصي (PIN)";
+"SETTINGS_PINS_ITEM" = "تغيير رقم الـ PIN";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
 "SETTINGS_PINS_ITEM_CREATE" = "إنشاء رقم تعريف شخصي (PIN)";
@@ -7538,7 +7547,7 @@
 "SETTINGS_PINS_TITLE" = "رقم PIN الخاص بسيجنال";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "تجاوز الرقابة، واستخدام البروكسي، ودعم المكالمات دومًا، وإعدادات المُرسِل المَخفي.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "تجاوز الرقابة، واستخدام البروكسي، ودعم المكالمات دومًا، وإعدادات المُرسِل المُشفَّر.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "مُتقدِّمة";
@@ -7703,7 +7712,7 @@
 "SOMETHING_WENT_WRONG_ERROR" = "حدث خطأ ما.";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "حدث خطأ ما. يُرجى المحاولة لاحقًا.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "حدث خطأ ما. يُرجى المحاولة مرّة أخرى لاحقًا.";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "الأصوات والإشعارات";
@@ -8000,7 +8009,7 @@
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "تعذَّر إرسال القصة. يُرجى التحقُّق من اتصالك بالشبكة ثم حاوِل مرّة أخرى.";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "تعذَّر إرسال هذه القصة إلى بعض الناس. تحقَّق من اتصالك بالشبكة ثم حاوِل مُجدَّدًا.";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "تعذَّر إرسال هذه القصة إلى بعض الناس. تحقَّق من اتصالك بالشبكة ثم حاوِل مرّة أخرى.";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "مشاركة فقط مع…";
@@ -8115,9 +8124,6 @@
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
 "SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Log URL: %1$@";
-
-/* Localized label for support request email signal version string. Embeds {{signal version}}. */
-"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "نسخة سيجنال: %1$@";
 
 /* Localized subject for support request emails */
 "SUPPORT_EMAIL_SUBJECT" = "طلب دعم خاص بمُستخدِمي سيجنال iOS";
@@ -8435,7 +8441,7 @@
 "UPDATE_GROUP_FAILED" = "لم يكن بالإمكان تحديث المجموعة.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "لم يكن بالإمكان تحديث المجموعة. تحقَّق من اتصالك بالإنترنت ثمَّ حاول مرّة أُخرى.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "لم يكن بالإمكان تحديث المجموعة. تحقَّق من اتصالك بالإنترنت ثمَّ حاوِل مرّة أُخرى.";
 
 /* Button to activate the signal proxy */
 "USE_PROXY_BUTTON" = "استخدم البروكسي";
@@ -8522,7 +8528,7 @@
 "USERNAME_LINK_TOOLTIP_TITLE" = "شارك اسم المُستخدم الخاص بك";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "حدث خطأ أثناء البحث عن اسم المُستخدِم. يُرجى إعادة المُحاولة في وقتٍ لاحق.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "حدث خطأ أثناء البحث عن اسم المُستخدِم. يُرجى المُحاولة مرّة أخرى في وقتٍ لاحق.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ ليس اسم مُستخدِم صالح. تأكَّد من أنك أدخلتَ اسم المُستخدِم كاملًا متبوعًا بمجموعة الأرقام الخاصة به.";
@@ -8573,7 +8579,7 @@
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "اسم المُستخدم هذا غير متاح.";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "قُمتَ بمحاولاتٍ كثيرة. يُرجى المحاولة لاحقًا.";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "قُمتَ بمحاولاتٍ كثيرة. يُرجى المحاولة مرّة أخرى لاحقًا.";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "اسم المُستخدِم";
@@ -8687,10 +8693,10 @@
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "النمط الداكن يعتِّم الخلفية";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "تتعذَّر إزالة الخلفية. يُرجى المُحاولة في وقتٍ لاحق أو التواصل مع الدعم في حال استمرار المُشكلة.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "تتعذَّر إزالة الخلفية. يُرجى المُحاولة مرّة أخرى في وقتٍ لاحق أو التواصل مع الدعم في حال استمرار المُشكلة.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "تتعذَّر إعادة تعيين جميع الخلفيَّات. يُرجى المُحاولة في وقتٍ لاحق أو تواصَل مع قسم الدعم في حال استمرار المُشكلة.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "تتعذَّر إعادة تعيين جميع الخلفيَّات. يُرجى المُحاولة مرّة أخرى في وقتٍ لاحق أو تواصَل مع قسم الدعم في حال استمرار المُشكلة.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "إعادة تعيين كل الألوان";
