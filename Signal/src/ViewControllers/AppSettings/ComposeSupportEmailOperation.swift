@@ -211,12 +211,8 @@ final class ComposeSupportEmailOperation: NSObject {
                     comment: "Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}."
                 ), model.iosVersion
             ),
-            String(
-                format: OWSLocalizedString(
-                    "SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT",
-                    comment: "Localized label for support request email signal version string. Embeds {{signal version}}."
-                ), model.signalAppVersion
-            ), {
+            "Signal Version: \(model.signalAppVersion)",
+            {
                 if let debugURLString = model.resolvedDebugString {
                     return String(
                         format: OWSLocalizedString(
