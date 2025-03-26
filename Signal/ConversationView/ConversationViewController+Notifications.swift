@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import AVFoundation
 
 extension ConversationViewController {
     func addNotificationListeners() {
@@ -41,6 +42,13 @@ extension ConversationViewController {
                                                selector: #selector(profileWhitelistDidChange),
                                                name: UserProfileNotifications.profileWhitelistDidChange,
                                                object: nil)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(audioSessionInterrupted),
+                                               name: AVAudioSession.interruptionNotification,
+                                               object: AVAudioSession.sharedInstance()
+        )
+
         AppEnvironment.shared.callService.callServiceState.addObserver(self, syncStateImmediately: false)
     }
 
@@ -142,6 +150,13 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         startReadTimer()
+    }
+
+    @objc
+    private func audioSessionInterrupted(_ notification: Notification) {
+        AssertIsOnMainThread()
+
+        finishRecordingVoiceMessage(sendImmediately: false)
     }
 }
 
