@@ -162,19 +162,6 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE",
             comment: "table section label"
         )
-        sealedSenderSection.footerAttributedTitle = NSAttributedString.composed(of: [
-            OWSLocalizedString(
-                "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER",
-                comment: "table section footer"
-            ),
-            " ",
-            CommonStrings.learnMore.styled(
-                with: .link(URL(string: "https://signal.org/blog/sealed-sender/")!)
-            )
-        ]).styled(
-            with: .font(.dynamicTypeCaption1Clamped),
-            .color(Theme.secondaryTextAndIconColor)
-        )
         sealedSenderSection.add(.init(
             customCellBlock: { [weak self] in
                 let cell = OWSTableItem.newCell()
@@ -231,6 +218,19 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 target: self,
                 selector: #selector(didToggleUDUnrestrictedAccessSwitch)
             ))
+            sealedSenderSection.footerAttributedTitle = NSAttributedString.composed(of: [
+                OWSLocalizedString(
+                    "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER",
+                    comment: "table section footer"
+                ),
+                " ",
+                CommonStrings.learnMore.styled(
+                    with: .link(URL(string: "https://signal.org/blog/sealed-sender/")!)
+                )
+            ]).styled(
+                with: .font(.dynamicTypeCaption1Clamped),
+                .color(Theme.secondaryTextAndIconColor)
+            )
         }
 
         contents.add(sealedSenderSection)
