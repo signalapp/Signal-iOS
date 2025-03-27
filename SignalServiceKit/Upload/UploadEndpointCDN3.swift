@@ -9,6 +9,10 @@ import Foundation
 /// https://tus.io/protocols/resumable-upload
 struct UploadEndpointCDN3: UploadEndpoint {
 
+    public enum Constants {
+        public static let checksumHeaderKey = "x-signal-checksum-sha256"
+    }
+
     private let uploadForm: Upload.Form
     private let signalService: OWSSignalServiceProtocol
     private let fileSystem: Upload.Shims.FileSystem
@@ -58,17 +62,19 @@ struct UploadEndpointCDN3: UploadEndpoint {
 
         let statusCode = response.responseStatusCode
         guard statusCode == 200 else {
-            owsFailDebug("Invalid status code: \(statusCode).")
+            attempt.logger.error("Invalid status code: \(statusCode).")
             // If a success results in something other than 200,
             // throw a 'Restart' error to try with a different upload form
             return .restart
         }
 
-        guard
-            let bytesAlreadyUploadedString = response.headers["upload-offset"],
-            let bytesAlreadyUploaded = Int(bytesAlreadyUploadedString)
-        else {
-            owsFailDebug("Missing upload offset data")
+        guard let bytesAlreadyUploadedString = response.headers["upload-offset"] else {
+            attempt.logger.error("Missing upload offset data, restart from 0")
+            return .uploaded(0)
+        }
+
+        guard let bytesAlreadyUploaded = Int(bytesAlreadyUploadedString) else {
+            attempt.logger.error("'upload-offset' contains something unexpected, discard upload form and restart")
             return .restart
         }
 
@@ -104,7 +110,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
 
             // On creation, provide a checksum for the server to validate
             if let metadata = attempt.localMetadata as? ValidatedUploadMetadata {
-                headers["x-signal-checksum-sha256"] = metadata.digest.base64EncodedString()
+                headers[Constants.checksumHeaderKey] = metadata.digest.base64EncodedString()
             }
         } else {
             // Resuming, slice attachment data in memory.
