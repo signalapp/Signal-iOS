@@ -18,8 +18,8 @@ class BlockingManagerTests: SSKBaseTest {
         super.setUp()
         otherBlockingManager = BlockingManager(
             appReadiness: AppReadinessMock(),
-            blockedGroupStore: BlockedGroupStoreImpl(),
-            blockedRecipientStore: BlockedRecipientStoreImpl()
+            blockedGroupStore: BlockedGroupStore(),
+            blockedRecipientStore: BlockedRecipientStore()
         )
     }
 

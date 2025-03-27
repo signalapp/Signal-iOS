@@ -26,13 +26,13 @@ public enum BlockMode {
 
 public class BlockingManager {
     private let appReadiness: AppReadiness
-    private let blockedGroupStore: any BlockedGroupStore
-    private let blockedRecipientStore: any BlockedRecipientStore
+    private let blockedGroupStore: BlockedGroupStore
+    private let blockedRecipientStore: BlockedRecipientStore
 
     init(
         appReadiness: AppReadiness,
-        blockedGroupStore: any BlockedGroupStore,
-        blockedRecipientStore: any BlockedRecipientStore
+        blockedGroupStore: BlockedGroupStore,
+        blockedRecipientStore: BlockedRecipientStore
     ) {
         self.appReadiness = appReadiness
         self.blockedGroupStore = blockedGroupStore

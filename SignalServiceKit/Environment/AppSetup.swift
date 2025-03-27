@@ -177,10 +177,10 @@ public class AppSetup {
             recipientIdFinder: recipientIdFinder,
             remoteConfigProvider: remoteConfigManager
         )
-        let blockedRecipientStore = BlockedRecipientStoreImpl()
+        let blockedRecipientStore = BlockedRecipientStore()
         let blockingManager = BlockingManager(
             appReadiness: appReadiness,
-            blockedGroupStore: BlockedGroupStoreImpl(),
+            blockedGroupStore: BlockedGroupStore(),
             blockedRecipientStore: blockedRecipientStore
         )
         let earlyMessageManager = EarlyMessageManager(appReadiness: appReadiness)

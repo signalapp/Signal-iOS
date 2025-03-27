@@ -6,13 +6,7 @@
 import Foundation
 import GRDB
 
-protocol BlockedGroupStore {
-    func blockedGroupIds(tx: DBReadTransaction) throws -> [Data]
-    func isBlocked(groupId: Data, tx: DBReadTransaction) throws -> Bool
-    func setBlocked(_ isBlocked: Bool, groupId: Data, tx: DBWriteTransaction) throws
-}
-
-class BlockedGroupStoreImpl: BlockedGroupStore {
+struct BlockedGroupStore {
     func blockedGroupIds(tx: DBReadTransaction) throws -> [Data] {
         let db = tx.database
         do {

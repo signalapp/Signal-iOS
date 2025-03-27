@@ -6,13 +6,7 @@
 import Foundation
 import GRDB
 
-protocol BlockedRecipientStore {
-    func blockedRecipientIds(tx: DBReadTransaction) throws -> [SignalRecipient.RowId]
-    func isBlocked(recipientId: SignalRecipient.RowId, tx: DBReadTransaction) throws -> Bool
-    func setBlocked(_ isBlocked: Bool, recipientId: SignalRecipient.RowId, tx: DBWriteTransaction) throws
-}
-
-class BlockedRecipientStoreImpl: BlockedRecipientStore {
+struct BlockedRecipientStore {
     func blockedRecipientIds(tx: DBReadTransaction) throws -> [SignalRecipient.RowId] {
         let db = tx.database
         do {
@@ -45,9 +39,7 @@ class BlockedRecipientStoreImpl: BlockedRecipientStore {
             throw error.grdbErrorForLogging
         }
     }
-}
 
-extension BlockedRecipientStore {
     func mergeRecipientId(_ recipientId: SignalRecipient.RowId, into targetRecipientId: SignalRecipient.RowId, tx: DBWriteTransaction) {
         do {
             if try self.isBlocked(recipientId: recipientId, tx: tx) {
@@ -62,5 +54,5 @@ extension BlockedRecipientStore {
 struct BlockedRecipient: Codable, FetchableRecord, PersistableRecord {
     static let databaseTableName: String = "BlockedRecipient"
 
-    let recipientId: Int64
+    let recipientId: SignalRecipient.RowId
 }

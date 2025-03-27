@@ -94,7 +94,7 @@ struct MergedRecipient {
 
 class RecipientMergerImpl: RecipientMerger {
     private let aciSessionStore: SignalSessionStore
-    private let blockedRecipientStore: any BlockedRecipientStore
+    private let blockedRecipientStore: BlockedRecipientStore
     private let identityManager: OWSIdentityManager
     private let observers: Observers
     private let recipientDatabaseTable: RecipientDatabaseTable
@@ -109,7 +109,7 @@ class RecipientMergerImpl: RecipientMerger {
     /// order in which they are provided.
     init(
         aciSessionStore: SignalSessionStore,
-        blockedRecipientStore: any BlockedRecipientStore,
+        blockedRecipientStore: BlockedRecipientStore,
         identityManager: OWSIdentityManager,
         observers: Observers,
         recipientDatabaseTable: RecipientDatabaseTable,
