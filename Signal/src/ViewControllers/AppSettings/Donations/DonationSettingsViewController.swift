@@ -99,7 +99,9 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        _ = loadAndUpdateState()
+        Task {
+            await self.loadAndUpdateState()
+        }
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -129,18 +131,18 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Data loading
 
-    func loadAndUpdateState() -> Guarantee<Void> {
+    func loadAndUpdateState() async {
         switch state {
         case .loading:
             owsFailDebug("Already loading!")
-            return .value(())
+            return
         case .initializing, .loadFinished:
             self.state = .loading
-            return loadState().done { self.state = $0 }
+            self.state = await self.loadState()
         }
     }
 
-    private func loadState() -> Guarantee<State> {
+    private func loadState() async -> State {
         let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         let profileManager = SSKEnvironment.shared.profileManagerRef
         let (
@@ -167,75 +169,68 @@ class DonationSettingsViewController: OWSTableViewController2 {
             )
         }
 
-        let subscriptionLevelsPromise = Promise.wrapAsync { try await DonationViewsUtil.loadSubscriptionLevels(badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore) }
-        let currentSubscriptionPromise = Promise.wrapAsync {
-            try await DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
-        }
-        let profileBadgeLookupPromise = Guarantee.wrapAsync { await self.loadProfileBadgeLookup() }
+        async let subscriptionLevels = DonationViewsUtil.loadSubscriptionLevels(badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore)
+        async let currentSubscription = DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
+        async let profileBadgeLookup = loadProfileBadgeLookup()
 
-        return profileBadgeLookupPromise.then { profileBadgeLookup -> Guarantee<State> in
-            subscriptionLevelsPromise.then { subscriptionLevels -> Promise<State> in
-                currentSubscriptionPromise.then { currentSubscription -> Guarantee<State> in
-                    let result: State = .loadFinished(
-                        subscriptionStatus: {
-                            guard let currentSubscription else {
-                                if let pendingIDEALSubscription {
-                                    return .pendingSubscription(pendingIDEALSubscription)
-                                } else {
-                                    return .noSubscription
-                                }
-                            }
-
-                            return .hasSubscription(
-                                subscription: currentSubscription,
-                                subscriptionLevel: DonationViewsUtil.subscriptionLevelForSubscription(
-                                    subscriptionLevels: subscriptionLevels,
-                                    subscription: currentSubscription
-                                ),
-                                previouslyHadActiveSubscription: hasEverRedeemedRecurringSubscriptionBadge,
-                                receiptCredentialRequestError: recurringSubscriptionReceiptCredentialRequestError
-                            )
-                        }(),
-                        oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
-                        profileBadgeLookup: profileBadgeLookup,
-                        pendingOneTimeDonation: pendingIDEALOneTimeDonation,
-                        hasAnyBadges: hasAnyBadges,
-                        hasAnyDonationReceipts: hasAnyDonationReceipts
-                    )
-                    if let pendingIDEALSubscription {
-                        // Serialized badges lose their assets, so ensure they've
-                        // been populated before returning.
-                        return Promise.wrapAsync {
-                            try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(pendingIDEALSubscription.newSubscriptionLevel.badge)
-                        }.then { _ -> Guarantee<State> in
-                            Guarantee.value(result)
-                        }.recover { _ in
-                            Guarantee.value(result)
-                        }
-                    } else {
-                        return Guarantee.value(result)
-                    }
-                }
-            }.recover { error -> Guarantee<State> in
-                Logger.warn("[Donations] \(error)")
-                owsFailDebugUnlessNetworkFailure(error)
-                let result: State = .loadFinished(
-                    subscriptionStatus: .loadFailed,
-                    oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
-                    profileBadgeLookup: profileBadgeLookup,
-                    pendingOneTimeDonation: pendingIDEALOneTimeDonation,
-                    hasAnyBadges: hasAnyBadges,
-                    hasAnyDonationReceipts: hasAnyDonationReceipts
+        do {
+            let subscriptionStatus: State.SubscriptionStatus
+            if let currentSubscription = try await currentSubscription {
+                subscriptionStatus = .hasSubscription(
+                    subscription: currentSubscription,
+                    subscriptionLevel: DonationViewsUtil.subscriptionLevelForSubscription(
+                        subscriptionLevels: try await subscriptionLevels,
+                        subscription: currentSubscription
+                    ),
+                    previouslyHadActiveSubscription: hasEverRedeemedRecurringSubscriptionBadge,
+                    receiptCredentialRequestError: recurringSubscriptionReceiptCredentialRequestError
                 )
-                return Guarantee.value(result)
+
+            } else if let pendingIDEALSubscription {
+                subscriptionStatus = .pendingSubscription(pendingIDEALSubscription)
+            } else {
+                subscriptionStatus = .noSubscription
             }
+
+            let result: State = .loadFinished(
+                subscriptionStatus: subscriptionStatus,
+                oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
+                profileBadgeLookup: await profileBadgeLookup,
+                pendingOneTimeDonation: pendingIDEALOneTimeDonation,
+                hasAnyBadges: hasAnyBadges,
+                hasAnyDonationReceipts: hasAnyDonationReceipts
+            )
+            if let pendingIDEALSubscription {
+                // Serialized badges lose their assets, so ensure they've
+                // been populated before returning.
+                try? await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(pendingIDEALSubscription.newSubscriptionLevel.badge)
+            }
+            return result
+        } catch {
+            Logger.warn("[Donations] \(error)")
+            owsFailDebugUnlessNetworkFailure(error)
+            let result: State = .loadFinished(
+                subscriptionStatus: .loadFailed,
+                oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
+                profileBadgeLookup: await profileBadgeLookup,
+                pendingOneTimeDonation: pendingIDEALOneTimeDonation,
+                hasAnyBadges: hasAnyBadges,
+                hasAnyDonationReceipts: hasAnyDonationReceipts
+            )
+            return result
         }
     }
 
     private func loadProfileBadgeLookup() async -> ProfileBadgeLookup {
-        let donationConfiguration: DonationSubscriptionManager.DonationConfiguration
         do {
-            donationConfiguration = try await DonationSubscriptionManager.fetchDonationConfiguration()
+            let donationConfiguration = try await DonationSubscriptionManager.fetchDonationConfiguration()
+            let result = ProfileBadgeLookup(
+                boostBadge: donationConfiguration.boost.badge,
+                giftBadge: donationConfiguration.gift.badge,
+                subscriptionLevels: donationConfiguration.subscription.levels
+            )
+            await result.attemptToPopulateBadgeAssets(populateAssetsOnBadge: SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(_:))
+            return result
         } catch {
             Logger.warn("[Donations] Failed to fetch donation configuration \(error). Proceeding without it, as it is only cosmetic here.")
             return ProfileBadgeLookup(
@@ -244,13 +239,6 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 subscriptionLevels: []
             )
         }
-        let profileBadgeLookup = ProfileBadgeLookup(
-            boostBadge: donationConfiguration.boost.badge,
-            giftBadge: donationConfiguration.gift.badge,
-            subscriptionLevels: donationConfiguration.subscription.levels
-        )
-        await profileBadgeLookup.attemptToPopulateBadgeAssets(populateAssetsOnBadge: SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge)
-        return profileBadgeLookup
     }
 
     private func setUpAvatarView() {
@@ -682,9 +670,9 @@ class DonationSettingsViewController: OWSTableViewController2 {
             // Not ideal, because this makes network requests. However, this
             // should be rare, and doing it this way avoids us needing to add
             // methods for updating the state outside the normal loading flow.
-            self.loadAndUpdateState().done(on: DispatchQueue.main) { [weak self] in
-                guard let self else { return }
-                self.showDonateViewController(preferredDonateMode: donateMode)
+            Task { [weak self] in
+                await self?.loadAndUpdateState()
+                self?.showDonateViewController(preferredDonateMode: donateMode)
             }
         }
     }

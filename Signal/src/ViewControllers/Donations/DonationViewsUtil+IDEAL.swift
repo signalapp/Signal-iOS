@@ -173,7 +173,7 @@ extension DonationViewsUtil {
             }.ensure(on: DispatchQueue.main) {
                 // refresh the local state upon completing the donation
                 // to refresh any pending donation messages
-                _ = donationsVC.loadAndUpdateState()
+                Task { await donationsVC.loadAndUpdateState() }
             }
         }
     }
