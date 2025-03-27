@@ -16,6 +16,14 @@ public struct OwnedAttachmentPointerProto {
 }
 
 public struct OwnedAttachmentBackupPointerProto {
+    public enum CreationError: Error {
+        case missingTransitCdnKey
+        case missingMediaName
+        case missingEncryptionKey
+        case missingDigest
+        case dbInsertionError(Error)
+    }
+
     public let proto: BackupProto_FilePointer
     public let renderingFlag: AttachmentReference.RenderingFlag
     public let clientUUID: UUID?
@@ -33,11 +41,27 @@ public struct OwnedAttachmentBackupPointerProto {
         self.owner = owner
     }
 
-    public enum CreationError: Error {
-        case missingTransitCdnKey
-        case missingMediaName
-        case missingEncryptionKey
-        case missingDigest
-        case dbInsertionError(Error)
+    /// The `receivedAt` timestamp of the owning message, or `nil` if the owner
+    /// is not a message.
+    public var owningMessageReceivedAtTimestamp: UInt64? {
+        switch owner {
+        case .messageBodyAttachment(let messageBodyAttachmentBuilder):
+            return messageBodyAttachmentBuilder.receivedAtTimestamp
+        case .messageOversizeText(let messageAttachmentBuilder):
+            return messageAttachmentBuilder.receivedAtTimestamp
+        case .messageLinkPreview(let messageAttachmentBuilder):
+            return messageAttachmentBuilder.receivedAtTimestamp
+        case .quotedReplyAttachment(let messageAttachmentBuilder):
+            return messageAttachmentBuilder.receivedAtTimestamp
+        case .messageSticker(let messageStickerBuilder):
+            return messageStickerBuilder.receivedAtTimestamp
+        case .messageContactAvatar(let messageAttachmentBuilder):
+            return messageAttachmentBuilder.receivedAtTimestamp
+        case .threadWallpaperImage, .globalThreadWallpaperImage:
+            return nil
+        case .storyMessageMedia, .storyMessageLinkPreview:
+            owsFailDebug("Backups never contain Stories file pointers!")
+            return nil
+        }
     }
 }

@@ -7,24 +7,30 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentStore: AttachmentStore
+    private let dateProvider: DateProvider
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private let orphanedAttachmentStore: OrphanedAttachmentStore
     private let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
+    private let remoteConfigManager: RemoteConfigManager
     private let stickerManager: Shims.StickerManager
 
     public init(
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentStore: AttachmentStore,
+        dateProvider: @escaping DateProvider,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
         orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
+        remoteConfigManager: RemoteConfigManager,
         stickerManager: Shims.StickerManager
     ) {
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentStore = attachmentStore
+        self.dateProvider = dateProvider
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.orphanedAttachmentStore = orphanedAttachmentStore
         self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
+        self.remoteConfigManager = remoteConfigManager
         self.stickerManager = stickerManager
     }
 
@@ -44,7 +50,14 @@ public class AttachmentManagerImpl: AttachmentManager {
             mimeType: \.proto.contentType,
             owner: \.owner,
             output: \.proto,
-            createFn: self._createAttachmentPointer(from:owner:sourceOrder:tx:),
+            createFn: {
+                try self._createAttachmentPointer(
+                    from: $0,
+                    owner: $1,
+                    sourceOrder: $2,
+                    tx: $3
+                )
+            },
             tx: tx
         )
     }
@@ -92,7 +105,14 @@ public class AttachmentManagerImpl: AttachmentManager {
             mimeType: { $0.mimeType },
             owner: \.owner,
             output: \.source,
-            createFn: self._createAttachmentStream(consuming:owner:sourceOrder:tx:),
+            createFn: {
+                try self._createAttachmentStream(
+                    consuming: $0,
+                    owner: $1,
+                    sourceOrder: $2,
+                    tx: $3
+                )
+            },
             tx: tx
         )
     }
@@ -476,24 +496,31 @@ public class AttachmentManagerImpl: AttachmentManager {
                 sourceUnencryptedByteCount = nil
             }
         case .attachmentLocator(let attachmentLocator):
-            let transitTierInfo: Attachment.TransitTierInfo
-            switch self.transitTierInfo(from: attachmentLocator, incrementalMacInfo: incrementalMacInfo) {
+            let transitTierInfo: Attachment.TransitTierInfo?
+            switch self.transitTierInfo(
+                from: attachmentLocator,
+                owningMessageReceivedAtTimestamp: ownedProto.owningMessageReceivedAtTimestamp,
+                incrementalMacInfo: incrementalMacInfo
+            ) {
             case .success(let value):
                 transitTierInfo = value
             case .failure(let error):
                 return .failure(error)
             }
-            attachmentParams = .fromPointer(
-                blurHash: proto.blurHash.nilIfEmpty,
-                mimeType: mimeType,
-                encryptionKey: transitTierInfo.encryptionKey,
-                transitTierInfo: transitTierInfo
-            )
 
-            if attachmentLocator.size > 0 {
-                sourceUnencryptedByteCount = attachmentLocator.size
+            if let transitTierInfo {
+                attachmentParams = .fromPointer(
+                    blurHash: proto.blurHash.nilIfEmpty,
+                    mimeType: mimeType,
+                    encryptionKey: attachmentLocator.key,
+                    transitTierInfo: transitTierInfo
+                )
+                sourceUnencryptedByteCount = transitTierInfo.unencryptedByteCount
             } else {
-                sourceUnencryptedByteCount = nil
+                // We successfully parsed the transit tier info, but decided we
+                // should discard it. To that end, fall through to the handling
+                // for invalid attachment locators.
+                fallthrough
             }
         case .invalidAttachmentLocator, .none:
             attachmentParams = .forInvalidBackupAttachment(
@@ -591,10 +618,38 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     private func transitTierInfo(
         from attachmentLocator: BackupProto_FilePointer.AttachmentLocator,
+        owningMessageReceivedAtTimestamp: UInt64?,
         incrementalMacInfo: Attachment.IncrementalMacInfo?
-    ) -> Result<Attachment.TransitTierInfo, OwnedAttachmentBackupPointerProto.CreationError> {
+    ) -> Result<Attachment.TransitTierInfo?, OwnedAttachmentBackupPointerProto.CreationError> {
         guard attachmentLocator.digest.count > 0 else { return .failure(.missingDigest) }
         guard attachmentLocator.cdnKey.count > 0 else { return .failure(.missingTransitCdnKey) }
+
+        let uploadTimestampMs: UInt64
+        if attachmentLocator.hasUploadTimestamp, attachmentLocator.uploadTimestamp > 0 {
+            uploadTimestampMs = attachmentLocator.uploadTimestamp
+        } else if let owningMessageReceivedAtTimestamp {
+            // iOS historically did not set the `uploadTimestamp` on attachment
+            // protos we sent with outgoing messages. As a workaround for our
+            // purposes here, we'll sub in the `receivedAt` timestamp for the
+            // message this attachment is owned by (if applicable).
+            uploadTimestampMs = owningMessageReceivedAtTimestamp
+        } else {
+            uploadTimestampMs = 0
+        }
+
+        let maxTransitTierAge: TimeInterval = Double(remoteConfigManager.currentConfig().messageQueueTimeMs) / 1000
+        let now = dateProvider()
+        guard
+            Date(millisecondsSince1970: uploadTimestampMs)
+                .addingTimeInterval(maxTransitTierAge) > now
+        else {
+            // This suggests that the attachment has expired off the transit
+            // tier, so we can proactively drop the transit tier info. That'll
+            // let us show users immediately that the attachment isn't available
+            // (on the transit tier), and avoid a doomed-to-fail network request
+            // that we'd otherwise make to confirm that it's gone.
+            return .success(nil)
+        }
 
         let unencryptedByteCount: UInt32?
         if attachmentLocator.size > 0 {

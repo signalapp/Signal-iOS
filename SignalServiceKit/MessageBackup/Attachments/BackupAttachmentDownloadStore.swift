@@ -24,6 +24,12 @@ public protocol BackupAttachmentDownloadStore {
     /// rows into the normal AttachmentDownloadQueue, as this table serves only as an intermediary.
     func enqueue(_ reference: AttachmentReference, tx: DBWriteTransaction) throws
 
+    /// Returns whether a download is enqueued for a target attachment.
+    func hasEnqueuedDownload(
+        attachmentRowId: Attachment.IDType,
+        tx: DBReadTransaction
+    ) throws -> Bool
+
     /// Read the next highest priority downloads off the queue, up to count.
     /// Returns an empty array if nothing is left to download.
     func peek(count: UInt, tx: DBReadTransaction) throws -> [QueuedBackupAttachmentDownload]
@@ -100,6 +106,17 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
             timestamp: timestamp
         )
         try record.insert(db)
+    }
+
+    public func hasEnqueuedDownload(
+        attachmentRowId: Attachment.IDType,
+        tx: DBReadTransaction
+    ) throws -> Bool {
+        let existingRecord = try QueuedBackupAttachmentDownload
+            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.attachmentRowId) == attachmentRowId)
+            .fetchOne(tx.database)
+
+        return existingRecord != nil
     }
 
     public func peek(

@@ -405,9 +405,11 @@ public class AppSetup {
         let attachmentManager = AttachmentManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentStore: attachmentStore,
+            dateProvider: dateProvider,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
             orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
+            remoteConfigManager: remoteConfigManager,
             stickerManager: AttachmentManagerImpl.Wrappers.StickerManager()
         )
         let attachmentValidationBackfillMigrator = AttachmentValidationBackfillMigratorImpl(
@@ -1248,6 +1250,7 @@ public class AppSetup {
             authorMergeHelper: authorMergeHelper,
             avatarDefaultColorManager: avatarDefaultColorManager,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             backupSubscriptionManager: backupSubscriptionManager,
             badgeCountFetcher: badgeCountFetcher,

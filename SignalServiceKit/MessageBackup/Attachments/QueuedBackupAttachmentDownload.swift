@@ -27,7 +27,7 @@ public struct QueuedBackupAttachmentDownload: Codable, FetchableRecord, MutableP
 
     /// Timestamp of the newest message that owns this attachment (or nil if non-message attachment).
     /// Used to determine priority and whether to download fullsize or thumbnail. NOT used for sorting.
-    public private(set) var timestamp: UInt64?
+    public let timestamp: UInt64?
 
     // MARK: - API
 
@@ -38,10 +38,6 @@ public struct QueuedBackupAttachmentDownload: Codable, FetchableRecord, MutableP
     ) {
         self.id = id
         self.attachmentRowId = attachmentRowId
-        self.timestamp = timestamp
-    }
-
-    public mutating func updateWithTimestamp(_ timestamp: UInt64) {
         self.timestamp = timestamp
     }
 

@@ -134,17 +134,39 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
-        // Avoid doing this on the main actor, as this isn't user-initiated.
-        Task.detached {
-            let db = DependenciesBridge.shared.db
+        /// If any of the failed or pending downloads were enqueued by a Backup
+        /// restore, immediately attempt to download those attachments.
+        Task {
             let attachmentDownloadManager = DependenciesBridge.shared.attachmentDownloadManager
+            let attachmentStore = DependenciesBridge.shared.attachmentStore
+            let backupAttachmentDownloadStore = DependenciesBridge.shared.backupAttachmentDownloadStore
+            let db = DependenciesBridge.shared.db
 
-            await db.awaitableWrite { tx in
-                attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
-                    message,
-                    priority: .default,
-                    tx: tx
-                )
+            guard let messageRowId = message.sqliteRowId else {
+                owsFailDebug("Cannot increase priority for uninserted message!")
+                return
+            }
+
+            let messageHasAnyEnqueuedBackupDownloads = try db.read { tx throws in
+                let referencedAttachments = attachmentStore
+                    .fetchAllReferencedAttachments(owningMessageRowId: messageRowId, tx: tx)
+
+                return try referencedAttachments.map { $0.attachment.id }.contains { attachmentRowId in
+                    try backupAttachmentDownloadStore.hasEnqueuedDownload(
+                        attachmentRowId: attachmentRowId,
+                        tx: tx
+                    )
+                }
+            }
+
+            if messageHasAnyEnqueuedBackupDownloads {
+                await db.awaitableWrite { tx in
+                    attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
+                        message,
+                        priority: .default,
+                        tx: tx
+                    )
+                }
             }
         }
     }

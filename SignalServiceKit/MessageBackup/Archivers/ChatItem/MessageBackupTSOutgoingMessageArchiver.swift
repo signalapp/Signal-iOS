@@ -513,7 +513,10 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             let outgoingMessageBuilder = TSOutgoingMessageBuilder(
                 thread: chatThread.tsThread,
                 timestamp: chatItem.dateSent,
-                receivedAtTimestamp: nil,
+                // If we pass `nil` this will default to "now", which is a much
+                // worse approximation than the "sent" timestamp. For outgoing
+                // messages, "sent" and "received" are the same, anyway.
+                receivedAtTimestamp: chatItem.dateSent,
                 messageBody: nil,
                 bodyRanges: nil,
                 editState: editState,

@@ -20,7 +20,7 @@ public protocol BackupAttachmentDownloadManager {
         tx: DBWriteTransaction
     ) throws
 
-    /// Restores all pending attachments in the BackupAttachmentUDownloadQueue.
+    /// Restores all pending attachments in the BackupAttachmentDownloadQueue.
     ///
     /// Will keep restoring attachments until there are none left, then returns.
     /// Is cooperatively cancellable; will check and early terminate if the task is cancelled

@@ -503,7 +503,8 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 } else {
                     return .globalThreadWallpaperImage
                 }
-            }())
+            }()
+        )
 
         let errors = attachmentManager.createAttachmentPointers(
             from: [ownedAttachment],
