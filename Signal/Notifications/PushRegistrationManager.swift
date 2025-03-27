@@ -70,9 +70,11 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         return Promise.wrapAsync {
             await self.registerUserNotificationSettings()
         }.then { (_) -> Promise<ApnRegistrationId> in
-            guard !Platform.isSimulator else {
-                throw PushRegistrationError.pushNotSupported(description: "Push not supported on simulators")
+            #if targetEnvironment(simulator)
+            if TSConstants.isUsingProductionService {
+                throw PushRegistrationError.pushNotSupported(description: "Production APNs isn't supported on simulators.")
             }
+            #endif
 
             return self
                 .registerForVanillaPushToken(
