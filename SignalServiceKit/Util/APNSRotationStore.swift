@@ -26,7 +26,14 @@ public final class APNSRotationStore {
         )
         // Mark the current token as one we know works!
         guard let token = SSKEnvironment.shared.preferencesRef.getPushToken(tx: transaction) else {
-            owsFailDebug("Got a push without a push token; not marking any token as working.")
+            // The value returned by `getPushToken` is saved after we receive a
+            // successful response from the server. If that response gets lost, the
+            // server may have (and use) a token that we haven't yet persisted. That's
+            // unusual but correct behavior.
+            //
+            // Additionally, the server may send a push challenge using an APNs token
+            // we haven't yet persisted to disk; that's also expected behavior.
+            Logger.warn("Got a push without a push token; not marking any token as working.")
             return
         }
         kvStore.setString(
