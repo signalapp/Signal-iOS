@@ -89,10 +89,14 @@ public class BlockingManager {
         return (try? blockedGroupStore.isBlocked(groupId: groupId, tx: transaction)) ?? false
     }
 
+    public func blockedRecipientIds(tx: DBReadTransaction) throws -> Set<SignalRecipient.RowId> {
+        return Set(try blockedRecipientStore.blockedRecipientIds(tx: tx))
+    }
+
     public func blockedAddresses(transaction: DBReadTransaction) -> Set<SignalServiceAddress> {
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
 
-        let blockedRecipientIds = (try? blockedRecipientStore.blockedRecipientIds(tx: transaction)) ?? []
+        let blockedRecipientIds = (try? self.blockedRecipientIds(tx: transaction)) ?? []
         return Set(blockedRecipientIds.compactMap {
             return recipientDatabaseTable.fetchRecipient(rowId: $0, tx: transaction)?.address
         })

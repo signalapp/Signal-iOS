@@ -47,7 +47,7 @@ extension MessageBackup {
 
 public protocol _MessageBackup_BlockingManagerShim {
 
-    func blockedAddresses(tx: DBReadTransaction) -> Set<SignalServiceAddress>
+    func blockedRecipientIds(tx: DBReadTransaction) throws -> Set<SignalRecipient.RowId>
     func blockedGroupIds(tx: DBReadTransaction) throws -> [Data]
 
     func addBlockedAddress(_ address: SignalServiceAddress, tx: DBWriteTransaction)
@@ -62,8 +62,8 @@ public class _MessageBackup_BlockingManagerWrapper: _MessageBackup_BlockingManag
         self.blockingManager = blockingManager
     }
 
-    public func blockedAddresses(tx: DBReadTransaction) -> Set<SignalServiceAddress> {
-        return blockingManager.blockedAddresses(transaction: SDSDB.shimOnlyBridge(tx))
+    public func blockedRecipientIds(tx: DBReadTransaction) throws -> Set<SignalRecipient.RowId> {
+        return try blockingManager.blockedRecipientIds(tx: SDSDB.shimOnlyBridge(tx))
     }
 
     public func blockedGroupIds(tx: DBReadTransaction) throws -> [Data] {

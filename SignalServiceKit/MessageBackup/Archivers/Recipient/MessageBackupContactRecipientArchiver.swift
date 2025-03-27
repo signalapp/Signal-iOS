@@ -72,7 +72,13 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         context: MessageBackup.RecipientArchivingContext
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         let whitelistedAddresses = Set(profileManager.allWhitelistedAddresses(tx: context.tx))
-        let blockedAddresses = blockingManager.blockedAddresses(tx: context.tx)
+
+        let blockedRecipientIds: Set<SignalRecipient.RowId>
+        do {
+            blockedRecipientIds = try blockingManager.blockedRecipientIds(tx: context.tx)
+        } catch {
+            return .completeFailure(.fatalArchiveError(.blockedRecipientFetchError(error)))
+        }
 
         var errors = [ArchiveFrameError]()
 
@@ -192,7 +198,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                     for: recipient,
                     tx: context.tx
                 ),
-                isBlocked: blockedAddresses.contains(recipient.address),
+                isBlocked: blockedRecipientIds.contains(recipient.id!),
                 isWhitelisted: whitelistedAddresses.contains(recipient.address),
                 isStoryHidden: isStoryHidden,
                 visibility: { () -> BackupProto_Contact.Visibility in
@@ -342,7 +348,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                     e164: contactAddress.e164,
                     username: nil, // If we have a user profile, we have no username.
                     nicknameRecord: nil, // Only contacts with SignalRecipients can have nicknames.
-                    isBlocked: blockedAddresses.contains(signalServiceAddress),
+                    isBlocked: false, // Only contacts with SignalRecipients can be blocked.
                     isWhitelisted: whitelistedAddresses.contains(signalServiceAddress),
                     isStoryHidden: false, // Can't have a story if there's no recipient.
                     visibility: .visible, // Can't have hidden if there's no recipient.
@@ -418,8 +424,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             e164: address.e164,
             username: nil,
             nicknameRecord: nil, // Only contacts with SignalRecipients can have nicknames.
-            isBlocked: blockingManager.blockedAddresses(tx: context.tx)
-                .contains(address.asInteropAddress()),
+            isBlocked: false, // only contacts with SignalRecipients can be blocked.
             isWhitelisted: profileManager.allWhitelistedAddresses(tx: context.tx)
                 .contains(address.asInteropAddress()),
             // If there's no recipient, neither can be hidden
