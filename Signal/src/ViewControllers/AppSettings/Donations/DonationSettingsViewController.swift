@@ -169,9 +169,8 @@ class DonationSettingsViewController: OWSTableViewController2 {
             )
         }
 
-        async let subscriptionLevels = DonationViewsUtil.loadSubscriptionLevels(badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore)
         async let currentSubscription = DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
-        async let profileBadgeLookup = loadProfileBadgeLookup()
+        async let donationConfiguration = DonationSubscriptionManager.fetchDonationConfiguration()
 
         do {
             let subscriptionStatus: State.SubscriptionStatus
@@ -179,7 +178,10 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 subscriptionStatus = .hasSubscription(
                     subscription: currentSubscription,
                     subscriptionLevel: DonationViewsUtil.subscriptionLevelForSubscription(
-                        subscriptionLevels: try await subscriptionLevels,
+                        subscriptionLevels: try await DonationViewsUtil.loadSubscriptionLevels(
+                            donationConfiguration: try await donationConfiguration,
+                            badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore
+                        ),
                         subscription: currentSubscription
                     ),
                     previouslyHadActiveSubscription: hasEverRedeemedRecurringSubscriptionBadge,
@@ -195,7 +197,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             let result: State = .loadFinished(
                 subscriptionStatus: subscriptionStatus,
                 oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
-                profileBadgeLookup: await profileBadgeLookup,
+                profileBadgeLookup: await loadProfileBadgeLookup(donationConfiguration: try? await donationConfiguration),
                 pendingOneTimeDonation: pendingIDEALOneTimeDonation,
                 hasAnyBadges: hasAnyBadges,
                 hasAnyDonationReceipts: hasAnyDonationReceipts
@@ -212,7 +214,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             let result: State = .loadFinished(
                 subscriptionStatus: .loadFailed,
                 oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
-                profileBadgeLookup: await profileBadgeLookup,
+                profileBadgeLookup: await loadProfileBadgeLookup(donationConfiguration: try? await donationConfiguration),
                 pendingOneTimeDonation: pendingIDEALOneTimeDonation,
                 hasAnyBadges: hasAnyBadges,
                 hasAnyDonationReceipts: hasAnyDonationReceipts
@@ -221,9 +223,8 @@ class DonationSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    private func loadProfileBadgeLookup() async -> ProfileBadgeLookup {
-        do {
-            let donationConfiguration = try await DonationSubscriptionManager.fetchDonationConfiguration()
+    private func loadProfileBadgeLookup(donationConfiguration: DonationSubscriptionManager.DonationConfiguration?) async -> ProfileBadgeLookup {
+        if let donationConfiguration {
             let result = ProfileBadgeLookup(
                 boostBadge: donationConfiguration.boost.badge,
                 giftBadge: donationConfiguration.gift.badge,
@@ -231,8 +232,8 @@ class DonationSettingsViewController: OWSTableViewController2 {
             )
             await result.attemptToPopulateBadgeAssets(populateAssetsOnBadge: SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(_:))
             return result
-        } catch {
-            Logger.warn("[Donations] Failed to fetch donation configuration \(error). Proceeding without it, as it is only cosmetic here.")
+        } else {
+            Logger.warn("[Donations] Failed to fetch donation configuration. Proceeding without it, as it is only cosmetic here.")
             return ProfileBadgeLookup(
                 boostBadge: nil,
                 giftBadge: nil,

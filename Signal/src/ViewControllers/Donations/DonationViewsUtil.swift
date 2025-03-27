@@ -327,8 +327,8 @@ public final class DonationViewsUtil {
         return try await DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: paymentType.paymentMethod).awaitable()
     }
 
-    public static func loadSubscriptionLevels(badgeStore: BadgeStore) async throws -> [DonationSubscriptionLevel] {
-        let levels = try await DonationSubscriptionManager.fetchDonationConfiguration().subscription.levels
+    public static func loadSubscriptionLevels(donationConfiguration: DonationSubscriptionManager.DonationConfiguration, badgeStore: BadgeStore) async throws -> [DonationSubscriptionLevel] {
+        let levels = donationConfiguration.subscription.levels
         try await withThrowingTaskGroup(of: Void.self) { taskGroup in
             for level in levels {
                 taskGroup.addTask {
