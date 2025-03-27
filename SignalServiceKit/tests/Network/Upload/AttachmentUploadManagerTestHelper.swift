@@ -24,6 +24,12 @@ enum MockResultType {
     case uploadTask(URLRequest)
 }
 
+struct MockUploadAttempt {
+    let auth: String
+    let uploadLocation: String
+    let resumeLocation: String
+}
+
 class AttachmentUploadManagerMockHelper {
     var mockDate = Date()
     lazy var mockDateProvider = { return self.mockDate }
@@ -111,7 +117,23 @@ class AttachmentUploadManagerMockHelper {
         }
     }
 
-    func addFormRequestMock(version: UInt32, statusCode: Int = 200) -> (auth: String, location: String) {
+    func addUploadRequestMock(
+        version: UInt32,
+        statusCode: Int = 200,
+        _ uploadMockBuilder: (_ auth: String, _ location: String, _ resumeLocation: String) -> Void
+    ) -> MockUploadAttempt {
+        addFormRequestMock(version: version, statusCode: statusCode) { auth, location in
+            addResumeLocationMock(auth: auth) { resumeLocation in
+                uploadMockBuilder(auth, location, resumeLocation)
+            }
+        }
+    }
+
+    private func addFormRequestMock(
+        version: UInt32,
+        statusCode: Int = 200,
+        _ authedMockBuilder: (_ auth: String, _ location: String) -> (String)
+    ) -> MockUploadAttempt {
         let authString = UUID().uuidString
         // Create a random, yet identifiable URL.  Helps with debugging the captured requests.
         let location = "https://upload/location/\(UUID().uuidString)"
@@ -131,10 +153,18 @@ class AttachmentUploadManagerMockHelper {
                 bodyData: try! JSONEncoder().encode(form)
             )
         }))
-        return (authString, location)
+        return .init(
+            auth: authString,
+            uploadLocation: location,
+            resumeLocation: authedMockBuilder(authString, location)
+        )
     }
 
-    func addResumeLocationMock(auth: String, statusCode: Int = 201) -> String {
+    private func addResumeLocationMock(
+        auth: String,
+        statusCode: Int = 201,
+        _ resumedLocationMockBuilder: ((String) -> Void)
+    ) -> String {
         // Create a random, yet identifiable URL.  Helps with debugging the captured requests.
         let location = "https://resume/location/\(UUID().uuidString)"
         enqueue(auth: auth, request: .uploadLocation({ request in
@@ -146,6 +176,7 @@ class AttachmentUploadManagerMockHelper {
                 bodyData: nil
             )
         }))
+        resumedLocationMockBuilder(location)
         return location
     }
 
@@ -188,22 +219,27 @@ class AttachmentUploadManagerMockHelper {
 
     enum UploadResultType {
         case success
-        case failure
+        case failure(code: Int)
         case networkError
     }
+
     func addUploadRequestMock(auth: String, location: String, type: UploadResultType) {
         enqueue(auth: auth, request: .uploadTask({ request, url in
-            var statusCode = 200
             switch type {
             case .networkError:
                 throw OWSHTTPError.networkFailure(.genericFailure)
-            case .failure:
-                statusCode = 500
-                fallthrough // Use the same response code as success
+            case .failure(let code):
+                throw OWSHTTPError.forServiceResponse(
+                    requestUrl: URL(string: location)!,
+                    responseStatus: code,
+                    responseHeaders: HttpHeaders(),
+                    responseError: nil,
+                    responseData: nil
+                )
             case .success:
                 return HTTPResponseImpl(
                     requestUrl: request.url!,
-                    status: statusCode,
+                    status: 200,
                     headers: HttpHeaders(),
                     bodyData: nil
                 )
