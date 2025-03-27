@@ -87,8 +87,8 @@ public final class AtomicUInt: Sendable {
     }
 
     @discardableResult
-    public func decrementOrZero() -> UInt {
-        value.map { max($0, 1) - 1 }
+    public func decrement() -> UInt {
+        value.map { $0 - 1 }
     }
 
     @discardableResult

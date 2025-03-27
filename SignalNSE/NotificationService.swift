@@ -33,7 +33,7 @@ private let hasShownFirstUnlockError = AtomicBool(false, lock: .sharedGlobal)
 
 class NotificationService: UNNotificationServiceExtension {
     private typealias ContentHandler = (UNNotificationContent) -> Void
-    private let contentHandler = AtomicOptional<ContentHandler>(nil, lock: .sharedGlobal)
+    private let contentHandler = AtomicOptional<ContentHandler>(nil, lock: .init())
 
     // MARK: -
 
@@ -68,7 +68,7 @@ class NotificationService: UNNotificationServiceExtension {
     // MARK: -
 
     // This method is thread-safe.
-    func completeSilently(badgeCount: BadgeCount? = nil, logger: NSELogger) {
+    func completeSilently(content: UNNotificationContent, logger: NSELogger) {
         defer { logger.flush() }
 
         guard let contentHandler = contentHandler.swap(nil) else {
@@ -76,9 +76,6 @@ class NotificationService: UNNotificationServiceExtension {
         }
 
         Self.nseDidComplete()
-
-        let content = UNMutableNotificationContent()
-        content.badge = badgeCount.map { NSNumber(value: $0.unreadTotalCount) }
 
         contentHandler(content)
     }
@@ -88,9 +85,18 @@ class NotificationService: UNNotificationServiceExtension {
         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void
     ) {
         let logger = NSELogger()
+        _ = Self.nseDidStart()
+        self.contentHandler.set(contentHandler)
+        Task {
+            let content = await _didReceive(request, logger: logger)
+            self.completeSilently(content: content, logger: logger)
+        }
+    }
 
+    @MainActor
+    private func _didReceive(_ request: UNNotificationRequest, logger: NSELogger) async -> UNNotificationContent {
         do {
-            try DispatchQueue.main.sync(execute: { try globalEnvironment.setUp(logger: logger) })
+            try await globalEnvironment.setUp(logger: logger)
         } catch KeychainError.notAllowed {
             // Detect and handle "no GRDB file" and "no keychain access".
             if hasShownFirstUnlockError.tryToSetFlag() {
@@ -101,50 +107,35 @@ class NotificationService: UNNotificationServiceExtension {
                     comment: "Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone')"
                 )
                 content.body = String(format: notificationFormat, UIDevice.current.localizedModel)
-                contentHandler(content)
+                return content
             } else {
                 // Only show a single error if we receive multiple pushes
                 // before first device unlock.
                 logger.error("DB Keys not accessible; completing silently.", flushImmediately: true)
                 let emptyContent = UNMutableNotificationContent()
-                contentHandler(emptyContent)
+                return emptyContent
             }
-            return
         } catch {
             owsFail("Couldn't load database: \(error.grdbErrorForLogging)")
         }
 
-        self.contentHandler.set(contentHandler)
-
-        _ = Self.nseDidStart()
-
-        globalEnvironment.appReadiness.runNowOrWhenAppWillBecomeReady {
-            // Mark down that the APNS token is working since we got a push.
-            // Do this as early as possible but after the app is ready and has run
-            // GRDB migrations and such. (therefore, willBecomeReady, which actually runs
-            // after the app is ready but just before any didBecomeReady blocks)
-            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
-                APNSRotationStore.didReceiveAPNSPush(transaction: transaction)
-            }
+        // Mark down that the APNS token is working since we got a push.
+        // Do this as early as possible but after the app is ready and has run
+        // GRDB migrations and such.
+        async let didMarkApnsReceived: Void = SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+            APNSRotationStore.didReceiveAPNSPush(transaction: transaction)
         }
 
-        globalEnvironment.appReadiness.runNowOrWhenAppDidBecomeReadySync {
-            SSKEnvironment.shared.messageFetcherJobRef.prepareToFetchViaREST()
+        SSKEnvironment.shared.messageFetcherJobRef.prepareToFetchViaREST()
+
+        if await globalEnvironment.askMainAppToHandleReceipt(logger: logger) {
+            logger.info("Received notification handled by main application, memoryUsage: \(LocalDevice.memoryUsageString).")
+            return UNMutableNotificationContent()
         }
 
-        globalEnvironment.appReadiness.runNowOrWhenAppDidBecomeReadySync {
-            globalEnvironment.askMainAppToHandleReceipt(logger: logger) { [weak self] mainAppHandledReceipt in
-                guard !mainAppHandledReceipt else {
-                    logger.info("Received notification handled by main application, memoryUsage: \(LocalDevice.memoryUsageString).")
-                    self?.completeSilently(logger: logger)
-                    return
-                }
-
-                DispatchQueue.main.async {
-                    self?.fetchAndProcessMessages(logger: logger)
-                }
-            }
-        }
+        let result = await self.fetchAndProcessMessages(logger: logger)
+        await didMarkApnsReceived
+        return result
     }
 
     // Called just before the extension will be terminated by the system.
@@ -154,65 +145,73 @@ class NotificationService: UNNotificationServiceExtension {
         // We complete silently here so that nothing is presented to the user.
         // By default the OS will present whatever the raw content of the original
         // notification is to the user otherwise.
-        completeSilently(logger: .uncorrelated)
+        completeSilently(content: UNMutableNotificationContent(), logger: .uncorrelated)
     }
 
-    // This method is thread-safe.
-    private func fetchAndProcessMessages(logger: NSELogger) {
-        if DependenciesBridge.shared.appExpiry.isExpired {
-            owsFailDebug("Not processing notifications for expired application.")
-            return completeSilently(logger: logger)
-        }
-
-        if SignalProxy.isEnabled {
-            if !SignalProxy.isEnabledAndReady {
+    @MainActor
+    private func startProxyIfEnabled() async {
+        // Runs on the main thread so that, if isEnabledAndReady is false, the
+        // observe(...) is guaranteed to happen before the notification is posted.
+        while SignalProxy.isEnabled, !SignalProxy.isEnabledAndReady {
+            await withCheckedContinuation { continuation in
                 Logger.info("Waiting for signal proxy to become ready for message fetch.")
                 NotificationCenter.default.observe(once: .isSignalProxyReadyDidChange)
-                    .done { [weak self] _ in
-                        self?.fetchAndProcessMessages(logger: logger)
-                    }
+                    .done { _ in continuation.resume() }
                 SignalProxy.startRelayServer()
-                return
             }
-
-            Logger.info("Using signal proxy for message fetch.")
         }
+    }
+
+    @MainActor
+    private func fetchAndProcessMessages(logger: NSELogger) async -> UNNotificationContent {
+        if DependenciesBridge.shared.appExpiry.isExpired {
+            Logger.warn("Not processing notifications for expired application.")
+            return UNMutableNotificationContent()
+        }
+
+        await startProxyIfEnabled()
+        defer { SignalProxy.stopRelayServer() }
 
         globalEnvironment.processingMessageCounter.increment()
+        defer { globalEnvironment.processingMessageCounter.decrement() }
 
-        firstly {
-            SSKEnvironment.shared.messageFetcherJobRef.run()
-        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
+        do {
+            try await SSKEnvironment.shared.messageFetcherJobRef.run().awaitable()
 
-            return firstly { () -> Promise<Void> in
-                return SSKEnvironment.shared.messageProcessorRef.waitForProcessingComplete().asPromise()
-            }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-                return Promise.when(on: SyncScheduler(), resolved: [
-                    // Wait until all ACKs are complete.
-                    SSKEnvironment.shared.messageFetcherJobRef.pendingAcksPromise(),
-                    // Wait until all outgoing receipt sends are complete.
-                    SSKEnvironment.shared.receiptSenderRef.pendingSendsPromise(),
-                    // Wait until all outgoing messages are sent.
-                    SSKEnvironment.shared.messageSenderRef.pendingSendsPromise(),
-                    // Wait until all sync requests are fulfilled.
-                    MessageReceiver.pendingTasksPromise(),
-                ]).asVoid()
-            }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-                // Finally, wait for any notifications to finish posting
-                return NotificationPresenterImpl.pendingNotificationsPromise()
+            await SSKEnvironment.shared.messageProcessorRef.waitForProcessingComplete().awaitable()
+
+            // Wait for these in parallel.
+            do {
+                // Wait until all ACKs are complete.
+                async let pendingAcks: Void = SSKEnvironment.shared.messageFetcherJobRef.pendingAcksPromise().awaitable()
+                // Wait until all outgoing receipt sends are complete.
+                async let pendingReceipts: Void = SSKEnvironment.shared.receiptSenderRef.pendingSendsPromise().awaitable()
+                // Wait until all outgoing messages are sent.
+                async let pendingMessages: Void = SSKEnvironment.shared.messageSenderRef.pendingSendsPromise().awaitable()
+                // Wait until all sync requests are fulfilled.
+                async let pendingOps: Void = MessageReceiver.pendingTasksPromise().awaitable()
+
+                try await pendingAcks
+                try await pendingReceipts
+                try await pendingMessages
+                try await pendingOps
             }
-        }.ensure(on: DispatchQueue.global()) { [weak self] in
-            logger.info("Message fetching & processing completed.")
-            SignalProxy.stopRelayServer()
-            globalEnvironment.processingMessageCounter.decrementOrZero()
-            // If we're completing normally, try to update the badge on the app icon.
-            let badgeCount: BadgeCount = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                return DependenciesBridge.shared.badgeCountFetcher
-                    .fetchBadgeCount(tx: tx)
-            }
-            self?.completeSilently(badgeCount: badgeCount, logger: logger)
-        }.catch(on: DispatchQueue.global()) { error in
-            logger.error("Error: \(error)")
+
+            // Finally, wait for any notifications to finish posting
+            try await NotificationPresenterImpl.pendingNotificationsPromise().awaitable()
+        } catch {
+            Logger.warn("\(error)")
         }
+
+        logger.info("Message fetching & processing completed.")
+
+        // If we're completing normally, try to update the badge on the app icon.
+        let badgeCount: BadgeCount = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return DependenciesBridge.shared.badgeCountFetcher
+                .fetchBadgeCount(tx: tx)
+        }
+        let content = UNMutableNotificationContent()
+        content.badge = NSNumber(value: badgeCount.unreadTotalCount)
+        return content
     }
 }

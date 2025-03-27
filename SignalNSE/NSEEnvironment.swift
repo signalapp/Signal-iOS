@@ -27,10 +27,13 @@ class NSEEnvironment {
 
     private static var mainAppDarwinQueue: DispatchQueue { .global(qos: .userInitiated) }
 
-    func askMainAppToHandleReceipt(
-        logger: NSELogger,
-        handledCallback: @escaping (_ mainAppHandledReceipt: Bool) -> Void
-    ) {
+    func askMainAppToHandleReceipt(logger: NSELogger) async -> Bool {
+        await withCheckedContinuation { continuation in
+            _askMainAppToHandleReceipt(logger: logger, continuation: continuation)
+        }
+    }
+
+    private func _askMainAppToHandleReceipt(logger: NSELogger, continuation: CheckedContinuation<Bool, Never>) {
         Self.mainAppDarwinQueue.async {
             // We track whether we've ever handled the call back to ensure
             // we only notify the caller once and avoid any races that may
@@ -52,7 +55,7 @@ class NSEEnvironment {
                     logger.info("Main app ack'd.")
                 }
 
-                handledCallback(true)
+                continuation.resume(returning: true)
             }
 
             // Notify the main app that we received new content to process.
@@ -72,7 +75,7 @@ class NSEEnvironment {
                 // If we haven't called back yet and removed the observer token,
                 // the main app is not running and will not handle receipt of this
                 // notification.
-                handledCallback(false)
+                continuation.resume(returning: false)
             }
         }
     }
@@ -99,14 +102,14 @@ class NSEEnvironment {
 
     // MARK: - Setup
 
-    private var didStartAppSetup = false
-    private var didFinishDatabaseSetup = false
+    @MainActor private var didStartAppSetup = false
+    @MainActor private var didFinishDatabaseSetup = false
 
     /// Called for each notification the NSE receives.
     ///
     /// Will be invoked multiple times in the same NSE process.
     @MainActor
-    func setUp(logger: NSELogger) throws {
+    func setUp(logger: NSELogger) async throws {
         let debugLogger = DebugLogger.shared
 
         if !didStartAppSetup {
@@ -149,17 +152,13 @@ class NSEEnvironment {
             messageBackupErrorPresenterFactory: NoOpMessageBackupErrorPresenterFactory()
         )
 
-        Task {
-            let finalSetupContinuation = await databaseContinuation.prepareDatabase()
-            await MainActor.run {
-                switch finalSetupContinuation.finish(willResumeInProgressRegistration: false) {
-                case .corruptRegistrationState:
-                    // TODO: Maybe notify that you should open the main app.
-                    return owsFailDebug("Couldn't launch because of corrupted registration state.")
-                case nil:
-                    self.setAppIsReady()
-                }
-            }
+        let finalSetupContinuation = await databaseContinuation.prepareDatabase()
+        switch finalSetupContinuation.finish(willResumeInProgressRegistration: false) {
+        case .corruptRegistrationState:
+            // TODO: Maybe notify that you should open the main app.
+            return owsFailDebug("Couldn't launch because of corrupted registration state.")
+        case nil:
+            self.setAppIsReady()
         }
 
         logger.info("completed.")
