@@ -153,7 +153,7 @@ extension MessageBackup {
                 contactPniMap[pni] = localRecipientId
             }
             if let e164 = E164(localIdentifiers.phoneNumber) {
-                contactE164ap[e164] = currentRecipientId
+                contactE164ap[e164] = localRecipientId
             }
 
             super.init(
