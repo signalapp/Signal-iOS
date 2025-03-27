@@ -50,7 +50,7 @@ extension MessageBackup {
         let expireStartDate: UInt64?
         let expiresInMs: UInt64?
         let isSealedSender: Bool
-        let chatItemType: ChatItemType
+        private(set) var chatItemType: ChatItemType
 
         /// - SeeAlso: ``TSMessage/isSmsMessageRestoredFromBackup``
         let isSmsPreviouslyRestoredFromBackup: Bool
@@ -62,6 +62,28 @@ extension MessageBackup {
         mutating func addPastRevision(_ pastRevision: InteractionArchiveDetails) {
             pastRevisions.append(pastRevision)
         }
+
+        // MARK: -
+
+        /// Returns whether the `chatItemType` of the latest or any prior
+        /// revision passes the given predicate.
+        func anyRevisionContainsChatItemType(where predicate: (ChatItemType) -> Bool) -> Bool {
+            let allChatItemTypes = [chatItemType] + pastRevisions.map(\.chatItemType)
+            return allChatItemTypes.contains(where: predicate)
+        }
+
+        /// Runs the given `block` on the `chatItemType` of the latest and any
+        /// prior revisions, replacing each with the result of the `block`.
+        mutating func mutateChatItemTypes(block: (ChatItemType) -> ChatItemType) {
+            chatItemType = block(chatItemType)
+            pastRevisions = pastRevisions.map { _pastRevision in
+                var pastRevision = _pastRevision
+                pastRevision.chatItemType = block(_pastRevision.chatItemType)
+                return pastRevision
+            }
+        }
+
+        // MARK: - Construction
 
         public enum AuthorAddress {
             case localUser
@@ -182,6 +204,8 @@ extension MessageBackup {
             }
         }
     }
+
+    // MARK: -
 
     enum SkippableInteraction {
         enum SkippableGroupUpdate {

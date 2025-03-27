@@ -226,7 +226,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             return .success
         }
 
-        let details: MessageBackup.InteractionArchiveDetails
+        var details: MessageBackup.InteractionArchiveDetails
         switch archiveInteractionResult {
         case .success(let deets):
             details = deets
@@ -245,45 +245,29 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
         // We may skip archiving messages based on their expiration
         // (disappearing message) details.
-        let shouldSkipBasedOnExpiration: Bool = {
-            guard
-                let expiresInMs = details.expiresInMs,
-                expiresInMs > 0
-            else {
-                // If the message isn't expiring, no reason to skip.
-                return false
-            }
-
-            if expiresInMs <= context.includedContentFilter.minExpirationTimeMs {
-                // If the expire timer was less than our minimum, we can always
-                // skip.
-                return true
-            } else if let expireStartDate = details.expireStartDate {
-                // If the expiration timer has started, check whether the
-                // remaining time before it expires is sufficient.
-                let expirationDate = expireStartDate + expiresInMs
-                let minExpirationDate = context.startTimestampMs + context.includedContentFilter.minRemainingTimeUntilExpirationMs
-
-                return expirationDate <= minExpirationDate
-            } else {
-                return false
-            }
-        }()
-        if shouldSkipBasedOnExpiration {
+        if shouldSkipMessageBasedOnExpiration(
+            details: details,
+            context: context
+        ) {
             // Skip, but treat as a success.
             return .success
         }
 
-        let chatItem = buildChatItem(
-            fromDetails: details,
-            chatId: chatId
-        )
+        // A bug on iOS allowed us to create edits of voice notes that contained
+        // text as well, which are not allowed in a Backup. Sanitize before
+        // writing that disallowed content to the stream.
+        sanitizeVoiceNotesWithText(details: &details)
 
         let error = Self.writeFrameToStream(
             stream,
             objectId: interaction.uniqueInteractionId,
             frameBencher: frameBencher
         ) {
+            let chatItem = buildChatItem(
+                fromDetails: details,
+                chatId: chatId
+            )
+
             var frame = BackupProto_Frame()
             frame.item = .chatItem(chatItem)
             return frame
@@ -296,6 +280,80 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             return .success
         } else {
             return .partialSuccess(partialErrors)
+        }
+    }
+
+    /// Strips the "voice message" flag from the attachments of all revisions
+    /// of the given message, if any of those revisions include both a voice
+    /// message and text.
+    ///
+    /// This works around an issue in which iOS allowed editing of voice
+    /// messages such that they could get body text added, by converting those
+    /// messages to "text messages with a non-voice-message audio attachment".
+    private func sanitizeVoiceNotesWithText(
+        details: inout MessageBackup.InteractionArchiveDetails
+    ) {
+        let anyRevisionContainsVoiceNoteAndText = details.anyRevisionContainsChatItemType { chatItemType -> Bool in
+            switch chatItemType {
+            case .standardMessage(let standardMessageProto):
+                let hasText = standardMessageProto.hasText
+                let hasVoiceNote = standardMessageProto.attachments.contains {
+                    $0.flag == .voiceMessage
+                }
+
+                return hasText && hasVoiceNote
+            default:
+                return false
+            }
+        }
+
+        guard anyRevisionContainsVoiceNoteAndText else { return }
+
+        details.mutateChatItemTypes { _chatItemType -> MessageBackup.InteractionArchiveDetails.ChatItemType in
+            switch _chatItemType {
+            case .standardMessage(var standardMessageProto):
+                standardMessageProto.attachments = standardMessageProto.attachments.map { attachment in
+                    if attachment.flag == .voiceMessage {
+                        var _attachment = attachment
+                        _attachment.flag = .none
+                        return _attachment
+                    }
+
+                    return attachment
+                }
+
+                return .standardMessage(standardMessageProto)
+            default:
+                return _chatItemType
+            }
+        }
+    }
+
+    private func shouldSkipMessageBasedOnExpiration(
+        details: MessageBackup.InteractionArchiveDetails,
+        context: MessageBackup.ArchivingContext
+    ) -> Bool {
+        guard
+            let expiresInMs = details.expiresInMs,
+            expiresInMs > 0
+        else {
+            // If the message isn't expiring, no reason to skip.
+            return false
+        }
+
+        if expiresInMs <= context.includedContentFilter.minExpirationTimeMs {
+            // If the expire timer was less than our minimum, we can always
+            // skip.
+            return true
+        } else if let expireStartDate = details.expireStartDate {
+            // If the expiration timer has started, check whether the
+            // remaining time before it expires is sufficient.
+            let expirationDate = expireStartDate + expiresInMs
+            let minExpirationDate = context.startTimestampMs + context.includedContentFilter.minRemainingTimeUntilExpirationMs
+
+            return expirationDate <= minExpirationDate
+        } else {
+            return false
         }
     }
 

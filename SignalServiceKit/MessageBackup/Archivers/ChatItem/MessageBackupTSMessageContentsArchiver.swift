@@ -305,7 +305,6 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         // Every "StandardMessage" must have either a body or body attachments;
         // if neither is set this stays false and we fail the message.
         var hasPrimaryContent = false
-        var hasText = false
 
         if let messageBody = message.body?.nilIfEmpty {
             hasPrimaryContent = true
@@ -322,7 +321,6 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 return errorResult
             }
             standardMessage.text = text
-            hasText = true
 
             // Oversize text is only ever a thing _alongside_ body text, the body
             // text is a prefix of the oversize text.
@@ -347,20 +345,9 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             context: context
         )
         switch bodyAttachmentsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
-        case .continue(var bodyAttachmentProtos):
+        case .continue(let bodyAttachmentProtos):
             if !bodyAttachmentProtos.isEmpty {
                 hasPrimaryContent = true
-                if hasText, bodyAttachmentProtos.first?.flag == .voiceMessage {
-                    // Drop the voice message flag if text is nonempty.
-                    bodyAttachmentProtos = bodyAttachmentProtos.map {
-                        guard $0.flag == .voiceMessage else {
-                            return $0
-                        }
-                        var proto = $0
-                        proto.flag = .none
-                        return proto
-                    }
-                }
                 standardMessage.attachments = bodyAttachmentProtos
             }
         case .bubbleUpError(let errorResult):
