@@ -793,7 +793,7 @@ public class AppSetup {
             db: db,
             identityManager: PreKey.Wrappers.IdentityManager(identityManager),
             linkedDevicePniKeyManager: linkedDevicePniKeyManager,
-            messageProcessor: PreKey.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
+            messageProcessor: messageProcessor,
             preKeyTaskAPIClient: preKeyTaskAPIClient,
             protocolStoreManager: signalProtocolStoreManager,
             chatConnectionManager: chatConnectionManager,

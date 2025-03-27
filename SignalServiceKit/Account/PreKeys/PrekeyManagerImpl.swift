@@ -46,7 +46,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         db: any DB,
         identityManager: PreKey.Shims.IdentityManager,
         linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
-        messageProcessor: PreKey.Shims.MessageProcessor,
+        messageProcessor: MessageProcessor,
         preKeyTaskAPIClient: PreKeyTaskAPIClient,
         protocolStoreManager: SignalProtocolStoreManager,
         chatConnectionManager: any ChatConnectionManager,

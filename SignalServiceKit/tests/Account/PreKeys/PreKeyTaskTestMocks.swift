@@ -19,7 +19,6 @@ extension PreKey {
         typealias DateProvider = _PreKey_DateProviderMock
         typealias IdentityManager = _PreKey_IdentityManagerMock
         typealias LinkedDevicePniKeyManager = _PreKey_LinkedDevicePniKeyManagerMock
-        typealias MessageProcessor = _PreKey_MessageProcessorMock
     }
 }
 
@@ -63,12 +62,6 @@ class _PreKey_LinkedDevicePniKeyManagerMock: LinkedDevicePniKeyManager {
     }
 
     func validateLocalPniIdentityKeyIfNecessary() async {
-    }
-}
-
-struct _PreKey_MessageProcessorMock: PreKey.Shims.MessageProcessor {
-    func waitForFetchingAndProcessing() -> Guarantee<Void> {
-        return Guarantee<Void>.value(())
     }
 }
 

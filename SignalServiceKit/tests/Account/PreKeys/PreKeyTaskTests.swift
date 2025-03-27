@@ -25,6 +25,10 @@ final class PreKeyTaskTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+
+        let testContext = (CurrentAppContext() as! TestAppContext)
+        testContext.shouldProcessIncomingMessages = false
+
         mockTSAccountManager = .init()
         mockIdentityManager = .init()
         mockLinkedDevicePniKeyManager = .init()
@@ -45,7 +49,7 @@ final class PreKeyTaskTests: XCTestCase {
             db: mockDb,
             identityManager: mockIdentityManager,
             linkedDevicePniKeyManager: mockLinkedDevicePniKeyManager,
-            messageProcessor: PreKey.Mocks.MessageProcessor(),
+            messageProcessor: SSKEnvironment.shared.messageProcessorRef,
             protocolStoreManager: mockProtocolStoreManager,
             tsAccountManager: mockTSAccountManager
         )

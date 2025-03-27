@@ -20,7 +20,7 @@ internal struct PreKeyTaskManager {
     private let db: any DB
     private let identityManager: PreKey.Shims.IdentityManager
     private let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
-    private let messageProcessor: PreKey.Shims.MessageProcessor
+    private let messageProcessor: MessageProcessor
     private let protocolStoreManager: SignalProtocolStoreManager
     private let tsAccountManager: TSAccountManager
 
@@ -30,7 +30,7 @@ internal struct PreKeyTaskManager {
         db: any DB,
         identityManager: PreKey.Shims.IdentityManager,
         linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
-        messageProcessor: PreKey.Shims.MessageProcessor,
+        messageProcessor: MessageProcessor,
         protocolStoreManager: SignalProtocolStoreManager,
         tsAccountManager: TSAccountManager
     ) {

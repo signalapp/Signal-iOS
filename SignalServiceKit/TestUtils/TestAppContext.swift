@@ -74,7 +74,7 @@ public class TestAppContext: NSObject, AppContext {
     public func appSharedDataDirectoryPath() -> String { mockAppSharedDataDirectoryPath }
     public func appDatabaseBaseDirectoryPath() -> String { appSharedDataDirectoryPath() }
     public func canPresentNotifications() -> Bool { false }
-    public let shouldProcessIncomingMessages: Bool = true
+    public var shouldProcessIncomingMessages = true
     public let hasUI: Bool = true
     public let debugLogsDirPath: String = testDebugLogsDirPath
 
