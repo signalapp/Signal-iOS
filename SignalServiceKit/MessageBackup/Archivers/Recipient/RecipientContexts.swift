@@ -127,7 +127,7 @@ extension MessageBackup {
         private let distributionIdMap = SharedMap<DistributionId, RecipientId>()
         private let contactAciMap = SharedMap<Aci, RecipientId>()
         private let contactPniMap = SharedMap<Pni, RecipientId>()
-        private let contactE164ap = SharedMap<E164, RecipientId>()
+        private let contactE164Map = SharedMap<E164, RecipientId>()
         private let callLinkIdMap = SharedMap<CallLinkRecordId, RecipientId>()
 
         init(
@@ -153,7 +153,7 @@ extension MessageBackup {
                 contactPniMap[pni] = localRecipientId
             }
             if let e164 = E164(localIdentifiers.phoneNumber) {
-                contactE164ap[e164] = localRecipientId
+                contactE164Map[e164] = localRecipientId
             }
 
             super.init(
@@ -186,7 +186,7 @@ extension MessageBackup {
                     contactPniMap[pni] = currentRecipientId
                 }
                 if let e164 = contactAddress.e164 {
-                    contactE164ap[e164] = currentRecipientId
+                    contactE164Map[e164] = currentRecipientId
                 }
             case .callLink(let callLinkId):
                 callLinkIdMap[callLinkId] = currentRecipientId
@@ -209,7 +209,7 @@ extension MessageBackup {
                     if let aci = contactAddress.aci {
                         return contactAciMap[aci]
                     } else if let e164 = contactAddress.e164 {
-                        return contactE164ap[e164]
+                        return contactE164Map[e164]
                     } else if let pni = contactAddress.pni {
                         return contactPniMap[pni]
                     } else {
