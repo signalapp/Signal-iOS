@@ -492,7 +492,7 @@ extension ContactViewController {
         }
         // Note that we use "q" (i.e. query) rather than "address" since we can't assume
         // this is a well-formed address.
-        guard let url = URL(string: "http://maps.apple.com/?q=\(escapedMapAddress)") else {
+        guard let url = URL(string: "maps://?q=\(escapedMapAddress)") else {
             owsFailDebug("could not open address.")
             return
         }
