@@ -14,40 +14,53 @@ public class NotificationActionHandler {
     @MainActor
     class func handleNotificationResponse(
         _ response: UNNotificationResponse,
-        appReadiness: AppReadinessSetter,
-        completionHandler: @escaping () -> Void
-    ) {
-        firstly {
-            try handleNotificationResponse(response, appReadiness: appReadiness)
-        }.done {
-            completionHandler()
-        }.catch { error in
+        appReadiness: AppReadinessSetter
+    ) async {
+        do {
+            try await _handleNotificationResponse(response, appReadiness: appReadiness)
+        } catch {
             owsFailDebug("error: \(error)")
-            completionHandler()
+        }
+    }
+
+    private struct UserInfo {
+        var callBackAciString: String?
+        var callBackPhoneNumber: String?
+        var defaultAction: String?
+        var messageId: String?
+        var roomId: String?
+        var threadId: String?
+
+        init(_ userInfo: [AnyHashable: Any]) {
+            self.callBackAciString = userInfo[AppNotificationUserInfoKey.callBackAciString] as? String
+            self.callBackPhoneNumber = userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] as? String
+            self.defaultAction = userInfo[AppNotificationUserInfoKey.defaultAction] as? String
+            self.messageId = userInfo[AppNotificationUserInfoKey.messageId] as? String
+            self.roomId = userInfo[AppNotificationUserInfoKey.roomId] as? String
+            self.threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String
         }
     }
 
     @MainActor
-    private class func handleNotificationResponse(
+    private class func _handleNotificationResponse(
         _ response: UNNotificationResponse,
         appReadiness: AppReadinessSetter
-    ) throws -> Promise<Void> {
+    ) async throws {
         owsAssertDebug(appReadiness.isAppReady)
 
-        let userInfo = response.notification.request.content.userInfo
+        let userInfo = UserInfo(response.notification.request.content.userInfo)
 
         let action: AppNotificationAction
 
         switch response.actionIdentifier {
         case UNNotificationDefaultActionIdentifier:
             Logger.debug("default action")
-            let defaultActionString = userInfo[AppNotificationUserInfoKey.defaultAction] as? String
-            let defaultAction = defaultActionString.flatMap { AppNotificationAction(rawValue: $0) }
+            let defaultAction = userInfo.defaultAction.flatMap { AppNotificationAction(rawValue: $0) }
             action = defaultAction ?? .showThread
         case UNNotificationDismissActionIdentifier:
             // TODO - mark as read?
             Logger.debug("dismissed notification")
-            return Promise.value(())
+            return
         default:
             if let responseAction = UserNotificationConfig.action(identifier: response.actionIdentifier) {
                 action = responseAction
@@ -62,43 +75,40 @@ public class NotificationActionHandler {
 
         switch action {
         case .callBack:
-            return Promise.wrapAsync { try await self.callBack(userInfo: userInfo) }
+            try await self.callBack(userInfo: userInfo)
         case .markAsRead:
-            return try markAsRead(userInfo: userInfo)
+            try await markAsRead(userInfo: userInfo)
         case .reply:
             guard let textInputResponse = response as? UNTextInputNotificationResponse else {
                 throw OWSAssertionError("response had unexpected type: \(response)")
             }
-
-            return try reply(userInfo: userInfo, replyText: textInputResponse.userText)
+            try await reply(userInfo: userInfo, replyText: textInputResponse.userText)
         case .showThread:
-            return try showThread(userInfo: userInfo)
+            try await showThread(userInfo: userInfo)
         case .showMyStories:
-            return showMyStories(appReadiness: appReadiness)
+            await showMyStories(appReadiness: appReadiness)
         case .reactWithThumbsUp:
-            return try reactWithThumbsUp(userInfo: userInfo)
+            try await reactWithThumbsUp(userInfo: userInfo)
         case .showCallLobby:
             showCallLobby(userInfo: userInfo)
-            return .value(())
         case .submitDebugLogs:
-            return submitDebugLogs()
+            await submitDebugLogs()
         case .reregister:
-            return reregister(appReadiness: appReadiness)
+            await reregister(appReadiness: appReadiness)
         case .showChatList:
             // No need to do anything.
-            return .value(())
+            break
         case .showLinkedDevices:
             showLinkedDevices()
-            return .value(())
         }
     }
 
     // MARK: -
 
     @MainActor
-    private class func callBack(userInfo: [AnyHashable: Any]) async throws {
-        let aciString = userInfo[AppNotificationUserInfoKey.callBackAciString] as? String
-        let phoneNumber = userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] as? String
+    private class func callBack(userInfo: UserInfo) async throws {
+        let aciString = userInfo.callBackAciString
+        let phoneNumber = userInfo.callBackPhoneNumber
         let address = SignalServiceAddress.legacyAddress(aciString: aciString, phoneNumber: phoneNumber)
         guard address.isValid else {
             throw OWSAssertionError("Missing or invalid address.")
@@ -115,105 +125,92 @@ public class NotificationActionHandler {
         callService.callUIAdapter.startAndShowOutgoingCall(thread: thread, prepareResult: prepareResult, hasLocalVideo: false)
     }
 
-    private class func markAsRead(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        return firstly {
-            self.notificationMessage(forUserInfo: userInfo)
-        }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) in
-            self.markMessageAsRead(notificationMessage: notificationMessage)
-        }
+    private class func markAsRead(userInfo: UserInfo) async throws {
+        let notificationMessage = try await self.notificationMessage(forUserInfo: userInfo)
+        try await self.markMessageAsRead(notificationMessage: notificationMessage)
     }
 
-    private class func reply(userInfo: [AnyHashable: Any], replyText: String) throws -> Promise<Void> {
-        return firstly { () -> Promise<NotificationMessage> in
-            self.notificationMessage(forUserInfo: userInfo)
-        }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
-            let thread = notificationMessage.thread
-            let interaction = notificationMessage.interaction
-            var draftModelForSending: DraftQuotedReplyModel.ForSending?
-            guard (interaction is TSOutgoingMessage) || (interaction is TSIncomingMessage) else {
-                throw OWSAssertionError("Unexpected interaction type.")
-            }
+    private class func reply(userInfo: UserInfo, replyText: String) async throws {
+        let notificationMessage = try await self.notificationMessage(forUserInfo: userInfo)
+        let thread = notificationMessage.thread
+        let interaction = notificationMessage.interaction
+        var draftModelForSending: DraftQuotedReplyModel.ForSending?
+        guard (interaction is TSOutgoingMessage) || (interaction is TSIncomingMessage) else {
+            throw OWSAssertionError("Unexpected interaction type.")
+        }
 
-            let optionalDraftModel: DraftQuotedReplyModel? = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+        let optionalDraftModel: DraftQuotedReplyModel? = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            if
+                let incomingMessage = notificationMessage.interaction as? TSIncomingMessage,
+                let draftQuotedReplyModel = DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(originalMessage: incomingMessage, tx: transaction) {
+                return draftQuotedReplyModel
+            }
+            return nil
+        }
+
+        if let draftModel = optionalDraftModel {
+            draftModelForSending = try? DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending(draftModel)
+        }
+
+        do {
+            try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+                let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
+                builder.messageBody = replyText
+
+                // If we're replying to a group story reply, keep the reply within that context.
                 if
-                    let incomingMessage = notificationMessage.interaction as? TSIncomingMessage,
-                    let draftQuotedReplyModel = DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(originalMessage: incomingMessage, tx: transaction) {
-                    return draftQuotedReplyModel
+                    let incomingMessage = interaction as? TSIncomingMessage,
+                    notificationMessage.isGroupStoryReply,
+                    let storyTimestamp = incomingMessage.storyTimestamp,
+                    let storyAuthorAci = incomingMessage.storyAuthorAci
+                {
+                    builder.storyTimestamp = storyTimestamp
+                    builder.storyAuthorAci = storyAuthorAci
+                } else {
+                    // We only use the thread's DM timer for normal messages & 1:1 story
+                    // replies -- group story replies last for the lifetime of the story.
+                    let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                    let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction)
+                    builder.expiresInSeconds = dmConfig.durationSeconds
+                    builder.expireTimerVersion = NSNumber(value: dmConfig.timerVersion)
                 }
-                return nil
-            }
 
-            if let draftModel = optionalDraftModel {
-                draftModelForSending = try? DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending(draftModel)
-            }
+                let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(TSOutgoingMessage(
+                    outgoingMessageWith: builder,
+                    additionalRecipients: [],
+                    explicitRecipients: [],
+                    skippedRecipients: [],
+                    transaction: transaction
+                ), quotedReplyDraft: draftModelForSending)
+                let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
+                return ThreadUtil.enqueueMessagePromise(message: preparedMessage, transaction: transaction)
+            }.awaitable()
+        } catch {
+            Logger.warn("Failed to send reply message from notification with error: \(error)")
+            SSKEnvironment.shared.notificationPresenterRef.notifyUserOfFailedSend(inThread: thread)
+            throw error
+        }
+        try await self.markMessageAsRead(notificationMessage: notificationMessage)
+    }
 
-            return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
-                    builder.messageBody = replyText
-
-                    // If we're replying to a group story reply, keep the reply within that context.
-                    if
-                        let incomingMessage = interaction as? TSIncomingMessage,
-                        notificationMessage.isGroupStoryReply,
-                        let storyTimestamp = incomingMessage.storyTimestamp,
-                        let storyAuthorAci = incomingMessage.storyAuthorAci
-                    {
-                        builder.storyTimestamp = storyTimestamp
-                        builder.storyAuthorAci = storyAuthorAci
-                    } else {
-                        // We only use the thread's DM timer for normal messages & 1:1 story
-                        // replies -- group story replies last for the lifetime of the story.
-                        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction)
-                        builder.expiresInSeconds = dmConfig.durationSeconds
-                        builder.expireTimerVersion = NSNumber(value: dmConfig.timerVersion)
-                    }
-
-                    let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(TSOutgoingMessage(
-                        outgoingMessageWith: builder,
-                        additionalRecipients: [],
-                        explicitRecipients: [],
-                        skippedRecipients: [],
-                        transaction: transaction
-                    ), quotedReplyDraft: draftModelForSending)
-                    do {
-                        let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
-                        return ThreadUtil.enqueueMessagePromise(message: preparedMessage, transaction: transaction)
-                    } catch {
-                        return Promise(error: error)
-                    }
-                }
-            }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in
-                Logger.warn("Failed to send reply message from notification with error: \(error)")
-                SSKEnvironment.shared.notificationPresenterRef.notifyUserOfFailedSend(inThread: thread)
-                throw error
-            }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-                self.markMessageAsRead(notificationMessage: notificationMessage)
-            }
+    @MainActor
+    private class func showThread(userInfo: UserInfo) async throws {
+        let notificationMessage = try await self.notificationMessage(forUserInfo: userInfo)
+        if notificationMessage.isGroupStoryReply {
+            self.showGroupStoryReplyThread(notificationMessage: notificationMessage)
+        } else {
+            self.showThread(uniqueId: notificationMessage.thread.uniqueId)
         }
     }
 
     @MainActor
-    private class func showThread(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        return firstly { () -> Promise<NotificationMessage> in
-            self.notificationMessage(forUserInfo: userInfo)
-        }.done(on: DispatchQueue.main) { notificationMessage in
-            if notificationMessage.isGroupStoryReply {
-                self.showGroupStoryReplyThread(notificationMessage: notificationMessage)
-            } else {
-                self.showThread(uniqueId: notificationMessage.thread.uniqueId)
-            }
-        }
-    }
-
-    private class func showMyStories(appReadiness: AppReadiness) -> Promise<Void> {
-        return Promise { future in
+    private class func showMyStories(appReadiness: AppReadiness) async {
+        await withCheckedContinuation { continuation in
             appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-                SignalApp.shared.showMyStories(animated: UIApplication.shared.applicationState == .active)
-                future.resolve()
+                continuation.resume()
             }
         }
+        SignalApp.shared.showMyStories(animated: UIApplication.shared.applicationState == .active)
     }
 
     @MainActor
@@ -227,6 +224,7 @@ public class NotificationActionHandler {
         )
     }
 
+    @MainActor
     private class func showGroupStoryReplyThread(notificationMessage: NotificationMessage) {
         guard notificationMessage.isGroupStoryReply, let storyMessage = notificationMessage.storyMessage else {
             return owsFailDebug("Unexpectedly missing story message")
@@ -268,40 +266,37 @@ public class NotificationActionHandler {
         frontmostViewController.present(vc, animated: true)
     }
 
-    private class func reactWithThumbsUp(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        return firstly { () -> Promise<NotificationMessage> in
-            self.notificationMessage(forUserInfo: userInfo)
-        }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
-            let thread = notificationMessage.thread
-            let interaction = notificationMessage.interaction
-            guard let incomingMessage = interaction as? TSIncomingMessage else {
-                throw OWSAssertionError("Unexpected interaction type.")
-            }
+    private class func reactWithThumbsUp(userInfo: UserInfo) async throws {
+        let notificationMessage = try await self.notificationMessage(forUserInfo: userInfo)
 
-            return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    ReactionManager.localUserReacted(
-                        to: incomingMessage.uniqueId,
-                        emoji: "👍",
-                        isRemoving: false,
-                        isHighPriority: false,
-                        tx: transaction
-                    )
-                }
-            }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in
-                Logger.warn("Failed to send reply message from notification with error: \(error)")
-                SSKEnvironment.shared.notificationPresenterRef.notifyUserOfFailedSend(inThread: thread)
-                throw error
-            }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-                self.markMessageAsRead(notificationMessage: notificationMessage)
-            }
+        let thread = notificationMessage.thread
+        let interaction = notificationMessage.interaction
+        guard let incomingMessage = interaction as? TSIncomingMessage else {
+            throw OWSAssertionError("Unexpected interaction type.")
         }
+
+        do {
+            try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+                ReactionManager.localUserReacted(
+                    to: incomingMessage.uniqueId,
+                    emoji: "👍",
+                    isRemoving: false,
+                    isHighPriority: false,
+                    tx: transaction
+                )
+            }.awaitable()
+        } catch {
+            Logger.warn("Failed to send reply message from notification with error: \(error)")
+            SSKEnvironment.shared.notificationPresenterRef.notifyUserOfFailedSend(inThread: thread)
+            throw error
+        }
+        try await self.markMessageAsRead(notificationMessage: notificationMessage)
     }
 
     @MainActor
-    private class func showCallLobby(userInfo: [AnyHashable: Any]) {
-        let threadUniqueId = userInfo[AppNotificationUserInfoKey.threadId] as? String
-        let callLinkRoomId = userInfo[AppNotificationUserInfoKey.roomId] as? String
+    private class func showCallLobby(userInfo: UserInfo) {
+        let threadUniqueId = userInfo.threadId
+        let callLinkRoomId = userInfo.roomId
 
         enum LobbyTarget {
             case groupThread(groupId: GroupIdentifier, uniqueId: String)
@@ -366,29 +361,30 @@ public class NotificationActionHandler {
         }
     }
 
-    private class func submitDebugLogs() -> Promise<Void> {
-        Promise { future in
+    private class func submitDebugLogs() async {
+        await withCheckedContinuation { continuation in
             DebugLogs.submitLogsWithSupportTag(nil) {
-                future.resolve()
+                continuation.resume()
             }
         }
     }
 
-    private class func reregister(appReadiness: AppReadinessSetter) -> Promise<Void> {
-        Promise { future in
+    @MainActor
+    private class func reregister(appReadiness: AppReadinessSetter) async {
+        await withCheckedContinuation { continuation in
             appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-                guard let viewController = CurrentAppContext().frontmostViewController() else {
-                    Logger.error("Responding to reregister notification action without a view controller!")
-                    future.resolve()
-                    return
-                }
-                Logger.info("Reregistering from deregistered notification")
-                RegistrationUtils.reregister(fromViewController: viewController, appReadiness: appReadiness)
-                future.resolve()
+                continuation.resume()
             }
         }
+        guard let viewController = CurrentAppContext().frontmostViewController() else {
+            Logger.error("Responding to reregister notification action without a view controller!")
+            return
+        }
+        Logger.info("Reregistering from deregistered notification")
+        RegistrationUtils.reregister(fromViewController: viewController, appReadiness: appReadiness)
     }
 
+    @MainActor
     private class func showLinkedDevices() {
         SignalApp.shared.showAppSettings(mode: .linkedDevices)
     }
@@ -401,61 +397,58 @@ public class NotificationActionHandler {
         let hasPendingMessageRequest: Bool
     }
 
-    private class func notificationMessage(forUserInfo userInfo: [AnyHashable: Any]) -> Promise<NotificationMessage> {
-        firstly(on: DispatchQueue.global()) { () throws -> NotificationMessage in
-            guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
-                throw OWSAssertionError("threadId was unexpectedly nil")
+    private class func notificationMessage(forUserInfo userInfo: UserInfo) async throws -> NotificationMessage {
+        guard let threadId = userInfo.threadId else {
+            throw OWSAssertionError("threadId was unexpectedly nil")
+        }
+        let messageId = userInfo.messageId
+
+        return try SSKEnvironment.shared.databaseStorageRef.read { (transaction) throws -> NotificationMessage in
+            guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
+                throw OWSAssertionError("unable to find thread with id: \(threadId)")
             }
-            let messageId = userInfo[AppNotificationUserInfoKey.messageId] as? String
 
-            return try SSKEnvironment.shared.databaseStorageRef.read { (transaction) throws -> NotificationMessage in
-                guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
-                    throw OWSAssertionError("unable to find thread with id: \(threadId)")
-                }
-
-                let interaction: TSInteraction?
-                if let messageId = messageId {
-                    interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction)
-                } else {
-                    interaction = nil
-                }
-
-                let storyMessage: StoryMessage?
-                if
-                    let message = interaction as? TSMessage,
-                    let storyTimestamp = message.storyTimestamp?.uint64Value,
-                    let storyAuthorAci = message.storyAuthorAci
-                {
-                    storyMessage = StoryFinder.story(timestamp: storyTimestamp, author: storyAuthorAci.wrappedAciValue, transaction: transaction)
-                } else {
-                    storyMessage = nil
-                }
-
-                let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction)
-
-                return NotificationMessage(
-                    thread: thread,
-                    interaction: interaction,
-                    storyMessage: storyMessage,
-                    isGroupStoryReply: (interaction as? TSMessage)?.isGroupStoryReply == true,
-                    hasPendingMessageRequest: hasPendingMessageRequest
-                )
+            let interaction: TSInteraction?
+            if let messageId = messageId {
+                interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction)
+            } else {
+                interaction = nil
             }
+
+            let storyMessage: StoryMessage?
+            if
+                let message = interaction as? TSMessage,
+                let storyTimestamp = message.storyTimestamp?.uint64Value,
+                let storyAuthorAci = message.storyAuthorAci
+            {
+                storyMessage = StoryFinder.story(timestamp: storyTimestamp, author: storyAuthorAci.wrappedAciValue, transaction: transaction)
+            } else {
+                storyMessage = nil
+            }
+
+            let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction)
+
+            return NotificationMessage(
+                thread: thread,
+                interaction: interaction,
+                storyMessage: storyMessage,
+                isGroupStoryReply: (interaction as? TSMessage)?.isGroupStoryReply == true,
+                hasPendingMessageRequest: hasPendingMessageRequest
+            )
         }
     }
 
-    private class func markMessageAsRead(notificationMessage: NotificationMessage) -> Promise<Void> {
+    private class func markMessageAsRead(notificationMessage: NotificationMessage) async throws {
         guard let interaction = notificationMessage.interaction else {
-            return Promise(error: OWSAssertionError("missing interaction"))
+            throw OWSAssertionError("missing interaction")
         }
-        let (promise, future) = Promise<Void>.pending()
-        SSKEnvironment.shared.receiptManagerRef.markAsReadLocally(
-            beforeSortId: interaction.sortId,
-            thread: notificationMessage.thread,
-            hasPendingMessageRequest: notificationMessage.hasPendingMessageRequest
-        ) {
-            future.resolve()
+        return await withCheckedContinuation { continuation in
+            SSKEnvironment.shared.receiptManagerRef.markAsReadLocally(
+                beforeSortId: interaction.sortId,
+                thread: notificationMessage.thread,
+                hasPendingMessageRequest: notificationMessage.hasPendingMessageRequest,
+                completion: { continuation.resume() }
+            )
         }
-        return promise
     }
 }

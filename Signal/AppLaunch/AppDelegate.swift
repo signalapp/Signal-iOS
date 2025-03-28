@@ -1656,11 +1656,13 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     ) {
         let appReadiness: AppReadinessSetter = self.appReadiness
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
-            NotificationActionHandler.handleNotificationResponse(
-                response,
-                appReadiness: appReadiness,
-                completionHandler: completionHandler
-            )
+            Task { @MainActor in
+                await NotificationActionHandler.handleNotificationResponse(
+                    response,
+                    appReadiness: appReadiness
+                )
+                completionHandler()
+            }
         }
     }
 }
