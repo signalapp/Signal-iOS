@@ -2287,3 +2287,33 @@ CREATE
                         ,"defaultColorIndex" INTEGER NOT NULL
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "StoryRecipient" (
+            "threadId" INTEGER NOT NULL
+            ,"recipientId" INTEGER NOT NULL
+            ,PRIMARY KEY (
+                "threadId"
+                ,"recipientId"
+            )
+            ,FOREIGN KEY ("threadId") REFERENCES "model_TSThread"("id"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+                        ,FOREIGN KEY ("recipientId") REFERENCES "model_SignalRecipient"("id"
+)
+    ON DELETE
+        CASCADE
+            ON UPDATE
+                CASCADE
+) WITHOUT ROWID
+;
+
+CREATE
+    INDEX "StoryRecipient_on_recipientId"
+        ON "StoryRecipient"("recipientId"
+)
+;

@@ -2140,6 +2140,10 @@ class StorageServiceOperation {
         return MultipleElementStateUpdater(
             recordUpdater: StorageServiceStoryDistributionListRecordUpdater(
                 privateStoryThreadDeletionManager: DependenciesBridge.shared.privateStoryThreadDeletionManager,
+                recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
+                recipientFetcher: DependenciesBridge.shared.recipientFetcher,
+                storyRecipientManager: DependenciesBridge.shared.storyRecipientManager,
+                storyRecipientStore: DependenciesBridge.shared.storyRecipientStore,
                 threadRemover: DependenciesBridge.shared.threadRemover
             ),
             changeState: \.storyDistributionListChangeMap,

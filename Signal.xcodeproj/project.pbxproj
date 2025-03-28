@@ -523,6 +523,8 @@
 		4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */; };
 		4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C622E7D393008010D2 /* MediaPresentationContext.swift */; };
 		4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */; };
+		50007B8A2BFE7676005652A2 /* StoryRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50007B892BFE7676005652A2 /* StoryRecipient.swift */; };
+		50007B8C2BFE79AD005652A2 /* StoryRecipientStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50007B8B2BFE79AD005652A2 /* StoryRecipientStore.swift */; };
 		5000CA312B1F97EE00BB8EFF /* JobQueueRunnerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5000CA302B1F97EE00BB8EFF /* JobQueueRunnerTest.swift */; };
 		5003BB3F299DA0F10037159B /* LinkPreviewFetchState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB3E299DA0F10037159B /* LinkPreviewFetchState.swift */; };
 		5003BB43299F034D0037159B /* E164.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB42299F034D0037159B /* E164.swift */; };
@@ -701,6 +703,7 @@
 		50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2422980B53000899660 /* LinkValidatorTest.swift */; };
 		50D6A93F2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D6A93E2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift */; };
 		50D8796A2A16D2C20031345D /* MessageLoaderBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D879692A16D2C20031345D /* MessageLoaderBatchTest.swift */; };
+		50D9CD8D2C52D78000273D6C /* StoryRecipientManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D9CD8C2C52D78000273D6C /* StoryRecipientManager.swift */; };
 		50E42FEA2C1BA3B900554BD6 /* CallHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E42FE92C1BA3B900554BD6 /* CallHTTPClient.swift */; };
 		50E51A3B2AE989C4004F9069 /* AccountAttributesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E51A3A2AE989C4004F9069 /* AccountAttributesTest.swift */; };
 		50E5E4B129932D9B00E15A1C /* DeviceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5E4B029932D9B00E15A1C /* DeviceMessage.swift */; };
@@ -4389,6 +4392,8 @@
 		500049CA28330184006A7466 /* mr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = mr; path = translations/mr.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049CB28330185006A7466 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = nb; path = translations/nb.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049CD28330189006A7466 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fa; path = translations/fa.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		50007B892BFE7676005652A2 /* StoryRecipient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryRecipient.swift; sourceTree = "<group>"; };
+		50007B8B2BFE79AD005652A2 /* StoryRecipientStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryRecipientStore.swift; sourceTree = "<group>"; };
 		5000CA302B1F97EE00BB8EFF /* JobQueueRunnerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueueRunnerTest.swift; sourceTree = "<group>"; };
 		5003BB3E299DA0F10037159B /* LinkPreviewFetchState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewFetchState.swift; sourceTree = "<group>"; };
 		5003BB40299E1FD10037159B /* LinkPreviewFetchStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewFetchStateTest.swift; sourceTree = "<group>"; };
@@ -4573,6 +4578,7 @@
 		50D5E2422980B53000899660 /* LinkValidatorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkValidatorTest.swift; sourceTree = "<group>"; };
 		50D6A93E2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniqueObjectRecipientMerger.swift; sourceTree = "<group>"; };
 		50D879692A16D2C20031345D /* MessageLoaderBatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageLoaderBatchTest.swift; sourceTree = "<group>"; };
+		50D9CD8C2C52D78000273D6C /* StoryRecipientManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryRecipientManager.swift; sourceTree = "<group>"; };
 		50E42FE52C1B9EB900554BD6 /* CallLinkState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkState.swift; sourceTree = "<group>"; };
 		50E42FE92C1BA3B900554BD6 /* CallHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallHTTPClient.swift; sourceTree = "<group>"; };
 		50E51A3A2AE989C4004F9069 /* AccountAttributesTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributesTest.swift; sourceTree = "<group>"; };
@@ -10291,6 +10297,9 @@
 			isa = PBXGroup;
 			children = (
 				66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */,
+				50007B892BFE7676005652A2 /* StoryRecipient.swift */,
+				50D9CD8C2C52D78000273D6C /* StoryRecipientManager.swift */,
+				50007B8B2BFE79AD005652A2 /* StoryRecipientStore.swift */,
 			);
 			path = Stories;
 			sourceTree = "<group>";
@@ -18230,6 +18239,9 @@
 				F9C5CC57289453B300548EEE /* StoryManager.swift in Sources */,
 				F9C5CC58289453B300548EEE /* StoryMessage.swift in Sources */,
 				6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */,
+				50007B8A2BFE7676005652A2 /* StoryRecipient.swift in Sources */,
+				50D9CD8D2C52D78000273D6C /* StoryRecipientManager.swift in Sources */,
+				50007B8C2BFE79AD005652A2 /* StoryRecipientStore.swift in Sources */,
 				6619A1972B27CA5F004B38FE /* StoryStore.swift in Sources */,
 				C1DD78AD2BB1CF110020F064 /* Streamable.swift in Sources */,
 				C1BF1F712BA0D7CC0004B112 /* StreamTransform.swift in Sources */,

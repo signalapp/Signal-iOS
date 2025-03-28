@@ -6,17 +6,34 @@
 import SignalServiceKit
 import SignalUI
 
-class PrivateStorySettingsViewController: OWSTableViewController2 {
-    let thread: TSPrivateStoryThread
+final class PrivateStorySettingsViewController: OWSTableViewController2 {
+    private let thread: TSPrivateStoryThread
+    private var sortedAddresses = [SignalServiceAddress]()
 
     init(thread: TSPrivateStoryThread) {
         self.thread = thread
         super.init()
     }
 
+    private func updateSortedAddresses() {
+        let contactManager = SSKEnvironment.shared.contactManagerRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
+
+        self.sortedAddresses = databaseStorage.read { tx in
+            return contactManager.sortSignalServiceAddresses(
+                failIfThrows {
+                    try storyRecipientManager.fetchRecipients(forStoryThread: thread, tx: tx)
+                }.map { $0.address },
+                transaction: tx
+            )
+        }
+    }
+
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateBarButtons()
+        updateSortedAddresses()
         updateTableContents()
     }
 
@@ -88,15 +105,10 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
             self?.showAddViewerView()
         }))
 
-        let totalViewersCount = thread.addresses.count
+        let totalViewersCount = sortedAddresses.count
         let maxViewersToShow = 6
 
-        var viewersToRender = SSKEnvironment.shared.databaseStorageRef.read {
-            SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(
-                thread.addresses,
-                transaction: $0
-            )
-        }
+        var viewersToRender = sortedAddresses
         let hasMoreViewers = !isShowingAllViewers && viewersToRender.count > maxViewersToShow
         if hasMoreViewers {
             viewersToRender = Array(viewersToRender.prefix(maxViewersToShow - 1))
@@ -219,11 +231,16 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
                     storyMessage.remotelyDelete(for: self.thread, transaction: transaction)
                 }
 
-                // Because we're sending delete messages to this thread, we need
-                // to keep it in the database even though it will no longer be
-                // rendered to the user. We'll clean it up later when we clean
-                // up records from storage service.
-                self.thread.updateWithStoryViewMode(.disabled, transaction: transaction)
+                // Because we're sending delete messages to this thread, we need to keep it
+                // (and its list of recipients!) in the database even though it will no
+                // longer be rendered to the user. We'll clean it up later when we clean up
+                // records from storage service.
+                self.thread.updateWithStoryViewMode(
+                    .disabled,
+                    storyRecipientIds: .noChange,
+                    updateStorageService: true,
+                    transaction: transaction
+                )
 
                 DependenciesBridge.shared.privateStoryThreadDeletionManager.recordDeletedAtTimestamp(
                     Date.ows_millisecondTimestamp(),
@@ -232,7 +249,6 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
                 )
 
                 transaction.addSyncCompletion {
-                    SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedStoryDistributionListIds: [dlistIdentifier])
                     Task { @MainActor in
                         modal.dismiss {
                             self.navigationController?.popViewController(animated: true)
@@ -286,15 +302,28 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
         actionSheet.addAction(.init(title: OWSLocalizedString(
             "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON",
             comment: "Action sheet button to remove a viewer from a story on the 'private story settings' view."
-        ), style: .destructive, handler: { _ in
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                self.thread.updateWithStoryViewMode(
-                    .explicit,
-                    addresses: self.thread.addresses.filter { $0 != address },
-                    updateStorageService: true,
-                    transaction: transaction
-                )
+        ), style: .destructive, handler: { [unowned self] _ in
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+            databaseStorage.write { transaction in
+                let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+                guard
+                    let storyThread = TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: self.thread.uniqueId, transaction: transaction),
+                    storyThread.storyViewMode == .explicit,
+                    let recipientId = recipientDatabaseTable.fetchRecipient(address: address, tx: transaction)?.id
+                else {
+                    return
+                }
+                let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
+                failIfThrows {
+                    try storyRecipientManager.removeRecipientIds(
+                        [recipientId],
+                        for: storyThread,
+                        shouldUpdateStorageService: true,
+                        tx: transaction
+                    )
+                }
             }
+            self.updateSortedAddresses()
             self.updateTableContents()
         }))
 

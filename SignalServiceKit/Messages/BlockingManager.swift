@@ -150,7 +150,12 @@ public class BlockingManager {
         if let aci = address.aci {
             StoryManager.deleteAllStories(forSender: aci, tx: tx)
         }
-        StoryManager.removeAddressFromAllPrivateStoryThreads(address, tx: tx)
+        let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
+        storyRecipientManager.removeRecipientIdFromAllPrivateStoryThreads(
+            recipient.id!,
+            shouldUpdateStorageService: true,
+            tx: tx
+        )
 
         switch blockMode {
         case .restoreFromBackup:
@@ -550,16 +555,5 @@ public class BlockingManager {
 
     func setLastSyncedChangeToken(_ newValue: UInt64, transaction writeTx: DBWriteTransaction) {
         keyValueStore.setUInt64(newValue, key: PersistenceKey.lastSyncedChangeTokenKey.rawValue, transaction: writeTx)
-    }
-
-    // MARK: - Helpers
-
-    private func failIfThrows<T>(_ block: () throws -> T) -> T {
-        do {
-            return try block()
-        } catch {
-            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(userDefaults: CurrentAppContext().appUserDefaults(), error: error)
-            owsFail("Couldn't write: \(error)")
-        }
     }
 }

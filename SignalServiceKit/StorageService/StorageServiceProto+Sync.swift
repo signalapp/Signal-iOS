@@ -1898,13 +1898,25 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
     typealias RecordType = StorageServiceProtoStoryDistributionListRecord
 
     private let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
+    private let recipientDatabaseTable: any RecipientDatabaseTable
+    private let recipientFetcher: any RecipientFetcher
+    private let storyRecipientManager: StoryRecipientManager
+    private let storyRecipientStore: StoryRecipientStore
     private let threadRemover: any ThreadRemover
 
     init(
         privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
+        recipientDatabaseTable: any RecipientDatabaseTable,
+        recipientFetcher: any RecipientFetcher,
+        storyRecipientManager: StoryRecipientManager,
+        storyRecipientStore: StoryRecipientStore,
         threadRemover: any ThreadRemover
     ) {
         self.privateStoryThreadDeletionManager = privateStoryThreadDeletionManager
+        self.recipientDatabaseTable = recipientDatabaseTable
+        self.recipientFetcher = recipientFetcher
+        self.storyRecipientManager = storyRecipientManager
+        self.storyRecipientStore = storyRecipientStore
         self.threadRemover = threadRemover
     }
 
@@ -1937,7 +1949,11 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             transaction: transaction
         ) {
             builder.setName(story.name)
-            builder.setRecipientServiceIds(story.addresses.compactMap { $0.serviceId?.serviceIdString })
+            builder.setRecipientServiceIds(
+                (try? storyRecipientManager
+                    .fetchRecipients(forStoryThread: story, tx: transaction)
+                    .compactMap { ($0.aci ?? $0.pni)?.serviceIdString }) ?? []
+            )
             builder.setAllowsReplies(story.allowsReplies)
             builder.setIsBlockList(story.storyViewMode == .blockList)
         } else {
@@ -1957,13 +1973,13 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
         _ record: StorageServiceProtoStoryDistributionListRecord,
         transaction: DBWriteTransaction
     ) -> StorageServiceMergeResult<Data> {
-        guard let identifier = record.identifier, let uniqueId = UUID(data: identifier)?.uuidString else {
+        guard let identifier = record.identifier, let uniqueId = UUID(data: identifier) else {
             owsFailDebug("identifier unexpectedly missing for distribution list")
             return .invalid
         }
 
         let existingStory = TSPrivateStoryThread.anyFetchPrivateStoryThread(
-            uniqueId: uniqueId,
+            uniqueId: uniqueId.uuidString,
             transaction: transaction
         )
 
@@ -1989,6 +2005,9 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             }
             return serviceId
         }
+        let remoteRecipientIds = remoteRecipientServiceIds.map {
+            return recipientFetcher.fetchOrCreate(serviceId: $0, tx: transaction).id!
+        }
 
         if let story = existingStory {
             // My Story has a hardcoded, localized name that we don't sync
@@ -2006,12 +2025,15 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
                 story.updateWithAllowsReplies(record.allowsReplies, updateStorageService: false, transaction: transaction)
             }
 
-            let localStoryIsBlocklist = story.storyViewMode == .blockList
-            let localRecipientServiceIds = story.addresses.compactMap { $0.serviceId }
-            if localStoryIsBlocklist != record.isBlockList || Set(localRecipientServiceIds) != Set(remoteRecipientServiceIds) {
+            let hasChanged: Bool = (
+                (story.storyViewMode == .blockList) != record.isBlockList
+                || Set(remoteRecipientIds) != (try? storyRecipientStore.fetchRecipientIds(forStoryThreadId: story.sqliteRowId!, tx: transaction)).map(Set.init(_:))
+            )
+
+            if hasChanged {
                 story.updateWithStoryViewMode(
                     record.isBlockList ? .blockList : .explicit,
-                    addresses: remoteRecipientServiceIds.map { SignalServiceAddress($0) },
+                    storyRecipientIds: .setTo(remoteRecipientIds),
                     updateStorageService: false,
                     transaction: transaction
                 )
@@ -2022,13 +2044,21 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
                 return .invalid
             }
             let newStory = TSPrivateStoryThread(
-                uniqueId: uniqueId,
+                uniqueId: uniqueId.uuidString,
                 name: name,
                 allowsReplies: record.allowsReplies,
-                addresses: remoteRecipientServiceIds.map { SignalServiceAddress($0) },
                 viewMode: record.isBlockList ? .blockList : .explicit
             )
             newStory.anyInsert(transaction: transaction)
+
+            failIfThrows {
+                try storyRecipientManager.setRecipientIds(
+                    remoteRecipientIds,
+                    for: newStory,
+                    shouldUpdateStorageService: false,
+                    tx: transaction
+                )
+            }
         }
 
         return .merged(needsUpdate: needsUpdate, identifier)

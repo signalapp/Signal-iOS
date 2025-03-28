@@ -16,11 +16,33 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
 
     let completionBlock: () -> Void
 
-    public init(thread: TSPrivateStoryThread, mode: TSThreadStoryViewMode, completionBlock: @escaping () -> Void) {
+    public static func load(
+        for thread: TSPrivateStoryThread,
+        mode: TSThreadStoryViewMode,
+        tx: DBReadTransaction,
+        completionBlock: @escaping () -> Void
+    ) -> SelectMyStoryRecipientsViewController {
+        let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
+        return SelectMyStoryRecipientsViewController(
+            thread: thread,
+            recipientAddresses: failIfThrows {
+                try storyRecipientManager.fetchRecipients(forStoryThread: thread, tx: tx)
+            }.map { $0.address },
+            mode: mode,
+            completionBlock: completionBlock
+        )
+    }
+
+    private init(
+        thread: TSPrivateStoryThread,
+        recipientAddresses: [SignalServiceAddress],
+        mode: TSThreadStoryViewMode,
+        completionBlock: @escaping () -> Void
+    ) {
         self.thread = thread
         self.mode = mode
         if thread.storyViewMode == mode {
-            self.recipientSet = OrderedSet(thread.addresses.map { .for(address: $0) })
+            self.recipientSet = OrderedSet(recipientAddresses.map { .for(address: $0) })
         } else {
             self.recipientSet = OrderedSet()
         }
@@ -53,26 +75,28 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
             if recipientSet.isEmpty {
                 title = OWSLocalizedString(
                     "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE",
-                    comment: "The title for the 'select connections for story' view.")
-
+                    comment: "The title for the 'select connections for story' view."
+                )
             } else {
                 let format = OWSLocalizedString(
                     "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d",
                     tableName: "PluralAware",
-                    comment: "The title for the 'select connections for story' view if already some connections are selected. Embeds {{number}} of connections.")
+                    comment: "The title for the 'select connections for story' view if already some connections are selected. Embeds {{number}} of connections."
+                )
                 title = String.localizedStringWithFormat(format, recipientSet.count)
             }
         case .blockList:
             if recipientSet.isEmpty {
                 title = OWSLocalizedString(
                     "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE",
-                    comment: "The title for the 'select excluded connections for story' view.")
-
+                    comment: "The title for the 'select excluded connections for story' view."
+                )
             } else {
                 let format = OWSLocalizedString(
                     "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d",
                     tableName: "PluralAware",
-                    comment: "The title for the 'select excluded connections for story' view if already some connections are selected. Embeds {{number}} of excluded connections.")
+                    comment: "The title for the 'select excluded connections for story' view if already some connections are selected. Embeds {{number}} of excluded connections."
+                )
                 title = String.localizedStringWithFormat(format, recipientSet.count)
             }
         case .default, .disabled:
@@ -86,9 +110,13 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
         AssertIsOnMainThread()
 
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+            let recipientIds = self.recipientSet.orderedMembers.lazy.compactMap { $0.address?.serviceId }.map {
+                return recipientFetcher.fetchOrCreate(serviceId: $0, tx: transaction).id!
+            }
             self.thread.updateWithStoryViewMode(
                 self.mode,
-                addresses: self.recipientSet.orderedMembers.compactMap { $0.address },
+                storyRecipientIds: .setTo(Array(recipientIds)),
                 updateStorageService: true,
                 transaction: transaction
             )

@@ -350,7 +350,12 @@ private extension RecipientHidingManagerImpl {
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
             Logger.info("[Recipient hiding][side effects] Remove from story distribution lists.")
-            StoryManager.removeAddressFromAllPrivateStoryThreads(recipient.address, tx: SDSDB.shimOnlyBridge(tx))
+            let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
+            storyRecipientManager.removeRecipientIdFromAllPrivateStoryThreads(
+                recipient.id!,
+                shouldUpdateStorageService: true,
+                tx: tx
+            )
             Logger.info("[Recipient hiding][side effects] Sync with storage service.")
             storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
         }

@@ -85,6 +85,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         func writeToStream(
             contact: BackupProto_Contact,
             contactAddress: MessageBackup.ContactAddress,
+            contactDbRowId: SignalRecipient.RowId?,
             frameBencher: MessageBackup.Bencher.FrameBencher
         ) {
             let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
@@ -94,6 +95,9 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 frameBuilder: {
                     let recipientAddress = contactAddress.asArchivingAddress()
                     let recipientId = context.assignRecipientId(to: recipientAddress)
+                    if let contactDbRowId {
+                        context.associateRecipientId(recipientId, withRecipientDbRowId: contactDbRowId)
+                    }
 
                     var recipient = BackupProto_Recipient()
                     recipient.id = recipientId.value
@@ -256,7 +260,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 )
             )
 
-            writeToStream(contact: contact, contactAddress: contactAddress, frameBencher: frameBencher)
+            writeToStream(contact: contact, contactAddress: contactAddress, contactDbRowId: recipient.id!, frameBencher: frameBencher)
         }
 
         do {
@@ -374,6 +378,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 writeToStream(
                     contact: contact,
                     contactAddress: contactAddress,
+                    contactDbRowId: nil,
                     frameBencher: frameBencher
                 )
             }
@@ -658,6 +663,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         } catch {
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId)])
         }
+        context.setRecipientDbRowId(recipient.id!, forBackupRecipientId: recipientProto.recipientId)
 
         /// No Backup code should be relying on the SSA cache, but once we've
         /// finished restoring and launched we want the cache to have accurate

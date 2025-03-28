@@ -6,6 +6,8 @@
 import Foundation
 
 extension TSPrivateStoryThread {
+    public typealias RowId = Int64
+
     @objc
     public class var myStoryUniqueId: String {
         // My Story always uses a UUID of all 0s
@@ -20,7 +22,7 @@ extension TSPrivateStoryThread {
     public class func getOrCreateMyStory(transaction: DBWriteTransaction) -> TSPrivateStoryThread! {
         if let myStory = getMyStory(transaction: transaction) { return myStory }
 
-        let myStory = TSPrivateStoryThread(uniqueId: myStoryUniqueId, name: "", allowsReplies: true, addresses: [], viewMode: .blockList)
+        let myStory = TSPrivateStoryThread(uniqueId: myStoryUniqueId, name: "", allowsReplies: true, viewMode: .blockList)
         myStory.anyInsert(transaction: transaction)
         return myStory
     }
@@ -30,24 +32,28 @@ extension TSPrivateStoryThread {
     @objc
     public var distributionListIdentifier: Data? { UUID(uuidString: uniqueId)?.data }
 
-    public override func recipientAddresses(with transaction: DBReadTransaction) -> [SignalServiceAddress] {
-        switch storyViewMode {
-        case .default:
-            owsFailDebug("Unexpectedly have private story with no view mode")
+    public override func recipientAddresses(with tx: DBReadTransaction) -> [SignalServiceAddress] {
+        let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
+        do {
+            switch storyViewMode {
+            case .default:
+                throw OWSAssertionError("Unexpectedly have private story with no view mode")
+            case .explicit, .disabled:
+                return try storyRecipientManager.fetchRecipients(forStoryThread: self, tx: tx).map { $0.address }
+            case .blockList:
+                let blockedAddresses = try storyRecipientManager.fetchRecipients(forStoryThread: self, tx: tx).map { $0.address }
+                let profileManager = SSKEnvironment.shared.profileManagerRef
+                return profileManager.allWhitelistedRegisteredAddresses(tx: tx).filter {
+                    return !blockedAddresses.contains($0) && !$0.isLocalAddress
+                }
+            }
+        } catch {
+            Logger.warn("Couldn't fetch addresses; returning []: \(error)")
             return []
-        case .explicit, .disabled:
-            return addresses
-        case .blockList:
-            return SSKEnvironment.shared.profileManagerRef.allWhitelistedRegisteredAddresses(tx: transaction).filter { !addresses.contains($0) && !$0.isLocalAddress }
         }
     }
 
     // MARK: - updateWith...
-
-    public override func updateWithShouldThreadBeVisible(_ shouldThreadBeVisible: Bool, transaction: DBWriteTransaction) {
-        super.updateWithShouldThreadBeVisible(shouldThreadBeVisible, transaction: transaction)
-        updateWithStoryViewMode(.disabled, transaction: transaction)
-    }
 
     public func updateWithAllowsReplies(
         _ allowsReplies: Bool,
@@ -94,7 +100,7 @@ extension TSPrivateStoryThread {
     /// writing, that is exclusively Backups – should set this to `false`.
     public func updateWithStoryViewMode(
         _ storyViewMode: TSThreadStoryViewMode,
-        addresses: [SignalServiceAddress],
+        storyRecipientIds storyRecipientIdsChange: OptionalChange<[SignalRecipient.RowId]>,
         updateStorageService: Bool,
         updateHasSetMyStoryPrivacyIfNeeded: Bool = true,
         transaction tx: DBWriteTransaction
@@ -109,13 +115,28 @@ extension TSPrivateStoryThread {
 
         anyUpdatePrivateStoryThread(transaction: tx) { privateStoryThread in
             privateStoryThread.storyViewMode = storyViewMode
-            privateStoryThread.addresses = addresses
+        }
+
+        switch storyRecipientIdsChange {
+        case .noChange:
+            break
+        case .setTo(let storyRecipientIds):
+            let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
+            failIfThrows {
+                try storyRecipientManager.setRecipientIds(
+                    storyRecipientIds,
+                    for: self,
+                    shouldUpdateStorageService: false, // handled below
+                    tx: tx
+                )
+            }
         }
 
         if updateStorageService, let distributionListIdentifier {
-            SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(
-                updatedStoryDistributionListIds: [ distributionListIdentifier ]
-            )
+            tx.addSyncCompletion {
+                let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
+                storageServiceManager.recordPendingUpdates(updatedStoryDistributionListIds: [distributionListIdentifier])
+            }
         }
     }
 }

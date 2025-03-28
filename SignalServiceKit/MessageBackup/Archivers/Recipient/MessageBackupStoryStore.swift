@@ -8,9 +8,11 @@ import LibSignalClient
 public final class MessageBackupStoryStore {
 
     private let storyStore: StoryStore
+    private let storyRecipientStore: StoryRecipientStore
 
-    init(storyStore: StoryStore) {
+    init(storyStore: StoryStore, storyRecipientStore: StoryRecipientStore) {
         self.storyStore = storyStore
+        self.storyRecipientStore = storyRecipientStore
     }
 
     // MARK: - Archiving
@@ -29,20 +31,22 @@ public final class MessageBackupStoryStore {
         return storyStore.getOrCreateStoryContextAssociatedData(forGroupThread: groupThread, tx: context.tx)
     }
 
+    func fetchRecipientIds(for storyThread: TSPrivateStoryThread, context: MessageBackup.RecipientArchivingContext) throws -> [SignalRecipient.RowId] {
+        return try storyRecipientStore.fetchRecipientIds(forStoryThreadId: storyThread.sqliteRowId!, tx: context.tx)
+    }
+
     // MARK: - Restoring
 
     func createMyStory(
         name: String,
         allowReplies: Bool,
         viewMode: TSThreadStoryViewMode,
-        addresses: [MessageBackup.ContactAddress],
         context: MessageBackup.RecipientRestoringContext
-    ) throws {
+    ) throws -> TSPrivateStoryThread {
         let myStory = TSPrivateStoryThread(
             uniqueId: TSPrivateStoryThread.myStoryUniqueId,
             name: name,
             allowsReplies: allowReplies,
-            addresses: addresses.map({ $0.asInteropAddress() }),
             viewMode: viewMode
         )
         var record = myStory.asRecord()
@@ -60,6 +64,15 @@ public final class MessageBackupStoryStore {
 
         // Use save to insert or update as my story might already exist.
         try record.save(context.tx.database)
+        return myStory
+    }
+
+    func insertRecipientId(
+        _ recipientId: SignalRecipient.RowId,
+        forStoryThreadId storyThreadId: TSPrivateStoryThread.RowId,
+        context: MessageBackup.RecipientRestoringContext
+    ) throws {
+        try storyRecipientStore.insertRecipientId(recipientId, forStoryThreadId: storyThreadId, tx: context.tx)
     }
 
     func insert(

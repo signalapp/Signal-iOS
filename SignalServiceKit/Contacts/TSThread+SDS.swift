@@ -272,8 +272,7 @@ extension TSThread {
             let mutedUntilTimestampObsolete: UInt64 = record.mutedUntilTimestamp
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
             let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .default
-            let addressesSerialized: Data? = record.addresses
-            let addresses: [SignalServiceAddress] = try SDSDeserialization.unarchive(addressesSerialized, name: "addresses")
+            let addresses: Data? = SDSDeserialization.optionalData(record.addresses, name: "addresses")
             let allowsReplies: Bool = try SDSDeserialization.required(record.allowsReplies, name: "allowsReplies")
             let name: String = try SDSDeserialization.required(record.name, name: "name")
 
@@ -419,7 +418,7 @@ extension TSThread: DeepCopyable {
             let mutedUntilTimestampObsolete: UInt64 = modelToCopy.mutedUntilTimestampObsolete
             let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
             let storyViewMode: TSThreadStoryViewMode = modelToCopy.storyViewMode
-            let addresses: [SignalServiceAddress] = try DeepCopies.deepCopy(modelToCopy.addresses)
+            let addresses: Data? = modelToCopy.addresses
             let allowsReplies: Bool = modelToCopy.allowsReplies
             let name: String = modelToCopy.name
 

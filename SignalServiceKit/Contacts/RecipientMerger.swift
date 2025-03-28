@@ -100,6 +100,7 @@ class RecipientMergerImpl: RecipientMerger {
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
     private let storageServiceManager: StorageServiceManager
+    private let storyRecipientStore: StoryRecipientStore
 
     /// Initializes a RecipientMerger.
     ///
@@ -114,7 +115,8 @@ class RecipientMergerImpl: RecipientMerger {
         observers: Observers,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
-        storageServiceManager: StorageServiceManager
+        storageServiceManager: StorageServiceManager,
+        storyRecipientStore: StoryRecipientStore
     ) {
         self.aciSessionStore = aciSessionStore
         self.blockedRecipientStore = blockedRecipientStore
@@ -123,6 +125,7 @@ class RecipientMergerImpl: RecipientMerger {
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.storageServiceManager = storageServiceManager
+        self.storyRecipientStore = storyRecipientStore
     }
 
     struct Observers {
@@ -751,6 +754,7 @@ class RecipientMergerImpl: RecipientMerger {
                 aciSessionStore.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
                 identityManager.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
                 blockedRecipientStore.mergeRecipientId(affectedRecipient.id!, into: mergedRecipient.id!, tx: tx)
+                failIfThrows { try storyRecipientStore.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx) }
                 recipientDatabaseTable.removeRecipient(affectedRecipient, transaction: tx)
             } else if existingRecipients.contains(where: { $0.uniqueId == affectedRecipient.uniqueId }) {
                 recipientDatabaseTable.updateRecipient(affectedRecipient, transaction: tx)

@@ -4,6 +4,7 @@
 //
 
 extension TSThread {
+    public typealias RowId = Int64
 
     // MARK: - updateWith...
 
@@ -49,10 +50,6 @@ extension TSThread {
     }
 
     /// Updates `shouldThreadBeVisible`.
-    ///
-    /// This method needs to be `@objc` since it is both declared in an
-    /// extension and is overridden by `TSPrivateStoryThread`.
-    @objc
     public func updateWithShouldThreadBeVisible(
         _ shouldThreadBeVisible: Bool,
         transaction tx: DBWriteTransaction
@@ -70,15 +67,6 @@ extension TSThread {
             if lastSentStoryTimestamp > (thread.lastSentStoryTimestamp?.uint64Value ?? 0) {
                 thread.lastSentStoryTimestamp = NSNumber(value: lastSentStoryTimestamp)
             }
-        }
-    }
-
-    public func updateWithStoryViewMode(
-        _ storyViewMode: TSThreadStoryViewMode,
-        transaction tx: DBWriteTransaction
-    ) {
-        anyUpdate(transaction: tx) { thread in
-            thread.storyViewMode = storyViewMode
         }
     }
 

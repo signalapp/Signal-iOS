@@ -67,7 +67,8 @@ private class TestDependencies {
             ),
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
-            storageServiceManager: storageServiceManager
+            storageServiceManager: storageServiceManager,
+            storyRecipientStore: StoryRecipientStore()
         )
     }
 }

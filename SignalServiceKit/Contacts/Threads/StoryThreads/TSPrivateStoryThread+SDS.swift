@@ -83,7 +83,7 @@ class TSPrivateStoryThreadSerializer: SDSSerializer {
         let allowsReplies: Bool? = model.allowsReplies
         let lastSentStoryTimestamp: UInt64? = archiveOptionalNSNumber(model.lastSentStoryTimestamp, conversion: { $0.uint64Value })
         let name: String? = model.name
-        let addresses: Data? = optionalArchive(model.addresses)
+        let addresses: Data? = model.addresses
         let storyViewMode: UInt = model.storyViewMode.rawValue
         let editTargetTimestamp: UInt64? = archiveOptionalNSNumber(model.editTargetTimestamp, conversion: { $0.uint64Value })
 

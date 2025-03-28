@@ -169,40 +169,6 @@ public class StoryManager {
         }
     }
 
-    /// Removes a given address from any TSPrivateStoryThread(s) that have it as an _explicit_ address, whether by exclusion or
-    /// inclusion.
-    public class func removeAddressFromAllPrivateStoryThreads(_ address: SignalServiceAddress, tx: DBWriteTransaction) {
-        // We don't have a mapping from recipient to the set of TSPrivateStoryThreads they
-        // are a part of, so the best we can do is index over all of them and find
-        // the recipient if present. If this becomes an issue, we can consider adding such a lookup table.
-        // In practice, since private story threads are generated exclusively by the user themselves,
-        // and explicit memberships are a subset, the count is going to be very low.
-        ThreadFinder().storyThreads(
-            includeImplicitGroupThreads: false,
-            transaction: tx
-        ).forEach { thread in
-            guard let storyThread = thread as? TSPrivateStoryThread else {
-                return
-            }
-            switch storyThread.storyViewMode {
-            case .default, .disabled:
-                return
-            case .explicit, .blockList:
-                var finalAddresses = storyThread.addresses
-                finalAddresses.removeAll(where: { $0 == address })
-                if finalAddresses.count != storyThread.addresses.count {
-                    // Remove the recipient from the private story thread.
-                    storyThread.updateWithStoryViewMode(
-                        storyThread.storyViewMode,
-                        addresses: finalAddresses,
-                        updateStorageService: true,
-                        transaction: tx
-                    )
-                }
-            }
-        }
-    }
-
     public class func nextExpirationTimestamp(transaction: DBReadTransaction) -> UInt64? {
         guard let timestamp = StoryFinder.oldestExpirableTimestamp(transaction: transaction) else { return nil }
         return timestamp + storyLifetimeMillis

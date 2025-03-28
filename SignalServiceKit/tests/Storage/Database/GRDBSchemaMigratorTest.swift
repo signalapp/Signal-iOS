@@ -4,6 +4,7 @@
 //
 
 import GRDB
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -383,7 +384,8 @@ extension GRDBSchemaMigratorTest {
                 "uniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL,
                 "devices" BLOB NOT NULL,
                 "recipientPhoneNumber" TEXT UNIQUE,
-                "recipientUUID" TEXT UNIQUE
+                "recipientUUID" TEXT UNIQUE,
+                "pni" TEXT UNIQUE
             );
 
             INSERT INTO "model_SignalRecipient" (
@@ -612,6 +614,139 @@ extension GRDBSchemaMigratorTest {
             XCTAssertEqual(rows.count, 4)
             XCTAssertEqual(rows.filter { $0["groupId"] != nil }.count, 1)
             XCTAssertEqual(rows.filter { $0["recipientRowId"] != nil }.count, 3)
+        }
+    }
+
+    @objc(SampleSignalServiceAddress)
+    private class SampleSignalServiceAddress: NSObject, NSSecureCoding {
+        let serviceId: ServiceId?
+        let phoneNumber: String?
+
+        init(serviceId: ServiceId?, phoneNumber: String?) {
+            self.serviceId = serviceId
+            self.phoneNumber = phoneNumber
+        }
+
+        class var supportsSecureCoding: Bool { true }
+
+        required init?(coder: NSCoder) { fatalError() }
+
+        func encode(with coder: NSCoder) {
+            if let aci = serviceId as? Aci {
+                coder.encode(aci.rawUUID, forKey: "backingUuid")
+            } else {
+                coder.encode(serviceId?.serviceIdBinary.asData, forKey: "backingUuid")
+            }
+            coder.encode(self.phoneNumber, forKey: "backingPhoneNumber")
+        }
+    }
+
+    private static func encodedAddresses(_ addresses: [SampleSignalServiceAddress]) throws -> Data {
+        let coder = NSKeyedArchiver(requiringSecureCoding: true)
+        coder.setClassName("SignalServiceKit.SignalServiceAddress", for: SampleSignalServiceAddress.self)
+        coder.encode(addresses, forKey: NSKeyedArchiveRootObjectKey)
+        return coder.encodedData
+    }
+
+    func testDecodeSignalServiceAddresses() throws {
+        let exampleAddresses: [SampleSignalServiceAddress] = [
+            .init(serviceId: Aci.parseFrom(aciString: "00000000-0000-4000-8000-000000000000")!, phoneNumber: nil),
+            .init(serviceId: Pni.parseFrom(pniString: "00000000-0000-4000-8000-000000000000")!, phoneNumber: nil),
+            .init(serviceId: nil, phoneNumber: "+16505550100"),
+        ]
+
+        let encodedAddresses = try Self.encodedAddresses(exampleAddresses)
+        let decodedAddresses = try GRDBSchemaMigrator.decodeSignalServiceAddresses(dataValue: encodedAddresses)
+        XCTAssertEqual(decodedAddresses.map(\.serviceId), exampleAddresses.map(\.serviceId))
+        XCTAssertEqual(decodedAddresses.map(\.phoneNumber), exampleAddresses.map(\.phoneNumber))
+    }
+
+    func testCreateStoryRecipients() throws {
+        // Set up the database with sample data that may have existed.
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "model_SignalRecipient" (
+                "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                "recordType" INTEGER NOT NULL,
+                "uniqueId" TEXT NOT NULL,
+                "recipientPhoneNumber" TEXT UNIQUE,
+                "recipientUUID" TEXT UNIQUE,
+                "pni" TEXT UNIQUE,
+                "devices" BLOB
+            );
+
+            CREATE TABLE "model_TSThread" (
+                id INTEGER PRIMARY KEY,
+                recordType INTEGER NOT NULL,
+                addresses BLOB
+            );
+
+            INSERT INTO "model_SignalRecipient" (
+                "recordType", "uniqueId", "recipientPhoneNumber", "recipientUUID", "pni"
+            ) VALUES
+                (0, '', '+17635550100', '00000000-0000-4000-A000-000000000000', NULL),
+                (0, '', '+17635550101', NULL, NULL),
+                (0, '', NULL, NULL, 'PNI:00000000-0000-4000-A000-000000000FFF');
+
+            INSERT INTO "model_TSThread" (
+                "id", "recordType", "addresses"
+            ) VALUES
+                (1, 73, X'');
+            """)
+            try db.execute(
+                sql: "INSERT INTO model_TSThread (id, recordType, addresses) VALUES (2, 72, ?)",
+                arguments: [Self.encodedAddresses([])]
+            )
+            try db.execute(
+                sql: "INSERT INTO model_TSThread (id, recordType, addresses) VALUES (3, 72, ?)",
+                arguments: [Self.encodedAddresses([.init(serviceId: Aci.parseFrom(aciString: "00000000-0000-4000-A000-000000000000")!, phoneNumber: nil)])]
+            )
+            try db.execute(
+                sql: "INSERT INTO model_TSThread (id, recordType, addresses) VALUES (4, 72, ?)",
+                arguments: [Self.encodedAddresses([
+                    .init(serviceId: Aci.parseFrom(aciString: "00000000-0000-4000-A000-000000000AAA")!, phoneNumber: nil),
+                    .init(serviceId: Aci.parseFrom(aciString: "00000000-0000-4000-A000-000000000AAA")!, phoneNumber: nil),
+                    .init(serviceId: Pni.parseFrom(pniString: "00000000-0000-4000-A000-000000000BBB")!, phoneNumber: nil),
+                    .init(serviceId: Pni.parseFrom(pniString: "00000000-0000-4000-A000-000000000FFF")!, phoneNumber: nil),
+                    .init(serviceId: nil, phoneNumber: "+17635550100"),
+                    .init(serviceId: nil, phoneNumber: "+17635550142"),
+                ])]
+            )
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.createStoryRecipients(tx: tx)
+            }
+
+            let storyRecipients = try Row.fetchAll(
+                db,
+                sql: "SELECT threadId, recipientId FROM StoryRecipient ORDER BY threadId, recipientId"
+            ).map { [$0[0] as Int64, $0[1] as Int64] }
+            XCTAssertEqual(storyRecipients, [[3, 1], [4, 1], [4, 3], [4, 4], [4, 5], [4, 6]])
+
+            let storyAddresses = try (Data?).fetchAll(
+                db,
+                sql: "SELECT addresses FROM model_TSThread ORDER BY id"
+            )
+            XCTAssertEqual(storyAddresses, [Data(), nil, nil, nil])
+
+            let signalRecipients = try Row.fetchAll(
+                db,
+                sql: "SELECT * FROM model_SignalRecipient ORDER BY id"
+            )
+            XCTAssertEqual(signalRecipients.count, 6)
+            XCTAssertEqual(signalRecipients[3]["recipientUUID"], "00000000-0000-4000-A000-000000000AAA")
+            XCTAssertEqual(signalRecipients[3]["recipientPhoneNumber"], nil as String?)
+            XCTAssertEqual(signalRecipients[3]["pni"], nil as String?)
+
+            XCTAssertEqual(signalRecipients[4]["recipientUUID"], nil as String?)
+            XCTAssertEqual(signalRecipients[4]["recipientPhoneNumber"], nil as String?)
+            XCTAssertEqual(signalRecipients[4]["pni"], "PNI:00000000-0000-4000-A000-000000000BBB")
+
+            XCTAssertEqual(signalRecipients[5]["recipientUUID"], nil as String?)
+            XCTAssertEqual(signalRecipients[5]["recipientPhoneNumber"], "+17635550142")
+            XCTAssertEqual(signalRecipients[5]["pni"], nil as String?)
         }
     }
 }

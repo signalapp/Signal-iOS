@@ -208,7 +208,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         class OutgoingMessageBuilder {
             let thread: TSPrivateStoryThread
             let allowsReplies: Bool
-            var skippedRecipients = Set<SignalServiceAddress>()
+            var skippedRecipientIds = Set<SignalRecipient.RowId>()
 
             init(thread: TSPrivateStoryThread) {
                 self.thread = thread
@@ -216,16 +216,22 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
             }
         }
 
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        let storyRecipientStore = DependenciesBridge.shared.storyRecipientStore
+
         var messageBuilders = [OutgoingMessageBuilder]()
-        var perRecipientBuilders = [SignalServiceAddress: OutgoingMessageBuilder]()
+        var perRecipientIdBuilders = [SignalRecipient.RowId: OutgoingMessageBuilder]()
         for thread in threads {
             let builderForCurrentThread = OutgoingMessageBuilder(thread: thread)
-            for recipient in thread.addresses {
+            let storyRecipientIds = failIfThrows {
+                return try storyRecipientStore.fetchRecipientIds(forStoryThreadId: thread.sqliteRowId!, tx: tx)
+            }
+            for recipientId in storyRecipientIds {
                 // We only want to send one message per recipient,
                 // and it should be the thread with the most privileges.
-                guard let existingBuilderForThisRecipient = perRecipientBuilders[recipient] else {
+                guard let existingBuilderForThisRecipient = perRecipientIdBuilders[recipientId] else {
                     // If this is the first time we see this recipient, do nothing.
-                    perRecipientBuilders[recipient] = builderForCurrentThread
+                    perRecipientIdBuilders[recipientId] = builderForCurrentThread
                     continue
                 }
                 // Otherwise skip this recipient in the message with _fewer_ privileges.
@@ -234,11 +240,11 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
                     builderForCurrentThread.allowsReplies
                 {
                     // Current thread has more privileges, prefer it for this recipient.
-                    existingBuilderForThisRecipient.skippedRecipients.insert(recipient)
-                    perRecipientBuilders[recipient] = builderForCurrentThread
+                    existingBuilderForThisRecipient.skippedRecipientIds.insert(recipientId)
+                    perRecipientIdBuilders[recipientId] = builderForCurrentThread
                 } else {
                     // Existing has more privileges, skip the recipient for the current thread.
-                    builderForCurrentThread.skippedRecipients.insert(recipient)
+                    builderForCurrentThread.skippedRecipientIds.insert(recipientId)
                 }
             }
             messageBuilders.append(builderForCurrentThread)
@@ -255,8 +261,9 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
                 skipSyncTranscript: index > 0,
                 transaction: tx
             )
-            builder.skippedRecipients.forEach {
-                message.updateWithSkippedRecipient($0, transaction: tx)
+            builder.skippedRecipientIds.forEach {
+                let recipientAddress = recipientDatabaseTable.fetchRecipient(rowId: $0, tx: tx)!.address
+                message.updateWithSkippedRecipient(recipientAddress, transaction: tx)
             }
             return message
         }

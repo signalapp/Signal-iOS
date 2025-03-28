@@ -481,14 +481,21 @@ extension StoryConversationItem: ConversationItem {
     }
 
     public func subtitle(transaction: DBReadTransaction) -> String? {
-        guard let thread = getExistingThread(transaction: transaction) else {
-            owsFailDebug("Unexpectedly missing story thread")
-            return nil
-        }
-        let recipientCount = thread.recipientAddresses(with: transaction).count
+        let storyRecipientStore = DependenciesBridge.shared.storyRecipientStore
 
         switch backingItem {
         case .privateStory(let item):
+            guard let thread = item.fetchThread(tx: transaction) else {
+                owsFailDebug("Unexpected thread type")
+                return ""
+            }
+            let recipientIds: [SignalRecipient.RowId]
+            do {
+                recipientIds = try storyRecipientStore.fetchRecipientIds(forStoryThreadId: thread.sqliteRowId!, tx: transaction)
+            } catch {
+                owsFailDebug("Couldn't fetch recipientIds: \(error)")
+                return ""
+            }
             if item.isMyStory {
                 guard StoryManager.hasSetMyStoriesPrivacy(transaction: transaction) else {
                     return OWSLocalizedString(
@@ -497,29 +504,31 @@ extension StoryConversationItem: ConversationItem {
                 }
                 switch thread.storyViewMode {
                 case .blockList:
-                    guard let thread = thread as? TSPrivateStoryThread else {
-                        owsFailDebug("Unexpected thread type")
-                        return ""
-                    }
-                    if thread.addresses.isEmpty {
+                    if recipientIds.isEmpty {
                         let format = OWSLocalizedString(
                             "MY_STORY_VIEWERS_ALL_CONNECTIONS_%d",
                             tableName: "PluralAware",
                             comment: "Format string representing the viewer count for 'My Story' when accessible to all signal connections. Embeds {{ number of viewers }}.")
-                        return String.localizedStringWithFormat(format, recipientCount)
+                        // If we haven't added anybody to the block list, we show the total number
+                        // of Signal Connections. That is *not* recipientIds; instead, it's the
+                        // thread's recipient addresses, fetched here using the same method we'll
+                        // use when sending a story.
+                        return String.localizedStringWithFormat(format, thread.recipientAddresses(with: transaction).count)
                     } else {
                         let format = OWSLocalizedString(
                             "MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d",
                             tableName: "PluralAware",
                             comment: "Format string representing the excluded viewer count for 'My Story' when accessible to all signal connections. Embeds {{ number of excluded viewers }}.")
-                        return String.localizedStringWithFormat(format, thread.addresses.count)
+                        // If we have added somebody to the block list, we show how many people are
+                        // in the exclusion list instead of the total number of Signal Connections.
+                        return String.localizedStringWithFormat(format, recipientIds.count)
                     }
                 case .explicit:
                     let format = OWSLocalizedString(
                         "MY_STORY_VIEWERS_ONLY_%d",
                         tableName: "PluralAware",
                         comment: "Format string representing the viewer count for 'My Story' when accessible to only an explicit list of viewers. Embeds {{ number of viewers }}.")
-                    return String.localizedStringWithFormat(format, recipientCount)
+                    return String.localizedStringWithFormat(format, recipientIds.count)
                 case .default, .disabled:
                     owsFailDebug("Unexpected view mode for my story")
                     return ""
@@ -529,14 +538,18 @@ extension StoryConversationItem: ConversationItem {
                     "PRIVATE_STORY_VIEWERS_%d",
                     tableName: "PluralAware",
                     comment: "Format string representing the viewer count for a custom story list. Embeds {{ number of viewers }}.")
-                return String.localizedStringWithFormat(format, recipientCount)
+                return String.localizedStringWithFormat(format, recipientIds.count)
             }
         case .groupStory:
+            guard let thread = getExistingThread(transaction: transaction) else {
+                owsFailDebug("Unexpectedly missing story thread")
+                return nil
+            }
             let format = OWSLocalizedString(
                 "GROUP_STORY_VIEWERS_%d",
                 tableName: "PluralAware",
                 comment: "Format string representing the viewer count for a group story list. Embeds {{ number of viewers }}.")
-            return String.localizedStringWithFormat(format, recipientCount)
+            return String.localizedStringWithFormat(format, thread.recipientAddresses(with: transaction).count)
         }
     }
 
@@ -569,10 +582,8 @@ public struct PrivateStoryConversationItem {
     let storyThreadId: String
     public let isMyStory: Bool
 
-    public var storyThread: TSPrivateStoryThread? {
-        SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: storyThreadId, transaction: transaction)
-        }
+    public func fetchThread(tx: DBReadTransaction) -> TSPrivateStoryThread? {
+        return TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: storyThreadId, transaction: tx)
     }
 }
 

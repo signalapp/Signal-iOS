@@ -705,6 +705,14 @@ public class AppSetup {
             threadStore: threadStore
         )
 
+        let storyRecipientStore = StoryRecipientStore()
+        let storyRecipientManager = StoryRecipientManager(
+            recipientDatabaseTable: recipientDatabaseTable,
+            storyRecipientStore: storyRecipientStore,
+            storageServiceManager: storageServiceManager,
+            threadStore: threadStore
+        )
+
         let authorMergeHelper = AuthorMergeHelper()
         let recipientMerger = RecipientMergerImpl(
             aciSessionStore: aciProtocolStore.sessionStore,
@@ -733,7 +741,8 @@ public class AppSetup {
             ),
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
-            storageServiceManager: storageServiceManager
+            storageServiceManager: storageServiceManager,
+            storyRecipientStore: storyRecipientStore
         )
 
         let registrationStateChangeManager = RegistrationStateChangeManagerImpl(
@@ -1016,7 +1025,10 @@ public class AppSetup {
             searchableNameIndexer: searchableNameIndexer
         )
         let backupStickerPackDownloadStore = BackupStickerPackDownloadStoreImpl()
-        let backupStoryStore = MessageBackupStoryStore(storyStore: storyStore)
+        let backupStoryStore = MessageBackupStoryStore(
+            storyStore: storyStore,
+            storyRecipientStore: storyRecipientStore
+        )
         let backupThreadStore = MessageBackupThreadStore(threadStore: threadStore)
 
         let messageBackupErrorPresenter = messageBackupErrorPresenterFactory.build(
@@ -1334,6 +1346,8 @@ public class AppSetup {
             sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
             signalProtocolStoreManager: signalProtocolStoreManager,
             storageServiceRecordIkmCapabilityStore: storageServiceRecordIkmCapabilityStore,
+            storyRecipientManager: storyRecipientManager,
+            storyRecipientStore: storyRecipientStore,
             svr: svr,
             svrCredentialStorage: svrCredentialStorage,
             svrLocalStorage: svrLocalStorage,

@@ -102,12 +102,16 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
 
         let distributionListAppId: RecipientAppId = .distributionList(distributionId)
 
-        let memberRecipientIds = storyThread.addresses.compactMap { address -> UInt64? in
-            guard let contactAddress = address.asSingleServiceIdBackupAddress() else {
-                errors.append(.archiveFrameError(.invalidDistributionListMemberAddress, distributionListAppId))
-                return nil
-            }
-            guard let recipientId = context[.contact(contactAddress)] else {
+        let recipientDbRowIds: [SignalRecipient.RowId]
+        do {
+            recipientDbRowIds = try storyStore.fetchRecipientIds(for: storyThread, context: context)
+        } catch {
+            errors.append(.archiveFrameError(.unableToFetchDistributionListRecipients, distributionListAppId))
+            return
+        }
+
+        let memberRecipientIds: [UInt64] = recipientDbRowIds.compactMap { recipientDbRowId -> UInt64? in
+            guard let recipientId = context.recipientId(forRecipientDbRowId: recipientDbRowId) else {
                 errors.append(.archiveFrameError(.referencedRecipientIdMissing(.distributionList(distributionId)), distributionListAppId))
                 return nil
             }
@@ -292,7 +296,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
         var partialErrors = [MessageBackup.RestoreFrameError<RecipientId>]()
 
         let viewMode: TSThreadStoryViewMode
-        let addresses: [MessageBackup.ContactAddress]
+        let recipientDbRowIds: [SignalRecipient.RowId]
 
         switch distributionListProto.privacyMode {
         case .all:
@@ -306,7 +310,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
             }
             viewMode = .blockList
             // Ignore any addresses in the proto, set to empty.
-            addresses = []
+            recipientDbRowIds = []
 
         case .allExcept:
             // Only My Story is allowed to use the `allExcept` mode.
@@ -320,7 +324,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
             viewMode = .blockList
             // Note: if the addresses are empty (because the proto was empty or parsing failed).
             // this will end up behaving the same as `all`: an empty `blocklist`.
-            addresses = readAddresses(
+            recipientDbRowIds = readRecipientDbRowIds(
                 from: distributionListProto,
                 recipientId: recipientId,
                 context: context,
@@ -329,7 +333,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
         case .onlyWith:
             // All stories are allowed to use `onlyWith` aka `explicit`.
             viewMode = .explicit
-            addresses = readAddresses(
+            recipientDbRowIds = readRecipientDbRowIds(
                 from: distributionListProto,
                 recipientId: recipientId,
                 context: context,
@@ -338,30 +342,30 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
         case .unknown, .UNRECOGNIZED:
             // Fallback to an empty explicit list.
             viewMode = .explicit
-            addresses = []
+            recipientDbRowIds = []
         }
+
+        let storyThread: TSPrivateStoryThread
 
         // MyStory is created during warmCaches(), so it should be present at this point.
         // But to guard against any future changes, call getOrCreateMyStory() to ensure
         // it is present before updating with the incoming data.
         if distributionId.isMyStoryId {
             do {
-                try storyStore.createMyStory(
+                storyThread = try storyStore.createMyStory(
                     name: distributionListProto.name,
                     allowReplies: distributionListProto.allowReplies,
                     viewMode: viewMode,
-                    addresses: addresses,
                     context: context
                 )
             } catch let error {
                 return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientId)])
             }
         } else {
-            let storyThread = TSPrivateStoryThread(
+            storyThread = TSPrivateStoryThread(
                 uniqueId: distributionId.value.uuidString,
                 name: distributionListProto.name,
                 allowsReplies: distributionListProto.allowReplies,
-                addresses: addresses.map { $0.asInteropAddress() },
                 viewMode: viewMode
             )
             do {
@@ -371,22 +375,29 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
             }
         }
 
+        for recipientDbRowId in recipientDbRowIds {
+            do {
+                try storyStore.insertRecipientId(recipientDbRowId, forStoryThreadId: storyThread.sqliteRowId!, context: context)
+            } catch let error {
+                return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientId)])
+            }
+        }
+
         return .success
     }
 
-    private func readAddresses(
+    private func readRecipientDbRowIds(
         from distributionListProto: BackupProto_DistributionList,
         recipientId: MessageBackup.RecipientId,
         context: MessageBackup.RecipientRestoringContext,
         partialErrors: inout [MessageBackup.RestoreFrameError<RecipientId>]
-    ) -> [MessageBackup.ContactAddress] {
+    ) -> [SignalRecipient.RowId] {
         distributionListProto
             .memberRecipientIds
             .compactMap {
-                switch context[RecipientId(value: $0)] {
-                case .contact(let contactAddress):
-                    return contactAddress
-                case .distributionList, .group, .localAddress, .releaseNotesChannel, .callLink, .none:
+                if let result = context.recipientDbRowId(forBackupRecipientId: RecipientId(value: $0)) {
+                    return result
+                } else {
                     partialErrors.append(.restoreFrameError(
                         .invalidProtoData(.invalidDistributionListMember(protoClass: BackupProto_DistributionList.self)),
                         recipientId

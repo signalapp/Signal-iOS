@@ -357,9 +357,10 @@ public extension DatabaseRecovery {
             // We don't want to get our linked devices wrong.
             // We *could* fetch these from the server. Could be a good followup change.
             OWSDevice.databaseTableName,
-            // We must get these right to keep everyone blocked.
+            // We must get these 3 right to keep everyone blocked.
             BlockedRecipient.databaseTableName,
             BlockedGroup.databaseTableName,
+            StoryRecipient.databaseTableName,
         ]
 
         /// Copy tables that must be copied flawlessly. Operation throws if any tables fail.

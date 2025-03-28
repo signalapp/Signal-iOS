@@ -462,7 +462,7 @@ class DebugUIMisc: NSObject, DebugUIPage {
             // Set to all connections which is the default.
             myStoryThread.updateWithStoryViewMode(
                 .blockList,
-                addresses: [],
+                storyRecipientIds: .setTo([]),
                 updateStorageService: false, /* storage service updated below */
                 transaction: transaction
             )

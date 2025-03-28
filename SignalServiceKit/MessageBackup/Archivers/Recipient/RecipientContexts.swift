@@ -128,6 +128,7 @@ extension MessageBackup {
         private let contactAciMap = SharedMap<Aci, RecipientId>()
         private let contactPniMap = SharedMap<Pni, RecipientId>()
         private let contactE164Map = SharedMap<E164, RecipientId>()
+        private let recipientDbRowIdMap = SharedMap<SignalRecipient.RowId, RecipientId>()
         private let callLinkIdMap = SharedMap<CallLinkRecordId, RecipientId>()
 
         init(
@@ -194,6 +195,10 @@ extension MessageBackup {
             return currentRecipientId
         }
 
+        func associateRecipientId(_ recipientId: RecipientId, withRecipientDbRowId recipientDbRowId: SignalRecipient.RowId) {
+            self.recipientDbRowIdMap[recipientDbRowId] = recipientId
+        }
+
         subscript(_ address: Address) -> RecipientId? {
             // swiftlint:disable:next implicit_getter
             get {
@@ -220,6 +225,10 @@ extension MessageBackup {
                 }
             }
         }
+
+        func recipientId(forRecipientDbRowId recipientDbRowId: SignalRecipient.RowId) -> RecipientId? {
+            return recipientDbRowIdMap[recipientDbRowId]
+        }
     }
 
     public class RecipientRestoringContext: RestoringContext {
@@ -235,6 +244,7 @@ extension MessageBackup {
         let localIdentifiers: LocalIdentifiers
 
         private let map = SharedMap<RecipientId, Address>()
+        private let recipientDbRowIdCache = SharedMap<RecipientId, SignalRecipient.RowId>()
         /// We create TSGroupThread (and GroupModel) when we restore the Recipient, NOT the Chat.
         /// By comparison, TSContactThread is created when we restore the Chat frame.
         /// We cache the TSGroupThread here to avoid fetching later when we do restore the Chat.
@@ -270,6 +280,14 @@ extension MessageBackup {
 
         func allRecipientIds() -> Dictionary<RecipientId, Address>.Keys {
             return map.keys
+        }
+
+        func recipientDbRowId(forBackupRecipientId recipientId: RecipientId) -> SignalRecipient.RowId? {
+            return recipientDbRowIdCache[recipientId]
+        }
+
+        func setRecipientDbRowId(_ recipientDbRowId: SignalRecipient.RowId, forBackupRecipientId recipientId: RecipientId) {
+            recipientDbRowIdCache[recipientId] = recipientDbRowId
         }
 
         // MARK: Post-Frame Restore

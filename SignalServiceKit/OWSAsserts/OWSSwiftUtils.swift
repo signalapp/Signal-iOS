@@ -70,6 +70,20 @@ public func owsFail(
     fatalError(logMessage)
 }
 
+public func failIfThrows<T>(
+    block: () throws -> T,
+    file: String = #fileID,
+    function: String = #function,
+    line: Int = #line
+) -> T {
+    do {
+        return try block()
+    } catch {
+        DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(userDefaults: CurrentAppContext().appUserDefaults(), error: error)
+        owsFail("Couldn't write: \(error)", file: file, function: function, line: line)
+    }
+}
+
 @inlinable
 public func owsAssertDebug(
     _ condition: Bool,

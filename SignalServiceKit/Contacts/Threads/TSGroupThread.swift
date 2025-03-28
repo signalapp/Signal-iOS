@@ -114,6 +114,15 @@ public extension TSGroupThread {
         }
     }
 
+    func updateWithStoryViewMode(
+        _ storyViewMode: TSThreadStoryViewMode,
+        transaction tx: DBWriteTransaction
+    ) {
+        anyUpdate(transaction: tx) { thread in
+            thread.storyViewMode = storyViewMode
+        }
+    }
+
     var isStorySendExplicitlyEnabled: Bool {
         storyViewMode == .explicit
     }

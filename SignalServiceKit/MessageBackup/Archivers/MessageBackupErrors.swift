@@ -124,12 +124,12 @@ extension MessageBackup {
 
             /// A distribution list had no distributionId; the distribution id assigned in the error should be ignored.
             case distributionListMissingDistributionId
+            /// The recipients for a distribution list couldn't be fetched.
+            case unableToFetchDistributionListRecipients
             /// A distribution list had ``TSThreadStoryViewMode/default``.
             case distributionListHasDefaultViewMode
             /// A custom (non-MyStory) distribution list had a ``TSThreadStoryViewMode/blocklist``.
             case customDistributionListBlocklistViewMode
-            /// A distributionListIdentifier memberRecipientId was invalid
-            case invalidDistributionListMemberAddress
             /// The story distribution list was marked as deleted but missing a deletion timestamp
             case distributionListMissingDeletionTimestamp
             /// The story distribution list was marked as deleted but had an invalid deletion timestamp.
@@ -287,11 +287,11 @@ extension MessageBackup {
                     .themedCustomChatColor,
                     .unableToFetchRecipientIdentity,
                     .distributionListMissingDistributionId,
+                    .unableToFetchDistributionListRecipients,
                     .distributionListHasDefaultViewMode,
                     .customDistributionListBlocklistViewMode,
                     .distributionListMissingDeletionTimestamp,
                     .distributionListInvalidTimestamp,
-                    .invalidDistributionListMemberAddress,
                     .invalidIncomingMessageAuthor,
                     .invalidOutgoingMessageRecipient,
                     .invalidQuoteAuthor,
@@ -355,11 +355,11 @@ extension MessageBackup {
                     .groupMasterKeyError,
                     .themedCustomChatColor,
                     .distributionListMissingDistributionId,
+                    .unableToFetchDistributionListRecipients,
                     .distributionListHasDefaultViewMode,
                     .customDistributionListBlocklistViewMode,
                     .distributionListMissingDeletionTimestamp,
                     .distributionListInvalidTimestamp,
-                    .invalidDistributionListMemberAddress,
                     .invalidIncomingMessageAuthor,
                     .invalidOutgoingMessageRecipient,
                     .invalidQuoteAuthor,

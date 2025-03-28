@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import GRDB
 
 public class GRDBSchemaMigrator {
@@ -324,6 +325,7 @@ public class GRDBSchemaMigrator {
         case deleteMessageRequestInteractionEpoch
         case addAvatarDefaultColorTable
         case populateAvatarDefaultColorTable
+        case addStoryRecipient
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -387,7 +389,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 110
+    public static let grdbSchemaVersionLatest: UInt = 111
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3945,6 +3947,11 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.addStoryRecipient) { tx in
+            try createStoryRecipients(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -5151,7 +5158,7 @@ public class GRDBSchemaMigrator {
         if let existingRecipientId {
             return existingRecipientId
         }
-        return try createRecipientV1(aciString: aciString, phoneNumber: nil, tx: tx)
+        return try createRecipientV1(aciString: aciString, phoneNumber: nil, pniString: nil, tx: tx)
     }
 
     private static func fetchOrCreateRecipientV1(phoneNumber: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
@@ -5160,19 +5167,44 @@ public class GRDBSchemaMigrator {
         if let existingRecipientId {
             return existingRecipientId
         }
-        return try createRecipientV1(aciString: nil, phoneNumber: phoneNumber, tx: tx)
+        return try createRecipientV1(aciString: nil, phoneNumber: phoneNumber, pniString: nil, tx: tx)
     }
 
-    private static func createRecipientV1(aciString: String?, phoneNumber: String?, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func fetchOrCreateRecipientV1(pniString: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+        let db = tx.database
+        let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE pni IS ?", arguments: [pniString])
+        if let existingRecipientId {
+            return existingRecipientId
+        }
+        return try createRecipientV1(aciString: nil, phoneNumber: nil, pniString: pniString, tx: tx)
+    }
+
+    private static func fetchOrCreateRecipientV1(address: FrozenSignalServiceAddress, tx: DBWriteTransaction) throws -> SignalRecipient.RowId? {
+        if let aci = address.serviceId as? Aci {
+            let aciString = aci.serviceIdUppercaseString
+            return try fetchOrCreateRecipientV1(aciString: aciString, tx: tx)
+        }
+        if let phoneNumber = address.phoneNumber {
+            return try fetchOrCreateRecipientV1(phoneNumber: phoneNumber, tx: tx)
+        }
+        if let pni = address.serviceId as? Pni {
+            let pniString = pni.serviceIdUppercaseString
+            return try fetchOrCreateRecipientV1(pniString: pniString, tx: tx)
+        }
+        return nil
+    }
+
+    private static func createRecipientV1(aciString: String?, phoneNumber: String?, pniString: String?, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
         try tx.database.execute(
             sql: """
-            INSERT INTO "model_SignalRecipient" ("recordType", "uniqueId", "devices", "recipientPhoneNumber", "recipientUUID") VALUES (31, ?, ?, ?, ?)
+            INSERT INTO "model_SignalRecipient" ("recordType", "uniqueId", "devices", "recipientPhoneNumber", "recipientUUID", "pni") VALUES (31, ?, ?, ?, ?, ?)
             """,
             arguments: [
                 UUID().uuidString,
                 NSKeyedArchiver.archivedData(withRootObject: NSOrderedSet(array: [] as [NSNumber]), requiringSecureCoding: true),
                 phoneNumber,
                 aciString,
+                pniString,
             ]
         )
         return tx.database.lastInsertedRowID
@@ -5680,6 +5712,104 @@ public class GRDBSchemaMigrator {
             forKey: NSKeyedArchiveRootObjectKey
         )
         return groupModel?.groupId as Data?
+    }
+
+    static func createStoryRecipients(tx: DBWriteTransaction) throws {
+        try tx.database.create(table: "StoryRecipient", options: [.withoutRowID]) { table in
+            table.primaryKey(["threadId", "recipientId"])
+            table.column("threadId", .integer).notNull()
+            table.foreignKey(["threadId"], references: "model_TSThread", columns: ["id"], onDelete: .cascade, onUpdate: .cascade)
+            table.column("recipientId", .integer).notNull().indexed()
+            table.foreignKey(["recipientId"], references: "model_SignalRecipient", columns: ["id"], onDelete: .cascade, onUpdate: .cascade)
+        }
+        try migrateStoryRecipients(tx: tx)
+    }
+
+    private static func migrateStoryRecipients(tx: DBWriteTransaction) throws {
+        let storyThreads = try Row.fetchAll(
+            tx.database,
+            sql: "SELECT id, addresses FROM model_TSThread WHERE recordType = 72"
+        )
+        for storyThread in storyThreads {
+            let storyThreadId: Int64 = storyThread[0]
+            let addressesData: Data? = storyThread[1]
+            guard let addressesData else {
+                continue
+            }
+            let addresses: [FrozenSignalServiceAddress]
+            do {
+                addresses = try decodeSignalServiceAddresses(dataValue: addressesData)
+            } catch {
+                owsFailDebug("Couldn't decode story recipients: \(error)")
+                continue
+            }
+            for address in addresses {
+                guard let recipientId = try fetchOrCreateRecipientV1(address: address, tx: tx) else {
+                    owsFailDebug("Couldn't include empty story recipient address")
+                    continue
+                }
+                do {
+                    try tx.database.execute(
+                        sql: "INSERT INTO StoryRecipient (threadId, recipientId) VALUES (?, ?)",
+                        arguments: [storyThreadId, recipientId]
+                    )
+                } catch DatabaseError.SQLITE_CONSTRAINT {
+                    // This is fine.
+                }
+            }
+        }
+        try tx.database.execute(
+            sql: "UPDATE model_TSThread SET addresses = NULL WHERE recordType = 72"
+        )
+    }
+
+    /// A SignalServiceAddress without global magic; useful in migrations.
+    @objc(FrozenSignalServiceAddress)
+    class FrozenSignalServiceAddress: NSObject, NSSecureCoding {
+        let serviceId: ServiceId?
+        let phoneNumber: String?
+
+        static var supportsSecureCoding: Bool { true }
+
+        required init?(coder: NSCoder) {
+            let serviceId: ServiceId?
+            switch coder.decodeObject(of: [NSUUID.self, NSData.self], forKey: "backingUuid") {
+            case nil:
+                serviceId = nil
+            case let serviceIdBinary as Data:
+                do {
+                    serviceId = try ServiceId.parseFrom(serviceIdBinary: serviceIdBinary)
+                } catch {
+                    owsFailDebug("Couldn't parse serviceIdBinary.")
+                    return nil
+                }
+            case let deprecatedUuid as NSUUID:
+                serviceId = Aci(fromUUID: deprecatedUuid as UUID)
+            default:
+                return nil
+            }
+            let phoneNumber = coder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?
+            self.serviceId = serviceId
+            self.phoneNumber = phoneNumber
+        }
+
+        func encode(with coder: NSCoder) {
+            owsFail("Not supported.")
+        }
+    }
+
+    static func decodeSignalServiceAddresses(dataValue: Data) throws -> [FrozenSignalServiceAddress] {
+        let coder = try NSKeyedUnarchiver(forReadingFrom: dataValue)
+        coder.requiresSecureCoding = true
+        coder.setClass(FrozenSignalServiceAddress.self, forClassName: "SignalServiceKit.SignalServiceAddress")
+        let decodedValue = try coder.decodeTopLevelObject(
+            of: [NSArray.self, FrozenSignalServiceAddress.self],
+            forKey: NSKeyedArchiveRootObjectKey
+        )
+        guard let result = decodedValue as? [FrozenSignalServiceAddress] else {
+            throw OWSGenericError("Couldn't parse result as an array of addresses.")
+        }
+        return result
     }
 }
 

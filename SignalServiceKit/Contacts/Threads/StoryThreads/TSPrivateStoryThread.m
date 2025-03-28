@@ -11,30 +11,24 @@
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                             name:(NSString *)name
                    allowsReplies:(BOOL)allowsReplies
-                       addresses:(NSArray<SignalServiceAddress *> *)addresses
                         viewMode:(TSThreadStoryViewMode)viewMode
 {
     self = [super initWithUniqueId:uniqueId];
     if (self) {
         self.name = name;
         self.allowsReplies = allowsReplies;
-        self.addresses = addresses;
         self.storyViewMode = viewMode;
     }
     return self;
 }
 
-- (instancetype)initWithName:(NSString *)name
-               allowsReplies:(BOOL)allowsReplies
-                   addresses:(NSArray<SignalServiceAddress *> *)addresses
-                    viewMode:(TSThreadStoryViewMode)viewMode
+- (instancetype)initWithName:(NSString *)name allowsReplies:(BOOL)allowsReplies viewMode:(TSThreadStoryViewMode)viewMode
 {
     NSString *uniqueId = [[self class] generateUniqueId];
     self = [super initWithUniqueId:uniqueId];
     if (self) {
         self.name = name;
         self.allowsReplies = allowsReplies;
-        self.addresses = addresses;
         self.storyViewMode = viewMode;
     }
     return self;
@@ -65,7 +59,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
      mutedUntilTimestampObsolete:(uint64_t)mutedUntilTimestampObsolete
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                    storyViewMode:(TSThreadStoryViewMode)storyViewMode
-                       addresses:(NSArray<SignalServiceAddress *> *)addresses
+                       addresses:(nullable NSData *)addresses
                    allowsReplies:(BOOL)allowsReplies
                             name:(NSString *)name
 {

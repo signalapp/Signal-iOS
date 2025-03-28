@@ -152,7 +152,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    func showSettings(for item: StoryConversationItem) {
+    private func showSettings(for item: StoryConversationItem) {
         switch item.backingItem {
         case .groupStory(let groupItem):
             showGroupStorySettings(for: groupItem)
@@ -171,7 +171,9 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
     }
 
     func showPrivateStorySettings(for item: PrivateStoryConversationItem) {
-        guard let storyThread = item.storyThread else {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let storyThread = databaseStorage.read { tx in item.fetchThread(tx: tx) }
+        guard let storyThread else {
             return owsFailDebug("Missing thread for private story")
         }
         let vc = PrivateStorySettingsViewController(thread: storyThread)
