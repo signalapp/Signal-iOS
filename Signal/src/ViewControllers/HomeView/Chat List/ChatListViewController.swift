@@ -536,8 +536,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     // MARK: UI Helpers
 
-    private var inviteFlow: InviteFlow?
-
     private var getStartedBanner: GetStartedBannerViewController?
 
     private var hasEverPresentedExperienceUpgrade = false
@@ -1576,8 +1574,8 @@ extension ChatListViewController: GetStartedBannerViewControllerDelegate {
     }
 
     func getStartedBannerDidTapInviteFriends(_ banner: GetStartedBannerViewController) {
-        inviteFlow = InviteFlow(presentingViewController: self)
-        inviteFlow?.present(isAnimated: true, completion: nil)
+        let inviteFlow = InviteFlow(presentingViewController: self)
+        inviteFlow.present(isAnimated: true, completion: nil)
     }
 
     func getStartedBannerDidTapCreateGroup(_ banner: GetStartedBannerViewController) {

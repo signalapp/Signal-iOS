@@ -35,7 +35,7 @@ public class InviteFlow: NSObject {
     private let homepageUrl = "https://signal.org"
 
     private weak var presentingViewController: UIViewController?
-    private var modalPresentationViewController: UIViewController?
+    private weak var modalPresentationViewController: UIViewController?
 
     private var channel: Channel?
 
@@ -62,8 +62,8 @@ public class InviteFlow: NSObject {
             let actionSheetController = ActionSheetController(title: nil, message: nil)
             actionSheetController.addAction(OWSActionSheets.dismissAction)
             for channel in channels {
-                actionSheetController.addAction(ActionSheetAction(title: channel.actionTitle, style: .default) { [weak self] _ in
-                    self?.presentInviteFlow(channel: channel)
+                actionSheetController.addAction(ActionSheetAction(title: channel.actionTitle, style: .default) { _ in
+                    self.presentInviteFlow(channel: channel)
                 })
             }
             presentingViewController?.present(actionSheetController, animated: isAnimated, completion: completion)
@@ -72,7 +72,7 @@ public class InviteFlow: NSObject {
         }
     }
 
-    private func presentViewController(_ vc: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+    private func presentViewController(_ vc: UIViewController, animated: Bool) {
         let navController = OWSNavigationController(rootViewController: vc)
         presentingViewController?.presentFormSheet(navController, animated: true)
         modalPresentationViewController = navController
@@ -106,6 +106,7 @@ public class InviteFlow: NSObject {
             performWhenAllowed: {
                 let picker = ContactPickerViewController(allowsMultipleSelection: true, subtitleCellType: channel.cellSubtitleType)
                 picker.delegate = self
+                ObjectRetainer.retainObject(self, forLifetimeOf: picker)
                 picker.title = OWSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
                 self.presentViewController(picker, animated: true)
             },
@@ -126,8 +127,8 @@ public class InviteFlow: NSObject {
                 warning.addAction(ActionSheetAction(
                     title: CommonStrings.continueButton,
                     style: .default,
-                    handler: { [weak self] _ in
-                        self?.sendSMSTo(phoneNumbers: phoneNumbers)
+                    handler: { _ in
+                        self.sendSMSTo(phoneNumbers: phoneNumbers)
                     }
                 ))
                 warning.addAction(OWSActionSheets.cancelAction)
@@ -142,6 +143,7 @@ public class InviteFlow: NSObject {
     public func sendSMSTo(phoneNumbers: [String]) {
         let messageComposeViewController = MFMessageComposeViewController()
         messageComposeViewController.messageComposeDelegate = self
+        ObjectRetainer.retainObject(self, forLifetimeOf: messageComposeViewController)
         messageComposeViewController.recipients = phoneNumbers
 
         let inviteText = OWSLocalizedString("SMS_INVITE_BODY", comment: "body sent to contacts when inviting to Install Signal")
@@ -162,6 +164,7 @@ public class InviteFlow: NSObject {
     private func sendMailTo(emails recipientEmails: [String]) {
         let mailComposeViewController = MFMailComposeViewController()
         mailComposeViewController.mailComposeDelegate = self
+        ObjectRetainer.retainObject(self, forLifetimeOf: mailComposeViewController)
         mailComposeViewController.setBccRecipients(recipientEmails)
 
         let subject = OWSLocalizedString("EMAIL_INVITE_SUBJECT", comment: "subject of email sent to contacts when inviting to install Signal")

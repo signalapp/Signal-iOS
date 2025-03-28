@@ -352,10 +352,8 @@ class AppSettingsViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    private var inviteFlow: InviteFlow?
     private func showInviteFlow() {
         let inviteFlow = InviteFlow(presentingViewController: self)
-        self.inviteFlow = inviteFlow
         inviteFlow.present(isAnimated: true, completion: nil)
     }
 

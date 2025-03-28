@@ -699,6 +699,7 @@
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
 		50D146CD2D1F4E5800D628DE /* ProfileKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D146CC2D1F4E5800D628DE /* ProfileKey.swift */; };
 		50D1EEAE2D95D95A00ADF921 /* TimeIntervalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D1EEAD2D95D95A00ADF921 /* TimeIntervalTest.swift */; };
+		50D1EEB02D96446E00ADF921 /* ObjectRetainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D1EEAF2D96446E00ADF921 /* ObjectRetainer.swift */; };
 		50D2FC7D2AEB134C002E4589 /* AuthorMergeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D2FC7C2AEB134C002E4589 /* AuthorMergeHelper.swift */; };
 		50D3136F2BFFE9370023EDCC /* CallEventInserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D3136E2BFFE9370023EDCC /* CallEventInserter.swift */; };
 		50D5E2412980AD6F00899660 /* LinkValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2402980AD6F00899660 /* LinkValidator.swift */; };
@@ -4576,6 +4577,7 @@
 		50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentGiftBadge.swift; sourceTree = "<group>"; };
 		50D146CC2D1F4E5800D628DE /* ProfileKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileKey.swift; sourceTree = "<group>"; };
 		50D1EEAD2D95D95A00ADF921 /* TimeIntervalTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeIntervalTest.swift; sourceTree = "<group>"; };
+		50D1EEAF2D96446E00ADF921 /* ObjectRetainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectRetainer.swift; sourceTree = "<group>"; };
 		50D2FC7C2AEB134C002E4589 /* AuthorMergeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeHelper.swift; sourceTree = "<group>"; };
 		50D3136E2BFFE9370023EDCC /* CallEventInserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallEventInserter.swift; sourceTree = "<group>"; };
 		50D5E2402980AD6F00899660 /* LinkValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkValidator.swift; sourceTree = "<group>"; };
@@ -14217,6 +14219,7 @@
 				F9C5CB39289453B200548EEE /* NSNotificationCenter+OWS.swift */,
 				F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */,
 				72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */,
+				50D1EEAF2D96446E00ADF921 /* ObjectRetainer.swift */,
 				F9C5CB44289453B200548EEE /* OffMainThreadTimer.swift */,
 				F9C5CB72289453B200548EEE /* OrderedDictionary.swift */,
 				F9C5CB4C289453B200548EEE /* OrderedSet.swift */,
@@ -17849,6 +17852,7 @@
 				66F2CE212A3CBE4A00519342 /* NSRangedValue.swift in Sources */,
 				F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */,
 				72976BF22BDCF00C0054FAC2 /* NSTimer+OWS.swift in Sources */,
+				50D1EEB02D96446E00ADF921 /* ObjectRetainer.swift in Sources */,
 				F9C5CD1C289453B300548EEE /* ObservedDatabaseChanges.swift in Sources */,
 				F9C5CE16289453B400548EEE /* OffMainThreadTimer.swift in Sources */,
 				F9C5CE43289453B400548EEE /* OrderedDictionary.swift in Sources */,

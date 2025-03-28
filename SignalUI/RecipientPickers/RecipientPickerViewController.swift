@@ -202,8 +202,6 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
     // MARK: UI
 
-    private var inviteFlow: InviteFlow?
-
     private var isNoContactsModeActive = false {
         didSet {
             guard oldValue != isNoContactsModeActive else { return }
@@ -913,7 +911,6 @@ extension RecipientPickerViewController {
     @objc
     private func presentInviteFlow() {
         let inviteFlow = InviteFlow(presentingViewController: self)
-        self.inviteFlow = inviteFlow
         inviteFlow.present(isAnimated: true, completion: nil)
     }
 }
@@ -1368,10 +1365,6 @@ extension RecipientPickerViewController {
                 }
                 let inviteFlow = InviteFlow(presentingViewController: self)
                 inviteFlow.sendSMSTo(phoneNumbers: [phoneNumber])
-                // We need to keep InviteFlow around until it's completed. We tie its
-                // lifetime to this view controller -- while not perfect, this avoids
-                // leaking the object.
-                self.inviteFlow = inviteFlow
             }
         ))
         presentActionSheet(actionSheet)

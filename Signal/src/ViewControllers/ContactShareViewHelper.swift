@@ -83,8 +83,6 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     // MARK: Invite
 
-    private var inviteFlow: InviteFlow?
-
     func showInviteContact(contactShare: ContactShareViewModel, from viewController: UIViewController) {
         Logger.info("")
 
@@ -100,7 +98,6 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         }
 
         let inviteFlow = InviteFlow(presentingViewController: viewController)
-        self.inviteFlow = inviteFlow
         inviteFlow.sendSMSTo(phoneNumbers: phoneNumbers)
     }
 

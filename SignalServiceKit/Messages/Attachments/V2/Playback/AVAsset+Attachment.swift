@@ -90,22 +90,14 @@ extension AVAsset {
         let asset = AVURLAsset(url: redirectURL)
         asset.resourceLoader.preloadsEligibleContentKeys = true
         asset.resourceLoader.setDelegate(resourceLoader, queue: Self.videoDecryptionQueue)
-
         // The resource loader delegate is held via weak reference, but:
         // 1. it doesn't hold a reference to the AVAsset
         // 2. we dont want to impose on the caller to hold a strong reference to it
         // so we create a strong reference from the asset.
-        objc_setAssociatedObject(
-            asset,
-            &Self.resourceLoaderKey,
-            resourceLoader,
-            objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN
-        )
+        ObjectRetainer.retainObject(resourceLoader, forLifetimeOf: asset)
 
         return asset
     }
-
-    private static var resourceLoaderKey: UInt8 = 0
 
     /// In order to get AVAsset to use the custom resource loader, we have to give it a URL scheme it doesn't
     /// understand how to load by itself. To do that, we prefix the url scheme with this string before handing
