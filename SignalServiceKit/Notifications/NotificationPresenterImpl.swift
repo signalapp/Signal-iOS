@@ -5,7 +5,7 @@
 
 import Foundation
 import Intents
-import LibSignalClient
+public import LibSignalClient
 
 /// There are two primary components in our system notification integration:
 ///
@@ -65,17 +65,93 @@ public enum AppNotificationDefaultAction: String {
     case showLinkedDevices
 }
 
-public struct AppNotificationUserInfoKey {
-    public static let roomId = "Signal.AppNotificationsUserInfoKey.roomId"
-    public static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
-    public static let messageId = "Signal.AppNotificationsUserInfoKey.messageId"
-    public static let reactionId = "Signal.AppNotificationsUserInfoKey.reactionId"
-    public static let storyMessageId = "Signal.AppNotificationsUserInfoKey.storyMessageId"
-    public static let storyTimestamp = "Signal.AppNotificationsUserInfoKey.storyTimestamp"
-    public static let callBackAciString = "Signal.AppNotificationsUserInfoKey.callBackUuid"
-    public static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
-    public static let isMissedCall = "Signal.AppNotificationsUserInfoKey.isMissedCall"
-    public static let defaultAction = "Signal.AppNotificationsUserInfoKey.defaultAction"
+public struct AppNotificationUserInfo {
+    public var callBackAci: Aci?
+    public var callBackPhoneNumber: String?
+    public var defaultAction: AppNotificationDefaultAction?
+    public var isMissedCall: Bool?
+    public var messageId: String?
+    public var reactionId: String?
+    public var roomId: Data?
+    public var storyMessageId: String?
+    public var storyTimestamp: UInt64?
+    public var threadId: String?
+
+    public init() {
+    }
+
+    public init(_ userInfo: [AnyHashable: Any]) {
+        self.callBackAci = (userInfo[UserInfoKey.callBackAciString] as? String).flatMap {
+            let result = Aci.parseFrom(aciString: $0)
+            owsAssertDebug(result != nil, "Couldn't parse callBackAciString.")
+            return result
+        }
+        self.callBackPhoneNumber = userInfo[UserInfoKey.callBackPhoneNumber] as? String
+        self.defaultAction = (userInfo[UserInfoKey.defaultAction] as? String).flatMap {
+            let result = AppNotificationDefaultAction(rawValue: $0)
+            owsAssertDebug(result != nil, "Couldn't parse default action. Did the identifiers change?")
+            return result
+        }
+        self.isMissedCall = userInfo[UserInfoKey.isMissedCall] as? Bool
+        self.messageId = userInfo[UserInfoKey.messageId] as? String
+        self.reactionId = userInfo[UserInfoKey.reactionId] as? String
+        self.roomId = (userInfo[UserInfoKey.roomId] as? String).flatMap {
+            let result = Data(base64Encoded: $0)
+            owsAssertDebug(result != nil, "Couldn't parse roomId.")
+            return result
+        }
+        self.storyMessageId = userInfo[UserInfoKey.storyMessageId] as? String
+        self.storyTimestamp = userInfo[UserInfoKey.storyTimestamp] as? UInt64
+        self.threadId = userInfo[UserInfoKey.threadId] as? String
+    }
+
+    private enum UserInfoKey {
+        public static let callBackAciString = "Signal.AppNotificationsUserInfoKey.callBackUuid"
+        public static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
+        public static let defaultAction = "Signal.AppNotificationsUserInfoKey.defaultAction"
+        public static let isMissedCall = "Signal.AppNotificationsUserInfoKey.isMissedCall"
+        public static let messageId = "Signal.AppNotificationsUserInfoKey.messageId"
+        public static let reactionId = "Signal.AppNotificationsUserInfoKey.reactionId"
+        public static let roomId = "Signal.AppNotificationsUserInfoKey.roomId"
+        public static let storyMessageId = "Signal.AppNotificationsUserInfoKey.storyMessageId"
+        public static let storyTimestamp = "Signal.AppNotificationsUserInfoKey.storyTimestamp"
+        public static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
+    }
+
+    func build() -> [String: Any] {
+        var result = [String: Any]()
+        if let callBackAci {
+            result[UserInfoKey.callBackAciString] = callBackAci.serviceIdString
+        }
+        if let callBackPhoneNumber {
+            result[UserInfoKey.callBackPhoneNumber] = callBackPhoneNumber
+        }
+        if let defaultAction {
+            result[UserInfoKey.defaultAction] = defaultAction.rawValue
+        }
+        if let isMissedCall {
+            result[UserInfoKey.isMissedCall] = isMissedCall
+        }
+        if let messageId {
+            result[UserInfoKey.messageId] = messageId
+        }
+        if let reactionId {
+            result[UserInfoKey.reactionId] = reactionId
+        }
+        if let roomId {
+            result[UserInfoKey.roomId] = roomId.base64EncodedString()
+        }
+        if let storyMessageId {
+            result[UserInfoKey.storyMessageId] = storyMessageId
+        }
+        if let storyTimestamp {
+            result[UserInfoKey.storyTimestamp] = storyTimestamp
+        }
+        if let threadId {
+            result[UserInfoKey.threadId] = threadId
+        }
+        return result
+    }
 }
 
 extension AppNotificationCategory {
@@ -369,9 +445,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
         let callPreview = fetchCallPreview(thread: .individualThread(thread), tx: tx)
 
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-        let userInfo = [
-            AppNotificationUserInfoKey.threadId: thread.uniqueId
-        ]
+        var userInfo = AppNotificationUserInfo()
+        userInfo.threadId = thread.uniqueId
 
         let threadUniqueId = thread.uniqueId
         enqueueNotificationAction(afterCommitting: tx) {
@@ -417,12 +492,11 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
-    private func userInfoForMissedCall(thread: TSThread, remoteAci: Aci) -> [String: Any] {
-        let userInfo: [String: Any] = [
-            AppNotificationUserInfoKey.threadId: thread.uniqueId,
-            AppNotificationUserInfoKey.callBackAciString: remoteAci.serviceIdUppercaseString,
-            AppNotificationUserInfoKey.isMissedCall: true,
-        ]
+    private func userInfoForMissedCall(thread: TSThread, remoteAci: Aci) -> AppNotificationUserInfo {
+        var userInfo = AppNotificationUserInfo()
+        userInfo.threadId = thread.uniqueId
+        userInfo.callBackAci = remoteAci
+        userInfo.isMissedCall = true
         return userInfo
     }
 
@@ -671,14 +745,10 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 : .incomingMessageWithActions_CannotReply
             )
         }
-        var userInfo: [AnyHashable: Any] = [
-            AppNotificationUserInfoKey.threadId: thread.uniqueId,
-            AppNotificationUserInfoKey.messageId: incomingMessage.uniqueId
-        ]
-
-        if let storyTimestamp = incomingMessage.storyTimestamp?.uint64Value {
-            userInfo[AppNotificationUserInfoKey.storyTimestamp] = storyTimestamp
-        }
+        var userInfo = AppNotificationUserInfo()
+        userInfo.threadId = thread.uniqueId
+        userInfo.messageId = incomingMessage.uniqueId
+        userInfo.storyTimestamp = incomingMessage.storyTimestamp?.uint64Value
 
         var intent: ResolvableValue<INIntent>?
         if previewType != .noNameNoPreview {
@@ -807,11 +877,10 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 : .incomingReactionWithActions_CannotReply
             )
         }
-        let userInfo = [
-            AppNotificationUserInfoKey.threadId: thread.uniqueId,
-            AppNotificationUserInfoKey.messageId: message.uniqueId,
-            AppNotificationUserInfoKey.reactionId: reaction.uniqueId
-        ]
+        var userInfo = AppNotificationUserInfo()
+        userInfo.threadId = thread.uniqueId
+        userInfo.messageId = message.uniqueId
+        userInfo.reactionId = reaction.uniqueId
 
         let intent = thread.generateSendMessageIntent(context: .senderAddress(reaction.reactor), transaction: transaction)
 
@@ -847,9 +916,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
         let notificationBody = NotificationStrings.failedToSendBody
         let threadId = thread.uniqueId
-        let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId
-        ]
+        var userInfo = AppNotificationUserInfo()
+        userInfo.threadId = threadId
 
         enqueueNotificationAction {
             await self.notifyViaPresenter(
@@ -880,15 +948,16 @@ public class NotificationPresenterImpl: NotificationPresenter {
         )
         let message = String(format: messageFormat, errorString)
 
+        var userInfo = AppNotificationUserInfo()
+        userInfo.defaultAction = .submitDebugLogs
+
         enqueueNotificationAction {
             await self.notifyViaPresenter(
                 category: .internalError,
                 title: ResolvableValue(resolvedValue: title),
                 body: message,
                 threadIdentifier: nil,
-                userInfo: [
-                    AppNotificationUserInfoKey.defaultAction: AppNotificationDefaultAction.submitDebugLogs.rawValue
-                ],
+                userInfo: userInfo,
                 soundQuery: .global
             )
         }
@@ -915,15 +984,10 @@ public class NotificationPresenterImpl: NotificationPresenter {
             : NotificationStrings.groupCallSafetyNumberChangeBody
         )
 
-        var userInfo: [String: Any] = [
-            AppNotificationUserInfoKey.defaultAction: AppNotificationDefaultAction.showCallLobby.rawValue
-        ]
-        if let threadUniqueId {
-            userInfo[AppNotificationUserInfoKey.threadId] = threadUniqueId
-        }
-        if let roomId {
-            userInfo[AppNotificationUserInfoKey.roomId] = roomId.base64EncodedString()
-        }
+        var userInfo = AppNotificationUserInfo()
+        userInfo.defaultAction = .showCallLobby
+        userInfo.threadId = threadUniqueId
+        userInfo.roomId = roomId
 
         enqueueNotificationAction {
             await self.notifyViaPresenter(
@@ -938,6 +1002,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
     }
 
     public func scheduleNotifyForNewLinkedDevice(deviceLinkTimestamp: Date) {
+        var userInfo = AppNotificationUserInfo()
+        userInfo.defaultAction = .showLinkedDevices
         enqueueNotificationAction {
             await self.notifyViaPresenter(
                 category: .newDeviceLinked,
@@ -953,7 +1019,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                     deviceLinkTimestamp.formatted(date: .omitted, time: .shortened)
                 ),
                 threadIdentifier: nil,
-                userInfo: [AppNotificationUserInfoKey.defaultAction: AppNotificationDefaultAction.showLinkedDevices.rawValue],
+                userInfo: userInfo,
                 soundQuery: .global
             )
         }
@@ -1065,15 +1131,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
             notificationBody = previewProvider(transaction)
         }
 
-        let isGroupCallMessage = tsInteraction is OWSGroupCallMessage
-        let preferredDefaultAction: AppNotificationDefaultAction = isGroupCallMessage ? .showCallLobby : .showThread
-
         let threadId = thread.uniqueId
-        let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId,
-            AppNotificationUserInfoKey.messageId: tsInteraction.uniqueId,
-            AppNotificationUserInfoKey.defaultAction: preferredDefaultAction.rawValue
-        ]
+
+        var userInfo = AppNotificationUserInfo()
+        userInfo.threadId = threadId
+        userInfo.messageId = tsInteraction.uniqueId
+
+        let isGroupCallMessage = tsInteraction is OWSGroupCallMessage
+        userInfo.defaultAction = isGroupCallMessage ? .showCallLobby : .showThread
 
         // Some types of generic messages (locally generated notifications) have a defacto
         // "sender". If so, generate an interaction so the notification renders as if it
@@ -1180,16 +1245,17 @@ public class NotificationPresenterImpl: NotificationPresenter {
         let threadIdentifier = thread.uniqueId
         let storyMessageId = storyMessage.uniqueId
 
+        var userInfo = AppNotificationUserInfo()
+        userInfo.defaultAction = .showMyStories
+        userInfo.storyMessageId = storyMessageId
+
         enqueueNotificationAction(afterCommitting: transaction) {
             await self.notifyViaPresenter(
                 category: .failedStorySend,
                 title: ResolvableValue(resolvedValue: notificationTitle),
                 body: notificationBody,
                 threadIdentifier: threadIdentifier,
-                userInfo: [
-                    AppNotificationUserInfoKey.defaultAction: AppNotificationDefaultAction.showMyStories.rawValue,
-                    AppNotificationUserInfoKey.storyMessageId: storyMessageId
-                ],
+                userInfo: userInfo,
                 intent: (ResolvableValue(resolvedValue: sendMessageIntent), .outgoing),
                 soundQuery: .global
             )
@@ -1201,15 +1267,15 @@ public class NotificationPresenterImpl: NotificationPresenter {
             "TRANSFER_RELAUNCH_NOTIFICATION",
             comment: "Notification prompting the user to relaunch Signal after a device transfer completed."
         )
+        var userInfo = AppNotificationUserInfo()
+        userInfo.defaultAction = .showChatList
         enqueueNotificationAction {
             await self.notifyViaPresenter(
                 category: .transferRelaunch,
                 title: nil,
                 body: notificationBody,
                 threadIdentifier: nil,
-                userInfo: [
-                    AppNotificationUserInfoKey.defaultAction: AppNotificationDefaultAction.showChatList.rawValue
-                ],
+                userInfo: userInfo,
                 // Use a default sound so we don't read from
                 // the db (which doesn't work until we relaunch)
                 soundQuery: .constant(.standard(.note)),
@@ -1220,21 +1286,19 @@ public class NotificationPresenterImpl: NotificationPresenter {
     }
 
     public func notifyUserOfDeregistration(tx: DBWriteTransaction) {
-        let sdsTx = SDSDB.shimOnlyBridge(tx)
-
         let notificationBody = OWSLocalizedString(
             "DEREGISTRATION_NOTIFICATION",
             comment: "Notification warning the user that they have been de-registered."
         )
-        enqueueNotificationAction(afterCommitting: sdsTx) {
+        var userInfo = AppNotificationUserInfo()
+        userInfo.defaultAction = .reregister
+        enqueueNotificationAction(afterCommitting: tx) {
             await self.notifyViaPresenter(
                 category: .deregistration,
                 title: nil,
                 body: notificationBody,
                 threadIdentifier: nil,
-                userInfo: [
-                    AppNotificationUserInfoKey.defaultAction: AppNotificationDefaultAction.reregister.rawValue
-                ],
+                userInfo: userInfo,
                 soundQuery: .global
             )
         }
@@ -1252,7 +1316,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         title resolvableTitle: ResolvableValue<String>?,
         body: String,
         threadIdentifier: String?,
-        userInfo: [AnyHashable: Any],
+        userInfo: AppNotificationUserInfo,
         intent intentPair: (resolvableIntent: ResolvableValue<INIntent>, direction: INInteractionDirection)? = nil,
         soundQuery: SoundQuery,
         replacingIdentifier: String? = nil,

@@ -105,7 +105,7 @@ class UserNotificationPresenter {
         title: String?,
         body: String,
         threadIdentifier: String?,
-        userInfo: [AnyHashable: Any],
+        userInfo: AppNotificationUserInfo,
         interaction: INInteraction?,
         sound: Sound?,
         replacingIdentifier: String? = nil,
@@ -126,7 +126,7 @@ class UserNotificationPresenter {
 
         let content = UNMutableNotificationContent()
         content.categoryIdentifier = category.identifier
-        content.userInfo = userInfo
+        content.userInfo = userInfo.build()
         if let sound, sound != .standard(.none) {
             content.sound = sound.notificationSound(isQuiet: isMainAppAndActive)
         }
@@ -147,7 +147,7 @@ class UserNotificationPresenter {
             || category == .incomingReactionWithActions_CannotReply
         )
         if checkForCancel, !isMainAppAndActive, hasReceivedSyncMessageRecentlyWithSneakyTransaction {
-            assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
+            assert(userInfo.threadId != nil)
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForRemoteRead, repeats: false)
         } else if category == .newDeviceLinked {
             let db = DependenciesBridge.shared.db
@@ -211,7 +211,7 @@ class UserNotificationPresenter {
 
     private func shouldPresentNotification(
         category: AppNotificationCategory,
-        userInfo: [AnyHashable: Any],
+        userInfo: AppNotificationUserInfo,
         notificationSuppressionRule: NotificationSuppressionRule
     ) -> Bool {
         switch category {
@@ -237,7 +237,7 @@ class UserNotificationPresenter {
              .infoOrErrorMessage:
             // Don't show these notifications when the thread is visible.
             if
-                let notificationThreadUniqueId = userInfo[AppNotificationUserInfoKey.threadId] as? String,
+                let notificationThreadUniqueId = userInfo.threadId,
                 case .messagesInThread(let suppressedThreadUniqueId) = notificationSuppressionRule,
                 suppressedThreadUniqueId == notificationThreadUniqueId
             {
@@ -248,8 +248,8 @@ class UserNotificationPresenter {
         case .incomingGroupStoryReply:
             // Show notifications any time we're not currently showing the group reply sheet for that story
             if
-                let notificationThreadUniqueId = userInfo[AppNotificationUserInfoKey.threadId] as? String,
-                let notificationStoryTimestamp = userInfo[AppNotificationUserInfoKey.storyTimestamp] as? UInt64,
+                let notificationThreadUniqueId = userInfo.threadId,
+                let notificationStoryTimestamp = userInfo.storyTimestamp,
                 case .groupStoryReplies(let suppressedThreadUniqueId, let suppressedStoryTimestamp) = notificationSuppressionRule,
                 suppressedThreadUniqueId == notificationThreadUniqueId,
                 suppressedStoryTimestamp == notificationStoryTimestamp
@@ -362,41 +362,26 @@ class UserNotificationPresenter {
         matching cancellationType: CancellationType
     ) -> Bool {
         let requestMatchesPredicate: (UNNotificationRequest) -> Bool = { request in
+            let userInfo = AppNotificationUserInfo(request.content.userInfo)
             switch cancellationType {
             case .threadId(let threadId):
-                if
-                    let requestThreadId = request.content.userInfo[AppNotificationUserInfoKey.threadId] as? String,
-                    requestThreadId == threadId
-                {
+                if let requestThreadId = userInfo.threadId, requestThreadId == threadId {
                     return true
                 }
             case .messageIds(let messageIds):
-                if
-                    let requestMessageId = request.content.userInfo[AppNotificationUserInfoKey.messageId] as? String,
-                    messageIds.contains(requestMessageId)
-                {
+                if let requestMessageId = userInfo.messageId, messageIds.contains(requestMessageId) {
                     return true
                 }
             case .reactionId(let reactionId):
-                if
-                    let requestReactionId = request.content.userInfo[AppNotificationUserInfoKey.reactionId] as? String,
-                    requestReactionId == reactionId
-                {
+                if let requestReactionId = userInfo.reactionId, requestReactionId == reactionId {
                     return true
                 }
             case .missedCalls(let threadUniqueId):
-                if
-                    (request.content.userInfo[AppNotificationUserInfoKey.isMissedCall] as? Bool) == true,
-                    let requestThreadId = request.content.userInfo[AppNotificationUserInfoKey.threadId] as? String,
-                    threadUniqueId == requestThreadId
-                {
+                if userInfo.isMissedCall == true, let requestThreadId = userInfo.threadId, threadUniqueId == requestThreadId {
                     return true
                 }
             case .storyMessage(let storyMessageUniqueId):
-                if
-                    let requestStoryMessageId = request.content.userInfo[AppNotificationUserInfoKey.storyMessageId] as? String,
-                    requestStoryMessageId == storyMessageUniqueId
-                {
+                if let requestStoryMessageId = userInfo.storyMessageId, requestStoryMessageId == storyMessageUniqueId {
                     return true
                 }
             }

@@ -23,24 +23,6 @@ public class NotificationActionHandler {
         }
     }
 
-    private struct UserInfo {
-        var callBackAciString: String?
-        var callBackPhoneNumber: String?
-        var defaultAction: String?
-        var messageId: String?
-        var roomId: String?
-        var threadId: String?
-
-        init(_ userInfo: [AnyHashable: Any]) {
-            self.callBackAciString = userInfo[AppNotificationUserInfoKey.callBackAciString] as? String
-            self.callBackPhoneNumber = userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] as? String
-            self.defaultAction = userInfo[AppNotificationUserInfoKey.defaultAction] as? String
-            self.messageId = userInfo[AppNotificationUserInfoKey.messageId] as? String
-            self.roomId = userInfo[AppNotificationUserInfoKey.roomId] as? String
-            self.threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String
-        }
-    }
-
     @MainActor
     private class func _handleNotificationResponse(
         _ response: UNNotificationResponse,
@@ -48,12 +30,12 @@ public class NotificationActionHandler {
     ) async throws {
         owsAssertDebug(appReadiness.isAppReady)
 
-        let userInfo = UserInfo(response.notification.request.content.userInfo)
+        let userInfo = AppNotificationUserInfo(response.notification.request.content.userInfo)
 
         switch response.actionIdentifier {
         case UNNotificationDefaultActionIdentifier:
             Logger.debug("default action")
-            let defaultAction = userInfo.defaultAction.flatMap { AppNotificationDefaultAction(rawValue: $0) } ?? .showThread
+            let defaultAction = userInfo.defaultAction ?? .showThread
             if DebugFlags.internalLogging {
                 Logger.info("Performing default action: \(defaultAction)")
             }
@@ -106,10 +88,10 @@ public class NotificationActionHandler {
     // MARK: -
 
     @MainActor
-    private class func callBack(userInfo: UserInfo) async throws {
-        let aciString = userInfo.callBackAciString
+    private class func callBack(userInfo: AppNotificationUserInfo) async throws {
+        let aci = userInfo.callBackAci
         let phoneNumber = userInfo.callBackPhoneNumber
-        let address = SignalServiceAddress.legacyAddress(aciString: aciString, phoneNumber: phoneNumber)
+        let address = SignalServiceAddress.legacyAddress(serviceId: aci, phoneNumber: phoneNumber)
         guard address.isValid else {
             throw OWSAssertionError("Missing or invalid address.")
         }
@@ -125,12 +107,12 @@ public class NotificationActionHandler {
         callService.callUIAdapter.startAndShowOutgoingCall(thread: thread, prepareResult: prepareResult, hasLocalVideo: false)
     }
 
-    private class func markAsRead(userInfo: UserInfo) async throws {
+    private class func markAsRead(userInfo: AppNotificationUserInfo) async throws {
         let notificationMessage = try await self.notificationMessage(forUserInfo: userInfo)
         try await self.markMessageAsRead(notificationMessage: notificationMessage)
     }
 
-    private class func reply(userInfo: UserInfo, replyText: String) async throws {
+    private class func reply(userInfo: AppNotificationUserInfo, replyText: String) async throws {
         let notificationMessage = try await self.notificationMessage(forUserInfo: userInfo)
         let thread = notificationMessage.thread
         let interaction = notificationMessage.interaction
@@ -194,7 +176,7 @@ public class NotificationActionHandler {
     }
 
     @MainActor
-    private class func showThread(userInfo: UserInfo) async throws {
+    private class func showThread(userInfo: AppNotificationUserInfo) async throws {
         let notificationMessage = try await self.notificationMessage(forUserInfo: userInfo)
         if notificationMessage.isGroupStoryReply {
             self.showGroupStoryReplyThread(notificationMessage: notificationMessage)
@@ -266,7 +248,7 @@ public class NotificationActionHandler {
         frontmostViewController.present(vc, animated: true)
     }
 
-    private class func reactWithThumbsUp(userInfo: UserInfo) async throws {
+    private class func reactWithThumbsUp(userInfo: AppNotificationUserInfo) async throws {
         let notificationMessage = try await self.notificationMessage(forUserInfo: userInfo)
 
         let thread = notificationMessage.thread
@@ -294,7 +276,7 @@ public class NotificationActionHandler {
     }
 
     @MainActor
-    private class func showCallLobby(userInfo: UserInfo) {
+    private class func showCallLobby(userInfo: AppNotificationUserInfo) {
         let threadUniqueId = userInfo.threadId
         let callLinkRoomId = userInfo.roomId
 
@@ -324,10 +306,7 @@ public class NotificationActionHandler {
             if let callLinkRoomId {
                 return SSKEnvironment.shared.databaseStorageRef.read { tx in
                     let callLinkStore = DependenciesBridge.shared.callLinkStore
-                    if
-                        let roomId = Data(base64Encoded: callLinkRoomId),
-                        let callLinkRecord = try? callLinkStore.fetch(roomId: roomId, tx: tx)
-                    {
+                    if let callLinkRecord = try? callLinkStore.fetch(roomId: callLinkRoomId, tx: tx) {
                         return .callLink(CallLink(rootKey: callLinkRecord.rootKey))
                     }
                     return nil
@@ -397,7 +376,7 @@ public class NotificationActionHandler {
         let hasPendingMessageRequest: Bool
     }
 
-    private class func notificationMessage(forUserInfo userInfo: UserInfo) async throws -> NotificationMessage {
+    private class func notificationMessage(forUserInfo userInfo: AppNotificationUserInfo) async throws -> NotificationMessage {
         guard let threadId = userInfo.threadId else {
             throw OWSAssertionError("threadId was unexpectedly nil")
         }
