@@ -18,11 +18,9 @@ public enum SSKProtoError: Error {
 public enum SSKProtoEnvelopeType: Int32 {
     case unknown = 0
     case ciphertext = 1
-    case keyExchange = 2
     case prekeyBundle = 3
     case receipt = 5
     case unidentifiedSender = 6
-    case senderkeyMessage = 7
     case plaintextContent = 8
 }
 
@@ -30,11 +28,9 @@ private func SSKProtoEnvelopeTypeWrap(_ value: SignalServiceProtos_Envelope.Type
     switch value {
     case .unknown: return .unknown
     case .ciphertext: return .ciphertext
-    case .keyExchange: return .keyExchange
     case .prekeyBundle: return .prekeyBundle
     case .receipt: return .receipt
     case .unidentifiedSender: return .unidentifiedSender
-    case .senderkeyMessage: return .senderkeyMessage
     case .plaintextContent: return .plaintextContent
     }
 }
@@ -43,11 +39,9 @@ private func SSKProtoEnvelopeTypeUnwrap(_ value: SSKProtoEnvelopeType) -> Signal
     switch value {
     case .unknown: return .unknown
     case .ciphertext: return .ciphertext
-    case .keyExchange: return .keyExchange
     case .prekeyBundle: return .prekeyBundle
     case .receipt: return .receipt
     case .unidentifiedSender: return .unidentifiedSender
-    case .senderkeyMessage: return .senderkeyMessage
     case .plaintextContent: return .plaintextContent
     }
 }

@@ -46,13 +46,11 @@ class ValidatedIncomingEnvelope {
             kind = .identifiedSender(.whisper)
         case .prekeyBundle:
             kind = .identifiedSender(.preKey)
-        case .senderkeyMessage:
-            kind = .identifiedSender(.senderKey)
         case .plaintextContent:
             kind = .identifiedSender(.plaintext)
         case .unidentifiedSender:
             kind = .unidentifiedSender
-        case .unknown, .keyExchange, .none:
+        case .unknown, .none:
             throw OWSGenericError("Unsupported type.")
         }
         self.kind = kind

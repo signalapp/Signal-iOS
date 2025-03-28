@@ -17,11 +17,11 @@ message Envelope {
   enum Type {
     UNKNOWN = 0;
     CIPHERTEXT = 1;
-    KEY_EXCHANGE = 2;
+    reserved 2; // formerly KEY_EXCHANGE
     PREKEY_BUNDLE = 3;
     RECEIPT = 5;
     UNIDENTIFIED_SENDER = 6;
-    SENDERKEY_MESSAGE = 7;
+    reserved 7; // formerly SENDERKEY_MESSAGE
     PLAINTEXT_CONTENT = 8;
   }
 

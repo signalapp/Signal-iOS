@@ -783,17 +783,12 @@ public class OWSMessageDecrypter {
             return "Unknown"
         case .ciphertext:
             return "SignalEncryptedMessage"
-        case .keyExchange:
-            // Unsupported
-            return "KeyExchange"
         case .prekeyBundle:
             return "PreKeyEncryptedMessage"
         case .receipt:
             return "DeliveryReceipt"
         case .unidentifiedSender:
             return "UnidentifiedSender"
-        case .senderkeyMessage:
-            return "SenderKey"
         case .plaintextContent:
             return "PlaintextContent"
         }

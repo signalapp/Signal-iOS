@@ -1256,7 +1256,7 @@ public class MessageSender {
                         return sealedSenderParameters != nil
                     case .ciphertext, .prekeyBundle, .plaintextContent:
                         return sealedSenderParameters == nil
-                    case .unknown, .keyExchange, .receipt, .senderkeyMessage:
+                    case .unknown, .receipt:
                         return false
                     }
                 }()

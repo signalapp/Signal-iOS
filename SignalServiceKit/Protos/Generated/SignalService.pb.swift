@@ -149,11 +149,9 @@ struct SignalServiceProtos_Envelope: @unchecked Sendable {
     typealias RawValue = Int
     case unknown // = 0
     case ciphertext // = 1
-    case keyExchange // = 2
     case prekeyBundle // = 3
     case receipt // = 5
     case unidentifiedSender // = 6
-    case senderkeyMessage // = 7
     case plaintextContent // = 8
 
     init() {
@@ -164,11 +162,9 @@ struct SignalServiceProtos_Envelope: @unchecked Sendable {
       switch rawValue {
       case 0: self = .unknown
       case 1: self = .ciphertext
-      case 2: self = .keyExchange
       case 3: self = .prekeyBundle
       case 5: self = .receipt
       case 6: self = .unidentifiedSender
-      case 7: self = .senderkeyMessage
       case 8: self = .plaintextContent
       default: return nil
       }
@@ -178,11 +174,9 @@ struct SignalServiceProtos_Envelope: @unchecked Sendable {
       switch self {
       case .unknown: return 0
       case .ciphertext: return 1
-      case .keyExchange: return 2
       case .prekeyBundle: return 3
       case .receipt: return 5
       case .unidentifiedSender: return 6
-      case .senderkeyMessage: return 7
       case .plaintextContent: return 8
       }
     }
@@ -4825,11 +4819,9 @@ extension SignalServiceProtos_Envelope.TypeEnum: SwiftProtobuf._ProtoNameProvidi
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "UNKNOWN"),
     1: .same(proto: "CIPHERTEXT"),
-    2: .same(proto: "KEY_EXCHANGE"),
     3: .same(proto: "PREKEY_BUNDLE"),
     5: .same(proto: "RECEIPT"),
     6: .same(proto: "UNIDENTIFIED_SENDER"),
-    7: .same(proto: "SENDERKEY_MESSAGE"),
     8: .same(proto: "PLAINTEXT_CONTENT"),
   ]
 }
