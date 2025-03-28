@@ -236,20 +236,23 @@ public class NotificationPresenterImpl: NotificationPresenter {
     // MARK: - Calls
 
     private struct CallPreview {
-        let notificationTitle: String
+        let notificationTitle: ResolvableValue<String>
         let threadIdentifier: String
         let shouldShowActions: Bool
     }
 
-    private func fetchCallPreview(thread: TSThread, tx: DBReadTransaction) -> CallPreview? {
+    private func fetchCallPreview(thread: NotifiableThread, tx: DBReadTransaction) -> CallPreview? {
         let previewType = self.previewType(tx: tx)
-        switch previewType {
-        case .noNameNoPreview:
-            return nil
-        case .nameNoPreview, .namePreview:
+        return self.notificationTitle(
+            for: thread,
+            senderAddress: nil,
+            isGroupStoryReply: false,
+            previewType: previewType,
+            tx: tx
+        ).map {
             return CallPreview(
-                notificationTitle: contactManager.displayName(for: thread, transaction: tx),
-                threadIdentifier: thread.uniqueId,
+                notificationTitle: $0,
+                threadIdentifier: thread.rawValue.uniqueId,
                 shouldShowActions: Self.shouldShowActions(for: previewType)
             )
         }
@@ -290,7 +293,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         tx: DBReadTransaction
     ) {
         let thread = notificationInfo.thread
-        let callPreview = fetchCallPreview(thread: thread, tx: tx)
+        let callPreview = fetchCallPreview(thread: .individualThread(thread), tx: tx)
 
         let timestampClassification = TimestampClassification(timestamp)
         let timestampArgument: String
@@ -353,22 +356,20 @@ public class NotificationPresenterImpl: NotificationPresenter {
             : .missedCallWithoutActions
         )
 
-        var interaction: INInteraction?
-        if callPreview != nil, let intent = thread.generateIncomingCallIntent(callerAci: notificationInfo.caller, tx: tx) {
-            let wrapper = INInteraction(intent: intent, response: nil)
-            wrapper.direction = .incoming
-            interaction = wrapper
+        var intent: ResolvableValue<INIntent>?
+        if callPreview != nil {
+            intent = thread.generateIncomingCallIntent(callerAci: notificationInfo.caller, tx: tx)
         }
 
         let threadUniqueId = thread.uniqueId
-        enqueueNotificationAction {
+        enqueueNotificationAction(afterCommitting: tx) {
             await self.notifyViaPresenter(
                 category: category,
                 title: callPreview?.notificationTitle,
                 body: notificationBody,
                 threadIdentifier: callPreview?.threadIdentifier,
                 userInfo: userInfo,
-                interaction: interaction,
+                intent: intent.map { ($0, .incoming) },
                 soundQuery: .thread(threadUniqueId),
                 replacingIdentifier: notificationInfo.groupingId.uuidString
             )
@@ -377,10 +378,10 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     public func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(
         notificationInfo: CallNotificationInfo,
-        tx: DBReadTransaction
+        tx: DBWriteTransaction
     ) {
         let thread = notificationInfo.thread
-        let callPreview = fetchCallPreview(thread: thread, tx: tx)
+        let callPreview = fetchCallPreview(thread: .individualThread(thread), tx: tx)
 
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
         let userInfo = [
@@ -388,14 +389,13 @@ public class NotificationPresenterImpl: NotificationPresenter {
         ]
 
         let threadUniqueId = thread.uniqueId
-        enqueueNotificationAction {
+        enqueueNotificationAction(afterCommitting: tx) {
             await self.notifyViaPresenter(
                 category: .missedCallFromNoLongerVerifiedIdentity,
                 title: callPreview?.notificationTitle,
                 body: notificationBody,
                 threadIdentifier: callPreview?.threadIdentifier,
                 userInfo: userInfo,
-                interaction: nil,
                 soundQuery: .thread(threadUniqueId),
                 replacingIdentifier: notificationInfo.groupingId.uuidString
             )
@@ -404,10 +404,10 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     public func notifyUserOfMissedCallBecauseOfNewIdentity(
         notificationInfo: CallNotificationInfo,
-        tx: DBReadTransaction
+        tx: DBWriteTransaction
     ) {
         let thread = notificationInfo.thread
-        let callPreview = fetchCallPreview(thread: thread, tx: tx)
+        let callPreview = fetchCallPreview(thread: .individualThread(thread), tx: tx)
 
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
         let userInfo = userInfoForMissedCall(thread: thread, remoteAci: notificationInfo.caller)
@@ -419,14 +419,13 @@ public class NotificationPresenterImpl: NotificationPresenter {
         )
 
         let threadUniqueId = thread.uniqueId
-        enqueueNotificationAction {
+        enqueueNotificationAction(afterCommitting: tx) {
             await self.notifyViaPresenter(
                 category: category,
                 title: callPreview?.notificationTitle,
                 body: notificationBody,
                 threadIdentifier: callPreview?.threadIdentifier,
                 userInfo: userInfo,
-                interaction: nil,
                 soundQuery: .thread(threadUniqueId),
                 replacingIdentifier: notificationInfo.groupingId.uuidString
             )
@@ -507,7 +506,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     public func notifyUser(
         forIncomingMessage incomingMessage: TSIncomingMessage,
         thread: TSThread,
-        transaction: DBReadTransaction
+        transaction: DBWriteTransaction
     ) {
         _notifyUser(
             forIncomingMessage: incomingMessage,
@@ -521,7 +520,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forIncomingMessage incomingMessage: TSIncomingMessage,
         editTarget: TSIncomingMessage,
         thread: TSThread,
-        transaction: DBReadTransaction
+        transaction: DBWriteTransaction
     ) {
         _notifyUser(
             forIncomingMessage: incomingMessage,
@@ -531,12 +530,97 @@ public class NotificationPresenterImpl: NotificationPresenter {
         )
     }
 
+    private enum NotifiableThread {
+        case individualThread(TSContactThread)
+        case groupThread(TSGroupThread)
+
+        init?(_ thread: TSThread) {
+            switch thread {
+            case let thread as TSContactThread:
+                self = .individualThread(thread)
+            case let thread as TSGroupThread:
+                self = .groupThread(thread)
+            default:
+                return nil
+            }
+        }
+
+        var rawValue: TSThread {
+            switch self {
+            case .individualThread(let thread):
+                return thread
+            case .groupThread(let thread):
+                return thread
+            }
+        }
+    }
+
+    private func notificationTitle(
+        for thread: NotifiableThread,
+        senderAddress: SignalServiceAddress?,
+        isGroupStoryReply: Bool,
+        previewType: NotificationType,
+        tx: DBReadTransaction
+    ) -> ResolvableValue<String>? {
+        switch previewType {
+        case .noNameNoPreview:
+            return nil
+        case .nameNoPreview, .namePreview:
+            switch thread {
+            case .individualThread(let thread):
+                owsAssertDebug(senderAddress == nil || senderAddress == thread.contactAddress)
+                return resolvableValue(
+                    withDisplayNameForAddress: thread.contactAddress,
+                    transformedBy: { displayName in displayName.resolvedValue() },
+                    tx: tx
+                )
+            case .groupThread(let thread):
+                let groupName = thread.groupNameOrDefault
+                if let senderAddress {
+                    let format = (
+                        isGroupStoryReply
+                        ? NotificationStrings.incomingGroupStoryReplyTitleFormat
+                        : NotificationStrings.incomingGroupMessageTitleFormat
+                    )
+                    return resolvableValue(
+                        withDisplayNameForAddress: senderAddress,
+                        transformedBy: { displayName in String(format: format, displayName.resolvedValue(), groupName) },
+                        tx: tx
+                    )
+                } else {
+                    return ResolvableValue(resolvedValue: groupName)
+                }
+            }
+        }
+    }
+
+    private func resolvableValue(
+        withDisplayNameForAddress address: SignalServiceAddress,
+        transformedBy transform: @escaping (DisplayName) -> String,
+        tx: DBReadTransaction
+    ) -> ResolvableValue<String> {
+        // TODO: Stop using SSKEnvironment.shared once dependencies are injected.
+        return ResolvableDisplayNameBuilder(
+            displayNameForAddress: address,
+            transformedBy: { displayName, _ in return transform(displayName) },
+            contactManager: SSKEnvironment.shared.contactManagerRef
+        ).resolvableValue(
+            db: SSKEnvironment.shared.databaseStorageRef,
+            profileFetcher: SSKEnvironment.shared.profileFetcherRef,
+            tx: tx
+        )
+    }
+
     private func _notifyUser(
         forIncomingMessage incomingMessage: TSIncomingMessage,
         editTarget: TSIncomingMessage?,
         thread: TSThread,
-        transaction: DBReadTransaction
+        transaction: DBWriteTransaction
     ) {
+        guard let notifiableThread = NotifiableThread(thread) else {
+            owsFailDebug("Can't notify for \(type(of: thread))")
+            return
+        }
 
         guard canNotify(for: incomingMessage, thread: thread, transaction: transaction) else {
             return
@@ -547,35 +631,23 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
         let messageText = rawMessageText.filterStringForDisplay()
 
-        let senderName = contactManager.displayName(for: incomingMessage.authorAddress, tx: transaction).resolvedValue()
-
         let previewType = self.previewType(tx: transaction)
 
-        let notificationTitle: String?
         let threadIdentifier: String?
         switch previewType {
         case .noNameNoPreview:
-            notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            switch thread {
-            case is TSContactThread:
-                notificationTitle = senderName
-            case let groupThread as TSGroupThread:
-                notificationTitle = String(
-                    format: incomingMessage.isGroupStoryReply
-                    ? NotificationStrings.incomingGroupStoryReplyTitleFormat
-                    : NotificationStrings.incomingGroupMessageTitleFormat,
-                    senderName,
-                    groupThread.groupNameOrDefault
-                )
-            default:
-                owsFailDebug("Invalid thread: \(thread.uniqueId)")
-                return
-            }
-
             threadIdentifier = thread.uniqueId
         }
+
+        let notificationTitle = self.notificationTitle(
+            for: notifiableThread,
+            senderAddress: incomingMessage.authorAddress,
+            isGroupStoryReply: incomingMessage.isGroupStoryReply,
+            previewType: previewType,
+            tx: transaction
+        )
 
         let notificationBody: String = {
             if thread.hasPendingMessageRequest(transaction: transaction) {
@@ -623,17 +695,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
             userInfo[AppNotificationUserInfoKey.storyTimestamp] = storyTimestamp
         }
 
-        var interaction: INInteraction?
-        if previewType != .noNameNoPreview,
-           let intent = thread.generateSendMessageIntent(context: .incomingMessage(incomingMessage), transaction: transaction) {
-            let wrapper = INInteraction(intent: intent, response: nil)
-            wrapper.direction = .incoming
-            interaction = wrapper
+        var intent: ResolvableValue<INIntent>?
+        if previewType != .noNameNoPreview {
+            intent = thread.generateSendMessageIntent(context: .incomingMessage(incomingMessage), transaction: transaction)
         }
 
         let threadUniqueId = thread.uniqueId
         let editTargetUniqueId = editTarget?.uniqueId
-        enqueueNotificationAction {
+        enqueueNotificationAction(afterCommitting: transaction) {
             if let editTargetUniqueId, await !self.presenter.replaceNotification(messageId: editTargetUniqueId) {
                 // The original notification was already dismissed. Don't show the edited one either.
                 return
@@ -644,7 +713,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 body: notificationBody,
                 threadIdentifier: threadIdentifier,
                 userInfo: userInfo,
-                interaction: interaction,
+                intent: intent.map { ($0, .incoming) },
                 soundQuery: (editTargetUniqueId != nil) ? .none : .thread(threadUniqueId)
             )
         }
@@ -654,8 +723,13 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forReaction reaction: OWSReaction,
         onOutgoingMessage message: TSOutgoingMessage,
         thread: TSThread,
-        transaction: DBReadTransaction
+        transaction: DBWriteTransaction
     ) {
+        guard let notifiableThread = NotifiableThread(thread) else {
+            owsFailDebug("Can't notify for \(type(of: thread))")
+            return
+        }
+
         guard !isThreadMuted(thread, transaction: transaction) else { return }
 
         // Reaction notifications only get displayed if we can include the reaction
@@ -666,23 +740,13 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
         owsPrecondition(Self.shouldShowActions(for: previewType))
 
-        let senderName = contactManager.displayName(for: reaction.reactor, tx: transaction).resolvedValue()
-
-        let notificationTitle: String
-
-        switch thread {
-        case is TSContactThread:
-            notificationTitle = senderName
-        case let groupThread as TSGroupThread:
-            notificationTitle = String(
-                format: NotificationStrings.incomingGroupMessageTitleFormat,
-                senderName,
-                groupThread.groupNameOrDefault
-            )
-        default:
-            owsFailDebug("unexpected thread: \(thread.uniqueId)")
-            return
-        }
+        let notificationTitle = self.notificationTitle(
+            for: notifiableThread,
+            senderAddress: reaction.reactor,
+            isGroupStoryReply: false,
+            previewType: previewType,
+            tx: transaction
+        )
 
         let notificationBody: String
         if let bodyDescription: String = {
@@ -764,35 +828,36 @@ public class NotificationPresenterImpl: NotificationPresenter {
             AppNotificationUserInfoKey.reactionId: reaction.uniqueId
         ]
 
-        var interaction: INInteraction?
-        if let intent = thread.generateSendMessageIntent(context: .senderAddress(reaction.reactor), transaction: transaction) {
-            let wrapper = INInteraction(intent: intent, response: nil)
-            wrapper.direction = .incoming
-            interaction = wrapper
-        }
+        let intent = thread.generateSendMessageIntent(context: .senderAddress(reaction.reactor), transaction: transaction)
 
         let threadUniqueId = thread.uniqueId
-        enqueueNotificationAction {
+        enqueueNotificationAction(afterCommitting: transaction) {
             await self.notifyViaPresenter(
                 category: category,
                 title: notificationTitle,
                 body: notificationBody,
                 threadIdentifier: threadUniqueId,
                 userInfo: userInfo,
-                interaction: interaction,
+                intent: intent.map { ($0, .incoming) },
                 soundQuery: .thread(threadUniqueId)
             )
         }
     }
 
     public func notifyUserOfFailedSend(inThread thread: TSThread) {
-        let notificationTitle: String? = databaseStorage.read { tx in
-            switch self.previewType(tx: tx) {
-            case .noNameNoPreview:
-                return nil
-            case .nameNoPreview, .namePreview:
-                return contactManager.displayName(for: thread, transaction: tx)
-            }
+        guard let notifiableThread = NotifiableThread(thread) else {
+            owsFailDebug("Can't notify for \(type(of: thread))")
+            return
+        }
+
+        let notificationTitle = databaseStorage.read { tx in
+            return self.notificationTitle(
+                for: notifiableThread,
+                senderAddress: nil,
+                isGroupStoryReply: false,
+                previewType: self.previewType(tx: tx),
+                tx: tx
+            )
         }
 
         let notificationBody = NotificationStrings.failedToSendBody
@@ -808,7 +873,6 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 body: notificationBody,
                 threadIdentifier: nil, // show ungrouped
                 userInfo: userInfo,
-                interaction: nil,
                 soundQuery: .thread(threadId)
             )
         }
@@ -834,13 +898,12 @@ public class NotificationPresenterImpl: NotificationPresenter {
         enqueueNotificationAction {
             await self.notifyViaPresenter(
                 category: .internalError,
-                title: title,
+                title: ResolvableValue(resolvedValue: title),
                 body: message,
                 threadIdentifier: nil,
                 userInfo: [
                     AppNotificationUserInfoKey.defaultAction: AppNotificationAction.submitDebugLogs.rawValue
                 ],
-                interaction: nil,
                 soundQuery: .global
             )
         }
@@ -852,12 +915,12 @@ public class NotificationPresenterImpl: NotificationPresenter {
         roomId: Data?,
         presentAtJoin: Bool
     ) {
-        let notificationTitle: String? = databaseStorage.read { tx in
+        let notificationTitle = databaseStorage.read { tx -> ResolvableValue<String>? in
             switch previewType(tx: tx) {
             case .noNameNoPreview:
                 return nil
             case .nameNoPreview, .namePreview:
-                return callTitle
+                return ResolvableValue(resolvedValue: callTitle)
             }
         }
 
@@ -884,7 +947,6 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 body: notificationBody,
                 threadIdentifier: nil, // show ungrouped
                 userInfo: userInfo,
-                interaction: nil,
                 soundQuery: threadUniqueId.map({ .thread($0) }) ?? .global
             )
         }
@@ -894,10 +956,10 @@ public class NotificationPresenterImpl: NotificationPresenter {
         enqueueNotificationAction {
             await self.notifyViaPresenter(
                 category: .newDeviceLinked,
-                title: OWSLocalizedString(
+                title: ResolvableValue(resolvedValue: OWSLocalizedString(
                     "LINKED_DEVICE_NOTIFICATION_TITLE",
                     comment: "Title for system notification when a new device is linked."
-                ),
+                )),
                 body: String(
                     format: OWSLocalizedString(
                         "LINKED_DEVICE_NOTIFICATION_BODY",
@@ -907,7 +969,6 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 ),
                 threadIdentifier: nil,
                 userInfo: [AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showLinkedDevices.rawValue],
-                interaction: nil,
                 soundQuery: .global
             )
         }
@@ -918,7 +979,9 @@ public class NotificationPresenterImpl: NotificationPresenter {
         thread: TSThread,
         transaction: DBWriteTransaction
     ) {
-        guard (errorMessage is OWSRecoverableDecryptionPlaceholder) == false else { return }
+        if errorMessage is OWSRecoverableDecryptionPlaceholder {
+            return
+        }
 
         switch errorMessage.errorType {
         case .noSession,
@@ -984,20 +1047,30 @@ public class NotificationPresenterImpl: NotificationPresenter {
         wantsSound: Bool,
         transaction: DBWriteTransaction
     ) {
+        guard let notifiableThread = NotifiableThread(thread) else {
+            owsFailDebug("Can't notify for \(type(of: thread))")
+            return
+        }
+
         guard !isThreadMuted(thread, transaction: transaction) else { return }
 
         let previewType = self.previewType(tx: transaction)
 
-        let notificationTitle: String?
         let threadIdentifier: String?
         switch previewType {
         case .noNameNoPreview:
-            notificationTitle = nil
             threadIdentifier = nil
         case .namePreview, .nameNoPreview:
-            notificationTitle = contactManager.displayName(for: thread, transaction: transaction)
             threadIdentifier = thread.uniqueId
         }
+
+        let notificationTitle = self.notificationTitle(
+            for: notifiableThread,
+            senderAddress: nil,
+            isGroupStoryReply: false,
+            previewType: previewType,
+            tx: transaction
+        )
 
         let notificationBody: String
         switch previewType {
@@ -1020,14 +1093,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
         // Some types of generic messages (locally generated notifications) have a defacto
         // "sender". If so, generate an interaction so the notification renders as if it
         // is from that user.
-        var interaction: INInteraction?
+        var intent: ResolvableValue<INIntent>?
         if previewType != .noNameNoPreview {
-            func wrapIntent(_ intent: INIntent) {
-                let wrapper = INInteraction(intent: intent, response: nil)
-                wrapper.direction = .incoming
-                interaction = wrapper
-            }
-
             if let infoMessage = tsInteraction as? TSInfoMessage {
                 guard let localIdentifiers = tsAccountManager.localIdentifiers(
                     tx: transaction
@@ -1056,28 +1123,18 @@ public class NotificationPresenterImpl: NotificationPresenter {
                         groupUpdateAuthor = persistableGroupUpdateItemsWrapper
                             .asSingleUpdateItem?.senderForNotification
                     }
-                    if
-                        let groupUpdateAuthor,
-                        let intent = thread.generateSendMessageIntent(context: .senderAddress(groupUpdateAuthor), transaction: transaction)
-                    {
-                        wrapIntent(intent)
+                    if let groupUpdateAuthor {
+                        intent = thread.generateSendMessageIntent(context: .senderAddress(groupUpdateAuthor), transaction: transaction)
                     }
                 case .userJoinedSignal:
-                    if
-                        let thread = thread as? TSContactThread,
-                        let intent = thread.generateSendMessageIntent(context: .senderAddress(thread.contactAddress), transaction: transaction)
-                    {
-                        wrapIntent(intent)
+                    if let thread = thread as? TSContactThread {
+                        intent = thread.generateSendMessageIntent(context: .senderAddress(thread.contactAddress), transaction: transaction)
                     }
                 default:
                     break
                 }
-            } else if
-                let callMessage = tsInteraction as? OWSGroupCallMessage,
-                let callCreator = callMessage.creatorAci?.wrappedAciValue,
-                let intent = thread.generateSendMessageIntent(context: .senderAddress(SignalServiceAddress(callCreator)), transaction: transaction)
-            {
-                wrapIntent(intent)
+            } else if let callCreator = (tsInteraction as? OWSGroupCallMessage)?.creatorAci?.wrappedAciValue {
+                intent = thread.generateSendMessageIntent(context: .senderAddress(SignalServiceAddress(callCreator)), transaction: transaction)
             }
         }
 
@@ -1088,7 +1145,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 body: notificationBody,
                 threadIdentifier: threadIdentifier,
                 userInfo: userInfo,
-                interaction: interaction,
+                intent: intent.map { ($0, .incoming) },
                 soundQuery: wantsSound ? .thread(threadId) : .none
             )
         }
@@ -1129,8 +1186,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             sender: person,
             attachments: nil
         )
-        let interaction = INInteraction(intent: sendMessageIntent, response: nil)
-        interaction.direction = .outgoing
+
         let notificationTitle = storyName
         let notificationBody = OWSLocalizedString(
             "STORY_SEND_FAILED_NOTIFICATION_BODY",
@@ -1142,14 +1198,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
         enqueueNotificationAction(afterCommitting: transaction) {
             await self.notifyViaPresenter(
                 category: .failedStorySend,
-                title: notificationTitle,
+                title: ResolvableValue(resolvedValue: notificationTitle),
                 body: notificationBody,
                 threadIdentifier: threadIdentifier,
                 userInfo: [
                     AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showMyStories.rawValue,
                     AppNotificationUserInfoKey.storyMessageId: storyMessageId
                 ],
-                interaction: interaction,
+                intent: (ResolvableValue(resolvedValue: sendMessageIntent), .outgoing),
                 soundQuery: .global
             )
         }
@@ -1169,7 +1225,6 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 userInfo: [
                     AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showChatList.rawValue
                 ],
-                interaction: nil,
                 // Use a default sound so we don't read from
                 // the db (which doesn't work until we relaunch)
                 soundQuery: .constant(.standard(.note)),
@@ -1195,7 +1250,6 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 userInfo: [
                     AppNotificationUserInfoKey.defaultAction: AppNotificationAction.reregister.rawValue
                 ],
-                interaction: nil,
                 soundQuery: .global
             )
         }
@@ -1210,11 +1264,11 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     private func notifyViaPresenter(
         category: AppNotificationCategory,
-        title: String?,
+        title resolvableTitle: ResolvableValue<String>?,
         body: String,
         threadIdentifier: String?,
         userInfo: [AnyHashable: Any],
-        interaction: INInteraction?,
+        intent intentPair: (resolvableIntent: ResolvableValue<INIntent>, direction: INInteractionDirection)? = nil,
         soundQuery: SoundQuery,
         replacingIdentifier: String? = nil,
         forceBeforeRegistered: Bool = false
@@ -1231,13 +1285,30 @@ public class NotificationPresenterImpl: NotificationPresenter {
         case .constant(let constantSound):
             sound = constantSound
         }
+
+        // Fetching these is currently best effort. (This could be improved in the
+        // future.)
+        let kProfileNameFetchTimeout: TimeInterval = 5
+
+        async let resolvedTitle = resolvableTitle?.resolve(timeout: kProfileNameFetchTimeout)
+
+        let resolvedInteraction: INInteraction?
+        if let intentPair {
+            let intent = await intentPair.resolvableIntent.resolve(timeout: kProfileNameFetchTimeout)
+            let interaction = INInteraction(intent: intent, response: nil)
+            interaction.direction = intentPair.direction
+            resolvedInteraction = interaction
+        } else {
+            resolvedInteraction = nil
+        }
+
         await self.presenter.notify(
             category: category,
-            title: title,
+            title: await resolvedTitle,
             body: body,
             threadIdentifier: threadIdentifier,
             userInfo: userInfo,
-            interaction: interaction,
+            interaction: resolvedInteraction,
             sound: sound,
             replacingIdentifier: replacingIdentifier,
             forceBeforeRegistered: forceBeforeRegistered,
@@ -1309,10 +1380,10 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     private let mostRecentTask = AtomicValue<Task<Void, Never>?>(nil, lock: .init())
 
-    private func enqueueNotificationAction(afterCommitting tx: DBWriteTransaction? = nil, _ block: @escaping () async -> Void) {
+    private func enqueueNotificationAction(afterCommitting tx: DBReadTransaction? = nil, _ block: @escaping () async -> Void) {
         let startTime = CACurrentMediaTime()
-        let pendingTask = Self.pendingTasks.buildPendingTask(label: "NotificationAction")
-        let commitGuarantee = tx.map {
+        let pendingTask = Self.pendingTasks.buildPendingTask(label: "Post Notification")
+        let commitGuarantee = (tx as? DBWriteTransaction).map {
             let (guarantee, future) = Guarantee<Void>.pending()
             $0.addSyncCompletion { future.resolve() }
             return guarantee

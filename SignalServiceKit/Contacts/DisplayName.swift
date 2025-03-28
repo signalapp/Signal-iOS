@@ -34,6 +34,15 @@ public enum DisplayName {
         }
     }
 
+    public var hasProfileNameOrBetter: Bool {
+        switch self {
+        case .nickname, .systemContactName, .profileName:
+            return true
+        case .phoneNumber, .username, .deletedAccount, .unknown:
+            return false
+        }
+    }
+
     public var hasKnownValue: Bool {
         switch self {
         case .nickname, .systemContactName, .profileName, .phoneNumber, .username:

@@ -8,11 +8,11 @@ public import LibSignalClient
 public protocol NotificationPresenter {
     func registerNotificationSettings() async
 
-    func notifyUser(forIncomingMessage: TSIncomingMessage, thread: TSThread, transaction: DBReadTransaction)
+    func notifyUser(forIncomingMessage: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction)
 
-    func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: DBReadTransaction)
+    func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction)
 
-    func notifyUser(forReaction: OWSReaction, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: DBReadTransaction)
+    func notifyUser(forReaction: OWSReaction, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: DBWriteTransaction)
 
     func notifyUser(forErrorMessage: TSErrorMessage, thread: TSThread, transaction: DBWriteTransaction)
 
@@ -35,12 +35,12 @@ public protocol NotificationPresenter {
 
     func notifyUserOfMissedCallBecauseOfNewIdentity(
         notificationInfo: CallNotificationInfo,
-        tx: DBReadTransaction
+        tx: DBWriteTransaction
     )
 
     func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(
         notificationInfo: CallNotificationInfo,
-        tx: DBReadTransaction
+        tx: DBWriteTransaction
     )
 
     func notifyForGroupCallSafetyNumberChange(

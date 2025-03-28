@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import LibSignalClient
+public import Intents
+import LibSignalClient
 
 // MARK: - Enqueue messages
 
@@ -327,27 +328,26 @@ extension ThreadUtil {
 
 // MARK: - Sharing Suggestions
 
-public import Intents
-
 extension TSThread {
 
     /// This function should be called every time the user
     /// initiates message sending via the UI. It should *not*
     /// be called for messages we send automatically, like
     /// receipts.
-    public func donateSendMessageIntent(for outgoingMessage: TSOutgoingMessage, transaction: DBReadTransaction) {
+    public func donateSendMessageIntent(for outgoingMessage: TSOutgoingMessage, transaction tx: DBReadTransaction) {
         // Never donate for story sends or replies, we don't want them as share suggestions
-        guard
-            !(outgoingMessage is OutgoingStoryMessage),
-            !outgoingMessage.isGroupStoryReply
-        else {
+        if (outgoingMessage is OutgoingStoryMessage) || outgoingMessage.isGroupStoryReply {
             return
         }
 
-        guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return }
-        guard let sendMessageIntent = generateSendMessageIntent(context: .outgoingMessage(outgoingMessage), transaction: transaction) else { return }
+        let sendMessageIntentBuilder = _generateSendMessageIntent(context: .outgoingMessage(outgoingMessage), transaction: tx)
+        guard let sendMessageIntentBuilder else {
+            return
+        }
 
-        let interaction = INInteraction(intent: sendMessageIntent, response: nil)
+        // We don't need to wait for names to resolve here because these are
+        // outgoing messages where we should already have a name.
+        let interaction = INInteraction(intent: sendMessageIntentBuilder.value(tx: tx), response: nil)
         interaction.groupIdentifier = uniqueId
         interaction.direction = .outgoing
         interaction.donate(completion: { error in
@@ -362,113 +362,158 @@ extension TSThread {
         case outgoingMessage(TSOutgoingMessage)
     }
 
-    public func generateSendMessageIntent(context: IntentContext, transaction: DBReadTransaction) -> INSendMessageIntent? {
-        guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
+    func generateSendMessageIntent(
+        context: IntentContext,
+        transaction: DBReadTransaction
+    ) -> ResolvableValue<INIntent>? {
+        let builder = _generateSendMessageIntent(context: context, transaction: transaction)
+        return builder?.resolvableValue(
+            db: SSKEnvironment.shared.databaseStorageRef,
+            profileFetcher: SSKEnvironment.shared.profileFetcherRef,
+            tx: transaction
+        )
+    }
 
-        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress else {
-            owsFailDebug("Missing local address")
+    private func _generateSendMessageIntent(
+        context: IntentContext,
+        transaction: DBReadTransaction
+    ) -> ResolvableDisplayNameBuilder<INIntent>? {
+        guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else {
+            return nil
+        }
+
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction) else {
+            owsFailDebug("Not registered.")
             return nil
         }
 
         let senderAddress: SignalServiceAddress
         let message: TSMessage?
-        let recipients: [INPerson]?
+        let recipientAddress: SignalServiceAddress?
         switch context {
         case .outgoingMessage(let outgoingMessage):
-            senderAddress = localAddress
+            senderAddress = localIdentifiers.aciAddress
             message = outgoingMessage
-
             // For 1:1 outgoing messages, we must populate the recipient of the message,
             // otherwise sharing suggestions won't be populated correctly.
-            if !isGroupThread {
-                recipients = outgoingMessage.recipientAddresses().map { inPersonForRecipient($0, transaction: transaction) }
-            } else {
-                recipients = nil
-            }
+            recipientAddress = (self as? TSContactThread)?.contactAddress
         case .incomingMessage(let incomingMessage):
             senderAddress = incomingMessage.authorAddress
             message = incomingMessage
-            recipients = nil
+            recipientAddress = nil
         case .senderAddress(let address):
             senderAddress = address
             message = nil
-            recipients = nil
+            recipientAddress = nil
         }
 
-        var conversationIdentifier = uniqueId
-        var threadName = SSKEnvironment.shared.contactManagerRef.displayName(for: self, transaction: transaction)
-        if isGroupThread && message?.isGroupStoryReply == true {
-            threadName = String(
-                format: OWSLocalizedString(
+        let isGroupStoryReply = isGroupThread && message?.isGroupStoryReply == true
+
+        let groupThreadName = (self as? TSGroupThread)?.groupNameOrDefault
+        let formattedGroupThreadName = groupThreadName.map {
+            if isGroupStoryReply {
+                let format = OWSLocalizedString(
                     "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT",
                     comment: "Message header when you are quoting a story. Embeds {{ story author name }}"
-                ),
-                threadName
-            )
-
-            // Uniquely namespace the notifications for group stories.
-            conversationIdentifier += "_groupStory"
+                )
+                return String(format: format, $0)
+            }
+            return $0
         }
-        let inSender = inPersonForRecipient(senderAddress, transaction: transaction)
 
-        let sendMessageIntent = INSendMessageIntent(
-            recipients: recipients,
-            outgoingMessageType: .outgoingMessageText,
-            content: nil,
-            speakableGroupName: isGroupThread ? INSpeakableString(spokenPhrase: threadName) : nil,
-            conversationIdentifier: conversationIdentifier,
-            serviceName: nil,
-            sender: inSender,
-            attachments: nil
-        )
+        // Uniquely namespace the notifications for group stories.
+        let conversationIdentifier = isGroupStoryReply ? (uniqueId + "_groupStory") : uniqueId
 
+        var donationMetadata: INSendMessageIntentDonationMetadata?
         if isGroupThread {
-            let donationMetadata = INSendMessageIntentDonationMetadata()
-            donationMetadata.recipientCount = recipientAddresses(with: transaction).count
+            donationMetadata = INSendMessageIntentDonationMetadata()
+            donationMetadata?.recipientCount = recipientAddresses(with: transaction).count
 
-            if let message = message {
+            if let message {
                 let mentionedAddresses = MentionFinder.mentionedAddresses(for: message, transaction: transaction)
-                donationMetadata.mentionsCurrentUser = mentionedAddresses.contains(localAddress)
-                donationMetadata.isReplyToCurrentUser = message.quotedMessage?.authorAddress.isEqualToAddress(localAddress) ?? false
-            }
-
-            sendMessageIntent.donationMetadata = donationMetadata
-
-            if let image = intentThreadAvatarImage(transaction: transaction) {
-                sendMessageIntent.setImage(image, forParameterNamed: \.speakableGroupName)
+                donationMetadata?.mentionsCurrentUser = mentionedAddresses.contains(localIdentifiers.aciAddress)
+                donationMetadata?.isReplyToCurrentUser = message.quotedMessage?.authorAddress == localIdentifiers.aciAddress
             }
         }
+        let speakableGroupNameImage = isGroupThread ? intentThreadAvatarImage(transaction: transaction) : nil
+        let recipientPerson = recipientAddress.map {
+            return Self.buildPerson(
+                address: $0,
+                displayName: SSKEnvironment.shared.contactManagerRef.displayName(for: $0, tx: transaction),
+                tx: transaction
+            )
+        }
 
-        return sendMessageIntent
+        return ResolvableDisplayNameBuilder(
+            displayNameForAddress: senderAddress,
+            transformedBy: { senderDisplayName, tx in
+                let senderPerson = Self.buildPerson(address: senderAddress, displayName: senderDisplayName, tx: tx)
+                let sendMessageIntent = INSendMessageIntent(
+                    recipients: [recipientPerson].compacted(),
+                    outgoingMessageType: .outgoingMessageText,
+                    content: nil,
+                    speakableGroupName: formattedGroupThreadName.map(INSpeakableString.init(spokenPhrase:)),
+                    conversationIdentifier: conversationIdentifier,
+                    serviceName: nil,
+                    sender: senderPerson,
+                    attachments: nil
+                )
+                if let speakableGroupNameImage {
+                    sendMessageIntent.setImage(speakableGroupNameImage, forParameterNamed: \.speakableGroupName)
+                }
+                if let donationMetadata {
+                    sendMessageIntent.donationMetadata = donationMetadata
+                }
+                return sendMessageIntent
+            },
+            contactManager: SSKEnvironment.shared.contactManagerRef
+        )
     }
 
-    public func generateIncomingCallIntent(callerAci: Aci, tx: DBReadTransaction) -> INIntent? {
-        guard !self.isGroupThread else {
+    func generateIncomingCallIntent(
+        callerAci: Aci,
+        tx: DBReadTransaction
+    ) -> ResolvableValue<INIntent>? {
+        if self.isGroupThread {
             // Fall back to a "send message" intent for group calls,
             // because the "start call" intent makes the notification look too much like a 1:1 call.
             return self.generateSendMessageIntent(
                 context: .senderAddress(SignalServiceAddress(callerAci)),
                 transaction: tx
             )
+        } else {
+            guard SSKPreferences.areIntentDonationsEnabled(transaction: tx) else {
+                return nil
+            }
+
+            return ResolvableDisplayNameBuilder(
+                displayNameForAddress: SignalServiceAddress(callerAci),
+                transformedBy: { displayName, tx in
+                    let caller = Self.buildPerson(address: SignalServiceAddress(callerAci), displayName: displayName, tx: tx)
+                    return INStartCallIntent(
+                        callRecordFilter: nil,
+                        callRecordToCallBack: nil,
+                        audioRoute: .unknown,
+                        destinationType: .normal,
+                        contacts: [caller],
+                        callCapability: .unknown
+                    )
+                },
+                contactManager: SSKEnvironment.shared.contactManagerRef
+            ).resolvableValue(
+                db: SSKEnvironment.shared.databaseStorageRef,
+                profileFetcher: SSKEnvironment.shared.profileFetcherRef,
+                tx: tx
+            )
         }
-
-        guard SSKPreferences.areIntentDonationsEnabled(transaction: tx) else {
-            return nil
-        }
-
-        let caller = inPersonForRecipient(SignalServiceAddress(callerAci), transaction: tx)
-
-        return INStartCallIntent(callRecordFilter: nil, callRecordToCallBack: nil, audioRoute: .unknown, destinationType: .normal, contacts: [caller], callCapability: .unknown)
     }
 
-    private func inPersonForRecipient(
-        _ recipient: SignalServiceAddress,
-        transaction: DBReadTransaction
+    private static func buildPerson(
+        address: SignalServiceAddress,
+        displayName: DisplayName,
+        tx: DBReadTransaction
     ) -> INPerson {
-
-        // Generate recipient name
-        let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: recipient, tx: transaction)
-
         let nameComponents: PersonNameComponents?
         switch displayName {
         case .nickname(let nickname):
@@ -489,17 +534,26 @@ extension TSThread {
         // Generate contact handle
         let handle: INPersonHandle
         let suggestionType: INPersonSuggestionType
-        if let phoneNumber = recipient.phoneNumber {
+        if let phoneNumber = address.phoneNumber {
             handle = INPersonHandle(value: phoneNumber, type: .phoneNumber, label: nil)
             suggestionType = .none
         } else {
-            handle = INPersonHandle(value: recipient.serviceIdUppercaseString, type: .unknown, label: nil)
+            handle = INPersonHandle(value: address.serviceIdUppercaseString, type: .unknown, label: nil)
             suggestionType = .instantMessageAddress
         }
 
         // Generate avatar
-        let image = intentRecipientAvatarImage(recipient: recipient, transaction: transaction)
-        return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: displayName.resolvedValue(), image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
+        let image = intentRecipientAvatarImage(recipient: address, transaction: tx)
+        return INPerson(
+            personHandle: handle,
+            nameComponents: nameComponents,
+            displayName: displayName.resolvedValue(),
+            image: image,
+            contactIdentifier: nil,
+            customIdentifier: nil,
+            isMe: false,
+            suggestionType: suggestionType
+        )
     }
 
     // Use the same point size as chat list avatars, so it's likely cached and ready for the NSE.
@@ -514,7 +568,7 @@ extension TSThread {
                     Logger.warn("Missing local address")
                     return nil
                 }
-                return intentRecipientAvatarImage(recipient: localAddress, transaction: tx)
+                return Self.intentRecipientAvatarImage(recipient: localAddress, transaction: tx)
             } else {
                 let rawImage = UIImage(named: "custom-story-light-36")
                 return rawImage?.pngData().map(INImage.init(imageData:))
@@ -524,7 +578,7 @@ extension TSThread {
         }
     }
 
-    private func intentRecipientAvatarImage(recipient: SignalServiceAddress, transaction: DBReadTransaction) -> INImage? {
+    private static func intentRecipientAvatarImage(recipient: SignalServiceAddress, transaction: DBReadTransaction) -> INImage? {
         // Generate avatar
         let image: INImage
         if let contactAvatar = SSKEnvironment.shared.avatarBuilderRef.avatarImage(

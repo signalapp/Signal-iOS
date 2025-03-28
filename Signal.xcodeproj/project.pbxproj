@@ -626,6 +626,7 @@
 		505C2ED92997422D00C23FB2 /* SelfSignedIdentityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */; };
 		505F76332BC45C0700B1B51C /* FeatureFlags+Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505F76322BC45C0700B1B51C /* FeatureFlags+Generated.swift */; };
 		5060EBBA2C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5060EBB92C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift */; };
+		5063B41E2C5432A30041CA51 /* ResolvableValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5063B41D2C5432A30041CA51 /* ResolvableValue.swift */; };
 		506695E129C296D500B6D8D0 /* RecipientMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E029C296D500B6D8D0 /* RecipientMergerTest.swift */; };
 		506695E329C29BCE00B6D8D0 /* RecipientMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E229C29BCE00B6D8D0 /* RecipientMerger.swift */; };
 		506695E529C29C2F00B6D8D0 /* RecipientDatabaseTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E429C29C2F00B6D8D0 /* RecipientDatabaseTable.swift */; };
@@ -697,6 +698,7 @@
 		50C98A412B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */; };
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
 		50D146CD2D1F4E5800D628DE /* ProfileKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D146CC2D1F4E5800D628DE /* ProfileKey.swift */; };
+		50D1EEAE2D95D95A00ADF921 /* TimeIntervalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D1EEAD2D95D95A00ADF921 /* TimeIntervalTest.swift */; };
 		50D2FC7D2AEB134C002E4589 /* AuthorMergeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D2FC7C2AEB134C002E4589 /* AuthorMergeHelper.swift */; };
 		50D3136F2BFFE9370023EDCC /* CallEventInserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D3136E2BFFE9370023EDCC /* CallEventInserter.swift */; };
 		50D5E2412980AD6F00899660 /* LinkValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2402980AD6F00899660 /* LinkValidator.swift */; };
@@ -4508,6 +4510,7 @@
 		505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceContactTest.swift; sourceTree = "<group>"; };
 		505F76322BC45C0700B1B51C /* FeatureFlags+Generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeatureFlags+Generated.swift"; sourceTree = "<group>"; };
 		5060EBB92C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallLinkUpdateMessage.swift; sourceTree = "<group>"; };
+		5063B41D2C5432A30041CA51 /* ResolvableValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResolvableValue.swift; sourceTree = "<group>"; };
 		506695E029C296D500B6D8D0 /* RecipientMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientMergerTest.swift; sourceTree = "<group>"; };
 		506695E229C29BCE00B6D8D0 /* RecipientMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientMerger.swift; sourceTree = "<group>"; };
 		506695E429C29C2F00B6D8D0 /* RecipientDatabaseTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientDatabaseTable.swift; sourceTree = "<group>"; };
@@ -4572,6 +4575,7 @@
 		50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberVisibilityFetcher.swift; sourceTree = "<group>"; };
 		50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentGiftBadge.swift; sourceTree = "<group>"; };
 		50D146CC2D1F4E5800D628DE /* ProfileKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileKey.swift; sourceTree = "<group>"; };
+		50D1EEAD2D95D95A00ADF921 /* TimeIntervalTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeIntervalTest.swift; sourceTree = "<group>"; };
 		50D2FC7C2AEB134C002E4589 /* AuthorMergeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeHelper.swift; sourceTree = "<group>"; };
 		50D3136E2BFFE9370023EDCC /* CallEventInserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallEventInserter.swift; sourceTree = "<group>"; };
 		50D5E2402980AD6F00899660 /* LinkValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkValidator.swift; sourceTree = "<group>"; };
@@ -10844,6 +10848,7 @@
 				F9C5CB92289453B200548EEE /* NoopNotificationPresenterImpl.swift */,
 				664657402AC4FB720099DE1C /* NotificationPresenter.swift */,
 				88D23D0A23CEBF4400B0E74B /* NotificationPresenterImpl.swift */,
+				5063B41D2C5432A30041CA51 /* ResolvableValue.swift */,
 				88D23D0923CEBF4400B0E74B /* UserNotificationsPresenter.swift */,
 			);
 			path = Notifications;
@@ -12994,6 +12999,7 @@
 				C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */,
 				7205701F2C8E860300826421 /* StringExtensionTests.swift */,
 				F9CAC77E29199B9200EEC1DE /* StringTest.swift */,
+				50D1EEAD2D95D95A00ADF921 /* TimeIntervalTest.swift */,
 				C1F09B9E2BB307E100F9E7F5 /* TransformingInputStreamTests.swift */,
 				C1E307412BA4D388009F015B /* TransformingOutputStreamTests.swift */,
 				D9C9640F2BE451CE0058F143 /* TSMessageStorageTest.swift */,
@@ -18115,6 +18121,7 @@
 				F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */,
 				F9C5CE17289453B400548EEE /* RemoteConfigManager.swift in Sources */,
 				D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */,
+				5063B41E2C5432A30041CA51 /* ResolvableValue.swift in Sources */,
 				F9C5CDBE289453B400548EEE /* RESTNetworkManager.swift in Sources */,
 				502C69742B06F0A400012867 /* Result.swift in Sources */,
 				50C0203E2CA4A7A500BDC4EF /* Retry.swift in Sources */,
@@ -18663,6 +18670,7 @@
 				6600F38B299016BC00B1EDB7 /* TestSchedulerTest.swift in Sources */,
 				5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */,
 				50C38CAD2A8EB2610030A731 /* TimeGatedBatchTest.swift in Sources */,
+				50D1EEAE2D95D95A00ADF921 /* TimeIntervalTest.swift in Sources */,
 				C1F09B9F2BB307E100F9E7F5 /* TransformingInputStreamTests.swift in Sources */,
 				C1E307422BA4D388009F015B /* TransformingOutputStreamTests.swift in Sources */,
 				F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */,

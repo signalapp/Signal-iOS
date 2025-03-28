@@ -12,29 +12,37 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
 
     public init() {}
 
-    public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,
-                           thread: TSThread,
-                           transaction: DBReadTransaction) {
+    public func notifyUser(
+        forIncomingMessage incomingMessage: TSIncomingMessage,
+        thread: TSThread,
+        transaction: DBWriteTransaction
+    ) {
         Logger.warn("")
     }
 
-    public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,
-                           editTarget: TSIncomingMessage,
-                           thread: TSThread,
-                           transaction: DBReadTransaction) {
+    public func notifyUser(
+        forIncomingMessage incomingMessage: TSIncomingMessage,
+        editTarget: TSIncomingMessage,
+        thread: TSThread,
+        transaction: DBWriteTransaction
+    ) {
         Logger.warn("")
     }
 
-    public func notifyUser(forReaction reaction: OWSReaction,
-                           onOutgoingMessage message: TSOutgoingMessage,
-                           thread: TSThread,
-                           transaction: DBReadTransaction) {
+    public func notifyUser(
+        forReaction reaction: OWSReaction,
+        onOutgoingMessage message: TSOutgoingMessage,
+        thread: TSThread,
+        transaction: DBWriteTransaction
+    ) {
         Logger.warn("")
     }
 
-    public func notifyUser(forErrorMessage errorMessage: TSErrorMessage,
-                           thread: TSThread,
-                           transaction: DBWriteTransaction) {
+    public func notifyUser(
+        forErrorMessage errorMessage: TSErrorMessage,
+        thread: TSThread,
+        transaction: DBWriteTransaction
+    ) {
         Logger.warn("")
     }
 
@@ -47,10 +55,12 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
-    public func notifyUser(forPreviewableInteraction previewableInteraction: TSInteraction & OWSPreviewText,
-                           thread: TSThread,
-                           wantsSound: Bool,
-                           transaction: DBWriteTransaction) {
+    public func notifyUser(
+        forPreviewableInteraction previewableInteraction: TSInteraction & OWSPreviewText,
+        thread: TSThread,
+        wantsSound: Bool,
+        transaction: DBWriteTransaction
+    ) {
         Logger.warn("")
     }
 
@@ -71,11 +81,11 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
-    public func notifyUserOfMissedCallBecauseOfNewIdentity(notificationInfo: CallNotificationInfo, tx: DBReadTransaction) {
+    public func notifyUserOfMissedCallBecauseOfNewIdentity(notificationInfo: CallNotificationInfo, tx: DBWriteTransaction) {
         Logger.warn("")
     }
 
-    public func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(notificationInfo: CallNotificationInfo, tx: DBReadTransaction) {
+    public func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(notificationInfo: CallNotificationInfo, tx: DBWriteTransaction) {
         Logger.warn("")
     }
 

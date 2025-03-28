@@ -25,7 +25,7 @@ public func withCooperativeTimeout<T>(seconds: TimeInterval, operation: @escapin
         }
         taskGroup.addTask {
             do {
-                try await Task.sleep(nanoseconds: UInt64(seconds * TimeInterval(NSEC_PER_SEC)))
+                try await Task.sleep(nanoseconds: seconds.clampedNanoseconds)
             } catch {
                 // If the timeout Task's sleep call throws an error, it's almost certainly
                 // a CancellationError. Per the documentation, though, we can't rethrow

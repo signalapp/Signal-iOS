@@ -22,6 +22,7 @@ public struct ProfileFetchContext {
 public protocol ProfileFetcher {
     func fetchProfileImpl(for serviceId: ServiceId, context: ProfileFetchContext, authedAccount: AuthedAccount) async throws -> FetchedProfile
     func fetchProfileSyncImpl(for serviceId: ServiceId, context: ProfileFetchContext, authedAccount: AuthedAccount) -> Task<FetchedProfile, Error>
+    func waitForPendingFetches(for serviceId: ServiceId) async throws
 }
 
 extension ProfileFetcher {
@@ -67,6 +68,12 @@ public actor ProfileFetcherImpl: ProfileFetcher {
             self.outcome = outcome
             self.completionDate = completionDate
         }
+    }
+
+    private nonisolated let inProgressFetches = AtomicValue<[ServiceId: [FetchState]]>([:], lock: .init())
+
+    private class FetchState {
+        var waiterContinuations = [CancellableContinuation<Void>]()
     }
 
     private var rateLimitExpirationDate: MonotonicDate?
@@ -115,14 +122,38 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         SwiftSingletons.register(self)
     }
 
+    private nonisolated func insertFetchState(serviceId: ServiceId) -> FetchState {
+        let fetchState = FetchState()
+        self.inProgressFetches.update {
+            $0[serviceId, default: []].append(fetchState)
+        }
+        return fetchState
+    }
+
+    private nonisolated func finalizeFetchState(
+        serviceId: ServiceId,
+        fetchState: FetchState
+    ) {
+        self.inProgressFetches.update {
+            $0[serviceId, default: []].removeAll(where: { $0 === fetchState })
+        }
+        for waiter in fetchState.waiterContinuations {
+            waiter.resume(with: .success(()))
+        }
+    }
+
     public nonisolated func fetchProfileSyncImpl(
         for serviceId: ServiceId,
         context: ProfileFetchContext,
         authedAccount: AuthedAccount
     ) -> Task<FetchedProfile, Error> {
+        // Insert this before starting the Task to ensure we've denoted the pending
+        // fetch before returning control to the caller.
+        let fetchState = insertFetchState(serviceId: serviceId)
         return Task {
-            return try await self.fetchProfileWithOptions(
+            return try await self.fetchProfileWithOptionsAndFinalize(
                 serviceId: serviceId,
+                fetchState: fetchState,
                 context: context,
                 authedAccount: authedAccount
             )
@@ -134,11 +165,31 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         context: ProfileFetchContext,
         authedAccount: AuthedAccount
     ) async throws -> FetchedProfile {
-        return try await fetchProfileWithOptions(
+        // We're already running concurrently with other code, so no new race
+        // conditions are introduced by calling `insertFetchState` inline.
+        return try await fetchProfileWithOptionsAndFinalize(
             serviceId: serviceId,
+            fetchState: insertFetchState(serviceId: serviceId),
             context: context,
             authedAccount: authedAccount
         )
+    }
+
+    private func fetchProfileWithOptionsAndFinalize(
+        serviceId: ServiceId,
+        fetchState: FetchState,
+        context: ProfileFetchContext,
+        authedAccount: AuthedAccount
+    ) async throws -> FetchedProfile {
+        let result = await Result {
+            try await fetchProfileWithOptions(
+                serviceId: serviceId,
+                context: context,
+                authedAccount: authedAccount
+            )
+        }
+        finalizeFetchState(serviceId: serviceId, fetchState: fetchState)
+        return try result.get()
     }
 
     private func fetchProfileWithOptions(
@@ -273,5 +324,26 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         }
 
         return MonotonicDate() > fetchResult.completionDate.adding(retryDelay)
+    }
+
+    // MARK: - Waiting
+
+    public func waitForPendingFetches(for serviceId: ServiceId) async throws {
+        try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+            let cancellableContinuations = self.inProgressFetches.update {
+                // There might be multiple profile fetches queued up for a single
+                // serviceId. We add a CancellableContinuation for *each* of those because
+                // we want to wait for whichever takes the longest.
+                return $0[serviceId, default: []].map { fetchState in
+                    let result = CancellableContinuation<Void>()
+                    fetchState.waiterContinuations.append(result)
+                    return result
+                }
+            }
+            for cancellableContinuation in cancellableContinuations {
+                taskGroup.addTask { try await cancellableContinuation.wait() }
+            }
+            try await taskGroup.waitForAll()
+        }
     }
 }
