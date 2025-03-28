@@ -27,24 +27,24 @@ public class UserNotificationConfig {
         )
     }
 
-    class func notificationAction(_ action: AppNotificationAction) -> UNNotificationAction? {
+    class func notificationAction(_ action: AppNotificationAction) -> UNNotificationAction {
         switch action {
         case .callBack:
             return UNNotificationAction(
-                identifier: action.identifier,
+                identifier: action.rawValue,
                 title: CallStrings.callBackButtonTitle,
                 options: .foreground,
                 icon: UNNotificationActionIcon(systemImageName: "phone")
             )
         case .markAsRead:
             return UNNotificationAction(
-                identifier: action.identifier,
+                identifier: action.rawValue,
                 title: MessageStrings.markAsReadNotificationAction,
                 icon: UNNotificationActionIcon(systemImageName: "message")
             )
         case .reply:
             return UNTextInputNotificationAction(
-                identifier: action.identifier,
+                identifier: action.rawValue,
                 title: MessageStrings.replyNotificationAction,
                 icon: UNNotificationActionIcon(systemImageName: "arrowshape.turn.up.left"),
                 textInputButtonTitle: MessageStrings.sendButton,
@@ -52,45 +52,17 @@ public class UserNotificationConfig {
             )
         case .showThread:
             return UNNotificationAction(
-                identifier: action.identifier,
+                identifier: action.rawValue,
                 title: CallStrings.showThreadButtonTitle,
                 icon: UNNotificationActionIcon(systemImageName: "bubble.left.and.bubble.right")
             )
-        case .showMyStories:
-            // Currently, .showMyStories is only used as a default action.
-            owsFailDebug("Show my stories not supported as a UNNotificationAction")
-            return nil
         case .reactWithThumbsUp:
             return UNNotificationAction(
-                identifier: action.identifier,
+                identifier: action.rawValue,
                 title: MessageStrings.reactWithThumbsUpNotificationAction,
                 icon: UNNotificationActionIcon(systemImageName: "hand.thumbsup")
             )
-        case .showCallLobby:
-            // Currently, .showCallLobby is only used as a default action.
-            owsFailDebug("Show call lobby not supported as a UNNotificationAction")
-            return nil
-        case .submitDebugLogs:
-            // Currently, .submitDebugLogs is only used as a default action.
-            owsFailDebug("Show submit debug logs not supported as a UNNotificationAction")
-            return nil
-        case .reregister:
-            // Currently, .reregister is only used as a default action.
-            owsFailDebug("Reregister is not supported as a UNNotificationAction")
-            return nil
-        case .showChatList:
-            // Currently, .showChatList is only used as a default action.
-            owsFailDebug("ShowChatList is not supported as a UNNotificationAction")
-            return nil
-        case .showLinkedDevices:
-            // Currently, .showLinkedDevices is only used as a default action.
-            owsFailDebug("showLinkedDevices is not supported as a UNNotificationAction")
-            return nil
         }
-    }
-
-    public class func action(identifier: String) -> AppNotificationAction? {
-        return AppNotificationAction.allCases.first { notificationAction($0)?.identifier == identifier }
     }
 }
 

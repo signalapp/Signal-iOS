@@ -37,13 +37,27 @@ public enum AppNotificationCategory: CaseIterable {
     case newDeviceLinked
 }
 
-public enum AppNotificationAction: String, CaseIterable {
-    case callBack
-    case markAsRead
-    case reply
+/// Represents "custom" notification actions. These are the ones that appear
+/// when long-pressing a notification. Their identifiers (rawValues) are
+/// passed to iOS via UNNotificationAction.
+///
+/// These are persisted (via notifications) and must remain stable.
+public enum AppNotificationAction: String {
+    case callBack = "Signal.AppNotifications.Action.callBack"
+    case markAsRead = "Signal.AppNotifications.Action.markAsRead"
+    case reply = "Signal.AppNotifications.Action.reply"
+    case showThread = "Signal.AppNotifications.Action.showThread"
+    case reactWithThumbsUp = "Signal.AppNotifications.Action.reactWithThumbsUp"
+}
+
+/// Represents "default" notification actions. These happen when you tap a
+/// notification to launch Signal. These are a Signal concept -- they are
+/// stored inside a notification's userInfo.
+///
+/// These are persisted (via notifications) and must remain stable.
+public enum AppNotificationDefaultAction: String {
     case showThread
     case showMyStories
-    case reactWithThumbsUp
     case showCallLobby
     case submitDebugLogs
     case reregister
@@ -135,35 +149,6 @@ extension AppNotificationCategory {
             return []
         case .newDeviceLinked:
             return []
-        }
-    }
-}
-
-extension AppNotificationAction {
-    var identifier: String {
-        switch self {
-        case .callBack:
-            return "Signal.AppNotifications.Action.callBack"
-        case .markAsRead:
-            return "Signal.AppNotifications.Action.markAsRead"
-        case .reply:
-            return "Signal.AppNotifications.Action.reply"
-        case .showThread:
-            return "Signal.AppNotifications.Action.showThread"
-        case .showMyStories:
-            return "Signal.AppNotifications.Action.showMyStories"
-        case .reactWithThumbsUp:
-            return "Signal.AppNotifications.Action.reactWithThumbsUp"
-        case .showCallLobby:
-            return "Signal.AppNotifications.Action.showCallLobby"
-        case .submitDebugLogs:
-            return "Signal.AppNotifications.Action.submitDebugLogs"
-        case .reregister:
-            return "Signal.AppNotifications.Action.reregister"
-        case .showChatList:
-            return "Signal.AppNotifications.Action.showChatList"
-        case .showLinkedDevices:
-            return "Signal.AppNotifications.Action.showLinkedDevices"
         }
     }
 }
@@ -902,7 +887,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 body: message,
                 threadIdentifier: nil,
                 userInfo: [
-                    AppNotificationUserInfoKey.defaultAction: AppNotificationAction.submitDebugLogs.rawValue
+                    AppNotificationUserInfoKey.defaultAction: AppNotificationDefaultAction.submitDebugLogs.rawValue
                 ],
                 soundQuery: .global
             )
@@ -931,7 +916,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         )
 
         var userInfo: [String: Any] = [
-            AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showCallLobby.rawValue
+            AppNotificationUserInfoKey.defaultAction: AppNotificationDefaultAction.showCallLobby.rawValue
         ]
         if let threadUniqueId {
             userInfo[AppNotificationUserInfoKey.threadId] = threadUniqueId
@@ -968,7 +953,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                     deviceLinkTimestamp.formatted(date: .omitted, time: .shortened)
                 ),
                 threadIdentifier: nil,
-                userInfo: [AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showLinkedDevices.rawValue],
+                userInfo: [AppNotificationUserInfoKey.defaultAction: AppNotificationDefaultAction.showLinkedDevices.rawValue],
                 soundQuery: .global
             )
         }
@@ -1081,7 +1066,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
 
         let isGroupCallMessage = tsInteraction is OWSGroupCallMessage
-        let preferredDefaultAction: AppNotificationAction = isGroupCallMessage ? .showCallLobby : .showThread
+        let preferredDefaultAction: AppNotificationDefaultAction = isGroupCallMessage ? .showCallLobby : .showThread
 
         let threadId = thread.uniqueId
         let userInfo = [
@@ -1202,7 +1187,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 body: notificationBody,
                 threadIdentifier: threadIdentifier,
                 userInfo: [
-                    AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showMyStories.rawValue,
+                    AppNotificationUserInfoKey.defaultAction: AppNotificationDefaultAction.showMyStories.rawValue,
                     AppNotificationUserInfoKey.storyMessageId: storyMessageId
                 ],
                 intent: (ResolvableValue(resolvedValue: sendMessageIntent), .outgoing),
@@ -1223,7 +1208,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 body: notificationBody,
                 threadIdentifier: nil,
                 userInfo: [
-                    AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showChatList.rawValue
+                    AppNotificationUserInfoKey.defaultAction: AppNotificationDefaultAction.showChatList.rawValue
                 ],
                 // Use a default sound so we don't read from
                 // the db (which doesn't work until we relaunch)
@@ -1248,7 +1233,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 body: notificationBody,
                 threadIdentifier: nil,
                 userInfo: [
-                    AppNotificationUserInfoKey.defaultAction: AppNotificationAction.reregister.rawValue
+                    AppNotificationUserInfoKey.defaultAction: AppNotificationDefaultAction.reregister.rawValue
                 ],
                 soundQuery: .global
             )

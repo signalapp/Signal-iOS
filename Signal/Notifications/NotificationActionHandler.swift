@@ -50,56 +50,56 @@ public class NotificationActionHandler {
 
         let userInfo = UserInfo(response.notification.request.content.userInfo)
 
-        let action: AppNotificationAction
-
         switch response.actionIdentifier {
         case UNNotificationDefaultActionIdentifier:
             Logger.debug("default action")
-            let defaultAction = userInfo.defaultAction.flatMap { AppNotificationAction(rawValue: $0) }
-            action = defaultAction ?? .showThread
+            let defaultAction = userInfo.defaultAction.flatMap { AppNotificationDefaultAction(rawValue: $0) } ?? .showThread
+            if DebugFlags.internalLogging {
+                Logger.info("Performing default action: \(defaultAction)")
+            }
+            switch defaultAction {
+            case .showThread:
+                try await showThread(userInfo: userInfo)
+            case .showMyStories:
+                await showMyStories(appReadiness: appReadiness)
+            case .showCallLobby:
+                showCallLobby(userInfo: userInfo)
+            case .submitDebugLogs:
+                await submitDebugLogs()
+            case .reregister:
+                await reregister(appReadiness: appReadiness)
+            case .showChatList:
+                // No need to do anything.
+                break
+            case .showLinkedDevices:
+                showLinkedDevices()
+            }
         case UNNotificationDismissActionIdentifier:
             // TODO - mark as read?
             Logger.debug("dismissed notification")
             return
         default:
-            if let responseAction = UserNotificationConfig.action(identifier: response.actionIdentifier) {
-                action = responseAction
-            } else {
+            guard let responseAction = AppNotificationAction(rawValue: response.actionIdentifier) else {
                 throw OWSAssertionError("unable to find action for actionIdentifier: \(response.actionIdentifier)")
             }
-        }
-
-        if DebugFlags.internalLogging {
-            Logger.info("Performing action: \(action)")
-        }
-
-        switch action {
-        case .callBack:
-            try await self.callBack(userInfo: userInfo)
-        case .markAsRead:
-            try await markAsRead(userInfo: userInfo)
-        case .reply:
-            guard let textInputResponse = response as? UNTextInputNotificationResponse else {
-                throw OWSAssertionError("response had unexpected type: \(response)")
+            if DebugFlags.internalLogging {
+                Logger.info("Performing action: \(responseAction)")
             }
-            try await reply(userInfo: userInfo, replyText: textInputResponse.userText)
-        case .showThread:
-            try await showThread(userInfo: userInfo)
-        case .showMyStories:
-            await showMyStories(appReadiness: appReadiness)
-        case .reactWithThumbsUp:
-            try await reactWithThumbsUp(userInfo: userInfo)
-        case .showCallLobby:
-            showCallLobby(userInfo: userInfo)
-        case .submitDebugLogs:
-            await submitDebugLogs()
-        case .reregister:
-            await reregister(appReadiness: appReadiness)
-        case .showChatList:
-            // No need to do anything.
-            break
-        case .showLinkedDevices:
-            showLinkedDevices()
+            switch responseAction {
+            case .callBack:
+                try await self.callBack(userInfo: userInfo)
+            case .markAsRead:
+                try await markAsRead(userInfo: userInfo)
+            case .reply:
+                guard let textInputResponse = response as? UNTextInputNotificationResponse else {
+                    throw OWSAssertionError("response had unexpected type: \(response)")
+                }
+                try await reply(userInfo: userInfo, replyText: textInputResponse.userText)
+            case .showThread:
+                try await showThread(userInfo: userInfo)
+            case .reactWithThumbsUp:
+                try await reactWithThumbsUp(userInfo: userInfo)
+            }
         }
     }
 
