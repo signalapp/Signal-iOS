@@ -1436,19 +1436,36 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 errorAlertMessage: message,
                 isEnabled: isDifferentSubscriptionLevelSelected(monthly.currentSubscription)
             )
+            let cancelButton = cancelSubscriptionButton()
 
             switch currentSubscription.status {
+            case .active:
+                return [continueButton]
             case .pastDue:
                 /// If the user's subscription is `.pastDue`, it means a renewal
                 /// payment failed and the payment processor is auto-retrying
                 /// the renewal payment. Give the user a chance to bail out by
                 /// canceling their subscription, which will stop the retries.
-                return [continueButton, cancelSubscriptionButton()]
-            case .active:
-                return [continueButton]
-            case .unknown, .incomplete, .unpaid, .canceled:
+                return [continueButton, cancelButton]
+            case .canceled:
+                /// If the subscription is `.canceled`, then we know that we are
+                /// incorrect about the subscription being "still processing"
+                /// and we should let the user clear their local state by
+                /// "canceling".
+                ///
+                /// For example, the receipt credential redemption job may have
+                /// run out of retries while the payment was still processing,
+                /// and since then the subscription was canceled. (This can
+                /// happen if there's suspected/actual credit card fraud, in
+                /// that a bank may leave the transaction hanging for a while
+                /// and ultimately decline it.)
+                return [continueButton, cancelButton]
+            case .unknown, .incomplete, .unpaid:
+                /// It's not clear how this happened, but in any case the
+                /// something is wrong and we should let users clear their local
+                /// state by canceling.
                 owsFailDebug("Have a payment processing, but have unexpected subscription status \(currentSubscription.status)")
-                return [continueButton]
+                return [continueButton, cancelButton]
             }
         } else if let currentSubscription = monthly.currentSubscription {
             if
