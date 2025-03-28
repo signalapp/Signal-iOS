@@ -14,6 +14,8 @@ protocol CallViewControllerWindowReference: AnyObject {
     var isJustMe: Bool { get }
     var view: UIView! { get }
 
+    /// Minimize (or exit, if the call isn't started yet).
+    func minimizeIfNeeded()
     func returnFromPip(pipWindow: UIWindow)
     func willMoveToPip(pipWindow: UIWindow)
 }

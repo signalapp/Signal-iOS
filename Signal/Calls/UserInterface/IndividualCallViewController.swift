@@ -1054,6 +1054,10 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     @objc
     private func didTapLeaveCall(sender: UIButton) {
+        _minimize()
+    }
+
+    private func _minimize() {
         isCallMinimized = true
         cancelBottomSheetTimeout()
         AppEnvironment.shared.windowManagerRef.leaveCallView()
@@ -1174,6 +1178,12 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
     var localVideoViewReference: CallMemberView { localVideoView }
     var remoteVideoAddress: SignalServiceAddress { thread.contactAddress }
     var isJustMe: Bool { isRenderingLocalVanityVideo }
+
+    func minimizeIfNeeded() {
+        if !isCallMinimized {
+            _minimize()
+        }
+    }
 
     func returnFromPip(pipWindow: UIWindow) {
         // The call "pip" uses our remote and local video views since only

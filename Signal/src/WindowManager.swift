@@ -303,6 +303,12 @@ class WindowManager {
         ensureWindowState()
     }
 
+    /// Minimizes the current call (or exits if it's not yet started).
+    @MainActor
+    func minimizeCallIfNeeded() {
+        callViewController?.minimizeIfNeeded()
+    }
+
     func leaveCallView() {
         AssertIsOnMainThread()
 

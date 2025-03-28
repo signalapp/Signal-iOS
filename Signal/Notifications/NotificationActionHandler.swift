@@ -194,6 +194,7 @@ public class NotificationActionHandler {
         }
     }
 
+    @MainActor
     private class func showThread(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
             self.notificationMessage(forUserInfo: userInfo)
@@ -215,6 +216,7 @@ public class NotificationActionHandler {
         }
     }
 
+    @MainActor
     private class func showThread(uniqueId: String) {
         // If this happens when the app is not visible we skip the animation so the thread
         // can be visible to the user immediately upon opening the app, rather than having to watch

@@ -192,10 +192,8 @@ extension SignalApp {
         }
     }
 
-    @objc
+    @MainActor
     func presentConversationAndScrollToFirstUnreadMessage(threadUniqueId: String, animated: Bool) {
-        AssertIsOnMainThread()
-
         guard let conversationSplitViewController else {
             owsFailDebug("No conversationSplitViewController")
             return
@@ -203,37 +201,40 @@ extension SignalApp {
 
         Logger.info("")
 
-        DispatchMainThreadSafe {
-            // If there's a presented blocking splash, but the user is trying to open a thread,
-            // dismiss it. We'll try again next time they open the app. We don't want to block
-            // them from accessing their conversations.
-            ExperienceUpgradeManager.dismissSplashWithoutCompletingIfNecessary()
+        // If there's a presented blocking splash, but the user is trying to open a
+        // thread, dismiss it. We'll try again next time they open the app. We
+        // don't want to block them from accessing their conversations.
+        ExperienceUpgradeManager.dismissSplashWithoutCompletingIfNecessary()
 
-            if let visibleThread = conversationSplitViewController.visibleThread, visibleThread.uniqueId == threadUniqueId {
-                conversationSplitViewController.selectedConversationViewController?.scrollToInitialPosition(animated: animated)
-                return
-            } else if let sendMediaNavigationController = conversationSplitViewController.selectedConversationViewController?.presentedViewController as? SendMediaNavigationController {
-                if sendMediaNavigationController.hasUnsavedChanges {
-                    return
-                }
+        if let visibleThread = conversationSplitViewController.visibleThread, visibleThread.uniqueId == threadUniqueId {
+            AppEnvironment.shared.windowManagerRef.minimizeCallIfNeeded()
+            conversationSplitViewController.selectedConversationViewController?.scrollToInitialPosition(animated: animated)
+            return
+        }
 
-                conversationSplitViewController.presentThread(
-                    threadUniqueId: threadUniqueId,
-                    action: .none,
-                    focusMessageId: nil,
-                    animated: false
-                )
-                sendMediaNavigationController.dismiss(animated: animated)
+        if let sendMediaNavigationController = conversationSplitViewController.selectedConversationViewController?.presentedViewController as? SendMediaNavigationController {
+            if sendMediaNavigationController.hasUnsavedChanges {
                 return
             }
 
+            AppEnvironment.shared.windowManagerRef.minimizeCallIfNeeded()
             conversationSplitViewController.presentThread(
                 threadUniqueId: threadUniqueId,
                 action: .none,
                 focusMessageId: nil,
-                animated: animated
+                animated: false
             )
+            sendMediaNavigationController.dismiss(animated: animated)
+            return
         }
+
+        AppEnvironment.shared.windowManagerRef.minimizeCallIfNeeded()
+        conversationSplitViewController.presentThread(
+            threadUniqueId: threadUniqueId,
+            action: .none,
+            focusMessageId: nil,
+            animated: animated
+        )
     }
 
     @objc

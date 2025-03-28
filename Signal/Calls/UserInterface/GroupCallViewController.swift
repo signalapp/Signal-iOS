@@ -1487,6 +1487,12 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         groupCall.isJustMe
     }
 
+    func minimizeIfNeeded() {
+        if !isCallMinimized {
+            didTapBackButton()
+        }
+    }
+
     public func returnFromPip(pipWindow: UIWindow) {
         // The call "pip" uses our remote and local video views since only
         // one `AVCaptureVideoPreviewLayer` per capture session is supported.
