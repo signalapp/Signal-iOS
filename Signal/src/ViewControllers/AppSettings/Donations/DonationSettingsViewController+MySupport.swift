@@ -155,8 +155,21 @@ extension DonationSettingsViewController {
                 return .awaitingIDEALAuthorization
 
             case .subscription(let subscription):
-
-                if let receiptCredentialRequestError {
+                if
+                    let receiptCredentialRequestError,
+                    receiptCredentialRequestError.errorCode == .paymentStillProcessing,
+                    subscription.status == .canceled
+                {
+                    /// The receipt credential redemption job may have run out
+                    /// of retries while the payment was still processing,
+                    /// leaving us with that persisted error. If the
+                    /// subscription is now canceled, though we know the payment
+                    /// never went through, and we should show as much.
+                    return .paymentFailed(
+                        chargeFailureCode: nil,
+                        paymentMethod: receiptCredentialRequestError.paymentMethod
+                    )
+                } else if let receiptCredentialRequestError {
                     logger.warn("Recurring subscription with receipt credential request error! \(receiptCredentialRequestError)")
 
                     return receiptCredentialRequestError.mySupportErrorState(

@@ -1418,6 +1418,8 @@ public class AppSetup {
         )
         let donationReceiptCredentialRedemptionJobQueue = DonationReceiptCredentialRedemptionJobQueue(
             db: db,
+            donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
+            profileManager: profileManager,
             reachabilityManager: reachabilityManager
         )
 

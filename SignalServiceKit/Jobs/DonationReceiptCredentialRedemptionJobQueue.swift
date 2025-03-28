@@ -44,17 +44,28 @@ public class DonationReceiptCredentialRedemptionJobQueue {
         DonationReceiptCredentialRedemptionJobRunnerFactory
     >
     private let jobRunnerFactory: DonationReceiptCredentialRedemptionJobRunnerFactory
+    private let logger: PrefixedLogger
 
-    private let logger: PrefixedLogger = .donations
-
-    public init(db: any DB, reachabilityManager: SSKReachabilityManager) {
-        self.jobRunnerFactory = DonationReceiptCredentialRedemptionJobRunnerFactory()
+    public init(
+        db: any DB,
+        donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
+        profileManager: ProfileManager,
+        reachabilityManager: SSKReachabilityManager
+    ) {
+        self.jobRunnerFactory = DonationReceiptCredentialRedemptionJobRunnerFactory(
+            db: db,
+            donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
+            logger: .donations,
+            profileManager: profileManager
+        )
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: true,
             db: db,
             jobFinder: JobRecordFinderImpl(db: db),
             jobRunnerFactory: self.jobRunnerFactory
         )
+        self.logger = .donations
+
         self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
     }
 
@@ -160,20 +171,55 @@ public class DonationReceiptCredentialRedemptionJobQueue {
 }
 
 private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
+    private let db: DB
+    private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
+    private let logger: PrefixedLogger
+    private let profileManager: ProfileManager
+
+    init(
+        db: DB,
+        donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
+        logger: PrefixedLogger,
+        profileManager: ProfileManager
+    ) {
+        self.db = db
+        self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
+        self.logger = logger
+        self.profileManager = profileManager
+    }
+
     func buildRunner() -> DonationReceiptCredentialRedemptionJobRunner { buildRunner(continuation: nil) }
 
     func buildRunner(continuation: CheckedContinuation<Void, Error>?) -> DonationReceiptCredentialRedemptionJobRunner {
-        return DonationReceiptCredentialRedemptionJobRunner(continuation: continuation)
+        return DonationReceiptCredentialRedemptionJobRunner(
+            continuation: continuation,
+            db: db,
+            donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
+            profileManager: profileManager
+        )
     }
 }
 
 private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
-    private let logger: PrefixedLogger = .donations
-
     private let continuation: CheckedContinuation<Void, Error>?
 
-    init(continuation: CheckedContinuation<Void, Error>?) {
+    private let db: DB
+    private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
+    private let logger: PrefixedLogger
+    private let profileManager: ProfileManager
+
+    init(
+        continuation: CheckedContinuation<Void, Error>?,
+        db: DB,
+        donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
+        profileManager: ProfileManager
+    ) {
         self.continuation = continuation
+
+        self.db = db
+        self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
+        self.logger = .donations
+        self.profileManager = profileManager
     }
 
     /// Represents the type of payment that resulted in this receipt credential
@@ -214,10 +260,6 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
             case .recurringSubscription(_, _, _, isNewSubscription: false): return "recurring-renewal"
             }
         }
-    }
-
-    private var donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore {
-        DependenciesBridge.shared.donationReceiptCredentialResultStore
     }
 
     // MARK: - Retries
@@ -282,7 +324,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         )
         guard retryInterval == .sepa else { return nil }
 
-        let priorError = SSKEnvironment.shared.databaseStorageRef.read(block: { tx -> DonationReceiptCredentialRequestError? in
+        let priorError = db.read(block: { tx -> DonationReceiptCredentialRequestError? in
             return donationReceiptCredentialResultStore.getRequestError(
                 errorMode: configuration.paymentType.receiptCredentialResultMode,
                 tx: tx
@@ -378,7 +420,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                 return .retryAfter(triggerExponentialRetry(jobRecord: jobRecord))
             }
             logger.warn("Job encountered unexpected terminal error")
-            return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            return await db.awaitableWrite { tx in
                 jobRecord.anyRemove(transaction: tx)
                 return .finished(.failure(error))
             }
@@ -414,9 +456,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
 
         // In order to properly show the "you have a new badge" UI after this job
         // succeeds, we need to know what badges we had beforehand.
-        let profileManager = SSKEnvironment.shared.profileManagerRef
-        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        let badgesSnapshotBeforeJob = databaseStorage.read { tx in
+        let badgesSnapshotBeforeJob = db.read { tx in
             ProfileBadgesSnapshot.forLocalProfile(profileManager: profileManager, tx: tx)
         }
 
@@ -455,7 +495,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                 let paymentMethod = configuration.paymentMethod
                 let paymentType = configuration.paymentType
 
-                return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                return await db.awaitableWrite { tx in
                     if
                         errorCode == .paymentIntentRedeemed,
                         case .recurringSubscription = paymentType
@@ -463,12 +503,12 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                         /// This error indicates that the user has gotten their
                         /// badge via another redemption from another job. No
                         /// harm done, so we'll treat these like a success.
-                        self.logger.warn("Suppressing payment-already-redeemed error.")
+                        logger.warn("Suppressing payment-already-redeemed error.")
                         jobRecord.anyRemove(transaction: tx)
                         return .finished(.success(()))
                     }
 
-                    self.persistErrorCode(
+                    persistErrorCode(
                         errorCode: errorCode,
                         chargeFailureCodeIfPaymentFailed: chargeFailureCodeIfPaymentFailed,
                         configuration: configuration,
@@ -483,18 +523,21 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                             paymentMethod: paymentMethod
                         )
                         if jobRecord.failureCount < maxRetries {
-                            self.logger.warn("Payment still processing; scheduling retry…")
+                            logger.warn("Payment still processing; scheduling retry…")
                             jobRecord.addFailure(tx: tx)
+
                             switch retryInterval {
                             case .exponential:
                                 return .retryAfter(self.triggerExponentialRetry(jobRecord: jobRecord))
                             case .sepa:
                                 return .retryAfter(Constants.sepaRetryInterval, canRetryEarly: false)
                             }
+                        } else {
+                            logger.error("Payment is still processing, but we're out of retries.")
                         }
                     }
 
-                    self.logger.warn("Couldn't fetch credential; aborting: \(errorCode)")
+                    logger.warn("Couldn't fetch credential; aborting: \(errorCode)")
                     jobRecord.anyRemove(transaction: tx)
                     return .finished(.failure(error))
                 }
@@ -505,7 +548,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
             receiptCredentialPresentation: receiptCredentialPresentation
         )
 
-        return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+        return await db.awaitableWrite { tx in
             self.donationReceiptCredentialResultStore.clearRequestError(
                 errorMode: configuration.paymentType.receiptCredentialResultMode,
                 tx: tx
@@ -598,7 +641,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
             )
         }
 
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+        await db.awaitableWrite { tx in
             jobRecord.setReceiptCredential(receiptCredential, tx: tx)
         }
 
