@@ -231,10 +231,12 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
                         let recipients = try await SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
                         modal.dismissIfNotCanceled {
                             guard let recipient = recipients.first else {
-                                return OWSActionSheets.showErrorAlert(
-                                    message: MessageSenderNoSuchSignalRecipientError().userErrorDescription,
+                                RecipientPickerViewController.presentSMSInvitationSheet(
+                                    for: phoneNumber,
+                                    fromViewController: self,
                                     dismissalDelegate: self
                                 )
+                                return
                             }
                             self.findByPhoneNumberDelegate?.findByPhoneNumber(self, didSelectAddress: recipient.address)
                         }

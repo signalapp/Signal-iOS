@@ -1328,7 +1328,7 @@ extension RecipientPickerViewController {
 
         case (.`default`, .notFound(validE164: let validE164)):
             // Otherwise, if we're trying to contact someone, offer to invite them.
-            presentSMSInvitationSheet(for: validE164)
+            Self.presentSMSInvitationSheet(for: validE164, fromViewController: self)
 
         case (_, .notValid(invalidE164: let invalidE164)):
             // If the number isn't valid, show an error so the user can fix it.
@@ -1336,7 +1336,11 @@ extension RecipientPickerViewController {
         }
     }
 
-    private func presentSMSInvitationSheet(for phoneNumber: String) {
+    public static func presentSMSInvitationSheet(
+        for phoneNumber: String,
+        fromViewController viewController: UIViewController,
+        dismissalDelegate: (any SheetDismissalDelegate)? = nil
+    ) {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "RECIPIENT_PICKER_INVITE_TITLE",
@@ -1357,17 +1361,18 @@ extension RecipientPickerViewController {
                 comment: "Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number."
             ),
             style: .default,
-            handler: { [weak self] action in
-                guard let self = self else { return }
+            handler: { [weak viewController] action in
+                guard let viewController else { return }
                 guard MFMessageComposeViewController.canSendText() else {
-                    OWSActionSheets.showErrorAlert(message: InviteFlow.unsupportedFeatureMessage)
+                    OWSActionSheets.showErrorAlert(message: InviteFlow.unsupportedFeatureMessage, fromViewController: viewController)
                     return
                 }
-                let inviteFlow = InviteFlow(presentingViewController: self)
+                let inviteFlow = InviteFlow(presentingViewController: viewController)
                 inviteFlow.sendSMSTo(phoneNumbers: [phoneNumber])
             }
         ))
-        presentActionSheet(actionSheet)
+        actionSheet.dismissalDelegate = dismissalDelegate
+        viewController.presentActionSheet(actionSheet)
     }
 
     private func presentInvalidNumberSheet(for phoneNumber: String) {

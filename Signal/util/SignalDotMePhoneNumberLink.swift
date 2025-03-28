@@ -33,7 +33,11 @@ class SignalDotMePhoneNumberLink {
                     let signalRecipients = try await SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
                     modal.dismissIfNotCanceled {
                         guard let recipient = signalRecipients.first else {
-                            return OWSActionSheets.showErrorAlert(message: MessageSenderNoSuchSignalRecipientError().userErrorDescription)
+                            RecipientPickerViewController.presentSMSInvitationSheet(
+                                for: phoneNumber,
+                                fromViewController: fromViewController
+                            )
+                            return
                         }
                         block(recipient.address)
                     }
