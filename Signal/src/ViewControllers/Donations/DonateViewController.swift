@@ -1453,12 +1453,13 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 /// and we should let the user clear their local state by
                 /// "canceling".
                 ///
-                /// For example, the receipt credential redemption job may have
+                /// In the past, the receipt credential redemption job may have
                 /// run out of retries while the payment was still processing,
-                /// and since then the subscription was canceled. (This can
-                /// happen if there's suspected/actual credit card fraud, in
-                /// that a bank may leave the transaction hanging for a while
-                /// and ultimately decline it.)
+                /// and since then the subscription was canceled. (For example,
+                /// if credit card fraud was suspected.)
+                ///
+                /// - Note This should no longer be possible, as the job in
+                /// question no longer runs out of retries.
                 return [continueButton, cancelButton]
             case .unknown, .incomplete, .unpaid:
                 /// It's not clear how this happened, but in any case the

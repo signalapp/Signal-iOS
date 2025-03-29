@@ -165,6 +165,9 @@ extension DonationSettingsViewController {
                     /// leaving us with that persisted error. If the
                     /// subscription is now canceled, though we know the payment
                     /// never went through, and we should show as much.
+                    ///
+                    /// - Note This should no longer be possible, as the job in
+                    /// question no longer runs out of retries.
                     return .paymentFailed(
                         chargeFailureCode: nil,
                         paymentMethod: receiptCredentialRequestError.paymentMethod

@@ -47,12 +47,14 @@ public class DonationReceiptCredentialRedemptionJobQueue {
     private let logger: PrefixedLogger
 
     public init(
+        dateProvider: @escaping DateProvider,
         db: any DB,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         profileManager: ProfileManager,
         reachabilityManager: SSKReachabilityManager
     ) {
         self.jobRunnerFactory = DonationReceiptCredentialRedemptionJobRunnerFactory(
+            dateProvider: dateProvider,
             db: db,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
             logger: .donations,
@@ -171,17 +173,20 @@ public class DonationReceiptCredentialRedemptionJobQueue {
 }
 
 private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
+    private let dateProvider: DateProvider
     private let db: DB
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     private let logger: PrefixedLogger
     private let profileManager: ProfileManager
 
     init(
+        dateProvider: @escaping DateProvider,
         db: DB,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         logger: PrefixedLogger,
         profileManager: ProfileManager
     ) {
+        self.dateProvider = dateProvider
         self.db = db
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
         self.logger = logger
@@ -193,6 +198,7 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
     func buildRunner(continuation: CheckedContinuation<Void, Error>?) -> DonationReceiptCredentialRedemptionJobRunner {
         return DonationReceiptCredentialRedemptionJobRunner(
             continuation: continuation,
+            dateProvider: dateProvider,
             db: db,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
             profileManager: profileManager
@@ -203,19 +209,24 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
 private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
     private let continuation: CheckedContinuation<Void, Error>?
 
+    private let dateProvider: DateProvider
     private let db: DB
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     private let logger: PrefixedLogger
     private let profileManager: ProfileManager
 
+    private var transientFailureCount: UInt = 0
+
     init(
         continuation: CheckedContinuation<Void, Error>?,
+        dateProvider: @escaping DateProvider,
         db: DB,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         profileManager: ProfileManager
     ) {
         self.continuation = continuation
 
+        self.dateProvider = dateProvider
         self.db = db
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
         self.logger = .donations
@@ -269,47 +280,38 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         static let sepaRetryInterval: TimeInterval = TSConstants.isUsingProductionService ? .day : .minute
     }
 
-    private enum RetryInterval {
+    private enum RetryMode {
         case exponential
         case sepa
     }
 
-    private func stillProcessingRetryParameters(
+    private func retryModeIfStillProcessing(
         paymentType: PaymentType,
         paymentMethod: DonationPaymentMethod?
-    ) -> (RetryInterval, maxRetries: UInt) {
+    ) -> RetryMode {
         switch paymentMethod {
         case nil, .applePay, .creditOrDebitCard, .paypal:
-            // We'll retry operations for these payment types fairly aggressively, so
-            // we need a large retry buffer.
-            return (.exponential, 110)
+            return .exponential
         case .sepa:
-            // We'll only retry operations for SEPA 1x/day (including those fronted by
-            // iDEAL), so we limit the retry buffer. They should always complete within
-            // 14 business days, so this is generous compared to what we should need,
-            // but prevents us from having an indefinite job if for whatever reason a
-            // payment never processes.
-            return (.sepa, 30)
+            return .sepa
         case .ideal:
             switch paymentType {
             case .oneTimeBoost:
-                return (.exponential, 110)
+                return .exponential
             case .recurringSubscription:
-                return (.sepa, 30)
+                return .sepa
             }
         }
     }
 
-    var transientFailureCount: UInt = 0
-
-    private func triggerExponentialRetry(jobRecord: JobRecord) -> TimeInterval {
-        // If this operation just started, but we've tried in the past and have
-        // persisted failures on the job record, we'll respect those and start with
-        // a longer retry. Otherwise, as this operation continues to retry it'll
-        // get a longer retry from its local error count.
+    /// Returns an exponential-backoff retry delay that increases with each
+    /// subsequent call to this method.
+    private func incrementExponentialRetryDelay() -> TimeInterval {
         transientFailureCount += 1
+
         return OWSOperation.retryIntervalForExponentialBackoff(
-            failureCount: max(jobRecord.failureCount, transientFailureCount)
+            failureCount: transientFailureCount,
+            maxBackoff: .day
         )
     }
 
@@ -318,11 +320,15 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
     }
 
     private func sepaRetryDelay(configuration: Configuration) -> TimeInterval? {
-        let (retryInterval, _) = stillProcessingRetryParameters(
+        switch retryModeIfStillProcessing(
             paymentType: configuration.paymentType,
             paymentMethod: configuration.paymentMethod
-        )
-        guard retryInterval == .sepa else { return nil }
+        ) {
+        case .exponential:
+            return nil
+        case .sepa:
+            break
+        }
 
         let priorError = db.read(block: { tx -> DonationReceiptCredentialRequestError? in
             return donationReceiptCredentialResultStore.getRequestError(
@@ -417,7 +423,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                     error.isNetworkFailureOrTimeout,
                     logger: logger
                 )
-                return .retryAfter(triggerExponentialRetry(jobRecord: jobRecord))
+                return .retryAfter(incrementExponentialRetryDelay())
             }
             logger.warn("Job encountered unexpected terminal error")
             return await db.awaitableWrite { tx in
@@ -517,29 +523,28 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                         tx: tx
                     )
 
-                    if errorCode == .paymentStillProcessing {
-                        let (retryInterval, maxRetries) = self.stillProcessingRetryParameters(
+                    switch errorCode {
+                    case .paymentStillProcessing:
+                        logger.warn("Payment still processing; scheduling retry…")
+
+                        switch retryModeIfStillProcessing(
                             paymentType: paymentType,
                             paymentMethod: paymentMethod
-                        )
-                        if jobRecord.failureCount < maxRetries {
-                            logger.warn("Payment still processing; scheduling retry…")
-                            jobRecord.addFailure(tx: tx)
-
-                            switch retryInterval {
-                            case .exponential:
-                                return .retryAfter(self.triggerExponentialRetry(jobRecord: jobRecord))
-                            case .sepa:
-                                return .retryAfter(Constants.sepaRetryInterval, canRetryEarly: false)
-                            }
-                        } else {
-                            logger.error("Payment is still processing, but we're out of retries.")
+                        ) {
+                        case .exponential:
+                            return .retryAfter(incrementExponentialRetryDelay())
+                        case .sepa:
+                            return .retryAfter(Constants.sepaRetryInterval, canRetryEarly: false)
                         }
+                    case .paymentFailed,
+                            .localValidationFailed,
+                            .serverValidationFailed,
+                            .paymentNotFound,
+                            .paymentIntentRedeemed:
+                        logger.warn("Couldn't fetch credential; aborting: \(errorCode)")
+                        jobRecord.anyRemove(transaction: tx)
+                        return .finished(.failure(error))
                     }
-
-                    logger.warn("Couldn't fetch credential; aborting: \(errorCode)")
-                    jobRecord.anyRemove(transaction: tx)
-                    return .finished(.failure(error))
                 }
             }
         }

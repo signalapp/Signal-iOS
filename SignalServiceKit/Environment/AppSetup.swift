@@ -1417,6 +1417,7 @@ public class AppSetup {
             reachabilityManager: reachabilityManager
         )
         let donationReceiptCredentialRedemptionJobQueue = DonationReceiptCredentialRedemptionJobQueue(
+            dateProvider: dateProvider,
             db: db,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
             profileManager: profileManager,
