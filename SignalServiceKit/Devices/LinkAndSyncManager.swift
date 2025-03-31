@@ -453,7 +453,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                     throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
                 case .rateLimited:
                     try await Task.sleep(
-                        nanoseconds: Requests.retryDelayNanoSeconds(response)
+                        nanoseconds: HTTPUtils.retryDelayNanoSeconds(response, defaultRetryTime: Constants.defaultRetryTime)
                     )
                     // retry
                     continue whileLoop
@@ -689,7 +689,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                     throw SecondaryLinkNSyncError.errorWaitingForBackup
                 case .rateLimited:
                     try await Task.sleep(
-                        nanoseconds: Requests.retryDelayNanoSeconds(response)
+                        nanoseconds: HTTPUtils.retryDelayNanoSeconds(response, defaultRetryTime: Constants.defaultRetryTime)
                     )
                     // retry
                     continue whileLoop
@@ -903,19 +903,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             // The timeout is server side; apply wiggle room for our local clock.
             request.timeoutInterval = 10 + TimeInterval(Constants.longPollRequestTimeoutSeconds)
             return request
-        }
-
-        static func retryDelayNanoSeconds(_ response: HTTPResponse) -> UInt64 {
-            let retryAfter: TimeInterval
-            if
-                let retryAfterHeader = response.headers["retry-after"],
-                let retryAfterTime = TimeInterval(retryAfterHeader)
-            {
-                retryAfter = retryAfterTime
-            } else {
-                retryAfter = Constants.defaultRetryTime
-            }
-            return UInt64(retryAfter * 1000) * NSEC_PER_MSEC
         }
     }
 }

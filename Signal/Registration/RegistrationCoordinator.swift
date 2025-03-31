@@ -37,6 +37,13 @@ public protocol RegistrationCoordinator {
     /// Continue past the splash screen (marking it as shown).
     func continueFromSplash() -> Guarantee<RegistrationStep>
 
+    /// User has chosen 'restore or transfer' from the splash screen.  The
+    /// next step is to ask if their old device is available.
+    func needToAskForOldDevice() -> Guarantee<RegistrationStep>
+
+    /// Mark if the user has their old device available to source registration information from.
+    func setHasOldDevice(_ hasOldDevice: Bool) -> Guarantee<RegistrationStep>
+
     /// Show the system permissions prompts, proceeding to the next step when done.
     ///
     /// If something goes wrong, the next step will be the same as the current step
@@ -113,8 +120,13 @@ public protocol RegistrationCoordinator {
     /// decline transferring; this method informs the flow of the latter choice.
     func skipDeviceTransfer() -> Guarantee<RegistrationStep>
 
-    /// Set the target backup fileUrl to be used in the next step to restore the system.
-    func restoreFromMessageBackup(type: RegistrationMessageBackupRestoreType) -> Guarantee<RegistrationStep>
+    /// Set the target restore method to be used in the next step to restore the system.
+    func updateRestoreMethod(method: RegistrationRestoreMethod) -> Guarantee<RegistrationStep>
+
+    /// Called after the old device sends the registration message after scanning the QR code.
+    /// - parameter message: The `RegistrationProvisioningMessage` sent from the old
+    ///     device containing the necessary info to reregister
+    func restoreFromRegistrationMessage(message: RegistrationProvisioningMessage) -> Guarantee<RegistrationStep>
 
     /// Mark the users choice to skip restoring from backup and continuing to the next step.
     func skipRestoreFromBackup() -> Guarantee<RegistrationStep>

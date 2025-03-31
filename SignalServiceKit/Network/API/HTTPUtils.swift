@@ -29,7 +29,7 @@ private extension Dictionary where Key == String {
     }
 }
 
-class HTTPUtils {
+public class HTTPUtils {
     #if TESTABLE_BUILD
     public static func logCurl(for request: URLRequest) {
         guard let httpMethod = request.httpMethod else {
@@ -129,6 +129,19 @@ class HTTPUtils {
             let db = DependenciesBridge.shared.db
             appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
         }
+    }
+
+    public static func retryDelayNanoSeconds(_ response: HTTPResponse, defaultRetryTime: TimeInterval = 15) -> UInt64 {
+        let retryAfter: TimeInterval
+        if
+            let retryAfterHeader = response.headers["retry-after"],
+            let retryAfterTime = TimeInterval(retryAfterHeader)
+        {
+            retryAfter = retryAfterTime
+        } else {
+            retryAfter = defaultRetryTime
+        }
+        return UInt64(retryAfter * 1000) * NSEC_PER_MSEC
     }
 
     private static func buildServiceError(

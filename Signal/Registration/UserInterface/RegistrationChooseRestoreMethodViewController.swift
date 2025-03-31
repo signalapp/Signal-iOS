@@ -7,21 +7,22 @@ public import Foundation
 import SignalServiceKit
 import SignalUI
 
-protocol RegistrationRestoreFromBackupPresenter: AnyObject {
-    func didSelectBackup(type: RegistrationMessageBackupRestoreType)
-    func skipRestoreFromBackup()
+protocol RegistrationChooseRestoreMethodPresenter: AnyObject {
+    func didChooseRestoreMethod(method: RegistrationRestoreMethod)
 }
 
-public enum RegistrationMessageBackupRestoreType {
+public enum RegistrationRestoreMethod {
+    case deviceTransfer
     case local(fileUrl: URL)
     case remote
+    case declined
 }
 
-class RegistrationRestoreFromBackupViewController: OWSViewController {
+class RegistrationChooseRestoreMethodViewController: OWSViewController {
 
-    private weak var presenter: RegistrationRestoreFromBackupPresenter?
+    private weak var presenter: RegistrationChooseRestoreMethodPresenter?
 
-    public init(presenter: RegistrationRestoreFromBackupPresenter) {
+    public init(presenter: RegistrationChooseRestoreMethodPresenter) {
         self.presenter = presenter
         super.init()
     }
@@ -142,6 +143,16 @@ class RegistrationRestoreFromBackupViewController: OWSViewController {
     )
 
     // TODO: [Backups] localize
+    private lazy var transferButton = choiceButton(
+        title: "Transfer from another device",
+        // comment: "The title for the device transfer 'choice' view 'transfer' option"
+        body: "Transfer directly from an existing device",
+        // comment: "The body for the device transfer 'choice' view 'transfer' option"
+        iconName: Theme.iconName(.transfer),
+        selector: #selector(didSelectDeviceTransfer)
+    )
+
+    // TODO: [Backups] localize
     private lazy var continueButton = choiceButton(
         title: "Continue without restoring",
         // comment: "The title for the device transfer 'choice' view 'transfer' option"
@@ -172,6 +183,7 @@ class RegistrationRestoreFromBackupViewController: OWSViewController {
             titleLabel,
             explanationLabel,
             restoreFromBackupButton,
+            transferButton,
             continueButton,
             UIView.vStretchingSpacer()
         ])
@@ -197,27 +209,26 @@ class RegistrationRestoreFromBackupViewController: OWSViewController {
 
     @objc
     private func didSelectRestoreLocal() {
-#if USE_DEBUG_UI && TESTABLE_BUILD
-        if Platform.isSimulator {
-            DebugUIMisc.debugOnly_savePlaintextDbKey()
-        }
-#endif
-
         let actionSheet = ActionSheetController(title: "Choose backup import source:")
         let localFileAction = ActionSheetAction(title: "Local backup") { [weak self] _ in
             self?.showMessageBackupPicker()
         }
         actionSheet.addAction(localFileAction)
         let remoteFileAction = ActionSheetAction(title: "Remote backup") { [weak self] _ in
-            self?.presenter?.didSelectBackup(type: .remote)
+            self?.presenter?.didChooseRestoreMethod(method: .remote)
         }
         actionSheet.addAction(remoteFileAction)
         presentActionSheet(actionSheet)
     }
 
     @objc
+    private func didSelectDeviceTransfer() {
+        presenter?.didChooseRestoreMethod(method: .deviceTransfer)
+    }
+
+    @objc
     private func didSkipRestore() {
-        presenter?.skipRestoreFromBackup()
+        presenter?.didChooseRestoreMethod(method: .declined)
     }
 
     private func showMessageBackupPicker() {
@@ -229,12 +240,11 @@ class RegistrationRestoreFromBackupViewController: OWSViewController {
     }
 }
 
-extension RegistrationRestoreFromBackupViewController: UIDocumentPickerDelegate {
-
+extension RegistrationChooseRestoreMethodViewController: UIDocumentPickerDelegate {
     public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let fileUrl = urls.first else {
             return
         }
-        presenter?.didSelectBackup(type: .local(fileUrl: fileUrl))
+        presenter?.didChooseRestoreMethod(method: .local(fileUrl: fileUrl))
     }
 }

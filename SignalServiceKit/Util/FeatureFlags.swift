@@ -46,7 +46,7 @@ public enum FeatureFlags {
     public static let messageBackupFileAlpha = build.includes(.internal)
     public static let messageBackupRemoteExportAlpha = build.includes(.dev)
     public static let messageBackupFileAlphaRegistrationFlow = build.includes(.dev)
-    public static let messageBackupQuickRestoreFlow = false
+    public static let messageBackupQuickRestoreFlow = build.includes(.dev)
     public static let messageBackupRestoreFailOnAnyError = build.includes(.beta)
     public static let messageBackupDetailedBenchLogging = build.includes(.internal)
 

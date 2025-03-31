@@ -113,6 +113,16 @@ class LinkDeviceViewController: OWSViewController {
     // MARK: -
 
     private func confirmProvisioningWithUrl(_ deviceProvisioningUrl: DeviceProvisioningURL) {
+        switch deviceProvisioningUrl.linkType {
+        case .linkDevice:
+            confirmProvisioning(with: deviceProvisioningUrl)
+        case .quickRestore:
+            // Ignore quick restore URLs in the link device controller
+            break
+        }
+    }
+
+    private func confirmProvisioning(with deviceProvisioningUrl: DeviceProvisioningURL) {
         if FeatureFlags.linkAndSyncPrimaryExport, deviceProvisioningUrl.capabilities.contains(.linknsync) {
             let linkOrSyncSheet = LinkOrSyncPickerSheet {
                 self.popToLinkedDeviceList()

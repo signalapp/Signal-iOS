@@ -16,6 +16,7 @@ private enum OpenableUrl {
     case linkDevice
     case completeIDEALDonation(Stripe.IDEALCallbackType)
     case callLink(CallLink)
+    case quickRestore
 }
 
 class UrlOpener {
@@ -71,8 +72,11 @@ class UrlOpener {
         if SignalProxy.isValidProxyLink(url) {
             return .signalProxy(url)
         }
-        if isSgnlLinkDeviceUrl(url) {
-            return .linkDevice
+        if let linkDeviceURL = isSgnlLinkDeviceUrl(url) {
+            switch linkDeviceURL.linkType {
+            case .linkDevice: return .linkDevice
+            case .quickRestore: return .quickRestore
+            }
         }
         if let donationType = Stripe.parseStripeIDEALCallback(url) {
             return .completeIDEALDonation(donationType)
@@ -111,8 +115,8 @@ class UrlOpener {
     }
 
     /// Returns whether the given URL is an `sgnl://` link-new-device URL.
-    private static func isSgnlLinkDeviceUrl(_ url: URL) -> Bool {
-        return DeviceProvisioningURL(urlString: url.absoluteString) != nil
+    private static func isSgnlLinkDeviceUrl(_ url: URL) -> DeviceProvisioningURL? {
+        return DeviceProvisioningURL(urlString: url.absoluteString)
     }
 
     // MARK: - Opening URLs
@@ -136,7 +140,7 @@ class UrlOpener {
     private func shouldDismiss(for url: OpenableUrl) -> Bool {
         switch url {
         case .completeIDEALDonation: return false
-        case .groupInvite, .linkDevice, .phoneNumberLink, .signalProxy, .stickerPack, .usernameLink, .callLink: return true
+        case .groupInvite, .linkDevice, .phoneNumberLink, .signalProxy, .stickerPack, .usernameLink, .callLink, .quickRestore: return true
         }
     }
 
@@ -194,6 +198,16 @@ class UrlOpener {
             linkDeviceWarningActionSheet.addAction(showLinkedDevicesAction)
             linkDeviceWarningActionSheet.addAction(.cancel)
             rootViewController.presentActionSheet(linkDeviceWarningActionSheet)
+
+        case .quickRestore:
+
+            guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
+                owsFailDebug("Ignoring URL; not primary device.")
+                return
+            }
+
+            // TODO: Add a prompt to let the user know they need to re-scan
+            // using the in-app camera
 
         case .completeIDEALDonation(let donationType):
             DonationViewsUtil.attemptToContinueActiveIDEALDonation(

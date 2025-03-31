@@ -160,14 +160,22 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // but its overkill so we have not.
                 update: nil
             )
-        case .scanQuickRegistrationQrCode(let state):
+        case .scanQuickRegistrationQrCode:
             return Controller(
                 type: RegistrationQuickRestoreQRCodeViewController.self,
                 make: { presenter in
                     return RegistrationQuickRestoreQRCodeViewController(
-                        state: state,
                         presenter: presenter
                     )
+                },
+                // State never changes.
+                update: nil
+            )
+        case .askForOldDevice:
+            return Controller(
+                type: RegistrationCheckForOldDeviceViewController.self,
+                make: { presenter in
+                    return RegistrationCheckForOldDeviceViewController(presenter: presenter)
                 },
                 // State never changes.
                 update: nil
@@ -294,11 +302,11 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
-        case .restoreFromLocalMessageBackup:
+        case .chooseRestoreMethod:
             return Controller(
-                type: RegistrationRestoreFromBackupViewController.self,
+                type: RegistrationChooseRestoreMethodViewController.self,
                 make: { presenter in
-                    return RegistrationRestoreFromBackupViewController(presenter: presenter)
+                    return RegistrationChooseRestoreMethodViewController(presenter: presenter)
                 },
                 update: nil
             )
@@ -426,7 +434,7 @@ extension RegistrationNavigationController: RegistrationSplashPresenter {
     }
 
     public func restoreOrTransfer() {
-        // TODO [Quick Restore]: Enter "Restore or Transfer" flow.
+        pushNextController(coordinator.needToAskForOldDevice())
     }
 
     public func switchToDeviceLinkingMode() {
@@ -607,21 +615,28 @@ extension RegistrationNavigationController: RegistrationEnterBackupKeyPresenter 
     }
 }
 
-extension RegistrationNavigationController: RegistrationRestoreFromBackupPresenter {
-
-    func skipRestoreFromBackup() {
-        pushNextController(coordinator.skipRestoreFromBackup())
-    }
-
-    func didSelectBackup(type: RegistrationMessageBackupRestoreType) {
-        let guarantee = coordinator.restoreFromMessageBackup(type: type)
-        pushNextController(guarantee, loadingMode: .restoringBackup)
+extension RegistrationNavigationController: RegistrationChooseRestoreMethodPresenter {
+    func didChooseRestoreMethod(method: RegistrationRestoreMethod) {
+        let guarantee = coordinator.updateRestoreMethod(method: method)
+        pushNextController(guarantee)
     }
 }
 
 extension RegistrationNavigationController: RegistrationQuickRestoreQRCodePresenter {
+    func didReceiveRegistrationMessage(_ message: SignalServiceKit.RegistrationProvisioningMessage) {
+        let guarantee = coordinator.restoreFromRegistrationMessage(message: message)
+        pushNextController(guarantee)
+    }
+
     func cancel() {
         // TODO [Quick Restore]: Pop back to the very first screen in the flow (splash).
+    }
+}
+
+extension RegistrationNavigationController: RegistrationCheckForOldDevicePresenter {
+    func hasOldDevice(_ hasOldDevice: Bool) {
+        let guarantee = coordinator.setHasOldDevice(hasOldDevice)
+        pushNextController(guarantee)
     }
 }
 

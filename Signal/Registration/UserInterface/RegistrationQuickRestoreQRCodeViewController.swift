@@ -8,11 +8,11 @@ import SignalUI
 import SwiftUI
 
 protocol RegistrationQuickRestoreQRCodePresenter: AnyObject {
-    func cancel()
-}
 
-public struct RegistrationQuickRestoreQRCodeState: Equatable {
-    let url: URL
+    func didReceiveRegistrationMessage(_ message: RegistrationProvisioningMessage)
+
+    // Cancel out to the splash screen
+    func cancel()
 }
 
 class RegistrationQuickRestoreQRCodeViewController:
@@ -20,18 +20,15 @@ class RegistrationQuickRestoreQRCodeViewController:
     OWSNavigationChildController,
     ProvisioningSocketManagerUIDelegate
 {
-    private let state: RegistrationQuickRestoreQRCodeState
     private weak var presenter: RegistrationQuickRestoreQRCodePresenter?
 
     private var provisioningSocketManager: ProvisioningSocketManager
+    private var viewModel: QRCodeViewRepresentable.Model
 
-    init(
-        state: RegistrationQuickRestoreQRCodeState,
-        presenter: RegistrationQuickRestoreQRCodePresenter
-    ) {
-        self.state = state
+    init(presenter: RegistrationQuickRestoreQRCodePresenter) {
         self.presenter = presenter
         self.provisioningSocketManager = ProvisioningSocketManager(linkType: .quickRestore)
+        self.viewModel = QRCodeViewRepresentable.Model(qrCodeURL: nil)
         super.init()
 
         self.provisioningSocketManager.delegate = self
@@ -43,7 +40,7 @@ class RegistrationQuickRestoreQRCodeViewController:
     }
 
     private lazy var hostingController = UIHostingController(rootView: ContentStack(
-        url: self.state.url,
+        viewModel: viewModel,
         cancelAction: { [weak self] in
             self?.presenter?.cancel()
         }
@@ -52,6 +49,16 @@ class RegistrationQuickRestoreQRCodeViewController:
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         provisioningSocketManager.start()
+
+        Task {
+            do {
+                let message: RegistrationProvisioningMessage = try await provisioningSocketManager.waitForMessage()
+                presenter?.didReceiveRegistrationMessage(message)
+            } catch {
+                // TODO: [Backup]: Prompt the user with the error
+                Logger.error("Encountered error waiting for qick restore message")
+            }
+        }
     }
 
     // MARK: ProvisioningSocketManagerUIDelegate
@@ -60,11 +67,11 @@ class RegistrationQuickRestoreQRCodeViewController:
         _ provisioningSocketManager: ProvisioningSocketManager,
         didUpdateProvisioningURL url: URL
     ) {
-        // Update the displayed URL
+        self.viewModel.qrCodeURL = url
     }
 
     func provisioningSocketManagerDidPauseQRRotation(_ provisioningSocketManager: ProvisioningSocketManager) {
-        // Show the 'refresh' UI.
+        // [TODO: Backups]: Show the 'refresh' UI.
     }
 
     // MARK: OWSNavigationChildController
@@ -79,7 +86,8 @@ class RegistrationQuickRestoreQRCodeViewController:
 // MARK: - SwiftUI
 
 private struct ContentStack: View {
-    let url: URL
+    @ObservedObject var viewModel: QRCodeViewRepresentable.Model
+
     let cancelAction: () -> Void
 
     var body: some View {
@@ -94,7 +102,7 @@ private struct ContentStack: View {
                 .padding(.horizontal, 8)
                 .multilineTextAlignment(.center)
             Spacer()
-            QRCode(url: url)
+            QRCodeViewRepresentable(model: viewModel).frame(width: 300, height: 300)
             Spacer()
             TutorialStack()
             Spacer()
@@ -137,31 +145,3 @@ private struct TutorialStack: View {
         .padding(.horizontal, 8)
     }
 }
-
-private struct QRCode: View {
-    let url: URL
-
-    var body: some View {
-        ZStack {
-            Color(.ows_gray02)
-                .frame(width: 296, height: 296)
-                .cornerRadius(24)
-            Color(.ows_white)
-                .frame(width: 216, height: 216)
-                .cornerRadius(12)
-            QRCodeViewRepresentable(
-                model: QRCodeViewRepresentable.Model(qrCodeURL: url),
-                contentInset: 4
-            )
-            .frame(width: 212, height: 212)
-        }
-    }
-}
-
-#if DEBUG
-
-#Preview() {
-    ContentStack(url: URL(string: "www.signal.org")!, cancelAction: {})
-}
-
-#endif

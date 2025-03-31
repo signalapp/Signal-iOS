@@ -1308,32 +1308,74 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
                 )
             }
         } else if
-            DeviceProvisioningURL(urlString: qrCodeString) != nil,
+            let provisioningURL = DeviceProvisioningURL(urlString: qrCodeString),
             DependenciesBridge.shared.tsAccountManager
                 .registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice
         {
             qrCodeScanned = true
 
-            let linkDeviceWarningActionSheet = ActionSheetController(
-                message: OWSLocalizedString(
-                    "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE",
-                    comment: "Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera."
+            switch provisioningURL.linkType {
+            case .linkDevice:
+
+                let linkDeviceWarningActionSheet = ActionSheetController(
+                    message: OWSLocalizedString(
+                        "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE",
+                        comment: "Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera."
+                    )
                 )
-            )
 
-            let showLinkedDevicesAction = ActionSheetAction(title: CommonStrings.continueButton) { _ in
-                self.dismiss(animated: true) {
-                    SignalApp.shared.showAppSettings(mode: .linkedDevices)
+                let showLinkedDevicesAction = ActionSheetAction(title: CommonStrings.continueButton) { _ in
+                    self.dismiss(animated: true) {
+                        SignalApp.shared.showAppSettings(mode: .linkedDevices)
+                    }
                 }
-            }
 
-            let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton) { _ in
-                self.qrCodeScanned = false
-            }
+                let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton) { _ in
+                    self.qrCodeScanned = false
+                }
 
-            linkDeviceWarningActionSheet.addAction(showLinkedDevicesAction)
-            linkDeviceWarningActionSheet.addAction(cancelAction)
-            presentActionSheet(linkDeviceWarningActionSheet)
+                linkDeviceWarningActionSheet.addAction(showLinkedDevicesAction)
+                linkDeviceWarningActionSheet.addAction(cancelAction)
+                presentActionSheet(linkDeviceWarningActionSheet)
+            case .quickRestore:
+
+                let quickRestoreActionSheet = ActionSheetController(
+                    message: OWSLocalizedString(
+                        "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE",
+                        comment: "Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera."
+                    )
+                )
+
+                let showQuickRestoreAction = ActionSheetAction(title: CommonStrings.continueButton) { _ in
+                    self.dismiss(animated: true) {
+                        Task {
+                            do {
+                                let quickRestoreManager = AppEnvironment.shared.quickRestoreManager!
+                                let token = try await quickRestoreManager.register(deviceProvisioningUrl: provisioningURL)
+                                let method = try await quickRestoreManager.waitForNewDeviceToRegister(restoreMethodToken: token)
+
+                                switch method {
+                                case .decline, .localBackup:
+                                    Logger.error("Unexpected method")
+                                case .remoteBackup:
+                                    Logger.error("Remote backup")
+                                case .deviceTransfer(let data):
+                                    Logger.error("Device Transfer: \(data)")
+                                }
+                            } catch {
+                                Logger.error("Failed to register device via URL: \(error)")
+                            }
+                        }
+                    }
+                }
+                let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton) { _ in
+                    self.qrCodeScanned = false
+                }
+
+                quickRestoreActionSheet.addAction(showQuickRestoreAction)
+                quickRestoreActionSheet.addAction(cancelAction)
+                presentActionSheet(quickRestoreActionSheet)
+            }
         }
     }
 

@@ -35,6 +35,7 @@ public class AppEnvironment: NSObject {
     private(set) var callLinkProfileKeySharingManager: CallLinkProfileKeySharingManager!
     private(set) var callService: CallService!
     private(set) var provisioningManager: ProvisioningManager!
+    private(set) var quickRestoreManager: QuickRestoreManager!
     private var usernameValidationObserverRef: UsernameValidationObserver!
 
     init(appReadiness: AppReadiness, deviceTransferService: DeviceTransferService) {
@@ -55,6 +56,11 @@ public class AppEnvironment: NSObject {
             serialScheduler: DispatchQueue.sharedUtility
         )
 
+        let deviceProvisioningService = DeviceProvisioningServiceImpl(
+            networkManager: SSKEnvironment.shared.networkManagerRef,
+            schedulers: bridge.schedulers
+        )
+
         self.appIconBadgeUpdater = AppIconBadgeUpdater(badgeManager: badgeManager)
         self.avatarHistoryManager = AvatarHistoryManager(
             appReadiness: appReadiness,
@@ -71,15 +77,21 @@ public class AppEnvironment: NSObject {
             accountKeyStore: bridge.accountKeyStore,
             db: bridge.db,
             deviceManager: bridge.deviceManager,
-            deviceProvisioningService: DeviceProvisioningServiceImpl(
-                networkManager: SSKEnvironment.shared.networkManagerRef,
-                schedulers: bridge.schedulers
-            ),
+            deviceProvisioningService: deviceProvisioningService,
             identityManager: bridge.identityManager,
             linkAndSyncManager: bridge.linkAndSyncManager,
             profileManager: ProvisioningManager.Wrappers.ProfileManager(SSKEnvironment.shared.profileManagerRef),
             receiptManager: ProvisioningManager.Wrappers.ReceiptManager(SSKEnvironment.shared.receiptManagerRef),
             tsAccountManager: bridge.tsAccountManager
+        )
+
+        self.quickRestoreManager = QuickRestoreManager(
+            accountKeyStore: bridge.accountKeyStore,
+            db: bridge.db,
+            deviceProvisioningService: deviceProvisioningService,
+            networkManager: SSKEnvironment.shared.networkManagerRef,
+            tsAccountManager: bridge.tsAccountManager,
+            twoFAManager: SSKEnvironment.shared.ows2FAManagerRef
         )
 
         self.usernameValidationObserverRef = UsernameValidationObserver(

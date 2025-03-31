@@ -11,7 +11,18 @@ public enum RegistrationStep: Equatable {
     case registrationSplash
     case changeNumberSplash
     case permissions
-    case scanQuickRegistrationQrCode(RegistrationQuickRestoreQRCodeState)
+
+    // MARK: - Quick Restore
+
+    /// Ask the user if their old device is available to source existing
+    /// registration information from.  If so, we'll present the QR code
+    /// to initiate the transfer of that info from the old device
+    case askForOldDevice
+
+    /// Display a QR code similar to provisioning that, when scanned,
+    /// sets up a connection for the old device to sent registration information
+    /// to the new device.
+    case scanQuickRegistrationQrCode
 
     // MARK: - Actually registering
 
@@ -58,9 +69,8 @@ public enum RegistrationStep: Equatable {
 
     // MARK: - Post-Registration
 
-    /// If the user has successfully recovered their master key and can attempt to
-    /// restore from a local message backup.
-    case restoreFromLocalMessageBackup
+    /// Prompt the user to choose from the available restore methods
+    case chooseRestoreMethod
 
     /// If the account has not set whether its phone number should be
     /// discoverable, this step happens after registration is complete.
@@ -124,6 +134,7 @@ public enum RegistrationStep: Equatable {
         case .registrationSplash: return "registrationSplash"
         case .changeNumberSplash: return "changeNumberSplash"
         case .permissions: return "permissions"
+        case .askForOldDevice: return "askForOldDevice"
         case .scanQuickRegistrationQrCode: return "scanQuickRegistrationQrCode"
         case .phoneNumberEntry: return "phoneNumberEntry"
         case .verificationCodeEntry: return "verificationCodeEntry"
@@ -133,7 +144,7 @@ public enum RegistrationStep: Equatable {
         case .captchaChallenge: return "captchaChallenge"
         case .reglockTimeout: return "reglockTimeout"
         case .enterBackupKey: return "enterBackupKey"
-        case .restoreFromLocalMessageBackup: return "restoreFromLocalMessageBackup"
+        case .chooseRestoreMethod: return "chooseRestoreMethod"
         case .phoneNumberDiscoverability: return "phoneNumberDiscoverability"
         case .setupProfile: return "setupProfile"
         case .showErrorSheet: return "showErrorSheet"
