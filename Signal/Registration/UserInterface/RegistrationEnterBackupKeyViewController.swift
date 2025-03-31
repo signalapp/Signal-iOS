@@ -8,7 +8,7 @@ import SignalUI
 import SwiftUI
 
 protocol RegistrationEnterBackupKeyPresenter: AnyObject {
-    func next()
+    func next(accountEntropyPool: AccountEntropyPool)
 }
 
 class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigationChildController {
@@ -18,7 +18,8 @@ class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigation
         self.presenter = presenter
         super.init()
 
-        navigationItem.rightBarButtonItem = canSubmit ? nextBarButton : nil
+        // TODO: [Backups] Disable this next button until the input is valid
+        navigationItem.rightBarButtonItem = nextBarButton
 
         self.view.backgroundColor = Theme.backgroundColor
 
@@ -53,8 +54,6 @@ class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigation
     public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
 
     public var navbarBackgroundColorOverride: UIColor? { .clear }
-
-    public var prefersNavigationBarHidden: Bool { true }
 
     // MARK: UI
 
@@ -154,7 +153,11 @@ class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigation
     private func didTapNext() {
         guard canSubmit else { return }
         textView.resignFirstResponder()
-        self.presenter?.next()
+        guard let aep = try? AccountEntropyPool(key: textView.text.filter({!$0.isWhitespace})) else {
+            // TODO: [Backups] Present an error about invalid AEP entry here
+            return
+        }
+        self.presenter?.next(accountEntropyPool: aep)
     }
 
     private var canSubmit: Bool {
@@ -285,7 +288,7 @@ private extension String {
 
 #if DEBUG
 private class PreviewRegistrationEnterBackupKeyPresenter: RegistrationEnterBackupKeyPresenter {
-    func next() {
+    func next(accountEntropyPool: AccountEntropyPool) {
         print("next")
     }
 }

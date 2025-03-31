@@ -610,15 +610,21 @@ extension RegistrationNavigationController: RegistrationReglockTimeoutPresenter 
 }
 
 extension RegistrationNavigationController: RegistrationEnterBackupKeyPresenter {
-    func next() {
-        // TODO [Reg UI]: IOS-5450.
+    func next(accountEntropyPool: AccountEntropyPool) {
+        let guarantee = coordinator.updateAccountEntropyPool(accountEntropyPool)
+        pushNextController(guarantee)
     }
 }
 
 extension RegistrationNavigationController: RegistrationChooseRestoreMethodPresenter {
     func didChooseRestoreMethod(method: RegistrationRestoreMethod) {
-        let guarantee = coordinator.updateRestoreMethod(method: method)
-        pushNextController(guarantee)
+        switch method {
+        case .deviceTransfer:
+            transferDevice()
+        case .declined, .local, .remote:
+            let guarantee = coordinator.updateRestoreMethod(method: method)
+            pushNextController(guarantee)
+        }
     }
 }
 

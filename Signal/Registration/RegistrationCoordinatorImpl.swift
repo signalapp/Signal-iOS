@@ -315,6 +315,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return self.nextStep()
     }
 
+    public func updateAccountEntropyPool(_ accountEntropyPool: SignalServiceKit.AccountEntropyPool) -> Guarantee<RegistrationStep> {
+        deps.db.write { tx in
+            updatePersistedState(tx) {
+                $0.accountEntropyPool = accountEntropyPool
+            }
+        }
+        return self.nextStep()
+    }
+
     public func restoreFromRegistrationMessage(message: RegistrationProvisioningMessage) -> Guarantee<RegistrationStep> {
         deps.db.write { tx in
             updatePersistedState(tx) {
@@ -1527,7 +1536,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
-            return .value(.transferSelection)
+            if deps.featureFlags.messageBackupFileAlphaRegistrationFlow {
+                return .value(.chooseRestoreMethod)
+            } else {
+                return .value(.transferSelection)
+            }
         }
 
         // Attempt to register right away with the password.
@@ -1979,7 +1992,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
-            return .value(.transferSelection)
+            if deps.featureFlags.messageBackupFileAlphaRegistrationFlow {
+                return .value(.chooseRestoreMethod)
+            } else {
+                return .value(.transferSelection)
+            }
         }
 
         if session.verified {
@@ -2300,7 +2317,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return nextStep()
         case .deviceTransferPossible:
             inMemoryState.needsToAskForDeviceTransfer = true
-            return .value(.transferSelection)
+            if deps.featureFlags.messageBackupFileAlphaRegistrationFlow {
+                return .value(.chooseRestoreMethod)
+            } else {
+                return .value(.transferSelection)
+            }
         case .networkError:
             if retriesLeft > 0 {
                 return makeRegisterOrChangeNumberRequestFromSession(
@@ -3015,15 +3036,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
         }
 
-        // If the AccountEntropyPool doesn't exist yet, create one.
         if deps.featureFlags.enableAccountEntropyPool {
             if persistedState.accountEntropyPool == nil {
-                db.write { tx in
-                    updatePersistedState(tx) {
-                        $0.accountEntropyPool = deps.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
+                if persistedState.restoreMethod?.backupType != nil {
+                    // If the user want's to restore from backup, ask for the key
+                    return .value(.enterBackupKey)
+                } else {
+                    // If the AccountEntropyPool doesn't exist yet, create one.
+                    db.write { tx in
+                        updatePersistedState(tx) {
+                            $0.accountEntropyPool = deps.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
+                        }
+                        let newMasterKey = persistedState.accountEntropyPool?.getMasterKey()
+                        updateMasterKeyAndLocalState(masterKey: newMasterKey, tx: tx)
                     }
-                    let newMasterKey = persistedState.accountEntropyPool?.getMasterKey()
-                    updateMasterKeyAndLocalState(masterKey: newMasterKey, tx: tx)
                 }
             }
         } else {

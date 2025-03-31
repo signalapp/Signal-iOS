@@ -194,6 +194,15 @@ class DebugUIMisc: NSObject, DebugUIPage {
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
                     DependenciesBridge.shared.accountKeyStore.setAccountEntropyPool(nil, tx: tx)
                 }
+            }),
+
+            OWSTableItem(title: "Copy AEP to clipboard", actionBlock: {
+                guard let aep = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
+                    DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: tx)
+                }) else {
+                    return
+                }
+                UIPasteboard.general.string = aep.rawData
             })
         ]
         return OWSTableSection(title: name, items: items)

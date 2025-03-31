@@ -123,6 +123,9 @@ public protocol RegistrationCoordinator {
     /// Set the target restore method to be used in the next step to restore the system.
     func updateRestoreMethod(method: RegistrationRestoreMethod) -> Guarantee<RegistrationStep>
 
+    /// Set the user-provided AEP
+    func updateAccountEntropyPool(_ accountEntropyPool: AccountEntropyPool) -> Guarantee<RegistrationStep>
+
     /// Called after the old device sends the registration message after scanning the QR code.
     /// - parameter message: The `RegistrationProvisioningMessage` sent from the old
     ///     device containing the necessary info to reregister
