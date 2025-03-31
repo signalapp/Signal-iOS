@@ -91,6 +91,7 @@ public class ProvisioningManagerTests {
 
         // New device: Build the linking URL that is shown in the QR code
         let provisioningUrl = DeviceProvisioningURL(
+            type: .linkDevice,
             ephemeralDeviceId: ephemeralDeviceId,
             publicKey: newDeviceIdentityKeyPair.publicKey
         )

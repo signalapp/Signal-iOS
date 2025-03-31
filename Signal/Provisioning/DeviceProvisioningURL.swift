@@ -16,6 +16,8 @@ public class DeviceProvisioningURL {
         case linknsync = "backup3"
     }
 
+    public let linkType: LinkType
+
     let ephemeralDeviceId: String
 
     let publicKey: PublicKey
@@ -23,18 +25,24 @@ public class DeviceProvisioningURL {
     public let capabilities: [Capability]
 
     public enum Constants {
-        public static let linkDeviceHost = "linkdevice"
         static let sgnlPrefix = "sgnl"
         static let uuidParamName = "uuid"
         static let publicKeyParamName = "pub_key"
         static let capabilitiesParamName = "capabilities"
     }
 
+    public enum LinkType: String {
+        case linkDevice = "linkdevice"
+        case quickRestore = "rereg"
+    }
+
     public init(
+        type: LinkType,
         ephemeralDeviceId: String,
         publicKey: PublicKey,
         capabilities: [Capability] = []
     ) {
+        self.linkType = type
         self.ephemeralDeviceId = ephemeralDeviceId
         self.publicKey = publicKey
         self.capabilities = capabilities
@@ -45,7 +53,7 @@ public class DeviceProvisioningURL {
     public func buildUrl() throws -> URL {
         var urlString = Constants.sgnlPrefix
         urlString.append("://")
-        urlString.append(Constants.linkDeviceHost)
+        urlString.append(linkType.rawValue)
         urlString.append("?\(Constants.uuidParamName)=\(ephemeralDeviceId)")
         urlString.append("&\(Constants.publicKeyParamName)=\(try Self.encodePublicKey(publicKey))")
         urlString.append("&\(Constants.capabilitiesParamName)=\(capabilities.map(\.rawValue).joined(separator: ","))")
@@ -59,7 +67,8 @@ public class DeviceProvisioningURL {
         guard
             let urlComponents = URLComponents(string: urlString),
             urlComponents.scheme == Constants.sgnlPrefix,
-            urlComponents.host == Constants.linkDeviceHost,
+            let host = urlComponents.host,
+            let type = LinkType(rawValue: host),
             let queryItems = urlComponents.queryItems
         else {
             return nil
@@ -84,7 +93,7 @@ public class DeviceProvisioningURL {
                         }
                         return capability
                     })
-                    ?? []
+                ?? []
             default:
                 Logger.warn("unknown query item in provisioning string: \(queryItem.name)")
             }
@@ -94,6 +103,7 @@ public class DeviceProvisioningURL {
             return nil
         }
 
+        self.linkType = type
         self.ephemeralDeviceId = ephemeralDeviceId
         self.publicKey = publicKey
         self.capabilities = capabilities

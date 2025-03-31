@@ -783,6 +783,7 @@ class ProvisioningController: NSObject {
         }
 
         return try DeviceProvisioningURL(
+            type: .linkDevice,
             ephemeralDeviceId: params.uuid,
             publicKey: params.cipher.ourPublicKey,
             capabilities: capabilities
