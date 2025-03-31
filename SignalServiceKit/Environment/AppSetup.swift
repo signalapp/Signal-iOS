@@ -925,6 +925,7 @@ public class AppSetup {
             networkManager: networkManager,
             remoteConfigProvider: remoteConfigManager,
             signalService: signalService,
+            sleepTimer: Upload.Wrappers.SleepTimer(),
             storyStore: storyStore
         )
 

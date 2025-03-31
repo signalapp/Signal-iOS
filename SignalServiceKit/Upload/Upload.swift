@@ -43,8 +43,15 @@ public enum Upload {
 
     public enum FailureMode {
         public enum RetryMode {
+            /// This was a temporary failure, such as a network
+            /// timeout, so an immediate retry should be possible
             case immediately
-            case afterDelay(TimeInterval)
+            /// The remote server sent back a retry-after header that should be honored
+            /// when attempting a backoff before retry
+            case afterServerRequestedDelay(TimeInterval)
+            /// An error was encountered and the server didn't provide a backoff, so
+            /// use the internal exponential backoff
+            case afterBackoff
         }
 
         // The overall upload has hit the max number of retries.

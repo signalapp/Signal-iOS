@@ -27,6 +27,7 @@ class AttachmentUploadManagerTests {
             networkManager: helper.mockNetworkManager,
             remoteConfigProvider: helper.mockRemoteConfigProvider,
             signalService: helper.mockServiceManager,
+            sleepTimer: helper.mockSleepTimer,
             storyStore: helper.mockStoryStore
         )
     }
@@ -171,6 +172,141 @@ class AttachmentUploadManagerTests {
             #expect(request.url!.absoluteString == attempt2.fetchedUploadLocation)
             #expect(request.httpMethod == attempt2.uploadHttpMethod)
             #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(encryptedSize)")
+            #expect(request.allHTTPHeaderFields!["Content-Range"] == nil)
+        } else { Issue.record("Unexpected request encountered.") }
+        #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
+    }
+
+    @Test(arguments: CDNEndpoint.allCases)
+    func testFullRestartSwitchingCDNUpload(cdn: CDNEndpoint) async throws {
+        let encryptedSize: UInt32 = 20
+        let unencryptedSize: UInt32 = 32
+        helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
+
+        let startCDN = cdn
+        let finishCDN: CDNEndpoint = {
+            switch cdn {
+            case .cdn2: return .cdn3
+            case .cdn3: return .cdn2
+            }
+        }()
+
+        // Indexed to line up with helper.capturedRequests.
+        // 0. Mock the form request
+        // 1. Upload location request
+        _ = helper.addUploadFormAndLocationRequestMock(cdn: startCDN) { auth, _, location in
+            // 2. Fail the upload with a network error
+            helper.addUploadRequestMock(auth: auth, location: location, type: .networkError)
+            // 3. Fetch the progress (10 of 20 bytes)
+            helper.addResumeProgressMock(cdn: startCDN, auth: auth, location: location, type: .malformedRange)
+        }
+
+        // NOTE: on resume this switches to the other CDN to attempt the download
+        // 4. Mock the form request
+        // 5. Upload location request
+        let attempt2 = helper.addUploadFormAndLocationRequestMock(cdn: finishCDN) { auth, _, location in
+            // 6. Complete the upload
+            helper.addUploadRequestMock(auth: auth, location: location, type: .success)
+        }
+
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+
+        if case let .uploadTask(request) = helper.capturedUploadRequests.last {
+            #expect(request.url!.absoluteString == attempt2.fetchedUploadLocation)
+            #expect(request.httpMethod == attempt2.uploadHttpMethod)
+            #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(encryptedSize)")
+            #expect(request.allHTTPHeaderFields!["Content-Range"] == nil)
+        } else { Issue.record("Unexpected request encountered.") }
+        #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
+    }
+
+    /// Test getting a 500 back, and reporting local progress. Each failure should result in an increasing backoff
+    @Test(arguments: CDNEndpoint.allCases)
+    func testFullRestartUploadAfter500ReportingLocalProgress(cdn: CDNEndpoint) async throws {
+        let encryptedSize: UInt32 = 20
+        let unencryptedSize: UInt32 = 32
+        helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
+
+        // Indexed to line up with helper.capturedRequests.
+        // 0. Mock the form request
+        // 1. Upload location request
+        let attempt = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { auth, _, location in
+            // 2. Fail the upload with a server error
+            helper.addUploadRequestMock(auth: auth, location: location, type: .failure(code: 500), completedCount: 20)
+
+            // 3. Fetch the remote progress, but find none
+            helper.addResumeProgressMock(cdn: cdn, auth: auth, location: location, type: .missingRange)
+
+            // 4. Fail the upload with a server error
+            helper.addUploadRequestMock(auth: auth, location: location, type: .failure(code: 500), completedCount: 20)
+
+            // 5. Fetch the remote progress, but find none
+            helper.addResumeProgressMock(cdn: cdn, auth: auth, location: location, type: .missingRange)
+
+            // 6. Fail the upload with a server error
+            helper.addUploadRequestMock(auth: auth, location: location, type: .failure(code: 500), completedCount: 20)
+
+            // 7. Fetch the remote progress, but find none
+            helper.addResumeProgressMock(cdn: cdn, auth: auth, location: location, type: .missingRange)
+
+            // 8. Succeed the upload
+            helper.addUploadRequestMock(auth: auth, location: location, type: .success, completedCount: 20)
+        }
+
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+
+        #expect(helper.mockSleepTimer.requestedDelays.count == 3)
+
+        if case let .uploadTask(request) = helper.capturedUploadRequests.last {
+            #expect(request.url!.absoluteString == attempt.fetchedUploadLocation)
+            #expect(request.httpMethod == attempt.uploadHttpMethod)
+            #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(encryptedSize)")
+            #expect(request.allHTTPHeaderFields!["Content-Range"] == nil)
+        } else { Issue.record("Unexpected request encountered.") }
+        #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
+    }
+
+    @Test(arguments: CDNEndpoint.allCases)
+    func testNetworkTimeoutResumeUpload(cdn: CDNEndpoint) async throws {
+        let encryptedSize: UInt32 = 20
+        let unencryptedSize: UInt32 = 32
+        helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
+
+        // Indexed to line up with helper.capturedRequests.
+        // 0. Mock the form request
+        // 1. Upload location request
+        let attempt = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { auth, _, location in
+            // 2. Fail the upload with a server error
+            helper.addUploadRequestMock(auth: auth, location: location, type: .networkTimeout, completedCount: nil)
+
+            // 3. Fetch the progress (0 of 20 bytes)
+            helper.addResumeProgressMock(cdn: cdn, auth: auth, location: location, type: .progress(count: 5))
+
+            // 4. Fail the upload with a second server error
+            helper.addUploadRequestMock(auth: auth, location: location, type: .networkTimeout, completedCount: nil)
+
+            // 5. Fetch the progress (0 of 20 bytes)
+            helper.addResumeProgressMock(cdn: cdn, auth: auth, location: location, type: .progress(count: 10))
+
+            // 6. Fail the upload with another server error
+            helper.addUploadRequestMock(auth: auth, location: location, type: .networkTimeout, completedCount: nil)
+
+            // 7. Fetch the progress (0 of 20 bytes)
+            helper.addResumeProgressMock(cdn: cdn, auth: auth, location: location, type: .progress(count: 15))
+
+            // 8. Succeed the upload
+            helper.addUploadRequestMock(auth: auth, location: location, type: .success, completedCount: 20)
+        }
+
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+
+        // Since these are network timeouts, and the remote endpoint is showing progress being made
+        // there shouldn't be any backoff timers fired.
+        #expect(helper.mockSleepTimer.requestedDelays.count == 0)
+
+        if case let .uploadTask(request) = helper.capturedUploadRequests.last {
+            #expect(request.url!.absoluteString == attempt.resumeUploadURL)
+            #expect(request.httpMethod == attempt.resumeUploadHttpMethod)
             #expect(request.allHTTPHeaderFields!["Content-Range"] == nil)
         } else { Issue.record("Unexpected request encountered.") }
         #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)

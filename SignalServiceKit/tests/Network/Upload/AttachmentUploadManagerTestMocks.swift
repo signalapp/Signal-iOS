@@ -18,6 +18,8 @@ extension AttachmentUploadManagerImpl {
 
         typealias MessageBackupKeyMaterial = _AttachmentUploadManager_MessageBackupKeyMaterialMock
         typealias MessageBackupRequestManager = _AttachmentUploadManager_MessageBackupRequestManagerMock
+
+        typealias SleepTimer = _Upload_SleepTimerMock
     }
 }
 
@@ -43,6 +45,13 @@ class _Upload_FileSystemMock: Upload.Shims.FileSystem {
 
     func createTempFileSlice(url: URL, start: Int) throws -> (URL, Int) {
         return (url, size - start)
+    }
+}
+
+class _Upload_SleepTimerMock: Upload.Shims.SleepTimer {
+    var requestedDelays = [TimeInterval]()
+    func sleep(for delay: TimeInterval) async throws {
+        requestedDelays.append(delay)
     }
 }
 

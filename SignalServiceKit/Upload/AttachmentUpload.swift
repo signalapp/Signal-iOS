@@ -19,6 +19,7 @@ public struct AttachmentUpload {
     public static func start<Metadata: UploadMetadata>(
         attempt: Upload.Attempt<Metadata>,
         dateProvider: @escaping DateProvider,
+        sleepTimer: Upload.Shims.SleepTimer,
         progress: OWSProgressSink?
     ) async throws -> Upload.Result<Metadata> {
         try Task.checkCancellation()
@@ -31,6 +32,7 @@ public struct AttachmentUpload {
         return try await attemptUpload(
             attempt: attempt,
             dateProvider: dateProvider,
+            sleepTimer: sleepTimer,
             progress: progressSource
         )
     }
@@ -49,11 +51,13 @@ public struct AttachmentUpload {
     private static func attemptUpload<Metadata: UploadMetadata>(
         attempt: Upload.Attempt<Metadata>,
         dateProvider: @escaping DateProvider,
+        sleepTimer: Upload.Shims.SleepTimer,
         progress: OWSProgressSource?
     ) async throws -> Upload.Result<Metadata> {
         attempt.logger.info("Begin upload. (CDN\(attempt.cdnNumber))")
         try await performResumableUpload(
             attempt: attempt,
+            sleepTimer: sleepTimer,
             progress: progress
         )
         return Upload.Result(
@@ -93,6 +97,7 @@ public struct AttachmentUpload {
     /// Upload the file using the endpoint and report progress
     private static func performResumableUpload<Metadata: UploadMetadata>(
         attempt: Upload.Attempt<Metadata>,
+        sleepTimer: Upload.Shims.SleepTimer,
         count: UInt = 0,
         priorUploadProgress: Upload.ResumeProgress? = nil,
         progress: OWSProgressSource?
@@ -125,8 +130,7 @@ public struct AttachmentUpload {
                 bytesAlreadyUploaded = updatedBytesAlreadUploaded
             case .restart:
                 attempt.logger.warn("Error with fetching progress. Restart upload.")
-                let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count + 1)
-                throw Upload.Error.uploadFailure(recovery: .restart(.afterDelay(backoff)))
+                throw Upload.Error.uploadFailure(recovery: .restart(.afterBackoff))
             }
         } else {
             bytesAlreadyUploaded = 0
@@ -178,7 +182,7 @@ public struct AttachmentUpload {
             var failureMode: Upload.FailureMode = .noMoreRetries
             var latestUploadProgress: Upload.ResumeProgress?
             var latestUploadProgressBytes: UInt32 = UInt32(truncatingIfNeeded: internalProgress.completedUnitCount)
-            let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count)
+            var uploadReportedRemoteProgress = false
             switch error {
             case .uploadFailure(let retryMode):
                 // if a failure mode was passed back
@@ -193,24 +197,29 @@ public struct AttachmentUpload {
                     failureMode = .resume(.immediately)
                 case .restart:
                     latestUploadProgressBytes = 0
-                    failureMode = .restart(.afterDelay(backoff))
+                    failureMode = .restart(.afterBackoff)
                 case .none:
-                    failureMode = .resume(.afterDelay(backoff))
+                    failureMode = .resume(.afterBackoff)
                 case .uploaded(let remoteBytesCount):
                     attempt.logger.info("Endpoint reported \(remoteBytesCount)/\(attempt.encryptedDataLength) uploaded.")
                     latestUploadProgressBytes = UInt32(truncatingIfNeeded: remoteBytesCount)
-                    failureMode = .resume(.afterDelay(backoff))
+                    if latestUploadProgressBytes > bytesAlreadyUploaded {
+                        uploadReportedRemoteProgress = true
+                        // The remote endpoint reports progress was made, so retry immediately.
+                        failureMode = .resume(.immediately)
+                    } else {
+                        failureMode = .resume(.afterBackoff)
+                    }
                 }
             case .networkError:
-                failureMode = .resume(.afterDelay(backoff))
+                failureMode = .resume(.afterBackoff)
             case .invalidUploadURL, .unsupportedEndpoint, .unexpectedResponseStatusCode, .unknown:
                 // These errors are unrecoverable, so restart the upload in hopes of correcting the issue.
-                failureMode = .restart(.afterDelay(backoff))
+                failureMode = .restart(.afterBackoff)
             }
 
-            let didUploadMakeProgress = latestUploadProgressBytes > bytesAlreadyUploaded
-            if didUploadMakeProgress {
-                attempt.logger.warn("Upload made progress: \(bytesAlreadyUploaded) -> \(latestUploadProgressBytes) (\(downloadTimeLogString(UInt64(latestUploadProgressBytes))))")
+            if uploadReportedRemoteProgress {
+                attempt.logger.warn("Upload reported making progress: \(bytesAlreadyUploaded) -> \(latestUploadProgressBytes) (\(downloadTimeLogString(UInt64(latestUploadProgressBytes))))")
             }
 
             switch failureMode {
@@ -221,9 +230,13 @@ public struct AttachmentUpload {
                 switch recoveryMode {
                 case .immediately:
                     attempt.logger.warn("Retry upload immediately.")
-                case .afterDelay(let delay):
+                case .afterBackoff:
+                    let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count)
+                    attempt.logger.warn(String(format: "Retry upload after %.3f seconds.", backoff))
+                    try await sleepTimer.sleep(for: backoff)
+                case .afterServerRequestedDelay(let delay):
                     attempt.logger.warn(String(format: "Retry upload after %.3f seconds.", delay))
-                    try await Upload.sleep(for: delay)
+                    try await sleepTimer.sleep(for: delay)
                 }
             case .restart:
                 // Restart is handled at a higher level since the whole
@@ -232,11 +245,12 @@ public struct AttachmentUpload {
             }
 
             attempt.logger.info("Resuming upload.")
-            // Reset the attempt count to 1 as long as progress was made. Make it 1, since 0
+            // Reset the attempt count to 1 as long as remote progress was made. Make it 1, since 0
             // will behave like a fresh upload and skip fetching the remote upload progress.
-            let nextAttemptCount = didUploadMakeProgress ? 1 : count + 1
+            let nextAttemptCount = uploadReportedRemoteProgress ? 1 : count + 1
             try await performResumableUpload(
                 attempt: attempt,
+                sleepTimer: sleepTimer,
                 count: nextAttemptCount,
                 priorUploadProgress: latestUploadProgress,
                 progress: progress
@@ -361,13 +375,6 @@ public struct AttachmentUpload {
             isResumedUpload: existingSessionUrl != nil,
             logger: logger
         )
-    }
-}
-
-extension Upload {
-    static func sleep(for delay: TimeInterval) async throws {
-        let delayInNs = UInt64(delay * Double(NSEC_PER_SEC))
-        try await Task.sleep(nanoseconds: delayInNs)
     }
 }
 

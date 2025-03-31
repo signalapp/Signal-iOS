@@ -8,7 +8,7 @@ import Foundation
 
 typealias PerformTSRequestBlock = ((TSRequest, Bool) async throws -> any HTTPResponse)
 typealias PerformRequestBlock = ((URLRequest) async throws -> any HTTPResponse)
-typealias PerformUploadBlock = ((URLRequest, URL) async throws -> any HTTPResponse)
+typealias PerformUploadBlock = ((URLRequest, URL, OWSProgressSource?) async throws -> any HTTPResponse)
 
 enum MockRequestType {
     case uploadForm(PerformTSRequestBlock)
@@ -83,6 +83,7 @@ class AttachmentUploadManagerMockHelper {
     var messageBackupKeyMaterial = AttachmentUploadManagerImpl.Mocks.MessageBackupKeyMaterial()
     var messageBackupRequestManager = AttachmentUploadManagerImpl.Mocks.MessageBackupRequestManager()
     var mockRemoteConfigProvider = MockRemoteConfigProvider()
+    var mockSleepTimer = AttachmentUploadManagerImpl.Mocks.SleepTimer()
 
     var capturedRequests = [MockResultType]()
     var capturedFormRequests: [MockResultType] { capturedRequests.filter { if case .uploadForm = $0 { true } else { false }}}
@@ -147,12 +148,12 @@ class AttachmentUploadManagerMockHelper {
             }
         }
 
-        mockURLSession.performUploadFileBlock = { request, url, _, _ in
+        mockURLSession.performUploadFileBlock = { request, url, _, progress in
             guard case let .uploadTask(requestBlock) = self.activeUploadRequestMocks.removeFirst() else {
                 throw OWSAssertionError("Mock request missing")
             }
             self.capturedRequests.append(.uploadTask(request))
-            return try await requestBlock(request, url)
+            return try await requestBlock(request, url, progress)
         }
     }
 
@@ -312,11 +313,17 @@ class AttachmentUploadManagerMockHelper {
         case success
         case failure(code: Int)
         case networkError
+        case networkTimeout
     }
 
-    func addUploadRequestMock(auth: String, location: String, type: UploadResultType) {
-        enqueue(auth: auth, request: .uploadTask({ request, url in
+    func addUploadRequestMock(auth: String, location: String, type: UploadResultType, completedCount: UInt64? = nil) {
+        enqueue(auth: auth, request: .uploadTask({ request, url, progress in
+            if let completedCount {
+                progress?.incrementCompletedUnitCount(by: completedCount)
+            }
             switch type {
+            case .networkTimeout:
+                throw OWSHTTPError.networkFailure(.genericTimeout)
             case .networkError:
                 throw OWSHTTPError.networkFailure(.genericFailure)
             case .failure(let code):

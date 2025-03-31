@@ -9,11 +9,13 @@ extension Upload {
     public enum Shims {
         public typealias AttachmentEncrypter = _Upload_AttachmentEncrypterShim
         public typealias FileSystem = _Upload_FileSystemShim
+        public typealias SleepTimer = _Upload_SleepTimerShim
     }
 
     public enum Wrappers {
         public typealias AttachmentEncrypter = _Upload_AttachmentEncrypterWrapper
         public typealias FileSystem = _Upload_FileSystemWrapper
+        public typealias SleepTimer = _Upload_SleepTimerWrapper
     }
 }
 
@@ -31,6 +33,10 @@ public protocol _Upload_FileSystemShim {
     func deleteFile(url: URL) throws
 
     func createTempFileSlice(url: URL, start: Int) throws -> (URL, Int)
+}
+
+public protocol _Upload_SleepTimerShim {
+    func sleep(for delay: TimeInterval) async throws
 }
 
 // MARK: - Wrappers
@@ -56,5 +62,11 @@ public struct _Upload_FileSystemWrapper: Upload.Shims.FileSystem {
 
     public func createTempFileSlice(url: URL, start: Int) throws -> (URL, Int) {
         return try OWSFileSystem.createTempFileSlice(url: url, start: start)
+    }
+}
+
+public struct _Upload_SleepTimerWrapper: Upload.Shims.SleepTimer {
+    public func sleep(for delay: TimeInterval) async throws {
+        try await Task.sleep(nanoseconds: UInt64(delay * Double(NSEC_PER_SEC)))
     }
 }

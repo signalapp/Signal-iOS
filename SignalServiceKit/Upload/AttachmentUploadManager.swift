@@ -141,6 +141,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     private let networkManager: NetworkManager
     private let remoteConfigProvider: any RemoteConfigProvider
     private let signalService: OWSSignalServiceProtocol
+    private let sleepTimer: Upload.Shims.SleepTimer
     private let storyStore: StoryStore
 
     // Map of active upload tasks.
@@ -176,6 +177,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         networkManager: NetworkManager,
         remoteConfigProvider: any RemoteConfigProvider,
         signalService: OWSSignalServiceProtocol,
+        sleepTimer: Upload.Shims.SleepTimer,
         storyStore: StoryStore
     ) {
         self.attachmentEncrypter = attachmentEncrypter
@@ -192,6 +194,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         self.networkManager = networkManager
         self.remoteConfigProvider = remoteConfigProvider
         self.signalService = signalService
+        self.sleepTimer = sleepTimer
         self.storyStore = storyStore
     }
 
@@ -210,7 +213,12 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 dateProvider: dateProvider,
                 logger: logger
             )
-            return try await AttachmentUpload.start(attempt: attempt, dateProvider: dateProvider, progress: nil)
+            return try await AttachmentUpload.start(
+                attempt: attempt,
+                dateProvider: dateProvider,
+                sleepTimer: sleepTimer,
+                progress: nil
+            )
         } catch {
             if error.isNetworkFailureOrTimeout {
                 logger.warn("Upload failed due to network error")
@@ -254,7 +262,12 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 dateProvider: dateProvider,
                 logger: logger
             )
-            return try await AttachmentUpload.start(attempt: attempt, dateProvider: dateProvider, progress: nil)
+            return try await AttachmentUpload.start(
+                attempt: attempt,
+                dateProvider: dateProvider,
+                sleepTimer: sleepTimer,
+                progress: nil
+            )
         } catch {
             if error.isNetworkFailureOrTimeout {
                 logger.warn("Upload failed due to network error")
@@ -301,7 +314,12 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 dateProvider: dateProvider,
                 logger: logger
             )
-            return try await AttachmentUpload.start(attempt: attempt, dateProvider: dateProvider, progress: progress)
+            return try await AttachmentUpload.start(
+                attempt: attempt,
+                dateProvider: dateProvider,
+                sleepTimer: sleepTimer,
+                progress: progress
+            )
         } catch {
             if error.isNetworkFailureOrTimeout {
                 logger.warn("Upload failed due to network error")
@@ -681,6 +699,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             let result = try await AttachmentUpload.start(
                 attempt: attempt,
                 dateProvider: self.dateProvider,
+                sleepTimer: sleepTimer,
                 progress: progress
             )
 

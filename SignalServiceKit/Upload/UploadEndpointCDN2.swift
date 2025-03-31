@@ -209,11 +209,15 @@ struct UploadEndpointCDN2: UploadEndpoint {
             }
         } catch {
             let retryMode: Upload.FailureMode.RetryMode = {
-                guard
+                if
+                    // Allow the server to override the default backoff with a specified value
                     let retryHeader = error.httpResponseHeaders?.value(forHeader: "retry-after"),
                     let delay = TimeInterval(retryHeader)
-                else { return .immediately }
-                return .afterDelay(delay)
+                {
+                    return .afterServerRequestedDelay(delay)
+                } else {
+                    return .afterBackoff
+                }
             }()
 
             switch error {
