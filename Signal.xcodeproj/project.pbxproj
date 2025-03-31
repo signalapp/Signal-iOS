@@ -1725,6 +1725,7 @@
 		C198FDD62A37C905000BCAC9 /* SSKKyberPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */; };
 		C1A0F79D2B9F57340009DC0D /* MessageBackupKeyMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A0F79C2B9F57340009DC0D /* MessageBackupKeyMaterial.swift */; };
 		C1A0F79F2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A0F79E2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift */; };
+		C1AE7C5D2D7B4538007A618D /* ProvisioningSocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18087892D76023400B16D1E /* ProvisioningSocketManager.swift */; };
 		C1BF1F712BA0D7CC0004B112 /* StreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1BF1F702BA0D7CC0004B112 /* StreamTransform.swift */; };
 		C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */; };
 		C1C7E4FB2BE0419300F196EE /* UploadMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C7E4FA2BE0419300F196EE /* UploadMetadata.swift */; };
@@ -5598,6 +5599,7 @@
 		C179B01D29ED94FA00275AD1 /* EditRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRecord.swift; sourceTree = "<group>"; };
 		C17B31542D710DBD0060664D /* ProvisioningManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningManager.swift; sourceTree = "<group>"; };
 		C17B31582D710DD80060664D /* ProvisioningManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProvisioningManager+Shims.swift"; sourceTree = "<group>"; };
+		C18087892D76023400B16D1E /* ProvisioningSocketManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningSocketManager.swift; sourceTree = "<group>"; };
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
 		C18806332BD8080B0024044A /* MessageBackupAuthCredentialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupAuthCredentialManager.swift; sourceTree = "<group>"; };
@@ -10104,6 +10106,7 @@
 				66CDB7562AFC40BE009A36EC /* ProvisioningCoordinatorImpl.swift */,
 				C17B31582D710DD80060664D /* ProvisioningManager+Shims.swift */,
 				C17B31542D710DBD0060664D /* ProvisioningManager.swift */,
+				C18087892D76023400B16D1E /* ProvisioningSocketManager.swift */,
 			);
 			path = Provisioning;
 			sourceTree = "<group>";
@@ -17048,6 +17051,7 @@
 				6659A0392A81933B00066AB7 /* ProvisioningPermissionsViewController.swift in Sources */,
 				4C30E224234F9F34009558B7 /* ProvisioningPrepViewController.swift in Sources */,
 				4C30E226234FB033009558B7 /* ProvisioningQRCodeViewController.swift in Sources */,
+				C1AE7C5D2D7B4538007A618D /* ProvisioningSocketManager.swift in Sources */,
 				34ACA7DB2733159600E47AD4 /* ProvisioningSplashViewController.swift in Sources */,
 				34ACA7D52733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift in Sources */,
 				34ACA7D72733159600E47AD4 /* ProvisioningTransferProgressViewController.swift in Sources */,

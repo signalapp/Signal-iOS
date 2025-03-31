@@ -7,14 +7,20 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
+class ProvisioningQRCodeViewController: ProvisioningBaseViewController, ProvisioningSocketManagerUIDelegate {
     private let provisioningQRCodeViewModel: ProvisioningQRCodeView.Model
-    private var rotateQRCodeTask: Task<Void, Never>?
+    private let provisioningSocketManager: ProvisioningSocketManager
 
-    override init(provisioningController: ProvisioningController) {
+    init(
+        provisioningController: ProvisioningController,
+        provisioningSocketManager: ProvisioningSocketManager
+    ) {
         provisioningQRCodeViewModel = ProvisioningQRCodeView.Model(urlDisplayMode: .loading)
+        self.provisioningSocketManager = provisioningSocketManager
 
         super.init(provisioningController: provisioningController)
+
+        provisioningSocketManager.delegate = self
     }
 
     override func viewDidLoad() {
@@ -28,7 +34,7 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
         let qrCodeViewHostingContainer = HostingContainer(wrappedView: ProvisioningQRCodeView(
             model: provisioningQRCodeViewModel,
             onRefreshButtonPressed: { [weak self] in
-                self?.startQRCodeRotationTask()
+                self?.provisioningSocketManager.reset()
             }
         ))
 
@@ -37,13 +43,13 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
         qrCodeViewHostingContainer.view.autoPinEdgesToSuperviewMargins()
         qrCodeViewHostingContainer.didMove(toParent: self)
 
-        startQRCodeRotationTask()
+        provisioningQRCodeViewModel.updateURLDisplayMode(.loading)
+        provisioningSocketManager.start()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
-        rotateQRCodeTask?.cancel()
+        provisioningSocketManager.stop()
     }
 
     // MARK: -
@@ -53,61 +59,18 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
         return false
     }
 
-    // MARK: -
-
     func reset() {
-        rotateQRCodeTask?.cancel()
-        rotateQRCodeTask = nil
+        provisioningSocketManager.stop()
         provisioningQRCodeViewModel.updateURLDisplayMode(.loading)
-        startQRCodeRotationTask()
+        provisioningSocketManager.start()
     }
 
-    private func startQRCodeRotationTask() {
-        AssertIsOnMainThread()
+    func provisioningSocketManager(_ provisioningSocketManager: ProvisioningSocketManager, didUpdateProvisioningURL url: URL) {
+        provisioningQRCodeViewModel.updateURLDisplayMode(.loaded(url))
+    }
 
-        guard rotateQRCodeTask == nil else {
-            return
-        }
-
-        rotateQRCodeTask = Task {
-            /// Every 45s, five times, rotate the provisioning socket for which
-            /// we're displaying a QR code. If we fail, or once we've exhausted
-            /// the five rotations, fall back to showing a manual "refresh"
-            /// button.
-            ///
-            /// Note that the server will close provisioning sockets after 90s,
-            /// so hopefully rotating every 45s means no primary will ever end
-            /// up trying to send into a closed socket.
-            do {
-                for _ in 0..<5 {
-                    let provisioningUrl = try await provisioningController.openNewProvisioningSocket()
-
-                    try Task.checkCancellation()
-
-                    provisioningQRCodeViewModel.updateURLDisplayMode(.loaded(provisioningUrl))
-
-                    let rotationDelaySecs: UInt64
-#if TESTABLE_BUILD
-                    rotationDelaySecs = 3
-#else
-                    rotationDelaySecs = 45
-#endif
-
-                    try await Task.sleep(nanoseconds: rotationDelaySecs * NSEC_PER_SEC)
-
-                    try Task.checkCancellation()
-                }
-            } catch is CancellationError {
-                // We've been canceled; bail! It's the canceler's responsibility
-                // to make sure the UI is updated.
-                return
-            } catch {
-                // Fall through as if we'd exhausted our rotations.
-            }
-
-            provisioningQRCodeViewModel.updateURLDisplayMode(.refreshButton)
-            rotateQRCodeTask = nil
-        }
+    public func provisioningSocketManagerDidPauseQRRotation(_ provisioningSocketManager: ProvisioningSocketManager) {
+        provisioningQRCodeViewModel.updateURLDisplayMode(.refreshButton)
     }
 }
 

@@ -15,9 +15,15 @@ public struct RegistrationQuickRestoreQRCodeState: Equatable {
     let url: URL
 }
 
-class RegistrationQuickRestoreQRCodeViewController: OWSViewController, OWSNavigationChildController {
+class RegistrationQuickRestoreQRCodeViewController:
+    OWSViewController,
+    OWSNavigationChildController,
+    ProvisioningSocketManagerUIDelegate
+{
     private let state: RegistrationQuickRestoreQRCodeState
     private weak var presenter: RegistrationQuickRestoreQRCodePresenter?
+
+    private var provisioningSocketManager: ProvisioningSocketManager
 
     init(
         state: RegistrationQuickRestoreQRCodeState,
@@ -25,7 +31,10 @@ class RegistrationQuickRestoreQRCodeViewController: OWSViewController, OWSNaviga
     ) {
         self.state = state
         self.presenter = presenter
+        self.provisioningSocketManager = ProvisioningSocketManager(linkType: .quickRestore)
         super.init()
+
+        self.provisioningSocketManager.delegate = self
 
         self.addChild(hostingController)
         self.view.addSubview(hostingController.view)
@@ -39,6 +48,24 @@ class RegistrationQuickRestoreQRCodeViewController: OWSViewController, OWSNaviga
             self?.presenter?.cancel()
         }
     ))
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        provisioningSocketManager.start()
+    }
+
+    // MARK: ProvisioningSocketManagerUIDelegate
+
+    func provisioningSocketManager(
+        _ provisioningSocketManager: ProvisioningSocketManager,
+        didUpdateProvisioningURL url: URL
+    ) {
+        // Update the displayed URL
+    }
+
+    func provisioningSocketManagerDidPauseQRRotation(_ provisioningSocketManager: ProvisioningSocketManager) {
+        // Show the 'refresh' UI.
+    }
 
     // MARK: OWSNavigationChildController
 
