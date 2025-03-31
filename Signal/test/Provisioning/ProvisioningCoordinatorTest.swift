@@ -89,7 +89,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
 
     public func testProvisioning() async throws {
         let aep = AccountEntropyPool()
-        let provisioningMessage = ProvisioningMessage(
+        let provisioningMessage = LinkingProvisioningMessage(
             rootKey: .accountEntropyPool(aep),
             aci: .randomForTesting(),
             phoneNumber: "+17875550100",

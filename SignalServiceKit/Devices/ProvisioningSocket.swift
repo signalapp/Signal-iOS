@@ -24,7 +24,7 @@ public class ProvisioningSocket {
         let request = WebSocketRequest(
             signalService: .mainSignalServiceIdentified,
             urlPath: "v1/websocket/provisioning/",
-            urlQueryItems: [URLQueryItem(name: "agent", value: ProvisioningMessage.Constants.userAgent)],
+            urlQueryItems: [URLQueryItem(name: "agent", value: LinkingProvisioningMessage.Constants.userAgent)],
             extraHeaders: [:]
         )
         let webSocket = webSocketFactory.buildSocket(request: request, callbackScheduler: DispatchQueue.main)!

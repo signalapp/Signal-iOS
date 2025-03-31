@@ -42,7 +42,7 @@ public class ProvisioningProtoProvisioningUuid: NSObject, Codable, NSSecureCodin
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try ProvisioningProtos_ProvisioningUuid(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -204,7 +204,7 @@ public class ProvisioningProtoProvisionEnvelope: NSObject, Codable, NSSecureCodi
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try ProvisioningProtos_ProvisionEnvelope(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -518,7 +518,7 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCodin
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try ProvisioningProtos_ProvisionMessage(serializedBytes: serializedData)
         try self.init(proto)
     }

@@ -167,7 +167,7 @@ public protocol SecureValueRecovery {
     ) throws(SVR.KeysError)
 
     func storeKeys(
-        fromProvisioningMessage provisioningMessage: ProvisioningMessage,
+        fromProvisioningMessage provisioningMessage: LinkingProvisioningMessage,
         authedDevice: AuthedDevice,
         tx: DBWriteTransaction
     ) throws(SVR.KeysError)

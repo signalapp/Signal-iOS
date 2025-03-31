@@ -195,7 +195,7 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_Envelope(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -516,7 +516,7 @@ public class SSKProtoTypingMessage: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_TypingMessage(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -725,7 +725,7 @@ public class SSKProtoStoryMessage: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_StoryMessage(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -993,7 +993,7 @@ public class SSKProtoPreview: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_Preview(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -1238,7 +1238,7 @@ public class SSKProtoTextAttachmentGradient: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_TextAttachment.Gradient(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -1515,7 +1515,7 @@ public class SSKProtoTextAttachment: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_TextAttachment(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -1798,7 +1798,7 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_Content(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -2193,7 +2193,7 @@ public class SSKProtoCallMessageOffer: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_CallMessage.Offer(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -2378,7 +2378,7 @@ public class SSKProtoCallMessageAnswer: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_CallMessage.Answer(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -2555,7 +2555,7 @@ public class SSKProtoCallMessageIceUpdate: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_CallMessage.IceUpdate(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -2720,7 +2720,7 @@ public class SSKProtoCallMessageBusy: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_CallMessage.Busy(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -2931,7 +2931,7 @@ public class SSKProtoCallMessageHangup: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_CallMessage.Hangup(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -3147,7 +3147,7 @@ public class SSKProtoCallMessageOpaque: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_CallMessage.Opaque(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -3348,7 +3348,7 @@ public class SSKProtoCallMessage: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_CallMessage(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -3642,7 +3642,7 @@ public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject, Codable, NSSecu
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Quote.QuotedAttachment(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -3899,7 +3899,7 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Quote(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -4171,7 +4171,7 @@ public class SSKProtoDataMessageContactName: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Contact.Name(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -4441,7 +4441,7 @@ public class SSKProtoDataMessageContactPhone: NSObject, Codable, NSSecureCoding 
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Contact.Phone(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -4677,7 +4677,7 @@ public class SSKProtoDataMessageContactEmail: NSObject, Codable, NSSecureCoding 
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Contact.Email(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -4982,7 +4982,7 @@ public class SSKProtoDataMessageContactPostalAddress: NSObject, Codable, NSSecur
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Contact.PostalAddress(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -5244,7 +5244,7 @@ public class SSKProtoDataMessageContactAvatar: NSObject, Codable, NSSecureCoding
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Contact.Avatar(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -5437,7 +5437,7 @@ public class SSKProtoDataMessageContact: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Contact(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -5696,7 +5696,7 @@ public class SSKProtoDataMessageSticker: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Sticker(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -5941,7 +5941,7 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Reaction(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -6132,7 +6132,7 @@ public class SSKProtoDataMessageDelete: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Delete(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -6290,7 +6290,7 @@ public class SSKProtoDataMessageGroupCallUpdate: NSObject, Codable, NSSecureCodi
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.GroupCallUpdate(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -6437,7 +6437,7 @@ public class SSKProtoDataMessagePaymentAmountMobileCoin: NSObject, Codable, NSSe
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -6588,7 +6588,7 @@ public class SSKProtoDataMessagePaymentAmount: NSObject, Codable, NSSecureCoding
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Payment.Amount(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -6741,7 +6741,7 @@ public class SSKProtoDataMessagePaymentNotificationMobileCoin: NSObject, Codable
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -6910,7 +6910,7 @@ public class SSKProtoDataMessagePaymentNotification: NSObject, Codable, NSSecure
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Payment.Notification(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -7114,7 +7114,7 @@ public class SSKProtoDataMessagePaymentActivation: NSObject, Codable, NSSecureCo
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Payment.Activation(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -7260,7 +7260,7 @@ public class SSKProtoDataMessagePayment: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Payment(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -7449,7 +7449,7 @@ public class SSKProtoDataMessageStoryContext: NSObject, Codable, NSSecureCoding 
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.StoryContext(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -7611,7 +7611,7 @@ public class SSKProtoDataMessageGiftBadge: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.GiftBadge(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -7961,7 +7961,7 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -8417,7 +8417,7 @@ public class SSKProtoNullMessage: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_NullMessage(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -8609,7 +8609,7 @@ public class SSKProtoReceiptMessage: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_ReceiptMessage(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -8837,7 +8837,7 @@ public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_Verified(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -9036,7 +9036,7 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -9212,7 +9212,7 @@ public class SSKProtoSyncMessageSentStoryMessageRecipient: NSObject, Codable, NS
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -9449,7 +9449,7 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Sent(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -9733,7 +9733,7 @@ public class SSKProtoSyncMessageContacts: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Contacts(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -9908,7 +9908,7 @@ public class SSKProtoSyncMessageBlocked: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Blocked(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -10120,7 +10120,7 @@ public class SSKProtoSyncMessageRequest: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Request(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -10273,7 +10273,7 @@ public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Read(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -10450,7 +10450,7 @@ public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Viewed(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -10655,7 +10655,7 @@ public class SSKProtoSyncMessageConfiguration: NSObject, Codable, NSSecureCoding
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Configuration(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -10875,7 +10875,7 @@ public class SSKProtoSyncMessageStickerPackOperation: NSObject, Codable, NSSecur
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.StickerPackOperation(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -11070,7 +11070,7 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding 
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.ViewOnceOpen(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -11278,7 +11278,7 @@ public class SSKProtoSyncMessageFetchLatest: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.FetchLatest(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -11450,7 +11450,7 @@ public class SSKProtoSyncMessageKeys: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Keys(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -11701,7 +11701,7 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSec
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.MessageRequestResponse(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -11923,7 +11923,7 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable, NS
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -12180,7 +12180,7 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable, NSSecureCodi
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.OutgoingPayment(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -12413,7 +12413,7 @@ public class SSKProtoSyncMessagePniChangeNumber: NSObject, Codable, NSSecureCodi
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.PniChangeNumber(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -12782,7 +12782,7 @@ public class SSKProtoSyncMessageCallEvent: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.CallEvent(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -13027,7 +13027,7 @@ public class SSKProtoSyncMessageCallLinkUpdate: NSObject, Codable, NSSecureCodin
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.CallLinkUpdate(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -13266,7 +13266,7 @@ public class SSKProtoSyncMessageCallLogEvent: NSObject, Codable, NSSecureCoding 
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.CallLogEvent(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -13468,7 +13468,7 @@ public class SSKProtoSyncMessageDeleteForMeConversationIdentifier: NSObject, Cod
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -13671,7 +13671,7 @@ public class SSKProtoSyncMessageDeleteForMeAddressableMessage: NSObject, Codable
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -13845,7 +13845,7 @@ public class SSKProtoSyncMessageDeleteForMeMessageDeletes: NSObject, Codable, NS
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -14054,7 +14054,7 @@ public class SSKProtoSyncMessageDeleteForMeAttachmentDelete: NSObject, Codable, 
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -14288,7 +14288,7 @@ public class SSKProtoSyncMessageDeleteForMeConversationDelete: NSObject, Codable
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -14479,7 +14479,7 @@ public class SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete: NSObject
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -14647,7 +14647,7 @@ public class SSKProtoSyncMessageDeleteForMe: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.DeleteForMe(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -14844,7 +14844,7 @@ public class SSKProtoSyncMessageDeviceNameChange: NSObject, Codable, NSSecureCod
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.DeviceNameChange(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -15092,7 +15092,7 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -15815,7 +15815,7 @@ public class SSKProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_AttachmentPointer(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -16158,7 +16158,7 @@ public class SSKProtoGroupContextV2: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_GroupContextV2(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -16343,7 +16343,7 @@ public class SSKProtoContactDetailsAvatar: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_ContactDetails.Avatar(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -16561,7 +16561,7 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_ContactDetails(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -16804,7 +16804,7 @@ public class SSKProtoPackSticker: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_Pack.Sticker(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -17012,7 +17012,7 @@ public class SSKProtoPack: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_Pack(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -17213,7 +17213,7 @@ public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable, NSSecureCoding
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_PaymentAddress.MobileCoin(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -17388,7 +17388,7 @@ public class SSKProtoPaymentAddress: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_PaymentAddress(serializedBytes: serializedData)
         try self.init(proto)
     }
@@ -17566,7 +17566,7 @@ public class SSKProtoDecryptionErrorMessage: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DecryptionErrorMessage(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -17748,7 +17748,7 @@ public class SSKProtoPniSignatureMessage: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_PniSignatureMessage(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -17988,7 +17988,7 @@ public class SSKProtoBodyRange: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_BodyRange(serializedBytes: serializedData)
         self.init(proto)
     }
@@ -18168,7 +18168,7 @@ public class SSKProtoEditMessage: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public convenience init(serializedData: Data) throws {
+    public required convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_EditMessage(serializedBytes: serializedData)
         try self.init(proto)
     }

@@ -896,7 +896,7 @@ public func serializedData() throws -> Data {
         # init(serializedData:) func
         if writer.needs_objc():
             writer.add_objc()
-            writer.add("public convenience init(serializedData: Data) throws {")
+            writer.add("public required convenience init(serializedData: Data) throws {")
         else:
             writer.add("public init(serializedData: Data) throws {")
         writer.push_indent()

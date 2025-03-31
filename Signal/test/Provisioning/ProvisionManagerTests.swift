@@ -109,7 +109,7 @@ public class ProvisioningManagerTests {
             data: provisionEnvelope.body,
             theirPublicKey: PublicKey(provisionEnvelope.publicKey)
         )
-        let provisionMessage = try ProvisioningMessage(plaintext: provisionMessageData)
+        let provisionMessage = try LinkingProvisioningMessage(plaintext: provisionMessageData)
 
         // Validate that all the data in the decrypted envelope on the new device side matches the
         // values populated by the old device

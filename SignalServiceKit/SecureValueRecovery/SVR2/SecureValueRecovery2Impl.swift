@@ -419,7 +419,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     public func storeKeys(
-        fromProvisioningMessage provisioningMessage: ProvisioningMessage,
+        fromProvisioningMessage provisioningMessage: LinkingProvisioningMessage,
         authedDevice: AuthedDevice,
         tx: DBWriteTransaction
     ) throws(SVR.KeysError) {

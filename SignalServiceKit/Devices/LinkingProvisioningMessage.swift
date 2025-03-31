@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public struct ProvisioningMessage {
+public struct LinkingProvisioningMessage {
 
     public enum RootKey {
         case accountEntropyPool(AccountEntropyPool)

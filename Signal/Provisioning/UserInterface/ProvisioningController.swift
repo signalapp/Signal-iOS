@@ -255,7 +255,7 @@ class ProvisioningController: NSObject {
         }
 
         /// Ensure the primary is new enough to link us.
-        guard provisioningMessage.provisioningVersion >= ProvisioningMessage.Constants.provisioningVersion else {
+        guard provisioningMessage.provisioningVersion >= LinkingProvisioningMessage.Constants.provisioningVersion else {
             OWSActionSheets.showActionSheet(
                 title: OWSLocalizedString(
                     "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE",
@@ -291,7 +291,7 @@ class ProvisioningController: NSObject {
     @MainActor
     private func waitForProvisioningMessage(
         navigationController: UINavigationController
-    ) async -> ProvisioningMessage? {
+    ) async -> LinkingProvisioningMessage? {
         do {
             return try await provisioningSocketManager.waitForMessage()
         } catch let error {

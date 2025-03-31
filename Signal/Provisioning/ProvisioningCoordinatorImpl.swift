@@ -75,7 +75,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     }
 
     func completeProvisioning(
-        provisionMessage: ProvisioningMessage,
+        provisionMessage: LinkingProvisioningMessage,
         deviceName: String,
         progressViewModel: LinkAndSyncSecondaryProgressViewModel
     ) async throws(CompleteProvisioningError) {
@@ -217,7 +217,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     }
 
     private func completeProvisioning_updateCensorshipCircumvention(
-        provisionMessage: ProvisioningMessage,
+        provisionMessage: LinkingProvisioningMessage,
         deviceName: String,
         aci: Aci,
         pni: Pni,
@@ -238,7 +238,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     }
 
     private func completeProvisioning_createPrekeys(
-        provisionMessage: ProvisioningMessage,
+        provisionMessage: LinkingProvisioningMessage,
         deviceName: String,
         aci: Aci,
         pni: Pni,
@@ -278,7 +278,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     }
 
     private func completeProvisioning_createRegistrationIds(
-        provisionMessage: ProvisioningMessage,
+        provisionMessage: LinkingProvisioningMessage,
         deviceName: String,
         aci: Aci,
         pni: Pni,
@@ -309,7 +309,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     }
 
     private func completeProvisioning_verifyAndLinkOnServer(
-        provisionMessage: ProvisioningMessage,
+        provisionMessage: LinkingProvisioningMessage,
         deviceName: String,
         aci: Aci,
         pni: Pni,
@@ -352,7 +352,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     }
 
     private func completeProvisioning_setLocalKeys(
-        provisionMessage: ProvisioningMessage,
+        provisionMessage: LinkingProvisioningMessage,
         prekeyBundles: RegistrationPreKeyUploadBundles,
         authedDevice: AuthedDevice.Explicit
     ) async throws(CompleteProvisioningError) -> CompleteProvisioningStepResult {
@@ -436,7 +436,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     }
 
     private func completeProvisioning_finalizePrekeys(
-        provisionMessage: ProvisioningMessage,
+        provisionMessage: LinkingProvisioningMessage,
         prekeyBundles: RegistrationPreKeyUploadBundles,
         authedDevice: AuthedDevice.Explicit
     ) async throws(CompleteProvisioningError) -> CompleteProvisioningStepResult {
@@ -625,7 +625,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     // MARK: Network steps
 
     private func verifyAndLinkOnServer(
-        provisionMessage: ProvisioningMessage,
+        provisionMessage: LinkingProvisioningMessage,
         aci: Aci,
         pni: Pni,
         phoneNumber: E164,

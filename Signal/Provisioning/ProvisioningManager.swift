@@ -53,7 +53,7 @@ public class ProvisioningManager {
             var aciIdentityKeyPair: ECKeyPair
             var pniIdentityKeyPair: ECKeyPair
             var areReadReceiptsEnabled: Bool
-            var rootKey: ProvisioningMessage.RootKey
+            var rootKey: LinkingProvisioningMessage.RootKey
             var mediaRootBackupKey: BackupKey
             var profileKey: Aes256Key
         }
@@ -79,7 +79,7 @@ public class ProvisioningManager {
                 owsFail("Can't provision without a pni identity.")
             }
             let areReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled(tx: tx)
-            let rootKey: ProvisioningMessage.RootKey
+            let rootKey: LinkingProvisioningMessage.RootKey
             if FeatureFlags.enableAccountEntropyPool {
                 guard let accountEntropyPool = accountKeyStore.getAccountEntropyPool(tx: tx) else {
                     // This should be impossible; the only times you don't have
@@ -118,7 +118,7 @@ public class ProvisioningManager {
 
         let provisioningCode = try await deviceProvisioningService.requestDeviceProvisioningCode()
 
-        let provisioningMessage = ProvisioningMessage(
+        let provisioningMessage = LinkingProvisioningMessage(
             rootKey: provisioningState.rootKey,
             aci: myAci,
             phoneNumber: myPhoneNumber,

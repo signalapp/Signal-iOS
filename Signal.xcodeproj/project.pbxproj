@@ -1683,13 +1683,14 @@
 		C13A484729B650BC00BA9005 /* UsernameValidationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */; };
 		C13B9BB22A17BC32007F74C4 /* EditManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */; };
 		C13B9BB62A1819C7007F74C4 /* OutgoingEditMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */; };
+		C13EDC3F2D94636000670597 /* Registration.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15EE0922D5D5AC00070838C /* Registration.pb.swift */; };
 		C14391132BD1C0DF00ED6FCB /* MessageBackupRequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14391122BD1C0DF00ED6FCB /* MessageBackupRequestManager.swift */; };
 		C14AEBDF2C1A482900FAA31D /* CVComponentArchivedPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14AEBDE2C1A482900FAA31D /* CVComponentArchivedPayment.swift */; };
 		C14D49CE2D667F830033BA69 /* AccountKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14D49CD2D667F830033BA69 /* AccountKeyStore.swift */; };
 		C14EC1A22BA891D200A4D064 /* TransformingInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */; };
 		C14EC1A92BAA4B5F00A4D064 /* StreamTransformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */; };
 		C14EC1AB2BAB57B900A4D064 /* DecryptingStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */; };
-		C150D6452D70AD9400DA119B /* ProvisioningMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C150D6442D70AD9400DA119B /* ProvisioningMessage.swift */; };
+		C150D6452D70AD9400DA119B /* LinkingProvisioningMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C150D6442D70AD9400DA119B /* LinkingProvisioningMessage.swift */; };
 		C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15837EE29A592BA00176927 /* UsernameValidationManager.swift */; };
 		C1661A1A2C3D939300AB887F /* ArchivedPaymentHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1661A192C3D939300AB887F /* ArchivedPaymentHistoryItem.swift */; };
 		C1661A1C2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1661A1B2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift */; };
@@ -1710,6 +1711,7 @@
 		C17A54982D7B3DCD00E1D267 /* DeviceProvisioningURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */; };
 		C17A54992D7B3DDE00E1D267 /* ProvisioningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17B31542D710DBD0060664D /* ProvisioningManager.swift */; };
 		C17A549A2D7B3DFB00E1D267 /* ProvisioningManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17B31582D710DD80060664D /* ProvisioningManager+Shims.swift */; };
+		C180878C2D763D4800B16D1E /* RegistrationProvisioningMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C180878B2D763D4800B16D1E /* RegistrationProvisioningMessage.swift */; };
 		C18806342BD8080B0024044A /* MessageBackupAuthCredentialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18806332BD8080B0024044A /* MessageBackupAuthCredentialManager.swift */; };
 		C18806362BD947970024044A /* OWSRequestFactory+MessageBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18806352BD947970024044A /* OWSRequestFactory+MessageBackup.swift */; };
 		C18D4A952B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */; };
@@ -5581,8 +5583,10 @@
 		C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformingInputStream.swift; sourceTree = "<group>"; };
 		C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTransformTests.swift; sourceTree = "<group>"; };
 		C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptingStreamTransform.swift; sourceTree = "<group>"; };
-		C150D6442D70AD9400DA119B /* ProvisioningMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningMessage.swift; sourceTree = "<group>"; };
+		C150D6442D70AD9400DA119B /* LinkingProvisioningMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkingProvisioningMessage.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
+		C15EE0902D5D53420070838C /* Registration.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = Registration.proto; path = SignalServiceKit/protobuf/Registration.proto; sourceTree = SOURCE_ROOT; };
+		C15EE0922D5D5AC00070838C /* Registration.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Registration.pb.swift; sourceTree = "<group>"; };
 		C1661A192C3D939300AB887F /* ArchivedPaymentHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivedPaymentHistoryItem.swift; sourceTree = "<group>"; };
 		C1661A1B2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSPaymentModelHistoryItem.swift; sourceTree = "<group>"; };
 		C1661A1D2C3D942300AB887F /* PaymentHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentHistoryItem.swift; sourceTree = "<group>"; };
@@ -5600,6 +5604,7 @@
 		C17B31542D710DBD0060664D /* ProvisioningManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningManager.swift; sourceTree = "<group>"; };
 		C17B31582D710DD80060664D /* ProvisioningManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProvisioningManager+Shims.swift"; sourceTree = "<group>"; };
 		C18087892D76023400B16D1E /* ProvisioningSocketManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningSocketManager.swift; sourceTree = "<group>"; };
+		C180878B2D763D4800B16D1E /* RegistrationProvisioningMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationProvisioningMessage.swift; sourceTree = "<group>"; };
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
 		C18806332BD8080B0024044A /* MessageBackupAuthCredentialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupAuthCredentialManager.swift; sourceTree = "<group>"; };
@@ -12642,6 +12647,7 @@
 				D9D3217D2A8FEA9C004FC110 /* Fingerprint.proto */,
 				D9D3217B2A8FEA9B004FC110 /* Groups.proto */,
 				D9D321822A8FEA9C004FC110 /* Provisioning.proto */,
+				C15EE0902D5D53420070838C /* Registration.proto */,
 				D9D3217E2A8FEA9C004FC110 /* SessionRecord.proto */,
 				D9D3217F2A8FEA9C004FC110 /* SignalIOS.proto */,
 				D9D321812A8FEA9C004FC110 /* SignalService.proto */,
@@ -13711,6 +13717,7 @@
 				501052632BDAEEDC0097DDC5 /* MobileCoinExternal.pb.swift */,
 				F9C5C9B2289453B100548EEE /* Provisioning.pb.swift */,
 				F9C5C9AA289453B100548EEE /* ProvisioningProto.swift */,
+				C15EE0922D5D5AC00070838C /* Registration.pb.swift */,
 				F9C5C9AB289453B100548EEE /* SessionRecord.pb.swift */,
 				F9C5C9A4289453B100548EEE /* SignalIOS.pb.swift */,
 				F9C5C9B3289453B100548EEE /* SignalIOSProto.swift */,
@@ -13867,6 +13874,7 @@
 				6619A1BB2B2A8132004B38FE /* SentMessageTranscriptReceiver */,
 				D9C0AE642BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift */,
 				669941A02CC976B000DC99A1 /* LinkAndSyncManager.swift */,
+				C150D6442D70AD9400DA119B /* LinkingProvisioningMessage.swift */,
 				D9AA7D6D2D11F0750014137C /* OutgoingDeviceNameChangeSyncMessage.swift */,
 				F9C5CA21289453B100548EEE /* OWSBlockedPhoneNumbersMessage.h */,
 				F9C5CA29289453B100548EEE /* OWSBlockedPhoneNumbersMessage.m */,
@@ -13889,8 +13897,8 @@
 				F9C5CA2E289453B100548EEE /* OWSViewOnceMessageReadSyncMessage.h */,
 				F9C5CA1C289453B100548EEE /* OWSViewOnceMessageReadSyncMessage.m */,
 				F9C5CA25289453B100548EEE /* ProvisioningCipher.swift */,
-				C150D6442D70AD9400DA119B /* ProvisioningMessage.swift */,
 				F9C5CA18289453B100548EEE /* ProvisioningSocket.swift */,
+				C180878B2D763D4800B16D1E /* RegistrationProvisioningMessage.swift */,
 			);
 			path = Devices;
 			sourceTree = "<group>";
@@ -17689,6 +17697,7 @@
 				D9A36B932C7FEDA100CEC0E7 /* LineByLineStringDiff.swift in Sources */,
 				669941A12CC976B500DC99A1 /* LinkAndSyncManager.swift in Sources */,
 				D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */,
+				C150D6452D70AD9400DA119B /* LinkingProvisioningMessage.swift in Sources */,
 				66076B4C2BC053290043D547 /* LinkPreviewBuilder.swift in Sources */,
 				66076B4E2BC056980043D547 /* LinkPreviewBuilderImpl.swift in Sources */,
 				6600BB212BA3BC540005A035 /* LinkPreviewHelper.swift in Sources */,
@@ -18084,7 +18093,6 @@
 				72901D2F2C9B1918000406DC /* ProtoUtils.swift in Sources */,
 				F9C5CC9D289453B300548EEE /* Provisioning.pb.swift in Sources */,
 				F9C5CD08289453B300548EEE /* ProvisioningCipher.swift in Sources */,
-				C150D6452D70AD9400DA119B /* ProvisioningMessage.swift in Sources */,
 				F9C5CC95289453B300548EEE /* ProvisioningProto.swift in Sources */,
 				66CDB7632AFC5E24009A36EC /* ProvisioningRequestFactory.swift in Sources */,
 				66CDB7652AFC5E74009A36EC /* ProvisioningServiceResponses.swift in Sources */,
@@ -18122,7 +18130,9 @@
 				66EB029B2BAB9F1C004F0580 /* ReferencedAttachment.swift in Sources */,
 				F9C5CE18289453B400548EEE /* Refinery.swift in Sources */,
 				720547F62B9C985300E2CF2F /* RefreshEvent.swift in Sources */,
+				C13EDC3F2D94636000670597 /* Registration.pb.swift in Sources */,
 				661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */,
+				C180878C2D763D4800B16D1E /* RegistrationProvisioningMessage.swift in Sources */,
 				66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */,
 				66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */,
 				6600F354298C8FCA00B1EDB7 /* RegistrationSession.swift in Sources */,

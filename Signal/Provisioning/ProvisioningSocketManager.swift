@@ -7,10 +7,55 @@ import Foundation
 public import SignalServiceKit
 import LibSignalClient
 
+// MARK: - DecryptableProvisioningMessage
+
+/// Protocol describing a message that can be sent and received through
+/// the ProvisioningSocket.
+public protocol DecryptableProvisioningMessage {
+
+    /// Alias for the proto type that wraps the message.
+    associatedtype Envelope: ProvisioningEnvelope
+
+    init(plaintext: Data) throws
+}
+
+/// Protocol describing the envelope that contains a `DecryptableProvisioningMessage`
+/// and can be sent and received through the ProvisioningSocket.
+public protocol ProvisioningEnvelope {
+
+    init(serializedData: Data) throws
+
+    /// Encrypted payload containing the `DecryptableProvisioningMessage`
+    var body: Data { get }
+
+    /// The public key used to encrypt `bodyData`
+    var publicKey: Data { get }
+}
+
+// MARK: - DecryptableProvisioningMessage conformance
+
+extension ProvisioningProtoProvisionEnvelope: ProvisioningEnvelope {}
+extension LinkingProvisioningMessage: DecryptableProvisioningMessage {
+    public typealias Envelope = ProvisioningProtoProvisionEnvelope
+}
+
+extension RegistrationProvisioningEnvelope: ProvisioningEnvelope {}
+extension RegistrationProvisioningMessage: DecryptableProvisioningMessage {
+    public typealias Envelope = RegistrationProvisioningEnvelope
+}
+
+// MARK: - ProvisioningSocketManager
+
 @MainActor
 public protocol ProvisioningSocketManagerUIDelegate: AnyObject {
-    func provisioningSocketManager(_ provisioningSocketManager: ProvisioningSocketManager, didUpdateProvisioningURL url: URL)
-    func provisioningSocketManagerDidPauseQRRotation(_ provisioningSocketManager: ProvisioningSocketManager)
+    func provisioningSocketManager(
+        _ provisioningSocketManager: ProvisioningSocketManager,
+        didUpdateProvisioningURL url: URL
+    )
+
+    func provisioningSocketManagerDidPauseQRRotation(
+        _ provisioningSocketManager: ProvisioningSocketManager
+    )
 }
 
 public class ProvisioningSocketManager: ProvisioningSocketDelegate {
@@ -20,15 +65,16 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
     }
 
     private struct DecryptableProvisionEnvelope {
-        let cipher: ProvisioningCipher
-        let envelope: ProvisioningProtoProvisionEnvelope
+        private let cipher: ProvisioningCipher
+        private let encryptedEnvelope: Data
 
-        init(cipher: ProvisioningCipher, data: Data) throws {
+        init(cipher: ProvisioningCipher, data: Data) {
             self.cipher = cipher
-            self.envelope = try ProvisioningProtoProvisionEnvelope(serializedData: data)
+            self.encryptedEnvelope = data
         }
 
-        func decrypt() throws -> ProvisioningMessage {
+        func decrypt<ProvisioningMessage: DecryptableProvisioningMessage>() throws -> ProvisioningMessage {
+            let envelope = try ProvisioningMessage.Envelope(serializedData: encryptedEnvelope)
             let data = try cipher.decrypt(data: envelope.body, theirPublicKey: try PublicKey(envelope.publicKey))
             return try ProvisioningMessage(plaintext: data)
         }
@@ -50,7 +96,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
     }
 
     private var urlCommunicationAttempts: AtomicValue<[ProvisioningUrlCommunicationAttempt]> = AtomicValue([], lock: .init())
-    private var awaitProvisionEnvelopeContinuation: AtomicValue<CheckedContinuation<DecryptableProvisionEnvelope?, Never>?> = AtomicValue(nil, lock: .init())
+    private var awaitProvisionEnvelopeContinuation: AtomicValue<CheckedContinuation<DecryptableProvisionEnvelope, Error>?> = AtomicValue(nil, lock: .init())
 
     public var delegate: ProvisioningSocketManagerUIDelegate?
 
@@ -78,7 +124,10 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
 
     // MARK: ProvisioningSocketDelegate
 
-    public func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveProvisioningUuid provisioningUuid: String) {
+    public func provisioningSocket(
+        _ provisioningSocket: ProvisioningSocket,
+        didReceiveProvisioningUuid provisioningUuid: String
+    ) {
         urlCommunicationAttempts.update { attempts in
             let matchingAttemptIndex = attempts.firstIndex {
                 $0.socket.id == provisioningSocket.id
@@ -138,16 +187,9 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
                 return
             }
 
-            do {
-                let envelope = try DecryptableProvisionEnvelope(
-                    cipher: cipherForSocket,
-                    data: data
-                )
-                continuation.resume(returning: envelope)
-            } catch {
-                owsFailDebug("Failed to decrypt provision envelope!")
-                continuation.resume(returning: nil)
-            }
+            stop()
+            let envelope = DecryptableProvisionEnvelope(cipher: cipherForSocket, data: data)
+            continuation.resume(returning: envelope)
         }
     }
 
@@ -241,20 +283,15 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
         return try Self.buildProvisioningUrl(type: linkType, params: provisioningUrlParams)
     }
 
-    public func waitForMessage() async throws -> ProvisioningMessage {
-        let decryptableProvisionEnvelope: DecryptableProvisionEnvelope? = await withCheckedContinuation { newContinuation in
+    public func waitForMessage<ProvisioningMessage: DecryptableProvisioningMessage>() async throws -> ProvisioningMessage {
+        let decryptableProvisionEnvelope: DecryptableProvisionEnvelope = try await withCheckedThrowingContinuation { newContinuation in
             awaitProvisionEnvelopeContinuation.update { existingContinuation in
                 guard existingContinuation == nil else {
-                    newContinuation.resume(returning: nil)
+                    newContinuation.resume(throwing: OWSAssertionError("Attempted to await provisioning multiple times!"))
                     return
                 }
-
                 existingContinuation = newContinuation
             }
-        }
-        guard let decryptableProvisionEnvelope else {
-            // TODO: Throw real error
-            throw OWSAssertionError("Attempted to await provisioning multiple times!")
         }
         return try decryptableProvisionEnvelope.decrypt()
     }
