@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
     showUnidentifiedDeliveryIndicators:(BOOL)showUnidentifiedDeliveryIndicators
                   showTypingIndicators:(BOOL)showTypingIndicators
                       sendLinkPreviews:(BOOL)sendLinkPreviews
+                   provisioningVersion:(uint32_t)provisioningVersion
                            transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

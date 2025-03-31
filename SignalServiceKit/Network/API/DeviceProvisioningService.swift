@@ -16,12 +16,12 @@ public struct DeviceProvisioningTokenId {
 public struct DeviceProvisioningCodeResponse: Decodable {
     /// An opaque token to send to a new linked device that authorizes the
     /// new device to link itself to the account that requested this token.
-    var verificationCode: String
+    public var verificationCode: String
     /// An opaque identifier for the generated token that the caller may use
     /// to watch for a new device to complete the linking process.
     var tokenIdentifier: String
 
-    var tokenId: DeviceProvisioningTokenId { .init(id: tokenIdentifier) }
+    public var tokenId: DeviceProvisioningTokenId { .init(id: tokenIdentifier) }
 }
 
 public protocol DeviceProvisioningService {

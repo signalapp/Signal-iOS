@@ -4,10 +4,8 @@
 //
 
 import LibSignalClient
-import SignalServiceKit
-import XCTest
-
 @testable import Signal
+import XCTest
 
 class DeviceProvisioningURLTest: XCTestCase {
     func testValid() {

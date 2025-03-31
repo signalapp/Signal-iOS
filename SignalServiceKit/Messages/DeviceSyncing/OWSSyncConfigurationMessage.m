@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL showUnidentifiedDeliveryIndicators;
 @property (nonatomic, readonly) BOOL showTypingIndicators;
 @property (nonatomic, readonly) BOOL sendLinkPreviews;
+@property (nonatomic, readonly) uint32_t provisioningVersion;
 
 @end
 
@@ -24,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
     showUnidentifiedDeliveryIndicators:(BOOL)showUnidentifiedDeliveryIndicators
                   showTypingIndicators:(BOOL)showTypingIndicators
                       sendLinkPreviews:(BOOL)sendLinkPreviews
+                   provisioningVersion:(uint32_t)provisioningVersion
                            transaction:(DBReadTransaction *)transaction
 {
     self = [super initWithLocalThread:localThread transaction:transaction];
@@ -35,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
     _showUnidentifiedDeliveryIndicators = showUnidentifiedDeliveryIndicators;
     _showTypingIndicators = showTypingIndicators;
     _sendLinkPreviews = sendLinkPreviews;
+    _provisioningVersion = provisioningVersion;
 
     return self;
 }
@@ -51,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     configurationBuilder.unidentifiedDeliveryIndicators = self.showUnidentifiedDeliveryIndicators;
     configurationBuilder.typingIndicators = self.showTypingIndicators;
     configurationBuilder.linkPreviews = self.sendLinkPreviews;
-    configurationBuilder.provisioningVersion = OWSDeviceProvisionerConstant.provisioningVersion;
+    configurationBuilder.provisioningVersion = self.provisioningVersion;
 
     SSKProtoSyncMessageBuilder *builder = [SSKProtoSyncMessage builder];
     builder.configuration = [configurationBuilder buildInfallibly];

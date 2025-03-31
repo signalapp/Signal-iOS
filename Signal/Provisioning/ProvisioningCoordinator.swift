@@ -25,7 +25,7 @@ import SignalServiceKit
 protocol ProvisioningCoordinator {
 
     func completeProvisioning(
-        provisionMessage: ProvisionMessage,
+        provisionMessage: ProvisioningMessage,
         deviceName: String,
         progressViewModel: LinkAndSyncSecondaryProgressViewModel
     ) async throws(CompleteProvisioningError)

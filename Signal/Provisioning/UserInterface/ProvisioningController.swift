@@ -5,6 +5,7 @@
 
 import SignalServiceKit
 import SignalUI
+import LibSignalClient
 
 class ProvisioningNavigationController: OWSNavigationController {
     private(set) var provisioningController: ProvisioningController
@@ -33,8 +34,14 @@ class ProvisioningController: NSObject {
         let cipher: ProvisioningCipher
         let envelope: ProvisioningProtoProvisionEnvelope
 
-        func decrypt() throws -> ProvisionMessage {
-            return try cipher.decrypt(envelope: envelope)
+        init(cipher: ProvisioningCipher, data: Data) throws {
+            self.cipher = cipher
+            self.envelope = try ProvisioningProtoProvisionEnvelope(serializedData: data)
+        }
+
+        func decrypt() throws -> ProvisioningMessage {
+            let data = try cipher.decrypt(data: envelope.body, theirPublicKey: try PublicKey(envelope.publicKey))
+            return try ProvisioningMessage(plaintext: data)
         }
     }
 
@@ -280,7 +287,7 @@ class ProvisioningController: NSObject {
         }
 
         await MainActor.run {
-            let provisionMessage: ProvisionMessage
+            let provisionMessage: ProvisioningMessage
             do {
                 provisionMessage = try decryptableProvisionEnvelope.decrypt()
             } catch let error {
@@ -306,10 +313,7 @@ class ProvisioningController: NSObject {
             }
 
             /// Ensure the primary is new enough to link us.
-            guard
-                let provisioningVersion = provisionMessage.provisioningVersion,
-                provisioningVersion >= OWSDeviceProvisionerConstant.provisioningVersion
-            else {
+            guard provisionMessage.provisioningVersion >= ProvisioningMessage.Constants.provisioningVersion else {
                 OWSActionSheets.showActionSheet(
                     title: OWSLocalizedString(
                         "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE",
@@ -386,7 +390,7 @@ class ProvisioningController: NSObject {
         let provisioningUrlParams: ProvisioningUrlParams = try await withCheckedThrowingContinuation { paramsContinuation in
             let newAttempt = ProvisioningUrlCommunicationAttempt(
                 socket: ProvisioningSocket(),
-                cipher: .generate(),
+                cipher: ProvisioningCipher(),
                 fetchProvisioningUrlParamsContinuation: paramsContinuation
             )
 
@@ -751,14 +755,6 @@ class ProvisioningController: NSObject {
     // MARK: -
 
     private static func buildProvisioningUrl(params: ProvisioningUrlParams) throws -> URL {
-        let base64PubKey: String = Data(
-            params.cipher.secondaryDevicePublicKey.serialize()
-        ).base64EncodedString()
-        guard let encodedPubKey = base64PubKey.encodeURIComponent else {
-            throw OWSAssertionError("Failed to url encode query params")
-        }
-
-        var capabilities = [String]()
 
         let shouldLinkAndSync: Bool = {
             switch DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction {
@@ -781,23 +777,16 @@ class ProvisioningController: NSObject {
             }
         }()
 
+        var capabilities = [DeviceProvisioningURL.Capability]()
         if shouldLinkAndSync {
-            capabilities.append(DeviceProvisioningURL.Capability.linknsync.rawValue)
+            capabilities.append(DeviceProvisioningURL.Capability.linknsync)
         }
 
-        // We don't use URLComponents to generate this URL as it encodes '+' and '/'
-        // in the base64 pub_key in a way the Android doesn't tolerate.
-        var urlString = UrlOpener.Constants.sgnlPrefix
-        urlString.append("://")
-        urlString.append(DeviceProvisioningURL.Constants.linkDeviceHost)
-        urlString.append("?\(DeviceProvisioningURL.uuidParamName)=\(params.uuid)")
-        urlString.append("&\(DeviceProvisioningURL.publicKeyParamName)=\(encodedPubKey)")
-        urlString.append("&\(DeviceProvisioningURL.capabilitiesParamName)=\(capabilities.joined(separator: ","))")
-        guard let url = URL(string: urlString) else {
-            throw OWSAssertionError("invalid url: \(urlString)")
-        }
-
-        return url
+        return try DeviceProvisioningURL(
+            ephemeralDeviceId: params.uuid,
+            publicKey: params.cipher.ourPublicKey,
+            capabilities: capabilities
+        ).buildUrl()
     }
 }
 
@@ -827,7 +816,7 @@ extension ProvisioningController: ProvisioningSocketDelegate {
         }
     }
 
-    func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveEnvelope envelope: ProvisioningProtoProvisionEnvelope) {
+    func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveEnvelopeData data: Data) {
         var cipherForSocket: ProvisioningCipher?
 
         /// We've gotten a provisioning message, from one of our attempts'
@@ -854,16 +843,21 @@ extension ProvisioningController: ProvisioningSocketDelegate {
         }
 
         awaitProvisionEnvelopeContinuation.update { continuation in
-            guard continuation != nil else {
+            guard let continuation else {
                 owsFailDebug("Got provision envelope, but missing continuation or cipher!")
                 return
             }
 
-            continuation!.resume(returning: DecryptableProvisionEnvelope(
-                cipher: cipherForSocket,
-                envelope: envelope
-            ))
-            continuation = nil
+            do {
+                let envelope = try DecryptableProvisionEnvelope(
+                    cipher: cipherForSocket,
+                    data: data
+                )
+                continuation.resume(returning: envelope)
+            } catch {
+                owsFailDebug("Failed to decrypt provision envelope!")
+                continuation.resume(returning: nil)
+            }
         }
     }
 

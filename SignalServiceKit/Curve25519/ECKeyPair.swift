@@ -81,3 +81,7 @@ public final class ECKeyPair: NSObject, NSSecureCoding {
         return Data(identityKeyPair.privateKey.serialize())
     }
 }
+
+extension IdentityKeyPair {
+    public var asECKeyPair: ECKeyPair { return .init(self) }
+}

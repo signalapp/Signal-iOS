@@ -419,39 +419,18 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     public func storeKeys(
-        fromProvisioningMessage provisioningMessage: ProvisionMessage,
+        fromProvisioningMessage provisioningMessage: ProvisioningMessage,
         authedDevice: AuthedDevice,
         tx: DBWriteTransaction
     ) throws(SVR.KeysError) {
         Logger.info("")
-        do {
-            if let mbrk = try provisioningMessage.mrbk.map({ try BackupKey(contents: Array($0)) }) {
-                accountKeyStore.setMediaRootBackupKey(mbrk, tx: tx)
-            }
-        } catch {
-            if FeatureFlags.linkAndSyncLinkedImport || FeatureFlags.messageBackupFileAlpha {
-                throw .missingMediaRootBackupKey
-            } else {
-                Logger.warn("Invalid MRBK; ignoring")
-            }
-        }
+        accountKeyStore.setMediaRootBackupKey(provisioningMessage.mrbk, tx: tx)
 
-        var didSetAEP = false
-        do {
-            if let aep = try provisioningMessage.accountEntropyPool.map({ try AccountEntropyPool(key: $0) }) {
-                accountKeyStore.setAccountEntropyPool(aep, tx: tx)
-                didSetAEP = true
-            }
-        } catch {
-            Logger.warn("Failed to parse AEP")
-        }
-
-        if !didSetAEP {
-            do {
-                accountKeyStore.setMasterKey(try MasterKey(data: provisioningMessage.masterKey), tx: tx)
-            } catch {
-                throw .missingMasterKey
-            }
+        switch provisioningMessage.rootKey {
+        case .accountEntropyPool(let aep):
+            accountKeyStore.setAccountEntropyPool(aep, tx: tx)
+        case .masterKey(let masterKey):
+            accountKeyStore.setMasterKey(masterKey, tx: tx)
         }
 
         // Wipe the storage service key, we don't need it anymore.

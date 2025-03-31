@@ -7,7 +7,7 @@ import Foundation
 
 public protocol ProvisioningSocketDelegate: AnyObject {
     func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveProvisioningUuid provisioningUuid: String)
-    func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveEnvelope envelope: ProvisioningProtoProvisionEnvelope)
+    func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveEnvelopeData data: Data)
     func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didError error: Error)
 }
 
@@ -24,7 +24,7 @@ public class ProvisioningSocket {
         let request = WebSocketRequest(
             signalService: .mainSignalServiceIdentified,
             urlPath: "v1/websocket/provisioning/",
-            urlQueryItems: [URLQueryItem(name: "agent", value: OWSDeviceProvisioner.userAgent)],
+            urlQueryItems: [URLQueryItem(name: "agent", value: ProvisioningMessage.Constants.userAgent)],
             extraHeaders: [:]
         )
         let webSocket = webSocketFactory.buildSocket(request: request, callbackScheduler: DispatchQueue.main)!
@@ -102,8 +102,7 @@ extension ProvisioningSocket: SSKWebSocketDelegate {
             guard let body = request.body else {
                 throw OWSAssertionError("body was unexpectedly nil")
             }
-            let envelopeProto = try ProvisioningProtoProvisionEnvelope(serializedData: body)
-            delegate?.provisioningSocket(self, didReceiveEnvelope: envelopeProto)
+            delegate?.provisioningSocket(self, didReceiveEnvelopeData: body)
         default:
             throw OWSAssertionError("unexpected request: \(request)")
         }

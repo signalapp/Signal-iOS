@@ -554,7 +554,6 @@
 		5010526B2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5010526A2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy */; };
 		5010B6B42C6BD41E00314CD4 /* PreKeyBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5010B6B32C6BD41E00314CD4 /* PreKeyBundle.swift */; };
 		5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */; };
-		5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */; };
 		5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */; };
 		5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */; };
 		50150DAC2C80E2CE0047F1CB /* CallLinkState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E42FE52C1B9EB900554BD6 /* CallLinkState.swift */; };
@@ -1690,6 +1689,7 @@
 		C14EC1A22BA891D200A4D064 /* TransformingInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */; };
 		C14EC1A92BAA4B5F00A4D064 /* StreamTransformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */; };
 		C14EC1AB2BAB57B900A4D064 /* DecryptingStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */; };
+		C150D6452D70AD9400DA119B /* ProvisioningMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C150D6442D70AD9400DA119B /* ProvisioningMessage.swift */; };
 		C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15837EE29A592BA00176927 /* UsernameValidationManager.swift */; };
 		C1661A1A2C3D939300AB887F /* ArchivedPaymentHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1661A192C3D939300AB887F /* ArchivedPaymentHistoryItem.swift */; };
 		C1661A1C2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1661A1B2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift */; };
@@ -1705,6 +1705,11 @@
 		C17345BB2A5E000300C6426D /* PreKeyTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17345BA2A5E000300C6426D /* PreKeyTarget.swift */; };
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
+		C17A54962D7B3D9E00E1D267 /* DeviceProvisioningURLTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93999EB28C80A6C00E34899 /* DeviceProvisioningURLTest.swift */; };
+		C17A54972D7B3DA700E1D267 /* ProvisionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261C8289B1B5300460798 /* ProvisionManagerTests.swift */; };
+		C17A54982D7B3DCD00E1D267 /* DeviceProvisioningURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */; };
+		C17A54992D7B3DDE00E1D267 /* ProvisioningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17B31542D710DBD0060664D /* ProvisioningManager.swift */; };
+		C17A549A2D7B3DFB00E1D267 /* ProvisioningManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17B31582D710DD80060664D /* ProvisioningManager+Shims.swift */; };
 		C18806342BD8080B0024044A /* MessageBackupAuthCredentialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18806332BD8080B0024044A /* MessageBackupAuthCredentialManager.swift */; };
 		C18806362BD947970024044A /* OWSRequestFactory+MessageBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18806352BD947970024044A /* OWSRequestFactory+MessageBackup.swift */; };
 		C18D4A952B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */; };
@@ -3047,13 +3052,11 @@
 		F93461BB291ED2B000366682 /* PaymentDetailsValidityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461BA291ED2B000366682 /* PaymentDetailsValidityTest.swift */; };
 		F9349CE62901866800F9A93A /* DonationHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9349CE52901866800F9A93A /* DonationHeroView.swift */; };
 		F937EDA429746DA20003AF3F /* OWSFail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F937EDA329746DA20003AF3F /* OWSFail.swift */; };
-		F93999EC28C80A6C00E34899 /* DeviceProvisioningURLTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93999EB28C80A6C00E34899 /* DeviceProvisioningURLTest.swift */; };
 		F93999F628C81F2100E34899 /* DataMessagePaddingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93999F528C81F2100E34899 /* DataMessagePaddingTests.swift */; };
 		F93999F828C8204800E34899 /* Data+MessagePadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93999F728C8204800E34899 /* Data+MessagePadding.swift */; };
 		F93A76ED29133A4B005FDE4F /* OWSDisappearingMessagesJobTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93A76EC29133A4B005FDE4F /* OWSDisappearingMessagesJobTest.swift */; };
 		F93BCB9A29EDE86400E3C6A0 /* UIDevice+CanUpgradeOperatingSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93BCB9929EDE86400E3C6A0 /* UIDevice+CanUpgradeOperatingSystem.swift */; };
 		F941B17028412D5F00498CCD /* ApplePayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F941B16F28412D5F00498CCD /* ApplePayButton.swift */; };
-		F942623B289B1B5500460798 /* OWSDeviceProvisionerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261C8289B1B5300460798 /* OWSDeviceProvisionerTest.swift */; };
 		F9426241289B1B5500460798 /* MessageSenderJobRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D0289B1B5400460798 /* MessageSenderJobRecordTest.swift */; };
 		F9426242289B1B5500460798 /* OWSURLBuilderUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D1289B1B5400460798 /* OWSURLBuilderUtilTest.swift */; };
 		F9426243289B1B5500460798 /* HttpHeadersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D2289B1B5400460798 /* HttpHeadersTest.swift */; };
@@ -3417,9 +3420,7 @@
 		F9C5CCE2289453B300548EEE /* SignalServiceAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FC289453B100548EEE /* SignalServiceAddress.swift */; };
 		F9C5CCE3289453B300548EEE /* TSGroupMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FD289453B100548EEE /* TSGroupMember.swift */; };
 		F9C5CCE4289453B300548EEE /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FE289453B100548EEE /* Contact.swift */; };
-		F9C5CCEF289453B300548EEE /* OWSDeviceProvisioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0B289453B100548EEE /* OWSDeviceProvisioner.swift */; };
 		F9C5CCF0289453B300548EEE /* OWSStickerPackSyncMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0C289453B100548EEE /* OWSStickerPackSyncMessage.m */; };
-		F9C5CCF1289453B300548EEE /* OWSProvisioningCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0D289453B100548EEE /* OWSProvisioningCipher.swift */; };
 		F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0F289453B100548EEE /* ChunkedInputStream.swift */; };
 		F9C5CCF8289453B300548EEE /* ContactsInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA15289453B100548EEE /* ContactsInputStream.swift */; };
 		F9C5CCFB289453B300548EEE /* ProvisioningSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA18289453B100548EEE /* ProvisioningSocket.swift */; };
@@ -3637,7 +3638,7 @@
 		F9F4DE2A283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */; };
 		F9F797DF296CC54A0025C103 /* DonationPaymentDetailsViewController+GiftDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F797DE296CC54A0025C103 /* DonationPaymentDetailsViewController+GiftDonation.swift */; };
 		F9F797E1296CCC630025C103 /* DonationViewsUtil+Gifting.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F797E0296CCC630025C103 /* DonationViewsUtil+Gifting.swift */; };
-		F9FA363629F335E500C13830 /* OWSProvisioningCipherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9FA363529F335E500C13830 /* OWSProvisioningCipherTest.swift */; };
+		F9FA363629F335E500C13830 /* ProvisioningCipherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9FA363529F335E500C13830 /* ProvisioningCipherTests.swift */; };
 		F9FAABD829DB55940004B383 /* Progress+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9FAABD729DB55940004B383 /* Progress+Signal.swift */; };
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
@@ -5579,6 +5580,7 @@
 		C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformingInputStream.swift; sourceTree = "<group>"; };
 		C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTransformTests.swift; sourceTree = "<group>"; };
 		C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptingStreamTransform.swift; sourceTree = "<group>"; };
+		C150D6442D70AD9400DA119B /* ProvisioningMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningMessage.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
 		C1661A192C3D939300AB887F /* ArchivedPaymentHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivedPaymentHistoryItem.swift; sourceTree = "<group>"; };
 		C1661A1B2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSPaymentModelHistoryItem.swift; sourceTree = "<group>"; };
@@ -5594,6 +5596,8 @@
 		C17345BA2A5E000300C6426D /* PreKeyTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTarget.swift; sourceTree = "<group>"; };
 		C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberPrivacySettingsViewController.swift; sourceTree = "<group>"; };
 		C179B01D29ED94FA00275AD1 /* EditRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRecord.swift; sourceTree = "<group>"; };
+		C17B31542D710DBD0060664D /* ProvisioningManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningManager.swift; sourceTree = "<group>"; };
+		C17B31582D710DD80060664D /* ProvisioningManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProvisioningManager+Shims.swift"; sourceTree = "<group>"; };
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
 		C18806332BD8080B0024044A /* MessageBackupAuthCredentialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupAuthCredentialManager.swift; sourceTree = "<group>"; };
@@ -6971,7 +6975,7 @@
 		F93A76EC29133A4B005FDE4F /* OWSDisappearingMessagesJobTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDisappearingMessagesJobTest.swift; sourceTree = "<group>"; };
 		F93BCB9929EDE86400E3C6A0 /* UIDevice+CanUpgradeOperatingSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIDevice+CanUpgradeOperatingSystem.swift"; sourceTree = "<group>"; };
 		F941B16F28412D5F00498CCD /* ApplePayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayButton.swift; sourceTree = "<group>"; };
-		F94261C8289B1B5300460798 /* OWSDeviceProvisionerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDeviceProvisionerTest.swift; sourceTree = "<group>"; };
+		F94261C8289B1B5300460798 /* ProvisionManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisionManagerTests.swift; sourceTree = "<group>"; };
 		F94261D0289B1B5400460798 /* MessageSenderJobRecordTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSenderJobRecordTest.swift; sourceTree = "<group>"; };
 		F94261D1289B1B5400460798 /* OWSURLBuilderUtilTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLBuilderUtilTest.swift; sourceTree = "<group>"; };
 		F94261D2289B1B5400460798 /* HttpHeadersTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHeadersTest.swift; sourceTree = "<group>"; };
@@ -7344,9 +7348,7 @@
 		F9C5C9FC289453B100548EEE /* SignalServiceAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceAddress.swift; sourceTree = "<group>"; };
 		F9C5C9FD289453B100548EEE /* TSGroupMember.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSGroupMember.swift; sourceTree = "<group>"; };
 		F9C5C9FE289453B100548EEE /* Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
-		F9C5CA0B289453B100548EEE /* OWSDeviceProvisioner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDeviceProvisioner.swift; sourceTree = "<group>"; };
 		F9C5CA0C289453B100548EEE /* OWSStickerPackSyncMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSStickerPackSyncMessage.m; sourceTree = "<group>"; };
-		F9C5CA0D289453B100548EEE /* OWSProvisioningCipher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSProvisioningCipher.swift; sourceTree = "<group>"; };
 		F9C5CA0F289453B100548EEE /* ChunkedInputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChunkedInputStream.swift; sourceTree = "<group>"; };
 		F9C5CA15289453B100548EEE /* ContactsInputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsInputStream.swift; sourceTree = "<group>"; };
 		F9C5CA18289453B100548EEE /* ProvisioningSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningSocket.swift; sourceTree = "<group>"; };
@@ -7568,7 +7570,7 @@
 		F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingConfirmationViewController.swift; sourceTree = "<group>"; };
 		F9F797DE296CC54A0025C103 /* DonationPaymentDetailsViewController+GiftDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationPaymentDetailsViewController+GiftDonation.swift"; sourceTree = "<group>"; };
 		F9F797E0296CCC630025C103 /* DonationViewsUtil+Gifting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+Gifting.swift"; sourceTree = "<group>"; };
-		F9FA363529F335E500C13830 /* OWSProvisioningCipherTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSProvisioningCipherTest.swift; sourceTree = "<group>"; };
+		F9FA363529F335E500C13830 /* ProvisioningCipherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningCipherTests.swift; sourceTree = "<group>"; };
 		F9FAABD729DB55940004B383 /* Progress+Signal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Progress+Signal.swift"; sourceTree = "<group>"; };
 		FA0F334C71C5504ED07AC74C /* Pods-SignalUI.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.profiling.xcconfig"; path = "Target Support Files/Pods-SignalUI/Pods-SignalUI.profiling.xcconfig"; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
@@ -8687,7 +8689,6 @@
 		458E38381D6699110094BD24 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F93999EB28C80A6C00E34899 /* DeviceProvisioningURLTest.swift */,
 				4C5250D321E7C51900CE3D95 /* PhoneNumberValidatorTest.swift */,
 			);
 			name = Models;
@@ -10101,6 +10102,8 @@
 				66CDB7542AFC3F1F009A36EC /* ProvisioningCoordinator.swift */,
 				66CDB7662AFC5FCD009A36EC /* ProvisioningCoordinatorImpl+Service.swift */,
 				66CDB7562AFC40BE009A36EC /* ProvisioningCoordinatorImpl.swift */,
+				C17B31582D710DD80060664D /* ProvisioningManager+Shims.swift */,
+				C17B31542D710DBD0060664D /* ProvisioningManager.swift */,
 			);
 			path = Provisioning;
 			sourceTree = "<group>";
@@ -10108,8 +10111,10 @@
 		66CDB75A2AFC42B6009A36EC /* Provisioning */ = {
 			isa = PBXGroup;
 			children = (
+				F93999EB28C80A6C00E34899 /* DeviceProvisioningURLTest.swift */,
 				66CDB75E2AFC45BF009A36EC /* ProvisioningCoordinator+Mocks.swift */,
 				66CDB75B2AFC42C5009A36EC /* ProvisioningCoordinatorTest.swift */,
+				F94261C8289B1B5300460798 /* ProvisionManagerTests.swift */,
 			);
 			path = Provisioning;
 			sourceTree = "<group>";
@@ -12898,9 +12903,8 @@
 			children = (
 				D9C0AE612BD7102500FCB05E /* InactiveLinkedDeviceFinderTest.swift */,
 				D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */,
-				F94261C8289B1B5300460798 /* OWSDeviceProvisionerTest.swift */,
 				D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */,
-				F9FA363529F335E500C13830 /* OWSProvisioningCipherTest.swift */,
+				F9FA363529F335E500C13830 /* ProvisioningCipherTests.swift */,
 			);
 			name = Devices;
 			path = SignalServiceKit/tests/Devices;
@@ -13865,12 +13869,10 @@
 				F9C5CA29289453B100548EEE /* OWSBlockedPhoneNumbersMessage.m */,
 				F9C5CA1A289453B100548EEE /* OWSDevice.swift */,
 				D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */,
-				F9C5CA0B289453B100548EEE /* OWSDeviceProvisioner.swift */,
 				F9C5CAE7289453B200548EEE /* OWSDeviceService.swift */,
 				D9C0AE632BD7103100FCB05E /* OWSDeviceStore.swift */,
 				F9C5CA1F289453B100548EEE /* OWSLinkedDeviceReadReceipt.h */,
 				F9C5CA2A289453B100548EEE /* OWSLinkedDeviceReadReceipt.m */,
-				F9C5CA0D289453B100548EEE /* OWSProvisioningCipher.swift */,
 				F9C5CA1D289453B100548EEE /* OWSReadReceiptsForLinkedDevicesMessage.h */,
 				F9C5CA2D289453B100548EEE /* OWSReadReceiptsForLinkedDevicesMessage.m */,
 				F9C5CA20289453B100548EEE /* OWSReceiptsForSenderMessage.h */,
@@ -13884,6 +13886,7 @@
 				F9C5CA2E289453B100548EEE /* OWSViewOnceMessageReadSyncMessage.h */,
 				F9C5CA1C289453B100548EEE /* OWSViewOnceMessageReadSyncMessage.m */,
 				F9C5CA25289453B100548EEE /* ProvisioningCipher.swift */,
+				C150D6442D70AD9400DA119B /* ProvisioningMessage.swift */,
 				F9C5CA18289453B100548EEE /* ProvisioningSocket.swift */,
 			);
 			path = Devices;
@@ -16784,7 +16787,7 @@
 				887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */,
 				D9E8EDF32C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift in Sources */,
 				D9E8EDF12C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift in Sources */,
-				5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */,
+				C17A54982D7B3DCD00E1D267 /* DeviceProvisioningURL.swift in Sources */,
 				887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */,
 				887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */,
 				887CD48324730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift in Sources */,
@@ -17039,6 +17042,8 @@
 				66CDB7552AFC3F1F009A36EC /* ProvisioningCoordinator.swift in Sources */,
 				66CDB7672AFC5FCD009A36EC /* ProvisioningCoordinatorImpl+Service.swift in Sources */,
 				66CDB7572AFC40BE009A36EC /* ProvisioningCoordinatorImpl.swift in Sources */,
+				C17A549A2D7B3DFB00E1D267 /* ProvisioningManager+Shims.swift in Sources */,
+				C17A54992D7B3DDE00E1D267 /* ProvisioningManager.swift in Sources */,
 				6605D4F02A82DCC7004DC345 /* ProvisioningModeSwitchConfirmationViewController.swift in Sources */,
 				6659A0392A81933B00066AB7 /* ProvisioningPermissionsViewController.swift in Sources */,
 				4C30E224234F9F34009558B7 /* ProvisioningPrepViewController.swift in Sources */,
@@ -17240,7 +17245,7 @@
 				88D6E94325535D49003142D9 /* CVTextTest.swift in Sources */,
 				F93999F628C81F2100E34899 /* DataMessagePaddingTests.swift in Sources */,
 				3494BBE026E66FC30079B11B /* DateUtilTest.swift in Sources */,
-				F93999EC28C80A6C00E34899 /* DeviceProvisioningURLTest.swift in Sources */,
+				C17A54962D7B3D9E00E1D267 /* DeviceProvisioningURLTest.swift in Sources */,
 				45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */,
 				F90B7BC12912B90100F50A59 /* DonateViewControllerTest.swift in Sources */,
 				F99D2C8B2926F0DD00748CCB /* DonationPaymentDetailsViewControllerTest.swift in Sources */,
@@ -17267,6 +17272,7 @@
 				4C5250D421E7C51900CE3D95 /* PhoneNumberValidatorTest.swift in Sources */,
 				66CDB7602AFC45CF009A36EC /* ProvisioningCoordinator+Mocks.swift in Sources */,
 				66CDB75D2AFC42FC009A36EC /* ProvisioningCoordinatorTest.swift in Sources */,
+				C17A54972D7B3DA700E1D267 /* ProvisionManagerTests.swift in Sources */,
 				349D21E9268E045500D98870 /* QRCodeParserTest.swift in Sources */,
 				E1D827DA2BDC1F7B0022C1AF /* ReactionBurstManagerTests.swift in Sources */,
 				E16B440E2BBF242C00D2583E /* ReactionsModelTest.swift in Sources */,
@@ -17902,7 +17908,6 @@
 				72328C892C6C6733000EA728 /* OWSCountryMetadata.swift in Sources */,
 				F9C5CCFD289453B300548EEE /* OWSDevice.swift in Sources */,
 				D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */,
-				F9C5CCEF289453B300548EEE /* OWSDeviceProvisioner.swift in Sources */,
 				F9C5CDBA289453B400548EEE /* OWSDeviceService.swift in Sources */,
 				D9C0AE652BD7103100FCB05E /* OWSDeviceStore.swift in Sources */,
 				F9C5CBFC289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage+SDS.swift in Sources */,
@@ -17969,7 +17974,6 @@
 				F9C5CC32289453B300548EEE /* OWSProfileKeyMessage.m in Sources */,
 				724D47B82B97C301001BE973 /* OWSProfileManager.swift in Sources */,
 				66A830442CEBFCC700A7656D /* OWSProgress.swift in Sources */,
-				F9C5CCF1289453B300548EEE /* OWSProvisioningCipher.swift in Sources */,
 				F9C5CC3A289453B300548EEE /* OWSReaction.swift in Sources */,
 				F9C5CD10289453B300548EEE /* OWSReadReceiptsForLinkedDevicesMessage.m in Sources */,
 				F9C5CC80289453B300548EEE /* OWSReceiptManager.swift in Sources */,
@@ -18076,6 +18080,7 @@
 				72901D2F2C9B1918000406DC /* ProtoUtils.swift in Sources */,
 				F9C5CC9D289453B300548EEE /* Provisioning.pb.swift in Sources */,
 				F9C5CD08289453B300548EEE /* ProvisioningCipher.swift in Sources */,
+				C150D6452D70AD9400DA119B /* ProvisioningMessage.swift in Sources */,
 				F9C5CC95289453B300548EEE /* ProvisioningProto.swift in Sources */,
 				66CDB7632AFC5E24009A36EC /* ProvisioningRequestFactory.swift in Sources */,
 				66CDB7652AFC5E74009A36EC /* ProvisioningServiceResponses.swift in Sources */,
@@ -18585,7 +18590,6 @@
 				667BBAD92BAA5F84006AB9DE /* OWSAttachmentInfoSerializationTest.swift in Sources */,
 				666072622BAB58A20084B3D2 /* OWSContactSerializationTest.swift in Sources */,
 				D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */,
-				F942623B289B1B5500460798 /* OWSDeviceProvisionerTest.swift in Sources */,
 				D9B95A9829E8906200D7CB95 /* OWSDeviceTest.swift in Sources */,
 				50EF8DD32A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift in Sources */,
 				F93A76ED29133A4B005FDE4F /* OWSDisappearingMessagesJobTest.swift in Sources */,
@@ -18599,7 +18603,6 @@
 				F988DC13289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift in Sources */,
 				508C72242C2DFCB2000811F3 /* OWSOutgoingResendResponseTest.swift in Sources */,
 				663F94082CED62EC002C9063 /* OWSProgressTest.swift in Sources */,
-				F9FA363629F335E500C13830 /* OWSProvisioningCipherTest.swift in Sources */,
 				F942627A289B1B5600460798 /* OWSRecipientIdentityTest.swift in Sources */,
 				F9426244289B1B5500460798 /* OWSRequestFactoryTest.swift in Sources */,
 				F942629F289B1B5600460798 /* OWSUDManagerTest.swift in Sources */,
@@ -18620,6 +18623,7 @@
 				724D47B52B97C28F001BE973 /* ProfileManagerTest.swift in Sources */,
 				668A013D2C2B60A1007B8808 /* PromiseTests.swift in Sources */,
 				F97391A328EF0B20002DDE5D /* ProtoParsingTest.swift in Sources */,
+				F9FA363629F335E500C13830 /* ProvisioningCipherTests.swift in Sources */,
 				728BFE4A2C5BFDA7008F20F1 /* RandomnessTest.swift in Sources */,
 				F9426294289B1B5600460798 /* ReceiptSenderTest.swift in Sources */,
 				50F75E312AD9F18F0032530F /* RecipientDatabaseTableTest.swift in Sources */,

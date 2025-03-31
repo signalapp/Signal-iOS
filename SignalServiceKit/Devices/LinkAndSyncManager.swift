@@ -6,13 +6,6 @@
 public import LibSignalClient
 
 extension BackupKey {
-    public convenience init?(provisioningMessage: ProvisionMessage) {
-        guard let data = provisioningMessage.ephemeralBackupKey else {
-            return nil
-        }
-        try? self.init(contents: Array(data))
-    }
-
     #if TESTABLE_BUILD
     public static func forTesting() -> BackupKey {
         return try! BackupKey(contents: Array(Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength))))

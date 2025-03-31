@@ -34,6 +34,7 @@ public class AppEnvironment: NSObject {
     private(set) var badgeManager: BadgeManager!
     private(set) var callLinkProfileKeySharingManager: CallLinkProfileKeySharingManager!
     private(set) var callService: CallService!
+    private(set) var provisioningManager: ProvisioningManager!
     private var usernameValidationObserverRef: UsernameValidationObserver!
 
     init(appReadiness: AppReadiness, deviceTransferService: DeviceTransferService) {
@@ -46,6 +47,8 @@ public class AppEnvironment: NSObject {
     }
 
     func setUp(appReadiness: AppReadiness, callService: CallService) {
+        let bridge = DependenciesBridge.shared
+
         let badgeManager = BadgeManager(
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             mainScheduler: DispatchQueue.main,
@@ -63,10 +66,26 @@ public class AppEnvironment: NSObject {
             db: DependenciesBridge.shared.db,
             accountManager: DependenciesBridge.shared.tsAccountManager
         )
+
+        self.provisioningManager = ProvisioningManager(
+            accountKeyStore: bridge.accountKeyStore,
+            db: bridge.db,
+            deviceManager: bridge.deviceManager,
+            deviceProvisioningService: DeviceProvisioningServiceImpl(
+                networkManager: SSKEnvironment.shared.networkManagerRef,
+                schedulers: bridge.schedulers
+            ),
+            identityManager: bridge.identityManager,
+            linkAndSyncManager: bridge.linkAndSyncManager,
+            profileManager: ProvisioningManager.Wrappers.ProfileManager(SSKEnvironment.shared.profileManagerRef),
+            receiptManager: ProvisioningManager.Wrappers.ReceiptManager(SSKEnvironment.shared.receiptManagerRef),
+            tsAccountManager: bridge.tsAccountManager
+        )
+
         self.usernameValidationObserverRef = UsernameValidationObserver(
             appReadiness: appReadiness,
-            manager: DependenciesBridge.shared.usernameValidationManager,
-            database: DependenciesBridge.shared.db
+            manager: bridge.usernameValidationManager,
+            database: bridge.db
         )
 
         appReadiness.runNowOrWhenAppWillBecomeReady {

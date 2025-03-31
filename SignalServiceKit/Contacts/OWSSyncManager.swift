@@ -94,6 +94,7 @@ extension OWSSyncManager: SyncManagerProtocolObjc {
             showUnidentifiedDeliveryIndicators: sealedSenderIndicators,
             showTypingIndicators: typingIndicators,
             sendLinkPreviews: linkPreviews,
+            provisioningVersion: ProvisioningMessage.Constants.provisioningVersion,
             transaction: tx
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(

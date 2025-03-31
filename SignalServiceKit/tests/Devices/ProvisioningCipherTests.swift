@@ -4,12 +4,12 @@
 //
 
 import Foundation
+import Testing
 import LibSignalClient
-import XCTest
 
 @testable import SignalServiceKit
 
-final class OWSProvisioningCipherTest: XCTestCase {
+final class ProvisioningCipherTests {
     private let knownInitializationVector = Data([
         0xec, 0x67, 0x0b, 0xb7,
         0x18, 0xe1, 0xe9, 0x0a,
@@ -57,14 +57,14 @@ final class OWSProvisioningCipherTest: XCTestCase {
         0x6e, 0xff, 0x37, 0x1d
     ])
 
-    func testEncrypt() {
-        let cipher = OWSProvisioningCipher(
-            theirPublicKey: knownPublicKey,
-            ourKeyPair: knownKeyPair,
+    @Test
+    func testEncrypt() throws {
+        let cipher = ProvisioningCipher(
+            ourKeyPair: knownKeyPair.identityKeyPair,
             initializationVector: knownInitializationVector
         )
 
-        let actualOutput = cipher.encrypt(knownData)
+        let actualOutput = try cipher.encrypt(knownData, theirPublicKey: knownPublicKey)
 
         let expectedOutput = Data([
             0x01, 0xec, 0x67, 0x0b,
@@ -86,21 +86,21 @@ final class OWSProvisioningCipherTest: XCTestCase {
             0xcc
         ])
 
-        XCTAssertEqual(actualOutput, expectedOutput)
+        #expect(actualOutput == expectedOutput)
     }
 
-    func testPadding() {
+    @Test
+    func testPadding() throws {
         let count: UInt = 16
         for i in (0...count) {
-            let cipher = OWSProvisioningCipher(
-                theirPublicKey: knownPublicKey,
-                ourKeyPair: knownKeyPair,
+            let cipher = ProvisioningCipher(
+                ourKeyPair: knownKeyPair.identityKeyPair,
                 initializationVector: knownInitializationVector
             )
 
-            let encrypted = cipher.encrypt(Randomness.generateRandomBytes(i))
+            let encrypted = try cipher.encrypt(Randomness.generateRandomBytes(i), theirPublicKey: knownPublicKey)
 
-            XCTAssertNotNil(encrypted, "failed for message length: \(i)")
+            #expect(encrypted != nil)
         }
     }
 }

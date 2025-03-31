@@ -5,25 +5,7 @@
 
 import CommonCrypto
 import CryptoKit
-import Foundation
 public import LibSignalClient
-
-public struct ProvisionMessage {
-    public let accountEntropyPool: String?
-    public let aci: Aci?
-    public let phoneNumber: String
-    public let pni: Pni?
-    public let aciIdentityKeyPair: ECKeyPair
-    public let pniIdentityKeyPair: ECKeyPair
-    public let profileKey: Aes256Key
-    public let masterKey: Data
-    public let mrbk: Data?
-    public let ephemeralBackupKey: Data?
-    public let areReadReceiptsEnabled: Bool?
-    public let primaryUserAgent: String?
-    public let provisioningCode: String
-    public let provisioningVersion: UInt32?
-}
 
 public enum ProvisioningError: Error {
     case invalidProvisionMessage(_ description: String)
@@ -31,26 +13,86 @@ public enum ProvisioningError: Error {
 
 public class ProvisioningCipher {
 
-    public var secondaryDevicePublicKey: PublicKey {
-        return secondaryDeviceKeyPair.publicKey
+    private enum Constants {
+        static let cipherKeyLength: Int = 32
+        static let macKeyLength: Int = 32
+        static let info: String = "TextSecure Provisioning Message"
     }
 
-    let secondaryDeviceKeyPair: IdentityKeyPair
-    init(secondaryDeviceKeyPair: IdentityKeyPair) {
-        self.secondaryDeviceKeyPair = secondaryDeviceKeyPair
+    private let ourKeyPair: IdentityKeyPair
+    private let initializationVector: Data
+
+    public var ourPublicKey: PublicKey {
+        return ourKeyPair.publicKey
     }
 
-    public class func generate() -> ProvisioningCipher {
-        return ProvisioningCipher(secondaryDeviceKeyPair: IdentityKeyPair.generate())
+    public init(
+        ourKeyPair: IdentityKeyPair = IdentityKeyPair.generate(),
+        initializationVector: Data? = nil
+    ) {
+        self.ourKeyPair = ourKeyPair
+        self.initializationVector = initializationVector ?? Randomness.generateRandomBytes(UInt(kCCBlockSizeAES128))
     }
 
-    internal class var messageInfo: String {
-        return "TextSecure Provisioning Message"
+    public func encrypt(_ data: Data, theirPublicKey: PublicKey) throws -> Data {
+        let sharedSecret = self.ourKeyPair.privateKey.keyAgreement(with: theirPublicKey)
+
+        let infoData = Constants.info
+        let derivedSecret: [UInt8] = try infoData.utf8.withContiguousStorageIfAvailable {
+            let totalLength = Constants.cipherKeyLength + Constants.macKeyLength
+            return try hkdf(outputLength: totalLength, inputKeyMaterial: sharedSecret, salt: [], info: $0)
+        }!
+        let cipherKey = derivedSecret[0..<Constants.cipherKeyLength]
+        let macKey = derivedSecret[Constants.cipherKeyLength...]
+        owsAssertDebug(macKey.count == Constants.macKeyLength)
+
+        guard data.count < Int.max - (kCCBlockSizeAES128 + initializationVector.count) else {
+            throw ProvisioningError.invalidProvisionMessage("data too long to encrypt.")
+        }
+
+        let ciphertextBufferSize = data.count + kCCBlockSizeAES128
+
+        var ciphertextData = Data(count: ciphertextBufferSize)
+
+        var bytesEncrypted = 0
+        let cryptStatus: CCCryptorStatus = cipherKey.withUnsafeBytes { keyBytes in
+            initializationVector.withUnsafeBytes { ivBytes in
+                data.withUnsafeBytes { dataBytes in
+                    ciphertextData.withUnsafeMutableBytes { ciphertextBytes in
+                        let status = CCCrypt(
+                            CCOperation(kCCEncrypt),
+                            CCAlgorithm(kCCAlgorithmAES),
+                            CCOptions(kCCOptionPKCS7Padding),
+                            keyBytes.baseAddress, keyBytes.count,
+                            ivBytes.baseAddress,
+                            dataBytes.baseAddress, dataBytes.count,
+                            ciphertextBytes.baseAddress, ciphertextBytes.count,
+                            &bytesEncrypted)
+                        return status
+                    }
+                }
+            }
+        }
+
+        guard cryptStatus == kCCSuccess else {
+            throw ProvisioningError.invalidProvisionMessage("failure with status \(cryptStatus)")
+        }
+
+        // message format is (iv || ciphertext)
+        let cipherText = initializationVector + ciphertextData.prefix(bytesEncrypted)
+
+        let version: UInt8 = 1
+        var message: Data = Data()
+        message.append(version)
+        message.append(cipherText)
+
+        let mac = Data(HMAC<SHA256>.authenticationCode(for: message, using: .init(data: macKey)))
+        message.append(mac)
+        return message
     }
 
-    public func decrypt(envelope: ProvisioningProtoProvisionEnvelope) throws -> ProvisionMessage {
-        let primaryDeviceEphemeralPublicKey = try PublicKey(envelope.publicKey)
-        let bytes = [UInt8](envelope.body)
+    public func decrypt(data: Data, theirPublicKey: PublicKey) throws -> Data {
+        let bytes = [UInt8](data)
 
         let versionLength = 1
         let ivLength = 16
@@ -70,10 +112,9 @@ public class ProvisioningCipher {
         let messageToAuthenticate = bytes[0..<(bytes.count - 32)]
         let ciphertext = Array(bytes[17..<(bytes.count - 32)])
 
-        let agreement = secondaryDeviceKeyPair.privateKey.keyAgreement(
-            with: primaryDeviceEphemeralPublicKey)
+        let agreement = ourKeyPair.privateKey.keyAgreement(with: theirPublicKey)
 
-        let keyBytes = try Self.messageInfo.utf8.withContiguousStorageIfAvailable {
+        let keyBytes = try Constants.info.utf8.withContiguousStorageIfAvailable {
             try hkdf(outputLength: 64, inputKeyMaterial: agreement, salt: [], info: $0)
         }!
 
@@ -103,65 +144,6 @@ public class ProvisioningCipher {
             throw OWSAssertionError("failure with cryptStatus: \(cryptStatus)")
         }
 
-        let plaintext = Data(plaintextBuffer.prefix(upTo: bytesDecrypted))
-        let proto = try ProvisioningProtoProvisionMessage(serializedData: plaintext)
-
-        let aciIdentityKeyPair = try IdentityKeyPair(publicKey: PublicKey(proto.aciIdentityKeyPublic),
-                                                     privateKey: PrivateKey(proto.aciIdentityKeyPrivate))
-        let pniIdentityKeyPair = try IdentityKeyPair(publicKey: PublicKey(proto.pniIdentityKeyPublic),
-                                                     privateKey: PrivateKey(proto.pniIdentityKeyPrivate))
-
-        guard let profileKey = Aes256Key(data: proto.profileKey) else {
-            throw ProvisioningError.invalidProvisionMessage("invalid profileKey - count: \(proto.profileKey.count)")
-        }
-        let areReadReceiptsEnabled = proto.hasReadReceipts ? proto.readReceipts : nil
-        let primaryUserAgent = proto.hasUserAgent ? proto.userAgent : nil
-        let provisioningCode = proto.provisioningCode
-        let provisioningVersion = proto.hasProvisioningVersion ? proto.provisioningVersion : nil
-
-        guard let phoneNumber = proto.number, phoneNumber.count > 1 else {
-            throw ProvisioningError.invalidProvisionMessage("missing number from provisioning message")
-        }
-
-        let aci: Aci? = try {
-            guard proto.hasAci, let aciString = proto.aci else { return nil }
-            guard let aci = Aci.parseFrom(aciString: aciString) else {
-                throw ProvisioningError.invalidProvisionMessage("invalid ACI from provisioning message")
-            }
-            return aci
-        }()
-
-        let pni: Pni? = try {
-            guard proto.hasPni, let pniString = proto.pni else { return nil }
-            guard let pni = Pni.parseFrom(ambiguousString: pniString) else {
-                throw ProvisioningError.invalidProvisionMessage("invalid PNI from provisioning message")
-            }
-            return pni
-        }()
-
-        guard let masterKey = proto.masterKey else {
-            throw ProvisioningError.invalidProvisionMessage("missing master key from provisioning message")
-        }
-
-        let accountEntropyPool = proto.accountEntropyPool?.nilIfEmpty
-        let mediaRootBackupKey = proto.mediaRootBackupKey?.nilIfEmpty
-        let ephemeralBackupKey = proto.ephemeralBackupKey
-
-        return ProvisionMessage(
-            accountEntropyPool: accountEntropyPool,
-            aci: aci,
-            phoneNumber: phoneNumber,
-            pni: pni,
-            aciIdentityKeyPair: ECKeyPair(aciIdentityKeyPair),
-            pniIdentityKeyPair: ECKeyPair(pniIdentityKeyPair),
-            profileKey: profileKey,
-            masterKey: masterKey,
-            mrbk: mediaRootBackupKey,
-            ephemeralBackupKey: ephemeralBackupKey,
-            areReadReceiptsEnabled: areReadReceiptsEnabled,
-            primaryUserAgent: primaryUserAgent,
-            provisioningCode: provisioningCode,
-            provisioningVersion: provisioningVersion
-        )
+        return Data(plaintextBuffer.prefix(upTo: bytesDecrypted))
     }
 }

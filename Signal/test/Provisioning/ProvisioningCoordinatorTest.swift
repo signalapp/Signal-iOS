@@ -88,22 +88,19 @@ public class ProvisioningCoordinatorTest: XCTestCase {
     }
 
     public func testProvisioning() async throws {
-        let aep = AccountEntropyPool.generate()
-        let provisioningMessage = ProvisionMessage(
-            accountEntropyPool: aep,
+        let aep = AccountEntropyPool()
+        let provisioningMessage = ProvisioningMessage(
+            rootKey: .accountEntropyPool(aep),
             aci: .randomForTesting(),
             phoneNumber: "+17875550100",
             pni: .randomForTesting(),
-            aciIdentityKeyPair: try keyPairForTesting(),
-            pniIdentityKeyPair: try keyPairForTesting(),
+            aciIdentityKeyPair: IdentityKeyPair.generate(),
+            pniIdentityKeyPair: IdentityKeyPair.generate(),
             profileKey: .generateRandom(),
-            masterKey: Data(try! AccountEntropyPool.deriveSvrKey(aep)),
-            mrbk: Randomness.generateRandomBytes(AccountKeyStore.Constants.mediaRootBackupKeyLength),
+            mrbk: BackupKey.forTesting(),
             ephemeralBackupKey: nil,
             areReadReceiptsEnabled: true,
-            primaryUserAgent: nil,
-            provisioningCode: "1234",
-            provisioningVersion: 1
+            provisioningCode: "1234"
         )
         let deviceName = "test device"
         let deviceId = DeviceId(validating: UInt32.random(in: 2...3))!
@@ -111,7 +108,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         let mockSession = UrlSessionMock()
 
         let verificationResponse = ProvisioningServiceResponses.VerifySecondaryDeviceResponse(
-            pni: provisioningMessage.pni!,
+            pni: provisioningMessage.pni,
             deviceId: deviceId
         )
 
@@ -153,10 +150,25 @@ public class ProvisioningCoordinatorTest: XCTestCase {
 
         XCTAssert(didSetLocalIdentifiers)
         XCTAssert(prekeyManagerMock.didFinalizeRegistrationPrekeys)
-        XCTAssertEqual(profileManagerMock.localUserProfileMock?.profileKey, provisioningMessage.profileKey)
-        XCTAssertEqual(identityManagerMock.identityKeyPairs[.aci], provisioningMessage.aciIdentityKeyPair)
-        XCTAssertEqual(identityManagerMock.identityKeyPairs[.pni], provisioningMessage.pniIdentityKeyPair)
-        XCTAssertEqual(svrMock.syncedMasterKey, provisioningMessage.masterKey)
+        XCTAssertEqual(
+            profileManagerMock.localUserProfileMock?.profileKey,
+            provisioningMessage.profileKey
+        )
+        XCTAssertEqual(
+            identityManagerMock.identityKeyPairs[.aci]?.publicKey,
+            provisioningMessage.aciIdentityKeyPair.asECKeyPair.publicKey
+        )
+        XCTAssertEqual(
+            identityManagerMock.identityKeyPairs[.pni]?.publicKey,
+            provisioningMessage.pniIdentityKeyPair.asECKeyPair.publicKey
+        )
+        let masterKey = switch provisioningMessage.rootKey {
+        case .accountEntropyPool(let accountEntropyPool):
+            accountEntropyPool.getMasterKey()
+        case .masterKey(let masterKey):
+            masterKey
+        }
+        XCTAssertEqual(svrMock.syncedMasterKey?.rawData, masterKey.rawData)
     }
 
     private func keyPairForTesting() throws -> ECKeyPair {

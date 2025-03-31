@@ -30,6 +30,8 @@ public class ViewControllerContext {
     public let usernameLookupManager: UsernameLookupManager
     public let localUsernameManager: LocalUsernameManager
 
+    public let provisioningManager: ProvisioningManager
+
     public init(
         db: any DB,
         editManager: EditManager,
@@ -40,7 +42,8 @@ public class ViewControllerContext {
         usernameEducationManager: UsernameEducationManager,
         usernameLinkManager: UsernameLinkManager,
         usernameLookupManager: UsernameLookupManager,
-        localUsernameManager: LocalUsernameManager
+        localUsernameManager: LocalUsernameManager,
+        provisioningManager: ProvisioningManager
     ) {
         self.db = db
         self.editManager = editManager
@@ -52,6 +55,7 @@ public class ViewControllerContext {
         self.usernameLinkManager = usernameLinkManager
         self.usernameLookupManager = usernameLookupManager
         self.localUsernameManager = localUsernameManager
+        self.provisioningManager = provisioningManager
     }
 
     /// Eventually, this shared instance should not exist. (And DependenciesBridge should not exist, either).
@@ -73,7 +77,8 @@ public class ViewControllerContext {
             usernameEducationManager: bridge.usernameEducationManager,
             usernameLinkManager: bridge.usernameLinkManager,
             usernameLookupManager: bridge.usernameLookupManager,
-            localUsernameManager: bridge.localUsernameManager
+            localUsernameManager: bridge.localUsernameManager,
+            provisioningManager: AppEnvironment.shared.provisioningManager
         )
     }()
 }

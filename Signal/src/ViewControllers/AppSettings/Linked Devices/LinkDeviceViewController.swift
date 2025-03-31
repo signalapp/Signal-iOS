@@ -16,6 +16,7 @@ protocol LinkDeviceViewControllerDelegate: AnyObject {
 class LinkDeviceViewController: OWSViewController {
 
     weak var delegate: LinkDeviceViewControllerDelegate?
+    private var context = ViewControllerContext.shared
 
     private var hasShownEducationSheet: Bool
     private weak var educationSheet: HeroSheetViewController?
@@ -157,107 +158,12 @@ class LinkDeviceViewController: OWSViewController {
         _ deviceProvisioningUrl: DeviceProvisioningURL,
         shouldLinkNSync: Bool
     ) {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            // Optimistically set this flag.
-            DependenciesBridge.shared.deviceManager.setMightHaveUnknownLinkedDevice(
-                true,
-                transaction: transaction
-            )
-        }
-
-        struct ProvisioningState {
-            var localIdentifiers: LocalIdentifiers
-            var aciIdentityKeyPair: ECKeyPair
-            var pniIdentityKeyPair: ECKeyPair
-            var areReadReceiptsEnabled: Bool
-            var rootKey: OWSDeviceProvisioner.RootKey
-            var mediaRootBackupKey: BackupKey
-            var profileKey: Aes256Key
-        }
-
-        let ephemeralBackupKey: BackupKey?
-        if
-            FeatureFlags.linkAndSyncPrimaryExport,
-            shouldLinkNSync,
-            deviceProvisioningUrl.capabilities.contains(where: { $0 == .linknsync })
-        {
-            ephemeralBackupKey = DependenciesBridge.shared.linkAndSyncManager.generateEphemeralBackupKey()
-        } else {
-            ephemeralBackupKey = nil
-        }
-
-        let provisioningState = SSKEnvironment.shared.databaseStorageRef.write { tx in
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
-                owsFail("Can't provision without an aci & phone number.")
-            }
-            let identityManager = DependenciesBridge.shared.identityManager
-            guard let aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx) else {
-                owsFail("Can't provision without an aci identity.")
-            }
-            guard let pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx) else {
-                owsFail("Can't provision without a pni identity.")
-            }
-            let areReadReceiptsEnabled = OWSReceiptManager.areReadReceiptsEnabled(transaction: tx)
-            let rootKey: OWSDeviceProvisioner.RootKey
-            if FeatureFlags.enableAccountEntropyPool {
-                guard let accountEntropyPool = DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: tx) else {
-                    // This should be impossible; the only times you don't have
-                    // a AEP are during registration.
-                    owsFail("Can't provision without account entropy pool.")
-                }
-                rootKey = .accountEntropyPool(accountEntropyPool)
-            } else {
-                guard let masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx) else {
-                    // This should be impossible; the only times you don't have
-                    // a master key are during registration.
-                    owsFail("Can't provision without master key.")
-                }
-                rootKey = .masterKey(masterKey)
-            }
-            let mrbk = DependenciesBridge.shared.accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx)
-            guard let profileKey = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: tx)?.profileKey else {
-                owsFail("Can't provision without a profile key.")
-            }
-            return ProvisioningState(
-                localIdentifiers: localIdentifiers,
-                aciIdentityKeyPair: aciIdentityKeyPair,
-                pniIdentityKeyPair: pniIdentityKeyPair,
-                areReadReceiptsEnabled: areReadReceiptsEnabled,
-                rootKey: rootKey,
-                mediaRootBackupKey: mrbk,
-                profileKey: profileKey
-            )
-        }
-
-        let myAci = provisioningState.localIdentifiers.aci
-        let myPhoneNumber = provisioningState.localIdentifiers.phoneNumber
-        guard let myPni = provisioningState.localIdentifiers.pni else {
-            owsFail("Can't provision without a pni.")
-        }
-
-        let deviceProvisioner = OWSDeviceProvisioner(
-            myAciIdentityKeyPair: provisioningState.aciIdentityKeyPair.identityKeyPair,
-            myPniIdentityKeyPair: provisioningState.pniIdentityKeyPair.identityKeyPair,
-            theirPublicKey: deviceProvisioningUrl.publicKey,
-            theirEphemeralDeviceId: deviceProvisioningUrl.ephemeralDeviceId,
-            myAci: myAci,
-            myPhoneNumber: myPhoneNumber,
-            myPni: myPni,
-            profileKey: provisioningState.profileKey.keyData,
-            rootKey: provisioningState.rootKey,
-            mrbk: provisioningState.mediaRootBackupKey,
-            ephemeralBackupKey: ephemeralBackupKey,
-            readReceiptsEnabled: provisioningState.areReadReceiptsEnabled,
-            provisioningService: DeviceProvisioningServiceImpl(
-                networkManager: SSKEnvironment.shared.networkManagerRef,
-                schedulers: DependenciesBridge.shared.schedulers
-            ),
-            schedulers: DependenciesBridge.shared.schedulers
-        )
-
         Task {
             do {
-                let tokenId = try await deviceProvisioner.provision()
+                let (ephemeralBackupKey, tokenId) = try await context.provisioningManager.provision(
+                    with: deviceProvisioningUrl,
+                    shouldLinkNSync: shouldLinkNSync
+                )
                 Logger.info("Successfully provisioned device.")
 
                 self.delegate?.didFinishLinking(

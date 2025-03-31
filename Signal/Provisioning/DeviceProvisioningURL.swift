@@ -3,14 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
 import SignalServiceKit
+public import LibSignalClient
 
-class DeviceProvisioningURL {
-
-    public static let uuidParamName = "uuid"
-    public static let publicKeyParamName = "pub_key"
-    public static let capabilitiesParamName = "capabilities"
+public class DeviceProvisioningURL {
 
     /// Capabilities communicated in a provisioning QR code.
     /// NOT to be confused with Account Capabilities; this is a distinct set
@@ -24,16 +20,45 @@ class DeviceProvisioningURL {
 
     let publicKey: PublicKey
 
-    let capabilities: [Capability]
+    public let capabilities: [Capability]
 
-    enum Constants {
-        static let linkDeviceHost = "linkdevice"
+    public enum Constants {
+        public static let linkDeviceHost = "linkdevice"
+        static let sgnlPrefix = "sgnl"
+        static let uuidParamName = "uuid"
+        static let publicKeyParamName = "pub_key"
+        static let capabilitiesParamName = "capabilities"
     }
 
-    init?(urlString: String) {
+    public init(
+        ephemeralDeviceId: String,
+        publicKey: PublicKey,
+        capabilities: [Capability] = []
+    ) {
+        self.ephemeralDeviceId = ephemeralDeviceId
+        self.publicKey = publicKey
+        self.capabilities = capabilities
+    }
+
+    // We don't use URLComponents to generate this URL as it encodes '+' and '/'
+    // in the base64 pub_key in a way the Android doesn't tolerate.
+    public func buildUrl() throws -> URL {
+        var urlString = Constants.sgnlPrefix
+        urlString.append("://")
+        urlString.append(Constants.linkDeviceHost)
+        urlString.append("?\(Constants.uuidParamName)=\(ephemeralDeviceId)")
+        urlString.append("&\(Constants.publicKeyParamName)=\(try Self.encodePublicKey(publicKey))")
+        urlString.append("&\(Constants.capabilitiesParamName)=\(capabilities.map(\.rawValue).joined(separator: ","))")
+        guard let url = URL(string: urlString) else {
+            throw OWSAssertionError("invalid url: \(urlString)")
+        }
+        return url
+    }
+
+    public init?(urlString: String) {
         guard
             let urlComponents = URLComponents(string: urlString),
-            urlComponents.scheme == UrlOpener.Constants.sgnlPrefix,
+            urlComponents.scheme == Constants.sgnlPrefix,
             urlComponents.host == Constants.linkDeviceHost,
             let queryItems = urlComponents.queryItems
         else {
@@ -45,11 +70,11 @@ class DeviceProvisioningURL {
         var capabilities: [Capability] = []
         for queryItem in queryItems {
             switch queryItem.name {
-            case Self.uuidParamName:
+            case Constants.uuidParamName:
                 ephemeralDeviceId = queryItem.value
-            case Self.publicKeyParamName:
+            case Constants.publicKeyParamName:
                 publicKey = Self.decodePublicKey(queryItem.value)
-            case Self.capabilitiesParamName:
+            case Constants.capabilitiesParamName:
                 capabilities = queryItem.value?
                     .split(separator: ",")
                     .compactMap({
@@ -72,6 +97,14 @@ class DeviceProvisioningURL {
         self.ephemeralDeviceId = ephemeralDeviceId
         self.publicKey = publicKey
         self.capabilities = capabilities
+    }
+
+    private static func encodePublicKey(_ publicKey: PublicKey) throws -> String {
+        let base64PubKey: String = Data(publicKey.serialize()).base64EncodedString()
+        guard let encodedPubKey = base64PubKey.encodeURIComponent else {
+            throw OWSAssertionError("Failed to url encode query params")
+        }
+        return encodedPubKey
     }
 
     private static func decodePublicKey(_ encodedPublicKey: String?) -> PublicKey? {
