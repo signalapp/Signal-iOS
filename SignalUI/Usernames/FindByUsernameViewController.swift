@@ -11,6 +11,12 @@ protocol FindByUsernameDelegate: AnyObject {
     func openQRCodeScanner()
 }
 
+enum FindByUsername {
+    static func preParseUsername(_ userInput: String) -> String {
+        return userInput.starts(with: "@") ? String(userInput.dropFirst()) : userInput
+    }
+}
+
 public class FindByUsernameViewController: OWSTableViewController2 {
 
     weak var findByUsernameDelegate: FindByUsernameDelegate?
@@ -33,7 +39,7 @@ public class FindByUsernameViewController: OWSTableViewController2 {
 
     private var usernameValue: String {
         let textValue = usernameTextField.text ?? ""
-        return textValue.starts(with: "@") ? String(textValue.dropFirst()) : textValue
+        return FindByUsername.preParseUsername(textValue)
     }
 
     public override func viewDidLoad() {

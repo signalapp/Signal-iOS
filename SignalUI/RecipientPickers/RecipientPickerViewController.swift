@@ -1429,7 +1429,7 @@ extension RecipientPickerViewController: FindByUsernameDelegate {
 extension RecipientPickerViewController {
 
     private func parsePossibleSearchUsername(for searchText: String) -> String? {
-        let username = searchText
+        let username = FindByUsername.preParseUsername(searchText)
 
         guard let firstCharacter = username.first else {
             // Don't show username results -- the user hasn't searched for anything
