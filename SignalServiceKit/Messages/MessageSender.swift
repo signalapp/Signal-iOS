@@ -800,7 +800,7 @@ public class MessageSender {
                         recoveryState.canRefreshExpiringGroupSendEndorsements,
                         endorsements == nil || endorsements!.expiration.timeIntervalSinceNow < 2 * .hour
                     {
-                        Logger.warn("Refetching GSEs for \(thread.uniqueId) that are missing or about to expire.")
+                        Logger.warn("Refetching GSEs for \(thread.logString) that are missing or about to expire.")
                         return .fetchGroupSendEndorsementsAndTryAgain(secretParams)
                     }
                 } else {

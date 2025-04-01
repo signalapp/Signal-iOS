@@ -44,9 +44,9 @@ public class GroupV2UpdatesImpl {
         let groupSecretParams = groupInfoToRefresh.groupSecretParams
         if let lastRefreshDate = groupInfoToRefresh.lastRefreshDate {
             let formattedDays = String(format: "%.1f", -lastRefreshDate.timeIntervalSinceNow / TimeInterval.day)
-            Logger.info("Auto-refreshing group: \(groupId.base64EncodedString()) which hasn't been refreshed in \(formattedDays) days.")
+            Logger.info("Auto-refreshing group: \(groupId) which hasn't been refreshed in \(formattedDays) days.")
         } else {
-            Logger.info("Auto-refreshing group: \(groupId.base64EncodedString()) which has never been refreshed.")
+            Logger.info("Auto-refreshing group: \(groupId) which has never been refreshed.")
         }
 
         do {
@@ -59,7 +59,7 @@ public class GroupV2UpdatesImpl {
     }
 
     private struct GroupInfo {
-        let groupId: Data
+        let groupId: GroupIdentifier
         let groupSecretParams: GroupSecretParams
         let lastRefreshDate: Date?
     }
@@ -79,13 +79,14 @@ public class GroupV2UpdatesImpl {
                     let groupModel = groupThread.groupModel as? TSGroupModelV2,
                     groupModel.groupMembership.isLocalUserFullOrInvitedMember,
                     let groupSecretParams = try? groupModel.secretParams(),
-                    !SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupThread.groupId, transaction: transaction)
+                    let groupId = try? groupSecretParams.getPublicParams().getGroupIdentifier(),
+                    !SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId.serialize().asData, transaction: transaction)
                 else {
                     // Refreshing a group we're not a member of will throw errors
                     return
                 }
 
-                let storeKey = groupThread.groupId.hexadecimalString
+                let storeKey = groupId.serialize().asData.toHex()
                 guard let lastRefreshDate: Date = Self.groupRefreshStore.getDate(
                     storeKey,
                     transaction: transaction
@@ -93,7 +94,7 @@ public class GroupV2UpdatesImpl {
                     // If we find a group that we have no record of refreshing,
                     // pick that one immediately.
                     groupInfoToRefresh = GroupInfo(
-                        groupId: groupThread.groupId,
+                        groupId: groupId,
                         groupSecretParams: groupSecretParams,
                         lastRefreshDate: nil
                     )
@@ -118,7 +119,7 @@ public class GroupV2UpdatesImpl {
                 }
 
                 groupInfoToRefresh = GroupInfo(
-                    groupId: groupThread.groupId,
+                    groupId: groupId,
                     groupSecretParams: groupSecretParams,
                     lastRefreshDate: lastRefreshDate
                 )

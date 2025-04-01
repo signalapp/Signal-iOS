@@ -840,10 +840,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             var skippedRecipients = Set<SignalServiceAddress>()
 
             guard let threadUuid = UUID(uuidString: thread.uniqueId) else {
-                return owsFailDebug("Thread has invalid uniqueId \(thread.uniqueId)")
+                return owsFailDebug("Thread has invalid uniqueId \(thread.logString)")
             }
 
-            Logger.info("Remotely deleting private story with timestamp \(timestamp) from dList \(thread.uniqueId)")
+            Logger.info("Remotely deleting private story with timestamp \(timestamp) from dList \(thread.logString)")
 
             for (serviceId, var state) in recipientStates {
                 if state.contexts.contains(threadUuid) {

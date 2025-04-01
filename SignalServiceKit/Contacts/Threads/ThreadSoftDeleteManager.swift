@@ -145,7 +145,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         syncMessageContext: SyncMessageContext?,
         tx: DBWriteTransaction
     ) {
-        logger.info("Deleting thread with ID \(thread.uniqueId).")
+        logger.info("Deleting thread with ID \(thread.logString).")
 
         removeAllInteractions(
             thread: thread,

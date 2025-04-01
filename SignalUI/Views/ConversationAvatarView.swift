@@ -938,7 +938,7 @@ public enum ConversationAvatarDataSource: Equatable, CustomStringConvertible {
     public var description: String {
         switch self {
         case .address(let address): return "[Address: \(address)]"
-        case .thread(let thread): return "[Thread \(type(of: thread)):\(thread.uniqueId)]"
+        case .thread(let thread): return "[Thread \(type(of: thread)):\(thread.logString)]"
         case .asset(let avatar, let badge): return "[AvatarImage: \(String(describing: avatar)), BadgeImage: \(String(describing: badge))]"
         }
     }

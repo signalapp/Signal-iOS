@@ -1262,7 +1262,7 @@ class StorageServiceOperation {
                     createRecord(localId: masterKey.serialize().asData, stateUpdater: groupV2Updater)
                 } else if let storyThread = thread as? TSPrivateStoryThread {
                     guard let distributionListId = storyThread.distributionListIdentifier else {
-                        owsFailDebug("Missing distribution list id for story thread \(thread.uniqueId)")
+                        owsFailDebug("Missing distribution list id for story thread \(thread.logString)")
                         return
                     }
                     createRecord(localId: distributionListId, stateUpdater: storyDistributionListUpdater)

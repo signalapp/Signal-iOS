@@ -6,6 +6,10 @@
 extension TSThread {
     public typealias RowId = Int64
 
+    public var logString: String {
+        return (self as? TSGroupThread)?.groupId.toHex() ?? self.uniqueId
+    }
+
     // MARK: - updateWith...
 
     public func updateWithDraft(

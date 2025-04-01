@@ -303,7 +303,7 @@ extension MessageSender {
                 result.readyRecipients.append(serviceId)
                 continue
             }
-            Logger.info("Preparing SKDM for \(serviceId) in thread \(thread.uniqueId)")
+            Logger.info("Preparing SKDM for \(serviceId) in thread \(thread.logString)")
 
             let contactThread = TSContactThread.getOrCreateThread(
                 withContactAddress: SignalServiceAddress(serviceId),

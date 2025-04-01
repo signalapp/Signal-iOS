@@ -376,7 +376,7 @@ public class GroupCallManager {
                 continue
             }
 
-            logger.info("Marking unended group call interaction as ended for thread \(groupThread.uniqueId), callId \(callIdProvider.callId).")
+            logger.info("Marking unended group call interaction as ended for thread \(groupThread.logString), callId \(callIdProvider.callId).")
 
             interactionStore.markGroupCallInteractionAsEnded(
                 groupCallInteraction: unendedCallInteraction,

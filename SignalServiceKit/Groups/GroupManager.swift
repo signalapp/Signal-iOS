@@ -890,7 +890,7 @@ public class GroupManager: NSObject {
     ) -> TSGroupThread {
 
         if let groupThread = TSGroupThread.fetch(groupId: groupModel.groupId, transaction: transaction) {
-            owsFail("Inserting existing group thread: \(groupThread.uniqueId).")
+            owsFail("Inserting existing group thread: \(groupThread.logString).")
         }
 
         let groupThread = DependenciesBridge.shared.threadStore.createGroupThread(

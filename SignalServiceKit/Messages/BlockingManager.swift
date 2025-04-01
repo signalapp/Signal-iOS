@@ -222,7 +222,7 @@ public class BlockingManager {
 
     public func addBlockedGroupId(_ groupId: Data, blockMode: BlockMode, transaction: DBWriteTransaction) {
         guard GroupManager.isValidGroupIdOfAnyKind(groupId) else {
-            owsFailDebug("Can't block invalid groupId: g\(groupId.base64EncodedString())")
+            owsFailDebug("Can't block invalid groupId: \(groupId.toHex())")
             return
         }
 
@@ -234,7 +234,7 @@ public class BlockingManager {
             try blockedGroupStore.setBlocked(true, groupId: groupId, tx: transaction)
         }
 
-        Logger.info("Added blocked groupId: g\(groupId.base64EncodedString())")
+        Logger.info("Added blocked groupId: \(groupId.toHex())")
 
         let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction)
         owsAssertDebug(groupThread != nil, "Must have TSGroupThread in order to block it.")
@@ -282,7 +282,7 @@ public class BlockingManager {
             try blockedGroupStore.setBlocked(false, groupId: groupId, tx: transaction)
         }
 
-        Logger.info("Removed blocked groupId: g\(groupId.base64EncodedString())")
+        Logger.info("Removed blocked groupId: \(groupId.toHex())")
 
         let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction)
 

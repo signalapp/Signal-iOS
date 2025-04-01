@@ -78,7 +78,7 @@ extension TSGroupThread {
         }
         if oldGroupMembers != newGroupMembers {
             let groupSendEndorsementStore = DependenciesBridge.shared.groupSendEndorsementStore
-            Logger.info("Clearing GSEs in \(self.uniqueId) due to membership change.")
+            Logger.info("Clearing GSEs in \(self.logString) due to membership change.")
             groupSendEndorsementStore.deleteEndorsements(groupThreadId: self.sqliteRowId!, tx: tx)
         }
     }

@@ -479,7 +479,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 continue
             }
 
-            Logger.info("Processing 'recipient update' transcript in thread: \(groupThread.uniqueId), timestamp: \(timestamp), recipientIds: \(transcript.recipientStates.keys)")
+            Logger.info("Processing 'recipient update' transcript in thread: \(groupThread.logString), timestamp: \(timestamp), recipientIds: \(transcript.recipientStates.keys)")
 
             interactionStore.updateRecipientsFromNonLocalDevice(
                 message,

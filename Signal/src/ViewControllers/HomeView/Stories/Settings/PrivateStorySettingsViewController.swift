@@ -222,7 +222,7 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
 
     private func deleteStory() {
         guard let dlistIdentifier = thread.distributionListIdentifier else {
-            return owsFailDebug("Missing dlist identifier for thread \(thread.uniqueId)")
+            return owsFailDebug("Missing dlist identifier for thread \(thread.logString)")
         }
 
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in

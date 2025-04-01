@@ -104,8 +104,11 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                     value: arePaymentsEnabled ? "Yes" : "No"
                 ))
 
-            } else {
-                // Nothing extra to show for groups.
+            } else if let groupThread = thread as? TSGroupThread {
+                section.add(.copyableItem(
+                    label: "Group ID",
+                    value: groupThread.groupId.toHex()
+                ))
             }
 
             section.add(.copyableItem(

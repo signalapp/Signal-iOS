@@ -581,7 +581,7 @@ public class AttachmentMultisend {
         var recipientStates = [ServiceId: StoryRecipientState]()
         for thread in privateStoryThreads {
             guard let threadUuid = UUID(uuidString: thread.uniqueId) else {
-                throw OWSAssertionError("Invalid uniqueId for thread \(thread.uniqueId)")
+                throw OWSAssertionError("Invalid uniqueId for thread \(thread.logString)")
             }
             for recipientAddress in thread.recipientAddresses(with: tx) {
                 guard let recipient = recipientAddress.serviceId else {

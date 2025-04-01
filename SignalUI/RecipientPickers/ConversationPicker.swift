@@ -403,7 +403,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                         groupItems.append(item)
                     }
                 default:
-                    owsFailDebug("unexpected thread: \(thread.uniqueId)")
+                    owsFailDebug("unexpected thread: \(thread.logString)")
                 }
             }
 
