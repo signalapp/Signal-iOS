@@ -20,9 +20,6 @@ public class OutgoingEditMessage: TSOutgoingMessage {
     // MARK: - Overrides
 
     @objc
-    public override var isUrgent: Bool { false }
-
-    @objc
     public override var shouldBeSaved: Bool { false }
 
     @objc
