@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 extension NSData {
     @objc
@@ -36,14 +37,7 @@ extension Data {
         self.init(result)
     }
 
-    public var hexadecimalString: String {
-        var result: String = ""
-        result.reserveCapacity(count * 2)
-        for v in self {
-            result += String(format: "%02x", v)
-        }
-        return result
-    }
+    public var hexadecimalString: String { self.toHex() }
 
     public static func data(fromHex hexString: String) -> Data? {
         Data(hex: hexString)

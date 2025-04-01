@@ -1285,7 +1285,7 @@ public class GroupsV2Impl: GroupsV2 {
                 individualEndorsements.append((serviceId, individualEndorsement))
             }
             let groupId = try secretParams.getPublicParams().getGroupIdentifier()
-            Logger.info("Received GSEs that expire at \(groupSendEndorsementsResponse.expiration) for \(groupId.logString)")
+            Logger.info("Received GSEs that expire at \(groupSendEndorsementsResponse.expiration) for \(groupId)")
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             groupSendEndorsementStore.saveEndorsements(
                 groupThreadId: groupThreadId,

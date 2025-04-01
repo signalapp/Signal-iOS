@@ -561,7 +561,6 @@
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */; };
 		501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */; };
-		501BD6012D39B89B00FBEADB /* GroupIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501BD6002D39B89B00FBEADB /* GroupIdentifier.swift */; };
 		501E4DAB2D133F4400D883C7 /* CompletionSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501E4DAA2D133F4400D883C7 /* CompletionSerializer.swift */; };
 		501E4DAE2D13439E00D883C7 /* CompletionSerializerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501E4DAC2D13439E00D883C7 /* CompletionSerializerTest.swift */; };
 		501E78622CFE3E2700FD56C4 /* PhoneNumberCountry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501E78612CFE3E2700FD56C4 /* PhoneNumberCountry.swift */; };
@@ -4443,7 +4442,6 @@
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
 		5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedDevice.swift; sourceTree = "<group>"; };
 		501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPairTest.swift; sourceTree = "<group>"; };
-		501BD6002D39B89B00FBEADB /* GroupIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupIdentifier.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
 		501E4DAA2D133F4400D883C7 /* CompletionSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionSerializer.swift; sourceTree = "<group>"; };
 		501E4DAC2D13439E00D883C7 /* CompletionSerializerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CompletionSerializerTest.swift; path = SignalServiceKit/tests/Storage/Database/CompletionSerializerTest.swift; sourceTree = SOURCE_ROOT; };
@@ -10120,7 +10118,6 @@
 				C17B31542D710DBD0060664D /* ProvisioningManager.swift */,
 				C18087892D76023400B16D1E /* ProvisioningSocketManager.swift */,
 				C1AE7C592D7B4451007A618D /* QuickRestoreManager.swift */,
-				C10C7BA02D88C98C0003CB77 /* RegistrationProvisioningMessage+DecryptableProvisioningMessage.swift */,
 			);
 			path = Provisioning;
 			sourceTree = "<group>";
@@ -14345,7 +14342,6 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CBA5289453B200548EEE /* GroupAccess.swift */,
-				501BD6002D39B89B00FBEADB /* GroupIdentifier.swift */,
 				D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */,
 				F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */,
 				F9C5CBA9289453B200548EEE /* GroupManager.swift */,
@@ -17630,7 +17626,6 @@
 				725465622BA0348600EABFD2 /* GroupCallPeekClient.swift in Sources */,
 				D979CC5B2AD61699006AAC49 /* GroupCallRecordManager.swift in Sources */,
 				D91F0B4E2B193A5C0086DB30 /* GroupCallRecordRingUpdateDelegate.swift in Sources */,
-				501BD6012D39B89B00FBEADB /* GroupIdentifier.swift in Sources */,
 				D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */,
 				F9A042C8289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift in Sources */,
 				F9C5CE77289453B400548EEE /* GroupManager.swift in Sources */,

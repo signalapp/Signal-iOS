@@ -238,7 +238,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
             let promise = vanillaTokenPromise!
             owsAssertDebug(!promise.isSealed)
             Logger.info("already pending promise for vanilla push token")
-            return promise.map { $0.hexEncodedString }
+            return promise.map { $0.toHex() }
         }
 
         // No pending vanilla token yet. Create a new promise
@@ -286,7 +286,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
                 }
 
                 Logger.info("successfully registered for vanilla push notifications")
-                return pushTokenData.hexEncodedString
+                return pushTokenData.toHex()
             }
         }.ensure {
             self.vanillaTokenPromise = nil
@@ -305,12 +305,5 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         self.voipRegistry  = voipRegistry
         voipRegistry.desiredPushTypes = [.voIP]
         voipRegistry.delegate = self
-    }
-}
-
-// We transmit pushToken data as hex encoded string to the server
-fileprivate extension Data {
-    var hexEncodedString: String {
-        return map { String(format: "%02hhx", $0) }.joined()
     }
 }

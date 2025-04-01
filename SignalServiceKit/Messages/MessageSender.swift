@@ -863,7 +863,7 @@ public class MessageSender {
                 try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(secretParams: secretParams)
             } catch {
                 let groupId = try secretParams.getPublicParams().getGroupIdentifier()
-                Logger.warn("Couldn't refresh \(groupId.logString) to fetch GSEs: \(error)")
+                Logger.warn("Couldn't refresh \(groupId) to fetch GSEs: \(error)")
                 // continue anyways... we'll fall back to a fanout when retrying
             }
             retryRecoveryState = recoveryState.mutated({ $0.canRefreshExpiringGroupSendEndorsements = false })
