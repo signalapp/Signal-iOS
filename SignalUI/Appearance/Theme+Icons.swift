@@ -160,6 +160,7 @@ public enum ThemeIcon: UInt {
     case transfer
     case register
     case backup
+    case noDevice
 
     case emojiActivity
     case emojiAnimal
@@ -512,6 +513,8 @@ public extension Theme {
             return "register-\(UIDevice.current.isIPad ? "ipad" : "phone")-outline-60-\(isDarkThemeEnabled ? "dark" : "light")"
         case .backup:
             return "backup-display"
+        case .noDevice:
+            return "device-phone-slash"
 
         case .emojiActivity:
             return "emoji-activity"

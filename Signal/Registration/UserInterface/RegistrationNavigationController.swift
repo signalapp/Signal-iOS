@@ -171,15 +171,6 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // State never changes.
                 update: nil
             )
-        case .askForOldDevice:
-            return Controller(
-                type: RegistrationCheckForOldDeviceViewController.self,
-                make: { presenter in
-                    return RegistrationCheckForOldDeviceViewController(presenter: presenter)
-                },
-                // State never changes.
-                update: nil
-            )
         case .phoneNumberEntry(let state):
             switch state {
             case .registration(let registrationMode):
@@ -433,8 +424,8 @@ extension RegistrationNavigationController: RegistrationSplashPresenter {
         pushNextController(coordinator.continueFromSplash())
     }
 
-    public func restoreOrTransfer() {
-        pushNextController(coordinator.needToAskForOldDevice())
+    public func setHasOldDevice(_ hasOldDevice: Bool) {
+        pushNextController(coordinator.setHasOldDevice(hasOldDevice))
     }
 
     public func switchToDeviceLinkingMode() {
@@ -636,13 +627,6 @@ extension RegistrationNavigationController: RegistrationQuickRestoreQRCodePresen
 
     func cancel() {
         // TODO [Quick Restore]: Pop back to the very first screen in the flow (splash).
-    }
-}
-
-extension RegistrationNavigationController: RegistrationCheckForOldDevicePresenter {
-    func hasOldDevice(_ hasOldDevice: Bool) {
-        let guarantee = coordinator.setHasOldDevice(hasOldDevice)
-        pushNextController(guarantee)
     }
 }
 

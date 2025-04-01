@@ -37,10 +37,6 @@ public protocol RegistrationCoordinator {
     /// Continue past the splash screen (marking it as shown).
     func continueFromSplash() -> Guarantee<RegistrationStep>
 
-    /// User has chosen 'restore or transfer' from the splash screen.  The
-    /// next step is to ask if their old device is available.
-    func needToAskForOldDevice() -> Guarantee<RegistrationStep>
-
     /// Mark if the user has their old device available to source registration information from.
     func setHasOldDevice(_ hasOldDevice: Bool) -> Guarantee<RegistrationStep>
 

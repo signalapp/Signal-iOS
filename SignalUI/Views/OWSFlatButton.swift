@@ -6,7 +6,7 @@
 import SignalServiceKit
 import UIKit
 
-public class OWSFlatButton: UIView {
+open class OWSFlatButton: UIView {
 
     public let button: UIButton
 

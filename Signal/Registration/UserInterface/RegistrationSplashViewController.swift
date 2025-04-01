@@ -12,7 +12,7 @@ public import SignalUI
 
 public protocol RegistrationSplashPresenter: AnyObject {
     func continueFromSplash()
-    func restoreOrTransfer()
+    func setHasOldDevice(_ hasOldDevice: Bool)
 
     func switchToDeviceLinkingMode()
     func transferDevice()
@@ -204,6 +204,91 @@ public class RegistrationSplashViewController: OWSViewController {
     @objc
     private func didTapRestoreOrTransfer() {
         Logger.info("")
-        presenter?.restoreOrTransfer()
+        let sheet = RestoreOrTransferPickerController(
+            setHasOldDeviceBlock: { [weak self] hasOldDevice in
+                self?.dismiss(animated: true) {
+                    self?.presenter?.setHasOldDevice(hasOldDevice)
+                }
+            }
+        )
+        self.present(sheet, animated: true)
     }
 }
+
+private class RestoreOrTransferPickerController: StackSheetViewController {
+
+    private let setHasOldDeviceBlock: ((Bool) -> Void)
+    init(setHasOldDeviceBlock: @escaping (Bool) -> Void) {
+        self.setHasOldDeviceBlock = setHasOldDeviceBlock
+        super.init()
+    }
+
+    open override var sheetBackgroundColor: UIColor { Theme.secondaryBackgroundColor }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        stackView.spacing = 16
+
+        let hasDeviceButton = RegistrationChoiceButton(
+            title: OWSLocalizedString(
+                "ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE",
+                comment: "Title for the 'have my old device' choice of the 'Restore or Transfer' prompt"
+            ),
+            body: OWSLocalizedString(
+                "ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY",
+                comment: "Explanation of 'have old device' flow for the 'Restore or Transfer' prompt"
+            ),
+            iconName: Theme.iconName(.qrCodeLight)
+        )
+        hasDeviceButton.addTarget(target: self, selector: #selector(hasDevice))
+        stackView.addArrangedSubview(hasDeviceButton)
+
+        let noDeviceButton = RegistrationChoiceButton(
+            title: OWSLocalizedString(
+                "ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE",
+                comment: "Title for the 'do not have my old device' choice of the 'Restore or Transfer' prompt"
+            ),
+            body: OWSLocalizedString(
+                "ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY",
+                comment: "Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt"
+            ),
+            iconName: Theme.iconName(.noDevice)
+        )
+        noDeviceButton.addTarget(target: self, selector: #selector(noDevice))
+        stackView.addArrangedSubview(noDeviceButton)
+    }
+
+    @objc func hasDevice() {
+        setHasOldDeviceBlock(true)
+    }
+
+    @objc func noDevice() {
+        setHasOldDeviceBlock(false)
+    }
+}
+
+#if DEBUG
+private class PreviewRegistrationSplashPresenter: RegistrationSplashPresenter {
+    func continueFromSplash() {
+        print("continueFromSplash")
+    }
+
+    func setHasOldDevice(_ hasOldDevice: Bool) {
+        print("setHasOldDevice: \(hasOldDevice)")
+    }
+
+    func switchToDeviceLinkingMode() {
+        print("switchToDeviceLinkingMode")
+    }
+
+    func transferDevice() {
+        print("transferDevice")
+    }
+}
+
+@available(iOS 17, *)
+#Preview {
+    let presenter = PreviewRegistrationSplashPresenter()
+    return RegistrationSplashViewController(presenter: presenter)
+}
+#endif

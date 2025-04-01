@@ -103,17 +103,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return nextStep()
     }
 
-    public func needToAskForOldDevice() -> Guarantee<RegistrationStep> {
-        Logger.info("")
-        db.write { tx in
-            self.updatePersistedState(tx) {
-                $0.needToAskForOldDevice = true
-                $0.hasShownSplash = true
-            }
-        }
-        return nextStep()
-    }
-
     public func requestPermissions() -> Guarantee<RegistrationStep> {
         Logger.info("")
 
@@ -360,7 +349,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     public func setHasOldDevice(_ hasOldDevice: Bool) -> Guarantee<RegistrationStep> {
         deps.db.write { tx in
             updatePersistedState(tx) {
-                $0.needToAskForOldDevice = false
+                $0.hasShownSplash = true
                 $0.hasOldDevice = hasOldDevice
             }
         }
@@ -778,7 +767,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var shouldSkipRegistrationSplash = false
 
         var hasOldDevice = false
-        var needToAskForOldDevice = false
 
         /// When re-registering, just before completing the actual create account
         /// request, we wipe our local state for re-registration. We only do this once,
@@ -991,7 +979,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case didRefreshOneTimePreKeys
             case hasDeclinedTransfer
             case hasOldDevice
-            case needToAskForOldDevice
             case accountEntropyPool
             case recoveredSVRMasterKey
             case restoreMethodToken
@@ -1369,15 +1356,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         {
             return .opening
         }
-        if case .registering = mode {
-            if persistedState.needToAskForOldDevice {
-                return .opening
-            } else if
-                persistedState.hasOldDevice,
-                persistedState.restoreMethod == nil
-            {
-                return .quickRestore
-            }
+        if
+            case .registering = mode,
+            persistedState.hasOldDevice,
+            persistedState.restoreMethod == nil
+        {
+            return .quickRestore
         }
         if let session = inMemoryState.session {
             // If we have a session, always use that. We might have obtained SVR
@@ -1458,12 +1442,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func nextStepForOpeningPath() -> Guarantee<RegistrationStep> {
         if let splashStep = splashStepToShow() {
             return .value(splashStep)
-        }
-        if
-            persistedState.needToAskForOldDevice,
-            case .registering = mode
-        {
-            return .value(.askForOldDevice)
         }
         if inMemoryState.needsSomePermissions {
             // This class is only used for primary device registration

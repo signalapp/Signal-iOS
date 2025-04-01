@@ -14,11 +14,6 @@ public enum RegistrationStep: Equatable {
 
     // MARK: - Quick Restore
 
-    /// Ask the user if their old device is available to source existing
-    /// registration information from.  If so, we'll present the QR code
-    /// to initiate the transfer of that info from the old device
-    case askForOldDevice
-
     /// Display a QR code similar to provisioning that, when scanned,
     /// sets up a connection for the old device to sent registration information
     /// to the new device.
@@ -134,7 +129,6 @@ public enum RegistrationStep: Equatable {
         case .registrationSplash: return "registrationSplash"
         case .changeNumberSplash: return "changeNumberSplash"
         case .permissions: return "permissions"
-        case .askForOldDevice: return "askForOldDevice"
         case .scanQuickRegistrationQrCode: return "scanQuickRegistrationQrCode"
         case .phoneNumberEntry: return "phoneNumberEntry"
         case .verificationCodeEntry: return "verificationCodeEntry"
