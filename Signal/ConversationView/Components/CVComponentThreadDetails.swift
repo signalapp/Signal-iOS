@@ -202,6 +202,17 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             }
             innerViews.append(groupInfoWrapper)
 
+            if safetySection.shouldShowNationalSecurityWarning {
+                let nationalSecurityWarningLabelConfig = self.nationalSecurityWarningConfig()
+                nationalSecurityWarningLabelConfig.applyForRendering(label: componentView.nationalSecurityWarningLabel)
+                innerViews.append(UIView.spacer(withHeight: vSpacingMutualGroups))
+                
+                // Create a wrapper view that extends edge-to-edge
+                let warningWrapper = ManualLayoutView(name: "warningWrapper")
+                warningWrapper.addSubviewToFillSuperviewEdges(componentView.nationalSecurityWarningLabel)
+                innerViews.append(warningWrapper)
+            }
+
             let maxWidth = cellMeasurement.cellSize.width
             - outerStackConfig.layoutMargins.totalWidth
             - innerStackConfig.layoutMargins.totalWidth
@@ -367,6 +378,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     private static var reviewCarefullyFont: UIFont { .dynamicTypeSubheadline.semibold() }
     private static var reviewCarefullyTextColor: UIColor { UIColor(rgbHex: 0xA88746) }
+    private static var nationalSecurityBridgeColor: UIColor { UIColor(rgbHex: 0xFC0303) }
 
     private func reviewCarefullyConfig() -> CVLabelConfig {
         CVLabelConfig.init(
@@ -391,6 +403,61 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             ),
             font: Self.reviewCarefullyFont,
             textColor: Self.reviewCarefullyTextColor
+        )
+    }
+
+    private func nationalSecurityWarningConfig() -> CVLabelConfig {
+        let titleFont = UIFont.dynamicTypeSubheadline.bold()
+        let bodyFont = UIFont.dynamicTypeSubheadline
+        
+        let titleText = OWSLocalizedString(
+            "SYSTEM_MESSAGE_NATIONAL_SECURITY_WARNING_TITLE",
+            comment: "Indicator warning title about a national security bridge"
+        )
+        let bodyText = OWSLocalizedString(
+            "SYSTEM_MESSAGE_NATIONAL_SECURITY_WARNING_BODY",
+            comment: "Indicator warning body about a national security bridge"
+        )
+        
+        let attributedString = NSMutableAttributedString()
+        
+        // Create paragraph styles
+        let titleParagraphStyle = NSMutableParagraphStyle()
+        titleParagraphStyle.alignment = .center
+        
+        let bodyParagraphStyle = NSMutableParagraphStyle()
+        bodyParagraphStyle.alignment = .justified
+        
+        // Add title with centered alignment
+        attributedString.append(NSAttributedString(
+            string: titleText,
+            attributes: [
+                .font: titleFont,
+                .foregroundColor: Self.nationalSecurityBridgeColor,
+                .paragraphStyle: titleParagraphStyle
+            ]
+        ))
+        
+        // Add body text with justified alignment
+        attributedString.append(NSAttributedString(
+            string: bodyText,
+            attributes: [
+                .font: bodyFont,
+                .foregroundColor: Self.nationalSecurityBridgeColor,
+                .paragraphStyle: bodyParagraphStyle
+            ]
+        ))
+        
+        return CVLabelConfig(
+            text: .attributedText(attributedString),
+            displayConfig: .forUnstyledText(
+                font: bodyFont,
+                textColor: Self.nationalSecurityBridgeColor
+            ),
+            font: bodyFont,
+            textColor: Self.nationalSecurityBridgeColor,
+            numberOfLines: 0,
+            textAlignment: .natural
         )
     }
 
@@ -750,6 +817,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 subviewInfos: groupInfoSubviewInfos
             ).measuredSize
             innerSubviewInfos.append(mutualGroupsSize.asManualSubviewInfo)
+
+            if safetySection.shouldShowNationalSecurityWarning {
+                let nationalSecurityWarningSize = CVText.measureLabel(
+                    config: self.nationalSecurityWarningConfig(),
+                    maxWidth: maxContentWidth
+                )
+                innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
+                innerSubviewInfos.append(CGSize(width: maxContentWidth, height: nationalSecurityWarningSize.height).asManualSubviewInfo)
+            }
         }
 
         let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
@@ -852,6 +928,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate let bioLabel = CVLabel()
 
         fileprivate let reviewCarefullyLabel = CVLabel()
+        fileprivate let nationalSecurityWarningLabel = CVLabel()
         fileprivate let profileNamesEducationLabel = CVButton()
         fileprivate let detailsButton = CVButton()
         fileprivate let mutualGroupsLabel = CVLabel()
@@ -891,6 +968,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             titleButton.reset()
             bioLabel.text = nil
             reviewCarefullyLabel.text = nil
+            nationalSecurityWarningLabel.text = nil
             profileNamesEducationLabel.reset()
             detailsButton.reset()
             mutualGroupsLabel.text = nil
@@ -937,8 +1015,27 @@ extension CVComponentThreadDetails {
             transaction: tx
         )
 
+        let shouldShowNationalSecurityWarning = {
+            let signalGateNames = signalGateNames()
+            let memberAddresses = groupThread.groupModel.groupMembership.fullMembers
+            
+            for memberAddress in memberAddresses {
+                let displayName = SSKEnvironment.shared.contactManagerRef.displayName(
+                    for: memberAddress,
+                    tx: tx
+                ).resolvedValue()
+                
+                // Check if the display name matches any of the signal gate aliases
+                if signalGateNames.contains(displayName) {
+                    return true
+                }
+            }
+            return false
+        }()
+
         return .init(
             shouldShowLowTrustWarning: shouldShowUnknownThreadWarning,
+            shouldShowNationalSecurityWarning: shouldShowNationalSecurityWarning,
             shouldShowProfileNamesEducation: shouldShowUnknownThreadWarning,
             detailsText: memberCountAttributedText,
             mutualGroupsText: nil,
@@ -965,6 +1062,7 @@ extension CVComponentThreadDetails {
         guard !contactThread.isNoteToSelf else {
             return .init(
                 shouldShowLowTrustWarning: false,
+                shouldShowNationalSecurityWarning: false,
                 shouldShowProfileNamesEducation: false,
                 detailsText: nil,
                 mutualGroupsText: OWSLocalizedString(
@@ -991,6 +1089,15 @@ extension CVComponentThreadDetails {
             thread: contactThread,
             transaction: tx
         )
+        
+        let shouldShowNationalSecurityWarning = {
+            let signalGateNames = signalGateNames()
+            let displayName = SSKEnvironment.shared.contactManagerRef.displayName(
+                for: contactThread.contactAddress,
+                tx: tx
+            ).resolvedValue()
+            return signalGateNames.contains(displayName)
+        }()
 
         switch mutualGroupNames.count {
         case 0:
@@ -1056,6 +1163,7 @@ extension CVComponentThreadDetails {
 
         return .init(
             shouldShowLowTrustWarning: shouldShowUnknownThreadWarning,
+            shouldShowNationalSecurityWarning: shouldShowNationalSecurityWarning,
             shouldShowProfileNamesEducation: shouldShowProfileNamesEducation,
             detailsText: phoneNumberString,
             mutualGroupsText: NSAttributedString.composed(of: [
@@ -1069,5 +1177,27 @@ extension CVComponentThreadDetails {
             threadType: .contact,
             shouldShowSafetyTipsButton: isMessageRequest
         )
+    }
+    
+    private static func signalGateNames() -> Set<String> {
+        [
+            "Walker Barrett",
+            "Scott Bessent",
+            "Tulsi Gabbard",
+            "Jeffrey Goldberg",
+            "Pete Hegseth",
+            "Dan Katz",
+            "Joe Kent",
+            "Brian McCormack",
+            "Stephen Miller",
+            "Mike Needham",
+            "John Ratcliffe",
+            "Marco Rubio",
+            "Susie Wiles",
+            "Steve Witkoff",
+            "Mike Waltz",
+            "Alex Wong",
+            "JD Vance"
+        ]
     }
 }

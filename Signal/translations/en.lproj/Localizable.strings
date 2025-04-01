@@ -8209,6 +8209,12 @@
 /* Indicator warning about an unknown contact thread */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
 
+/* Title for a national security advisory warning displayed in a conversation thread */
+"SYSTEM_MESSAGE_NATIONAL_SECURITY_WARNING_TITLE" = "🚨 U.S. National Security Advisory 🚨\n🚨 COMSEC Breach Warning 🚨";
+
+/* Body text for a warning discouraging the sharing of classified information in a chat thread */
+"SYSTEM_MESSAGE_NATIONAL_SECURITY_WARNING_BODY" = "\n\nThis communication thread is not authorized for the discussion, transmission, or coordination of classified intelligence, military operations, or foreign policy matters. Unauthorized disclosures—including, but not limited to, operational airstrike plans, or diplomatic correspondence—are strictly prohibited.\nIf you are a Vice President, Defense Secretary, or a real estate mogul turned geopolitical strategist, please exit this chat immediately and report to your nearest SCIF (Sensitive Compartmented Information Facility).";
+
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Tap to replace an emoji";
 

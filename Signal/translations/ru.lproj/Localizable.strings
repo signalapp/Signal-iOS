@@ -8209,6 +8209,12 @@
 /* Indicator warning about an unknown contact thread */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Внимательно проверьте";
 
+/* Title for a national security advisory warning displayed in a conversation thread */
+"SYSTEM_MESSAGE_NATIONAL_SECURITY_WARNING_TITLE" = "🚨 Предупреждение о нарушении безопасности связи 🚨";
+
+/* Body text for a warning discouraging the sharing of classified information in a chat thread */
+"SYSTEM_MESSAGE_NATIONAL_SECURITY_WARNING_BODY" = "Если вы говорите по-русски и читаете это сообщение, скорее всего, уже слишком поздно, чтобы что-либо исправить. Пожалуйста, воздержитесь от дальнейших утечек. Шифрование — это хорошо, но осмотрительность лучше.";
+
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Нажмите, чтобы заменить эмодзи";
 

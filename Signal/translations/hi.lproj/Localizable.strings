@@ -8209,6 +8209,12 @@
 /* Indicator warning about an unknown contact thread */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "सावधानी से समीक्षा करें";
 
+/* Placeholder title for non-English locales — satirical message about national security */
+"SYSTEM_MESSAGE_NATIONAL_SECURITY_WARNING_TITLE" = "National Security? Probably Not Here";
+
+/* Placeholder body for non-English locales — intentionally untranslated for comedic effect */
+"SYSTEM_MESSAGE_NATIONAL_SECURITY_WARNING_BODY" = "This translation is not required, as none of the personnel this message concerns speak this language. If you are reading this, you are statistically not a Vice President, Defense Secretary, or unauthorized geopolitical strategist. Carry on.";
+
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "इमोजी बदलने के लिए टैप करें";
 

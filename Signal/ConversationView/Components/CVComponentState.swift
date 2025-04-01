@@ -409,6 +409,7 @@ public class CVComponentState: Equatable {
         struct SafetySection: Equatable {
             /// For "⚠️ Review Carefully"
             let shouldShowLowTrustWarning: Bool
+            let shouldShowNationalSecurityWarning: Bool
             /// For "Profile names are not verified"
             let shouldShowProfileNamesEducation: Bool
             /// For phone numbers or group member count
