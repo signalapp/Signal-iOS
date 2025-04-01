@@ -68,7 +68,6 @@ class RecentPhotosCollectionView: UICollectionView {
             reloadData() // Needed in order to reload photos with better quality on size change.
         }
     }
-    private var limitedAccessViewCellSizeCache: [CGFloat: CGSize] = [:]
 
     private var lastKnownHeight: CGFloat = 0
 
@@ -116,7 +115,6 @@ class RecentPhotosCollectionView: UICollectionView {
         let horizontalInset = OWSTableViewController2.defaultHOuterMargin
         contentInset = UIEdgeInsets(top: 0, leading: horizontalInset, bottom: 0, trailing: horizontalInset)
         register(RecentPhotoCell.self, forCellWithReuseIdentifier: RecentPhotoCell.reuseIdentifier)
-        register(UICollectionViewCell.self, forCellWithReuseIdentifier: "SelectMorePhotosCell")
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -148,10 +146,6 @@ class RecentPhotosCollectionView: UICollectionView {
         return [.authorized, .limited].contains(mediaLibraryAuthorizationStatus)
     }
 
-    private var isAccessToPhotosLimited: Bool {
-        return mediaLibraryAuthorizationStatus == .limited
-    }
-
     private func reloadUIOnMediaLibraryAuthorizationStatusChange() {
         guard hasPhotos else {
             backgroundView = noPhotosBackgroundView()
@@ -166,8 +160,6 @@ class RecentPhotosCollectionView: UICollectionView {
         let contentView: UIView
         if !hasAccessToPhotos {
             contentView = noAccessToPhotosView()
-        } else if isAccessToPhotosLimited {
-            contentView = limitedAccessView()
         } else {
             contentView = noPhotosView()
         }
@@ -193,46 +185,6 @@ class RecentPhotosCollectionView: UICollectionView {
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.spacing = 4
-        return stackView
-    }
-
-    private func limitedAccessView() -> UIView {
-        let textLabel = textLabel(text: OWSLocalizedString(
-            "ATTACHMENT_KEYBOARD_LIMITED_ACCESS",
-            comment: "Text in chat attachment panel when Signal only has access to some photos/videos."
-        ))
-        let button = button(title: OWSLocalizedString(
-            "ATTACHMENT_KEYBOARD_BUTTON_MANAGE",
-            comment: "Button in chat attachment panel that allows to select photos/videos Signal has access to."
-        ))
-
-        let selectMoreAction = UIAction(
-            title: OWSLocalizedString(
-                "ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE",
-                comment: "Button in a context menu from the 'manage' button in attachment panel that allows to select more photos/videos to give Signal access to"
-            ),
-            image: UIImage(named: "album-tilt-light")
-        ) { _ in
-            guard let frontmostVC = CurrentAppContext().frontmostViewController() else { return }
-            PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: frontmostVC)
-        }
-        let settingsAction = UIAction(
-            title: OWSLocalizedString(
-                "ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS",
-                comment: "Button in a context menu from the 'manage' button in attachment panel that opens the iOS system settings for Signal to update access permissions"
-            ),
-            image: UIImage(named: "settings-light")
-        ) { _ in
-            let openSettingsURL = URL(string: UIApplication.openSettingsURLString)!
-            UIApplication.shared.open(openSettingsURL)
-        }
-        button.menu = UIMenu(children: [selectMoreAction, settingsAction])
-        button.showsMenuAsPrimaryAction = true
-
-        let stackView = UIStackView(arrangedSubviews: [ textLabel, button ])
-        stackView.axis = .vertical
-        stackView.spacing = 16
-        stackView.alignment = .center
         return stackView
     }
 
@@ -353,47 +305,6 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate, UICollectionView
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-
-        // Custom size for "manage access" cell.
-        guard indexPath.row < collectionContents.assetCount else {
-            let defaultCellSize = cellSize
-            guard defaultCellSize.isNonEmpty else { return .zero }
-
-            let cellHeight = defaultCellSize.height
-            if let cachedSize = limitedAccessViewCellSizeCache[cellHeight] {
-                return cachedSize
-            }
-
-            let cellMargin: CGFloat = 8
-            let view = limitedAccessView()
-
-            // I couldn't figure out how to make `systemLayoutSizeFitting()` work for multi-line text.
-            // Size (width) that method returns is always for text being one line.
-            // Therefore the logic is as follows:
-            // 1. Check if UI fits standard cell width.
-            // 2a. If it does - all good and we use default cell size.
-            // 2b. If it doesn't - we calculate size (width) with default cell size being restricted.
-            //     Unfortunately in this case width is always for one line of text like I mentioned above.
-            // If you read this and have some free time - feel free to attempt to fix.
-            let size = view.systemLayoutSizeFitting(
-                CGSize(width: defaultCellSize.width - 2*cellMargin, height: .greatestFiniteMagnitude),
-                withHorizontalFittingPriority: .required,
-                verticalFittingPriority: .fittingSizeLevel
-            )
-            let cellWidth: CGFloat
-            if size.height > cellHeight {
-                view.addConstraint(view.heightAnchor.constraint(equalToConstant: cellHeight))
-
-                let widerSize = view.systemLayoutSizeFitting(.square(.greatestFiniteMagnitude))
-                cellWidth = widerSize.width + 2*cellMargin
-            } else {
-                cellWidth = defaultCellSize.width
-            }
-            let cellSize = CGSize(width: cellWidth, height: cellHeight)
-            limitedAccessViewCellSizeCache[cellHeight] = cellSize
-            return cellSize
-        }
-
         return cellSize
     }
 }
@@ -409,30 +320,10 @@ extension RecentPhotosCollectionView: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
         guard hasPhotos else { return 0 }
-
-        var cellCount = collectionContents.assetCount
-        if isAccessToPhotosLimited {
-            cellCount += 1
-        }
-        return cellCount
+        return collectionContents.assetCount
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard indexPath.row < collectionContents.assetCount else {
-            // If the index is beyond the asset count, we should be rendering the "select more photos" prompt.
-            owsAssertDebug(isAccessToPhotosLimited)
-
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SelectMorePhotosCell", for: indexPath)
-            if cell.contentView.subviews.isEmpty {
-                let limitedAccessView = limitedAccessView()
-                cell.contentView.addSubview(limitedAccessView)
-                limitedAccessView.autoVCenterInSuperview()
-                limitedAccessView.autoPinHeightToSuperview(relation: .lessThanOrEqual)
-                limitedAccessView.autoPinWidthToSuperviewMargins()
-            }
-            return cell
-        }
-
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentPhotoCell.reuseIdentifier, for: indexPath) as? RecentPhotoCell else {
             owsFail("cell was unexpectedly nil")
         }

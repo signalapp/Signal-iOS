@@ -1658,6 +1658,7 @@
 		B9D65E532BAE1DA70067322A /* NicknameEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */; };
 		B9D721762C87B8EB007EDA85 /* SwiftUI+Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */; };
 		B9DB91702AF46B9A0051A3FD /* BankTransferMandateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */; };
+		B9E02DF02D974F2B00C9DDF8 /* LimitedPhotoPermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E02DEF2D974F2B00C9DDF8 /* LimitedPhotoPermissionsView.swift */; };
 		B9E322D52CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E322D42CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift */; };
 		B9E322D82CD024A2006DAF3B /* linking-device-light.json in Resources */ = {isa = PBXBuildFile; fileRef = B9E322D72CD024A2006DAF3B /* linking-device-light.json */; };
 		B9E322D92CD024A2006DAF3B /* linking-device-dark.json in Resources */ = {isa = PBXBuildFile; fileRef = B9E322D62CD024A2006DAF3B /* linking-device-dark.json */; };
@@ -5553,6 +5554,7 @@
 		B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameEditorViewController.swift; sourceTree = "<group>"; };
 		B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUI+Animations.swift"; sourceTree = "<group>"; };
 		B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankTransferMandateViewController.swift; sourceTree = "<group>"; };
+		B9E02DEF2D974F2B00C9DDF8 /* LimitedPhotoPermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitedPhotoPermissionsView.swift; sourceTree = "<group>"; };
 		B9E322D42CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanOrPickDelegate.swift; sourceTree = "<group>"; };
 		B9E322D62CD024A2006DAF3B /* linking-device-dark.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "linking-device-dark.json"; sourceTree = "<group>"; };
 		B9E322D72CD024A2006DAF3B /* linking-device-light.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "linking-device-light.json"; sourceTree = "<group>"; };
@@ -10449,6 +10451,7 @@
 			children = (
 				88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */,
 				8809CE8622F8FE6D00D38867 /* AttachmentKeyboard.swift */,
+				B9E02DEF2D974F2B00C9DDF8 /* LimitedPhotoPermissionsView.swift */,
 				8809CE8922F93C2200D38867 /* RecentPhotoCollectionView.swift */,
 			);
 			path = "Attachment Keyboard";
@@ -16930,6 +16933,7 @@
 				5045F44229E0DB7100058E5F /* LaunchJobs.swift in Sources */,
 				502F187F2D5530AA00A1BD62 /* LazyDatabaseMigratorRunner.swift in Sources */,
 				D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */,
+				B9E02DF02D974F2B00C9DDF8 /* LimitedPhotoPermissionsView.swift in Sources */,
 				B9A53B912CF507FB0000578B /* LinkAndSyncProgressModal.swift in Sources */,
 				660FA9112CE58CD7006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift in Sources */,
 				505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */,

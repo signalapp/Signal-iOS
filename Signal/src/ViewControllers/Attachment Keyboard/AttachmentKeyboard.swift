@@ -35,6 +35,8 @@ class AttachmentKeyboard: CustomKeyboard {
         return pickerView
     }()
 
+    private lazy var limitedPhotoPermissionsView = LimitedPhotoPermissionsView()
+
     // MARK: -
 
     init(delegate: AttachmentKeyboardDelegate?) {
@@ -44,8 +46,13 @@ class AttachmentKeyboard: CustomKeyboard {
 
         backgroundColor = Theme.backgroundColor
 
-        let stackView = UIStackView(arrangedSubviews: [ recentPhotosCollectionView, attachmentFormatPickerView ])
+        let stackView = UIStackView(arrangedSubviews: [
+            limitedPhotoPermissionsView,
+            recentPhotosCollectionView,
+            attachmentFormatPickerView,
+        ])
         stackView.axis = .vertical
+        stackView.setCustomSpacing(12, after: limitedPhotoPermissionsView)
         contentView.addSubview(stackView)
         stackView.autoPinWidthToSuperview()
         stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 12)
@@ -72,15 +79,25 @@ class AttachmentKeyboard: CustomKeyboard {
     }
 
     private func checkPermissions() {
+        let setAuthorizationStatus: (PHAuthorizationStatus) -> Void = { status in
+            self.recentPhotosCollectionView.mediaLibraryAuthorizationStatus = status
+            let isLimited = switch status {
+            case .limited:
+                true
+            case .notDetermined, .restricted, .denied, .authorized:
+                false
+            @unknown default:
+                false
+            }
+            self.attachmentFormatPickerView.shouldLeaveSpaceForPermissions = isLimited
+            self.limitedPhotoPermissionsView.isHiddenInStackView = !isLimited
+        }
         let authorizationStatus: PHAuthorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         guard authorizationStatus != .notDetermined else {
-            let handler: (PHAuthorizationStatus) -> Void = { status in
-                self.recentPhotosCollectionView.mediaLibraryAuthorizationStatus = status
-            }
-            PHPhotoLibrary.requestAuthorization(for: .readWrite, handler: handler)
+            PHPhotoLibrary.requestAuthorization(for: .readWrite, handler: setAuthorizationStatus)
             return
         }
-        recentPhotosCollectionView.mediaLibraryAuthorizationStatus = authorizationStatus
+        setAuthorizationStatus(authorizationStatus)
     }
 }
 

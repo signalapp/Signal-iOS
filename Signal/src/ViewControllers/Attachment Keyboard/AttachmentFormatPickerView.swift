@@ -20,6 +20,12 @@ class AttachmentFormatPickerView: UIView {
 
     weak var attachmentFormatPickerDelegate: AttachmentFormatPickerDelegate?
 
+    var shouldLeaveSpaceForPermissions: Bool = false {
+        didSet {
+            self.invalidateIntrinsicContentSize()
+        }
+    }
+
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsHorizontalScrollIndicator = false
@@ -105,7 +111,14 @@ class AttachmentFormatPickerView: UIView {
     }
 
     override var intrinsicContentSize: CGSize {
-        let height: CGFloat = traitCollection.verticalSizeClass == .compact ? 86 : 122
+        let isVerticallyCompact = traitCollection.verticalSizeClass == .compact
+        let height: CGFloat =
+        switch (isVerticallyCompact, shouldLeaveSpaceForPermissions) {
+        case (false, false): 122
+        case (false, true): 100
+        case (true, false): 86
+        case (true, true): 76
+        }
         return CGSize(width: UIView.noIntrinsicMetric, height: height)
     }
 
