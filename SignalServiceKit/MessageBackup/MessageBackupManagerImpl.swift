@@ -246,7 +246,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             shouldIncludePin: true
         )
 
-        return try await _exportBackup<Upload.EncryptedBackupUploadMetadata>(
+        return try await _exportBackup(
             localIdentifiers: localIdentifiers,
             backupPurpose: backupPurpose,
             includedContentFilter: includedContentFilter,
@@ -282,7 +282,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             shouldIncludePin: true
         )
 
-        return try await _exportBackup<URL>(
+        return try await _exportBackup(
             localIdentifiers: localIdentifiers,
             backupPurpose: .remoteBackup,
             includedContentFilter: includedContentFilter,

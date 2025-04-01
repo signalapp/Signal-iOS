@@ -36,6 +36,7 @@ public enum EditorSticker {
         case clockDigital(DigitalClockStyle)
         case clockAnalog(AnalogClockStyle)
 
+        @MainActor
         func previewView() -> UIView {
             switch self {
             case .clockDigital(let digitalClockStyle):
@@ -176,6 +177,7 @@ extension EditorSticker.StorySticker {
             }
         }
 
+        @MainActor
         func drawClock(date: Date) -> CALayer {
             return AnalogClockLayer(style: self, date: date)
         }
@@ -304,6 +306,7 @@ private class AnalogClockLayer: CALayer {
         }
     }
 
+    @MainActor
     init(style: Style, date: Date) {
         self.clockStyle = style
         self.date = date
