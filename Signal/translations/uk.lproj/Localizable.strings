@@ -401,7 +401,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal має доступ лише до вибраних вами фото і відео";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal має доступ лише до фото і відео, які ви вибрали";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Локація";
@@ -455,7 +455,7 @@
 "ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Збережено до «Фотографій»";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Анімовано";
+"ATTACHMENT_TYPE_ANIMATED" = "Анімація";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Аудіо";
@@ -530,13 +530,13 @@
 "BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ підтримує Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Термін дії вашого Значка підтримки скінчився, тож він більше не відображається в профілі.\n\nВи можете і надалі користуватися Signal. Але ми будемо дуже вдячні, якщо ви підтримаєте технологію, створену для вас, щомісячним внесок.";
+"BADGE_EXPIRED_BOOST_BODY" = "Ваш значок за підтримку вже недійсний, тому його більше не видно в профілі.\n\nЩоб і надалі підтримувати створені для вас технології, ви можете щомісяця здійснювати благодійний внесок.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Термін дії вашого Значка підтримки скінчився, тож він більше не відображається в профілі.\n\nВи можете відновити Значок підтримки ще на 30 днів, зробивши разовий донат.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Ваш значок за підтримку вже недійсний, тому його більше не видно в профілі.\n\nВи можете знов активувати значок ще на 30 днів, зробивши разовий донат.";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Строк дії емблеми сплив";
+"BADGE_EXPIRED_BOOST_TITLE" = "Значок недійсний";
 
 /* Button text when a badge expires, asking users to donate */
 "BADGE_EXPIRED_DONATE_BUTTON" = "Підтримати";
@@ -548,7 +548,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Щомісячний донат скасовано";
 
 /* String explaining to the user on a badge expiry sheet that their subscription badge has expired because the renewal payment failed. Embeds {{ a specific, already-localized string describing the payment failure }}. Will have a 'learn more' link appended, when it is rendered. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Ваш регулярний щомісячний донат було скасовано. %1$@\n\nВаш значок більше не відображається у профілі.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Щомісячний донат було скасовано. %1$@\n\nЗначок зник з вашого профілю.";
 
 /* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
 "BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Ваш банківський переказ отримано. Тепер ви можете показувати в профілі цей значок, щоб розказати іншим про свою підтримку.";
@@ -563,28 +563,28 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Показувати в профілі";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Зробити обраним значком";
+"BADGE_THANKS_MAKE_FEATURED" = "Обрати цей значок";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Дякуємо за вашу підтримку!";
+"BADGE_THANKS_TITLE" = "Дякуємо за підтримку!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Коли у вас є декілька значків, ви можете обрати, який саме показувати у своєму профілі.";
 
 /* On the bank donation screen, show a link below the input form to show help about finding account info. */
-"BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "Пошук даних рахунку";
+"BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "Як знайти платіжні реквізити";
 
 /* On the bank transfer donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their bank information (2) tell them that Signal does not collect or store their personal information. */
-"BANK_DONATION_SUBHEADER_TEXT" = "Введіть свої банківські реквізити. Signal не збирає і не зберігає вашу особисту інформацію.";
+"BANK_DONATION_SUBHEADER_TEXT" = "Введіть реквізити картки. Signal не збирає і не зберігає вашу особисту інформацію.";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button to agree to the mandate. */
-"BANK_MANDATE_AGREE" = "Погодитися";
+"BANK_MANDATE_AGREE" = "Погоджуюся";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button that shows more of the mandate if it is not all visible. */
-"BANK_MANDATE_READ_MORE" = "Більше";
+"BANK_MANDATE_READ_MORE" = "Читати далі";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a subtitle about the payment processor Stripe above that mandate. */
-"BANK_MANDATE_SUBTITLE" = "Stripe оброблює донати для Signal. Signal не збирає і не зберігає вашу особисту інформацію.";
+"BANK_MANDATE_SUBTITLE" = "Stripe опрацьовує донати на користь Signal. Signal не збирає і не зберігає вашу особисту інформацію.";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is the title above that mandate. */
 "BANK_MANDATE_TITLE" = "Банківський переказ";
@@ -599,7 +599,7 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Заблокувати";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Заблокувати і покинути групу «%1$@»?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Заблокувати й покинути групу «%1$@»?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Заблокувати користувача %1$@?";
@@ -611,10 +611,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Заблоковані користувачі";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Група вже заблокована.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Групу вже заблоковано.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Користувач уже заблокований.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Користувача вже заблоковано.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Розблокувати";
@@ -632,16 +632,16 @@
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Розблокувати цю групу?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Розблокувати «%1$@»?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Розблокувати чат «%1$@»?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Заблокувати";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "«%1$@» було заблоковано.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "«%1$@» заблоковано.";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Користувач заблокований";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Користувача заблоковано";
 
 /* The title of the 'group blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Групу заблоковано";
@@ -653,7 +653,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Помилка";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "«%1$@» було розблоковано.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "«%1$@» розблоковано.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Тепер поточні учасники можуть знов додати вас у групу.";
@@ -938,7 +938,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Користувач Signal";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Група";
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Група в Signal";
 
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "Виклики";
@@ -1085,10 +1085,10 @@
 "CAMERA_VO_ZOOM_LEVEL" = "Збільшення: %1$@";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Код безпеки з'явиться після обміну повідомленнями із цим користувачем.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Код безпеки буде згенеровано після обміну повідомленнями із цим користувачем.";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
-"CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "Недійсний номер картки";
+"CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "Неправильний номер картки";
 
 /* Users can donate to Signal with a credit or debit card. This is the label for the card number field on that screen. */
 "CARD_DONATION_CARD_NUMBER_LABEL" = "Номер картки";
@@ -1100,10 +1100,10 @@
 "CARD_DONATION_CVV_LABEL" = "CVV";
 
 /* Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is too long, this error will be shown. Try to use a short string to make space in the UI. */
-"CARD_DONATION_CVV_TOO_LONG_ERROR" = "Код занадто довгий";
+"CARD_DONATION_CVV_TOO_LONG_ERROR" = "Код задовгий";
 
 /* Users can donate to Signal with a credit or debit card. If their expiration date is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
-"CARD_DONATION_EXPIRATION_DATE_GENERIC_ERROR" = "Недійсний термін дії";
+"CARD_DONATION_EXPIRATION_DATE_GENERIC_ERROR" = "Неправильний термін дії";
 
 /* Users can donate to Signal with a credit or debit card. This is the label for the expiration date field on that screen. Try to use a short string to make space in the UI. (For example, the English text uses \"Exp. Date\" instead of \"Expiration Date\"). */
 "CARD_DONATION_EXPIRATION_DATE_LABEL" = "Термін дії";
@@ -1112,16 +1112,16 @@
 "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER" = "ММ/РР";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
-"CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal не збирає і не зберігає вашу особисту інформацію, коли ви відправляєте донат.\n\nМи користуємося послугами компанії Stripe для обробки ваших платежів. Ми не зберігаємо інформацію, яку ви надаєте Stripe, і не маємо до неї доступу.\n\nSignal не може і не намагається встановити зв'язок між вашим донатом і вашим акаунтом Signal.\n\nДякуємо за вашу підтримку!";
+"CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal не збирає і не зберігає вашу особисту інформацію, коли ви робите донати.\n\nМи користуємося послугами компанії Stripe для опрацювання ваших донатів. Ми не зберігаємо інформацію, яку ви надаєте Stripe, і не маємо до неї доступу.\n\nSignal не знає і не може дізнатися, що донат надійшов саме з вашого акаунту.\n\nДякуємо за підтримку!";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the title of that sheet. */
-"CARD_DONATION_READ_MORE_SHEET_TITLE" = "Ваша інформація є конфіденційною";
+"CARD_DONATION_READ_MORE_SHEET_TITLE" = "Ваша інформація конфіденційна";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information. */
 "CARD_DONATION_SUBHEADER_LEARN_MORE" = "Дізнатися більше.";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information. */
-"CARD_DONATION_SUBHEADER_TEXT" = "Введіть дані банківської картки. Signal не збирає і не зберігає вашу особисту інформацію.";
+"CARD_DONATION_SUBHEADER_TEXT" = "Введіть реквізити картки. Signal не збирає і не зберігає вашу особисту інформацію.";
 
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Вибрати країну";
@@ -1163,7 +1163,7 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "авто";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Видалити колір";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Скинути колір";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "Колір чату";
@@ -1241,13 +1241,13 @@
 "CONFIRM_DELETE_DATA_TEXT" = "Налаштування застосунку буде скинуто, а ваші повідомлення — видалено. Після завершення цього процесу застосунок закриється.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "Ви дійсно хочете видалити всі ваші дані?";
+"CONFIRM_DELETE_DATA_TITLE" = "Ви справді хочете видалити всі дані?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Ця дія відновить програму, видаливши всі ваші повідомлення з даного пристрою. Ви завжди зможете прив'язати ваш телефон знову, але це не відновить видалені повідомлення. Після завершення процесу програма закриється.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Налаштування застосунку буде скинуто, а всі ваші повідомлення — видалено. Ви завжди зможете зв'язати телефон знову, але це не відновить видалені повідомлення. Після завершення цього процесу застосунок закриється.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Ви дійсно хочете видалити всі дані?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Ви справді хочете видалити всі дані?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Ви не зможете ні надсилати, ні отримувати в ній повідомлення.";
@@ -1268,7 +1268,7 @@
 "CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Особистого чату з %1$@ немає";
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Активний запит на повідомлення";
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Нерозглянутий запит на повідомлення";
 
 /* A label on the profile about sheet */
 "CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Назви профілів не проходять перевірку";
@@ -1334,7 +1334,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Надайте доступ до контактів";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Щоб бачити імена та фото контактів у своїх чатах:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Щоб бачити імена й фото контактів у своїх чатах:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Натисніть кнопку «Відкрити параметри»";
@@ -1379,10 +1379,10 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "Такого контакту не існує.";
 
 /* Alert body when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal необхідно мати доступ до ваших контактів. Перейдіть у параметри iOS і надайте дозвіл. Ваші контакти зашифровані. Сервіс Signal їх не бачить.";
+"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal потребує доступу до ваших контактів. Відкрийте параметри iOS і надайте відповідний дозвіл. Ваші контакти зашифровано й приховано від служби Signal.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_TITLE" = "Надати доступ до контактів";
+"CONTACT_SHARING_NO_ACCESS_TITLE" = "Надайте доступ до контактів";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "Звернутися в службу підтримки";
@@ -1667,7 +1667,7 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Ніколи не сповіщати";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "сповіщення вимкнені";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "сповіщення вимкнено";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "до %1$@";
@@ -1685,19 +1685,19 @@
 "CONVERSATION_SETTINGS_PERMISSIONS" = "Дозволи";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Видалити з Групи";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Вилучити з групи";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Видалити %1$@ з групи?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Вилучити користувача %1$@ з групи?";
 
 /* Label for 'report spam' action in conversation settings view. */
 "CONVERSATION_SETTINGS_REPORT_SPAM" = "Повідомити про спам";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Видалити як адміністратора";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Забрати права адміністратора";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Видалити %1$@ як адміністратора групи?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Забрати в користувача %1$@ права адміністратора групи?";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "пошук";
@@ -1772,25 +1772,25 @@
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "Контактуйте по-новому";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Термін дії картки закінчився. Переконайтеся, що дані вашої картки правильні, і повторіть спробу.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Термін дії картки минув. Переконайтеся, що правильно ввели дані картки, і повторіть платіж.";
 
 /* Credit/debit card donation error for decline failures where the card number is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Невірний номер картки. Переконайтеся, що дані вашої картки правильні, і повторіть спробу.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Неправильний номер картки. Переконайтеся, що правильно ввели дані картки, і повторіть платіж.";
 
 /* Credit/debit card donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Невірний код CVC картки. Переконайтеся, що дані вашої картки правильні, і повторіть спробу.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Неправильний CVC-код картки. Переконайтеся, що правильно ввели дані картки, і повторіть платіж.";
 
 /* Credit/debit card donation error for decline failures where the expiration month on the payment method is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "Невірний місяць закінчення дії картки. Переконайтеся, що дані вашої картки правильні, і повторіть спробу.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "Неправильний місяць закінчення дії картки. Переконайтеся, що правильно ввели дані картки, і повторіть платіж.";
 
 /* Credit/debit card donation error for decline failures where the expiration year on the payment method is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "Невірний рік закінчення дії картки. Переконайтеся, що дані вашої картки правильні, і повторіть спробу.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "Неправильний рік закінчення дії картки. Переконайтеся, що правильно ввели дані картки, і повторіть платіж.";
 
 /* Credit/debit card donation error for unspecified decline failures. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "Переконайтеся, що дані вашої картки правильні, і повторіть спробу. Якщо проблема не зникне, зв'яжіться зі своїм банком.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "Переконайтеся, що правильно ввели дані картки, і повторіть платіж. Якщо це не допоможе, зв'яжіться зі своїм банком.";
 
 /* Credit/debit card donation error for decline failures where the payment cannot be authorized. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Переконайтеся, що дані вашої картки правильні, і повторіть спробу.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Переконайтеся, що правильно ввели дані картки, і повторіть платіж.";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Переміщуйте й масштабуйте";
@@ -1829,7 +1829,7 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Запустити діагностичну перевірку бази даних?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Частина вашої історії повідомлень могла бути пошкоджена. Це ніяк не вплинуло на безпеку вашого акаунту чи повідомлень. Натисніть «Продовжити», щоб відновити дані.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Можливо, вашу історію повідомлень частково пошкоджено. Небезпеки для вашого акаунту й повідомлень немає. Натисніть «Продовжити», щоб відновити дані.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Проблема з отриманням даних";
@@ -1847,16 +1847,16 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Не вдалося відновити історію повідомлень. Ви можете повторно встановити Signal і користуватися застосунком надалі. Надішліть нам журнал налагодження, щоб ми могли розібратися в цій проблемі.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Відновити початковий стан Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Скинути налаштування Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Скинути";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Дані акаунту, профіль і всі повідомлення буде видалено. Після видалення застосунок закриється.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Буде видалено інформацію про ваш акаунт, профіль і всі ваші повідомлення. Після цього застосунок закриється.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Відновити початковий стан Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Скинути налаштування Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Надіслати журнал налагодження";
@@ -1865,13 +1865,13 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Дані не відновлено";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Не закривайте програму поки триває відновлення. Процес може зайняти кілька хвилин.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Не закривайте застосунок, поки триває відновлення. Воно може тривати кілька хвилин.";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Відновлюємо дані";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Триває відновлення даних";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Дані було відновлено, але, можливо, втрачено деякі повідомлення.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Дані відновлено, але, можливо, було втрачено частину повідомлень.";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
 "DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Дані відновлено";
@@ -1946,7 +1946,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Буде видалено інформацію про ваш акаунт, профіль і всі ваші повідомлення.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Видаляємо акаунт…";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Видалення акаунту…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Відсутнє з'єднання з інтернетом. Перевірте, чи ввімкнено Wi-Fi / стільникові дані, та повторіть спробу.";
@@ -1964,10 +1964,10 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Ви ввели не той номер телефону, на який зареєстровано ваш акаунт.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Видалити усі повідомлення у чаті?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Видалити всі повідомлення в чаті?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Видалити усі повідомлення";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Видалити всі повідомлення";
 
 /* 'Delete' button label on the delete contact confirmation action sheet */
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Видалити";
@@ -1982,7 +1982,7 @@
 "DELETE_CONTACT_BUTTON" = "Видалити контакт";
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
-"DELETE_CONTACT_CONFIRMATION_TOAST" = "Користувача %1$@ було видалено зі списку контактів і вилучено.";
+"DELETE_CONTACT_CONFIRMATION_TOAST" = "Користувача %1$@ було видалено й вилучено зі списку контактів.";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Видалити";
@@ -2012,7 +2012,7 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Зареєструвати цей номер телефону знов";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Цей пристрій більше не зареєстровано. Ймовірно, ви зареєстрували свій номер телефону в Signal на іншому пристрої.";
+"DEREGISTRATION_WARNING" = "Реєстрація на цьому пристрої вже не дійсна. Імовірно, ви зареєстрували свій номер телефону в Signal на іншому пристрої.";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
 "DEREGISTRATION_WARNING_ACTION_TITLE" = "Перереєструйте пристрій";
@@ -2069,7 +2069,7 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Перенесення акаунту й повідомлень";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Перенести акаунт і історію повідомлень з вашого старого пристрою на iOS";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Перенести акаунт і історію повідомлень зі старого пристрою з iOS";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Перенести акаунт і історію повідомлень зі старого пристрою з iOS";
@@ -2090,7 +2090,7 @@
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Не вдалось перевірити ваш новий пристрій. Повторіть перевірку";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "Не вдалося завершити перенесення. Переконайтеся, що пристрої находяться поруч один з одним, і спробуйте знову.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Не вдалося завершити перенесення. Переконайтеся, що пристрої розташовані поряд, і спробуйте знову.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Щоб використовувати цей iPad як зв'язаний пристрій, необхідно зісканувати код старим iPad";
@@ -2114,10 +2114,10 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Перенесення акаунту";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Піднесіть свій старий пристрій, увімкніть Wi-Fi і Bluetooth та проскануйте цей QR-код старим пристроєм.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Візьміть старий пристрій, увімкніть Wi-Fi та Bluetooth і зіскануйте цей QR-код старим пристроєм.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Розмістіть цей QR-код так, щоби він був у рамці на іншому вашому пристрої iOS.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Розмістіть цей QR-код так, щоб він був у рамці на іншому вашому пристрої з iOS.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Нічого не бачите на старому пристрої?";
@@ -2219,13 +2219,13 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Від імені користувача %1$@";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Отримайте значок %1$@";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Отримайте значок «%1$@»";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Отримайте значок «%1$@» на 30 днів";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Донат для Signal %1$@";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Донат для Signal: %1$@";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Задонатити Signal %1$@";
@@ -2240,13 +2240,13 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Додати повідомлення";
 
 /* If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Термін дії минув";
+"DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Уже недійсний";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Донат через iDEAL в обробці. Перевірте застосунок свого банку і підтвердьте платіж, перш ніж робити новий донат.";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Опрацювання вашого донату через iDEAL ще триває. Зайдіть у застосунок свого банку й підтвердьте платіж, перш ніж робити новий донат.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Донат через iDEAL в обробці. Перевірте застосунок свого банку і підтвердьте платіж, перш ніж робити новий донат.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Опрацювання вашого донату через iDEAL ще триває. Зайдіть у застосунок свого банку й підтвердьте платіж, перш ніж робити новий донат.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Опрацювання банківських переказів може займати від 1 до 14 робочих днів. Просимо вас дочекатися проведення платежу, перш ніж робити новий донат.";
@@ -2255,10 +2255,10 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Опрацювання банківських переказів може займати від 1 до 14 робочих днів. Просимо вас дочекатися списання донату, перш ніж оновлювати підписку.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
-"DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "За допомогою банківського переказу можна надіслати до %1$@. Спробуйте іншу суму або інший спосіб оплати.";
+"DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Ми приймаємо банківські перекази на суму до %1$@. Спробуйте іншу суму або інший платіжний засіб.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Ваш донат все ще обробляється. Обробка може зайняти кілька хвилин в залежності від вашого з'єднання. Будь ласка, зачекайте на проведення платежу, перш ніж робити новий донат.";
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Опрацювання вашого донату ще триває. Воно може зайняти кілька хвилин — швидкість залежить від вашого з'єднання. Просимо вас дочекатися проведення платежу, перш ніж робити новий донат.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via non-bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Опрацювання вашого донату ще триває. Воно може зайняти кілька хвилин — швидкість залежить від вашого з'єднання. Просимо вас дочекатися списання донату, перш ніж оновлювати підписку.";
@@ -2270,7 +2270,7 @@
 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "Мінімальна сума донату: %1$@.";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Донат очікує на авторизацію";
+"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Донат потребує підтвердження";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "Ваш попередній донат ще не надійшов";
@@ -2279,19 +2279,19 @@
 "DONATE_SCREEN_ERROR_TITLE_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Сума завелика";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "Ви надіслали донат, що очікує на розгляд";
+"DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "Ваш попередній донат ще не надійшов";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "Щомісяця";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these and it expires soon, this text is shown below it indicating when it will expire. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Термін дії минає %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Дійсний до %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Наступний платіж %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Отримайте значок %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Отримайте значок «%1$@»";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown as the title for each level, telling you the price per month. Embeds {{currency string}}, such as \"$5\". */
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/місяць";
@@ -2303,10 +2303,10 @@
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Змінити підписку";
 
 /* Message for a sheet explaining that a donation via bank payment has failed. Embeds {{ a specific, already-localized string describing the payment failure }}. */
-"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE" = "З обробкою банківського переказу виникла проблема. %1$@";
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE" = "Під час опрацювання банківського переказу виникла проблема. %1$@";
 
 /* Title for a sheet explaining that a donation via bank payment has failed. */
-"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_TITLE" = "Не вдалось обробити донат";
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_TITLE" = "Не вдалось опрацювати донат";
 
 /* Title for a sheet explaining that a donation via bank payment is pending. */
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Ваш донат ще не надійшов";
@@ -2324,19 +2324,19 @@
 "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "Спробувати знову";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
-"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Діє %1$@";
+"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Дійсний %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Термін дії вашого значка за донат минув, тож він більше не відображається в профілі.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Ваш донат уже неактивний, тому значок за нього більше не з'являється в профілі.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Термін дії вашого доната минув";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Ваш донат уже неактивний";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Термін дії вашого значка за донат від користувача %1$@ минув і його більше не можна активувати.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Донат, який від вашого імені зробив користувач %1$@, уже неактивний, тому ви вже не можете показувати значок за нього.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Термін дії вашого доната минув";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Ваш донат уже неактивний";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Активовано";
@@ -2351,13 +2351,13 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Оберіть одержувача";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Підтвердити донат";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Підтвердження донату";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
 "DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "У цьому чаті ввімкнено тимчасові повідомлення. Повідомлення про донат зникне після спливу відповідного часу (%1$@).";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Не вдалося задонатити. Перевірте підключення до мережі і спробуйте знову.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Не вдалося задонатити. Перевірте з'єднання та спробуйте ще раз.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "Не вдалося задонатити";
@@ -2366,19 +2366,19 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "Разовий донат";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Не вдалося обробити платіж. Кошти не було стягнуто. Будь ласка, спробуйте ще раз.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Ваш платіж не вдалось опрацювати, тому кошти не було стягнуто. Будь ласка, повторіть оплату.";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Помилка платежу";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Не вдалося здійснити платіж";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Ваш платіж було оброблено, але Signal не вдалося надіслати повідомлення з донатом. Будь ласка, зверніться до служби підтримки.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Ваш донат опрацьовано, але Signal не вдалося надіслати повідомлення про нього. Будь ласка, зверніться до служби підтримки.";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "Не вдалося задонатити";
 
 /* A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ донатить від вашого імені";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ Користувач %1$@ зробив донат від вашого імені";
 
 /* You have a made a donation on a friend's behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ Ви задонатили від імені користувача %1$@";
@@ -2387,7 +2387,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "Користувач %1$@ підтримав Signal донатом від вашого імені";
 
 /* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "Ви не можете задонатити за цього користувача, тому що ви його заблокували.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "Ви не можете задонатити від імені цього користувача, тому що ви його заблокували.";
 
 /* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "Неможливо надіслати донат";
@@ -2396,10 +2396,10 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Активувати";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "Ви можете активувати значок пізніше";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "Значок можна активувати пізніше";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ донатить від вашого імені";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "Користувач %1$@ зробив донат від вашого імені";
 
 /* Shown when you're replying to a donation message. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Донат";
@@ -2408,10 +2408,10 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Донат від імені користувача %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Ви підтримали Signal донатом від імені користувача %1$@. Користувач зможе розказати іншим про підтримку, відобразивши в профілі значок.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Ви підтримали Signal донатом від імені користувача %1$@. Користувач зможе продемонструвати свою підтримку, показуючи в профілі значок.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Дякуємо за вашу підтримку!";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Дякуємо за підтримку!";
 
 /* A button shown on a donation message you send, to view additional details about the badge that was sent. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "Переглянути";
@@ -2510,10 +2510,10 @@
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "Ваш донат ще не надійшов";
 
 /* Message shown in a sheet explaining that the user's donation has failed because payment failed. Embeds {{ a specific, already-localized string describing the payment failure reason }}. */
-"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_MESSAGE_FORMAT" = "З обробкою донату виникла проблема. %1$@";
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_MESSAGE_FORMAT" = "Під час опрацювання донату виникла проблема. %1$@";
 
 /* Title for a sheet explaining that a payment failed. */
-"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "Помилка обробки донату";
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "Помилка під час опрацювання";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Не вдалося підтвердити донат";
@@ -2531,7 +2531,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Не вдалося підтвердити ваш щомісячний донат %1$@ через iDEAL. Перевірте банківський застосунок і підтвердьте свій донат iDEAL.";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
-"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Період вашого регулярного щомісячного донату було завершено. %1$@";
+"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Щомісячний донат було скасовано. %1$@";
 
 /* Title for a sheet explaining that the user's recurring subscription has ended because payment failed. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE" = "Щомісячний донат скасовано";
@@ -2897,10 +2897,10 @@
 "FORWARD_MESSAGE_TITLE" = "Куди переслати";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Завантажуємо нові медіа…";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Завантажуємо нові медіафайли…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Завантажуємо старі медіа…";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Завантажуємо старі медіафайли…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Вкладення";
@@ -2951,13 +2951,13 @@
 "GO_TO_SETTINGS_BUTTON" = "Відкрити параметри";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%1$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "%1$@ тепер можуть редагувати інформацію про групу, оскільки ви змінили налаштування.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%2$@ тепер можуть редагувати інформацію про групу, оскільки користувач %1$@ змінив налаштування.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%1$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "%1$@ можуть змінювати інформацію про групу.";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Тільки адміністратори";
@@ -2975,13 +2975,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Вимкнено";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%1$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "%1$@ тепер можуть змінювати склад групи, оскільки ви змінили налаштування.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%2$@ тепер можуть змінювати склад групи, оскільки користувач %1$@ змінив налаштування.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%1$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "%1$@ можуть змінювати склад групи.";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "Це можуть змінювати тільки адміністратори.";
@@ -3638,10 +3638,10 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ видалив назву групи.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%1$@”.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Ви змінили назву групи на «%1$@».";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@”.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ змінив назву групи на «%2$@».";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Тепер група називається «%1$@».";
@@ -5540,19 +5540,19 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Запрошень немає.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%1$@”.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Додано користувача %1$@.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Переглянути запити";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%1$@”.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Запит користувача %1$@ відхилено.";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Відкликати запрошення";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%1$@”?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Відкликати запрошення користувача %1$@ в групу?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Інформація про людей, яких запросили інші учасники групи, не показується. Інформація запрошеного стане доступна для учасників групи в разі прийняття запрошення. Запрошені побачать повідомлення в групі тільки після приєднання.";
@@ -6257,13 +6257,13 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Не зберегли ключа?";
 
 /* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-digit recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Резервну копію неможливо відновити без відповідного 64-значного ключа. Якщо ви втратили доступ до свого ключа, Signal не допоможе вам відновити резервну копію.\n\nЯкщо у вас лишився старий пристрій, ключ від резервної копії можна переглянути, відкривши налаштування > Чати > Резервне копіювання від Signal. Потім виберіть «Переглянути ключ від резервної копії».";
 
 /* Title for sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "No Backup Key?";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Не зберегли ключа?";
 
 /* Title for button on sheet for when you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Skip & Don’t Restore";
+"REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Пропустити й не відновлювати";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Введіть свій номер телефону, щоб почати.";

@@ -2951,13 +2951,13 @@
 "GO_TO_SETTINGS_BUTTON" = "સેટિંગ્સ પર જાઓ";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%1$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "તમે ગ્રૂપ માહિતીમાં કોણ ફેરફાર કરી શકે તેને “%1$@“ પર બદલ્યું છે";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@એ ગ્રૂપ માહિતીમાં કોણ ફેરફાર કરી શકે તેને “%2$@“ પર બદલ્યું છે.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%1$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "ગ્રૂપ માહિતી “%1$@“ બદલી શકે છે.";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "ફક્ત એડમિન";
@@ -2975,13 +2975,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "અક્ષમ";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%1$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "તમે ગ્રૂપ સદસ્યતામાં કોણ ફેરફાર કરી શકે છે તેને \"%1$@\" પર બદલ્યું છે.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@એ ગ્રૂપ સદસ્યતામાં કોણ ફેરફાર કરી શકે તેને “%2$@“ પર બદલ્યું છે.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%1$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "ગ્રૂપ સદસ્યતા “%1$@“ બદલી શકે છે.";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "આ વિકલ્પને માત્ર એડમિન જ બદલી શકે છે.";
@@ -3638,10 +3638,10 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ એ ગ્રુપનું નામ દૂર કર્યું.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%1$@”.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "તમે ગ્રૂપનું નામ બદલીને “%1$@“ કર્યું છે.";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@”.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@એ ગ્રૂપનું નામ બદલીને “%2$@“ કર્યું.";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "ગ્રુપનું નામ હવે “%1$@” છે.";
@@ -5540,19 +5540,19 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "બતાવવા માટે કોઈ આમંત્રણ નથી.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%1$@”.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "“%1$@“ ઉમેર્યું.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "વિનંતીઓ જુઓ";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%1$@”.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "“%1$@“નો અસ્વીકાર કર્યો.";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "આમંત્રણ રદ કરો";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%1$@”?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "“%1$@“ માટે ગ્રૂપ આમંત્રણ રદ કરવું છે?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "અન્ય ગ્રુપ સભ્યો દ્વારા આમંત્રિત લોકોની વિગતો બતાવવામાં આવી નથી. જો આમંત્રિતો જોડાવાનું પસંદ કરે છે, તો તે સમયે તેમની માહિતી ગ્રુપ સાથે શેર કરવામાં આવશે. તેઓ જોડાશે ત્યાં સુધી તેઓ ગ્રુપમાં કોઈ મેસેજ જોશે નહીં.";
@@ -6257,13 +6257,13 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "કોઈ બેકઅપ કી નથી?";
 
 /* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-digit recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "બેકઅપને તેમના 64-અંકના રિકવરી કોડ વિના રિકવર કરી શકાતા નથી. જો તમે તમારી બેકઅપ કી ગુમાવી દીધી હોય તો Signal તમારા બેકઅપને રિસ્ટોર કરવામાં મદદ કરી શકશે નહીં.\n\nજો તમારી પાસે તમારું જૂનું ડિવાઇસ હોય તો તમે સેટિંગ્સ > ચેટ > Signal બેકઅપમાં તમારી બેકઅપ કી જોઈ શકો છો. પછી બેકઅપ કી જુઓ પર ટેપ કરો.";
 
 /* Title for sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "No Backup Key?";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "કોઈ બેકઅપ કી નથી?";
 
 /* Title for button on sheet for when you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Skip & Don’t Restore";
+"REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "છોડો અને રિસ્ટોર કરશો નહીં";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "શરુ કરવા માટે તમારો ફોન નંબર દાખલ કરો.";

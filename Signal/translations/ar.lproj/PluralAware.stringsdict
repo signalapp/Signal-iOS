@@ -1347,17 +1347,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>قصة جماعية · %1$d مُشاهدِين</string>
+			<string>قصة  المجموعة· %1$d مُشاهدِين</string>
 			<key>one</key>
-			<string>قصة جماعية · %1$d مُشاهِد</string>
+			<string>قصة  المجموعة· %1$d مُشاهِد</string>
 			<key>two</key>
-			<string>قصة جماعية · %1$d مُشاهِدين</string>
+			<string>قصة  المجموعة· %1$d مُشاهِدين</string>
 			<key>few</key>
-			<string>قصة جماعية · %1$d مُشاهِدين</string>
+			<string>قصة  المجموعة· %1$d مُشاهِدين</string>
 			<key>many</key>
-			<string>قصة جماعية · %1$d مُشاهِدًا</string>
+			<string>قصة  المجموعة· %1$d مُشاهِدًا</string>
 			<key>other</key>
-			<string>قِصة جماعية · %1$d مُشاهِدٍ</string>
+			<string>قِصة  المجموعة· %1$d مُشاهِدٍ</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>

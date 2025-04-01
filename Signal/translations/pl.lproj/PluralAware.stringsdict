@@ -348,13 +348,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ten kolor niestandardowy jest używany w %1$d czacie. Czy chcesz go usunąć?</string>
+			<string>Ten kolor niestandardowy jest używany w %1$d czacie. Czy chcesz usunąć ten kolor?</string>
 			<key>few</key>
 			<string>Ten kolor niestandardowy jest używany w %1$d czatach. Czy chcesz go usunąć ze wszystkich czatów?</string>
 			<key>many</key>
 			<string>Ten kolor niestandardowy jest używany w %1$d czatach. Czy chcesz go usunąć ze wszystkich czatów?</string>
 			<key>other</key>
-			<string>Ten kolor niestandardowy jest używany w %1$d czatach.  Czy chcesz go usunąć ze wszystkich czatów?</string>
+			<string>Ten kolor niestandardowy jest używany w %1$d czatu. Czy chcesz usunąć ten kolor ze wszystkich czatów?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -489,7 +489,7 @@
 			<key>many</key>
 			<string>%1$d członków</string>
 			<key>other</key>
-			<string>%1$d członków</string>
+			<string>%1$d członka</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -603,7 +603,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tę wiadomość można edytować tylko %1$d raz.</string>
+			<string>Tę wiadomość można edytować tylko raz.</string>
 			<key>few</key>
 			<string>Tę wiadomość można edytować tylko %1$d razy.</string>
 			<key>many</key>
@@ -663,13 +663,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Osiągnięto maksymalną liczbę uczestników połączenia (%1$d). Spróbuj później.</string>
+			<string>W połączeniu bierze już udział maksymalna liczba uczestników (%1$d). Spróbuj później.</string>
 			<key>few</key>
-			<string>Osiągnięto maksymalną liczbę uczestników połączenia (%1$d). Spróbuj później.</string>
+			<string>W połączeniu bierze już udział maksymalna liczba uczestników (%1$d). Spróbuj później.</string>
 			<key>many</key>
-			<string>Osiągnięto maksymalną liczbę uczestników połączenia (%1$d). Spróbuj później.</string>
+			<string>W połączeniu bierze już udział maksymalna liczba uczestników (%1$d). Spróbuj później.</string>
 			<key>other</key>
-			<string>Osiągnięto maksymalną liczbę uczestników połączenia (%1$d). Spróbuj później.</string>
+			<string>W połączeniu bierze już udział maksymalna liczba uczestników (%1$d). Spróbuj później.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -743,13 +743,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>i jeszcze %1$ld osoba</string>
+			<string>+%1$ld osoba</string>
 			<key>few</key>
-			<string>i jeszcze %1$ld osoby</string>
+			<string>+%1$ld osoby</string>
 			<key>many</key>
-			<string>i jeszcze %1$ld osób</string>
+			<string>+%1$ld osób</string>
 			<key>other</key>
-			<string>i jeszcze %1$ld osoby</string>
+			<string>+%1$ld osoby</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -929,7 +929,7 @@
 			<key>many</key>
 			<string>%1$d członków</string>
 			<key>other</key>
-			<string>%1$d członków</string>
+			<string>%1$d członka</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -989,7 +989,7 @@
 			<key>many</key>
 			<string>%1$d członków</string>
 			<key>other</key>
-			<string>%1$d członków</string>
+			<string>%1$d członka</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -1009,7 +1009,7 @@
 			<key>many</key>
 			<string>%1$d członków</string>
 			<key>other</key>
-			<string>%1$d członków</string>
+			<string>%1$d członka</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -1169,7 +1169,7 @@
 			<key>many</key>
 			<string>Nie udało się dodać do nowej grupy %1$d osób, więc zostały one do tej grupy zaproszone.</string>
 			<key>other</key>
-			<string>Nie udało się dodać do nowej grupy %1$d osiby, więc zostały one do tej grupy zaproszone.</string>
+			<string>Nie udało się dodać do nowej grupy %1$d osoby, więc zostały one do tej grupy zaproszone.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -1203,7 +1203,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aby zachować połączenie z urzędzeniem %2$@, otwórz na nim Signal w ciągu %1$d dnia.</string>
+			<string>Aby zachować połączenie z urządzeniem %2$@, otwórz na nim Signal w ciągu %1$d dnia.</string>
 			<key>few</key>
 			<string>Aby zachować połączenie z urządzeniem %2$@, otwórz na nim Signal w ciągu %1$d dni.</string>
 			<key>many</key>
@@ -1229,7 +1229,7 @@
 			<key>many</key>
 			<string>%1$d wspólnych grup</string>
 			<key>other</key>
-			<string>%1$d wspólne grupy</string>
+			<string>%1$d wspólnej grupy</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MEDIA_TITLE</key>
@@ -1349,7 +1349,7 @@
 			<key>many</key>
 			<string>Zablokowano %1$d członków tej grupy</string>
 			<key>other</key>
-			<string>Zablokowano %1$d członków tej grupy</string>
+			<string>Zablokowano %1$d członka tej grupy</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -1429,7 +1429,7 @@
 			<key>many</key>
 			<string>%1$d odbiorców</string>
 			<key>other</key>
-			<string>%1$d odbiorców</string>
+			<string>%1$d odbiorcy</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1503,13 +1503,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Udostępnij tylko · %1$d odbiorcy</string>
+			<string>Udostępniaj tylko · %1$d odbiorca</string>
 			<key>few</key>
-			<string>Udostępnij tylko · %1$d odbiorcom</string>
+			<string>Udostępniaj tylko · %1$d odbiorców</string>
 			<key>many</key>
-			<string>Udostępnij tylko · %1$d odbiorcom</string>
+			<string>Udostępniaj tylko · %1$d odbiorców</string>
 			<key>other</key>
-			<string>Udostępnij tylko · %1$d odbiorcy</string>
+			<string>Udostępniaj tylko · %1$d odbiorcy</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1529,7 +1529,7 @@
 			<key>many</key>
 			<string>%1$d członków</string>
 			<key>other</key>
-			<string>%1$d członków</string>
+			<string>%1$d członka</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
@@ -1563,13 +1563,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Jeszcze %1$d reakcja</string>
+			<string>Jeszcze %1$d reakcja.</string>
 			<key>few</key>
-			<string>Jeszcze %1$d reakcje</string>
+			<string>Jeszcze %1$d reakcje.</string>
 			<key>many</key>
-			<string>Jeszcze %1$d reakcji</string>
+			<string>Jeszcze %1$d reakcji.</string>
 			<key>other</key>
-			<string>Jeszcze %1$d reakcji</string>
+			<string>Jeszcze %1$d reakcji.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -1609,7 +1609,7 @@
 			<key>many</key>
 			<string>%1$d oczekujących próśb o przyjęcie.</string>
 			<key>other</key>
-			<string>%1$d oczekujących próśb o przyjęcie.</string>
+			<string>%1$d oczekującej prośby o przyjęcie.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -1629,7 +1629,7 @@
 			<key>many</key>
 			<string>Cofnij %1$d nieprawidłowych zaproszeń</string>
 			<key>other</key>
-			<string>Cofnij %1$d nieprawidłowych zaproszeń</string>
+			<string>Cofnij %1$d nieprawidłowego zaproszenia</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1669,7 +1669,7 @@
 			<key>many</key>
 			<string>Cofnąć %1$d zaproszeń do grupy, których nadawca to %2$@?</string>
 			<key>other</key>
-			<string>Cofnąć %1$d zaproszenia do grupy, których nadawca to %2$@?</string>
+			<string>Cofnąć %1$d zaproszenia do grupy, którego nadawca to %2$@?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1789,7 +1789,7 @@
 			<key>many</key>
 			<string>%1$d odbiorców</string>
 			<key>other</key>
-			<string>%1$d odbiorców</string>
+			<string>%1$d odbiorcy</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
