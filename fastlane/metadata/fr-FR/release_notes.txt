@@ -1,1 +1,2 @@
-• Zoom sur notre dernière prouesse : vous pouvez maintenant zoomer sur une image ou vidéo à vue unique. Essayez dès maintenant, ça vaut vraiment le coup d'œil !
+• We made it easier to select additional pictures when Limited Access photo permissions are enabled in iOS. The Manage button has been repositioned so that it's always visible, and updating your chosen selection is so fast that it's never a photo finish.
+• Now when you tap on a notification during a voice or video call, the call will automatically minimize to show the relevant chat without any extra steps. Save your extra steps (especially when they're taps) for tap dancing.

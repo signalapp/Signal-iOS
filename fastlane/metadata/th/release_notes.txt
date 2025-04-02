@@ -1,1 +1,2 @@
-• พัฒนาให้คุณสามารถซูมดูไฟล์สื่อแบบที่ดูได้ครั้งเดียวไม่ว่าจะเป็นรูปภาพหรือวิดีโอ
+• We made it easier to select additional pictures when Limited Access photo permissions are enabled in iOS. The Manage button has been repositioned so that it's always visible, and updating your chosen selection is so fast that it's never a photo finish.
+• Now when you tap on a notification during a voice or video call, the call will automatically minimize to show the relevant chat without any extra steps. Save your extra steps (especially when they're taps) for tap dancing.
