@@ -189,6 +189,7 @@ extension OWS2FAManager {
             if let pinToMatch {
                 result(pinToMatch.ensureArabicNumerals == pin.ensureArabicNumerals)
             } else {
+                Logger.info("Attempting to verify missing PIN")
                 result(false)
             }
         case .disabled:

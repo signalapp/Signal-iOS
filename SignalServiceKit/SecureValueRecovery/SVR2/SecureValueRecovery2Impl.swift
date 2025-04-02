@@ -1170,6 +1170,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             )
         }
         if !hasMasterKey, isRegisteredPrimary {
+            Logger.info("")
             db.write { tx in
                 let newMasterKey = self.accountKeyStore.getOrGenerateMasterKey(tx: tx)
                 if pinCode != nil {
@@ -1195,6 +1196,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         )}
         guard accountEntropyPool == nil else { return }
         if isRegisteredPrimary {
+            Logger.info("")
             db.write { tx in
                 let newAEP = self.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
                 self.useDeviceLocalAccountEntropyPool(
@@ -1236,6 +1238,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             !isBackedUp
         {
             return backupMasterKey(pin: currentPIN, masterKey: masterKey, authMethod: .implicit).asVoid()
+        } else {
+            if masterKey != nil && currentPIN == nil {
+                Logger.warn("Cannot backup master key without PIN")
+            } else if masterKey == nil && currentPIN != nil {
+                Logger.warn("Skipping backup due missing master key")
+            }
         }
         return .value(())
     }
