@@ -400,8 +400,8 @@
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
-/* Text in chat attachment panel when Signal only has access to some photos/videos. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal solo tiene acceso a las fotos y los vídeos que has seleccionado.";
+/* Text in chat attachment panel when Signal only has access to some photos/videos. This string is in a compact horizontal space, so it should be short if possible. */
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal has limited access to photos";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Ubicación";
@@ -1322,25 +1322,25 @@
 "CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "Para encontrar a personas que conoces en Signal:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Toca el botón \"Ir a Ajustes\" de abajo";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Toca el botón \"Ir a Ajustes\" de abajo.";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Activa los permisos";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Activa los permisos.";
 
 /* Second step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Toca \"Contactos\"";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Toca \"Contactos\".";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Permitir acceso a tus contactos";
+"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Permite el acceso a tus contactos";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Para mostrar los nombres y las fotos de tus contactos en los chats:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Toca el botón \"Ir a Ajustes\" de abajo";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Toca el botón \"Ir a Ajustes\" de abajo.";
 
 /* Second step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Activa \"Contactos\"";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Activa \"Contactos\".";
 
 /* Title for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Activar contactos";
@@ -2735,7 +2735,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Se ha producido un error desconocido.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Este contacto no usa Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Couldn’t send message because this person is no longer using Signal.";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "No se ha podido subir el archivo.";
@@ -2951,13 +2951,13 @@
 "GO_TO_SETTINGS_BUTTON" = "Ir a Ajustes";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%1$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Has cambiado quién puede editar los detalles del grupo a \"%1$@\".";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha cambiado quién puede editar los detalles del grupo a \"%2$@\".";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%1$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Quién puede editar los detalles del grupo: \"%1$@\".";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Solo admins";
@@ -2975,13 +2975,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Desactivado";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%1$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Has cambiado quién puede editar la lista de participantes del grupo a \"%1$@\".";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha cambiado quién puede editar la lista de participantes del grupo a \"%2$@\".";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%1$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Quién puede editar la lista de participantes del grupo: \"%1$@\".";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "Solo admins pueden cambiar esta opción.";
@@ -3638,10 +3638,10 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ha eliminado el nombre del grupo.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%1$@”.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Has cambiado el nombre del grupo a \"%1$@\".";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@”.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha cambiado el nombre del grupo a \"%2$@\".";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Ahora el nombre del grupo es \"%1$@\".";
@@ -4964,13 +4964,13 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Para recibir notificaciones de mensajes nuevos:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Toca el botón \"Ir a Ajustes\" de abajo";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Toca el botón \"Ir a Ajustes\" de abajo.";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activa \"Permitir notificaciones\"";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activa \"Permitir notificaciones\".";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Toca \"Notificaciones\"";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Toca \"Notificaciones\".";
 
 /* Title for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Activar notificaciones";
@@ -5112,6 +5112,18 @@
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Te has quedado sin intentos para verificar el PIN, pero aún puedes acceder a tu cuenta de Signal si verificas tu número de teléfono. Por tu seguridad y para proteger tu privacidad, se restaurará tu cuenta y se eliminará cualquier información guardada en tu perfil o ajustes.";
+
+/* Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt */
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "Or you're reinstalling Signal on the same device";
+
+/* Title for the 'do not have my old device' choice of the 'Restore or Transfer' prompt */
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "I don't have my old phone";
+
+/* Explanation of 'have old device' flow for the 'Restore or Transfer' prompt */
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scan a QR code from your current Signal account to get started quickly";
+
+/* Title for the 'have my old device' choice of the 'Restore or Transfer' prompt */
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "I have my old phone";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Restaurar o transferir cuenta";
@@ -5540,19 +5552,19 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "No hay invitaciones que mostrar.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%1$@”.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Se ha añadido a %1$@.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Ver solicitudes";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%1$@”.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Se ha rechazado a %1$@.";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Retirar invitación";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%1$@”?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "¿Retirar la invitación enviada a %1$@?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "No se muestra la información de las personas que otros participantes han invitado. Dicha información se compartirá cuando se unan al grupo. También verán los mensajes del grupo a partir de ese momento.";
@@ -5930,7 +5942,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Privacidad ante todo";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Todo bien por aquí";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Excelente y mejorando";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "¡Hola, hola!";
@@ -6167,7 +6179,7 @@
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Número de teléfono no válido";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "Mensaje";
+"RECIPIENT_PICKER_INVITE_ACTION" = "Invite";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ no usa Signal. ¿Quieres enviar una invitación a este número?";
@@ -6179,13 +6191,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "¿Necesitas ayuda?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más dígitos que has creado. Si olvidas tu PIN, deberás esperar 7 días para volver a registrar tu cuenta.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más caracteres que has creado. Si olvidas tu PIN, deberás esperar 7 días para volver a registrar tu cuenta.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más dígitos que has creado. Si olvidas tu PIN, podrás volver a registrarte y usar tu cuenta, pero perderás algunos ajustes guardados, como tu información de perfil.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más caracteres que has creado. Si olvidas tu PIN, podrás volver a registrarte y usar tu cuenta, pero perderás algunos ajustes guardados, como tu información de perfil.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más dígitos que has creado. Si olvidas tu PIN, puedes crear uno nuevo. Podrás volver a registrarte y usar tu cuenta, pero perderás algunos ajustes ya guardados, como tu información de perfil.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más caracteres que has creado. Si olvidas tu PIN, puedes crear uno nuevo. Podrás volver a registrarte y usar tu cuenta, pero perderás algunos ajustes ya guardados, como tu información de perfil.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorrecto";
@@ -6227,7 +6239,7 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transferir cuenta y mensajes";
 
 /* Description for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "La clave de tu copia de seguridad es un código de 64 dígitos que necesitarás para recuperar tu cuenta y tus datos.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "La clave de tu copia de seguridad es un código de 64 caracteres que necesitarás para recuperar tu cuenta y tus datos.";
 
 /* Title for the screen that allows users to enter their backup key. */
 "REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Introduce la clave de tu copia de seguridad";
@@ -6257,13 +6269,13 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "¿No tienes tu clave?";
 
 /* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-digit recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Las copias de seguridad no se pueden recuperar sin el código de recuperación de 64 caracteres. Si has perdido tu clave, Signal no puede ayudarte a restaurar tu copia de seguridad.\n\nSi tienes tu dispositivo anterior, puedes ver la clave de tu copia de seguridad en Ajustes > Chats > Copias de seguridad de Signal. Luego, toca Ver clave de copia de seguridad.";
 
 /* Title for sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "No Backup Key?";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "¿No tienes tu clave?";
 
 /* Title for button on sheet for when you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Skip & Don’t Restore";
+"REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Omitir y no restaurar";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Introduce tu número de teléfono para comenzar.";
@@ -7982,7 +7994,7 @@
 "STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "Ha reaccionado con %1$@ a una historia";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Ha reaccionado con %1$@ a la historia de %2$@";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Has reaccionado con %1$@ a la historia de %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Responder";

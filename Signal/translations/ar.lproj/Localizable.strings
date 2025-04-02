@@ -281,7 +281,7 @@
 "APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "رقم بطاقتك خاطئ. يُرجى التحقُّق من أنك أدخلت طريقة الدفع الخاصة بك في Apple Pay بشكلٍ صحيح. إن لم تكن كذلك، قُم بتحديثها وحاوِل مرّة أخرى.";
 
 /* Apple Pay donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "رقم رمز التحقُّق لبطاقتك (CVC) غير صحيح. تحقّق لمعرفة ما إذا كان رقم رمز التحقُّق من بطاقتك (CVC) قد تمَّ إدخاله بشكلٍ صحيح في Apple Pay. إذا لم يكن كذلك، فحدِّثه وحاوِل مرّة أخرى.";
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "كود التحقُّق من بطاقتك (CVC) غير صحيح. تحقّق لمعرفة ما إذا كان كود التحقُّق من بطاقتك (CVC) قد تمَّ إدخاله بشكلٍ صحيح في Apple Pay. إذا لم يكن كذلك، فحدِّثه وحاوِل مرّة أخرى.";
 
 /* Apple Pay donation error for decline failures where the card has insufficient funds. */
 "APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "لا يتوفَّر مبالغ كافية لإتمام عملية الشراء هذه. حاوِل استخدام طريقة دفع أخرى أو تواصَل مع المصرف الذي تتعامل معه للمزيد من العملومات.";
@@ -400,8 +400,8 @@
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "صورة متحركة";
 
-/* Text in chat attachment panel when Signal only has access to some photos/videos. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "لدى سيجنال إمكانية الوصول فقط للصور والفيديوهات التي تحدِّدها.";
+/* Text in chat attachment panel when Signal only has access to some photos/videos. This string is in a compact horizontal space, so it should be short if possible. */
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal has limited access to photos";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "الموقع";
@@ -956,13 +956,13 @@
 "CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "مسح";
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "إزالة";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "سَيؤدي هذا إلى حذف جميع سجِلات المكالمات بشكلٍ دائم.";
 
 /* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "هل ترغبُ بمسح سجِل المكالمات؟";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "هل ترغبُ بإزالة سجِل المكالمات؟";
 
 /* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "حذف";
@@ -1175,7 +1175,7 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "طابِق تلقائيًا اللون مع الخلفية";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "مسح فلتر المحادثات غير المقروءة";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "إزالة فلتر المحادثات غير المقروءة";
 
 /* Button displayed in chat list to clear the unread filter when no chats are unread */
 "CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "إزالة الفلتر";
@@ -1538,7 +1538,7 @@
 "CONVERSATION_PICKER_SECTION_STORIES" = "القِصَص";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "اختر المستلمين";
+"CONVERSATION_PICKER_TITLE" = "اختر المُستلِمين";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "لا يوجد تطابق";
@@ -1778,7 +1778,7 @@
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "رقم بطاقتك غير صحيح. تأكَّد من صحة تفاصيل بطاقتك وحاوِل مرّة أخرى.";
 
 /* Credit/debit card donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "رقم رمز التحقُّق لبطاقتك (CVC) غير صحيح. تأكَّد من صحة تفاصيل بطاقتك وحاوِل مرّة أخرى.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "كود التحقُّق من بطاقتك (CVC) غير صحيح. تأكَّد من صحة تفاصيل بطاقتك وحاوِل مرّة أخرى.";
 
 /* Credit/debit card donation error for decline failures where the expiration month on the payment method is incorrect. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "شهر انتهاء الصلاحية الخاص ببطاقتك غير صحيح. تأكَّد من صحة تفاصيل بطاقتك وحاوِل مرّة أخرى.";
@@ -1853,7 +1853,7 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "إعادة التعيين";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "سيتمُّ مسح معلومات حسابك وحسابك الشخصي وجميع رسائلك. سيتمُّ إغلاق التطبيق بعد اكتمال هذه العملية.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "سيتمُّ إزالة معلومات حسابك وحسابك الشخصي وجميع رسائلك. سيتمُّ إغلاق التطبيق بعد اكتمال هذه العملية.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "إعادة تعيين سيجنال";
@@ -2195,7 +2195,7 @@
 "DISMISS_CONTEXT_MENU" = "تجاهُل قائمة السياق";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "عرض الشارات على الملف الشخصي";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "عرض الشارات على الحساب الشخصي";
 
 /* Title for the proxy confirmation */
 "DO_YOU_WANT_TO_USE_PROXY" = "هل لديك رغبة في استخدام عنوان البروكسي هذا؟";
@@ -2372,7 +2372,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "فشِلت عملية الدفع";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "تمَّت مُعالجة عملية الدفع لديك، ولكن لم يتمكّن سيجنال من إرسال رسالة التبرُّع الخاصة بك. يُرجى الاتصال بفريق الدعم.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "تمَّت مُعالجة عملية الدفع لديك، ولكن لم يتمكّن سيجنال من إرسال رسالة التبرُّع الخاصة بك. يُرجى التواصل مع فريق الدعم.";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "تعذَّر التبرُّع";
@@ -2630,7 +2630,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "مرحبًا،\n\nمؤخّرًا كُنتُ أستخدِم سيجنال لإبقاء الدردشات على جهاز الآيفون خاصة. أريدُ منك القيام بتثبيته أيضًا، بحيث نكون واثقين من أنك أنت فقط وأنا يُمكننا قراءة رسائلنا أو سماع مكالماتنا.\n\nسيجنال مُتوفِّر للآيفون والآندرويد والكمبيوتر المكتبي. احصل عليه هنا: %1$@\n\n يعمل سيجنال مثل تطبيق المراسلة الحالي لديك. يُمكننا إرسال الصور ومقاطع الفيديو، وإجراء المكالمات، والبدء بالدردشات الجماعية. أفضل ما في الأمر هو أنه، لا يمكن لأي أحد آخر رؤية أي من تلك المراسلات، ولا حتى الأشخاص القائمين على سيجنال!\n\nيُمكنك قراءة المزيد حول سيجنال هنا: %2$@";
+"EMAIL_INVITE_BODY" = "مرحبًا،\n\nمؤخّرًا كُنتُ أستخدِم سيجنال لإبقاء الدردشات على جهاز الآيفون خاصة. أريدُ منك القيام بتثبيته أيضًا، بحيث نكون واثقين من أنك أنت فقط وأنا يُمكننا قراءة رسائلنا أو سماع مكالماتنا.\n\nسيجنال مُتوفِّر للآيفون والأندرويد والكمبيوتر المكتبي. احصل عليه هنا: %1$@\n\n يعمل سيجنال مثل تطبيق المراسلة الحالي لديك. يُمكننا إرسال الصور ومقاطع الفيديو، وإجراء المكالمات، والبدء بالدردشات الجماعية. أفضل ما في الأمر هو أنه، لا يمكن لأي أحد آخر رؤية أي من تلك المراسلات، ولا حتى الأشخاص القائمين على سيجنال!\n\nيُمكنك قراءة المزيد حول سيجنال هنا: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "لننتقل إلى سيجنال";
@@ -2735,7 +2735,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "حدث خطأ مجهول.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "جهة الاتصال ليست من مستخدمي سيجنال.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Couldn’t send message because this person is no longer using Signal.";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "فشل تحميل الملف المُرفَق.";
@@ -2951,13 +2951,13 @@
 "GO_TO_SETTINGS_BUTTON" = "انتقِل إلى الإعدادات";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%1$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "غيَّرتَ من يمكنه تعديل معلومات المجموعة إلى \"%1$@\".";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "غيَّرَ %1$@ مَن يُمكنه تعديل معلومات المجموعة إلى \"%2$@\".";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%1$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "يُمكن لـ \"%1$@\" تعديل معلومات المجموعة.";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "للمُشرِفين فقط";
@@ -2975,13 +2975,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "مُعطَّل";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%1$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "غيَّرتَ من يمكنه تعديل عُضوية المجموعة إلى \"%1$@\".";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "غيَّرَ %1$@ مَن يُمكنه تعديل عُضوية المجموعة إلى \"%2$@\".";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%1$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "يُمكن تغيير عُضوية المجموعة بواسطة \"%1$@\".";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "المُشرفون فقط يُمكنهم تعديل هذا الإعداد.";
@@ -3131,7 +3131,7 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "بدأ %1$@ مُكالمة جماعية";
 
 /* Text displayed when trying to turn on ringing when calling a large group. */
-"GROUP_CALL_TOO_LARGE_TO_RING" = "المجموعة كبيرة جدًا لكي يتصل التطبيق بجميع المشاركين.";
+"GROUP_CALL_TOO_LARGE_TO_RING" = "المجموعة كبيرة جدًا لكي يرن التطبيق على المُشارِكين.";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ و %2$@ في هذه المُكالمة";
@@ -3572,7 +3572,7 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ إلى %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "حذف قصة المجموعات";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "حذف قصة المجموعة";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "هل أنت مُتأكِّد من أنك تريد حذف \"%1$@\"؟";
@@ -3638,10 +3638,10 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "أزالَ %1$@ اسم المجموعة.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%1$@”.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "غيَّرتَ اسم المجموعة إلى \"%1$@\".";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@”.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "غيَّرَ %1$@ اسم المجموعة إلى \"%2$@\".";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "الآن اسم المجموعة هو \"%1$@\".";
@@ -4097,7 +4097,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "امسح ضوئيًا كود الـ QR";
 
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "انقر على \"متابعة\" وأدخِل قفل هاتفك للتأكيد. لا تُدخِل رقم التعريف الشخصي (PIN) لسيجنال الخاص بك.";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "انقر على \"متابعة\" وأدخِل قفل هاتفك للتأكيد. لا تُدخِل رقم التعريف الشخصي (PIN) على سيجنال الخاص بك.";
 
 /* Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
 "LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "قبل الربط، أكِّد هويتك";
@@ -4334,7 +4334,7 @@
 "MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "ستظهر الصور والفيديوهات والصور المتحركة التي تُرسلها وتستقبلها هنا.";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_MEDIA_TITLE" = "لا توجد وسائط";
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "لا يوجد ملف وسائط";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "هذا الشهر";
@@ -4436,7 +4436,7 @@
 "MESSAGE_ACTION_SELECT_MESSAGE" = "اختيار مُتعدِّد";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "شارِك الوسائط";
+"MESSAGE_ACTION_SHARE_MEDIA" = "مشاركة الوسائط";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SPEAK_MESSAGE" = "نطق الرسالة";
@@ -4763,7 +4763,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "الكل باستثناء…";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "كل جهات اتصال سيجنال";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "جميع جهات اتصال سيجنال";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "مشاركة فقط مع…";
@@ -5027,7 +5027,7 @@
 "ONBOARDING_2FA_ENTER_NUMERIC" = "أدخِل رقم تعريف شخصي (PIN) رَقمي";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "هَل تحتاج لمساعدة؟";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "هل تحتاج لمُساعدة؟";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "رقم التعريف الشخصي (PIN) غير صحيح";
@@ -5099,7 +5099,7 @@
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "يُرجى الانتِظار بضع دقائق قبل المُحاولة مرّة أُخرى. (%1$@)";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "رقم الهاتف غير صالِح. للتسجيل يُرجى إدخال رقم هاتف صالِح.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "رقم الهاتف غير صحيح. للتسجيل يُرجى إدخال رقم هاتف صالِح.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "استنفدتَ تخمينات رقم التعريف الشخصي (PIN) المسموحة لك، ولكن مازال بإمكانك الوصول إلى حسابك على سيجنال من خلال إنشاء رقم تعريف لشخصي (PIN) جديد. للحفاظ على خصوصيتك وأمانك، ستتمُّ استعادة حسابك بدون أي معلومات حساب أو إعدادات محفوظة.";
@@ -5112,6 +5112,18 @@
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "نَفَدت جميع مُحاولات تخمين رقم التعريف الشخصي (PIN)، لكن مازال بإمكانك الوصول إلى حساب سيجنال الخاص بِكَ عبر التحقُّق من رقم هاتفك. للحفاظ على خصوصيتك وأمانك، سَيُستعاد حسابك من غير أي معلومات حساب شخصي أو إعدادات محفوظة مُسبقًا.";
+
+/* Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt */
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "Or you're reinstalling Signal on the same device";
+
+/* Title for the 'do not have my old device' choice of the 'Restore or Transfer' prompt */
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "I don't have my old phone";
+
+/* Explanation of 'have old device' flow for the 'Restore or Transfer' prompt */
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scan a QR code from your current Signal account to get started quickly";
+
+/* Title for the 'have my old device' choice of the 'Restore or Transfer' prompt */
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "I have my old phone";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "استعادة أو نقل الحساب";
@@ -5540,19 +5552,19 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "لا توجد دعوات لتعرضها.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%1$@”.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "تمَّت إضافة \"%1$@\".";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "عرض الطلبات";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%1$@”.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "تمَّ رفض \"%1$@\".";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "إلغاء الدعوة";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%1$@”?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "هل تُريد إلغاء دعوة المجموعة لـ \"%1$@\"؟";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "لا يتم إظهار تفاصيل الأشخاص المدعوين مِن قِبَل أعضاء المجموعة الآخرين. إذا اختار المدعوون الانضمام، حينها ستتمُّ مُشاركة معلوماتهم مع المجموعة. لن يستطيعوا رؤية أي رِسالة في المجموعة حتى ينضموا.";
@@ -5726,7 +5738,7 @@
 "PIN_CREATION_LEARN_MORE_TEXT" = "يُمكِّنك رقم التعريف الشخصي (PIN) من حفظ معلوماتك بشكلٍ مُشفَّر في سيجنال بحيث يمكنك الوصول إليها وحدك. سَتتمُّ استعادة حسابك وإعداداتك وجهات اتصالك عند إعادة تثبيت سيجنال.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "نبذة حول رقم التعريف الشخصي (PIN) لسيجنال";
+"PIN_CREATION_LEARN_MORE_TITLE" = "نبذة حول رقم التعريف الشخصي (PIN) على سيجنال";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "رقم التعريف الشخصي (PIN) غير مُطابِق. حاوِل مرّة أُخرى.";
@@ -5834,7 +5846,7 @@
 "PIN_REMINDER_MISMATCH_ERROR" = "رقم التعريف الشخصي (PIN) غير صالح. حاوِل مرّة أُخرى.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "أدخِل رقم التعريف الشخصي (PIN) الخاص بك في سيجنال";
+"PIN_REMINDER_TITLE" = "أدخِل رقم التعريف الشخصي (PIN) الخاص بك على سيجنال";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "رقم التعريف الشخصي (PIN) يجب أن يحوي أربعة ارقام على الأقل.";
@@ -6164,10 +6176,10 @@
 "RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "لم يعُد %1$@ من مُستخدِمي سيجنال. حاوِل مرّة أُخرى باستخدام رقم هاتف صحيح.";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "رقم هاتف غير صحيح";
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "رقم الهاتف غير صحيح";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "رسالة";
+"RECIPIENT_PICKER_INVITE_ACTION" = "Invite";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "لم يعُد %1$@ من مُستخدِمي سيجنال. هل تريد دعوة هذا الرقم؟";
@@ -6176,7 +6188,7 @@
 "RECIPIENT_PICKER_INVITE_TITLE" = "ادْعُ إلى سيجنال";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "هل تُريد المُساعدة؟";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "هل تحتاج لمُساعدة؟";
 
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "رقم التعريف الشخصي (PIN) الخاص بك عبارة عن كود من أربع خانات أو أكثر والتي يُمكن أن تكون إما أرقام أو حُروف. إذا لم تستطع تَذكُّر رقم التعريف الشخصي (PIN) الخاص بك، يجبُ عليك الانتظار لمدة سبعة أيام لكي تُعيد تسجيل الحساب الخاص بك.";
@@ -6257,13 +6269,13 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "ليس بمتناولك مفتاح النسخة الاحتياطية؟";
 
 /* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-digit recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "لا يُمكن استرجاع النسخ الاحتياطية دون كود الاستعادة المُكوَّن من 64 رقمًا. إذا فقدت مفتاح النسخة الاحتياطية الخاص بك، فلا يُمكن لسيجنال مُساعدتك في استعادة نسختك الاحتياطية.\n\nإذا كُنتَ تستعمل جهازك القديم، يُمكنك عرض مفتاح النسخة الاحتياطية الخاص بك في \"الإعدادات\" > \"الدردشات\" > \"النسخ الاحتياطية على سيجنال\". ثم انقر على \"عرض مفتاح النسخة الاحتياطية\".";
 
 /* Title for sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "No Backup Key?";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "ليس بمتناولك مفتاح النسخة الاحتياطية؟";
 
 /* Title for button on sheet for when you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Skip & Don’t Restore";
+"REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "تخطّي دون الاستعادة";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "أدخِل رقم هاتفك للبدء.";
@@ -6356,7 +6368,7 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "يُرجى إدخال رقم هاتف صالح للتسجيل.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "رقم هاتف غير صالح";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "رقم الهاتف غير صحيح";
 
 /* Message for confirmation alert during phone number registration. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "سَوف يتمُّ إرسال كود التحقُّق إلى هذا الرقم. هل رقمُ هاتِفك أعلاه صحيح؟";
@@ -6713,7 +6725,7 @@
 "SEPA_DONATION_NAME_PLACEHOLDER" = "الاسم كما يظهر في الحساب المصرفي";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "يستخدم سيجنال التشفير من طرف لِطرف، وقد يحتاج إلى إنعاش جلسة الدردشة الخاصة بك في بعض الأحيان. لا يُؤثِّر هذا على أمان الدردشة ولكن رُبما تكون أنت قد فوَّتَ رسالة من جهة الاتصال هذه. ولذلك، يُمكِنُك سؤاله لإعادة إرسالها.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "يستخدم سيجنال التشفير من طرف لِطرف، وقد يحتاج إلى تحديث جلسة الدردشة الخاصة بك في بعض الأحيان. لا يُؤثِّر هذا على أمان الدردشة ولكن رُبما تكون أنت قد فوَّتَ رسالة من جهة الاتصال هذه. ولذلك، يُمكِنُك سؤاله لإعادة إرسالها.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "تمَّ تحديث جلسة الدردشة";
@@ -6866,7 +6878,7 @@
 "SETTINGS_CHATS" = "الدردشات";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "مسح سجل الدردشات";
+"SETTINGS_CLEAR_HISTORY" = "إزالة سجل الدردشات";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "حقوق النشر محفوظة لتطبيق سيجنال للدردشة\nمُرخَّص بموجب AGPLv3";
@@ -7529,7 +7541,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "تأكَّد من حفظ رقم التعريف الشخصي (PIN) الخاص بك أو تخزينه بشكلٍ آمن لأنه لا يُمكن استعادته. إذا نسيت رقم التعريف الشخصي (PIN) الخاص بك، قد تفقد البيانات عند إعادة تسجيل حساب سيجنال الخاص بك.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "تأكيد رقم PIN الخاص بسيجنال";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "تأكيد رقم PIN على سيجنال";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "تذكيرات رقم التعريف الشخصي (PIN)";
@@ -7544,7 +7556,7 @@
 "SETTINGS_PINS_ITEM_CREATE" = "إنشاء رقم تعريف شخصي (PIN)";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "رقم PIN الخاص بسيجنال";
+"SETTINGS_PINS_TITLE" = "رقم PIN على سيجنال";
 
 /* Footer for table section */
 "SETTINGS_PRIVACY_ADVANCED_FOOTER" = "تجاوز الرقابة، واستخدام البروكسي، ودعم المكالمات دومًا، وإعدادات المُرسِل المُشفَّر.";
@@ -7634,7 +7646,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "قفل التسجيل";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "رقم التعريف الشخصي (PIN) الخاص بسيجنال مطلوب لتسجيل رقم هاتفك مع سيجنال مرّة أُخرى.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "رقم التعريف الشخصي (PIN) على سيجنال مطلوب لتسجيل رقم هاتفك مع سيجنال مرّة أُخرى.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "مؤشِّرات الكتابة";
@@ -7691,7 +7703,7 @@
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "تعذَّر تجهيز الملف المُرفَق";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "شارِك على سيجنال";
+"SHARE_EXTENSION_VIEW_TITLE" = "مشاركة على سيجنال";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "فَشَلَ تعطيل اقتراحات المُشاركة.";
@@ -8156,7 +8168,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "هل ترغبُ بتأكيد الإلغاء؟";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "تعذَّرت إضافة شارتك إلى حسابك. يُرجى التواصل مع قسم الدعم.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "تعذَّرت إضافة شارتك إلى حسابك. يُرجى التواصل مع فريق الدعم.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "تعذَّرت إضافة الشارة";
@@ -8678,10 +8690,10 @@
 "WALLPAPER_PREVIEW_TITLE" = "معاينة";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "مسح لون الدردشة";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "إزالة لون الدردشة";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "هل ترغبُ بمسح لون هذه الدردشة؟";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "هل ترغبُ بإزالة لون هذه الدردشة؟";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "إزالة الخلفية";

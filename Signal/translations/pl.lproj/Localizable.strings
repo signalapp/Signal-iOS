@@ -400,8 +400,8 @@
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
-/* Text in chat attachment panel when Signal only has access to some photos/videos. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal ma dostęp tylko do zdjęć i filmów wybranych przez Ciebie";
+/* Text in chat attachment panel when Signal only has access to some photos/videos. This string is in a compact horizontal space, so it should be short if possible. */
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal has limited access to photos";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Lokalizacja";
@@ -2735,7 +2735,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Wystąpił nieznany błąd.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt nie korzysta z aplikacji Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Couldn’t send message because this person is no longer using Signal.";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Nie udało się przesłać załącznika.";
@@ -2951,13 +2951,13 @@
 "GO_TO_SETTINGS_BUTTON" = "Przejdź do ustawień";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%1$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Zmieniasz uprawnienia do edycji informacji o grupie na „%1$@”.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ zmienia uprawnienia do edycji informacji o grupie na „%2$@”.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%1$@”.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Kto może zmieniać informacje o grupie: „%1$@”.";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Tylko administratorzy";
@@ -2975,13 +2975,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Opcja wyłączona";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%1$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Zmieniasz uprawnienia do edycji składu grupy na „%1$@”.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ zmienia uprawnienia do edycji składu grupy na „%2$@”.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%1$@”.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Kto może zmieniać skład grupy: „%1$@”.";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "Tę opcję mogą zmienić tylko administratorzy.";
@@ -3638,10 +3638,10 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ usuwa nazwę grupy.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%1$@”.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Zmieniasz nazwę grupy na „%1$@”.";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@”.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ zmienia nazwę grupy na „%2$@”.";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Nazwa grupy to teraz „%1$@”.";
@@ -4766,7 +4766,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Wszystkie kontakty Signal";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Udostępnij tylko…";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Udostępniaj tylko…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Moje relacje";
@@ -5112,6 +5112,18 @@
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Nie możesz więcej razy próbować odgadnąć PIN-u. Aby zalogować się na konto Signal, możesz jeszcze spróbować zweryfikować swój numer telefonu. W trosce o Twoją prywatność i bezpieczeństwo Twojego konta przywrócimy je bez wcześniejszych informacji w profilu ani ustawień.";
+
+/* Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt */
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "Or you're reinstalling Signal on the same device";
+
+/* Title for the 'do not have my old device' choice of the 'Restore or Transfer' prompt */
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "I don't have my old phone";
+
+/* Explanation of 'have old device' flow for the 'Restore or Transfer' prompt */
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scan a QR code from your current Signal account to get started quickly";
+
+/* Title for the 'have my old device' choice of the 'Restore or Transfer' prompt */
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "I have my old phone";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Przywróć lub przenieś konto";
@@ -5540,19 +5552,19 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Nie ma oczekujących zaproszeń.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%1$@”.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "%1$@ należy teraz do grupy.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Wyświetl prośby";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%1$@”.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Prośba, której nadawca to %1$@, została odrzucona.";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Cofnij zaproszenie";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%1$@”?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Cofnąć zaproszenie do grupy, którego adresat to %1$@?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Dane osób zaproszonych przez innych członków grupy nie są widoczne. Gdy przyjmą one zaproszenie, dane zostaną udostępnione grupie. Dopóki zaproszone osoby nie dołączą do grupy, nie będą mogły w niej wyświetlić żadnych wiadomości.";
@@ -6167,7 +6179,7 @@
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Nieprawidłowy numer telefonu";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "Wiadomość";
+"RECIPIENT_PICKER_INVITE_ACTION" = "Invite";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ nie używa aplikacji Signal. Chcesz wysłać na ten numer zaproszenie?";
@@ -6257,13 +6269,13 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Nie masz kodu kopii zapasowej?";
 
 /* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-digit recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Bez kodu składającego się z 64 znaków nie odzyskasz swojej kopii zapasowej. Jeśli nie pamiętasz kodu kopii zapasowej, nie będziemy w stanie przywrócić kopii zapasowej Twojego konta Signal.\n\nJeśli masz dostęp do swojego starego urządzenia, kod kopii zapasowej znajdziesz w sekcji Ustawienia > Czaty > Kopie zapasowe Signal. Następnie wybierz opcję Wyświetl kod kopii zapasowej.";
 
 /* Title for sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "No Backup Key?";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Nie masz kodu kopii zapasowej?";
 
 /* Title for button on sheet for when you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Skip & Don’t Restore";
+"REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Pomiń i nie przywracaj";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Najpierw podaj swój numer telefonu.";
@@ -6398,7 +6410,7 @@
 "REREGISTER_FOR_PUSH" = "Ponownie skonfiguruj powiadomienia push";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = " %1$@. Jeśli skończą Ci się próby, możesz uworzyć nowy PIN. Możesz się zarejestrować i korzystać ze swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje w profilu.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "%1$@. Jeśli skończą Ci się próby, możesz utworzyć nowy PIN. Możesz się zarejestrować i korzystać ze swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje w profilu.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
 "REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "%1$@. Jeśli skończą Ci się próby, Twoje konto zostanie zablokowane na 7 dni. Po 7 dniach nieaktywności możesz zarejestrować się ponownie bez podawania PIN-u. Wszystkie treści zostaną usunięte.";
@@ -7178,7 +7190,7 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Pomiń frazę odzyskiwania";
 
 /* Message of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Fraza odzyskiwania w najgorszym przypadku pozwoli Ci na przywrócenie środków. Zdecydowanie zalecamy jej zapisanie.";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Fraza odzyskiwania pozwoli Ci na przywrócenie środków. Zdecydowanie zalecamy jej zapisanie na wszelki wypadek.";
 
 /* Title of confirmation alert when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Kontynuować bez zapisywania?";
@@ -7391,7 +7403,7 @@
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Zeskanuj kod QR";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Aby wysłać środki, użyj kodu lub lub Touch ID.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Aby wysłać środki, użyj kodu lub Touch ID.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Aby wysłać środki, użyj Face ID.";
@@ -7745,7 +7757,7 @@
 "SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "Głośnik wyłączony";
 
 /* Text for a toast confirming that the speakerphone has been turned on for a call. */
-"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Głośnik właczony";
+"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Głośnik włączony";
 
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "Polecane";
@@ -7832,19 +7844,19 @@
 "STORIES_HIDDEN_SECTION_HEADER" = "Ukryte relacje";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Ukryj relację";
+"STORIES_HIDE_STORY_ACTION" = "Ukryj relacje";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
 "STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Nowe relacje, które doda %1$@, nie będą już się pojawiać na początku listy relacji.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
-"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Ukryć relację?";
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Ukryć relacje?";
 
 /* Short context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION_SHORT" = "Ukryj";
 
 /* Toast shown when a story is successfuly hidden */
-"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Relacja ukryta";
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Relacje ukryte";
 
 /* Context menu action to view metadata about the story */
 "STORIES_INFO_ACTION" = "Informacje";
@@ -7862,7 +7874,7 @@
 "STORIES_NO_VIEWS_YET" = "Brak wyświetleń";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Pozwól osobom, które wyświetlają Twoje relacje, reagować i odpowiadać.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Pozwól osobom, które wyświetlają Twoje relacje, reagować na nie i odpowiadać.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Odpowiedzi i reakcje";
@@ -7928,13 +7940,13 @@
 "STORIES_TITLE" = "Relacje";
 
 /* Context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION" = "Pokaż relację";
+"STORIES_UNHIDE_STORY_ACTION" = "Pokaż relacje";
 
 /* Short context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION_SHORT" = "Pokaż";
 
 /* Toast shown when a story is successfuly unhidden */
-"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Relacja już się pokazuje";
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Relacje już się pokazują";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
 "STORIES_VIEWS_OFF_DESCRIPTION" = "Włącz potwierdzenia wyświetleń i sprawdzaj, kto wyświetla Twoje relacje.";
@@ -8048,7 +8060,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Masz te osoby w kontaktach telefonu";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Kontakty mogą wyświetlić Twoje imię i zdjęcie oraz wszystko, co udostępniasz w swoich relacjach – chyba że je przed tymi osobami ukryjesz.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Kontakty mogą wyświetlić Twoje imię, nazwisko i zdjęcie oraz wszystko, co udostępniasz w swoich relacjach – chyba że je przed tymi osobami ukryjesz.";
 
 /* Header for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Kontakty Signal</bold> to osoby, które  zostały uznane za zaufane z jednego z tych powodów:";
@@ -8282,7 +8294,7 @@
 "THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "Brak wspólnych grup";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
-"THREAD_MERGE_LEARN_MORE" = "Wymiana wiadomości z numerem %1$@ pozwoliła potwierdzić, że osobą, do której należy ten numer, jest %2$@. Ten numer jest prywatny.\n\nHistoria wiadomości z obu czatów została połączona tutaj.";
+"THREAD_MERGE_LEARN_MORE" = "Wymiana wiadomości z numerem %1$@ pozwoliła potwierdzić, że osobą, do której należy ten numer, jest %2$@. Ten numer jest ukryty.\n\nHistoria wiadomości z obu czatów została połączona tutaj.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
 "THREAD_MERGE_NO_PHONE_NUMBER" = "Historia wiadomości, które wymieniacie Ty i %1$@, oraz tych z innego czatu należącego do tej osoby została połączona.";
@@ -8402,7 +8414,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Odłączyć urządzenie %1$@?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "To urządzenie nie jest już połączone. Aby dalej wysyłać i otrzymywac wiadomości, połącz swój telefon ponownie z aplikacją Signal.";
+"UNLINKED_WARNING" = "To urządzenie nie jest już połączone. Aby dalej wysyłać i otrzymywać wiadomości, połącz swój telefon ponownie z aplikacją Signal.";
 
 /* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
 "UNLINKED_WARNING_ACTION_TITLE" = "Połącz urządzenie ponownie";
@@ -8480,7 +8492,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Kolor";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Udostępniaj swój kod QR tylko zaufanym osobom. Po udostępnieniu inni będą mogli wyświetlić Twoją nazwę użytkownika i rozpocząć z Tobą czat.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Udostępniaj swój kod QR i link tylko zaufanym osobom. Po udostępnieniu inni będą mogli wyświetlić Twoją nazwę użytkownika i rozpocząć z Tobą czat.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
 "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "Kod QR i link nie zostały ustawione. Sprawdź połączenie z internetem i spróbuj ponownie.";
@@ -8531,7 +8543,7 @@
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Podczas wyszukiwania nazwy użytkownika wystąpił błąd. Spróbuj ponownie później.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ to nieprawidłowa nazwa użytkownika. Upewnij się, że wprowadzasz pełną nazwę użytkownika wraz z ciągiem cyfr.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ to nieprawidłowa nazwa użytkownika. Upewnij się, że podajesz pełną nazwę użytkownika wraz z ciągiem cyfr.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Nieprawidłowa nazwa użytkownika";
@@ -8540,13 +8552,13 @@
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Ten link do nazwy użytkownika wygasł.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ nie jest użytkownikiem Signal. Upewnij się, że została przez Ciebie podana pełna nazwa użytkownika.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ nie jest użytkownikiem Signal. Upewnij się, że podajesz pełną nazwę użytkownika.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Nie znaleziono użytkownika";
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
-"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Zeskanuj teb kod QR swoim telefonem, aby rozpocząć ze mną czat w aplikacji Signal.";
+"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Zeskanuj ten kod QR swoim telefonem, aby rozpocząć ze mną czat w aplikacji Signal.";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "Kod QR i link zostały zresetowane, a Twoja nazwa użytkownika to %1$@";
@@ -8561,16 +8573,16 @@
 "USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Nazwy użytkowników zawsze są parowane z zestawem liczb. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Ustal dla siebie nazwę użytkownika";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Wybierz dla siebie nazwę użytkownika";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Nazwy użytkownika mogą zawierać wyłącznie znaki a–z, 0–9 oraz _";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Nazwa użytkownika może zawierać wyłącznie znaki a–z, 0–9 oraz _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Nieprawidłowa nazwa użytkownika. Wpisz co najmniej dwie cyfry";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Te cyfry pomagają chronić prywatność Twojej nazwy użytkownika, dzięki czemu unikasz niechcianych wiadomości. Udostępniaj swoją nazwę użytkownika tylko tym osobom i grupom, z którymi chcesz rozmawiać na czacie. Jeśli zmienisz nazwę użytkownika, otrzymasz nowy zestaw cyfr.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Te cyfry pomagają chronić prywatność Twojej nazwy użytkownika, dzięki czemu możesz uniknąć niechcianych wiadomości. Udostępniaj swoją nazwę użytkownika tylko tym osobom i grupom, z którymi chcesz rozmawiać na czacie. Jeśli zmienisz nazwę użytkownika, otrzymasz nowy zestaw cyfr.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Co to za cyfry?";
@@ -8579,7 +8591,7 @@
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Ta nazwa użytkownika jest niedostępna";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Zbyt wiele prób. Spróbuj ponownie później.";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Zbyt wiele prób. Spróbuj ponownie później";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Nazwa użytkownika";
@@ -8705,7 +8717,7 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Zresetuj wszystkie tapety";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Czy chcesz zastąpić kolory wszystkich czatów?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Czy chcesz zmienić kolory we wszystkich czatach?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Zresetuj kolory czatów";
