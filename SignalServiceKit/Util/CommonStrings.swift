@@ -115,8 +115,18 @@ public enum CommonStrings {
         OWSLocalizedString("SETTINGS_HELP", comment: "Title for help button and help pages in app settings.")
     }
 
-    static public var openSettingsButton: String {
-        OWSLocalizedString("OPEN_SETTINGS_BUTTON", comment: "Button text which opens the settings app")
+    static public var openAppSettingsButton: String {
+        OWSLocalizedString(
+            "OPEN_APP_SETTINGS_BUTTON",
+            comment: "Title for button which opens the in-app settings"
+        )
+    }
+
+    static public var openSystemSettingsButton: String {
+        OWSLocalizedString(
+            "OPEN_SETTINGS_BUTTON",
+            comment: "Button text which opens the settings app"
+        )
     }
 
     static public var errorAlertTitle: String {

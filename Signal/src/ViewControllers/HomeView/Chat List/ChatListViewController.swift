@@ -459,7 +459,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 self?.showAppSettings()
             }
         )
-        barButtonItem.accessibilityLabel = CommonStrings.openSettingsButton
+        barButtonItem.accessibilityLabel = CommonStrings.openAppSettingsButton
         barButtonItem.accessibilityIdentifier = "ChatListViewController.settingsButton"
         return barButtonItem
     }

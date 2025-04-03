@@ -15,9 +15,7 @@ public class AppContextUtils {
             return nil
         }
 
-        return ActionSheetAction(title: CommonStrings.openSettingsButton,
-                                 accessibilityIdentifier: "system_settings",
-                                 style: .default) { _ in
+        return ActionSheetAction(title: CommonStrings.openSystemSettingsButton) { _ in
             CurrentAppContext().openSystemSettings()
             completion?()
         }

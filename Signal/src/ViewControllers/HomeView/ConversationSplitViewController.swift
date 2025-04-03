@@ -347,10 +347,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             action: #selector(showAppSettings),
             input: ",",
             modifierFlags: .command,
-            discoverabilityTitle: OWSLocalizedString(
-                "KEY_COMMAND_SETTINGS",
-                comment: "A keyboard command to present the application settings dialog."
-            )
+            discoverabilityTitle: CommonStrings.openAppSettingsButton
         ),
         UIKeyCommand(
             action: #selector(focusSearch),

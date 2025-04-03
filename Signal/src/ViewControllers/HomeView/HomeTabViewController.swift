@@ -20,13 +20,13 @@ extension HomeTabViewController {
         showAppSettings: @escaping () -> Void
     ) -> UIBarButtonItem {
         let settingsAction = UIAction(
-            title: CommonStrings.openSettingsButton,
+            title: CommonStrings.openAppSettingsButton,
             image: Theme.iconImage(.contextMenuSettings),
             handler: { _ in showAppSettings() }
         )
 
         let contextButton = ContextMenuButton(actions: buildActions(settingsAction))
-        contextButton.accessibilityLabel = CommonStrings.openSettingsButton
+        contextButton.accessibilityLabel = CommonStrings.openAppSettingsButton
 
         let avatarView = ConversationAvatarView(
             sizeClass: .twentyEight,
@@ -55,7 +55,7 @@ extension HomeTabViewController {
         }
 
         let barButtonItem = UIBarButtonItem(customView: barButtonView)
-        barButtonItem.accessibilityLabel = CommonStrings.openSettingsButton
+        barButtonItem.accessibilityLabel = CommonStrings.openAppSettingsButton
         return barButtonItem
     }
 }

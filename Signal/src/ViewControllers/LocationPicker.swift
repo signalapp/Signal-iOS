@@ -168,7 +168,7 @@ public class LocationPicker: UIViewController {
                                            comment: "Alert body indicating the user has denied location permissions")
             )
             let openSettingsAction = ActionSheetAction(
-                title: CommonStrings.openSettingsButton,
+                title: CommonStrings.openSystemSettingsButton,
                 style: .default
             ) { _ in UIApplication.shared.openSystemSettings()  }
             alert.addAction(openSettingsAction)

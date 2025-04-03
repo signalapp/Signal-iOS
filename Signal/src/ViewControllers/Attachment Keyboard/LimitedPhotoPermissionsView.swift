@@ -26,8 +26,7 @@ class LimitedPhotoPermissionsView: UIView {
             ),
             image: UIImage(named: "settings-light")
         ) { _ in
-            let openSettingsURL = URL(string: UIApplication.openSettingsURLString)!
-            UIApplication.shared.open(openSettingsURL)
+            CurrentAppContext().openSystemSettings()
         }
 
         var buttonConfig = UIButton.Configuration.gray()
