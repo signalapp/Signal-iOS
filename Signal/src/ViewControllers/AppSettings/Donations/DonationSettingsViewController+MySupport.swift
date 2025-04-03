@@ -253,7 +253,7 @@ extension DonationSettingsViewController {
                 }
             }()
 
-            let currencyString = DonationUtilities.format(money: amount)
+            let currencyString = CurrencyFormatter.format(money: amount)
 
             return String(format: pricingFormat, currencyString)
         }()
@@ -380,7 +380,7 @@ extension DonationSettingsViewController {
 
                     return String(
                         format: pricingFormat,
-                        DonationUtilities.format(money: amount)
+                        CurrencyFormatter.format(money: amount)
                     )
                 }()
 

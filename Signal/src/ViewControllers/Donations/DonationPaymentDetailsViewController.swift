@@ -689,7 +689,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
     // MARK: - Submit button, footer
 
     private lazy var submitButton: OWSButton = {
-        let amountString = DonationUtilities.format(money: self.donationAmount)
+        let amountString = CurrencyFormatter.format(money: self.donationAmount)
         let title = {
             let format: String
             switch self.donationMode {
@@ -736,9 +736,12 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
 
                     let messageFormat = OWSLocalizedString(
                         "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE",
-                        comment: "Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation."
+                        comment: "Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}."
                     )
-                    let message = String(format: messageFormat, amountString)
+                    let oneEuroCentString = CurrencyFormatter.format(
+                        money: FiatMoney(currencyCode: "EUR", value: 0.01)
+                    )
+                    let message = String(format: messageFormat, oneEuroCentString, amountString)
 
                     let actionSheet = ActionSheetController(title: title, message: message)
                     actionSheet.addAction(.init(

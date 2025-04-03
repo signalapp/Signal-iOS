@@ -156,7 +156,7 @@ public class GiftBadgeCellView: UIStackView {
 
         let secondLineLabel = UILabel()
         secondLineLabel.text = {
-            let formattedPrice = DonationUtilities.format(money: price)
+            let formattedPrice = CurrencyFormatter.format(money: price)
 
             let formattedDuration: String = {
                 guard let duration = badge.duration else {

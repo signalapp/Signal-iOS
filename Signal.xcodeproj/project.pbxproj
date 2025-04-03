@@ -2614,6 +2614,8 @@
 		D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */; };
 		D972E2FF2C542BCD001D7337 /* Backup.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = D972E2FE2C542BCD001D7337 /* Backup.pb.swift */; };
 		D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */; };
+		D97992A12D9E55F20080A4F5 /* CurrencyFormatterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97992A02D9E55E10080A4F5 /* CurrencyFormatterTest.swift */; };
+		D97992A32D9E55FB0080A4F5 /* CurrencyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97992A22D9E55F80080A4F5 /* CurrencyFormatter.swift */; };
 		D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */; };
 		D979CC292AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC222AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift */; };
 		D979CC2B2AD3933B006AAC49 /* InteractionStore+CallRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC242AD3933B006AAC49 /* InteractionStore+CallRecord.swift */; };
@@ -6516,6 +6518,8 @@
 		D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManagerTest.swift; sourceTree = "<group>"; };
 		D972E2FE2C542BCD001D7337 /* Backup.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Backup.pb.swift; sourceTree = "<group>"; };
 		D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupManager+GenericGroupUpdates.swift"; sourceTree = "<group>"; };
+		D97992A02D9E55E10080A4F5 /* CurrencyFormatterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatterTest.swift; sourceTree = "<group>"; };
+		D97992A22D9E55F80080A4F5 /* CurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatter.swift; sourceTree = "<group>"; };
 		D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCallRecordManager.swift; sourceTree = "<group>"; };
 		D979CC202AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncomingCallEventSyncMessageManager.swift; sourceTree = "<group>"; };
 		D979CC222AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessageManager.swift; sourceTree = "<group>"; };
@@ -10294,6 +10298,7 @@
 		7254654E2BA026E700EABFD2 /* Subscriptions */ = {
 			isa = PBXGroup;
 			children = (
+				D97992A02D9E55E10080A4F5 /* CurrencyFormatterTest.swift */,
 				F992ACC328F8C9D900906038 /* StripeTest.swift */,
 			);
 			path = Subscriptions;
@@ -12195,6 +12200,7 @@
 			isa = PBXGroup;
 			children = (
 				D986D1372CC8334F00F9803D /* Backups */,
+				D97992A42D9E58E00080A4F5 /* Currencies */,
 				D986D1362CC8332F00F9803D /* Donations */,
 				D97054192CFE49E200AC7954 /* Subscription.swift */,
 				D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */,
@@ -12383,6 +12389,15 @@
 				D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */,
 			);
 			path = Jobs;
+			sourceTree = "<group>";
+		};
+		D97992A42D9E58E00080A4F5 /* Currencies */ = {
+			isa = PBXGroup;
+			children = (
+				F9C5CB22289453B200548EEE /* Currency.swift */,
+				D97992A22D9E55F80080A4F5 /* CurrencyFormatter.swift */,
+			);
+			path = Currencies;
 			sourceTree = "<group>";
 		};
 		D979CC3F2AD4DD8A006AAC49 /* CallRecord */ = {
@@ -14198,7 +14213,6 @@
 				0512145A2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift */,
 				34A955AB271B521500B05242 /* CommonStrings.swift */,
 				F962B389293F9F1F00765BD8 /* CRC32.swift */,
-				F9C5CB22289453B200548EEE /* Currency.swift */,
 				72A132A42CA210C2000ACED6 /* DarwinNotificationCenter.swift */,
 				F9C5CB63289453B200548EEE /* DarwinNotificationName.swift */,
 				F93999F728C8204800E34899 /* Data+MessagePadding.swift */,
@@ -17503,6 +17517,7 @@
 				F962B38A293F9F1F00765BD8 /* CRC32.swift in Sources */,
 				668A00D02C2B5E32007B8808 /* Cryptography.swift in Sources */,
 				F9C5CDF4289453B400548EEE /* Currency.swift in Sources */,
+				D97992A32D9E55FB0080A4F5 /* CurrencyFormatter.swift in Sources */,
 				72A132A52CA210C7000ACED6 /* DarwinNotificationCenter.swift in Sources */,
 				F9C5CE35289453B400548EEE /* DarwinNotificationName.swift in Sources */,
 				F93999F828C8204800E34899 /* Data+MessagePadding.swift in Sources */,
@@ -18547,6 +18562,7 @@
 				F962B38C293F9F9F00765BD8 /* CRC32Test.swift in Sources */,
 				668A28AF2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift in Sources */,
 				668A00DB2C2B5E72007B8808 /* CryptographyTests.swift in Sources */,
+				D97992A12D9E55F20080A4F5 /* CurrencyFormatterTest.swift in Sources */,
 				509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */,
 				F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */,
 				F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */,

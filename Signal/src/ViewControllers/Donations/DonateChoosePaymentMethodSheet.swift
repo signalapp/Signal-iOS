@@ -23,7 +23,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
     private let buttonHeight: CGFloat = 48
 
     private var titleText: String {
-        let currencyString = DonationUtilities.format(money: amount)
+        let currencyString = CurrencyFormatter.format(money: amount)
         switch donationMode {
         case .oneTime:
             let format = OWSLocalizedString(

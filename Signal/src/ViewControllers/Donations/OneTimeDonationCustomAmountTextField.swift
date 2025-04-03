@@ -110,7 +110,7 @@ class OneTimeDonationCustomAmountTextField: UIView {
 
         symbolLabel.removeFromSuperview()
 
-        switch DonationUtilities.Symbol.for(currencyCode: currencyCode) {
+        switch Currency.Symbol.for(currencyCode: currencyCode) {
         case .before(let symbol):
             symbolLabel.text = symbol
             stackView.insertArrangedSubview(symbolLabel, at: 0)

@@ -335,7 +335,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             ),
             message: String(
                 format: messageFormat,
-                DonationUtilities.format(money: maximumAmount)
+                CurrencyFormatter.format(money: maximumAmount)
             )
         )
         actionSheetController.addAction(OWSActionSheets.okayAction)
@@ -472,7 +472,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT",
                 comment: "If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\"."
             )
-            let currencyString = DonationUtilities.format(money: minimumAmount)
+            let currencyString = CurrencyFormatter.format(money: minimumAmount)
             showError(String(format: format, currencyString))
         case .awaitingIDEALAuthorization:
             // Not pending, but awaiting approval
@@ -580,7 +580,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             owsFail("[Donations] Cannot update monthly donation. This should be prevented in the UI")
         }
 
-        let currencyString = DonationUtilities.format(money: monthlyPaymentRequest.amount)
+        let currencyString = CurrencyFormatter.format(money: monthlyPaymentRequest.amount)
         let title = OWSLocalizedString(
             "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE",
             comment: "Update Subscription? Action sheet title"
@@ -1182,7 +1182,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     downColor: DonationViewsUtil.bubbleBackgroundColor.withAlphaComponent(0.8)
                 )
                 button.setTitle(
-                    title: DonationUtilities.format(money: amount),
+                    title: CurrencyFormatter.format(money: amount),
                     font: .regularFont(ofSize: UIDevice.current.isIPhone5OrShorter ? 18 : 20),
                     titleColor: Theme.primaryTextColor
                 )

@@ -177,32 +177,6 @@ public class DonationUtilities {
         ]
     }
 
-    public enum Symbol: Equatable {
-        case before(String)
-        case after(String)
-        case currencyCode
-
-        private static let symbols: [Currency.Code: Symbol] = [
-            "USD": .before("$"),
-            "AUD": .before("A$"),
-            "BRL": .before("R$"),
-            "GBP": .before("£"),
-            "CAD": .before("CA$"),
-            "CNY": .before("CN¥"),
-            "EUR": .before("€"),
-            "HKD": .before("HK$"),
-            "INR": .before("₹"),
-            "JPY": .before("¥"),
-            "KRW": .before("₩"),
-            "PLN": .after("zł"),
-            "SEK": .after("kr")
-        ]
-
-        public static func `for`(currencyCode: Currency.Code) -> Symbol {
-            return symbols[currencyCode, default: .currencyCode]
-        }
-    }
-
     public struct Preset: Equatable {
         public let currencyCode: Currency.Code
         public let amounts: [FiatMoney]
@@ -210,42 +184,6 @@ public class DonationUtilities {
         public init(currencyCode: Currency.Code, amounts: [FiatMoney]) {
             self.currencyCode = currencyCode
             self.amounts = amounts
-        }
-    }
-
-    private static let currencyFormatter: NumberFormatter = {
-        let currencyFormatter = NumberFormatter()
-        currencyFormatter.numberStyle = .decimal
-        return currencyFormatter
-    }()
-
-    public static func format(money: FiatMoney, includeSymbol: Bool = true) -> String {
-        let value = money.value
-        let currencyCode = money.currencyCode
-
-        let isZeroDecimalCurrency = zeroDecimalCurrencyCodes.contains(currencyCode)
-
-        let decimalPlaces: Int
-        if isZeroDecimalCurrency {
-            decimalPlaces = 0
-        } else if value.isInteger {
-            decimalPlaces = 0
-        } else {
-            decimalPlaces = 2
-        }
-
-        currencyFormatter.minimumFractionDigits = decimalPlaces
-        currencyFormatter.maximumFractionDigits = decimalPlaces
-
-        let nsValue = value as NSDecimalNumber
-        let valueString = currencyFormatter.string(from: nsValue) ?? nsValue.stringValue
-
-        guard includeSymbol else { return valueString }
-
-        switch Symbol.for(currencyCode: currencyCode) {
-        case .before(let symbol): return symbol + valueString
-        case .after(let symbol): return valueString + symbol
-        case .currencyCode: return currencyCode + " " + valueString
         }
     }
 

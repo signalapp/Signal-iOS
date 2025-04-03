@@ -60,7 +60,7 @@ class DonationReceiptsViewController: OWSTableViewController2 {
 
             let profileBadgeImage = profileBadgeLookup.getImage(donationReceipt: donationReceipt, preferDarkTheme: Theme.isDarkThemeEnabled)
             let formattedDate = dateFormatter.string(from: donationReceipt.timestamp)
-            let formattedAmount = DonationUtilities.format(money: donationReceipt.amount)
+            let formattedAmount = CurrencyFormatter.format(money: donationReceipt.amount)
 
             let tableItem = OWSTableItem(
                 customCellBlock: { [weak self] in

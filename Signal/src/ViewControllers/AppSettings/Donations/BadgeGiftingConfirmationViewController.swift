@@ -347,7 +347,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             descriptionLabel.numberOfLines = 0
 
             let priceLabel = UILabel()
-            priceLabel.text = DonationUtilities.format(money: price)
+            priceLabel.text = CurrencyFormatter.format(money: price)
             priceLabel.font = .dynamicTypeBody.semibold()
             priceLabel.numberOfLines = 0
 
