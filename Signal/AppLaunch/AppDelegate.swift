@@ -157,7 +157,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // This should be the first thing we do.
         let mainAppContext = MainAppContext()
-        SetCurrentAppContext(mainAppContext)
+        SetCurrentAppContext(mainAppContext, isRunningTests: false)
 
         let debugLogger = DebugLogger.shared
         debugLogger.enableTTYLoggingIfNeeded()

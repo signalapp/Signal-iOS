@@ -23,6 +23,19 @@ class BlockingManagerTests: SSKBaseTest {
         )
     }
 
+    override func tearDown() {
+        let flushTask = blockingManager.flushSyncQueueTask()
+        let otherFlushTask = otherBlockingManager.flushSyncQueueTask()
+        let flushExpectation = self.expectation(description: "flush sync queues")
+        Task {
+            try! await flushTask.value
+            try! await otherFlushTask.value
+            flushExpectation.fulfill()
+        }
+        self.wait(for: [flushExpectation], timeout: 60)
+        super.tearDown()
+    }
+
     func testAddBlockedAddress() {
         // Setup
         let aci = Aci.randomForTesting()

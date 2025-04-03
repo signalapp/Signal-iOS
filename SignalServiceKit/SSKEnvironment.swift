@@ -14,8 +14,8 @@ public class SSKEnvironment: NSObject {
     @objc
     public static var shared: SSKEnvironment { _shared! }
 
-    public static func setShared(_ env: SSKEnvironment, isRunningTests: Bool) {
-        owsPrecondition(_shared == nil || isRunningTests)
+    public static func setShared(_ env: SSKEnvironment?, isRunningTests: Bool) {
+        owsPrecondition((_shared == nil && env != nil) || isRunningTests)
         _shared = env
     }
 

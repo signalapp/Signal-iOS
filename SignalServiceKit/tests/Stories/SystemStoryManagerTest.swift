@@ -38,13 +38,15 @@ class SystemStoryManagerTest: SSKBaseTest {
     }
 
     override func tearDown() {
-        super.tearDown()
-
+        let flushExpectation = self.expectation(description: "flush")
         DispatchQueue.main.async {
             self.manager.chainedPromise.enqueue { .value(()) }.ensure {
                 self.manager = nil
+                flushExpectation.fulfill()
             }.cauterize()
         }
+        self.wait(for: [flushExpectation], timeout: 60)
+        super.tearDown()
     }
 
     // MARK: - Downloading

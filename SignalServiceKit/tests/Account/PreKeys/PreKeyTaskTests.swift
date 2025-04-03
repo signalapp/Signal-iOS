@@ -8,7 +8,7 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-final class PreKeyTaskTests: XCTestCase {
+final class PreKeyTaskTests: SSKBaseTest {
 
     private var mockTSAccountManager: MockTSAccountManager!
     private var mockIdentityManager: PreKey.Mocks.IdentityManager!
@@ -57,6 +57,7 @@ final class PreKeyTaskTests: XCTestCase {
 
     override func tearDown() {
         mockAPIClient.setPreKeysResult.ensureUnset()
+        super.tearDown()
     }
 
     //

@@ -29,6 +29,14 @@ public class BlockingManager {
     private let blockedGroupStore: BlockedGroupStore
     private let blockedRecipientStore: BlockedRecipientStore
 
+    private let syncQueue = SerialTaskQueue()
+
+    #if TESTABLE_BUILD
+    func flushSyncQueueTask() -> Task<Void, any Error> {
+        return self.syncQueue.enqueue {}
+    }
+    #endif
+
     init(
         appReadiness: AppReadiness,
         blockedGroupStore: BlockedGroupStore,
@@ -48,7 +56,9 @@ public class BlockingManager {
 
     private func syncIfNeeded() {
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            Task { await self.sendBlockListSyncMessage(force: false) }
+            self.syncQueue.enqueue {
+                await self.sendBlockListSyncMessage(force: false)
+            }
         }
     }
 
@@ -66,7 +76,9 @@ public class BlockingManager {
     private func setNeedsSync(tx: DBWriteTransaction) {
         setChangeToken(fetchChangeToken(tx: tx) + 1, tx: tx)
         tx.addSyncCompletion {
-            Task { await self.sendBlockListSyncMessage(force: false) }
+            self.syncQueue.enqueue {
+                await self.sendBlockListSyncMessage(force: false)
+            }
         }
     }
 
@@ -407,8 +419,10 @@ public class BlockingManager {
         }
     }
 
-    public func syncBlockList() async {
-        await sendBlockListSyncMessage(force: true)
+    public func syncBlockList() -> Task<Void, any Error> {
+        return self.syncQueue.enqueue {
+            await self.sendBlockListSyncMessage(force: true)
+        }
     }
 
     private func sendBlockListSyncMessage(force: Bool) async {

@@ -33,6 +33,7 @@ class OWSContactsManagerTest: SignalBaseTest {
 
     override func tearDown() {
         mockUsernameLookupMananger.clearAllUsernames()
+        super.tearDown()
     }
 
     private func makeContactsManager() -> OWSContactsManager {

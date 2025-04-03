@@ -34,7 +34,14 @@ public class DependenciesBridge {
     }
     private static var _shared: DependenciesBridge?
 
-    static func setShared(_ dependenciesBridge: DependenciesBridge) {
+    #if TESTABLE_BUILD
+    static var hasShared: Bool {
+        return _shared != nil
+    }
+    #endif
+
+    static func setShared(_ dependenciesBridge: DependenciesBridge?, isRunningTests: Bool) {
+        owsPrecondition((_shared == nil && dependenciesBridge != nil) || isRunningTests)
         Self._shared = dependenciesBridge
     }
 

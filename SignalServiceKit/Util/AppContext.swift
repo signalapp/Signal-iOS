@@ -152,7 +152,8 @@ public func CurrentAppContext() -> any AppContext {
     currentAppContext!
 }
 
-public func SetCurrentAppContext(_ appContext: any AppContext) {
+public func SetCurrentAppContext(_ appContext: any AppContext, isRunningTests: Bool) {
+    owsPrecondition(currentAppContext == nil || isRunningTests)
     currentAppContext = appContext
 }
 

@@ -11,10 +11,28 @@ import GRDB
 public class MockSSKEnvironment {
     /// Set up a mock SSK environment as well as ``DependenciesBridge``.
     @MainActor
-    public static func activate() async {
+    public static func activate(
+        appReadiness: any AppReadiness = AppReadinessImpl(),
+        callMessageHandler: any CallMessageHandler = NoopCallMessageHandler(),
+        currentCallProvider: any CurrentCallProvider = CurrentCallNoOpProvider(),
+        notificationPresenter: any NotificationPresenter = NoopNotificationPresenterImpl(),
+        incrementalMessageTSAttachmentMigratorFactory: any IncrementalMessageTSAttachmentMigratorFactory = IncrementalMessageTSAttachmentMigratorFactoryMock(),
+        testDependencies: AppSetup.TestDependencies? = nil
+    ) async {
+        owsPrecondition(!(CurrentAppContext() is TestAppContext))
+        owsPrecondition(!SSKEnvironment.hasShared)
+        owsPrecondition(!DependenciesBridge.hasShared)
+
         let testAppContext = TestAppContext()
-        SetCurrentAppContext(testAppContext)
-        let appReadiness = AppReadinessImpl()
+        SetCurrentAppContext(testAppContext, isRunningTests: true)
+
+        /// Note that ``SDSDatabaseStorage/grdbDatabaseFileUrl``, through a few
+        /// layers of abstraction, uses the "current app context" to decide
+        /// where to put the database,
+        ///
+        /// For a ``TestAppContext`` as configured above, this will be a
+        /// subdirectory of our temp directory unique to the instantiation of
+        /// the app context.
 
         _ = await AppSetup().start(
             appContext: testAppContext,
@@ -26,12 +44,12 @@ public class MockSSKEnvironment {
             ),
             paymentsEvents: PaymentsEventsNoop(),
             mobileCoinHelper: MobileCoinHelperMock(),
-            callMessageHandler: NoopCallMessageHandler(),
-            currentCallProvider: CurrentCallNoOpProvider(),
-            notificationPresenter: NoopNotificationPresenterImpl(),
-            incrementalMessageTSAttachmentMigratorFactory: IncrementalMessageTSAttachmentMigratorFactoryMock(),
+            callMessageHandler: callMessageHandler,
+            currentCallProvider: currentCallProvider,
+            notificationPresenter: notificationPresenter,
+            incrementalMessageTSAttachmentMigratorFactory: incrementalMessageTSAttachmentMigratorFactory,
             messageBackupErrorPresenterFactory: NoOpMessageBackupErrorPresenterFactory(),
-            testDependencies: AppSetup.TestDependencies(
+            testDependencies: testDependencies ?? AppSetup.TestDependencies(
                 contactManager: FakeContactsManager(),
                 groupV2Updates: MockGroupV2Updates(),
                 groupsV2: MockGroupsV2(),
@@ -56,7 +74,8 @@ public class MockSSKEnvironment {
         ).prepareDatabase()
     }
 
-    public static func flushAndWait() {
+    @MainActor
+    private static func flushAndWait() {
         AssertIsOnMainThread()
 
         waitForMainQueue()
@@ -66,6 +85,30 @@ public class MockSSKEnvironment {
 
         // Wait for the main queue *again* in case more work was scheduled.
         waitForMainQueue()
+    }
+
+    public static func deactivateAsync(oldContext: any AppContext) async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async {
+                SSKEnvironment.shared.databaseStorageRef.grdbStorage.pool.barrierWriteWithoutTransaction { _ in }
+                DispatchQueue.main.async {
+                    continuation.resume()
+                }
+            }
+        }
+        _deactivate(oldContext: oldContext)
+    }
+
+    @MainActor
+    public static func deactivate(oldContext: any AppContext) {
+        flushAndWait()
+        _deactivate(oldContext: oldContext)
+    }
+
+    private static func _deactivate(oldContext: any AppContext) {
+        SetCurrentAppContext(oldContext, isRunningTests: true)
+        SSKEnvironment.setShared(nil, isRunningTests: true)
+        DependenciesBridge.setShared(nil, isRunningTests: true)
     }
 
     private static func waitForMainQueue() {

@@ -57,11 +57,12 @@ class CollectionViewLogger: MediaGalleryCollectionViewUpdaterDelegate {
 
 }
 
-final class MediaGalleryCollectionViewUpdaterTest: SignalBaseTest {
+final class MediaGalleryCollectionViewUpdaterTest: XCTestCase {
     private var logger: CollectionViewLogger!
     private var updater: MediaGalleryCollectionViewUpdater!
 
     override func setUp() {
+        super.setUp()
         logger = CollectionViewLogger()
     }
 

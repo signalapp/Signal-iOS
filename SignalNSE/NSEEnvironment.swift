@@ -12,7 +12,7 @@ class NSEEnvironment {
 
     init() {
         self.appContext = NSEContext()
-        SetCurrentAppContext(self.appContext)
+        SetCurrentAppContext(self.appContext, isRunningTests: false)
         appReadiness = AppReadinessImpl()
     }
 

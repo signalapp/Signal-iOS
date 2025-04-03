@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalUI
 
-final class PhoneNumberCountryTest: XCTestCase {
+final class PhoneNumberCountryTest: SignalBaseTest {
     func testCountryCodesForSearchTerm() {
         func countryCodes(forSearchTerm searchTerm: String?) -> [String] {
             return PhoneNumberCountry.buildCountries(searchText: searchTerm).map(\.countryCode)

@@ -8,10 +8,13 @@ public import XCTest
 import CocoaLumberjack
 
 public class SSKBaseTest: XCTestCase {
+    private var oldContext: (any AppContext)!
+
     @MainActor
     public override func setUp() {
         DDLog.add(DDTTYLogger.sharedInstance!)
         let setupExpectation = expectation(description: "mock ssk environment setup completed")
+        self.oldContext = CurrentAppContext()
         Task {
             await MockSSKEnvironment.activate()
             setupExpectation.fulfill()
@@ -19,8 +22,9 @@ public class SSKBaseTest: XCTestCase {
         waitForExpectations(timeout: 2)
     }
 
+    @MainActor
     public override func tearDown() {
-        MockSSKEnvironment.flushAndWait()
+        MockSSKEnvironment.deactivate(oldContext: self.oldContext)
         super.tearDown()
     }
 

@@ -688,7 +688,7 @@ public final class MessageReceiver {
             let pendingTask = Self.buildPendingTask(label: "syncBlockList")
             Task {
                 defer { pendingTask.complete() }
-                await SSKEnvironment.shared.blockingManagerRef.syncBlockList()
+                try? await SSKEnvironment.shared.blockingManagerRef.syncBlockList().value
             }
 
         case .configuration:

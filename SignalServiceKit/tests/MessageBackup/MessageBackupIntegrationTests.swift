@@ -286,18 +286,11 @@ class MessageBackupIntegrationTests: XCTestCase {
     /// by LibSignal. They should be equivalent; any disparity indicates that
     /// some data was dropped or modified as part of the import/export process,
     /// which should be idempotent.
+    @MainActor
     private func runRoundTripTest(
         testCaseFileUrl: URL,
         failureLogOutput: LibSignalComparisonFailureLogOutput
     ) async throws {
-        /// A backup doesn't contain our own local identifiers. Rather, those
-        /// are determined as part of registration for a backup import, and are
-        /// already-known for a backup export.
-        ///
-        /// Consequently, we can use any local identifiers for our test
-        /// purposes without worrying about the contents of each test case's
-        /// backup file.
-        let localIdentifiers: LocalIdentifiers = .forUnitTests
 
         /// Backup files hardcode timestamps, some of which are interpreted
         /// relative to "now". For example, "deleted" story distribution lists
@@ -312,7 +305,32 @@ class MessageBackupIntegrationTests: XCTestCase {
         /// that as our "now" during import.
         let backupTimeMs = try await readBackupTimeMs(testCaseFileUrl: testCaseFileUrl)
 
+        let oldContext = CurrentAppContext()
         await initializeApp(dateProvider: { Date(millisecondsSince1970: backupTimeMs) })
+        let result = await Result {
+            try await self._runRoundTripTest(
+                testCaseFileUrl: testCaseFileUrl,
+                backupTimeMs: backupTimeMs,
+                failureLogOutput: failureLogOutput
+            )
+        }
+        await deinitializeApp(oldContext: oldContext)
+        try result.get()
+    }
+
+    private func _runRoundTripTest(
+        testCaseFileUrl: URL,
+        backupTimeMs: UInt64,
+        failureLogOutput: LibSignalComparisonFailureLogOutput
+    ) async throws {
+        /// A backup doesn't contain our own local identifiers. Rather, those
+        /// are determined as part of registration for a backup import, and are
+        /// already-known for a backup export.
+        ///
+        /// Consequently, we can use any local identifiers for our test
+        /// purposes without worrying about the contents of each test case's
+        /// backup file.
+        let localIdentifiers: LocalIdentifiers = .forUnitTests
 
         try await deps.messageBackupManager.importPlaintextBackup(
             fileUrl: testCaseFileUrl,
@@ -429,44 +447,28 @@ class MessageBackupIntegrationTests: XCTestCase {
 
     @MainActor
     private func initializeApp(dateProvider: DateProvider?) async {
-        let testAppContext = TestAppContext()
-        SetCurrentAppContext(testAppContext)
         let appReadiness = AppReadinessMock()
-
-        /// Note that ``SDSDatabaseStorage/grdbDatabaseFileUrl``, through a few
-        /// layers of abstraction, uses the "current app context" to decide
-        /// where to put the database,
-        ///
-        /// For a ``TestAppContext`` as configured above, this will be a
-        /// subdirectory of our temp directory unique to the instantiation of
-        /// the app context.
-        let databaseStorage = try! SDSDatabaseStorage(
-            appReadiness: appReadiness,
-            databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
-            keychainStorage: MockKeychainStorage()
-        )
 
         /// We use crashy versions of dependencies that should never be called
         /// during backups, and no-op implementations of payments because those
         /// are bound to the SignalUI target.
-        _ = await AppSetup().start(
-            appContext: testAppContext,
+        await MockSSKEnvironment.activate(
             appReadiness: appReadiness,
-            databaseStorage: databaseStorage,
-            paymentsEvents: PaymentsEventsNoop(),
-            mobileCoinHelper: MobileCoinHelperMock(),
             callMessageHandler: CrashyMocks.MockCallMessageHandler(),
             currentCallProvider: CrashyMocks.MockCurrentCallThreadProvider(),
             notificationPresenter: CrashyMocks.MockNotificationPresenter(),
             incrementalMessageTSAttachmentMigratorFactory: NoOpIncrementalMessageTSAttachmentMigratorFactory(),
-            messageBackupErrorPresenterFactory: NoOpMessageBackupErrorPresenterFactory(),
             testDependencies: AppSetup.TestDependencies(
                 backupAttachmentDownloadManager: BackupAttachmentDownloadManagerMock(),
                 dateProvider: dateProvider,
                 networkManager: CrashyMocks.MockNetworkManager(appReadiness: appReadiness, libsignalNet: nil),
                 webSocketFactory: CrashyMocks.MockWebSocketFactory()
             )
-        ).prepareDatabase()
+        )
+    }
+
+    private func deinitializeApp(oldContext: any AppContext) async {
+        await MockSSKEnvironment.deactivateAsync(oldContext: oldContext)
     }
 }
 

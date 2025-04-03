@@ -1366,7 +1366,7 @@ public class AppSetup {
             wallpaperImageStore: wallpaperImageStore,
             wallpaperStore: wallpaperStore
         )
-        DependenciesBridge.setShared(dependenciesBridge)
+        DependenciesBridge.setShared(dependenciesBridge, isRunningTests: appContext.isRunningTests)
 
         let proximityMonitoringManager = OWSProximityMonitoringManagerImpl()
         let avatarBuilder = AvatarBuilder(appReadiness: appReadiness)

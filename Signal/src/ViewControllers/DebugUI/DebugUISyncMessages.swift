@@ -33,7 +33,7 @@ class DebugUISyncMessages: DebugUIPage {
     }
 
     private static func sendBlockListSyncMessage() {
-        Task { await SSKEnvironment.shared.blockingManagerRef.syncBlockList() }
+        _ = SSKEnvironment.shared.blockingManagerRef.syncBlockList()
     }
 
     private static func sendConfigurationSyncMessage() {
