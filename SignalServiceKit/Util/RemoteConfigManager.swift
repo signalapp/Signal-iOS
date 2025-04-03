@@ -229,10 +229,6 @@ public class RemoteConfig {
         ))
     }
 
-    public var libsignalCdsUseNewConnectLogic: Bool {
-        return isEnabled(.libsignalCdsUseNewConnectLogic, defaultValue: true)
-    }
-
     public var messageQueueTime: TimeInterval {
         return interval(.messageQueueTimeInSeconds, defaultInterval: 45 * .day)
     }
@@ -438,7 +434,6 @@ private enum IsEnabledFlag: String, FlagType {
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
     case lazyDatabaseMigratorKillSwitch = "ios.lazyDatabaseMigratorKillSwitch"
-    case libsignalCdsUseNewConnectLogic = "ios.libsignal.cdsUseNewConnectLogic"
     case libsignalForChat = "ios.useLibsignalForChat"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
@@ -463,7 +458,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
         case .lazyDatabaseMigratorKillSwitch: false
-        case .libsignalCdsUseNewConnectLogic: false
         case .libsignalForChat: false
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false
@@ -489,7 +483,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
         case .lazyDatabaseMigratorKillSwitch: true
-        case .libsignalCdsUseNewConnectLogic: true
         case .libsignalForChat: false
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false

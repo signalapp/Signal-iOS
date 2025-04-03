@@ -57,30 +57,15 @@ public class NetworkManager {
     }
 
     private static func resetLibsignalNetProxySettings(_ libsignalNet: Net, appReadiness: AppReadiness) {
-        // Note: This is a workaround for libsignal's previous CDS implementation not supporting system proxies.
-        // In the long run, everything in libsignal will support system proxies and this can go away.
-        let supportsSystemProxiesForCds = if appReadiness.isAppReady {
-            RemoteConfig.current.libsignalCdsUseNewConnectLogic
-        } else {
-            // This defaults to USING system proxies for connections before the app is ready,
-            // because CDS requests won't usually happen that early and chat connections might.
-            true
-        }
-
         if let systemProxy = ProxyConfig.fromCFNetwork() {
-            if supportsSystemProxiesForCds {
-                Logger.info("System '\(systemProxy.scheme)' proxy detected")
-                do {
-                    try libsignalNet.setProxy(scheme: systemProxy.scheme, host: systemProxy.host, port: systemProxy.port, username: systemProxy.username, password: systemProxy.password)
-                    return
-                } catch {
-                    Logger.error("invalid proxy: \(error)")
-                    // When setProxy(...) fails, it refuses to connect in case your proxy was load-bearing.
-                    // That makes sense for in-app settings, but less so for system-level proxies, given that we are already ignoring system-level proxies we don't understand.
-                    // Fall through to the reset call.
-                }
-            } else {
-                Logger.info("System '\(systemProxy.scheme)' proxy detected; not passing to libsignal for compatibility with older CDS implementation")
+            Logger.info("System '\(systemProxy.scheme)' proxy detected")
+            do {
+                try libsignalNet.setProxy(scheme: systemProxy.scheme, host: systemProxy.host, port: systemProxy.port, username: systemProxy.username, password: systemProxy.password)
+                return
+            } catch {
+                Logger.error("invalid proxy: \(error)")
+                // When setProxy(...) fails, it refuses to connect in case your proxy was load-bearing.
+                // That makes sense for in-app settings, but less so for system-level proxies, given that we are already ignoring system-level proxies we don't understand.
                 // Fall through to the reset call.
             }
         }

@@ -60,7 +60,7 @@ extension LibSignalClient.Net: ContactDiscoveryConnection {
             acisAndAccessKeys: request.acisAndAccessKeys,
             token: request.token
         )
-        return try await self.cdsiLookup(auth: auth, request: request, useNewConnectLogic: RemoteConfig.current.libsignalCdsUseNewConnectLogic)
+        return try await self.cdsiLookup(auth: auth, request: request)
     }
 
     func continueRequest(afterAckingToken tokenResult: CdsiLookup) async throws -> [ContactDiscoveryResult] {
