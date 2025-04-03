@@ -129,7 +129,7 @@ public class _RegistrationCoordinator_FeatureFlagsWrapper: _RegistrationCoordina
 
     public var enableAccountEntropyPool: Bool { FeatureFlags.enableAccountEntropyPool }
 
-    public var messageBackupFileAlphaRegistrationFlow: Bool { FeatureFlags.messageBackupFileAlphaRegistrationFlow }
+    public var messageBackupFileAlphaRegistrationFlow: Bool { FeatureFlags.MessageBackup.fileAlphaRegistrationFlow }
 }
 
 // MARK: - MessagePipelineSupervisor

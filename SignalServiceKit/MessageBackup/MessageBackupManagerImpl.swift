@@ -27,7 +27,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         static let supportedBackupVersion: UInt64 = 1
 
         /// The ratio of frames processed for which to sample memory.
-        static let memorySamplerFrameRatio: Float = FeatureFlags.messageBackupDetailedBenchLogging ? 0.001 : 0
+        static let memorySamplerFrameRatio: Float = FeatureFlags.MessageBackup.detailedBenchLogging ? 0.001 : 0
     }
 
     private class NotImplementedError: Error {}
@@ -212,14 +212,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         backupPurpose: MessageBackupPurpose,
         progress progressSink: OWSProgressSink?
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
-        guard
-            FeatureFlags.messageBackupFileAlpha
-                || FeatureFlags.linkAndSyncPrimaryExport
-        else {
-            owsFailDebug("Should not be able to use backups!")
-            throw NotImplementedError()
-        }
-
         let includedContentFilter = MessageBackup.ArchivingContext.IncludedContentFilter(
             minExpirationTimeMs: {
                 switch backupPurpose {
@@ -268,7 +260,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         localIdentifiers: LocalIdentifiers,
         progress progressSink: OWSProgressSink?
     ) async throws -> URL {
-        guard FeatureFlags.messageBackupFileAlpha else {
+        guard FeatureFlags.MessageBackup.fileAlpha else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
@@ -670,11 +662,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         backupKey: BackupKey,
         progress progressSink: OWSProgressSink?
     ) async throws {
-        guard FeatureFlags.messageBackupFileAlpha || FeatureFlags.linkAndSyncLinkedImport else {
-            owsFailDebug("Should not be able to use backups!")
-            throw NotImplementedError()
-        }
-
         try await _importBackup(
             fileUrl: fileUrl,
             localIdentifiers: localIdentifiers,
@@ -697,7 +684,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         localIdentifiers: LocalIdentifiers,
         progress progressSink: OWSProgressSink?
     ) async throws {
-        guard FeatureFlags.messageBackupFileAlpha else {
+        guard FeatureFlags.MessageBackup.fileAlpha else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
@@ -951,7 +938,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     case .protoDeserializationError(let error):
                         // fail the whole thing if we fail to deserialize one frame
                         owsFailDebug("Failed to deserialize proto frame!")
-                        if FeatureFlags.messageBackupRestoreFailOnAnyError {
+                        if FeatureFlags.MessageBackup.restoreFailOnAnyError {
                             throw error
                         } else {
                             return
@@ -1034,7 +1021,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: recipient) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: recipient) })
-                                if FeatureFlags.messageBackupRestoreFailOnAnyError {
+                                if FeatureFlags.MessageBackup.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }
@@ -1053,7 +1040,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: chat) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: chat) })
-                                if FeatureFlags.messageBackupRestoreFailOnAnyError {
+                                if FeatureFlags.MessageBackup.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }
@@ -1072,7 +1059,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: chatItem) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: chatItem) })
-                                if FeatureFlags.messageBackupRestoreFailOnAnyError {
+                                if FeatureFlags.MessageBackup.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }
@@ -1110,7 +1097,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: backupProtoStickerPack) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: backupProtoStickerPack) })
-                                if FeatureFlags.messageBackupRestoreFailOnAnyError {
+                                if FeatureFlags.MessageBackup.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }
@@ -1129,7 +1116,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: backupProtoAdHocCall) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: backupProtoAdHocCall) })
-                                if FeatureFlags.messageBackupRestoreFailOnAnyError {
+                                if FeatureFlags.MessageBackup.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }

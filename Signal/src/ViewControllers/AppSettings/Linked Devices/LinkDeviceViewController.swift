@@ -123,7 +123,7 @@ class LinkDeviceViewController: OWSViewController {
     }
 
     private func confirmProvisioning(with deviceProvisioningUrl: DeviceProvisioningURL) {
-        if FeatureFlags.linkAndSyncPrimaryExport, deviceProvisioningUrl.capabilities.contains(.linknsync) {
+        if deviceProvisioningUrl.capabilities.contains(.linknsync) {
             let linkOrSyncSheet = LinkOrSyncPickerSheet {
                 self.popToLinkedDeviceList()
             } linkAndSync: {

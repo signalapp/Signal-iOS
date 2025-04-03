@@ -106,17 +106,13 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         ))
 
-        if FeatureFlags.linkAndSyncPrimaryExport || FeatureFlags.messageBackupFileAlpha {
-            debugSection.add(.actionItem(withText: "Validate Message Backup") {
-                self.validateMessageBackupProto()
-            })
-        }
+        debugSection.add(.actionItem(withText: "Validate Message Backup") {
+            self.validateMessageBackupProto()
+        })
 
-        if FeatureFlags.messageBackupFileAlpha {
-            debugSection.add(.actionItem(withText: "Export Message Backup proto") {
-                self.exportMessageBackupProto()
-            })
-        }
+        debugSection.add(.actionItem(withText: "Export Message Backup proto") {
+            self.exportMessageBackupProto()
+        })
 
         contents.add(debugSection)
 
@@ -317,7 +313,7 @@ private extension InternalSettingsViewController {
                 }
             }
 
-            guard FeatureFlags.messageBackupRemoteExportAlpha else {
+            guard FeatureFlags.MessageBackup.remoteExportAlpha else {
                 exportMessageBackupProtoFile()
                 return
             }

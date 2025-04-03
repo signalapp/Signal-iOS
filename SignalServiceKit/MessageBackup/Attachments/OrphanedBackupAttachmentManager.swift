@@ -85,7 +85,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         withMediaName mediaName: String,
         tx: DBWriteTransaction
     ) {
-        guard FeatureFlags.messageBackupFileAlpha else {
+        guard FeatureFlags.MessageBackup.fileAlpha else {
             return
         }
         try! OrphanedBackupAttachment
@@ -232,7 +232,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         private let errorCounts = ErrorCounts()
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
-            guard FeatureFlags.messageBackupFileAlpha else {
+            guard FeatureFlags.MessageBackup.fileAlpha else {
                 return .cancelled
             }
 

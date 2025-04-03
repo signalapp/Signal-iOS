@@ -58,18 +58,11 @@ class ProvisioningTransferChoiceViewController: ProvisioningBaseViewController {
             "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE",
             comment: "The title for the device transfer 'choice' view 'register' option when linking a device"
         )
-        let registerBody = if FeatureFlags.linkAndSyncLinkedImport {
-            OWSLocalizedString(
-                "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC",
-                value: "You’ll have the option to transfer messages and recent media from your phone",
-                comment: "The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available"
-            )
-        } else {
-            OWSLocalizedString(
-                "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY",
-                comment: "The body for the device transfer 'choice' view 'register' option when linking a device"
-            )
-        }
+        let registerBody = OWSLocalizedString(
+            "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC",
+            value: "You’ll have the option to transfer messages and recent media from your phone",
+            comment: "The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available"
+        )
 
         let explanationLabel = self.createExplanationLabel(explanationText: explanationText)
         explanationLabel.font = .dynamicTypeBody

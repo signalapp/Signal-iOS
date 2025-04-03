@@ -181,10 +181,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     ) async throws(CompleteProvisioningError) {
         var didLinkNSync = false
         var postLinkNSyncProgress: OWSProgressSource?
-        if
-            FeatureFlags.linkAndSyncLinkedImport,
-            let ephemeralBackupKey
-        {
+        if let ephemeralBackupKey {
             postLinkNSyncProgress = try await completeProvisioning_linkAndSync(
                 ephemeralBackupKey: ephemeralBackupKey,
                 authedDevice: authedDevice,
@@ -386,12 +383,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     owsFailDebug("Failed to store master key from provisioning message")
                     return .obsoleteLinkedDeviceError
                 case SVR.KeysError.missingMediaRootBackupKey:
-                    if FeatureFlags.linkAndSyncLinkedImport || FeatureFlags.messageBackupFileAlpha {
-                        return .obsoleteLinkedDeviceError
-                    } else {
-                        Logger.warn("Invalid MRBK; ignoring")
-                        owsFailDebug("Failed to store MBRK from provisioning message")
-                    }
+                    return .obsoleteLinkedDeviceError
                 default:
                     owsFailDebug("Unexpected Error")
                 }

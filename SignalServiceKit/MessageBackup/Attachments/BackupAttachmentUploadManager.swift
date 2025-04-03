@@ -77,7 +77,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         currentUploadEra: String,
         tx: DBWriteTransaction
     ) throws {
-        guard FeatureFlags.messageBackupFileAlpha else {
+        guard FeatureFlags.MessageBackup.fileAlpha else {
             return
         }
         if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
@@ -162,7 +162,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         private let errorCounts = ErrorCounts()
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
-            guard FeatureFlags.messageBackupFileAlpha else {
+            guard FeatureFlags.MessageBackup.fileAlpha else {
                 return .cancelled
             }
             let attachment = db.read { tx in

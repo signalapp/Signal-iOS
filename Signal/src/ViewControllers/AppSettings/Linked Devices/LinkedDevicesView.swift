@@ -839,29 +839,16 @@ struct LinkedDevicesView: View {
         viewModel.editMode.isEditing
     }
 
-    private var headerSubtitle: String {
-        if FeatureFlags.linkAndSyncPrimaryExport && FeatureFlags.linkAndSyncLinkedImport {
-            // This string references syncing messages to Desktop & iPad, so
-            // check both sides of the feature flag here.
-            OWSLocalizedString(
-                "LINKED_DEVICES_HEADER_DESCRIPTION",
-                comment: "Description for header of the linked devices list"
-            )
-        } else {
-            OWSLocalizedString(
-                "LINKED_DEVICES_HEADER_DESCRIPTION_LINK_AND_SYNC_DISABLED",
-                comment: "Description for header of the linked devices list when Link and Sync is disabled"
-            )
-        }
-    }
-
     var body: some View {
         SignalList {
             SignalSection {
                 VStack(spacing: 20) {
                     Image("linked-device-intro-dark")
 
-                    Text(self.headerSubtitle)
+                    Text(OWSLocalizedString(
+                        "LINKED_DEVICES_HEADER_DESCRIPTION",
+                        comment: "Description for header of the linked devices list"
+                    ))
                         .appendLink(CommonStrings.learnMore) {
                             viewModel.present.send(.linkedDeviceEducation)
                         }

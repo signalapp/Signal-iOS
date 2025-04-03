@@ -159,7 +159,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     }
 
     public func generateEphemeralBackupKey() -> BackupKey {
-        owsAssertDebug(FeatureFlags.linkAndSyncPrimaryExport)
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true)
         return try! BackupKey(contents: Array(Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength))))
     }
@@ -169,10 +168,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         tokenId: DeviceProvisioningTokenId,
         progress: OWSProgressSink
     ) async throws(PrimaryLinkNSyncError) {
-        guard FeatureFlags.linkAndSyncPrimaryExport else {
-            owsFailDebug("link'n'sync not available")
-            return
-        }
         let (localIdentifiers, registrationState) = db.read { tx in
             return (
                 tsAccountManager.localIdentifiers(tx: tx),
@@ -311,10 +306,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         ephemeralBackupKey: BackupKey,
         progress: OWSProgressSink
     ) async throws(SecondaryLinkNSyncError) {
-        guard FeatureFlags.linkAndSyncLinkedImport else {
-            owsFailDebug("link'n'sync not available")
-            return
-        }
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice != true)
 
         let hasPreviouslyRestored = db.read { messageBackupManager.hasRestoredFromBackup(tx: $0) }

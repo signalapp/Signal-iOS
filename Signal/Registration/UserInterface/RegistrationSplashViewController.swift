@@ -151,7 +151,7 @@ public class RegistrationSplashViewController: OWSViewController {
             continueButton.autoPinEdge(toSuperviewEdge: .trailing)
         }
 
-        if FeatureFlags.messageBackupQuickRestoreFlow {
+        if FeatureFlags.MessageBackup.quickRestoreFlow {
             stackView.setCustomSpacing(16, after: continueButton)
 
             let restoreOrTransferButton = OWSFlatButton.secondaryButtonForRegistration(

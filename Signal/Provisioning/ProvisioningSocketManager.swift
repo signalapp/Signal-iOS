@@ -228,7 +228,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
         let shouldLinkAndSync: Bool = {
             switch DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction {
             case .unregistered:
-                return FeatureFlags.linkAndSyncLinkedImport
+                return true
             case .delinked, .relinking:
                 // We don't allow relinking secondaries to link'n'sync.
                 return false

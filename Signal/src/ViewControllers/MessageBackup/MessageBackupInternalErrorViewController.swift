@@ -48,7 +48,7 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
         didFail: Bool,
         tx outerTx: DBWriteTransaction
     ) {
-        guard FeatureFlags.messageBackupErrorDisplay else {
+        guard FeatureFlags.MessageBackup.errorDisplay else {
             return
         }
 
@@ -96,7 +96,7 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
     }
 
     func presentOverTopmostViewController(completion: @escaping () -> Void) {
-        guard FeatureFlags.messageBackupErrorDisplay else {
+        guard FeatureFlags.MessageBackup.errorDisplay else {
             completion()
             return
         }

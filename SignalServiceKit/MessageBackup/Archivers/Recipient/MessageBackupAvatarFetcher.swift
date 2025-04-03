@@ -95,9 +95,6 @@ public class MessageBackupAvatarFetcher {
     }
 
     public func runIfNeeded() async throws {
-        guard FeatureFlags.messageBackupFileAlpha || FeatureFlags.linkAndSyncLinkedImport else {
-            return
-        }
         guard appReadiness.isAppReady else {
             return
         }

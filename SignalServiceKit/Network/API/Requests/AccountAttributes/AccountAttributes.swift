@@ -123,7 +123,7 @@ public struct AccountAttributes: Codable {
         public let transfer = true
         public let hasSVRBackups: Bool
         public let deleteSyncSendSupport = true
-        public let storageServiceRecordIkm = FeatureFlags.storageServiceRecordIkmMigration
+        public let storageServiceRecordIkm = true
 
         public enum CodingKeys: String, CodingKey {
             case transfer

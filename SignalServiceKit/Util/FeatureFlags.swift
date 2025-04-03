@@ -42,18 +42,17 @@ public enum FeatureFlags {
     /// future, we can re-enable this.
     public static let periodicallyCheckDatabaseIntegrity: Bool = false
 
-    public static let messageBackupErrorDisplay = build.includes(.internal)
-    public static let messageBackupFileAlpha = build.includes(.internal)
-    public static let messageBackupRemoteExportAlpha = build.includes(.dev)
-    public static let messageBackupFileAlphaRegistrationFlow = build.includes(.dev)
-    public static let messageBackupQuickRestoreFlow = build.includes(.dev)
-    public static let messageBackupRestoreFailOnAnyError = build.includes(.beta)
-    public static let messageBackupDetailedBenchLogging = build.includes(.internal)
+    public enum MessageBackup {
+        public static let fileAlpha = build.includes(.internal)
+        public static let remoteExportAlpha = build.includes(.dev)
 
-    public static let linkAndSyncPrimaryExport = true
-    public static let linkAndSyncLinkedImport = true
+        public static let fileAlphaRegistrationFlow = build.includes(.dev)
+        public static let quickRestoreFlow = build.includes(.dev)
 
-    public static let storageServiceRecordIkmMigration = true
+        public static let restoreFailOnAnyError = build.includes(.beta)
+        public static let detailedBenchLogging = build.includes(.internal)
+        public static let errorDisplay = build.includes(.internal)
+    }
 
     public static let runTSAttachmentMigrationInMainAppBackground = true
     public static let runTSAttachmentMigrationBlockingOnLaunch = false

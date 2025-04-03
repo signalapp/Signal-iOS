@@ -60,7 +60,6 @@ public class ProvisioningManager {
 
         let ephemeralBackupKey: BackupKey?
         if
-            FeatureFlags.linkAndSyncPrimaryExport,
             shouldLinkNSync,
             deviceProvisioningUrl.capabilities.contains(where: { $0 == .linknsync })
         {
