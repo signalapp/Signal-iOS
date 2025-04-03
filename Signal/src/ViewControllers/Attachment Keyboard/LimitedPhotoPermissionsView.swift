@@ -44,7 +44,7 @@ class LimitedPhotoPermissionsView: UIView {
         buttonConfig.attributedTitle = titleAttributedString
 
         let button = UIButton(configuration: buttonConfig)
-        button.menu = UIMenu(children: [selectMoreAction, settingsAction])
+        button.menu = UIMenu(children: [settingsAction, selectMoreAction])
         button.showsMenuAsPrimaryAction = true
         button.titleLabel?.font = .dynamicTypeFootnoteClamped
 
