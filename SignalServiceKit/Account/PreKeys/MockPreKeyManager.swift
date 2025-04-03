@@ -71,7 +71,7 @@ internal class MockPreKeyManager: PreKeyManager {
         return Task {}
     }
 
-    func rotateSignedPreKeys() -> Task<Void, Error> { Task {} }
+    func rotateSignedPreKeysIfNeeded() -> Task<Void, Error> { Task {} }
     func refreshOneTimePreKeys(forIdentity identity: OWSIdentity, alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool) { }
 
     func generateLastResortKyberPreKey(signedBy signingKeyPair: ECKeyPair) -> SignalServiceKit.KyberPreKeyRecord {

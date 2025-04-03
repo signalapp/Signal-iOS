@@ -127,7 +127,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             return
         }
 
-        let shouldCheckOneTimePrekeys = {
+        let shouldCheckOneTimePreKeys = {
             if
                 shouldThrottle,
                 let lastOneTimePreKeyCheckTimestamp,
@@ -138,25 +138,33 @@ public class PreKeyManagerImpl: PreKeyManager {
             return true
         }()
 
+        _ = self._checkPreKeys(shouldCheckOneTimePreKeys: shouldCheckOneTimePreKeys, tx: tx)
+    }
+
+    private func _checkPreKeys(shouldCheckOneTimePreKeys: Bool, tx: DBReadTransaction) -> Task<Void, any Error> {
         var targets: PreKey.Target = [.signedPreKey, .lastResortPqPreKey]
-        if shouldCheckOneTimePrekeys {
+        if shouldCheckOneTimePreKeys {
             targets.insert(target: .oneTimePreKey)
             targets.insert(target: .oneTimePqPreKey)
         }
         let shouldPerformPniOp = hasPniIdentityKey(tx: tx)
 
-        Task { [weak self, chatConnectionManager, taskManager, targets] in
-            let task = Self.taskQueue.enqueue {
+        return Self.taskQueue.enqueue { [weak self, chatConnectionManager, taskManager, targets] in
+            if OWSChatConnection.canAppUseSocketsToMakeRequests {
                 try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
-                try Task.checkCancellation()
-                try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
-                if shouldPerformPniOp {
-                    try Task.checkCancellation()
-                    try await taskManager.refresh(identity: .pni, targets: targets, auth: .implicit())
-                }
+            } else {
+                // TODO: Migrate the NSE to use web sockets.
+                // The NSE generally launches only when network is available, and we try to
+                // run this only when we have network, but it's not harmful if that's not
+                // true, so this is fine.
             }
-            try await task.value
-            if shouldCheckOneTimePrekeys {
+            try Task.checkCancellation()
+            try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
+            if shouldPerformPniOp {
+                try Task.checkCancellation()
+                try await taskManager.refresh(identity: .pni, targets: targets, auth: .implicit())
+            }
+            if shouldCheckOneTimePreKeys {
                 self?.refreshOneTimePreKeysCheckDidSucceed()
             }
         }
@@ -213,27 +221,11 @@ public class PreKeyManagerImpl: PreKeyManager {
         }
     }
 
-    public func rotateSignedPreKeys() -> Task<Void, Error> {
-        PreKey.logger.info("Rotate signed prekeys")
+    public func rotateSignedPreKeysIfNeeded() -> Task<Void, Error> {
+        PreKey.logger.info("Rotating signed prekeys if needed")
 
-        let targets: PreKey.Target = [.signedPreKey, .lastResortPqPreKey]
-        let shouldPerformPniOp = db.read(block: hasPniIdentityKey(tx:))
-
-        return Self.taskQueue.enqueue { [chatConnectionManager, taskManager, targets] in
-            if OWSChatConnection.canAppUseSocketsToMakeRequests {
-                try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
-            } else {
-                // TODO: Migrate the NSE to use web sockets.
-                // The NSE generally launches only when network is available, and we try to
-                // run this only when we have network, but it's not harmful if that's not
-                // true, so this is fine.
-            }
-            try Task.checkCancellation()
-            try await taskManager.rotate(identity: .aci, targets: targets, auth: .implicit())
-            if shouldPerformPniOp {
-                try Task.checkCancellation()
-                try await taskManager.rotate(identity: .pni, targets: targets, auth: .implicit())
-            }
+        return db.read { tx in
+            return _checkPreKeys(shouldCheckOneTimePreKeys: false, tx: tx)
         }
     }
 

@@ -55,7 +55,7 @@ public protocol PreKeyManager {
     /// - returns: A task representing the completion of the prekey operation. This task is _not_
     /// a child task of the calling context; this call returns once the task has been scheduled, but running
     /// the task is handled separately (but can be optionally waited on by the caller).
-    func rotateSignedPreKeys() -> Task<Void, Error>
+    func rotateSignedPreKeysIfNeeded() -> Task<Void, Error>
 
     func refreshOneTimePreKeys(
         forIdentity identity: OWSIdentity,

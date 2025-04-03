@@ -187,32 +187,6 @@ internal struct PreKeyTaskManager {
         try await uploadAndPersistBundle(bundle, auth: auth)
     }
 
-    /// When we rotate keys (e.g. due to prior prekey failure) we should never change
-    /// our identity key. So this variant:
-    /// CANNOT create a new identity key
-    /// ALWAYS changes the targeted keys (regardless of current key state)
-    internal func rotate(
-        identity: OWSIdentity,
-        targets: PreKey.Target,
-        auth: ChatServiceAuth
-    ) async throws {
-        PreKey.logger.info("[\(identity)] Rotate [\(targets)]")
-        try Task.checkCancellation()
-        try await waitForMessageProcessing(identity: identity)
-        try Task.checkCancellation()
-        let bundle = try await db.awaitableWrite { tx in
-            let identityKeyPair = try self.requireIdentityKeyPair(for: identity, tx: tx)
-            return try self.createAndPersistPartialBundle(
-                identity: identity,
-                identityKeyPair: identityKeyPair,
-                targets: targets,
-                tx: tx
-            )
-        }
-        try Task.checkCancellation()
-        try await uploadAndPersistBundle(bundle, auth: auth)
-    }
-
     internal func createOneTimePreKeys(
         identity: OWSIdentity,
         auth: ChatServiceAuth

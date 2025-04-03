@@ -72,7 +72,7 @@ final class PreKeyTaskTests: XCTestCase {
         // Pre-validate
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
 
-        _ = try await taskManager.rotate(identity: .aci, targets: .all, auth: .implicit())
+        _ = try await taskManager.refresh(identity: .aci, targets: .all, force: true, auth: .implicit())
 
         // Validate
         XCTAssertEqual(mockAPIClient.preKeyRecords?.count, 100)
@@ -91,7 +91,7 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertEqual(mockAciProtocolStore.mockSignedPreKeyStore.generatedSignedPreKeys.count, 0)
         XCTAssertNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
 
-        _ = try await taskManager.rotate(identity: .aci, targets: .signedPreKey, auth: .implicit())
+        _ = try await taskManager.refresh(identity: .aci, targets: .signedPreKey, force: true, auth: .implicit())
 
         // Validate
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
@@ -112,7 +112,7 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertEqual(mockAciProtocolStore.mockSignedPreKeyStore.generatedSignedPreKeys.count, 0)
         XCTAssertNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
 
-        _ = try await taskManager.rotate(identity: .aci, targets: .oneTimePreKey, auth: .implicit())
+        _ = try await taskManager.refresh(identity: .aci, targets: .oneTimePreKey, force: true, auth: .implicit())
 
         // Validate
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 100)
@@ -133,7 +133,7 @@ final class PreKeyTaskTests: XCTestCase {
 
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
 
-        _ = try await taskManager.rotate(identity: .aci, targets: .all, auth: .implicit())
+        _ = try await taskManager.refresh(identity: .aci, targets: .all, force: true, auth: .implicit())
 
         XCTAssertEqual(mockAPIClient.preKeyRecords?.count, 100)
         XCTAssertNotNil(mockAPIClient.signedPreKeyRecord)
@@ -149,7 +149,7 @@ final class PreKeyTaskTests: XCTestCase {
         mockAPIClient.currentPreKeyCount = 100
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
 
-        _ = try await taskManager.rotate(identity: .aci, targets: .oneTimePreKey, auth: .implicit())
+        _ = try await taskManager.refresh(identity: .aci, targets: .oneTimePreKey, force: true, auth: .implicit())
 
         XCTAssertEqual(mockAPIClient.preKeyRecords?.count, 100)
         XCTAssertNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
@@ -166,9 +166,10 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.oneTimeRecords.count, 0)
         XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.lastResortRecords.count, 0)
 
-        _ = try await taskManager.rotate(
+        _ = try await taskManager.refresh(
             identity: .aci,
             targets: [.lastResortPqPreKey, .oneTimePqPreKey],
+            force: true,
             auth: .implicit()
         )
 
@@ -316,7 +317,7 @@ final class PreKeyTaskTests: XCTestCase {
 
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
 
-        _ = try await taskManager.rotate(identity: .aci, targets: .all, auth: .implicit())
+        _ = try await taskManager.refresh(identity: .aci, targets: .all, force: true, auth: .implicit())
 
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 100)
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.preKeyId, 100)
@@ -334,7 +335,7 @@ final class PreKeyTaskTests: XCTestCase {
         mockAPIClient.currentPreKeyCount = 100
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
 
-        _ = try await taskManager.rotate(identity: .aci, targets: .oneTimePreKey, auth: .implicit())
+        _ = try await taskManager.refresh(identity: .aci, targets: .oneTimePreKey, force: true, auth: .implicit())
 
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 100)
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.preKeyId, 100)
@@ -360,7 +361,7 @@ final class PreKeyTaskTests: XCTestCase {
             responseData: nil
         ))
 
-        _ = try? await taskManager.rotate(identity: .pni, targets: .all, auth: .implicit())
+        _ = try? await taskManager.refresh(identity: .pni, targets: .all, force: true, auth: .implicit())
 
         // Validate
         XCTAssertTrue(mockLinkedDevicePniKeyManager.hasSuspectedIssue)
