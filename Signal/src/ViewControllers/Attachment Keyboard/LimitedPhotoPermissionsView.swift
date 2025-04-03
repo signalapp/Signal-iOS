@@ -57,18 +57,22 @@ class LimitedPhotoPermissionsView: UIView {
         let label = UILabel()
         label.textColor = UIColor.Signal.secondaryLabel
         label.font = .dynamicTypeBody2Clamped
+        label.numberOfLines = 2
+        label.setContentHuggingHorizontalLow()
         label.text = OWSLocalizedString(
             "ATTACHMENT_KEYBOARD_LIMITED_ACCESS",
             comment: "Text in chat attachment panel when Signal only has access to some photos/videos. This string is in a compact horizontal space, so it should be short if possible."
         )
 
-        addSubview(label)
-        label.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
-        label.setContentHuggingLow()
-        addSubview(button)
-        button.autoPinEdges(toSuperviewMarginsExcludingEdge: .leading)
-        button.autoPinEdge(.leading, to: .trailing, of: label, withOffset: 8)
         button.setContentHuggingHigh()
+        button.setCompressionResistanceHorizontalHigh()
+
+        let stackView = UIStackView(arrangedSubviews: [label, button])
+        stackView.axis = .horizontal
+        stackView.spacing = 8
+        stackView.alignment = .center
+        self.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewMargins()
     }
 
     required init?(coder: NSCoder) {
