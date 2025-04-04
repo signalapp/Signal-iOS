@@ -49,7 +49,7 @@ class LinkedDevicesViewModel: ObservableObject {
             shouldShowFinishLinkingSheet = newDeviceExpectation != nil
         }
     }
-    private var deviceIdToIgnore: Int64?
+    private var deviceIdToIgnore: DeviceId?
     fileprivate var shouldShowFinishLinkingSheet = false
 
     private let databaseChangeObserver: DatabaseChangeObserver
@@ -134,7 +134,7 @@ class LinkedDevicesViewModel: ObservableObject {
 
         if let deviceIdToIgnore {
             displayableDevices.removeAll { device in
-                let shouldRemove = device.id == deviceIdToIgnore
+                let shouldRemove = device.id == Int(deviceIdToIgnore.rawValue)
                 if shouldRemove {
                     Logger.debug("Ignoring device \(device.id)")
                 }

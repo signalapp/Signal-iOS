@@ -15,7 +15,7 @@ extension BackupKey {
 
 /// For Link'n'Sync errors thrown on the primary device.
 public enum PrimaryLinkNSyncError: Error {
-    case cancelled(linkedDeviceId: Int64?)
+    case cancelled(linkedDeviceId: DeviceId?)
     case errorWaitingForLinkedDevice
     case errorGeneratingBackup
     // Only these two types are "retryable" in that we let the
@@ -784,7 +784,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
         struct WaitForDeviceToLinkResponse: Codable {
             /// The deviceId of the linked device
-            let id: Int64
+            let id: DeviceId
             /// Thename of the linked device.
             let name: String
             /// The timestamp the linked device was last seen on the server.
@@ -841,7 +841,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 url: URL(string: "v1/devices/transfer_archive")!,
                 method: "PUT",
                 parameters: [
-                    "destinationDeviceId": waitForDeviceToLinkResponse.id,
+                    "destinationDeviceId": waitForDeviceToLinkResponse.id.uint32Value,
                     "destinationDeviceCreated": waitForDeviceToLinkResponse.created,
                     "transferArchive": {
                         switch result {
