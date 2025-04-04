@@ -1625,17 +1625,38 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
         let libsignalRequest = ChatConnection.Request(method: requestInfo.httpMethod, pathAndQuery: "/\(requestUrl.relativeString)", headers: httpHeaders.headers, body: body, timeout: request.timeoutInterval)
 
         unsubmittedRequestTokenForEarlyExit = nil
-        _ = Promise.wrapAsync { [self, connection] in
-            // LibSignalClient's ChatConnection doesn't keep track of outstanding requests,
-            // so we keep the request token alive until we get the response instead.
-            defer {
-                removeUnsubmittedRequestToken(unsubmittedRequestToken)
+        _ = Task { [self, connection] in
+            let connectionInfo: ConnectionInfo
+            let response: ChatConnection.Response
+
+            do {
+                // LibSignalClient's ChatConnection doesn't keep track of outstanding requests,
+                // so we keep the request token alive until we get the response instead.
+                defer {
+                    removeUnsubmittedRequestToken(unsubmittedRequestToken)
+                }
+
+                guard let chatService = await connection.waitToFinishConnecting() else {
+                    throw SignalError.chatServiceInactive("no connection to chat server")
+                }
+
+                connectionInfo = chatService.info()
+                response = try await chatService.send(libsignalRequest)
+            } catch {
+                switch error as? SignalError {
+                case .connectionTimeoutError(_), .requestTimeoutError(_):
+                    if requestInfo.timeoutIfNecessary() {
+                        self.cycleSocket()
+                    }
+                case .webSocketError(_), .connectionFailed(_):
+                    requestInfo.didFailDueToNetwork()
+                default:
+                    owsFailDebug("[\(requestId)] failed with an unexpected error: \(error)")
+                    requestInfo.didFailDueToNetwork()
+                }
+                return
             }
-            guard let chatService = await connection.waitToFinishConnecting() else {
-                throw SignalError.chatServiceInactive("no connection to chat server")
-            }
-            return (try await chatService.send(libsignalRequest), chatService.info())
-        }.done(on: self.serialQueue) { (response, connectionInfo) in
+
             if DebugFlags.internalLogging {
                 Logger.info("received response for requestId: \(requestId), message: \(response.message), route: \(connectionInfo)")
             }
@@ -1649,19 +1670,6 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
             // We may have been holding the websocket open, waiting for this response.
             // Check if we should close the websocket.
             self.applyDesiredSocketState()
-
-        }.catch(on: self.serialQueue) { error in
-            switch error as? SignalError {
-            case .connectionTimeoutError(_), .requestTimeoutError(_):
-                if requestInfo.timeoutIfNecessary() {
-                    self.cycleSocket()
-                }
-            case .webSocketError(_), .connectionFailed(_):
-                requestInfo.didFailDueToNetwork()
-            default:
-                owsFailDebug("[\(requestId)] failed with an unexpected error: \(error)")
-                requestInfo.didFailDueToNetwork()
-            }
         }
     }
 
