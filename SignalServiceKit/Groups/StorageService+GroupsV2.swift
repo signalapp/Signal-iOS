@@ -77,7 +77,7 @@ public extension StorageService {
         fromRevision: UInt32,
         limit: UInt32?,
         includeFirstState: Bool,
-        gseExpiration: UInt64?,
+        gseExpiration: UInt64,
         authCredential: AuthCredentialWithPni
     ) throws -> GroupsV2Request {
         var queryItems = [URLQueryItem]()
@@ -88,11 +88,7 @@ public extension StorageService {
         }
 
         var urlComponents = URLComponents()
-        if gseExpiration != nil {
-            urlComponents.path = "v2/groups/logs/\(fromRevision)"
-        } else {
-            urlComponents.path = "v1/groups/logs/\(fromRevision)"
-        }
+        urlComponents.path = "v2/groups/logs/\(fromRevision)"
         urlComponents.queryItems = queryItems
 
         var request = try buildGroupV2Request(
@@ -103,9 +99,7 @@ public extension StorageService {
             authCredential: authCredential
         )
 
-        if let gseExpiration {
-            request.addHeader("Cached-Send-Endorsements", value: "\(gseExpiration)")
-        }
+        request.addHeader("Cached-Send-Endorsements", value: "\(gseExpiration)")
 
         return request
     }
@@ -116,7 +110,7 @@ public extension StorageService {
     ) throws -> GroupsV2Request {
         return try buildGroupV2Request(
             protoData: nil,
-            urlString: "/v1/groups/joined_at_version/",
+            urlString: "/v2/groups/joined_at_version/",
             method: .get,
             secretParams: secretParams,
             authCredential: authCredential
@@ -126,7 +120,7 @@ public extension StorageService {
     static func buildGroupAvatarUploadFormRequest(groupV2Params: GroupV2Params,
                                                   authCredential: AuthCredentialWithPni) throws -> GroupsV2Request {
 
-        let urlPath = "/v1/groups/avatar/form"
+        let urlPath = "/v2/groups/avatar/form"
         return try buildGroupV2Request(protoData: nil,
                                        urlString: urlPath,
                                        method: .get,
@@ -139,7 +133,7 @@ public extension StorageService {
                                                         groupV2Params: GroupV2Params,
                                                         authCredential: AuthCredentialWithPni) throws -> GroupsV2Request {
 
-        var urlPath = "/v1/groups/join/"
+        var urlPath = "/v2/groups/join/"
         if let inviteLinkPassword = inviteLinkPassword {
             urlPath += "\(inviteLinkPassword.asBase64Url)"
         }
@@ -157,7 +151,7 @@ public extension StorageService {
     ) throws -> GroupsV2Request {
         return try buildGroupV2Request(
             protoData: nil,
-            urlString: "/v1/groups/token",
+            urlString: "/v2/groups/token",
             method: .get,
             secretParams: groupV2Params.groupSecretParams,
             authCredential: authCredential

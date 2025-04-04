@@ -644,7 +644,7 @@ public class GroupsV2Impl: GroupsV2 {
         let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize().asData
 
         let groupModel: TSGroupModelV2?
-        let gseExpiration: UInt64?
+        let gseExpiration: UInt64
 
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         (groupModel, gseExpiration) = databaseStorage.read { tx in
@@ -734,7 +734,7 @@ public class GroupsV2Impl: GroupsV2 {
         startingAtRevision: UInt32,
         upThroughRevision: UInt32?,
         includeFirstState: Bool,
-        gseExpiration: UInt64?
+        gseExpiration: UInt64
     ) async throws -> GroupChangesResponse {
         let groupId = try secretParams.getPublicParams().getGroupIdentifier().serialize().asData
 
