@@ -32,12 +32,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         case loadStringObjectFailed
         case loadDataRepresentationFailed
         case loadInPlaceFileRepresentationFailed
-        case nonFileUrl
         case fileUrlWasBplist
     }
-
-    private var hasInitialRootViewController = false
-    private var isReadyForAppExtensions = false
 
     private var progressPoller: ProgressPoller?
     lazy var loadViewController = SAELoadViewController(delegate: self)
@@ -61,13 +57,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("")
 
-        // We don't need to use applySignalAppearence in the SAE.
-
-        if appContext.isRunningTests {
-            // TODO: Do we need to implement isRunningTests in the SAE context?
-            return
-        }
-
         let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
         let databaseStorage: SDSDatabaseStorage
         do {
@@ -82,7 +71,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
         databaseStorage.grdbStorage.setUpDatabasePathKVO()
 
-        // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         let databaseContinuation = AppSetup().start(
             appContext: appContext,
             appReadiness: appReadiness,
@@ -133,16 +121,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             strongSelf.showPrimaryViewController(strongSelf.loadViewController)
         }
 
-        // We don't need to use "screen protection" in the SAE.
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(registrationStateDidChange),
-                                               name: .registrationStateDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(owsApplicationWillEnterForeground),
-                                               name: .OWSApplicationWillEnterForeground,
-                                               object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationDidEnterBackground),
                                                name: .OWSApplicationDidEnterBackground,
@@ -167,105 +145,19 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
     }
 
-    private func activate() {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        // We don't need to use "screen protection" in the SAE.
-
-        ensureRootViewController()
-
-        // Always check prekeys after app launches, and sometimes check on app activation.
-        SSKEnvironment.shared.databaseStorageRef.read { tx in
-            if DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isRegistered {
-                DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx)
-            }
-        }
-
-        // We don't need to use RTCInitializeSSL() in the SAE.
-
-        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-            Logger.info("running post launch block for registered user: \(String(describing: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress))")
-        } else {
-            Logger.info("running post launch block for unregistered user.")
-
-            // We don't need to update the app icon badge number in the SAE.
-
-            // We don't need to prod the ChatConnectionManager in the SAE.
-        }
-
-        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-            DispatchQueue.main.async { [weak self] in
-                guard self != nil else { return }
-                Logger.info("running post launch block for registered user: \(String(describing: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress))")
-
-                // We don't need to use the ChatConnectionManager in the SAE.
-
-                // TODO: Re-enable when system contact fetching uses less memory.
-                // self.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
-
-                // We don't need to fetch messages in the SAE.
-
-                // We don't need to use OWSSyncPushTokensJob in the SAE.
-            }
-        }
-    }
-
     private func setAppIsReady() {
-        Logger.debug("")
         AssertIsOnMainThread()
         owsPrecondition(!appReadiness.isAppReady)
-
-        // We don't need to use LaunchJobs in the SAE.
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         appReadiness.setAppIsReady()
 
-        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-            Logger.info("localAddress: \(String(describing: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress))")
-
-            // We don't need to use messageFetcherJob in the SAE.
-
-            // We don't need to use SyncPushTokensJob in the SAE.
-        }
+        let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci
+        Logger.info("localAci: \(localAci?.logString ?? "<none>")")
 
         AppVersionImpl.shared.saeLaunchDidComplete()
 
-        ensureRootViewController()
-
-        // We don't need to fetch the local profile in the SAE
-    }
-
-    @objc
-    private func registrationStateDidChange() {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-            Logger.info("localAddress: \(String(describing: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress))")
-
-            // We don't need to use ExperienceUpgradeFinder in the SAE.
-
-            // We don't need to use OWSDisappearingMessagesJob in the SAE.
-        }
-    }
-
-    private func ensureRootViewController() {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        guard appReadiness.isAppReady else {
-            return
-        }
-        guard !hasInitialRootViewController else {
-            return
-        }
-        hasInitialRootViewController = true
-
-        Logger.info("Presenting initial root view controller")
+        Logger.info("")
 
         if ScreenLock.shared.isScreenLockEnabled() {
             presentScreenLock()
@@ -277,39 +169,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func presentContentView() {
         AssertIsOnMainThread()
 
-        Logger.debug("")
-
-        Logger.info("Presenting content view")
-
-        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            showNotRegisteredView()
-            return
-        }
-        let profileManager = SSKEnvironment.shared.profileManagerRef
-        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        let localProfile = databaseStorage.read(block: profileManager.localUserProfile(tx:))
-        guard localProfile != nil else {
-            // This is a rare edge case, but we want to ensure that the user
-            // has already saved their local profile key in the main app.
-            showNotReadyView()
-            return
-        }
+        Logger.info("")
 
         buildAttachmentsAndPresentConversationPicker()
-        // We don't use the AppUpdateNag in the SAE.
     }
 
     // MARK: Error Views
-
-    private func showNotReadyView() {
-        AssertIsOnMainThread()
-
-        let failureTitle = OWSLocalizedString("SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE",
-                                             comment: "Title indicating that the share extension cannot be used until the main app has been launched at least once.")
-        let failureMessage = OWSLocalizedString("SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE",
-                                               comment: "Message indicating that the share extension cannot be used until the main app has been launched at least once.")
-        showErrorView(title: failureTitle, message: failureMessage)
-    }
 
     private func showNotRegisteredView() {
         AssertIsOnMainThread()
@@ -330,74 +195,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         navigationController.presentationController?.delegate = self
         navigationController.setViewControllers([viewController], animated: false)
         if self.presentedViewController == nil {
-            Logger.debug("presenting modally: \(viewController)")
             self.present(navigationController, animated: true)
         } else {
-            owsFailDebug("modal already presented. swapping modal content for: \(viewController)")
+            owsFailDebug("modal already presented. swapping modal content for: \(type(of: viewController))")
             assert(self.presentedViewController == navigationController)
         }
-    }
-
-    // MARK: View Lifecycle
-
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-
-        Logger.debug("")
-
-        if isReadyForAppExtensions {
-            appReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
-                AssertIsOnMainThread()
-                self?.activate()
-            }
-        }
-    }
-
-    override open func viewWillAppear(_ animated: Bool) {
-        Logger.debug("")
-
-        super.viewWillAppear(animated)
-    }
-
-    override open func viewDidAppear(_ animated: Bool) {
-        Logger.debug("")
-
-        super.viewDidAppear(animated)
-    }
-
-    override open func viewWillDisappear(_ animated: Bool) {
-        Logger.debug("")
-
-        super.viewWillDisappear(animated)
-        loadTask?.cancel()
-        loadTask = nil
-    }
-
-    @objc
-    private func owsApplicationWillEnterForeground() throws {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        // If a user unregisters in the main app, the SAE should shut down
-        // immediately.
-        guard !DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            // If user is registered, do nothing.
-            return
-        }
-        guard let shareViewNavigationController = shareViewNavigationController else {
-            owsFailDebug("Missing shareViewNavigationController")
-            return
-        }
-        guard let firstViewController = shareViewNavigationController.viewControllers.first else {
-            // If no view has been presented yet, do nothing.
-            return
-        }
-        if firstViewController is SAEFailedViewController {
-            // If root view is an error view, do nothing.
-            return
-        }
-        throw ShareViewControllerError.notRegistered
     }
 
     // MARK: ShareViewDelegate, SAEFailedViewDelegate
@@ -461,10 +263,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
         shareViewNavigationController.setViewControllers([viewController], animated: true)
         if self.presentedViewController == nil {
-            Logger.debug("presenting modally: \(viewController)")
             self.present(shareViewNavigationController, animated: true)
         } else {
-            Logger.debug("modal already presented. swapping modal content for: \(viewController)")
             assert(self.presentedViewController == shareViewNavigationController)
         }
     }
@@ -564,7 +364,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         AssertIsOnMainThread()
 
         let screenLockUI = SAEScreenLockViewController(shareViewDelegate: self)
-        Logger.debug("presentScreenLock: \(screenLockUI)")
         showPrimaryViewController(screenLockUI)
         Logger.info("showing screen lock")
     }
@@ -981,7 +780,6 @@ private class ProgressPoller: NSObject {
             strongSelf.progress.completedUnitCount = completedUnitCount
 
             if completedUnitCount == strongSelf.progressTotalUnitCount {
-                Logger.debug("progress complete")
                 timer.invalidate()
             }
         }

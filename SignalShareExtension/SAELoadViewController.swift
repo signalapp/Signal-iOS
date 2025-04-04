@@ -21,12 +21,12 @@ class SAELoadViewController: UIViewController {
                 return
             }
 
-            updateProgressViewVisability()
+            updateProgressViewVisibility()
             progressView.observedProgress = progress
         }
     }
 
-    func updateProgressViewVisability() {
+    func updateProgressViewVisibility() {
         guard progressView != nil, activityIndicator != nil else {
             return
         }
@@ -74,7 +74,7 @@ class SAELoadViewController: UIViewController {
         progressView.autoPinWidthToSuperview(withMargin: .scaleFromIPhone5(30))
         progressView.progressTintColor = Theme.accentBlueColor
 
-        updateProgressViewVisability()
+        updateProgressViewVisibility()
 
         let label = UILabel()
         label.textColor = Theme.primaryTextColor
@@ -90,16 +90,5 @@ class SAELoadViewController: UIViewController {
         super.viewWillAppear(animated)
 
         self.navigationController?.isNavigationBarHidden = false
-    }
-
-    // MARK: - Event Handlers
-
-    @objc
-    private func cancelPressed(sender: UIButton) {
-        guard let delegate = delegate else {
-            owsFailDebug("missing delegate")
-            return
-        }
-        delegate.shareViewWasCancelled()
     }
 }
