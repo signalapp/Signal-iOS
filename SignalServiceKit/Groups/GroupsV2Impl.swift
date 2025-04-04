@@ -1035,59 +1035,46 @@ public class GroupsV2Impl: GroupsV2 {
     /// `requestBuilder`. Specifies how to respond if the request results in
     /// certain errors.
     private func performServiceRequest(
-        requestBuilder: @escaping RequestBuilder,
+        requestBuilder: RequestBuilder,
         groupId: Data?,
         behavior400: Behavior400,
         behavior403: Behavior403,
-        behavior404: Behavior404,
-        remainingRetries: UInt = 3
+        behavior404: Behavior404
     ) async throws -> HTTPResponse {
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             throw OWSAssertionError("Missing localIdentifiers.")
         }
 
-        let authCredential = try await authCredentialManager.fetchGroupAuthCredential(localIdentifiers: localIdentifiers)
-        let request = try await requestBuilder(authCredential)
-
-        do {
-            return try await performServiceRequestAttempt(request: request)
-        } catch {
-            let retryIfPossible = { (error: Error) async throws -> HTTPResponse in
-                if remainingRetries > 0 {
-                    return try await self.performServiceRequest(
-                        requestBuilder: requestBuilder,
+        return try await Retry.performWithBackoff(
+            maxAttempts: 3,
+            isRetryable: { $0.isNetworkFailureOrTimeout || $0.httpStatusCode == 401 },
+            block: {
+                let authCredential = try await authCredentialManager.fetchGroupAuthCredential(localIdentifiers: localIdentifiers)
+                let request = try await requestBuilder(authCredential)
+                do {
+                    return try await performServiceRequestAttempt(request: request)
+                } catch {
+                    try await self.tryRecoveryFromServiceRequestFailure(
+                        error: error,
                         groupId: groupId,
                         behavior400: behavior400,
                         behavior403: behavior403,
-                        behavior404: behavior404,
-                        remainingRetries: remainingRetries - 1
+                        behavior404: behavior404
                     )
-                } else {
-                    throw error
                 }
             }
-
-            return try await self.tryRecoveryFromServiceRequestFailure(
-                error: error,
-                retryBlock: retryIfPossible,
-                groupId: groupId,
-                behavior400: behavior400,
-                behavior403: behavior403,
-                behavior404: behavior404
-            )
-        }
+        )
     }
 
     /// Upon error from performing a service request, attempt to recover based
     /// on the error and our 4XX behaviors.
     private func tryRecoveryFromServiceRequestFailure(
         error: Error,
-        retryBlock: (Error) async throws -> HTTPResponse,
         groupId: Data?,
         behavior400: Behavior400,
         behavior403: Behavior403,
         behavior404: Behavior404
-    ) async throws -> HTTPResponse {
+    ) async throws -> Never {
         // Fall through to retry if retry-able,
         // otherwise reject immediately.
         if let statusCode = error.httpStatusCode {
@@ -1106,7 +1093,7 @@ public class GroupsV2Impl: GroupsV2 {
                 await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                     self.authCredentialStore.removeAllGroupAuthCredentials(tx: tx)
                 }
-                return try await retryBlock(error)
+                throw error
             case 403:
                 guard
                     let responseHeaders = error.httpResponseHeaders,
@@ -1192,9 +1179,6 @@ public class GroupsV2Impl: GroupsV2 {
                 // Unexpected status code.
                 throw error
             }
-        } else if error.isNetworkFailureOrTimeout {
-            // Retry on network failure.
-            return try await retryBlock(error)
         } else {
             // Unexpected error.
             throw error
