@@ -38,7 +38,7 @@ class RegistrationPhoneNumberInputView: UIStackView {
 
         addArrangedSubview(dividerView)
 
-        nationalNumberView.text = initialPhoneNumber.nationalNumber
+        nationalNumberView.text = formatNationalNumber(input: initialPhoneNumber.nationalNumber)
         addArrangedSubview(nationalNumberView)
 
         render()
