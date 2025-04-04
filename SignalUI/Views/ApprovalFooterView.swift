@@ -200,6 +200,7 @@ public class ApprovalFooterView: UIView {
         button.addSubview(proceedLoadingIndicator)
         proceedLoadingIndicator.autoCenterInSuperview()
         proceedLoadingIndicator.isHidden = true
+        proceedLoadingIndicator.color = .white
 
         return button
     }()
