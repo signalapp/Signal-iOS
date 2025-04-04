@@ -119,13 +119,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         if isCensorshipCircumventionActive && signalServiceInfo.censorshipCircumventionSupported {
             let censorshipConfiguration = buildCensorshipConfiguration()
             let frontingURLWithoutPathPrefix = censorshipConfiguration.domainFrontBaseUrl
-            let frontingURLWithPathPrefix = {
-                if censorshipConfiguration.requiresPathPrefix {
-                    return frontingURLWithoutPathPrefix.appendingPathComponent(signalServiceInfo.censorshipCircumventionPathPrefix)
-                } else {
-                    return frontingURLWithoutPathPrefix
-                }
-            }()
+            let frontingURLWithPathPrefix = frontingURLWithoutPathPrefix.appendingPathComponent(signalServiceInfo.censorshipCircumventionPathPrefix)
             let unfrontedBaseUrl = signalServiceInfo.baseUrl
             let frontingInfo = OWSUrlFrontingInfo(
                 frontingURLWithoutPathPrefix: frontingURLWithoutPathPrefix,
@@ -134,7 +128,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             )
             let baseUrl = frontingURLWithPathPrefix
             let securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy
-            let extraHeaders: HttpHeaders = ["Host": censorshipConfiguration.hostHeader(signalServiceInfo.type) ?? TSConstants.censorshipReflectorHost]
+            let extraHeaders: HttpHeaders = ["Host": censorshipConfiguration.reflectorHost()]
             return OWSURLSessionEndpoint(
                 baseUrl: baseUrl,
                 frontingInfo: frontingInfo,

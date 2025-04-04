@@ -30,6 +30,15 @@ enum OWSFrontingHost {
         }
     }
 
+    fileprivate var host: String {
+        switch self {
+        case .googleEgypt, .googleUae, .googleOman, .googlePakistan, .googleQatar, .googleUzbekistan, .googleVenezuela, .`default`:
+            return TSConstants.censorshipGReflectorHost
+        case .fastly:
+            return TSConstants.censorshipFReflectorHost
+        }
+    }
+
     fileprivate var requiresPathPrefix: Bool {
         switch self {
         case .googleEgypt, .googleUae, .googleOman, .googlePakistan, .googleQatar, .googleUzbekistan, .googleVenezuela, .`default`:
@@ -88,33 +97,13 @@ struct OWSCensorshipConfiguration {
 
     let domainFrontBaseUrl: URL
     let domainFrontSecurityPolicy: HttpSecurityPolicy
-    let requiresPathPrefix: Bool
+    let host: String
 
     /// Returns a service specific host header.
     ///
     /// Callers should use a default host header if there's not a service specific host header.
-    func hostHeader(_ signalServiceType: SignalServiceType) -> String? {
-        // right now we either have different host headers or path prefixes but not both
-        if requiresPathPrefix {
-            return nil
-        } else {
-            switch signalServiceType {
-            case .mainSignalServiceIdentified, .mainSignalServiceUnidentified:
-                return "chat-signal.global.ssl.fastly.net"
-            case .storageService:
-                return "storage.signal.org.global.prod.fastly.net"
-            case .cdn0:
-                return "cdn.signal.org.global.prod.fastly.net"
-            case .cdn2:
-                return "cdn2.signal.org.global.prod.fastly.net"
-            case .cdn3:
-                return "cdn3-signal.global.ssl.fastly.net"
-            case .updates, .updates2:
-                return nil
-            case .svr2:
-                return "svr2-signal.global.ssl.fastly.net"
-            }
-        }
+    func reflectorHost() -> String {
+        return host
     }
 
     /// Returns `nil` if `e164` is not known to be censored.
@@ -140,12 +129,12 @@ struct OWSCensorshipConfiguration {
             return defaultConfiguration
         }
 
-        return OWSCensorshipConfiguration(domainFrontBaseUrl: baseUrl, securityPolicy: specifiedDomain.securityPolicy, requiresPathPrefix: specifiedDomain.requiresPathPrefix)
+        return OWSCensorshipConfiguration(domainFrontBaseUrl: baseUrl, securityPolicy: specifiedDomain.securityPolicy, host: specifiedDomain.host)
     }
 
     static var defaultConfiguration: OWSCensorshipConfiguration {
         let baseUrl = URL(string: "https://\(OWSFrontingHost.default.randomSniHeader())")!
-        return OWSCensorshipConfiguration(domainFrontBaseUrl: baseUrl, securityPolicy: OWSFrontingHost.default.securityPolicy, requiresPathPrefix: OWSFrontingHost.default.requiresPathPrefix)
+        return OWSCensorshipConfiguration(domainFrontBaseUrl: baseUrl, securityPolicy: OWSFrontingHost.default.securityPolicy, host: OWSFrontingHost.default.host)
 
     }
 
@@ -153,10 +142,10 @@ struct OWSCensorshipConfiguration {
         censoredCountryCode(e164: e164) != nil
     }
 
-    private init(domainFrontBaseUrl: URL, securityPolicy: HttpSecurityPolicy, requiresPathPrefix: Bool) {
+    private init(domainFrontBaseUrl: URL, securityPolicy: HttpSecurityPolicy, host: String) {
         self.domainFrontBaseUrl = domainFrontBaseUrl
         self.domainFrontSecurityPolicy = securityPolicy
-        self.requiresPathPrefix = requiresPathPrefix
+        self.host = host
     }
 
     /// The set of countries for which domain fronting should be automatically enabled.

@@ -56,7 +56,8 @@ public class TSConstants {
     public static var updatesURL: String { shared.updatesURL }
     public static var updates2URL: String { shared.updates2URL }
 
-    public static var censorshipReflectorHost: String { shared.censorshipReflectorHost }
+    public static var censorshipFReflectorHost: String { shared.censorshipFReflectorHost }
+    public static var censorshipGReflectorHost: String { shared.censorshipGReflectorHost }
 
     public static var serviceCensorshipPrefix: String { shared.serviceCensorshipPrefix }
     public static var cdn0CensorshipPrefix: String { shared.cdn0CensorshipPrefix }
@@ -111,7 +112,8 @@ public protocol TSConstantsProtocol: AnyObject {
     var updatesURL: String { get }
     var updates2URL: String { get }
 
-    var censorshipReflectorHost: String { get }
+    var censorshipFReflectorHost: String { get }
+    var censorshipGReflectorHost: String { get }
 
     var serviceCensorshipPrefix: String { get }
     var cdn0CensorshipPrefix: String { get }
@@ -166,7 +168,8 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let updatesURL = "https://updates.signal.org"
     public let updates2URL = "https://updates2.signal.org"
 
-    public let censorshipReflectorHost = "reflector-nrgwuv7kwq-uc.a.run.app"
+    public let censorshipFReflectorHost = "reflector-signal.global.ssl.fastly.net"
+    public let censorshipGReflectorHost = "reflector-nrgwuv7kwq-uc.a.run.app"
 
     public let serviceCensorshipPrefix = "service"
     public let cdn0CensorshipPrefix = "cdn"
@@ -217,7 +220,8 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let updatesURL = "https://updates.signal.org"
     public let updates2URL = "https://updates2.signal.org"
 
-    public let censorshipReflectorHost = "reflector-nrgwuv7kwq-uc.a.run.app"
+    public let censorshipFReflectorHost = "reflector-staging-signal.global.ssl.fastly.net"
+    public let censorshipGReflectorHost = "reflector-nrgwuv7kwq-uc.a.run.app"
 
     public let serviceCensorshipPrefix = "service-staging"
     public let cdn0CensorshipPrefix = "cdn-staging"
@@ -284,7 +288,8 @@ public class TSConstantsMock: TSConstantsProtocol {
 
     public lazy var updates2URL = defaultValues.updates2URL
 
-    public lazy var censorshipReflectorHost = defaultValues.censorshipReflectorHost
+    public lazy var censorshipFReflectorHost = defaultValues.censorshipFReflectorHost
+    public lazy var censorshipGReflectorHost = defaultValues.censorshipGReflectorHost
 
     public lazy var serviceCensorshipPrefix = defaultValues.serviceCensorshipPrefix
 
