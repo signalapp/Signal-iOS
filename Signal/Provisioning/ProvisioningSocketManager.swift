@@ -316,14 +316,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
 
                     await delegate?.provisioningSocketManager(self, didUpdateProvisioningURL: provisioningUrl)
 
-                    let rotationDelaySecs: UInt64
-#if TESTABLE_BUILD
-                    rotationDelaySecs = 3
-#else
-                    rotationDelaySecs = 45
-#endif
-
-                    try await Task.sleep(nanoseconds: rotationDelaySecs * NSEC_PER_SEC)
+                    try await Task.sleep(nanoseconds: 45 * NSEC_PER_SEC)
 
                     try Task.checkCancellation()
                 }

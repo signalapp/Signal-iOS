@@ -188,12 +188,12 @@ private struct ProvisioningQRCodeView: View {
                     #available(iOS 16.0, *),
                     let provisioningUrl = model.qrCodeViewModel.qrCodeURL
                 {
-                    // If on a physical device, this prefixing with some text
+                    // If on a physical device, this postfixing with some text
                     // allows one to AirDrop the URL to macOS to be copied into
                     // a simulator, instead of having macOS automatically try
                     // and open the URL (which Signal Desktop will try, and
                     // fail, to handle).
-                    ShareLink(item: "Provisioning URL: \(provisioningUrl)") {
+                    ShareLink(item: "\(provisioningUrl) DELETETHIS") {
                         Text(LocalizationNotNeeded(
                             "Debug only: Share URL"
                         ))
@@ -205,6 +205,12 @@ private struct ProvisioningQRCodeView: View {
                         // extraction from a simulator.
                         UIPasteboard.general.url = provisioningUrl
                     })
+
+                    Button(LocalizationNotNeeded("Debug only: Copy URL")) {
+                        UIPasteboard.general.url = provisioningUrl
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(Color.Signal.accent)
                 }
 #endif
             }
