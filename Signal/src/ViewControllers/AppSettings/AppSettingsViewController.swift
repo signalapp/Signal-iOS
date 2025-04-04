@@ -235,6 +235,16 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
+        if FeatureFlags.MessageBackup.settings {
+            section2.add(.disclosureItem(
+                icon: .backup,
+                withText: OWSLocalizedString("SETTINGS_BACKUPS", comment: "Label for the 'backups' section of app settings."),
+                actionBlock: { [weak self] in
+                    let vc = BackupSettingsViewController.make()
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            ))
+        }
         section2.add(.disclosureItem(
             icon: .settingsDataUsage,
             withText: OWSLocalizedString("SETTINGS_DATA", comment: "Label for the 'data' section of the app settings."),

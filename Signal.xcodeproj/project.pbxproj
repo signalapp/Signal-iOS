@@ -2477,6 +2477,7 @@
 		D94AEB3C2D28940A00B03D7A /* PreKeyTaskAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94AEB3B2D28940500B03D7A /* PreKeyTaskAPIClient.swift */; };
 		D94D67CD2C9DEF870091B485 /* MessageBackupPostFrameRestoreActionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94D67CC2C9DEF6E0091B485 /* MessageBackupPostFrameRestoreActionManager.swift */; };
 		D94D67CF2C9DF4720091B485 /* TSInfoMessage+ContactHidden.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94D67CE2C9DF46E0091B485 /* TSInfoMessage+ContactHidden.swift */; };
+		D951F5312D9B236700C5EBF3 /* BackupSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D951F5302D9B236100C5EBF3 /* BackupSettingsViewController.swift */; };
 		D953424A2D8B71190087AD93 /* recipient_groups_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D95342282D8B71190087AD93 /* recipient_groups_07.binproto */; };
 		D953424B2D8B71190087AD93 /* recipient_groups_11.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D95342302D8B71190087AD93 /* recipient_groups_11.binproto */; };
 		D953424C2D8B71190087AD93 /* recipient_self_04.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D953423A2D8B71190087AD93 /* recipient_self_04.binproto */; };
@@ -6379,6 +6380,7 @@
 		D94D67CE2C9DF46E0091B485 /* TSInfoMessage+ContactHidden.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+ContactHidden.swift"; sourceTree = "<group>"; };
 		D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+WebAuthentication.swift"; sourceTree = "<group>"; };
 		D9517ABF292C5A3900DDD37E /* Paypal+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+API.swift"; sourceTree = "<group>"; };
+		D951F5302D9B236100C5EBF3 /* BackupSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSettingsViewController.swift; sourceTree = "<group>"; };
 		D95342162D8B71190087AD93 /* recipient_contacts_06.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = recipient_contacts_06.binproto; sourceTree = "<group>"; };
 		D95342172D8B71190087AD93 /* recipient_contacts_06.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = recipient_contacts_06.txtproto; sourceTree = "<group>"; };
 		D95342182D8B71190087AD93 /* recipient_contacts_07.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = recipient_contacts_07.binproto; sourceTree = "<group>"; };
@@ -7837,6 +7839,7 @@
 			children = (
 				887B6DCA25F6C3F500E677D4 /* Account */,
 				887B6DCB25F6C40500E677D4 /* Appearance */,
+				D951F52F2D9B233300C5EBF3 /* Backups */,
 				887B6DCC25F6C41500E677D4 /* Data Usage */,
 				F9C5BC5F282E98D4001EB3BF /* Donations */,
 				32ECD08624BFBF5C00EDDED0 /* Help */,
@@ -12346,6 +12349,14 @@
 			path = Avatars;
 			sourceTree = "<group>";
 		};
+		D951F52F2D9B233300C5EBF3 /* Backups */ = {
+			isa = PBXGroup;
+			children = (
+				D951F5302D9B236100C5EBF3 /* BackupSettingsViewController.swift */,
+			);
+			path = Backups;
+			sourceTree = "<group>";
+		};
 		D962346E2C0E99CE00DAF6CB /* DeleteForMe */ = {
 			isa = PBXGroup;
 			children = (
@@ -16573,6 +16584,7 @@
 				4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */,
 				32C584A825B81C6600256804 /* AvatarViewController.swift in Sources */,
 				B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */,
+				D951F5312D9B236700C5EBF3 /* BackupSettingsViewController.swift in Sources */,
 				32E035242739059C0081EE11 /* BadgeCollectionView.swift in Sources */,
 				32E03522273901710081EE11 /* BadgeConfigurationViewController.swift in Sources */,
 				881BB28A2743531D00B609B8 /* BadgeDetailsSheet.swift in Sources */,
