@@ -458,8 +458,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
             request = try self.endpoint.buildRequest(
                 rawRequestUrl.absoluteString,
                 method: method,
-                headers: httpHeaders,
-                body: requestBody
+                headers: httpHeaders
             )
         } catch {
             owsFailDebug("Missing or invalid request: \(rawRequestUrl).")
