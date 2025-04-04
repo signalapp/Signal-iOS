@@ -8,7 +8,6 @@ public import SignalUI
 
 // All Observer methods will be invoked from the main thread.
 public protocol ShareViewDelegate: AnyObject {
-    func shareViewWasUnlocked()
     func shareViewWasCompleted()
     func shareViewWasCancelled()
     func shareViewFailed(error: Error)

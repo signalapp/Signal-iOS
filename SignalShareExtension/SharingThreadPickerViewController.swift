@@ -14,24 +14,16 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
     private var sendProgressSheet: SharingThreadPickerProgressSheet?
 
-    /// It can take a while to fully process attachments, and until we do we aren't
-    /// fully sure if the attachments are stories-compatible. To speed things up,
-    /// we do some fast pre-checks and store the result here.
-    /// True if these pre-checks determine all attachments are stories-compatible.
-    /// Once this is set, we show stories forever, even if the attachments end up being
-    /// incompatible, because it would be weird to have the stories destinations disappear.
-    /// Instead, we show an error when actually sending if stories are selected.
-    public var areAttachmentStoriesCompatPrecheck: Bool? {
-        didSet {
-            // If we've already processed attachments, ignore the setting.
-            guard attachments == nil else {
-                areAttachmentStoriesCompatPrecheck = nil
-                return
-            }
-            updateStoriesState()
-            updateApprovalMode()
-        }
-    }
+    /// It can take a while to fully process attachments, and until we do, we
+    /// aren't fully sure if the attachments are stories-compatible. To speed
+    /// things up, we do some fast pre-checks and store the result here.
+    ///
+    /// True if these pre-checks determine all attachments are
+    /// stories-compatible. If this is true, we show stories forever, even if
+    /// the attachments end up being incompatible, because it would be weird to
+    /// have the stories destinations disappear. Instead, we show an error when
+    /// actually sending if stories are selected.
+    public let areAttachmentStoriesCompatPrecheck: Bool
 
     var attachments: [SignalAttachment]? {
         didSet {
@@ -59,13 +51,17 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
     var selectedConversations: [ConversationItem] { selection.conversations }
 
-    public init(shareViewDelegate: ShareViewDelegate) {
+    public init(areAttachmentStoriesCompatPrecheck: Bool, shareViewDelegate: ShareViewDelegate) {
+        self.areAttachmentStoriesCompatPrecheck = areAttachmentStoriesCompatPrecheck
         self.shareViewDelegate = shareViewDelegate
 
         super.init(selection: ConversationPickerSelection())
 
         shouldBatchUpdateIdentityKeys = true
         pickerDelegate = self
+
+        self.updateStoriesState()
+        self.updateApprovalMode()
     }
 
     public func presentActionSheetOnNavigationController(_ alert: ActionSheetController) {

@@ -8,12 +8,18 @@ import SignalUI
 
 final class SAEScreenLockViewController: ScreenLockViewController {
 
-    private weak var shareViewDelegate: ShareViewDelegate?
+    private var completion: ((_ didUnlock: Bool) -> Void)?
 
-    init(shareViewDelegate: ShareViewDelegate) {
-        self.shareViewDelegate = shareViewDelegate
+    private func invokeCompletion(didUnlock: Bool) {
+        let completion = self.completion
+        self.completion = nil
+        completion?(didUnlock)
+    }
+
+    init(completion: @escaping (_ didUnlock: Bool) -> Void) {
         super.init(nibName: nil, bundle: nil)
-        delegate = self
+        self.completion = completion
+        self.delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -72,7 +78,7 @@ final class SAEScreenLockViewController: ScreenLockViewController {
                 Logger.info("unlock screen lock succeeded.")
 
                 self.isShowingAuthUI = false
-                self.shareViewDelegate?.shareViewWasUnlocked()
+                self.invokeCompletion(didUnlock: true)
             },
             failure: { error in
                 AssertIsOnMainThread()
@@ -127,7 +133,7 @@ final class SAEScreenLockViewController: ScreenLockViewController {
     }
 
     private func cancelShareExperience() {
-        shareViewDelegate?.shareViewWasCancelled()
+        invokeCompletion(didUnlock: false)
     }
 }
 
