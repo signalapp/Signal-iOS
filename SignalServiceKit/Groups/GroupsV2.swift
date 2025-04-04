@@ -104,9 +104,10 @@ public protocol GroupsV2 {
         forceRefresh: Bool
     ) async throws
 
-    func fetchLatestSnapshot(groupModel: TSGroupModelV2) async throws -> GroupV2SnapshotResponse
-
-    func fetchLatestSnapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2SnapshotResponse
+    func fetchLatestSnapshot(
+        secretParams: GroupSecretParams,
+        justUploadedAvatars: GroupV2DownloadedAvatars?
+    ) async throws -> GroupV2SnapshotResponse
 
     func updateGroupV2(
         groupId: Data,
@@ -546,11 +547,10 @@ public class MockGroupsV2: GroupsV2 {
         forceRefresh: Bool
     ) async throws { }
 
-    public func fetchLatestSnapshot(groupModel: TSGroupModelV2) async throws -> GroupV2SnapshotResponse {
-        owsFail("Not implemented.")
-    }
-
-    public func fetchLatestSnapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2SnapshotResponse {
+    public func fetchLatestSnapshot(
+        secretParams: GroupSecretParams,
+        justUploadedAvatars: GroupV2DownloadedAvatars?
+    ) async throws -> GroupV2SnapshotResponse {
         owsFail("Not implemented.")
     }
 

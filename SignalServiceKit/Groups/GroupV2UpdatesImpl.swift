@@ -227,14 +227,12 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         }
 
         try await self.operationQueue.run {
-            try await Retry.performWithBackoff(maxAttempts: 3) {
-                try await self.runUpdateOperation(
-                    secretParams: secretParams,
-                    spamReportingMetadata: spamReportingMetadata,
-                    source: source,
-                    options: options
-                )
-            }
+            try await self.runUpdateOperation(
+                secretParams: secretParams,
+                spamReportingMetadata: spamReportingMetadata,
+                source: source,
+                options: options
+            )
         }
 
         switch source {
@@ -710,7 +708,10 @@ private extension GroupV2UpdatesImpl {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         options: TSGroupModelOptions
     ) async throws {
-        let snapshotResponse = try await SSKEnvironment.shared.groupsV2Ref.fetchLatestSnapshot(groupSecretParams: secretParams)
+        let snapshotResponse = try await SSKEnvironment.shared.groupsV2Ref.fetchLatestSnapshot(
+            secretParams: secretParams,
+            justUploadedAvatars: nil
+        )
 
         let groupV2Snapshot = snapshotResponse.groupSnapshot
 

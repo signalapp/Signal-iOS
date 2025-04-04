@@ -247,13 +247,18 @@ class GroupsV2ProfileKeyUpdater {
         let groupModel = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return TSGroupThread.fetch(groupId: groupId, transaction: tx)?.groupModel as? TSGroupModelV2
         }
-        guard let groupModel else {
+        guard let groupModel, let secretParams = try? groupModel.secretParams() else {
             throw GroupsV2Error.shouldDiscard
         }
 
         // Get latest group state from service and verify that this update is still necessary.
         try Task.checkCancellation()
-        let snapshotResponse = try await SSKEnvironment.shared.groupsV2Ref.fetchLatestSnapshot(groupModel: groupModel)
+        // Collect the avatar state to avoid an unnecessary download in the case
+        // where we've already fetched the latest avatar.
+        let snapshotResponse = try await SSKEnvironment.shared.groupsV2Ref.fetchLatestSnapshot(
+            secretParams: secretParams,
+            justUploadedAvatars: GroupV2DownloadedAvatars.from(groupModel: groupModel)
+        )
         guard snapshotResponse.groupSnapshot.groupMembership.isFullMember(localAci) else {
             // We're not a full member, no need to update profile key.
             throw GroupsV2Error.redundantChange

@@ -572,29 +572,11 @@ public class GroupsV2Impl: GroupsV2 {
 
     // MARK: - Fetch Current Group State
 
-    public func fetchLatestSnapshot(groupModel: TSGroupModelV2) async throws -> GroupV2SnapshotResponse {
-        // Collect the avatar state to avoid an unnecessary download in the
-        // case where we've just created this group but not yet inserted it
-        // into the database.
-        let justUploadedAvatars = GroupV2DownloadedAvatars.from(groupModel: groupModel)
-        return try await fetchLatestSnapshot(
-            groupSecretParams: try groupModel.secretParams(),
-            justUploadedAvatars: justUploadedAvatars
-        )
-    }
-
-    public func fetchLatestSnapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2SnapshotResponse {
-        return try await fetchLatestSnapshot(
-            groupSecretParams: groupSecretParams,
-            justUploadedAvatars: nil
-        )
-    }
-
-    private func fetchLatestSnapshot(
-        groupSecretParams: GroupSecretParams,
+    public func fetchLatestSnapshot(
+        secretParams: GroupSecretParams,
         justUploadedAvatars: GroupV2DownloadedAvatars?
     ) async throws -> GroupV2SnapshotResponse {
-        let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
+        let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
         return try await fetchLatestSnapshot(groupV2Params: groupV2Params, justUploadedAvatars: justUploadedAvatars)
     }
 
@@ -1526,31 +1508,6 @@ public class GroupsV2Impl: GroupsV2 {
         avatarData: Data?
     ) async throws {
         let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
-        var remainingRetries = 3
-        while true {
-            do {
-                try await self.joinGroupViaInviteLinkAttempt(
-                    groupId: groupId,
-                    inviteLinkPassword: inviteLinkPassword,
-                    groupV2Params: groupV2Params,
-                    groupInviteLinkPreview: groupInviteLinkPreview,
-                    avatarData: avatarData
-                )
-                return
-            } catch where remainingRetries > 0 && error.isNetworkFailureOrTimeout {
-                Logger.warn("Retryable after error: \(error)")
-                remainingRetries -= 1
-            }
-        }
-    }
-
-    private func joinGroupViaInviteLinkAttempt(
-        groupId: Data,
-        inviteLinkPassword: Data,
-        groupV2Params: GroupV2Params,
-        groupInviteLinkPreview: GroupInviteLinkPreview,
-        avatarData: Data?
-    ) async throws {
 
         // There are many edge cases around joining groups via invite links.
         //
