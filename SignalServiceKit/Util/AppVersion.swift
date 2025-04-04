@@ -50,6 +50,8 @@ public protocol AppVersion {
         backupCurrentAppVersion: String?,
         backupFirstAppVersion: String?
     )
+
+    func dumpToLog()
 }
 
 extension AppVersion {
@@ -127,7 +129,7 @@ public class AppVersionImpl: AppVersion {
             userDefaults: CurrentAppContext().appUserDefaults()
         )
         result.save()
-        result.startupLogging()
+        result.dumpToLog()
         return result
     }()
 
@@ -247,7 +249,7 @@ public class AppVersionImpl: AppVersion {
         userDefaults.set(currentAppVersion, forKey: lastVersionKey)
     }
 
-    private func startupLogging() {
+    public func dumpToLog() {
         Logger.info("firstAppVersion: \(formatForLogging(firstAppVersion))")
         if let backupAppVersion {
             Logger.info("backupAppVersion: \(formatForLogging(backupAppVersion))")
@@ -389,6 +391,8 @@ public class MockAppVerion: AppVersion {
         backupCurrentAppVersion: String?,
         backupFirstAppVersion: String?
     ) {}
+
+    public func dumpToLog() {}
 }
 
 #endif
