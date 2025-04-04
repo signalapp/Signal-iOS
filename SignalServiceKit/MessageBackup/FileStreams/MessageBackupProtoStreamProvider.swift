@@ -3,12 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-public import LibSignalClient
+import LibSignalClient
 
 extension MessageBackup {
-    public enum ProtoStream {
-        public enum OpenOutputStreamResult<StreamMetadata> {
+    enum ProtoStream {
+        enum OpenOutputStreamResult<StreamMetadata> {
             /// The contained stream was opened successfully.
             /// - Note
             /// Calling the contained `metadataProvider` provides point-in-time
@@ -19,7 +18,7 @@ extension MessageBackup {
             case unableToOpenFileStream
         }
 
-        public enum OpenInputStreamResult {
+        enum OpenInputStreamResult {
             /// A stream was opened successfully.
             case success(MessageBackupProtoInputStream, rawStream: TransformingInputStream)
             /// The provided target file was not found on disk.
@@ -29,10 +28,11 @@ extension MessageBackup {
             /// Unable to open an encrypted file stream due to HMAC validation
             /// failing.
             case hmacValidationFailedOnEncryptedFile
-
         }
     }
 }
+
+// MARK: -
 
 /// Creates streams for reading and writing to a plaintext Backup file on-disk.
 ///
@@ -43,23 +43,48 @@ extension MessageBackup {
 /// "frames", or individual proto objects that we read or write individually.
 ///
 /// - SeeAlso: ``MessageBackupEncryptedProtoStreamProvider``
-public protocol MessageBackupPlaintextProtoStreamProvider {
+public class MessageBackupPlaintextProtoStreamProvider {
     typealias ProtoStream = MessageBackup.ProtoStream
 
-    /// Open an output stream to write a plaintext backup to a file on disk. The
-    /// caller owns the returned stream, and is responsible for closing it once
-    /// finished.
-    func openPlaintextOutputFileStream(
-        exportProgress: MessageBackupExportProgress?
-    ) -> ProtoStream.OpenOutputStreamResult<URL>
+    private let genericStreamProvider: GenericStreamProvider
+
+    init() {
+        self.genericStreamProvider = GenericStreamProvider()
+    }
 
     /// Open an input stream to read a plaintext backup from a file on disk. The
     /// caller becomes the owner of the stream, and is responsible for closing
     /// it once finished.
+    func openPlaintextOutputFileStream(
+        exportProgress: MessageBackupExportProgress?
+    ) -> ProtoStream.OpenOutputStreamResult<URL> {
+        let transforms: [any StreamTransform] = [
+            ChunkedOutputStreamTransform(),
+        ]
+
+        return genericStreamProvider.openOutputFileStream(
+            transforms: transforms,
+            exportProgress: exportProgress
+        )
+    }
+
+    /// Open an output stream to write a plaintext backup to a file on disk. The
+    /// caller owns the returned stream, and is responsible for closing it once
+    /// finished.
     func openPlaintextInputFileStream(
         fileUrl: URL,
         frameRestoreProgress: MessageBackupImportFrameRestoreProgress?
-    ) -> ProtoStream.OpenInputStreamResult
+    ) -> ProtoStream.OpenInputStreamResult {
+        let transforms: [any StreamTransform] = [
+            frameRestoreProgress.map { InputProgressStreamTransform(frameRestoreProgress: $0) },
+            ChunkedInputStreamTransform(),
+        ].compacted()
+
+        return genericStreamProvider.openInputFileStream(
+            fileUrl: fileUrl,
+            transforms: transforms
+        )
+    }
 }
 
 /// Creates streams for reading and writing to an encrypted Backup file on-disk.
@@ -71,43 +96,21 @@ public protocol MessageBackupPlaintextProtoStreamProvider {
 /// "frames", or individual proto objects that we read or write individually.
 ///
 /// - SeeAlso: ``MessageBackupPlaintextProtoStreamProvider``
-public protocol MessageBackupEncryptedProtoStreamProvider {
+public class MessageBackupEncryptedProtoStreamProvider {
     typealias ProtoStream = MessageBackup.ProtoStream
+
+    private let backupKeyMaterial: MessageBackupKeyMaterial
+    private let genericStreamProvider: GenericStreamProvider
+
+    init(backupKeyMaterial: MessageBackupKeyMaterial) {
+        self.backupKeyMaterial = backupKeyMaterial
+        self.genericStreamProvider = GenericStreamProvider()
+    }
 
     /// Open an output stream to write an encrypted backup to a file on disk.
     /// The caller owns the returned stream, and is responsible for closing it
     /// once finished.
     func openEncryptedOutputFileStream(
-        localAci: Aci,
-        backupKey: BackupKey,
-        exportProgress: MessageBackupExportProgress?,
-        tx: DBReadTransaction
-    ) -> ProtoStream.OpenOutputStreamResult<Upload.EncryptedBackupUploadMetadata>
-
-    /// Open an input stream to read an encrypted backup from a file on disk.
-    /// The caller becomes the owner of the stream, and is responsible for
-    /// closing it once finished.
-    func openEncryptedInputFileStream(
-        fileUrl: URL,
-        localAci: Aci,
-        backupKey: BackupKey,
-        frameRestoreProgress: MessageBackupImportFrameRestoreProgress?,
-        tx: DBReadTransaction
-    ) -> ProtoStream.OpenInputStreamResult
-}
-
-// MARK: -
-
-public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncryptedProtoStreamProvider {
-    private let backupKeyMaterial: MessageBackupKeyMaterial
-    private let genericStreamProvider: GenericStreamProvider
-
-    public init(backupKeyMaterial: MessageBackupKeyMaterial) {
-        self.backupKeyMaterial = backupKeyMaterial
-        self.genericStreamProvider = GenericStreamProvider()
-    }
-
-    public func openEncryptedOutputFileStream(
         localAci: Aci,
         backupKey: BackupKey,
         exportProgress: MessageBackupExportProgress?,
@@ -159,7 +162,10 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         }
     }
 
-    public func openEncryptedInputFileStream(
+    /// Open an input stream to read an encrypted backup from a file on disk.
+    /// The caller becomes the owner of the stream, and is responsible for
+    /// closing it once finished.
+    func openEncryptedInputFileStream(
         fileUrl: URL,
         localAci: Aci,
         backupKey: BackupKey,
@@ -222,42 +228,6 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
     }
 }
 
-public class MessageBackupPlaintextProtoStreamProviderImpl: MessageBackupPlaintextProtoStreamProvider {
-    private let genericStreamProvider: GenericStreamProvider
-
-    init() {
-        self.genericStreamProvider = GenericStreamProvider()
-    }
-
-    public func openPlaintextOutputFileStream(
-        exportProgress: MessageBackupExportProgress?
-    ) -> ProtoStream.OpenOutputStreamResult<URL> {
-        let transforms: [any StreamTransform] = [
-            ChunkedOutputStreamTransform(),
-        ]
-
-        return genericStreamProvider.openOutputFileStream(
-            transforms: transforms,
-            exportProgress: exportProgress
-        )
-    }
-
-    public func openPlaintextInputFileStream(
-        fileUrl: URL,
-        frameRestoreProgress: MessageBackupImportFrameRestoreProgress?
-    ) -> ProtoStream.OpenInputStreamResult {
-        let transforms: [any StreamTransform] = [
-            frameRestoreProgress.map { InputProgressStreamTransform(frameRestoreProgress: $0) },
-            ChunkedInputStreamTransform(),
-        ].compacted()
-
-        return genericStreamProvider.openInputFileStream(
-            fileUrl: fileUrl,
-            transforms: transforms
-        )
-    }
-}
-
 // MARK: -
 
 private class GenericStreamProvider {
@@ -288,7 +258,7 @@ private class GenericStreamProvider {
             runLoop: streamRunloop
         )
 
-        let messageBackupOutputStream = MessageBackupProtoOutputStreamImpl(
+        let messageBackupOutputStream = MessageBackupProtoOutputStream(
             outputStream: transformingOutputStream,
             exportProgress: exportProgress
         )
@@ -324,7 +294,7 @@ private class GenericStreamProvider {
             runLoop: streamRunloop
         )
 
-        let messageBackupInputStream = MessageBackupProtoInputStreamImpl(
+        let messageBackupInputStream = MessageBackupProtoInputStream(
             inputStream: transformableInputStream,
             inputStreamDelegate: inputStreamDelegate
         )

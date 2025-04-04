@@ -22,7 +22,7 @@ public class MessageBackupReleaseNotesRecipientArchiver: MessageBackupProtoArchi
     // MARK: -
 
     func archiveReleaseNotesRecipient(
-        stream: any MessageBackupProtoOutputStream,
+        stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext
     ) -> ArchiveFrameResult {
         return context.bencher.processFrame { frameBencher in

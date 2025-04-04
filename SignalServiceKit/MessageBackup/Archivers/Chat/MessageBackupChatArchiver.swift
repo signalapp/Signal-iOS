@@ -6,39 +6,11 @@
 import Foundation
 import LibSignalClient
 
-public protocol MessageBackupChatArchiver: MessageBackupProtoArchiver {
-
+public class MessageBackupChatArchiver: MessageBackupProtoArchiver {
     typealias ChatId = MessageBackup.ChatId
-
     typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<MessageBackup.ThreadUniqueId>
-
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<ChatId>
 
-    /// Archive all ``TSThread``s (they map to ``BackupProto_Chat``).
-    ///
-    /// - Returns: ``ArchiveMultiFrameResult.success`` if all frames were written without error, or either
-    /// partial or complete failure otherwise.
-    /// How to handle ``ArchiveMultiFrameResult.partialSuccess`` is up to the caller,
-    /// but typically an error will be shown to the user, but the backup will be allowed to proceed.
-    /// ``ArchiveMultiFrameResult.completeFailure``, on the other hand, will stop the entire backup,
-    /// and should be used if some critical or category-wide failure occurs.
-    func archiveChats(
-        stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ChatArchivingContext
-    ) throws(CancellationError) -> ArchiveMultiFrameResult
-
-    /// Restore a single ``BackupProto_Chat`` frame.
-    ///
-    /// - Returns: ``RestoreFrameResult.success`` if all frames were read without error.
-    /// How to handle ``RestoreFrameResult.failure`` is up to the caller,
-    /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
-    func restore(
-        _ chat: BackupProto_Chat,
-        context: MessageBackup.ChatRestoringContext
-    ) -> RestoreFrameResult
-}
-
-public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.ThreadUniqueId>
 
     private let chatStyleArchiver: MessageBackupChatStyleArchiver
@@ -63,7 +35,15 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
     // MARK: - Archiving
 
-    public func archiveChats(
+    /// Archive all ``TSThread``s (they map to ``BackupProto_Chat``).
+    ///
+    /// - Returns: ``ArchiveMultiFrameResult.success`` if all frames were written without error, or either
+    /// partial or complete failure otherwise.
+    /// How to handle ``ArchiveMultiFrameResult.partialSuccess`` is up to the caller,
+    /// but typically an error will be shown to the user, but the backup will be allowed to proceed.
+    /// ``ArchiveMultiFrameResult.completeFailure``, on the other hand, will stop the entire backup,
+    /// and should be used if some critical or category-wide failure occurs.
+    func archiveChats(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
@@ -346,7 +326,12 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
     // MARK: - Restoring
 
-    public func restore(
+    /// Restore a single ``BackupProto_Chat`` frame.
+    ///
+    /// - Returns: ``RestoreFrameResult.success`` if all frames were read without error.
+    /// How to handle ``RestoreFrameResult.failure`` is up to the caller,
+    /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
+    func restore(
         _ chat: BackupProto_Chat,
         context: MessageBackup.ChatRestoringContext
     ) -> RestoreFrameResult {

@@ -25,15 +25,23 @@ public extension MessageBackup {
     }
 }
 
-public protocol MessageBackupStickerPackArchiver: MessageBackupProtoArchiver {
+// MARK: -
 
+public class MessageBackupStickerPackArchiver: MessageBackupProtoArchiver {
     typealias StickerPackId = MessageBackup.StickerPackId
-
     typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<StickerPackId>
-
     typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<StickerPackId>
-
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<StickerPackId>
+
+    private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
+
+    init(
+        backupStickerPackDownloadStore: BackupStickerPackDownloadStore
+    ) {
+        self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
+    }
+
+    // MARK: -
 
     /// Archive all ``StickerPack``s (they map to ``BackupProto_StickerPack``).
     ///
@@ -44,33 +52,6 @@ public protocol MessageBackupStickerPackArchiver: MessageBackupProtoArchiver {
     /// ``ArchiveMultiFrameResult.completeFailure``, on the other hand, will stop the entire backup,
     /// and should be used if some critical or category-wide failure occurs.
     func archiveStickerPacks(
-        stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ArchivingContext
-    ) throws(CancellationError) -> ArchiveMultiFrameResult
-
-    /// Restore a single ``BackupProto_StickerPack`` frame.
-    ///
-    /// - Returns: ``RestoreFrameResult.success`` if the frame was restored without error.
-    /// How to handle ``RestoreFrameResult.failure`` is up to the caller,
-    /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
-    func restore(
-        _ stickerPack: BackupProto_StickerPack,
-        context: MessageBackup.RestoringContext
-    ) -> RestoreFrameResult
-
-}
-
-public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchiver {
-
-    private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
-
-    init(
-        backupStickerPackDownloadStore: BackupStickerPackDownloadStore
-    ) {
-        self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
-    }
-
-    public func archiveStickerPacks(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ArchivingContext
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
@@ -175,7 +156,14 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
         }
     }
 
-    public func restore(
+    // MARK: -
+
+    /// Restore a single ``BackupProto_StickerPack`` frame.
+    ///
+    /// - Returns: ``RestoreFrameResult.success`` if the frame was restored without error.
+    /// How to handle ``RestoreFrameResult.failure`` is up to the caller,
+    /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
+    func restore(
         _ stickerPack: BackupProto_StickerPack,
         context: MessageBackup.RestoringContext
     ) -> RestoreFrameResult {
@@ -190,5 +178,4 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
         }
         return .success
     }
-
 }

@@ -46,24 +46,8 @@ extension MessageBackup {
     public typealias RestoreAccountDataResult = RestoreFrameResult<MessageBackup.AccountDataId>
 }
 
-/**
- * Archives the ``BackupProto_AccountData`` frame
- */
-public protocol MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
-    func archiveAccountData(
-        stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.CustomChatColorArchivingContext
-    ) -> MessageBackup.ArchiveAccountDataResult
-
-    func restore(
-        _ accountData: BackupProto_AccountData,
-        chatColorsContext: MessageBackup.CustomChatColorRestoringContext,
-        chatItemContext: MessageBackup.ChatItemRestoringContext
-    ) -> MessageBackup.RestoreAccountDataResult
-}
-
-public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchiver {
-
+/// Archives the ``BackupProto_AccountData`` frame.
+public class MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
     private let chatStyleArchiver: MessageBackupChatStyleArchiver
     private let disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore
     private let donationSubscriptionManager: MessageBackup.Shims.DonationSubscriptionManager
@@ -120,7 +104,9 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         self.usernameEducationManager = usernameEducationManager
     }
 
-    public func archiveAccountData(
+    // MARK: -
+
+    func archiveAccountData(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.CustomChatColorArchivingContext
     ) -> MessageBackup.ArchiveAccountDataResult {
@@ -278,7 +264,9 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         return .success(accountSettings)
     }
 
-    public func restore(
+    // MARK: -
+
+    func restore(
         _ accountData: BackupProto_AccountData,
         chatColorsContext context: MessageBackup.CustomChatColorRestoringContext,
         chatItemContext: MessageBackup.ChatItemRestoringContext
@@ -447,6 +435,8 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         }
     }
 }
+
+// MARK: -
 
 private extension QRCodeColor {
     var backupProtoColor: BackupProto_AccountData.UsernameLink.Color {

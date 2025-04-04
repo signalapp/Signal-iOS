@@ -411,7 +411,7 @@ class MessageBackupIntegrationTests: XCTestCase {
     /// Read the `backupTimeMs` field from the header of the Backup file at the
     /// given local URL.
     private func readBackupTimeMs(testCaseFileUrl: URL) async throws -> UInt64 {
-        let plaintextStreamProvider = MessageBackupPlaintextProtoStreamProviderImpl()
+        let plaintextStreamProvider = MessageBackupPlaintextProtoStreamProvider()
 
         let stream: MessageBackupProtoInputStream
         switch plaintextStreamProvider.openPlaintextInputFileStream(

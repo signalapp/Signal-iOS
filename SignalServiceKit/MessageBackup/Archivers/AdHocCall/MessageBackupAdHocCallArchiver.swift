@@ -31,40 +31,15 @@ public extension MessageBackup {
     typealias AdHocCallId = CallId
 }
 
-public protocol MessageBackupAdHocCallArchiver: MessageBackupProtoArchiver {
+// MARK: -
+
+public class MessageBackupAdHocCallArchiver: MessageBackupProtoArchiver {
     typealias AdHocCallAppId = MessageBackup.AdHocCallAppId
     typealias AdHocCallId = MessageBackup.AdHocCallId
     typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<AdHocCallAppId>
     typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<AdHocCallAppId>
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<AdHocCallId>
     typealias RestoreFrameError = MessageBackup.RestoreFrameError<AdHocCallId>
-
-    /// Archive all ``CallRecord``s (they map to ``BackupProto_AdHocCall``).
-    ///
-    /// - Returns: ``ArchiveMultiFrameResult.success`` if all frames were written without error, or either
-    /// partial or complete failure otherwise.
-    /// How to handle ``ArchiveMultiFrameResult.partialSuccess`` is up to the caller,
-    /// but typically an error will be shown to the user, but the backup will be allowed to proceed.
-    /// ``ArchiveMultiFrameResult.completeFailure``, on the other hand, will stop the entire backup,
-    /// and should be used if some critical or category-wide failure occurs.
-    func archiveAdHocCalls(
-        stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ChatArchivingContext
-    ) throws(CancellationError) -> ArchiveMultiFrameResult
-
-    /// Restore a single ``BackupProto_AdHocCall`` frame.
-    ///
-    /// - Returns: ``RestoreFrameResult.success`` if the frame was restored without error.
-    /// How to handle ``RestoreFrameResult.failure`` is up to the caller,
-    /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
-    func restore(
-        _ adHocCall: BackupProto_AdHocCall,
-        context: MessageBackup.ChatItemRestoringContext
-    ) -> RestoreFrameResult
-}
-
-public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver {
-    typealias RestoreChatUpdateMessageResult = MessageBackup.RestoreInteractionResult<Void>
 
     private let callRecordStore: CallRecordStore
     private let callLinkRecordStore: CallLinkRecordStore
@@ -80,8 +55,18 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
         self.adHocCallRecordManager = adHocCallRecordManager
     }
 
-    public func archiveAdHocCalls(
-        stream: any MessageBackupProtoOutputStream,
+    // MARK: -
+
+    /// Archive all ``CallRecord``s (they map to ``BackupProto_AdHocCall``).
+    ///
+    /// - Returns: ``ArchiveMultiFrameResult.success`` if all frames were written without error, or either
+    /// partial or complete failure otherwise.
+    /// How to handle ``ArchiveMultiFrameResult.partialSuccess`` is up to the caller,
+    /// but typically an error will be shown to the user, but the backup will be allowed to proceed.
+    /// ``ArchiveMultiFrameResult.completeFailure``, on the other hand, will stop the entire backup,
+    /// and should be used if some critical or category-wide failure occurs.
+    func archiveAdHocCalls(
+        stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
@@ -158,7 +143,14 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
         }
     }
 
-    public func restore(
+    // MARK: -
+
+    /// Restore a single ``BackupProto_AdHocCall`` frame.
+    ///
+    /// - Returns: ``RestoreFrameResult.success`` if the frame was restored without error.
+    /// How to handle ``RestoreFrameResult.failure`` is up to the caller,
+    /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
+    func restore(
         _ adHocCall: BackupProto_AdHocCall,
         context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreFrameResult {

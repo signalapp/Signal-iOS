@@ -4,13 +4,15 @@
 //
 
 extension MessageBackup {
-    public enum ProtoInputStreamReadResult<T> {
+    enum ProtoInputStreamReadResult<T> {
         case success(T, moreBytesAvailable: Bool)
         case emptyFinalFrame
         case invalidByteLengthDelimiter
         case protoDeserializationError(Swift.Error)
     }
 }
+
+// MARK: -
 
 /**
  * Input stream for reading and writing a backup file on disk.
@@ -20,20 +22,7 @@ extension MessageBackup {
  * The input stream abstracts over this, and allows callers to just think in terms of "frames",
  * the individual proto objects that we read one at a time.
  */
-public protocol MessageBackupProtoInputStream {
-
-    /// Read the single header object at the start of every backup file.
-    /// If this header is missing or invalid, the backup should be discarded.
-    func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_BackupInfo>
-
-    /// Read a the next frame from the backup file.
-    func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_Frame>
-
-    /// Close the stream. Attempting to read after closing will result in failures.
-    func closeFileStream()
-}
-
-internal class MessageBackupProtoInputStreamImpl: MessageBackupProtoInputStream {
+class MessageBackupProtoInputStream {
     private let inputStream: InputStreamable
     private let inputStreamDelegate: StreamDelegate
 
@@ -45,18 +34,22 @@ internal class MessageBackupProtoInputStreamImpl: MessageBackupProtoInputStream 
         self.inputStreamDelegate = inputStreamDelegate
     }
 
+    /// Read the single header object at the start of every backup file.
+    /// If this header is missing or invalid, the backup should be discarded.
     func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_BackupInfo> {
         return readProto { protoData in
             return try BackupProto_BackupInfo(serializedBytes: protoData)
         }
     }
 
+    /// Read the next frame from the backup file.
     func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_Frame> {
         return readProto { protoData in
             return try BackupProto_Frame(serializedBytes: protoData)
         }
     }
 
+    /// Close the stream. Attempting to read after closing will result in failures.
     func closeFileStream() {
         try? inputStream.close()
     }

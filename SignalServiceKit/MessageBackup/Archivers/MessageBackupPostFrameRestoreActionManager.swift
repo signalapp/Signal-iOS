@@ -16,8 +16,9 @@ public class MessageBackupPostFrameRestoreActionManager {
     private let dateProvider: DateProvider
     private let interactionStore: MessageBackupInteractionStore
     private let lastVisibleInteractionStore: LastVisibleInteractionStore
+    private let preferences: MessageBackup.Shims.Preferences
     private let recipientDatabaseTable: RecipientDatabaseTable
-    private let sskPreferences: Shims.SSKPreferences
+    private let sskPreferences: MessageBackup.Shims.SSKPreferences
     private let threadStore: MessageBackupThreadStore
 
     init(
@@ -25,14 +26,16 @@ public class MessageBackupPostFrameRestoreActionManager {
         dateProvider: @escaping DateProvider,
         interactionStore: MessageBackupInteractionStore,
         lastVisibleInteractionStore: LastVisibleInteractionStore,
+        preferences: MessageBackup.Shims.Preferences,
         recipientDatabaseTable: RecipientDatabaseTable,
-        sskPreferences: Shims.SSKPreferences,
+        sskPreferences: MessageBackup.Shims.SSKPreferences,
         threadStore: MessageBackupThreadStore
     ) {
         self.avatarFetcher = avatarFetcher
         self.dateProvider = dateProvider
         self.interactionStore = interactionStore
         self.lastVisibleInteractionStore = lastVisibleInteractionStore
+        self.preferences = preferences
         self.recipientDatabaseTable = recipientDatabaseTable
         self.sskPreferences = sskPreferences
         self.threadStore = threadStore
@@ -49,7 +52,7 @@ public class MessageBackupPostFrameRestoreActionManager {
         // Proactively mark the group call tooltip shown; we don't know
         // definitively if it was shown prior to restore, but it's a good
         // guess that it was and its annoying to see again.
-        sskPreferences.setWasGroupCallTooltipShown(tx: chatItemContext.tx)
+        preferences.setWasGroupCallTooltipShown(tx: chatItemContext.tx)
 
         for (recipientId, actions) in recipientActions {
             if actions.insertContactHiddenInfoMessage {
@@ -236,33 +239,5 @@ public class MessageBackupPostFrameRestoreActionManager {
                 tx: context.tx
             )
         }
-    }
-}
-
-extension MessageBackupPostFrameRestoreActionManager {
-    public enum Shims {
-        public typealias SSKPreferences = _MessageBackupPostFrameRestoreActionManager_SSKPreferencesShim
-    }
-    public enum Wrappers {
-        public typealias SSKPreferences = _MessageBackupPostFrameRestoreActionManager_SSKPreferencesWrapper
-    }
-}
-
-public protocol _MessageBackupPostFrameRestoreActionManager_SSKPreferencesShim {
-    func setHasSavedThread(_ newValue: Bool, tx: DBWriteTransaction)
-
-    func setWasGroupCallTooltipShown(tx: DBWriteTransaction)
-}
-
-public class _MessageBackupPostFrameRestoreActionManager_SSKPreferencesWrapper: MessageBackupPostFrameRestoreActionManager.Shims.SSKPreferences {
-
-    public init() {}
-
-    public func setHasSavedThread(_ newValue: Bool, tx: DBWriteTransaction) {
-        SSKPreferences.setHasSavedThread(newValue, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func setWasGroupCallTooltipShown(tx: DBWriteTransaction) {
-        SSKEnvironment.shared.preferencesRef.setWasGroupCallTooltipShown(tx: SDSDB.shimOnlyBridge(tx))
     }
 }

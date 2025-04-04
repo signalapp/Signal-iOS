@@ -1073,7 +1073,7 @@ public class AppSetup {
         )
 
         let messageBackupManager = MessageBackupManagerImpl(
-            accountDataArchiver: MessageBackupAccountDataArchiverImpl(
+            accountDataArchiver: MessageBackupAccountDataArchiver(
                 chatStyleArchiver: messageBackupChatStyleArchiver,
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
                 donationSubscriptionManager: MessageBackup.Wrappers.DonationSubscriptionManager(),
@@ -1092,7 +1092,7 @@ public class AppSetup {
                 udManager: MessageBackup.Wrappers.UDManager(udManager: udManager),
                 usernameEducationManager: usernameEducationManager
             ),
-            adHocCallArchiver: MessageBackupAdHocCallArchiverImpl(
+            adHocCallArchiver: MessageBackupAdHocCallArchiver(
                 callRecordStore: callRecordStore,
                 callLinkRecordStore: callLinkStore,
                 adHocCallRecordManager: adHocCallRecordManager
@@ -1108,14 +1108,14 @@ public class AppSetup {
             callLinkRecipientArchiver: MessageBackupCallLinkRecipientArchiver(
                 callLinkStore: callLinkStore
             ),
-            chatArchiver: MessageBackupChatArchiverImpl(
+            chatArchiver: MessageBackupChatArchiver(
                 chatStyleArchiver: messageBackupChatStyleArchiver,
                 contactRecipientArchiver: messageBackupContactRecipientArchiver,
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
                 pinnedThreadStore: pinnedThreadStore,
                 threadStore: backupThreadStore
             ),
-            chatItemArchiver: MessageBackupChatItemArchiverImpl(
+            chatItemArchiver: MessageBackupChatItemArchiver(
                 attachmentManager: attachmentManager,
                 attachmentStore: attachmentStore,
                 backupAttachmentDownloadManager: backupAttachmentDownloadManager,
@@ -1142,7 +1142,7 @@ public class AppSetup {
                 storyStore: backupStoryStore,
                 threadStore: backupThreadStore
             ),
-            encryptedStreamProvider: MessageBackupEncryptedProtoStreamProviderImpl(
+            encryptedStreamProvider: MessageBackupEncryptedProtoStreamProvider(
                 backupKeyMaterial: messageBackupKeyMaterial
             ),
             errorPresenter: messageBackupErrorPresenter,
@@ -1173,18 +1173,19 @@ public class AppSetup {
             ),
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             messagePipelineSupervisor: messagePipelineSupervisor,
-            plaintextStreamProvider: MessageBackupPlaintextProtoStreamProviderImpl(),
+            plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider(),
             postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager(
                 avatarFetcher: messageBackupAvatarFetcher,
                 dateProvider: dateProvider,
                 interactionStore: backupInteractionStore,
                 lastVisibleInteractionStore: lastVisibleInteractionStore,
+                preferences: MessageBackup.Wrappers.Preferences(preferences: preferences),
                 recipientDatabaseTable: recipientDatabaseTable,
-                sskPreferences: MessageBackupPostFrameRestoreActionManager.Wrappers.SSKPreferences(),
+                sskPreferences: MessageBackup.Wrappers.SSKPreferences(),
                 threadStore: backupThreadStore
             ),
             releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver(),
-            stickerPackArchiver: MessageBackupStickerPackArchiverImpl(
+            stickerPackArchiver: MessageBackupStickerPackArchiver(
                 backupStickerPackDownloadStore: backupStickerPackDownloadStore
             )
         )

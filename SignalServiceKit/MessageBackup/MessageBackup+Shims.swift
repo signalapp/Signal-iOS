@@ -181,6 +181,7 @@ public class _MessageBackup_OWS2FAManagerWrapper: _MessageBackup_OWS2FAManagerSh
 public protocol _MessageBackup_PreferencesShim {
     func shouldShowUnidentifiedDeliveryIndicators(tx: DBReadTransaction) -> Bool
     func setShouldShowUnidentifiedDeliveryIndicators(value: Bool, tx: DBWriteTransaction)
+    func setWasGroupCallTooltipShown(tx: DBWriteTransaction)
 }
 
 public class _MessageBackup_PreferencesWrapper: _MessageBackup_PreferencesShim {
@@ -195,6 +196,10 @@ public class _MessageBackup_PreferencesWrapper: _MessageBackup_PreferencesShim {
 
     public func setShouldShowUnidentifiedDeliveryIndicators(value: Bool, tx: DBWriteTransaction) {
         preferences.setShouldShowUnidentifiedDeliveryIndicators(value, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func setWasGroupCallTooltipShown(tx: DBWriteTransaction) {
+        preferences.setWasGroupCallTooltipShown(tx: SDSDB.shimOnlyBridge(tx))
     }
 }
 
@@ -383,6 +388,7 @@ public protocol _MessageBackup_SSKPreferencesShim {
 
     func shouldKeepMutedChatsArchived(tx: DBReadTransaction) -> Bool
     func setShouldKeepMutedChatsArchived(value: Bool, tx: DBWriteTransaction)
+    func setHasSavedThread(_ newValue: Bool, tx: DBWriteTransaction)
 }
 
 public class _MessageBackup_SSKPreferencesWrapper: _MessageBackup_SSKPreferencesShim {
@@ -396,8 +402,13 @@ public class _MessageBackup_SSKPreferencesWrapper: _MessageBackup_SSKPreferences
     public func shouldKeepMutedChatsArchived(tx: DBReadTransaction) -> Bool {
         SSKPreferences.shouldKeepMutedChatsArchived(transaction: SDSDB.shimOnlyBridge(tx))
     }
+
     public func setShouldKeepMutedChatsArchived(value: Bool, tx: DBWriteTransaction) {
         SSKPreferences.setShouldKeepMutedChatsArchived(value, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func setHasSavedThread(_ newValue: Bool, tx: DBWriteTransaction) {
+        SSKPreferences.setHasSavedThread(newValue, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 
