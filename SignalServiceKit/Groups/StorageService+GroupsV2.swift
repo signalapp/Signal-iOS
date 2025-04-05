@@ -97,7 +97,7 @@ public extension StorageService {
 
         var request = try buildGroupV2Request(
             protoData: nil,
-            urlString: urlComponents.url!.relativePath,
+            urlString: urlComponents.url!.relativeString,
             method: .get,
             secretParams: secretParams,
             authCredential: authCredential
