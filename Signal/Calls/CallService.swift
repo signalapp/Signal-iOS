@@ -31,13 +31,13 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     let authCredentialManager: any AuthCredentialManager
     private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
     private let db: any DB
-    private var deviceSleepManager: DeviceSleepManager { DeviceSleepManager.shared }
     private var groupCallManager: GroupCallManager { SSKEnvironment.shared.groupCallManagerRef }
     private var messageSenderJobQueue: MessageSenderJobQueue { SSKEnvironment.shared.messageSenderJobQueueRef }
     private var reachabilityManager: SSKReachabilityManager { SSKEnvironment.shared.reachabilityManagerRef }
 
     public var callUIAdapter: CallUIAdapter
 
+    let deviceSleepManager: DeviceSleepManager
     nonisolated let individualCallService: IndividualCallService
     let groupCallRemoteVideoManager: GroupCallRemoteVideoManager
     let callLinkManager: CallLinkManagerImpl
@@ -87,6 +87,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         callRecordDeleteManager: any CallRecordDeleteManager,
         callRecordStore: any CallRecordStore,
         db: any DB,
+        deviceSleepManager: DeviceSleepManager,
         mutableCurrentCall: AtomicValue<SignalCall?>,
         networkManager: NetworkManager,
         tsAccountManager: any TSAccountManager
@@ -126,6 +127,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             tsAccountManager: tsAccountManager
         )
         self.db = db
+        self.deviceSleepManager = deviceSleepManager
         self.callManager.delegate = self
         SwiftSingletons.register(self)
         self.callServiceState.addObserver(self)

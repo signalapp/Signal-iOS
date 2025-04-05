@@ -129,6 +129,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private let attachmentUploadManager: AttachmentUploadManager
     private let dateProvider: DateProvider
     private let db: any DB
+    private let deviceSleepManager: DeviceSleepManager
     private let kvStore: KeyValueStore
     private let messageBackupManager: MessageBackupManager
     private let messagePipelineSupervisor: MessagePipelineSupervisor
@@ -141,6 +142,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         attachmentUploadManager: AttachmentUploadManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
+        deviceSleepManager: DeviceSleepManager,
         messageBackupManager: MessageBackupManager,
         messagePipelineSupervisor: MessagePipelineSupervisor,
         networkManager: NetworkManager,
@@ -151,6 +153,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         self.attachmentUploadManager = attachmentUploadManager
         self.dateProvider = dateProvider
         self.db = db
+        self.deviceSleepManager = deviceSleepManager
         self.kvStore = KeyValueStore(collection: "LinkAndSyncManagerImpl")
         self.messageBackupManager = messageBackupManager
         self.messagePipelineSupervisor = messagePipelineSupervisor
@@ -183,12 +186,11 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             return
         }
 
-        await MainActor.run {
-            appContext.ensureSleepBlocking(true, blockingObjectsDescription: Constants.sleepBlockingDescription)
-        }
+        let blockObject = DeviceSleepManager.BlockObject(blockReason: Constants.sleepBlockingDescription)
+        await deviceSleepManager.addBlock(blockObject: blockObject)
         defer {
-            Task { @MainActor in
-                appContext.ensureSleepBlocking(false, blockingObjectsDescription: Constants.sleepBlockingDescription)
+            Task {
+                await deviceSleepManager.removeBlock(blockObject: blockObject)
             }
         }
 
@@ -315,12 +317,11 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             return
         }
 
-        await MainActor.run {
-            appContext.ensureSleepBlocking(true, blockingObjectsDescription: Constants.sleepBlockingDescription)
-        }
+        let blockObject = DeviceSleepManager.BlockObject(blockReason: Constants.sleepBlockingDescription)
+        await deviceSleepManager.addBlock(blockObject: blockObject)
         defer {
-            Task { @MainActor in
-                appContext.ensureSleepBlocking(false, blockingObjectsDescription: Constants.sleepBlockingDescription)
+            Task {
+                await deviceSleepManager.removeBlock(blockObject: blockObject)
             }
         }
 

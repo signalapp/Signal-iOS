@@ -143,6 +143,7 @@ class NSEEnvironment {
             appContext: CurrentAppContext(),
             appReadiness: appReadiness,
             databaseStorage: databaseStorage,
+            deviceSleepManager: DeviceSleepManager(appContext: appContext),
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NSECallMessageHandler(),

@@ -71,6 +71,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             appContext: appContext,
             appReadiness: appReadiness,
             databaseStorage: databaseStorage,
+            deviceSleepManager: DeviceSleepManager(appContext: appContext),
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NoopCallMessageHandler(),

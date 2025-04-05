@@ -104,7 +104,9 @@ public class AudioPlayer: NSObject {
     }
 
     deinit {
-        DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
+        Task { [sleepBlockObject] in
+            await DependenciesBridge.shared.deviceSleepManager.removeBlock(blockObject: sleepBlockObject)
+        }
         stop()
     }
 
@@ -165,7 +167,9 @@ public class AudioPlayer: NSObject {
         self.audioPlayerPoller = audioPlayerPoller
 
         // Prevent device from sleeping while playing audio.
-        DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
+        MainActor.assumeIsolated {
+            DependenciesBridge.shared.deviceSleepManager.addBlock(blockObject: sleepBlockObject)
+        }
     }
 
     public func pause() {
@@ -188,7 +192,9 @@ public class AudioPlayer: NSObject {
 
         endAudioActivities()
 
-        DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
+        MainActor.assumeIsolated {
+            DependenciesBridge.shared.deviceSleepManager.removeBlock(blockObject: sleepBlockObject)
+        }
     }
 
     public func setupAudioPlayer() {
@@ -273,7 +279,9 @@ public class AudioPlayer: NSObject {
         delegate?.setAudioProgress(0, duration: 0, playbackRate: playbackRate)
 
         endAudioActivities()
-        DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
+        MainActor.assumeIsolated {
+            DependenciesBridge.shared.deviceSleepManager.removeBlock(blockObject: sleepBlockObject)
+        }
         teardownRemoteCommandCenter()
     }
 

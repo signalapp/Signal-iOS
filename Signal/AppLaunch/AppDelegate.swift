@@ -183,9 +183,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         MessageFetchBGRefreshTask.register(appReadiness: appReadiness)
 
+        let deviceSleepManager = DeviceSleepManager(appContext: mainAppContext)
         let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
         let deviceTransferService = DeviceTransferService(
             appReadiness: appReadiness,
+            deviceSleepManager: deviceSleepManager,
             keychainStorage: keychainStorage
         )
 
@@ -253,6 +255,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let launchContext = LaunchContext(
             appContext: mainAppContext,
             databaseStorage: databaseStorage,
+            deviceSleepManager: deviceSleepManager,
             keychainStorage: keychainStorage,
             launchStartedAt: launchStartedAt,
             incrementalMessageTSAttachmentMigrationStore: incrementalMessageTSAttachmentMigrationStore,
@@ -364,6 +367,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private struct LaunchContext {
         var appContext: MainAppContext
         var databaseStorage: SDSDatabaseStorage
+        var deviceSleepManager: DeviceSleepManager
         var keychainStorage: any KeychainStorage
         var launchStartedAt: CFTimeInterval
         var incrementalMessageTSAttachmentMigrationStore: IncrementalTSAttachmentMigrationStore
@@ -398,7 +402,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         loadingViewController: LoadingViewController?
     ) async -> (AppSetup.FinalContinuation, DeviceSleepManager.BlockObject) {
         let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "app launch")
-        DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
+        launchContext.deviceSleepManager.addBlock(blockObject: sleepBlockObject)
 
         let _currentCall = AtomicValue<SignalCall?>(nil, lock: .init())
         let currentCall = CurrentCall(rawValue: _currentCall)
@@ -407,6 +411,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             appContext: launchContext.appContext,
             appReadiness: appReadiness,
             databaseStorage: launchContext.databaseStorage,
+            deviceSleepManager: launchContext.deviceSleepManager,
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
             callMessageHandler: WebRTCCallMessageHandler(),
@@ -431,6 +436,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 callRecordDeleteManager: DependenciesBridge.shared.callRecordDeleteManager,
                 callRecordStore: DependenciesBridge.shared.callRecordStore,
                 db: DependenciesBridge.shared.db,
+                deviceSleepManager: launchContext.deviceSleepManager,
                 mutableCurrentCall: _currentCall,
                 networkManager: SSKEnvironment.shared.networkManagerRef,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager
@@ -566,7 +572,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         launchInterface: launchInterface,
                         launchContext: launchContext
                     )
-                    DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
+                    finalContinuation.dependenciesBridge.deviceSleepManager.removeBlock(blockObject: sleepBlockObject)
                 }
             }
         }

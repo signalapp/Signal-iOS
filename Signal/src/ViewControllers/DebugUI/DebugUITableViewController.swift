@@ -10,28 +10,6 @@ import SignalUI
 
 class DebugUITableViewController: OWSTableViewController {
 
-    private let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "debug ui")
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        // Block device from sleeping while in the Debug UI.
-        //
-        // This is useful if you're using long-running actions in the
-        // Debug UI, like "send 1k messages", etc.
-        DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
-    }
-
-    deinit {
-        DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
-    }
-
     // MARK: Public
 
     static func presentDebugUI(from fromViewController: UIViewController, appReadiness: AppReadinessSetter) {

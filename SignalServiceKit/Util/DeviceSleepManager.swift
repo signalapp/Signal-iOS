@@ -25,14 +25,15 @@ public class DeviceSleepManager {
         }
     }
 
-    public static let shared = DeviceSleepManager()
-
+    private let appContext: any AppContext
     private let blockObjects = AtomicValue<[Weak<BlockObject>]>([], lock: .init())
 
-    private init() {
+    public init(appContext: any AppContext) {
+        self.appContext = appContext
         SwiftSingletons.register(self)
     }
 
+    @MainActor
     public func addBlock(blockObject: BlockObject) {
         self.blockObjects.update {
             $0.append(Weak(value: blockObject))
@@ -40,6 +41,7 @@ public class DeviceSleepManager {
         }
     }
 
+    @MainActor
     public func removeBlock(blockObject: BlockObject) {
         self.blockObjects.update {
             $0.removeAll(where: { $0.value === blockObject })
@@ -47,6 +49,7 @@ public class DeviceSleepManager {
         }
     }
 
+    @MainActor
     private func ensureSleepBlocking(blockObjects: inout [Weak<BlockObject>]) {
         // Cull expired blocks.
         if blockObjects.contains(where: { $0.value == nil }) {
@@ -66,8 +69,6 @@ public class DeviceSleepManager {
             description = "\(blockObjects[0].value?.blockReason ?? "") and \(blockObjects.count - 1) other(s)"
         }
 
-        DispatchQueue.main.async {
-            CurrentAppContext().ensureSleepBlocking(shouldBlock, blockingObjectsDescription: description)
-        }
+        self.appContext.ensureSleepBlocking(shouldBlock, blockingObjectsDescription: description)
     }
 }

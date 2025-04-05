@@ -77,6 +77,7 @@ public protocol AppContext {
     func endBackgroundTask(_ backgroundTaskIdentifier: UIBackgroundTaskIdentifier)
 
     /// Should be a NOOP if isMainApp is NO.
+    @MainActor
     func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjectsDescription: String)
 
     /// Returns the VC that should be used to present alerts, modals, etc.

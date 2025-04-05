@@ -129,6 +129,7 @@ class MainAppContext: NSObject, AppContext {
         UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier)
     }
 
+    @MainActor
     func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjectsDescription: String) {
         if UIApplication.shared.isIdleTimerDisabled != shouldBeBlocking {
             if shouldBeBlocking {

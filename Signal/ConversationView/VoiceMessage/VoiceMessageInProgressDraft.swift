@@ -33,7 +33,9 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
     }
 
     deinit {
-        sleepManager.removeBlock(blockObject: sleepBlockObject)
+        Task { [sleepManager, sleepBlockObject] in
+            await sleepManager.removeBlock(blockObject: sleepBlockObject)
+        }
     }
 
     private let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "voice message")
@@ -69,7 +71,9 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
             throw OWSAssertionError("Couldn't create audioRecorder: \(error)")
         }
 
-        sleepManager.addBlock(blockObject: sleepBlockObject)
+        MainActor.assumeIsolated {
+            sleepManager.addBlock(blockObject: sleepBlockObject)
+        }
 
         audioRecorder.isMeteringEnabled = true
 
@@ -85,7 +89,9 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
     func stopRecording() {
         AssertIsOnMainThread()
 
-        sleepManager.removeBlock(blockObject: sleepBlockObject)
+        MainActor.assumeIsolated {
+            sleepManager.removeBlock(blockObject: sleepBlockObject)
+        }
 
         guard let audioRecorder = audioRecorder else { return }
         self.audioRecorder = nil
@@ -103,7 +109,9 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
     func stopRecordingAsync() {
         AssertIsOnMainThread()
 
-        sleepManager.removeBlock(blockObject: sleepBlockObject)
+        MainActor.assumeIsolated {
+            sleepManager.removeBlock(blockObject: sleepBlockObject)
+        }
 
         guard let audioRecorder = audioRecorder else { return }
         self.audioRecorder = nil

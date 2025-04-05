@@ -117,10 +117,12 @@ class DeviceTransferService: NSObject {
     // MARK: -
 
     let appReadiness: AppReadiness
+    let deviceSleepManager: DeviceSleepManager
     let keychainStorage: any KeychainStorage
 
-    init(appReadiness: AppReadiness, keychainStorage: any KeychainStorage) {
+    init(appReadiness: AppReadiness, deviceSleepManager: DeviceSleepManager, keychainStorage: any KeychainStorage) {
         self.appReadiness = appReadiness
+        self.deviceSleepManager = deviceSleepManager
         self.keychainStorage = keychainStorage
 
         super.init()
@@ -147,7 +149,9 @@ class DeviceTransferService: NSObject {
         session.delegate = self
         self.session = session
 
-        DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
+        Task {
+            await self.deviceSleepManager.addBlock(blockObject: sleepBlockObject)
+        }
 
         newDeviceServiceAdvertiser.startAdvertisingPeer()
 
@@ -212,7 +216,9 @@ class DeviceTransferService: NSObject {
         session.delegate = self
         self.session = session
 
-        DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
+        Task {
+            await self.deviceSleepManager.addBlock(blockObject: sleepBlockObject)
+        }
 
         transferState = .outgoing(
             newDevicePeerId: peerId,
@@ -274,7 +280,9 @@ class DeviceTransferService: NSObject {
         session = nil
         identity = nil
 
-        DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
+        Task {
+            await self.deviceSleepManager.removeBlock(blockObject: sleepBlockObject)
+        }
 
         // It is possible that we get here because the app was backgrounded
         // after a failed launch. In that case, `tsAccountManager` will not be

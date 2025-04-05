@@ -17,7 +17,7 @@ extension ConversationViewController {
         let inProgressVoiceMessage = VoiceMessageInProgressDraft(
             thread: thread,
             audioSession: SUIEnvironment.shared.audioSessionRef,
-            sleepManager: DeviceSleepManager.shared
+            sleepManager: DependenciesBridge.shared.deviceSleepManager
         )
         viewState.inProgressVoiceMessage = inProgressVoiceMessage
 
