@@ -183,13 +183,13 @@ class NotificationService: UNNotificationServiceExtension {
             // Wait for these in parallel.
             do {
                 // Wait until all ACKs are complete.
-                async let pendingAcks: Void = SSKEnvironment.shared.messageFetcherJobRef.pendingAcksPromise().awaitable()
+                async let pendingAcks: Void = SSKEnvironment.shared.messageFetcherJobRef.waitForPendingAcks()
                 // Wait until all outgoing receipt sends are complete.
-                async let pendingReceipts: Void = SSKEnvironment.shared.receiptSenderRef.pendingSendsPromise().awaitable()
+                async let pendingReceipts: Void = SSKEnvironment.shared.receiptSenderRef.waitForPendingReceipts()
                 // Wait until all outgoing messages are sent.
-                async let pendingMessages: Void = SSKEnvironment.shared.messageSenderRef.pendingSendsPromise().awaitable()
+                async let pendingMessages: Void = SSKEnvironment.shared.messageSenderRef.waitForPendingMessages()
                 // Wait until all sync requests are fulfilled.
-                async let pendingOps: Void = MessageReceiver.pendingTasksPromise().awaitable()
+                async let pendingOps: Void = MessageReceiver.waitForPendingTasks()
 
                 try await pendingAcks
                 try await pendingReceipts
@@ -198,7 +198,7 @@ class NotificationService: UNNotificationServiceExtension {
             }
 
             // Finally, wait for any notifications to finish posting
-            try await NotificationPresenterImpl.pendingNotificationsPromise().awaitable()
+            try await NotificationPresenterImpl.waitForPendingNotifications()
         } catch {
             Logger.warn("\(error)")
         }

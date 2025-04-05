@@ -56,7 +56,7 @@ public class ReceiptSender: NSObject {
     private let viewedReceiptStore: KeyValueStore
 
     private var observers = [NSObjectProtocol]()
-    private let pendingTasks = PendingTasks(label: #fileID)
+    private let pendingTasks = PendingTasks()
     private let sendingState: AtomicValue<SendingState>
 
     public init(appReadiness: AppReadiness, recipientDatabaseTable: any RecipientDatabaseTable) {
@@ -161,7 +161,7 @@ public class ReceiptSender: NSObject {
             owsFailDebug("Invalid timestamp.")
             return
         }
-        let pendingTask = pendingTasks.buildPendingTask(label: "Receipt Send")
+        let pendingTask = pendingTasks.buildPendingTask()
         let persistedSet = fetchReceiptSet(receiptType: receiptType, aci: aci, tx: tx)
         persistedSet.insert(timestamp: timestamp, messageUniqueId: messageUniqueId)
         storeReceiptSet(persistedSet, receiptType: receiptType, aci: aci, tx: tx)
@@ -447,11 +447,7 @@ public class ReceiptSender: NSObject {
         }
     }
 
-    public func pendingSendsPromise() -> Promise<Void> {
-        // This promise blocks on all operations already in the queue but will not
-        // block on new operations added after this promise is created. That's
-        // intentional to ensure that NotificationService instances complete in a
-        // timely way.
-        pendingTasks.pendingTasksPromise()
+    public func waitForPendingReceipts() async throws {
+        try await pendingTasks.waitForPendingTasks()
     }
 }

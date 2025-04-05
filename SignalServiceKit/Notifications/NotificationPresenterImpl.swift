@@ -1417,21 +1417,17 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     // MARK: - Serialization
 
-    private static let pendingTasks = PendingTasks(label: "Notifications")
+    private static let pendingTasks = PendingTasks()
 
-    public static func pendingNotificationsPromise() -> Promise<Void> {
-        // This promise blocks on all pending notifications already in flight,
-        // but will not block on new notifications enqueued after this promise
-        // is created. That's intentional to ensure that NotificationService
-        // instances complete in a timely way.
-        pendingTasks.pendingTasksPromise()
+    public static func waitForPendingNotifications() async throws {
+        try await pendingTasks.waitForPendingTasks()
     }
 
     private let mostRecentTask = AtomicValue<Task<Void, Never>?>(nil, lock: .init())
 
     private func enqueueNotificationAction(afterCommitting tx: DBReadTransaction? = nil, _ block: @escaping () async -> Void) {
         let startTime = CACurrentMediaTime()
-        let pendingTask = Self.pendingTasks.buildPendingTask(label: "Post Notification")
+        let pendingTask = Self.pendingTasks.buildPendingTask()
         let commitGuarantee = (tx as? DBWriteTransaction).map {
             let (guarantee, future) = Guarantee<Void>.pending()
             $0.addSyncCompletion { future.resolve() }

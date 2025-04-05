@@ -41,14 +41,10 @@ public class MessageSender {
         SwiftSingletons.register(self)
     }
 
-    private let pendingTasks = PendingTasks(label: "Message Sends")
+    private let pendingTasks = PendingTasks()
 
-    public func pendingSendsPromise() -> Promise<Void> {
-        // This promise blocks on all operations already in the queue,
-        // but will not block on new operations added after this promise
-        // is created. That's intentional to ensure that NotificationService
-        // instances complete in a timely way.
-        pendingTasks.pendingTasksPromise()
+    public func waitForPendingMessages() async throws {
+        try await pendingTasks.waitForPendingTasks()
     }
 
     // MARK: - Creating Signal Protocol Sessions
@@ -416,7 +412,7 @@ public class MessageSender {
         Logger.info("Sending \(preparedOutgoingMessage)")
 
         // We create a PendingTask so we can block on flushing all current message sends.
-        let pendingTask = pendingTasks.buildPendingTask(label: "Message Send")
+        let pendingTask = pendingTasks.buildPendingTask()
         defer { pendingTask.complete() }
 
         try await withThrowingTaskGroup(of: Void.self) { taskGroup in

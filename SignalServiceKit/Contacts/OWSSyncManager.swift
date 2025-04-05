@@ -272,7 +272,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         case .unknown:
             owsFailDebug("Unknown fetch latest type")
         case .localProfile:
-            let pendingTask = MessageReceiver.buildPendingTask(label: "Fetch Profile")
+            let pendingTask = MessageReceiver.buildPendingTask()
             Task {
                 defer { pendingTask.complete() }
                 _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(authedAccount: .implicit())

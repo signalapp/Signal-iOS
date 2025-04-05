@@ -69,7 +69,7 @@ public class MessageFetcherJob {
                 self.startFetchingIfNeeded()
             }
             do {
-                try await self.pendingAcksPromise().awaitable()
+                try await self.waitForPendingAcks()
                 try await self.fetchMessages()
                 fetchFuture.resolve()
             } catch {
@@ -141,10 +141,10 @@ public class MessageFetcherJob {
     // We want to have multiple ACKs in flight at a time.
     private let ackQueue = ConcurrentTaskQueue(concurrentLimit: 5)
 
-    private let pendingAcks = PendingTasks(label: "Acks")
+    private let pendingAcks = PendingTasks()
 
     private func acknowledgeDelivery(envelopeInfo: EnvelopeInfo) {
-        let pendingAck = pendingAcks.buildPendingTask(label: "ack \(envelopeInfo.timestamp)")
+        let pendingAck = pendingAcks.buildPendingTask()
         Task {
             defer {
                 pendingAck.complete()
@@ -169,12 +169,8 @@ public class MessageFetcherJob {
         }
     }
 
-    public func pendingAcksPromise() -> Promise<Void> {
-        // This promise blocks on all operations already in the queue,
-        // but will not block on new operations added after this promise
-        // is created. That's intentional to ensure that NotificationService
-        // instances complete in a timely way.
-        pendingAcks.pendingTasksPromise()
+    public func waitForPendingAcks() async throws {
+        try await pendingAcks.waitForPendingTasks()
     }
 
     // MARK: -
@@ -232,7 +228,7 @@ public class MessageFetcherJob {
     private func fetchMessagesViaRestWhenReady() async throws {
         owsPrecondition(CurrentAppContext().isNSE)
         await SSKEnvironment.shared.messageProcessorRef.waitForProcessingComplete().awaitable()
-        try await pendingAcksPromise().awaitable()
+        try await waitForPendingAcks()
         try await fetchMessagesViaRest()
     }
 

@@ -71,18 +71,14 @@ public final class MessageReceiver {
         self.deleteForMeSyncMessageReceiver = deleteForMeSyncMessageReceiver
     }
 
-    private static let pendingTasks = PendingTasks(label: "messageReceiver")
+    private static let pendingTasks = PendingTasks()
 
-    public static func pendingTasksPromise() -> Promise<Void> {
-        // This promise blocks on all pending tasks already in flight,
-        // but will not block on new tasks enqueued after this promise
-        // is created. That's intentional to ensure that NotificationService
-        // instances complete in a timely way.
-        pendingTasks.pendingTasksPromise()
+    public static func waitForPendingTasks() async throws {
+        try await pendingTasks.waitForPendingTasks()
     }
 
-    public static func buildPendingTask(label: String) -> PendingTask {
-        Self.pendingTasks.buildPendingTask(label: label)
+    public static func buildPendingTask() -> PendingTask {
+        return pendingTasks.buildPendingTask()
     }
 
     /// Performs a limited amount of time sensitive processing before scheduling
@@ -470,7 +466,7 @@ public final class MessageReceiver {
                     }
                 } else if let groupCallUpdate = dataMessage.groupCallUpdate {
                     if let groupId = try? GroupIdentifier(contents: [UInt8](groupId ?? Data())) {
-                        let pendingTask = MessageReceiver.buildPendingTask(label: "GroupCallUpdate")
+                        let pendingTask = MessageReceiver.buildPendingTask()
                         Task { [callMessageHandler] in
                             defer { pendingTask.complete() }
                             await callMessageHandler.receivedGroupCallUpdateMessage(
@@ -675,7 +671,7 @@ public final class MessageReceiver {
             //
             // In rare cases this means we won't respond to the sync request, but
             // that's acceptable.
-            let pendingTask = Self.buildPendingTask(label: "syncAllContacts")
+            let pendingTask = Self.buildPendingTask()
             DispatchQueue.global().async {
                 SSKEnvironment.shared.syncManagerRef.syncAllContacts().ensure(on: DispatchQueue.global()) {
                     pendingTask.complete()
@@ -685,7 +681,7 @@ public final class MessageReceiver {
             }
 
         case .blocked:
-            let pendingTask = Self.buildPendingTask(label: "syncBlockList")
+            let pendingTask = Self.buildPendingTask()
             Task {
                 defer { pendingTask.complete() }
                 try? await SSKEnvironment.shared.blockingManagerRef.syncBlockList().value
@@ -951,7 +947,7 @@ public final class MessageReceiver {
                 Logger.warn("Ignoring group call update invalid group thread.")
                 return nil
             }
-            let pendingTask = Self.buildPendingTask(label: "GroupCallUpdate")
+            let pendingTask = Self.buildPendingTask()
             Task { [callMessageHandler] in
                 defer { pendingTask.complete() }
                 await callMessageHandler.receivedGroupCallUpdateMessage(
