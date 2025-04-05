@@ -1626,6 +1626,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
 
         unsubmittedRequestTokenForEarlyExit = nil
         _ = Task { [self, connection] in
+            var chatService: Connection?
             let connectionInfo: ConnectionInfo
             let response: ChatConnection.Response
 
@@ -1636,7 +1637,8 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                     removeUnsubmittedRequestToken(unsubmittedRequestToken)
                 }
 
-                guard let chatService = await connection.waitToFinishConnecting() else {
+                chatService = await connection.waitToFinishConnecting()
+                guard let chatService else {
                     throw SignalError.chatServiceInactive("no connection to chat server")
                 }
 
@@ -1646,7 +1648,13 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                 switch error as? SignalError {
                 case .connectionTimeoutError(_), .requestTimeoutError(_):
                     if requestInfo.timeoutIfNecessary() {
-                        self.cycleSocket()
+                        // cycleSocket(), but only if the chatService we just used is the one that's still connected.
+                        self.serialQueue.async { [weak chatService] in
+                            if let chatService, self.connection.isActive(chatService) {
+                                self.disconnectIfNeeded()
+                            }
+                        }
+                        applyDesiredSocketState()
                     }
                 case .webSocketError(_), .connectionFailed(_):
                     requestInfo.didFailDueToNetwork()
