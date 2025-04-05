@@ -860,7 +860,13 @@ public class MessageSender {
             } catch {
                 let groupId = try secretParams.getPublicParams().getGroupIdentifier()
                 Logger.warn("Couldn't refresh \(groupId) to fetch GSEs: \(error)")
-                // continue anyways... we'll fall back to a fanout when retrying
+                // If we hit a network failure, assume fanout message sends will also fail,
+                // so don't bother fanning out. Just wait.
+                if error.isNetworkFailureOrTimeout {
+                    throw error
+                }
+                // Otherwise, continue anyways. We'll fall back to a fanout when retrying,
+                // and that should avoid blocking sends on weird groups edge cases.
             }
             retryRecoveryState = recoveryState.mutated({ $0.canRefreshExpiringGroupSendEndorsements = false })
         case .sendPreparedMessage(let state):
