@@ -726,7 +726,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
     }
 
-    // MARK: Badge Sheets
+    // MARK: -
 
     private var donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore {
         DependenciesBridge.shared.donationReceiptCredentialResultStore
@@ -820,14 +820,18 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 receiptCredentialRequestError: recurringSubscriptionRenewalReceiptCredentialRequestError,
                 errorMode: .recurringSubscriptionRenewal
             )
-        } else {
-            showBadgeExpirationSheetIfNeeded(
-                donationSubscriberID: donationSubscriberID,
-                expiredBadgeID: expiredBadgeID,
-                shouldShowExpirySheet: shouldShowExpirySheet,
-                mostRecentSubscriptionPaymentMethod: mostRecentSubscriptionPaymentMethod,
-                probablyHasCurrentSubscription: probablyHasCurrentSubscription
-            )
+        } else if
+            let expiredBadgeID,
+            shouldShowExpirySheet
+        {
+            Task {
+                await showBadgeExpirationSheetIfNeeded(
+                    donationSubscriberID: donationSubscriberID,
+                    expiredBadgeID: expiredBadgeID,
+                    mostRecentSubscriptionPaymentMethod: mostRecentSubscriptionPaymentMethod,
+                    probablyHasCurrentSubscription: probablyHasCurrentSubscription
+                )
+            }
         }
     }
 
@@ -939,46 +943,35 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     private func showBadgeExpirationSheetIfNeeded(
         donationSubscriberID: Data?,
-        expiredBadgeID: String?,
-        shouldShowExpirySheet: Bool,
+        expiredBadgeID: String,
         mostRecentSubscriptionPaymentMethod: DonationPaymentMethod?,
         probablyHasCurrentSubscription: Bool
-    ) {
-        guard let expiredBadgeID else {
-            return
-        }
-
-        guard shouldShowExpirySheet else {
-            return
-        }
-
-        Logger.info("[Donations] showing expiry sheet for expired badge \(expiredBadgeID)")
-
+    ) async {
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let db = DependenciesBridge.shared.db
         if BoostBadgeIds.contains(expiredBadgeID) {
-            Promise.wrapAsync {
-                try await DonationSubscriptionManager.getBoostBadge()
-            }.done(on: DispatchQueue.global()) { boostBadge in
-                Promise.wrapAsync {
-                    try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(boostBadge)
-                }.done(on: DispatchQueue.main) {
-                    // Make sure we're still the active VC
-                    guard UIApplication.shared.frontmostViewController == self.conversationSplitViewController,
-                          self.conversationSplitViewController?.selectedThread == nil else { return }
+            Logger.info("[Donations] Showing expiry sheet for expired boost badge.")
 
-                    let badgeSheet = BadgeIssueSheet(
-                        badge: boostBadge,
-                        mode: .boostExpired(hasCurrentSubscription: probablyHasCurrentSubscription)
-                    )
-                    badgeSheet.delegate = self
-                    self.present(badgeSheet, animated: true)
-                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                        DonationSubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
-                    }
-                }.catch { error in
-                    owsFailDebug("Failed to fetch boost badge assets for expiry \(error)")
+            do {
+                let boostBadge = try await DonationSubscriptionManager.getBoostBadge()
+                try await profileManager.badgeStore.populateAssetsOnBadge(boostBadge)
+
+                // Make sure we're still the active VC
+                guard UIApplication.shared.frontmostViewController == self.conversationSplitViewController,
+                      self.conversationSplitViewController?.selectedThread == nil else { return }
+
+                let badgeSheet = BadgeIssueSheet(
+                    badge: boostBadge,
+                    mode: .boostExpired(hasCurrentSubscription: probablyHasCurrentSubscription)
+                )
+                badgeSheet.delegate = self
+                self.present(badgeSheet, animated: true)
+
+                await db.awaitableWrite { tx in
+                    DonationSubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: tx)
                 }
-            }.catch { error in
-                owsFailDebug("Failed to fetch boost badge for expiry \(error)")
+            } catch {
+                Logger.warn("[Donations] Failed to fetch expired boost badge assets! \(error)")
             }
         } else if SubscriptionBadgeIds.contains(expiredBadgeID) {
             /// We expect to show an error sheet when the subscription fails to
@@ -997,27 +990,25 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             /// We'll still fetch the subscription, but just for logging
             /// purposes.
 
-            Promise.wrapAsync { () -> Subscription? in
-                guard let donationSubscriberID else {
-                    return nil
-                }
-                return try await DonationSubscriptionManager.getCurrentSubscriptionStatus(
-                    for: donationSubscriberID
-                )
-            }.done(on: DispatchQueue.global()) { currentSubscription in
-                defer {
-                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                        DonationSubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
-                    }
-                }
+            Logger.info("[Donations] Handling expired subscription badge.")
 
-                guard let currentSubscription else {
-                    // If the subscription is missing entirely, it presumably
-                    // expired due to inactivity.
-                    Logger.warn("[Donations] Missing subscription for expired badge. It probably expired due to inactivity and was deleted.")
+            let currentSubscription: Subscription?
+            if let donationSubscriberID {
+                do {
+                    currentSubscription = try await DonationSubscriptionManager
+                        .getCurrentSubscriptionStatus(for: donationSubscriberID)
+                } catch {
+                    Logger.warn("[Donations] Failed to get subscription during badge expiration!")
                     return
                 }
+            } else {
+                currentSubscription = nil
+            }
 
+            if
+                donationSubscriberID != nil,
+                let currentSubscription
+            {
                 owsAssertDebug(
                     currentSubscription.status == .canceled,
                     "[Donations] Current subscription is not canceled, but the badge expired!"
@@ -1028,11 +1019,21 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 } else {
                     Logger.warn("[Donations] Badge expired for subscription without charge failure. It probably expired due to inactivity, but hasn't yet been deleted.")
                 }
-            }.catch(on: SyncScheduler()) { _ in
-                owsFailDebug("[Donations] Failed to get subscription during badge expiration!")
+            } else if donationSubscriberID != nil {
+                // If the subscription is missing entirely, it presumably
+                // expired due to inactivity.
+                Logger.warn("[Donations] Missing subscription for expired badge. It probably expired due to inactivity and was deleted.")
+            } else {
+                Logger.warn("[Donations] Missing subscriber ID for expired subscription badge.")
+            }
+
+            await db.awaitableWrite { tx in
+                DonationSubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: tx)
             }
         }
     }
+
+    // MARK: -
 
     private func isChatListTopmostViewController() -> Bool {
         guard
