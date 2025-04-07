@@ -974,7 +974,7 @@ public class AppSetup {
             networkManager: networkManager,
             reachabilityManager: reachabilityManager
         )
-        let backupSubscriptionManager = BackupSubscriptionManagerImpl(
+        let backupSubscriptionManager = BackupSubscriptionManager(
             dateProvider: dateProvider,
             db: db,
             networkManager: networkManager,
