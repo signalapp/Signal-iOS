@@ -240,7 +240,11 @@ class AppSettingsViewController: OWSTableViewController2 {
                 icon: .backup,
                 withText: OWSLocalizedString("SETTINGS_BACKUPS", comment: "Label for the 'backups' section of app settings."),
                 actionBlock: { [weak self] in
-                    let vc = BackupSettingsViewController.make()
+                    let vc = BackupSettingsViewController.make(
+                        backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
+                        db: DependenciesBridge.shared.db,
+                        networkManager: SSKEnvironment.shared.networkManagerRef
+                    )
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             ))

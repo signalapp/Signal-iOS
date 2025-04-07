@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Lottie
 import SignalServiceKit
 import SignalUI
 import SwiftUI
@@ -18,10 +19,62 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         )
     }
 
-    static func make() -> BackupSettingsViewController {
+    static func make(
+        backupSubscriptionManager: BackupSubscriptionManager,
+        db: DB,
+        networkManager: NetworkManager
+    ) -> BackupSettingsViewController {
+        let backupSubscriberID: Data? = db.read { tx in
+            backupSubscriptionManager.getIAPSubscriberData(tx: tx)?.subscriberId
+        }
+
+        let backupPlanViewModel = BackupSettingsViewModel.BackupPlanViewModel(
+            loadBackupPlanBlock: { () async throws -> BackupSettingsViewModel.BackupPlanViewModel.BackupPlan in
+                guard
+                    let backupSubscriberID,
+                    let backupSubscription = try await SubscriptionFetcher(networkManager: networkManager)
+                        .fetch(subscriberID: backupSubscriberID)
+                else {
+                    return .free
+                }
+
+                let endOfCurrentPeriod = Date(timeIntervalSince1970: backupSubscription.endOfCurrentPeriod)
+
+                switch backupSubscription.status {
+                case .active, .pastDue:
+                    // `.pastDue` means that a renewal failed, but the payment
+                    // processor is automatically retrying. For now, assume it
+                    // may recover, and show it as paid. If it fails, it'll
+                    // become `.canceled` instead.
+                    if backupSubscription.cancelAtEndOfPeriod {
+                        return .paidButCanceled(expirationDate: endOfCurrentPeriod)
+                    }
+
+                    return .paid(
+                        price: backupSubscription.amount,
+                        renewalDate: endOfCurrentPeriod
+                    )
+                case .canceled:
+                    // TODO: Improved "downgraded to free" state (see comment)
+                    // The user's subscription is full-on canceled, which means
+                    // in practice they've been downgraded to the free plan. We
+                    // should probably signal that to them more explicitly.
+                    return .paidButCanceled(expirationDate: endOfCurrentPeriod)
+                case .incomplete, .unpaid, .unknown:
+                    // These are unexpected statuses, so we know that something
+                    // is wrong with the subscription. Consequently, we can show
+                    // it as free.
+                    owsFailDebug("Unexpected backup subscription status! \(backupSubscription.status)")
+                    return .free
+                }
+            }
+        )
+
+        let enabledState = BackupSettingsViewModel.EnabledState.disabled
+
         return BackupSettingsViewController(viewModel: BackupSettingsViewModel(
-            backupPlan: .free,
-            enabledState: .disabled
+            backupPlanViewModel: backupPlanViewModel,
+            enabledState: enabledState
         ))
     }
 }
@@ -29,10 +82,69 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
 // MARK: -
 
 private class BackupSettingsViewModel: ObservableObject {
-    enum BackupPlan {
-        case free
-        case paid(price: FiatMoney, renewalDate: Date)
-        case paidButCanceled(expirationDate: Date)
+    class BackupPlanViewModel: ObservableObject {
+        enum BackupPlan {
+            case free
+            case paid(price: FiatMoney, renewalDate: Date)
+            case paidButCanceled(expirationDate: Date)
+        }
+
+        enum BackupPlanLoadingState {
+            case loading
+            case loaded(BackupPlan)
+            case networkError
+            case genericError
+        }
+
+        @Published var loadingState: BackupPlanLoadingState
+
+        init(
+            loadBackupPlanBlock: @escaping () async throws -> BackupPlan
+        ) {
+            self.loadingState = .loading
+
+            Task { @MainActor in
+                let newLoadingState: BackupPlanLoadingState
+                do {
+                    let backupPlan = try await loadBackupPlanBlock()
+                    newLoadingState = .loaded(backupPlan)
+                } catch let error where error.isNetworkFailureOrTimeout {
+                    newLoadingState = .networkError
+                } catch {
+                    newLoadingState = .genericError
+                }
+
+                withAnimation {
+                    loadingState = newLoadingState
+                }
+            }
+        }
+
+        // MARK: -
+
+        func upgradeFromFreeToPaidPlan() {
+            guard case .loaded(.free) = loadingState else {
+                owsFail("Attempting to upgrade from free plan, but not on free plan!")
+            }
+
+            // TODO: Implement
+        }
+
+        func manageOrCancelPaidPlan() {
+            guard case .loaded(.paid) = loadingState else {
+                owsFail("Attempting to manage/cancel paid plan, but not on paid plan!")
+            }
+
+            // TODO: Implement
+        }
+
+        func resubscribeToPaidPlan() {
+            guard case .loaded(.paidButCanceled) = loadingState else {
+                owsFail("Attempting to restart paid plan, but not on paid-but-canceled plan!")
+            }
+
+            // TODO: Implement
+        }
     }
 
     class BackupEnabledViewModel: ObservableObject {
@@ -76,41 +188,15 @@ private class BackupSettingsViewModel: ObservableObject {
         case disabled
     }
 
-    let backupPlan: BackupPlan
+    let backupPlanViewModel: BackupPlanViewModel
     @Published var enabledState: EnabledState
 
     init(
-        backupPlan: BackupPlan,
+        backupPlanViewModel: BackupPlanViewModel,
         enabledState: EnabledState
     ) {
-        self.backupPlan = backupPlan
+        self.backupPlanViewModel = backupPlanViewModel
         self.enabledState = enabledState
-    }
-
-    // MARK: -
-
-    func upgradeFromFreeToPaidPlan() {
-        guard case .free = backupPlan else {
-            owsFail("Attempting to upgrade from free plan, but not on free plan!")
-        }
-
-        // TODO: Implement
-    }
-
-    func manageOrCancelPaidPlan() {
-        guard case .paid = backupPlan else {
-            owsFail("Attempting to manage/cancel paid plan, but not on paid plan!")
-        }
-
-        // TODO: Implement
-    }
-
-    func resubscribeToPaidPlan() {
-        guard case .paidButCanceled = backupPlan else {
-            owsFail("Attempting to restart paid plan, but not on paid-but-canceled plan!")
-        }
-
-        // TODO: Implement
     }
 
     // MARK: -
@@ -158,19 +244,7 @@ struct BackupSettingsView: View {
     var body: some View {
         SignalList {
             SignalSection {
-                BackupPlanView(
-                    backupPlan: viewModel.backupPlan,
-                    didTapPlanActionButton: {
-                        switch viewModel.backupPlan {
-                        case .free:
-                            viewModel.upgradeFromFreeToPaidPlan()
-                        case .paid:
-                            viewModel.manageOrCancelPaidPlan()
-                        case .paidButCanceled:
-                            viewModel.resubscribeToPaidPlan()
-                        }
-                    }
-                )
+                BackupPlanView(viewModel: viewModel.backupPlanViewModel)
             }
 
             switch viewModel.enabledState {
@@ -245,104 +319,155 @@ struct BackupSettingsView: View {
 // MARK: -
 
 private struct BackupPlanView: View {
-    let backupPlan: BackupSettingsViewModel.BackupPlan
-    let didTapPlanActionButton: () -> Void
+    @ObservedObject var viewModel: BackupSettingsViewModel.BackupPlanViewModel
 
     var body: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 8) {
-                Group {
-                    switch backupPlan {
-                    case .free:
-                        Text(OWSLocalizedString(
-                            "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER",
-                            comment: "Header describing what the free backup plan includes."
-                        ))
-                    case .paid, .paidButCanceled:
-                        Text(OWSLocalizedString(
-                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER",
-                            comment: "Header describing what the paid backup plan includes."
-                        ))
-                    }
-                }
-                .font(.subheadline)
-                .foregroundStyle(Color.Signal.secondaryLabel)
-
-                switch backupPlan {
-                case .free:
-                    Text(OWSLocalizedString(
-                        "BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION",
-                        comment: "Text describing the user's free backup plan."
-                    ))
-                case .paid(let price, let renewalDate):
-                    let renewalStringFormat = OWSLocalizedString(
-                        "BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT",
-                        comment: "Text explaining when the user's paid backup plan renews. Embeds {{ the formatted renewal date }}."
-                    )
-                    let priceStringFormat = OWSLocalizedString(
-                        "BACKUP_SETTINGS_BACKUP_PLAN_PAID_PRICE_FORMAT",
-                        comment: "Text explaining the price of the user's paid backup plan. Embeds {{ the formatted price }}."
-                    )
-
-                    Text(String(format: priceStringFormat, CurrencyFormatter.format(money: price)))
-                    Text(String(format: renewalStringFormat, DateFormatter.localizedString(from: renewalDate, dateStyle: .medium, timeStyle: .none)))
-                case .paidButCanceled(let expirationDate):
-                    let expirationDateString = DateFormatter.localizedString(from: expirationDate, dateStyle: .medium, timeStyle: .none)
-
-                    Text(OWSLocalizedString(
-                        "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION",
-                        comment: "Text describing that the user's paid backup plan has been canceled."
-                    ))
-                    .foregroundStyle(Color.Signal.red)
-                    if expirationDate.isAfterNow {
-                        let expirationDateFutureString = OWSLocalizedString(
-                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT",
-                            comment: "Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}."
-                        )
-
-                        Text(String(format: expirationDateFutureString, expirationDateString))
-                    } else {
-                        let expirationDatePastString = OWSLocalizedString(
-                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT",
-                            comment: "Text explaining that a user's paid plan, which has been canceled, has expired. Embeds {{ the formatted expiration date }}."
-                        )
-
-                        Text(String(format: expirationDatePastString, expirationDateString))
-                    }
-                }
-
-                Button {
-                    didTapPlanActionButton()
-                } label: {
-                    switch backupPlan {
-                    case .free:
-                        Text(OWSLocalizedString(
-                            "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE",
-                            comment: "Title for a button allowing users to upgrade from a free to paid backup plan."
-                        ))
-                    case .paid:
-                        Text(OWSLocalizedString(
-                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE",
-                            comment: "Title for a button allowing users to manage or cancel their paid backup plan."
-                        ))
-                    case .paidButCanceled:
-                        Text(OWSLocalizedString(
-                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE",
-                            comment: "Title for a button allowing users to reenable a paid backup plan that has been canceled."
-                        ))
-                    }
-                }
-                .buttonStyle(.bordered)
-                .buttonBorderShape(.capsule)
-                .foregroundStyle(Color.Signal.label)
-                .padding(.top, 8)
+        switch viewModel.loadingState {
+        case .loading:
+            HStack(alignment: .center) {
+                Spacer()
+                LottieView(animation: .named("circular_indeterminate"))
+                    .playing(loopMode: .loop)
+                    .frame(width: 80, height: 80)
+                Spacer()
             }
+            .frame(height: 140)
+        case .loaded(let backupPlan):
+            LoadedView(
+                viewModel: viewModel,
+                backupPlan: backupPlan
+            )
+            .frame(minHeight: 140)
+        case .networkError:
+            HStack {
+                Image("error-circle")
+                    .foregroundStyle(Color.Signal.red)
+                Text(OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR",
+                    comment: "Text shown when we fail to load someone's backup plan due to a network error."
+                ))
+            }
+            .frame(height: 140)
+        case .genericError:
+            HStack {
+                Image("error-circle")
+                    .foregroundStyle(Color.Signal.red)
+                Text(OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR",
+                    comment: "Text shown when we fail to load someone's backup plan due to a generic error."
+                ))
+            }
+            .frame(height: 140)
+        }
+    }
 
-            Spacer()
+    private struct LoadedView: View {
+        let viewModel: BackupSettingsViewModel.BackupPlanViewModel
+        let backupPlan: BackupSettingsViewModel.BackupPlanViewModel.BackupPlan
 
-            Image(uiImage: Theme.iconImage(.backup))
-                .resizable()
-                .frame(width: 56, height: 56)
+        var body: some View {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Group {
+                        switch backupPlan {
+                        case .free:
+                            Text(OWSLocalizedString(
+                                "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER",
+                                comment: "Header describing what the free backup plan includes."
+                            ))
+                        case .paid, .paidButCanceled:
+                            Text(OWSLocalizedString(
+                                "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER",
+                                comment: "Header describing what the paid backup plan includes."
+                            ))
+                        }
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(Color.Signal.secondaryLabel)
+
+                    switch backupPlan {
+                    case .free:
+                        Text(OWSLocalizedString(
+                            "BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION",
+                            comment: "Text describing the user's free backup plan."
+                        ))
+                    case .paid(let price, let renewalDate):
+                        let renewalStringFormat = OWSLocalizedString(
+                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT",
+                            comment: "Text explaining when the user's paid backup plan renews. Embeds {{ the formatted renewal date }}."
+                        )
+                        let priceStringFormat = OWSLocalizedString(
+                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_PRICE_FORMAT",
+                            comment: "Text explaining the price of the user's paid backup plan. Embeds {{ the formatted price }}."
+                        )
+
+                        Text(String(format: priceStringFormat, CurrencyFormatter.format(money: price)))
+                        Text(String(format: renewalStringFormat, DateFormatter.localizedString(from: renewalDate, dateStyle: .medium, timeStyle: .none)))
+                    case .paidButCanceled(let expirationDate):
+                        let expirationDateString = DateFormatter.localizedString(from: expirationDate, dateStyle: .medium, timeStyle: .none)
+
+                        Text(OWSLocalizedString(
+                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION",
+                            comment: "Text describing that the user's paid backup plan has been canceled."
+                        ))
+                        .foregroundStyle(Color.Signal.red)
+                        if expirationDate.isAfterNow {
+                            let expirationDateFutureString = OWSLocalizedString(
+                                "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT",
+                                comment: "Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}."
+                            )
+
+                            Text(String(format: expirationDateFutureString, expirationDateString))
+                        } else {
+                            let expirationDatePastString = OWSLocalizedString(
+                                "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT",
+                                comment: "Text explaining that a user's paid plan, which has been canceled, has expired. Embeds {{ the formatted expiration date }}."
+                            )
+
+                            Text(String(format: expirationDatePastString, expirationDateString))
+                        }
+                    }
+
+                    Button {
+                        switch backupPlan {
+                        case .free:
+                            viewModel.upgradeFromFreeToPaidPlan()
+                        case .paid:
+                            viewModel.manageOrCancelPaidPlan()
+                        case .paidButCanceled:
+                            viewModel.resubscribeToPaidPlan()
+                        }
+                    } label: {
+                        switch backupPlan {
+                        case .free:
+                            Text(OWSLocalizedString(
+                                "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE",
+                                comment: "Title for a button allowing users to upgrade from a free to paid backup plan."
+                            ))
+                        case .paid:
+                            Text(OWSLocalizedString(
+                                "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE",
+                                comment: "Title for a button allowing users to manage or cancel their paid backup plan."
+                            ))
+                        case .paidButCanceled:
+                            Text(OWSLocalizedString(
+                                "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE",
+                                comment: "Title for a button allowing users to reenable a paid backup plan that has been canceled."
+                            ))
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    .buttonBorderShape(.capsule)
+                    .foregroundStyle(Color.Signal.label)
+                    .padding(.top, 8)
+                }
+
+                Spacer()
+
+                Image(uiImage: Theme.iconImage(.backup))
+                    .resizable()
+                    .frame(width: 56, height: 56)
+            }
         }
     }
 }
@@ -470,15 +595,24 @@ private extension BackupSettingsViewModel.BackupEnabledViewModel {
     }
 }
 
-#Preview("Paid Plan") {
-    let backupPlan: BackupSettingsViewModel.BackupPlan = .paid(
-        price: FiatMoney(currencyCode: "USD", value: 2.99),
-        renewalDate: Date().addingTimeInterval(.week)
-    )
+private extension BackupSettingsViewModel.BackupPlanViewModel {
+    static func forPreview(
+        loadResult: Result<BackupSettingsViewModel.BackupPlanViewModel.BackupPlan, Error>
+    ) -> BackupSettingsViewModel.BackupPlanViewModel {
+        return BackupSettingsViewModel.BackupPlanViewModel(loadBackupPlanBlock: {
+            try await Task.sleep(nanoseconds: 2.clampedNanoseconds)
+            return try loadResult.get()
+        })
+    }
+}
 
+#Preview("Paid Plan") {
     NavigationView {
         BackupSettingsView(viewModel: BackupSettingsViewModel(
-            backupPlan: backupPlan,
+            backupPlanViewModel: .forPreview(loadResult: .success(.paid(
+                price: FiatMoney(currencyCode: "USD", value: 2.99),
+                renewalDate: Date().addingTimeInterval(.week)
+            ))),
             enabledState: .enabled(.forPreview())
         ))
     }
@@ -487,7 +621,7 @@ private extension BackupSettingsViewModel.BackupEnabledViewModel {
 #Preview("Free Plan") {
     NavigationView {
         BackupSettingsView(viewModel: BackupSettingsViewModel(
-            backupPlan: .free,
+            backupPlanViewModel: .forPreview(loadResult: .success(.free)),
             enabledState: .enabled(.forPreview())
         ))
     }
@@ -496,7 +630,9 @@ private extension BackupSettingsViewModel.BackupEnabledViewModel {
 #Preview("Expiring Plan") {
     NavigationView {
         BackupSettingsView(viewModel: BackupSettingsViewModel(
-            backupPlan: .paidButCanceled(expirationDate: Date().addingTimeInterval(.week)),
+            backupPlanViewModel: .forPreview(loadResult: .success(.paidButCanceled(
+                expirationDate: Date().addingTimeInterval(.week)
+            ))),
             enabledState: .enabled(.forPreview())
         ))
     }
@@ -505,7 +641,27 @@ private extension BackupSettingsViewModel.BackupEnabledViewModel {
 #Preview("Expired Plan") {
     NavigationView {
         BackupSettingsView(viewModel: BackupSettingsViewModel(
-            backupPlan: .paidButCanceled(expirationDate: Date().addingTimeInterval(-1 * .week)),
+            backupPlanViewModel: .forPreview(loadResult: .success(.paidButCanceled(
+                expirationDate: Date().addingTimeInterval(-1 * .week)
+            ))),
+            enabledState: .enabled(.forPreview())
+        ))
+    }
+}
+
+#Preview("Plan Network Error") {
+    NavigationView {
+        BackupSettingsView(viewModel: BackupSettingsViewModel(
+            backupPlanViewModel: .forPreview(loadResult: .failure(OWSHTTPError.networkFailure(.genericTimeout))),
+            enabledState: .enabled(.forPreview())
+        ))
+    }
+}
+
+#Preview("Plan Generic Error") {
+    NavigationView {
+        BackupSettingsView(viewModel: BackupSettingsViewModel(
+            backupPlanViewModel: .forPreview(loadResult: .failure(OWSGenericError(""))),
             enabledState: .enabled(.forPreview())
         ))
     }
