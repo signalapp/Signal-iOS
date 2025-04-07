@@ -230,15 +230,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.parameters["primary"] as? Bool, false)
     }
 
-    func testSubscriptionGetCurrentSubscriptionLevelRequest() {
-        let request = OWSRequestFactory.subscriptionGetCurrentSubscriptionLevelRequest(
-            subscriberID: .init([255, 128])
-        )
-
-        XCTAssertEqual(request.url?.path, "v1/subscription/_4A")
-        XCTAssertEqual(request.httpMethod, "GET")
-    }
-
     func testBoostReceiptCredentialsWithPaymentIntentId() {
         let request = OWSRequestFactory.boostReceiptCredentials(
             with: "abc_123",

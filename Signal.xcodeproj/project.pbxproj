@@ -2608,7 +2608,7 @@
 		D968F71E2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D968F71D2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift */; };
 		D96A94A72954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */; };
 		D96BE42E292EF04200E4FE1A /* PaypalButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96BE42D292EF04200E4FE1A /* PaypalButton.swift */; };
-		D970541A2CFE49E400AC7954 /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97054192CFE49E200AC7954 /* Subscription.swift */; };
+		D970541A2CFE49E400AC7954 /* SubscriptionFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97054192CFE49E200AC7954 /* SubscriptionFetcher.swift */; };
 		D970541F2CFE4D0200AC7954 /* BackupPaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = D970541D2CFE4D0200AC7954 /* BackupPaymentMethod.swift */; };
 		D97054202CFE4D0200AC7954 /* BackupPaymentProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D970541E2CFE4D0200AC7954 /* BackupPaymentProcessor.swift */; };
 		D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */; };
@@ -6512,7 +6512,7 @@
 		D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+MonthlyPaypalDonation.swift"; sourceTree = "<group>"; };
 		D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+Subscriptions.swift"; sourceTree = "<group>"; };
 		D96BE42D292EF04200E4FE1A /* PaypalButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaypalButton.swift; sourceTree = "<group>"; };
-		D97054192CFE49E200AC7954 /* Subscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subscription.swift; sourceTree = "<group>"; };
+		D97054192CFE49E200AC7954 /* SubscriptionFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionFetcher.swift; sourceTree = "<group>"; };
 		D970541D2CFE4D0200AC7954 /* BackupPaymentMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupPaymentMethod.swift; sourceTree = "<group>"; };
 		D970541E2CFE4D0200AC7954 /* BackupPaymentProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupPaymentProcessor.swift; sourceTree = "<group>"; };
 		D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManagerTest.swift; sourceTree = "<group>"; };
@@ -12202,7 +12202,7 @@
 				D986D1372CC8334F00F9803D /* Backups */,
 				D97992A42D9E58E00080A4F5 /* Currencies */,
 				D986D1362CC8332F00F9803D /* Donations */,
-				D97054192CFE49E200AC7954 /* Subscription.swift */,
+				D97054192CFE49E200AC7954 /* SubscriptionFetcher.swift */,
 				D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */,
 			);
 			path = Subscriptions;
@@ -18317,7 +18317,7 @@
 				7254653D2BA01FCC00EABFD2 /* Stripe.swift in Sources */,
 				66FC637829DF8BEF00F00DAC /* StyleAttribute.swift in Sources */,
 				6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */,
-				D970541A2CFE49E400AC7954 /* Subscription.swift in Sources */,
+				D970541A2CFE49E400AC7954 /* SubscriptionFetcher.swift in Sources */,
 				D945319E2CE53CEB004DAB30 /* SubscriptionRedemptionNecessityChecker.swift in Sources */,
 				662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */,
 				66C2B13D2A0E9116008DDE72 /* SVR2AuthCredential.swift in Sources */,

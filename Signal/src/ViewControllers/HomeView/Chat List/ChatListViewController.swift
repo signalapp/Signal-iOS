@@ -947,8 +947,10 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         mostRecentSubscriptionPaymentMethod: DonationPaymentMethod?,
         probablyHasCurrentSubscription: Bool
     ) async {
-        let profileManager = SSKEnvironment.shared.profileManagerRef
         let db = DependenciesBridge.shared.db
+        let networkManager = SSKEnvironment.shared.networkManagerRef
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+
         if BoostBadgeIds.contains(expiredBadgeID) {
             Logger.info("[Donations] Showing expiry sheet for expired boost badge.")
 
@@ -995,8 +997,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             let currentSubscription: Subscription?
             if let donationSubscriberID {
                 do {
-                    currentSubscription = try await DonationSubscriptionManager
-                        .getCurrentSubscriptionStatus(for: donationSubscriberID)
+                    currentSubscription = try await SubscriptionFetcher(networkManager: networkManager)
+                        .fetch(subscriberID: donationSubscriberID)
                 } catch {
                     Logger.warn("[Donations] Failed to get subscription during badge expiration!")
                     return

@@ -341,8 +341,11 @@ public final class DonationViewsUtil {
     }
 
     public static func loadCurrentSubscription(subscriberID: Data?) async throws -> Subscription? {
+        let networkManager = SSKEnvironment.shared.networkManagerRef
+
         if let subscriberID {
-            return try await DonationSubscriptionManager.getCurrentSubscriptionStatus(for: subscriberID)
+            return try await SubscriptionFetcher(networkManager: networkManager)
+                .fetch(subscriberID: subscriberID)
         } else {
             return nil
         }

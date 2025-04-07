@@ -1425,6 +1425,7 @@ public class AppSetup {
             dateProvider: dateProvider,
             db: db,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
+            networkManager: networkManager,
             profileManager: profileManager,
             reachabilityManager: reachabilityManager
         )

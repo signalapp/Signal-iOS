@@ -130,10 +130,8 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
         /// associated subscription, if possible).
         try await performSubscriberIdHeartbeat(subscriberId)
 
-        let subscription = try await DonationSubscriptionManager.getCurrentSubscriptionStatus(
-            for: subscriberId,
-            networkManager: networkManager
-        )
+        let subscription = try await SubscriptionFetcher(networkManager: networkManager)
+            .fetch(subscriberID: subscriberId)
 
         guard let subscription else {
             logger.warn("No subscription for this subscriber ID!")

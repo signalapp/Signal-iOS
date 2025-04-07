@@ -3,6 +3,61 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public struct SubscriptionFetcher {
+    private let networkManager: NetworkManager
+
+    public init(networkManager: NetworkManager) {
+        self.networkManager = networkManager
+    }
+
+    public func fetch(subscriberID: Data) async throws -> Subscription? {
+        let response = try await networkManager.asyncRequest(
+            .fetchSubscription(subscriberID: subscriberID)
+        )
+
+        switch response.responseStatusCode {
+        case 200:
+            guard
+                let responseJson = response.responseBodyJson,
+                let parser = ParamParser(responseObject: responseJson)
+            else {
+                throw OWSAssertionError("Missing or invalid response body!")
+            }
+
+            guard let subscriptionDict: [String: Any] = try parser.optional(key: "subscription") else {
+                return nil
+            }
+
+            let chargeFailureDict: [String: Any]? = try parser.optional(key: "chargeFailure")
+
+            return try Subscription(
+                subscriptionDict: subscriptionDict,
+                chargeFailureDict: chargeFailureDict
+            )
+        case 404:
+            return nil
+        default:
+            throw OWSAssertionError("Got bad response code! \(response.responseStatusCode)")
+        }
+    }
+
+}
+
+private extension TSRequest {
+    static func fetchSubscription(subscriberID: Data) -> TSRequest {
+        let result = TSRequest(
+            url: URL(string: "v1/subscription/\(subscriberID.asBase64Url)")!,
+            method: "GET",
+            parameters: nil
+        )
+        result.auth = .anonymous
+        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        return result
+    }
+}
+
+// MARK: -
+
 /// Represents a *recurring* subscription, associated with a subscriber ID and
 /// fetched from the service using that ID.
 public struct Subscription: Equatable {

@@ -50,6 +50,7 @@ public class DonationReceiptCredentialRedemptionJobQueue {
         dateProvider: @escaping DateProvider,
         db: any DB,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
+        networkManager: NetworkManager,
         profileManager: ProfileManager,
         reachabilityManager: SSKReachabilityManager
     ) {
@@ -58,6 +59,7 @@ public class DonationReceiptCredentialRedemptionJobQueue {
             db: db,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
             logger: .donations,
+            networkManager: networkManager,
             profileManager: profileManager
         )
         self.jobQueueRunner = JobQueueRunner(
@@ -177,6 +179,7 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
     private let db: DB
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     private let logger: PrefixedLogger
+    private let networkManager: NetworkManager
     private let profileManager: ProfileManager
 
     init(
@@ -184,12 +187,14 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
         db: DB,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         logger: PrefixedLogger,
+        networkManager: NetworkManager,
         profileManager: ProfileManager
     ) {
         self.dateProvider = dateProvider
         self.db = db
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
         self.logger = logger
+        self.networkManager = networkManager
         self.profileManager = profileManager
     }
 
@@ -201,6 +206,7 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
             dateProvider: dateProvider,
             db: db,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
+            networkManager: networkManager,
             profileManager: profileManager
         )
     }
@@ -213,6 +219,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
     private let db: DB
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     private let logger: PrefixedLogger
+    private let networkManager: NetworkManager
     private let profileManager: ProfileManager
 
     private var transientFailureCount: UInt = 0
@@ -222,6 +229,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         dateProvider: @escaping DateProvider,
         db: DB,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
+        networkManager: NetworkManager,
         profileManager: ProfileManager
     ) {
         self.continuation = continuation
@@ -230,6 +238,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         self.db = db
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
         self.logger = .donations
+        self.networkManager = networkManager
         self.profileManager = profileManager
     }
 
@@ -597,7 +606,8 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         case .oneTimeBoost(paymentIntentId: _, amount: let amount):
             return amount
         case let .recurringSubscription(subscriberId, _, _, _):
-            let subscription = try await DonationSubscriptionManager.getCurrentSubscriptionStatus(for: subscriberId)
+            let subscription = try await SubscriptionFetcher(networkManager: networkManager)
+                .fetch(subscriberID: subscriberId)
             guard let subscription else {
                 throw OWSAssertionError("Missing subscription", logger: logger)
             }

@@ -303,21 +303,6 @@ public enum OWSRequestFactory {
         return result
     }
 
-    static func subscriptionGetCurrentSubscriptionLevelRequest(subscriberID: Data) -> TSRequest {
-        let result = TSRequest(
-            url: .init(pathComponents: [
-                "v1",
-                "subscription",
-                subscriberID.asBase64Url,
-            ])!,
-            method: "GET",
-            parameters: nil
-        )
-        result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURLForSuccessResponses())
-        return result
-    }
-
     static func subscriptionCreateStripePaymentMethodRequest(subscriberID: Data) -> TSRequest {
         let result = TSRequest(
             url: .init(pathComponents: [
