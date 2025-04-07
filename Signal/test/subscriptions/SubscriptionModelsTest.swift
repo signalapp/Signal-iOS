@@ -9,16 +9,6 @@ import XCTest
 class SubscriptionChargeFailureTest: XCTestCase {
     typealias ChargeFailure = Subscription.ChargeFailure
 
-    func testNilInit() {
-        let chargeFailure = ChargeFailure()
-        XCTAssertNil(chargeFailure.code)
-    }
-
-    func testStringInit() {
-        let chargeFailure = ChargeFailure(code: "foo bar")
-        XCTAssertEqual(chargeFailure.code, "foo bar")
-    }
-
     func testJsonInit() {
         let chargeFailure = ChargeFailure(jsonDictionary: ["code": "foo"])
         XCTAssertEqual(chargeFailure.code, "foo")

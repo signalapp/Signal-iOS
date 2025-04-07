@@ -68,15 +68,7 @@ public struct Subscription: Equatable {
         /// but can happen if the server sends an invalid response.
         public let code: String?
 
-        public init() {
-            code = nil
-        }
-
-        public init(code: String) {
-            self.code = code
-        }
-
-        public init(jsonDictionary: [String: Any]) {
+        init(jsonDictionary: [String: Any]) {
             code = try? ParamParser(dictionary: jsonDictionary).optional(key: "code")
         }
     }
