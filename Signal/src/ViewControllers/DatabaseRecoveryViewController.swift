@@ -9,6 +9,7 @@ import SignalUI
 class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     private let appReadiness: AppReadiness
     private let corruptDatabaseStorage: SDSDatabaseStorage
+    private let deviceSleepManager: DeviceSleepManagerImpl
     private let keychainStorage: any KeychainStorage
     private let setupSskEnvironment: (SDSDatabaseStorage) -> Task<SetupResult, Never>
     private let launchApp: (SetupResult) -> Void
@@ -16,12 +17,14 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     public init(
         appReadiness: AppReadiness,
         corruptDatabaseStorage: SDSDatabaseStorage,
+        deviceSleepManager: DeviceSleepManagerImpl,
         keychainStorage: any KeychainStorage,
         setupSskEnvironment: @escaping (SDSDatabaseStorage) -> Task<SetupResult, Never>,
         launchApp: @escaping (SetupResult) -> Void
     ) {
         self.appReadiness = appReadiness
         self.corruptDatabaseStorage = corruptDatabaseStorage
+        self.deviceSleepManager = deviceSleepManager
         self.keychainStorage = keychainStorage
         self.setupSskEnvironment = setupSskEnvironment
         self.launchApp = launchApp
@@ -29,6 +32,8 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     }
 
     // MARK: - State
+
+    private let sleepBlock = DeviceSleepBlockObject(blockReason: "Database Recovery")
 
     enum State {
         case awaitingUserConfirmation
@@ -423,7 +428,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         stackView.addArrangedSubview(continueButton)
         continueButton.autoPinWidthToSuperviewMargins()
 
-        UIApplication.shared.isIdleTimerDisabled = false
+        deviceSleepManager.removeBlock(blockObject: sleepBlock)
     }
 
     private func renderDeviceSpaceWarning() {
@@ -463,7 +468,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
         continueButton.autoPinWidthToSuperviewMargins()
 
-        UIApplication.shared.isIdleTimerDisabled = false
+        deviceSleepManager.removeBlock(blockObject: sleepBlock)
     }
 
     private func renderRecovering(fractionCompleted: Double) {
@@ -493,7 +498,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
             progressStack.autoPinWidthToSuperviewMargins()
 
-            UIApplication.shared.isIdleTimerDisabled = true
+            deviceSleepManager.addBlock(blockObject: sleepBlock)
         }
 
         progressLabel.text = Self.render(fractionCompleted: fractionCompleted)
@@ -543,7 +548,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         resetSignalButton.autoPinWidthToSuperviewMargins()
         submitDebugLogsButton.autoPinWidthToSuperviewMargins()
 
-        UIApplication.shared.isIdleTimerDisabled = false
+        deviceSleepManager.removeBlock(blockObject: sleepBlock)
     }
 
     private func renderRecoverySucceeded() {
@@ -574,7 +579,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
         launchAppButton.autoPinWidthToSuperviewMargins()
 
-        UIApplication.shared.isIdleTimerDisabled = false
+        deviceSleepManager.removeBlock(blockObject: sleepBlock)
     }
 
     // MARK: - Utilities

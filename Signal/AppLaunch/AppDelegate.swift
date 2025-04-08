@@ -1033,6 +1033,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let recoveryViewController = DatabaseRecoveryViewController<(AppSetup.FinalContinuation, DeviceSleepBlockObject)>(
             appReadiness: appReadiness,
             corruptDatabaseStorage: launchContext.databaseStorage,
+            deviceSleepManager: launchContext.deviceSleepManager,
             keychainStorage: launchContext.keychainStorage,
             setupSskEnvironment: { databaseStorage in
                 return Task {

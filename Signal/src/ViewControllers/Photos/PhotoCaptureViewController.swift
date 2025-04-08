@@ -58,16 +58,18 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         _shouldProcessQRCodes.set(!qrCodeScanned && !isRecordingVideo && isViewVisible)
     }
 
+    private let sleepBlock = DeviceSleepBlockObject(blockReason: "Photo Capture")
+
     private var isCameraReady = false {
         didSet {
             guard isCameraReady != oldValue else { return }
 
             if isCameraReady {
                 cameraCaptureSession.beginObservingVolumeButtons()
-                UIApplication.shared.isIdleTimerDisabled = true
+                DependenciesBridge.shared.deviceSleepManager!.addBlock(blockObject: sleepBlock)
             } else {
                 cameraCaptureSession.stopObservingVolumeButtons()
-                UIApplication.shared.isIdleTimerDisabled = false
+                DependenciesBridge.shared.deviceSleepManager!.removeBlock(blockObject: sleepBlock)
             }
         }
     }
