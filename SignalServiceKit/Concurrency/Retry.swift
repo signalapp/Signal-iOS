@@ -26,15 +26,20 @@ public enum Retry {
     /// the error from the final attempt. If `block` throws an error where
     /// `isRetryable` returns false, that error will be propagated immediately.
     /// This method supports cancellation.
-    public static func performWithBackoff<T>(maxAttempts: Int, isRetryable: (any Error) -> Bool, block: () async throws -> T) async throws -> T {
+    public static func performWithBackoff<T>(
+        maxAttempts: Int,
+        maxAverageBackoff: TimeInterval = .infinity,
+        isRetryable: (any Error) -> Bool,
+        block: () async throws -> T
+    ) async throws -> T {
         return try await performRepeatedly(
             block: block,
             onError: { error, attemptCount in
                 if attemptCount >= maxAttempts || !isRetryable(error) {
                     throw error
                 }
-                let retryDelayNs = OWSOperation.retryIntervalForExponentialBackoffNs(failureCount: attemptCount)
-                try await Task.sleep(nanoseconds: retryDelayNs)
+                let retryDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: UInt(attemptCount), maxBackoff: maxAverageBackoff)
+                try await Task.sleep(nanoseconds: retryDelay.clampedNanoseconds)
             }
         )
     }
@@ -48,6 +53,7 @@ public enum Retry {
     public static func performWithBackoff<T>(maxAttempts: Int, block: () async throws -> T) async throws -> T {
         return try await performWithBackoff(
             maxAttempts: maxAttempts,
+            maxAverageBackoff: 14.1 * .minute,
             isRetryable: { !$0.isFatalError && $0.isRetryable },
             block: block
         )

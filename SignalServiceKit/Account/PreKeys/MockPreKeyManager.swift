@@ -12,7 +12,7 @@ internal class MockPreKeyManager: PreKeyManager {
     func isAppLockedDueToPreKeyUpdateFailures(tx: SignalServiceKit.DBReadTransaction) -> Bool { false }
     func refreshOneTimePreKeysCheckDidSucceed() { }
     func checkPreKeysIfNecessary(tx: SignalServiceKit.DBReadTransaction) { }
-    func rotatePreKeysOnUpgradeIfNecessary(for identity: OWSIdentity) async { }
+    func rotatePreKeysOnUpgradeIfNecessary(for identity: OWSIdentity) async throws { }
 
     func createPreKeysForRegistration() -> Task<RegistrationPreKeyUploadBundles, Error> {
         let identityKeyPair = ECKeyPair.generateKeyPair()

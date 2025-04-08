@@ -276,7 +276,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         return self.identityManager.identityKeyPair(for: .pni, tx: tx) != nil
     }
 
-    public func rotatePreKeysOnUpgradeIfNecessary(for identity: OWSIdentity) async {
+    public func rotatePreKeysOnUpgradeIfNecessary(for identity: OWSIdentity) async throws {
         let keyValueStoreKey: String = {
             switch identity {
             case .aci:
@@ -291,8 +291,12 @@ public class PreKeyManagerImpl: PreKeyManager {
         guard preKeyRotationVersion < Constants.preKeyRotationVersion else {
             return
         }
-        var retryInterval: TimeInterval = 0.5
-        while db.read(block: tsAccountManager.registrationState(tx:)).isRegistered {
+        try await Retry.performWithBackoff(maxAttempts: .max, isRetryable: { _ in true }) {
+            guard db.read(block: tsAccountManager.registrationState(tx:)).isRegistered else {
+                // If we're not registered, we don't need to do this. Our pre keys will be
+                // rotated when we re-register.
+                return
+            }
             do {
                 if OWSChatConnection.canAppUseSocketsToMakeRequests {
                     try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
@@ -303,11 +307,9 @@ public class PreKeyManagerImpl: PreKeyManager {
                     // true, so this is fine.
                 }
                 try await _refreshOneTimePreKeys(forIdentity: identity, alsoRefreshSignedPreKey: true)
-                break
             } catch {
                 Logger.warn("Couldn't rotate pre keys: \(error)")
-                try? await Task.sleep(nanoseconds: UInt64(retryInterval * TimeInterval(NSEC_PER_SEC)))
-                retryInterval *= 2
+                throw error
             }
         }
         await db.awaitableWrite { [keyValueStore] tx in

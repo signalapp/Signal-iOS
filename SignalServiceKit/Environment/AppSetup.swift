@@ -1658,8 +1658,8 @@ extension AppSetup.FinalContinuation {
             Task {
                 // Rotate ACI keys first since PNI keys may block on incoming messages.
                 // TODO: Don't block ACI operations if PNI operations are blocked.
-                await preKeyManager.rotatePreKeysOnUpgradeIfNecessary(for: .aci)
-                await preKeyManager.rotatePreKeysOnUpgradeIfNecessary(for: .pni)
+                try await preKeyManager.rotatePreKeysOnUpgradeIfNecessary(for: .aci)
+                try await preKeyManager.rotatePreKeysOnUpgradeIfNecessary(for: .pni)
             }
         }
 
