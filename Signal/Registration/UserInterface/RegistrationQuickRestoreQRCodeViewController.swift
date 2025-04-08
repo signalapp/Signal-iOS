@@ -145,3 +145,22 @@ private struct TutorialStack: View {
         .padding(.horizontal, 8)
     }
 }
+
+#if DEBUG
+private class PreviewRegistrationQuickRestoreQRCodePresenter: RegistrationQuickRestoreQRCodePresenter {
+    func didReceiveRegistrationMessage(_ message: RegistrationProvisioningMessage) {
+        print("Received Message")
+    }
+
+    func cancel() {
+        print("Cancel")
+    }
+
+}
+
+private let presenter = PreviewRegistrationQuickRestoreQRCodePresenter()
+@available(iOS 17, *)
+#Preview {
+    return RegistrationQuickRestoreQRCodeViewController(presenter: presenter)
+}
+#endif
