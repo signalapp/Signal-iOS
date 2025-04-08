@@ -388,11 +388,26 @@ private extension GroupV2UpdatesImpl {
                 source: source
             )
 
+            var groupChanges = response.groupChanges
+            var groupSendEndorsementsResponse = response.groupSendEndorsementsResponse
+
+            switch source {
+            case .groupMessage(let upThroughRevision):
+                if groupChanges.contains(where: { $0.revision > upThroughRevision }) {
+                    owsFailDebug("Ignoring revisions beyond \(upThroughRevision).")
+                    groupChanges.removeAll(where: { $0.revision > upThroughRevision })
+                    // We dropped the final revision, and this is valid for that.
+                    groupSendEndorsementsResponse = nil
+                }
+            case .other:
+                break
+            }
+
             try await self.tryToApplyGroupChangesFromService(
                 secretParams: secretParams,
                 spamReportingMetadata: spamReportingMetadata,
-                groupChanges: response.groupChanges,
-                groupSendEndorsementsResponse: response.groupSendEndorsementsResponse,
+                groupChanges: groupChanges,
+                groupSendEndorsementsResponse: groupSendEndorsementsResponse,
                 options: options
             )
 
