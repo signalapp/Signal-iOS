@@ -1307,7 +1307,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let debounceTokenSnapshot = self.searchTermDebounceToken
 
         Task {
-            try await Task.sleep(nanoseconds: UInt64(Double(NSEC_PER_SEC) * Constants.searchDebounceInterval))
+            try await Task.sleep(nanoseconds: Constants.searchDebounceInterval.clampedNanoseconds)
 
             guard self.searchTermDebounceToken == debounceTokenSnapshot else {
                 /// The search term changed in the debounce period, so we'll

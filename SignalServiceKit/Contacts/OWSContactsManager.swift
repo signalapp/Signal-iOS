@@ -1050,7 +1050,7 @@ extension OWSContactsManager: ContactManager {
 
                 // TODO: Abort if another contact intersection succeeds in the meantime.
                 Logger.warn("Contact intersection failed with error: \(error). Rescheduling.")
-                try await Task.sleep(nanoseconds: OWSOperation.retryIntervalForExponentialBackoffNs(failureCount: attemptCount, maxBackoff: .infinity))
+                try await Task.sleep(nanoseconds: OWSOperation.retryIntervalForExponentialBackoff(failureCount: attemptCount, maxBackoff: .infinity).clampedNanoseconds)
             }
         )
     }

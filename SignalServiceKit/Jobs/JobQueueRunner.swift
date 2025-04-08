@@ -354,7 +354,7 @@ public class JobQueueRunner<
         case .retryAfter(let retryAfter, let canRetryEarly):
             // Create a Task that waits for `retryAfter`. If `retryWaitingJobs` is
             // called, this Task will be canceled, starting the next retry immediately.
-            let waitingTask = Task { _ = try? await Task.sleep(nanoseconds: UInt64(retryAfter*Double(NSEC_PER_SEC))) }
+            let waitingTask = Task { _ = try? await Task.sleep(nanoseconds: retryAfter.clampedNanoseconds) }
             if canRetryEarly {
                 state.update { state in state.waitingTasks[queuedJob.rowId] = waitingTask }
             }

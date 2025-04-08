@@ -49,7 +49,7 @@ public struct MonotonicDate: Comparable {
     }
 
     public func adding(_ timeInterval: TimeInterval) -> MonotonicDate {
-        return MonotonicDate(rawValue: self.rawValue + UInt64(timeInterval * TimeInterval(NSEC_PER_SEC)))
+        return MonotonicDate(rawValue: self.rawValue + timeInterval.clampedNanoseconds)
     }
 
     public static func < (lhs: MonotonicDate, rhs: MonotonicDate) -> Bool {

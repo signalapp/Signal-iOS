@@ -67,6 +67,6 @@ public struct _Upload_FileSystemWrapper: Upload.Shims.FileSystem {
 
 public struct _Upload_SleepTimerWrapper: Upload.Shims.SleepTimer {
     public func sleep(for delay: TimeInterval) async throws {
-        try await Task.sleep(nanoseconds: UInt64(delay * Double(NSEC_PER_SEC)))
+        try await Task.sleep(nanoseconds: delay.clampedNanoseconds)
     }
 }

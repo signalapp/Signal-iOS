@@ -1799,7 +1799,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
                 do {
                     // This does not quite send keepalives "every 30 seconds".
                     // Instead, it sends the next keepalive *at least 30 seconds* after the *response* for the previous one arrives.
-                    try await Task.sleep(nanoseconds: UInt64(keepaliveInterval) * NSEC_PER_SEC)
+                    try await Task.sleep(nanoseconds: keepaliveInterval.clampedNanoseconds)
                     guard let chat else {
                         // We've disconnected.
                         return
@@ -1824,7 +1824,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
                     if delay > keepaliveInterval {
                         // Wait out the part of the delay longer than 30s.
                         // Ignore cancellation here; when we get back to the top of the loop we'll check it then.
-                        _ = try? await Task.sleep(nanoseconds: UInt64(delay - keepaliveInterval) * NSEC_PER_SEC)
+                        _ = try? await Task.sleep(nanoseconds: (delay - keepaliveInterval).clampedNanoseconds)
                     }
                 } catch {
                     // Also no action necessary! Log just in case the failure has something interesting going on,
