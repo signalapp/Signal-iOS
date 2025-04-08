@@ -329,6 +329,18 @@ public class ProfileFetcherJob {
         if didAlreadyDownloadAvatar {
             return AvatarDownloadResult(remoteRelativePath: .noChange, localFileUrl: .noChange)
         }
+
+        let shouldPreventDownload = db.read { tx -> Bool in
+            SSKEnvironment.shared.contactManagerImplRef.shouldBlockAvatarDownload(
+                address: profileAddress,
+                tx: tx
+            )
+        }
+
+        if shouldPreventDownload {
+            return AvatarDownloadResult(remoteRelativePath: .setTo(newAvatarUrlPath), localFileUrl: .setTo(nil))
+        }
+
         let temporaryAvatarUrl: URL?
         do {
             temporaryAvatarUrl = try await profileManager.downloadAndDecryptAvatar(

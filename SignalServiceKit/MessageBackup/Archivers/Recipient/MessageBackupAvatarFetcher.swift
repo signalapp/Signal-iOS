@@ -248,6 +248,7 @@ public class MessageBackupAvatarFetcher {
 
                     let avatarHash: String?
                     let avatarDataFailedToFetchFromCDN: Bool
+                    let shouldNotDownloadAvatar: Bool
                     switch avatarDataState {
                     case .available(let avatarData):
                         // Persisting sets the avatar hash on the group model.
@@ -255,11 +256,17 @@ public class MessageBackupAvatarFetcher {
 
                         avatarHash = groupModel.avatarHash
                         avatarDataFailedToFetchFromCDN = false
+                        shouldNotDownloadAvatar = false
                     case .failedToFetchFromCDN:
                         avatarHash = nil
                         avatarDataFailedToFetchFromCDN = true
+                        shouldNotDownloadAvatar = false
                     case .missing:
                         throw OWSAssertionError("Unexpectedly missing avatar data!")
+                    case .lowTrustDownloadWasBlocked:
+                        avatarHash = nil
+                        avatarDataFailedToFetchFromCDN = false
+                        shouldNotDownloadAvatar = true
                     }
 
                     await db.awaitableWrite { tx in
@@ -274,6 +281,7 @@ public class MessageBackupAvatarFetcher {
 
                         refetchedGroupModel.avatarHash = avatarHash
                         refetchedGroupModel.avatarDataFailedToFetchFromCDN = avatarDataFailedToFetchFromCDN
+                        refetchedGroupModel.lowTrustAvatarDownloadWasBlocked = shouldNotDownloadAvatar
                         threadStore.update(
                             groupThread: refetchedGroupThread,
                             with: refetchedGroupModel,

@@ -244,6 +244,43 @@ extension AvatarTheme {
     }
 }
 
+// MARK: - Avatar Gradients
+
+public struct AvatarGradient: Equatable {
+    let id: Int
+    let topColor: UIColor
+    let bottomColor: UIColor
+
+    init(id: Int, topHex: UInt32, bottomHex: UInt32) {
+        self.id = id
+        self.topColor = UIColor(rgbHex: topHex)
+        self.bottomColor = UIColor(rgbHex: bottomHex)
+    }
+
+    static let gradients: [AvatarGradient] = [
+        AvatarGradient(id: 00, topHex: 0x252568, bottomHex: 0x9C8F8F),
+        AvatarGradient(id: 01, topHex: 0x2A4275, bottomHex: 0x9D9EA1),
+        AvatarGradient(id: 02, topHex: 0x2E4B5F, bottomHex: 0x8AA9B1),
+        AvatarGradient(id: 03, topHex: 0x2E426C, bottomHex: 0x7A9377),
+        AvatarGradient(id: 04, topHex: 0x1A341A, bottomHex: 0x807F6E),
+        AvatarGradient(id: 05, topHex: 0x464E42, bottomHex: 0xD5C38F),
+        AvatarGradient(id: 06, topHex: 0x595643, bottomHex: 0x93A899),
+        AvatarGradient(id: 07, topHex: 0x2C2F36, bottomHex: 0x687466),
+        AvatarGradient(id: 08, topHex: 0x2B1E18, bottomHex: 0x968980),
+        AvatarGradient(id: 09, topHex: 0x7B7067, bottomHex: 0xA5A893),
+        AvatarGradient(id: 10, topHex: 0x706359, bottomHex: 0xBDA194),
+        AvatarGradient(id: 11, topHex: 0x383331, bottomHex: 0xA48788),
+        AvatarGradient(id: 12, topHex: 0x924F4F, bottomHex: 0x897A7A),
+        AvatarGradient(id: 13, topHex: 0x663434, bottomHex: 0xC58D77),
+        AvatarGradient(id: 14, topHex: 0x8F4B02, bottomHex: 0xAA9274),
+        AvatarGradient(id: 15, topHex: 0x784747, bottomHex: 0x8C8F6F),
+        AvatarGradient(id: 16, topHex: 0x747474, bottomHex: 0xACACAC),
+        AvatarGradient(id: 17, topHex: 0x49484C, bottomHex: 0xA5A6B5),
+        AvatarGradient(id: 18, topHex: 0x4A4E4D, bottomHex: 0xABAFAE),
+        AvatarGradient(id: 19, topHex: 0x3A3A3A, bottomHex: 0x929887),
+    ]
+}
+
 // MARK: -
 
 extension AvatarTheme {

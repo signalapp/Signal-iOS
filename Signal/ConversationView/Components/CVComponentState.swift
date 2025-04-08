@@ -421,6 +421,7 @@ public class CVComponentState: Equatable {
 
         let avatarDataSource: ConversationAvatarDataSource?
         let isAvatarBlurred: Bool
+        let isAvatarBeingDownloaded: Bool
         let titleText: String
         let shouldShowVerifiedBadge: Bool
         let bioText: String?

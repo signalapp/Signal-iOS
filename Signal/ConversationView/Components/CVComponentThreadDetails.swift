@@ -6,6 +6,7 @@
 import Foundation
 import SignalServiceKit
 public import SignalUI
+import Lottie
 
 public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
@@ -89,38 +90,60 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             innerViews.append(avatarWrapper)
 
             var unblurAvatarSubviewInfos = [ManualStackSubviewInfo]()
-            let unblurAvatarIconView = CVImageView()
-            unblurAvatarIconView.setTemplateImageName("tap-outline-24", tintColor: .ows_white)
-            unblurAvatarSubviewInfos.append(CGSize.square(24).asManualSubviewInfo(hasFixedSize: true))
+            let subviews: [UIView]
 
-            let unblurAvatarLabelConfig = CVLabelConfig.unstyledText(
-                OWSLocalizedString(
-                    "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR",
-                    comment: "Indicator that a blurred avatar can be revealed by tapping."
-                ),
-                font: UIFont.dynamicTypeSubheadlineClamped,
-                textColor: .ows_white
+            if threadDetails.isAvatarBeingDownloaded {
+                let lottieView = LottieAnimationView(name: "indeterminate_spinner_44")
+                lottieView.loopMode = .loop
+                lottieView.play()
+                unblurAvatarSubviewInfos.append(CGSize.square(44).asManualSubviewInfo(hasFixedSize: true))
+
+                subviews = [lottieView]
+            } else {
+                let unblurAvatarIconView = CVImageView()
+                unblurAvatarIconView.setTemplateImageName("tap-outline-24", tintColor: .ows_white)
+                unblurAvatarSubviewInfos.append(CGSize.square(24).asManualSubviewInfo(hasFixedSize: true))
+
+                let unblurAvatarLabelConfig = CVLabelConfig.unstyledText(
+                    OWSLocalizedString(
+                        "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR",
+                        comment: "Indicator that a blurred avatar can be revealed by tapping."
+                    ),
+                    font: UIFont.dynamicTypeSubheadlineClamped,
+                    textColor: .ows_white
+                )
+                let maxWidth = CGFloat(avatarSizeClass.diameter) - 12
+                let unblurAvatarLabelSize = CVText.measureLabel(
+                    config: unblurAvatarLabelConfig,
+                    maxWidth: maxWidth
+                )
+                unblurAvatarSubviewInfos.append(unblurAvatarLabelSize.asManualSubviewInfo)
+                let unblurAvatarLabel = CVLabel()
+                unblurAvatarLabelConfig.applyForRendering(label: unblurAvatarLabel)
+                subviews = [unblurAvatarIconView, unblurAvatarLabel]
+            }
+
+            let unblurAvatarStackConfig = ManualStackView.Config(
+                axis: .vertical,
+                alignment: .center,
+                spacing: 8,
+                layoutMargins: .zero
             )
-            let maxWidth = CGFloat(avatarSizeClass.diameter) - 12
-            let unblurAvatarLabelSize = CVText.measureLabel(config: unblurAvatarLabelConfig, maxWidth: maxWidth)
-            unblurAvatarSubviewInfos.append(unblurAvatarLabelSize.asManualSubviewInfo)
-            let unblurAvatarLabel = CVLabel()
-            unblurAvatarLabelConfig.applyForRendering(label: unblurAvatarLabel)
-            let unblurAvatarStackConfig = ManualStackView.Config(axis: .vertical,
-                                                                 alignment: .center,
-                                                                 spacing: 8,
-                                                                 layoutMargins: .zero)
-            let unblurAvatarStackMeasurement = ManualStackView.measure(config: unblurAvatarStackConfig,
-                                                                       subviewInfos: unblurAvatarSubviewInfos)
+            let unblurAvatarStackMeasurement = ManualStackView.measure(
+                config: unblurAvatarStackConfig,
+                subviewInfos: unblurAvatarSubviewInfos
+            )
+
             let unblurAvatarStack = ManualStackView(name: "unblurAvatarStack")
-            unblurAvatarStack.configure(config: unblurAvatarStackConfig,
-                                        measurement: unblurAvatarStackMeasurement,
-                                        subviews: [
-                                            unblurAvatarIconView,
-                                            unblurAvatarLabel
-                                        ])
-            avatarWrapper.addSubviewToCenterOnSuperview(unblurAvatarStack,
-                                                        size: unblurAvatarStackMeasurement.measuredSize)
+            unblurAvatarStack.configure(
+                config: unblurAvatarStackConfig,
+                measurement: unblurAvatarStackMeasurement,
+                subviews: subviews
+            )
+            avatarWrapper.addSubviewToCenterOnSuperview(
+                unblurAvatarStack,
+                size: unblurAvatarStackMeasurement.measuredSize
+            )
         } else {
             innerViews.append(avatarView)
         }
@@ -526,6 +549,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             return CVComponentState.ThreadDetails(
                 avatarDataSource: nil,
                 isAvatarBlurred: false,
+                isAvatarBeingDownloaded: false,
                 titleText: TSGroupThread.defaultGroupName,
                 shouldShowVerifiedBadge: false,
                 bioText: nil,
@@ -548,10 +572,12 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             diameterPoints: avatarSizeClass.diameter
         )
 
-        let isAvatarBlurred = SSKEnvironment.shared.contactManagerImplRef.shouldBlurContactAvatar(
-            contactThread: contactThread,
-            transaction: transaction
+        let contactManager = SSKEnvironment.shared.contactManagerImplRef
+        let isAvatarBlurred = contactManager.shouldBlurContactAvatar(
+            address: contactThread.contactAddress,
+            tx: transaction
         )
+        let isAvatarBeingDownloaded = contactManager.avatarAddressesToShowDownloadingSpinner.contains(contactThread.contactAddress)
 
         let displayName = SSKEnvironment.shared.contactManagerRef.displayName(
             for: contactThread.contactAddress,
@@ -586,6 +612,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         return CVComponentState.ThreadDetails(
             avatarDataSource: avatarDataSource,
             isAvatarBlurred: isAvatarBlurred,
+            isAvatarBeingDownloaded: isAvatarBeingDownloaded,
             titleText: titleText,
             shouldShowVerifiedBadge: shouldShowVerifiedBadge,
             bioText: bioText,
@@ -606,10 +633,12 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             forGroupThread: groupThread,
             diameterPoints: avatarSizeClass.diameter)
 
-        let isAvatarBlurred = SSKEnvironment.shared.contactManagerImplRef.shouldBlurGroupAvatar(
-            groupThread: groupThread,
-            transaction: transaction
+        let contactManager = SSKEnvironment.shared.contactManagerImplRef
+        let isAvatarBlurred = contactManager.shouldBlurGroupAvatar(
+            groupId: groupThread.groupId,
+            tx: transaction
         )
+        let isAvatarBeingDownloaded = contactManager.avatarGroupIdsToShowDownloadingSpinner.contains(groupThread.groupId)
 
         let titleText = groupThread.groupNameOrDefault
 
@@ -625,6 +654,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         return CVComponentState.ThreadDetails(
             avatarDataSource: avatarDataSource,
             isAvatarBlurred: isAvatarBlurred,
+            isAvatarBeingDownloaded: isAvatarBeingDownloaded,
             titleText: titleText,
             shouldShowVerifiedBadge: false,
             bioText: nil,
@@ -822,17 +852,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
             let location = sender.location(in: avatarView)
             if avatarView.bounds.contains(location) {
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    if let contactThread = self.thread as? TSContactThread {
-                        SSKEnvironment.shared.contactManagerImplRef.doNotBlurContactAvatar(address: contactThread.contactAddress,
-                                                                        transaction: transaction)
-                    } else if let groupThread = self.thread as? TSGroupThread {
-                        SSKEnvironment.shared.contactManagerImplRef.doNotBlurGroupAvatar(groupThread: groupThread,
-                                                                      transaction: transaction)
-                    } else {
-                        owsFailDebug("Invalid thread.")
-                    }
-                }
+                let contactManager = SSKEnvironment.shared.contactManagerImplRef
+                contactManager.didTapToUnblurAvatar(for: thread)
                 return true
             }
         }
@@ -932,10 +953,7 @@ extension CVComponentThreadDetails {
             .color(Self.mutualGroupsTextColor)
         )
 
-        let shouldShowUnknownThreadWarning = SSKEnvironment.shared.contactManagerImplRef.shouldShowUnknownThreadWarning(
-            thread: groupThread,
-            transaction: tx
-        )
+        let shouldShowUnknownThreadWarning = SSKEnvironment.shared.contactManagerImplRef.isLowTrustGroup(groupThread: groupThread, tx: tx)
 
         return .init(
             shouldShowLowTrustWarning: shouldShowUnknownThreadWarning,
@@ -987,9 +1005,9 @@ extension CVComponentThreadDetails {
 
         let isMessageRequest = contactThread.hasPendingMessageRequest(transaction: tx)
 
-        let shouldShowUnknownThreadWarning = SSKEnvironment.shared.contactManagerImplRef.shouldShowUnknownThreadWarning(
-            thread: contactThread,
-            transaction: tx
+        let shouldShowUnknownThreadWarning = SSKEnvironment.shared.contactManagerImplRef.isLowTrustContact(
+            contactThread: contactThread,
+            tx: tx
         )
 
         switch mutualGroupNames.count {

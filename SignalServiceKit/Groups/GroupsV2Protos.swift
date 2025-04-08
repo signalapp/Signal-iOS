@@ -270,7 +270,7 @@ public class GroupsV2Protos {
 
     class func parse(
         groupResponseProto: GroupsProtoGroupResponse,
-        downloadedAvatars: GroupV2DownloadedAvatars,
+        downloadedAvatars: GroupAvatarStateMap,
         groupV2Params: GroupV2Params
     ) throws -> GroupV2SnapshotResponse {
         guard let groupProto = groupResponseProto.group else {
@@ -293,7 +293,7 @@ public class GroupsV2Protos {
     class func parse(
         groupProto: GroupsProtoGroup,
         fetchedAlongsideChangeActionsProto: GroupsProtoGroupChangeActions?,
-        downloadedAvatars: GroupV2DownloadedAvatars,
+        downloadedAvatars: GroupAvatarStateMap,
         groupV2Params: GroupV2Params
     ) throws -> GroupV2Snapshot {
 

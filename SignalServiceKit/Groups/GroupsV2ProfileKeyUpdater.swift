@@ -257,7 +257,7 @@ class GroupsV2ProfileKeyUpdater {
         // where we've already fetched the latest avatar.
         let snapshotResponse = try await SSKEnvironment.shared.groupsV2Ref.fetchLatestSnapshot(
             secretParams: secretParams,
-            justUploadedAvatars: GroupV2DownloadedAvatars.from(groupModel: groupModel)
+            justUploadedAvatars: GroupAvatarStateMap.from(groupModel: groupModel)
         )
         guard snapshotResponse.groupSnapshot.groupMembership.isFullMember(localAci) else {
             // We're not a full member, no need to update profile key.

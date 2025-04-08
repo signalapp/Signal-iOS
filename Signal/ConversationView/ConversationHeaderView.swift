@@ -154,10 +154,6 @@ public class ConversationHeaderView: UIView {
         subtitleLabel.textColor = Theme.navbarTitleColor
     }
 
-    public func updateAvatar() {
-        avatarView.reloadDataIfNecessary()
-    }
-
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         avatarView.updateWithSneakyTransactionIfNecessary { config in

@@ -59,7 +59,7 @@ public class GroupsV2IncomingChanges {
         groupThread: TSGroupThread,
         localIdentifiers: LocalIdentifiers,
         changeActionsProto: GroupsProtoGroupChangeActions,
-        downloadedAvatars: GroupV2DownloadedAvatars,
+        downloadedAvatars: GroupAvatarStateMap,
         options: TSGroupModelOptions
     ) throws -> ChangedGroupModel {
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {

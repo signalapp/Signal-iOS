@@ -219,7 +219,7 @@ class GroupModelsTest: SSKBaseTest {
             XCTAssertNil(groupModel.avatarUrlPath)
             switch groupModel.avatarDataState {
             case .missing: break
-            case .available, .failedToFetchFromCDN: XCTFail("Unexpected avatar data state")
+            case .available, .failedToFetchFromCDN, .lowTrustDownloadWasBlocked: XCTFail("Unexpected avatar data state")
             }
             XCTAssertNil(groupModel.inviteLinkPassword)
             XCTAssertFalse(groupModel.isAnnouncementsOnly)

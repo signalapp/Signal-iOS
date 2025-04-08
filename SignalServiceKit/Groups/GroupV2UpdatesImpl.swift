@@ -138,7 +138,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
-        downloadedAvatars: GroupV2DownloadedAvatars,
+        downloadedAvatars: GroupAvatarStateMap,
         transaction: DBWriteTransaction
     ) throws -> TSGroupThread {
 

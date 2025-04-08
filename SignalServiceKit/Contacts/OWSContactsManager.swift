@@ -51,18 +51,24 @@ public enum ContactAuthorizationForSharing {
 }
 
 public class OWSContactsManager: NSObject, ContactsManagerProtocol {
-    private let avatarBlurringCache = LowTrustCache()
     private let cnContactCache = LRUCache<String, CNContact>(maxSize: 50, shouldEvacuateInBackground: true)
-    private let isInMultipleWhitelistedGroupsWithLocalUserCache = AtomicDictionary<ServiceId, Bool>([:], lock: .init())
-    private let hasWhitelistedGroupMemberCache = AtomicDictionary<Data, Bool>([:], lock: .init())
     private let systemContactsCache = SystemContactsCache()
-    private let unknownThreadWarningCache = LowTrustCache()
+
+    private let addressesAllowingAvatarDownloadCache = AtomicSet<SignalServiceAddress>(lock: .init())
+    private let groupIdsAllowingAvatarDownloadCache = AtomicSet<Data>(lock: .init())
+    private let addressesNotNeedingLowTrustWarningCache = AtomicSet<SignalServiceAddress>(lock: .init())
+    private let groupIdsNotNeedingLowTrustWarningCache = AtomicSet<Data>(lock: .init())
 
     private let intersectionQueue = DispatchQueue(label: "org.signal.contacts.intersection")
 
     private let keyValueStore = KeyValueStore(collection: "OWSContactsManagerCollection")
-    private let skipContactAvatarBlurByServiceIdStore = KeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
-    private let skipGroupAvatarBlurByGroupIdStore = KeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
+    private let serviceIdsExplicitlyAllowingAvatarDownloadsStore = KeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
+    private let groupIdsExplicitlyAllowingAvatarDownloadsStore = KeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
+
+    private let avatarAddressesBeingDownloaded = AtomicSet<SignalServiceAddress>(lock: .init())
+    private let avatarGroupIdsBeingDownloaded = AtomicSet<Data>(lock: .init())
+    public let avatarAddressesToShowDownloadingSpinner = AtomicSet<SignalServiceAddress>(lock: .init())
+    public let avatarGroupIdsToShowDownloadingSpinner = AtomicSet<Data>(lock: .init())
 
     private let nicknameManager: any NicknameManager
     private let recipientDatabaseTable: any RecipientDatabaseTable
@@ -147,6 +153,19 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
         super.init()
         self.systemContactsFetcher.delegate = self
         SwiftSingletons.register(self)
+
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
+            self.setupNotificationObservations()
+        }
+    }
+
+    private func setupNotificationObservations() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.profileWhitelistDidChange(notification:)),
+            name: UserProfileNotifications.profileWhitelistDidChange,
+            object: nil
+        )
     }
 
     // Request systems contacts and start syncing changes. The user will see an alert
@@ -237,202 +256,311 @@ private class SystemContactsCache {
 
 // MARK: -
 
-private class LowTrustCache {
-    let contactCache = AtomicSet<ServiceId>(lock: .sharedGlobal)
-    let groupCache = AtomicSet<Data>(lock: .sharedGlobal)
-
-    func contains(groupThread: TSGroupThread) -> Bool {
-        groupCache.contains(groupThread.groupId)
-    }
-
-    func contains(contactThread: TSContactThread) -> Bool {
-        contains(address: contactThread.contactAddress)
-    }
-
-    func contains(address: SignalServiceAddress) -> Bool {
-        guard let serviceId = address.serviceId else {
-            return false
-        }
-        return contactCache.contains(serviceId)
-    }
-
-    func add(groupThread: TSGroupThread) {
-        groupCache.insert(groupThread.groupId)
-    }
-
-    func add(contactThread: TSContactThread) {
-        add(address: contactThread.contactAddress)
-    }
-
-    func add(address: SignalServiceAddress) {
-        guard let serviceId = address.serviceId else {
-            return
-        }
-        contactCache.insert(serviceId)
-    }
-}
-
-// MARK: -
-
 extension OWSContactsManager: ContactManager {
+
     // MARK: Low Trust
 
-    private func isLowTrustThread(_ thread: TSThread, lowTrustCache: LowTrustCache, tx: DBReadTransaction) -> Bool {
-        if let contactThread = thread as? TSContactThread {
-            return isLowTrustContact(contactThread: contactThread, lowTrustCache: lowTrustCache, tx: tx)
-        } else if let groupThread = thread as? TSGroupThread {
-            return isLowTrustGroup(groupThread: groupThread, lowTrustCache: lowTrustCache, tx: tx)
-        } else {
-            owsFailDebug("Invalid thread.")
-            return false
-        }
-    }
-
-    private func isLowTrustContact(address: SignalServiceAddress, lowTrustCache: LowTrustCache, tx: DBReadTransaction) -> Bool {
-        if lowTrustCache.contains(address: address) {
-            return false
-        }
-        guard let contactThread = TSContactThread.getWithContactAddress(address, transaction: tx) else {
-            lowTrustCache.add(address: address)
-            return false
-        }
-        return isLowTrustContact(contactThread: contactThread, lowTrustCache: lowTrustCache, tx: tx)
-    }
-
-    private func isLowTrustContact(contactThread: TSContactThread, lowTrustCache: LowTrustCache, tx: DBReadTransaction) -> Bool {
+    public func isLowTrustContact(contactThread: TSContactThread, tx: DBReadTransaction) -> Bool {
         let address = contactThread.contactAddress
-        if lowTrustCache.contains(address: address) {
+
+        if addressesNotNeedingLowTrustWarningCache.contains(address) {
             return false
         }
+
+        if SSKEnvironment.shared.profileManagerRef.isThread(inProfileWhitelist: contactThread, transaction: tx) {
+            addressesNotNeedingLowTrustWarningCache.insert(address)
+            return false
+        }
+
         if !contactThread.hasPendingMessageRequest(transaction: tx) {
-            lowTrustCache.add(address: address)
             return false
         }
-        // ...and not in a whitelisted group with the locar user.
-        if isInMultipleWhitelistedGroupsWithLocalUser(otherAddress: address, tx: tx) {
-            lowTrustCache.add(address: address)
+
+        if isInWhitelistedGroupsWithLocalUser(
+            otherAddress: address,
+            requireMultipleMutualGroups: true,
+            tx: tx
+        ) {
+            addressesNotNeedingLowTrustWarningCache.insert(address)
             return false
         }
-        // We can skip avatar blurring if the user has explicitly waived the blurring.
-        if
-            lowTrustCache === avatarBlurringCache,
-            let storeKey = address.serviceId?.serviceIdUppercaseString,
-            skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx)
-        {
-            lowTrustCache.add(address: address)
-            return false
-        }
+
         return true
     }
 
-    private func isLowTrustGroup(groupThread: TSGroupThread, lowTrustCache: LowTrustCache, tx: DBReadTransaction) -> Bool {
-        if lowTrustCache.contains(groupThread: groupThread) {
+    public func isLowTrustGroup(groupThread: TSGroupThread, tx: DBReadTransaction) -> Bool {
+        if groupIdsNotNeedingLowTrustWarningCache.contains(groupThread.groupId) {
             return false
         }
+
+        if SSKEnvironment.shared.profileManagerRef.isThread(inProfileWhitelist: groupThread, transaction: tx) {
+            groupIdsNotNeedingLowTrustWarningCache.insert(groupThread.groupId)
+            return false
+        }
+
         if !groupThread.hasPendingMessageRequest(transaction: tx) {
-            lowTrustCache.add(groupThread: groupThread)
             return false
         }
         // We can skip "unknown thread warnings" if a group has members which are trusted.
-        if lowTrustCache === unknownThreadWarningCache, hasWhitelistedGroupMember(groupThread: groupThread, tx: tx) {
-            lowTrustCache.add(groupThread: groupThread)
+        if hasWhitelistedGroupMember(groupThread: groupThread, tx: tx) {
+            groupIdsNotNeedingLowTrustWarningCache.insert(groupThread.groupId)
             return false
         }
         return true
     }
 
-    private func isInMultipleWhitelistedGroupsWithLocalUser(otherAddress: SignalServiceAddress, tx: DBReadTransaction) -> Bool {
-        let cache = isInMultipleWhitelistedGroupsWithLocalUserCache
-        if let cacheKey = otherAddress.serviceId, let cachedValue = cache[cacheKey] {
-            return cachedValue
-        }
-        let result: Bool = {
-            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
-                owsFailDebug("Missing localAddress.")
-                return false
-            }
-            let otherGroupThreadIds = TSGroupThread.groupThreadIds(with: otherAddress, transaction: tx)
-            guard !otherGroupThreadIds.isEmpty else {
-                return false
-            }
-            let localGroupThreadIds = TSGroupThread.groupThreadIds(with: localAddress, transaction: tx)
-            let groupThreadIds = Set(otherGroupThreadIds).intersection(localGroupThreadIds)
-
-            var isInOneWhitelistedGroup = false
-
-            for groupThreadId in groupThreadIds {
-                guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: tx) else {
-                    owsFailDebug("Missing group thread")
-                    continue
-                }
-                if SSKEnvironment.shared.profileManagerRef.isGroupId(inProfileWhitelist: groupThread.groupId, transaction: tx) {
-                    if isInOneWhitelistedGroup {
-                        return true
-                    }
-                    isInOneWhitelistedGroup = true
-                }
-            }
+    private func isInWhitelistedGroupsWithLocalUser(
+        otherAddress: SignalServiceAddress,
+        requireMultipleMutualGroups: Bool,
+        tx: DBReadTransaction
+    ) -> Bool {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
+            owsFailDebug("Missing localAddress.")
             return false
-        }()
-        if let cacheKey = otherAddress.serviceId {
-            cache[cacheKey] = result
         }
-        return result
+        let otherGroupThreadIds = TSGroupThread.groupThreadIds(with: otherAddress, transaction: tx)
+        guard !otherGroupThreadIds.isEmpty else {
+            return false
+        }
+        let localGroupThreadIds = TSGroupThread.groupThreadIds(with: localAddress, transaction: tx)
+        let groupThreadIds = Set(otherGroupThreadIds).intersection(localGroupThreadIds)
+
+        var isInOneWhitelistedGroup = false
+        let onlyNeedToCheckForOneMutualGroup = !requireMultipleMutualGroups
+
+        for groupThreadId in groupThreadIds {
+            guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: tx) else {
+                owsFailDebug("Missing group thread")
+                continue
+            }
+            if SSKEnvironment.shared.profileManagerRef.isGroupId(inProfileWhitelist: groupThread.groupId, transaction: tx) {
+                if isInOneWhitelistedGroup || onlyNeedToCheckForOneMutualGroup {
+                    return true
+                }
+                isInOneWhitelistedGroup = true
+            }
+        }
+        return false
     }
 
     private func hasWhitelistedGroupMember(groupThread: TSGroupThread, tx: DBReadTransaction) -> Bool {
-        let cache = hasWhitelistedGroupMemberCache
-        let cacheKey = groupThread.groupId
-        if let cachedValue = cache[cacheKey] {
-            return cachedValue
+        groupThread.groupMembership.fullMembers.contains { member in
+            SSKEnvironment.shared.profileManagerRef.isUser(inProfileWhitelist: member, transaction: tx)
         }
-        let result: Bool = {
-            for groupMember in groupThread.groupMembership.fullMembers {
-                if SSKEnvironment.shared.profileManagerRef.isUser(inProfileWhitelist: groupMember, transaction: tx) {
-                    return true
-                }
-            }
-            return false
-        }()
-        cache[cacheKey] = result
-        return result
-    }
-
-    public func shouldShowUnknownThreadWarning(thread: TSThread, transaction: DBReadTransaction) -> Bool {
-        isLowTrustThread(thread, lowTrustCache: unknownThreadWarningCache, tx: transaction)
     }
 
     // MARK: - Avatar Blurring
 
-    public func shouldBlurContactAvatar(address: SignalServiceAddress, transaction: DBReadTransaction) -> Bool {
-        isLowTrustContact(address: address, lowTrustCache: avatarBlurringCache, tx: transaction)
+    public func didTapToUnblurAvatar(for thread: TSThread) {
+        Task {
+            if let contactThread = thread as? TSContactThread {
+                await unblurContactAvatar(address: contactThread.contactAddress)
+            } else if let groupThread = thread as? TSGroupThread {
+                await unblurGroupAvatar(for: groupThread)
+            } else {
+                owsFailDebug("Invalid thread.")
+            }
+        }
     }
 
-    public func shouldBlurContactAvatar(contactThread: TSContactThread, transaction: DBReadTransaction) -> Bool {
-        isLowTrustContact(contactThread: contactThread, lowTrustCache: avatarBlurringCache, tx: transaction)
+    private func unblurContactAvatar(
+        address: SignalServiceAddress
+    ) async {
+        let db = DependenciesBridge.shared.db
+
+        let isBlurred = db.read { tx in
+            self.shouldBlurContactAvatar(address: address, tx: tx)
+        }
+        guard isBlurred else {
+            // No need to unblur
+            return
+        }
+
+        self.avatarAddressesBeingDownloaded.insert(address)
+
+        let spinnerTask = Task { @MainActor in
+            try await Task.sleep(nanoseconds: NSEC_PER_MSEC * 800)
+            self.avatarAddressesToShowDownloadingSpinner.insert(address)
+            self.postAvatarBlurDidChangeNotification(for: address)
+        }
+
+        defer {
+            spinnerTask.cancel()
+            Task { @MainActor in
+                try? await spinnerTask.value
+                self.avatarAddressesBeingDownloaded.remove(address)
+                self.avatarAddressesToShowDownloadingSpinner.remove(address)
+                self.postAvatarBlurDidChangeNotification(for: address)
+            }
+        }
+
+        let isDownloadBlocked = db.read { tx in
+            self.shouldBlockAvatarDownload(address: address, tx: tx)
+        }
+
+        if isDownloadBlocked {
+            await db.awaitableWrite { tx in
+                self.doNotBlurContactAvatar(address: address, transaction: tx)
+            }
+        }
+
+        let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+        guard let serviceId = address.serviceId else { return }
+        _ = try? await profileFetcher.fetchProfile(for: serviceId)
     }
 
-    public func shouldBlurGroupAvatar(groupThread: TSGroupThread, transaction: DBReadTransaction) -> Bool {
-        if nil == groupThread.groupModel.avatarHash {
-            // DO NOT add to the cache.
+    private func unblurGroupAvatar(for groupThread: TSGroupThread) async {
+        let db = DependenciesBridge.shared.db
+
+        let isBlurred = db.read { tx in
+            self.shouldBlurGroupAvatar(groupId: groupThread.groupId, tx: tx)
+        }
+        guard isBlurred else {
+            return
+        }
+
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            return
+        }
+
+        self.avatarGroupIdsBeingDownloaded.insert(groupThread.groupId)
+
+        let spinnerTask = Task { @MainActor in
+            try await Task.sleep(nanoseconds: NSEC_PER_MSEC * 800)
+            self.avatarGroupIdsToShowDownloadingSpinner.insert(groupThread.groupId)
+            self.postGroupAvatarBlurDidChangeNotification(groupUniqueId: groupThread.uniqueId)
+        }
+
+        defer {
+            spinnerTask.cancel()
+            Task { @MainActor in
+                try? await spinnerTask.value
+                self.avatarGroupIdsBeingDownloaded.remove(groupThread.groupId)
+                self.avatarGroupIdsToShowDownloadingSpinner.remove(groupThread.groupId)
+                self.postGroupAvatarBlurDidChangeNotification(groupUniqueId: groupThread.uniqueId)
+            }
+        }
+
+        let isDownloadBlocked = db.read { tx in
+            self.shouldBlockAvatarDownload(groupThread: groupThread, tx: tx)
+        }
+
+        if isDownloadBlocked {
+            await db.awaitableWrite { tx in
+                self.doNotBlurGroupAvatar(groupThread: groupThread, transaction: tx)
+            }
+        }
+
+        do {
+            try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(
+                secretParams: try groupModel.secretParams(),
+                spamReportingMetadata: .learnedByLocallyInitatedRefresh,
+                source: .other
+            )
+        } catch {
+            Logger.warn("Group refresh failed: \(error).")
+        }
+    }
+
+    public func shouldBlurContactAvatar(address: SignalServiceAddress, tx: DBReadTransaction) -> Bool {
+        if self.avatarAddressesBeingDownloaded.contains(address) {
+            return true
+        }
+
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        guard let profile = profileManager.userProfile(for: address, tx: tx) else {
             return false
         }
 
-        if !isLowTrustGroup(
-            groupThread: groupThread,
-            lowTrustCache: avatarBlurringCache,
-            tx: transaction
+        guard profile.avatarUrlPath?.nilIfEmpty != nil else {
+            // There is no known avatar at all, so nothing to blur
+            return false
+        }
+
+        if profile.avatarFileName?.nilIfEmpty == nil {
+            // There is a remote avatar, but we haven't downloaded it
+            return true
+        }
+
+        return shouldBlockAvatarDownload(address: address, tx: tx)
+    }
+
+    public func shouldBlockAvatarDownload(address: SignalServiceAddress, tx: DBReadTransaction) -> Bool {
+        if addressesAllowingAvatarDownloadCache.contains(address) {
+            return false
+        }
+
+        if address.isLocalAddress {
+            return false
+        }
+
+        if SSKEnvironment.shared.profileManagerRef.isUser(inProfileWhitelist: address, transaction: tx) {
+            addressesAllowingAvatarDownloadCache.insert(address)
+            return false
+        }
+
+        if
+            let storeKey = address.serviceId?.serviceIdUppercaseString,
+            serviceIdsExplicitlyAllowingAvatarDownloadsStore.getBool(
+                storeKey,
+                defaultValue: false,
+                transaction: tx
+            )
+        {
+            addressesAllowingAvatarDownloadCache.insert(address)
+            return false
+        }
+
+        if isInWhitelistedGroupsWithLocalUser(
+            otherAddress: address,
+            requireMultipleMutualGroups: false,
+            tx: tx
         ) {
+            addressesAllowingAvatarDownloadCache.insert(address)
             return false
         }
 
-        // We can skip avatar blurring if the user has explicitly waived the blurring.
-        if skipGroupAvatarBlurByGroupIdStore.getBool(
+        return true
+    }
+
+    public func shouldBlurGroupAvatar(groupId: Data, tx: DBReadTransaction) -> Bool {
+        guard let groupThread = TSGroupThread.fetch(
+            groupId: groupId,
+            transaction: tx
+        ) else {
+            return false
+        }
+
+        if self.avatarGroupIdsBeingDownloaded.contains(groupThread.groupId) {
+            return true
+        }
+
+        switch groupThread.groupModel.avatarDataState {
+        case .lowTrustDownloadWasBlocked:
+            return true
+        case .available, .missing, .failedToFetchFromCDN:
+            break
+        }
+
+        return shouldBlockAvatarDownload(groupThread: groupThread, tx: tx)
+    }
+
+    public func shouldBlockAvatarDownload(groupThread: TSGroupThread, tx: DBReadTransaction) -> Bool {
+        if groupIdsAllowingAvatarDownloadCache.contains(groupThread.groupId) {
+            return false
+        }
+
+        guard groupThread.hasPendingMessageRequest(transaction: tx) else {
+            return false
+        }
+
+        // Allow downloads if the user has tapped to unblur
+        if groupIdsExplicitlyAllowingAvatarDownloadsStore.getBool(
             groupThread.groupId.hexadecimalString,
             defaultValue: false,
-            transaction: transaction
+            transaction: tx
         ) {
-            avatarBlurringCache.add(groupThread: groupThread)
+            groupIdsAllowingAvatarDownloadCache.insert(groupThread.groupId)
             return false
         }
 
@@ -444,36 +572,40 @@ extension OWSContactsManager: ContactManager {
     public static let skipGroupAvatarBlurDidChange = NSNotification.Name("skipGroupAvatarBlurDidChange")
     public static let skipGroupAvatarBlurGroupUniqueIdKey = "skipGroupAvatarBlurGroupUniqueIdKey"
 
-    public func doNotBlurContactAvatar(address: SignalServiceAddress, transaction tx: DBWriteTransaction) {
+    private func doNotBlurContactAvatar(address: SignalServiceAddress, transaction tx: DBWriteTransaction) {
         guard let serviceId = address.serviceId else {
             owsFailDebug("Missing ServiceId for user.")
             return
         }
         let storeKey = serviceId.serviceIdUppercaseString
-        let shouldSkipBlur = skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx)
+        let shouldSkipBlur = serviceIdsExplicitlyAllowingAvatarDownloadsStore.getBool(storeKey, defaultValue: false, transaction: tx)
         guard !shouldSkipBlur else {
             owsFailDebug("Value did not change.")
             return
         }
-        skipContactAvatarBlurByServiceIdStore.setBool(true, key: storeKey, transaction: tx)
+        serviceIdsExplicitlyAllowingAvatarDownloadsStore.setBool(true, key: storeKey, transaction: tx)
         if let contactThread = TSContactThread.getWithContactAddress(address, transaction: tx) {
             SSKEnvironment.shared.databaseStorageRef.touch(thread: contactThread, shouldReindex: false, tx: tx)
         }
         tx.addSyncCompletion {
-            NotificationCenter.default.postOnMainThread(
-                name: Self.skipContactAvatarBlurDidChange,
-                object: nil,
-                userInfo: [
-                    Self.skipContactAvatarBlurAddressKey: address
-                ]
-            )
+            self.postAvatarBlurDidChangeNotification(for: address)
         }
     }
 
-    public func doNotBlurGroupAvatar(groupThread: TSGroupThread, transaction: DBWriteTransaction) {
+    private func postAvatarBlurDidChangeNotification(for address: SignalServiceAddress) {
+        NotificationCenter.default.postOnMainThread(
+            name: Self.skipContactAvatarBlurDidChange,
+            object: nil,
+            userInfo: [
+                Self.skipContactAvatarBlurAddressKey: address
+            ]
+        )
+    }
+
+    private func doNotBlurGroupAvatar(groupThread: TSGroupThread, transaction: DBWriteTransaction) {
         let groupId = groupThread.groupId
         let groupUniqueId = groupThread.uniqueId
-        guard !skipGroupAvatarBlurByGroupIdStore.getBool(
+        guard !groupIdsExplicitlyAllowingAvatarDownloadsStore.getBool(
             groupId.hexadecimalString,
             defaultValue: false,
             transaction: transaction
@@ -481,7 +613,7 @@ extension OWSContactsManager: ContactManager {
             owsFailDebug("Value did not change.")
             return
         }
-        skipGroupAvatarBlurByGroupIdStore.setBool(
+        groupIdsExplicitlyAllowingAvatarDownloadsStore.setBool(
             true,
             key: groupId.hexadecimalString,
             transaction: transaction
@@ -489,22 +621,75 @@ extension OWSContactsManager: ContactManager {
         SSKEnvironment.shared.databaseStorageRef.touch(thread: groupThread, shouldReindex: false, tx: transaction)
 
         transaction.addSyncCompletion {
-            NotificationCenter.default.postOnMainThread(
-                name: Self.skipGroupAvatarBlurDidChange,
-                object: nil,
-                userInfo: [
-                    Self.skipGroupAvatarBlurGroupUniqueIdKey: groupUniqueId
-                ]
-            )
+            self.postGroupAvatarBlurDidChangeNotification(groupUniqueId: groupUniqueId)
         }
     }
 
-    public func blurAvatar(_ image: UIImage) -> UIImage? {
-        do {
-            return try image.withGaussianBlur(radius: 16, resizeToMaxPixelDimension: 100)
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return nil
+    private func postGroupAvatarBlurDidChangeNotification(groupUniqueId: String) {
+        NotificationCenter.default.postOnMainThread(
+            name: Self.skipGroupAvatarBlurDidChange,
+            object: nil,
+            userInfo: [
+                Self.skipGroupAvatarBlurGroupUniqueIdKey: groupUniqueId
+            ]
+        )
+    }
+
+    // MARK: Whitelist notification handlers
+
+    @objc
+    private func profileWhitelistDidChange(notification: Notification) {
+        let db = DependenciesBridge.shared.db
+        if
+            let address = notification.userInfo?[
+                UserProfileNotifications.profileAddressKey
+            ] as? SignalServiceAddress
+        {
+            let doesNotNeedToBeBlurred = db.read { tx in
+                !self.shouldBlockAvatarDownload(
+                    address: address,
+                    tx: tx
+                )
+            }
+            guard doesNotNeedToBeBlurred else { return }
+            Task {
+                await self.unblurContactAvatar(address: address)
+            }
+        } else if
+            let groupId = notification.userInfo?[
+                UserProfileNotifications.profileGroupIdKey
+            ] as? Data
+        {
+            let groupThread: TSGroupThread? = db.read { tx in
+                let groupThread = TSGroupThread.fetch(
+                    groupId: groupId,
+                    transaction: tx
+                )
+                guard
+                    let groupThread,
+                    !self.shouldBlockAvatarDownload(
+                        groupThread: groupThread,
+                        tx: tx
+                    )
+                else {
+                    return nil
+                }
+                return groupThread
+            }
+            guard let groupThread else { return }
+            Task {
+                await self.unblurGroupAvatar(for: groupThread)
+            }
+
+            let members = db.read { tx in
+                groupThread.groupMembership.fullMembers
+            }
+
+            members.forEach { memberAddress in
+                Task {
+                    await self.unblurContactAvatar(address: memberAddress)
+                }
+            }
         }
     }
 

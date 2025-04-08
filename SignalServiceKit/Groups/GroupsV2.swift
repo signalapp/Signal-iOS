@@ -106,7 +106,7 @@ public protocol GroupsV2 {
 
     func fetchLatestSnapshot(
         secretParams: GroupSecretParams,
-        justUploadedAvatars: GroupV2DownloadedAvatars?
+        justUploadedAvatars: GroupAvatarStateMap?
     ) async throws -> GroupV2SnapshotResponse
 
     func updateGroupV2(
@@ -284,7 +284,7 @@ public protocol GroupV2Updates {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
-        downloadedAvatars: GroupV2DownloadedAvatars,
+        downloadedAvatars: GroupAvatarStateMap,
         transaction: DBWriteTransaction
     ) throws -> TSGroupThread
 }
@@ -339,12 +339,12 @@ public struct GroupChangesResponse {
 public struct GroupV2Change {
     public var snapshot: GroupV2Snapshot?
     public var changeActionsProto: GroupsProtoGroupChangeActions?
-    public let downloadedAvatars: GroupV2DownloadedAvatars
+    public let downloadedAvatars: GroupAvatarStateMap
 
     public init(
         snapshot: GroupV2Snapshot?,
         changeActionsProto: GroupsProtoGroupChangeActions?,
-        downloadedAvatars: GroupV2DownloadedAvatars
+        downloadedAvatars: GroupAvatarStateMap
     ) {
         owsPrecondition(snapshot != nil || changeActionsProto != nil)
         self.snapshot = snapshot
@@ -455,7 +455,7 @@ public struct GroupInviteLinkPreview: Equatable {
 
 // MARK: -
 
-public struct GroupV2DownloadedAvatars {
+public struct GroupAvatarStateMap {
     typealias AvatarDataState = TSGroupModel.AvatarDataState
 
     private var avatarMap = [String: AvatarDataState]()
@@ -466,9 +466,21 @@ public struct GroupV2DownloadedAvatars {
         avatarMap[avatarUrlPath] = avatarDataState
     }
 
-    mutating func merge(_ other: GroupV2DownloadedAvatars) {
+    mutating func merge(_ other: GroupAvatarStateMap) {
         for (avatarUrlPath, avatarDataState) in other.avatarMap {
             avatarMap[avatarUrlPath] = avatarDataState
+        }
+    }
+
+    /// Remove all `AvatarDataState`s marked `.lowTrustDownloadWasBlocked`.
+    mutating func removeBlockedAvatars() {
+        avatarMap = avatarMap.filter { _, value in
+            switch value {
+            case .available, .failedToFetchFromCDN, .missing:
+                true
+            case .lowTrustDownloadWasBlocked:
+                false
+            }
         }
     }
 
@@ -480,22 +492,22 @@ public struct GroupV2DownloadedAvatars {
         return Array(avatarMap.keys)
     }
 
-    static func from(groupModel: TSGroupModelV2) -> GroupV2DownloadedAvatars {
+    static func from(groupModel: TSGroupModelV2) -> GroupAvatarStateMap {
         return from(
             avatarDataState: groupModel.avatarDataState,
             avatarUrlPath: groupModel.avatarUrlPath
         )
     }
 
-    static func from(changes: GroupsV2OutgoingChanges) -> GroupV2DownloadedAvatars {
+    static func from(changes: GroupsV2OutgoingChanges) -> GroupAvatarStateMap {
         return from(
             avatarDataState: AvatarDataState(avatarData: changes.newAvatarData),
             avatarUrlPath: changes.newAvatarUrlPath
         )
     }
 
-    private static func from(avatarDataState: AvatarDataState, avatarUrlPath: String?) -> GroupV2DownloadedAvatars {
-        var downloadedAvatars = GroupV2DownloadedAvatars()
+    private static func from(avatarDataState: AvatarDataState, avatarUrlPath: String?) -> GroupAvatarStateMap {
+        var downloadedAvatars = GroupAvatarStateMap()
 
         guard let avatarUrlPath else {
             return downloadedAvatars
@@ -549,7 +561,7 @@ public class MockGroupsV2: GroupsV2 {
 
     public func fetchLatestSnapshot(
         secretParams: GroupSecretParams,
-        justUploadedAvatars: GroupV2DownloadedAvatars?
+        justUploadedAvatars: GroupAvatarStateMap?
     ) async throws -> GroupV2SnapshotResponse {
         owsFail("Not implemented.")
     }
@@ -686,7 +698,7 @@ public class MockGroupV2Updates: GroupV2Updates {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
-        downloadedAvatars: GroupV2DownloadedAvatars,
+        downloadedAvatars: GroupAvatarStateMap,
         transaction: DBWriteTransaction
     ) throws -> TSGroupThread {
         owsFail("Not implemented.")

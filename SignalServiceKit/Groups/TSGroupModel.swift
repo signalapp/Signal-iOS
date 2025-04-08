@@ -42,6 +42,8 @@ public class TSGroupModelV2: TSGroupModel {
 
     @objc
     public var avatarDataFailedToFetchFromCDN: Bool = false
+    @objc
+    public var lowTrustAvatarDownloadWasBlocked: Bool = false
 
     public init(
         groupId: Data,
@@ -81,6 +83,9 @@ public class TSGroupModelV2: TSGroupModel {
         case .failedToFetchFromCDN:
             avatarData = nil
             avatarDataFailedToFetchFromCDN = true
+        case .lowTrustDownloadWasBlocked:
+            avatarData = nil
+            lowTrustAvatarDownloadWasBlocked = true
         }
 
         super.init(
@@ -310,6 +315,7 @@ public extension TSGroupModel {
         case available(Data)
         case missing
         case failedToFetchFromCDN
+        case lowTrustDownloadWasBlocked
 
         init(avatarData: Data?) {
             if let avatarData {
@@ -328,11 +334,13 @@ public extension TSGroupModel {
     }
 
     var avatarDataState: AvatarDataState {
-        if
-            let selfAsV2 = self as? TSGroupModelV2,
-            selfAsV2.avatarDataFailedToFetchFromCDN
-        {
-            return .failedToFetchFromCDN
+        if let selfAsV2 = self as? TSGroupModelV2 {
+            if selfAsV2.avatarDataFailedToFetchFromCDN {
+                return .failedToFetchFromCDN
+            }
+            if selfAsV2.lowTrustAvatarDownloadWasBlocked {
+                return .lowTrustDownloadWasBlocked
+            }
         }
 
         if let dataFromDisk = readAvatarDataFromDisk() {

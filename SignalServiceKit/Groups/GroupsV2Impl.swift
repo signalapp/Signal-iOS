@@ -139,7 +139,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         return try GroupsV2Protos.parse(
             groupResponseProto: groupResponseProto,
-            downloadedAvatars: GroupV2DownloadedAvatars.from(groupModel: groupModel),
+            downloadedAvatars: GroupAvatarStateMap.from(groupModel: groupModel),
             groupV2Params: groupV2Params
         )
     }
@@ -205,7 +205,7 @@ public class GroupsV2Impl: GroupsV2 {
     // done immediately and in a consistent way.
     private func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) async throws {
 
-        let justUploadedAvatars = GroupV2DownloadedAvatars.from(changes: changes)
+        let justUploadedAvatars = GroupAvatarStateMap.from(changes: changes)
         let groupId = changes.groupId
         let groupV2Params = try GroupV2Params(groupSecretParams: changes.groupSecretParams)
 
@@ -330,7 +330,7 @@ public class GroupsV2Impl: GroupsV2 {
     private func handleGroupUpdatedOnService(
         changeResponse: GroupsProtoGroupChangeResponse,
         messageBehavior: GroupUpdateMessageBehavior,
-        justUploadedAvatars: GroupV2DownloadedAvatars,
+        justUploadedAvatars: GroupAvatarStateMap,
         groupId: Data,
         groupV2Params: GroupV2Params
     ) async throws {
@@ -492,7 +492,7 @@ public class GroupsV2Impl: GroupsV2 {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
-        justUploadedAvatars: GroupV2DownloadedAvatars?,
+        justUploadedAvatars: GroupAvatarStateMap?,
         groupV2Params: GroupV2Params
     ) async throws {
         try await _updateGroupWithChangeActions(
@@ -510,7 +510,7 @@ public class GroupsV2Impl: GroupsV2 {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
-        justUploadedAvatars: GroupV2DownloadedAvatars?,
+        justUploadedAvatars: GroupAvatarStateMap?,
         groupV2Params: GroupV2Params
     ) async throws {
         let downloadedAvatars = try await fetchAllAvatarData(
@@ -574,7 +574,7 @@ public class GroupsV2Impl: GroupsV2 {
 
     public func fetchLatestSnapshot(
         secretParams: GroupSecretParams,
-        justUploadedAvatars: GroupV2DownloadedAvatars?
+        justUploadedAvatars: GroupAvatarStateMap?
     ) async throws -> GroupV2SnapshotResponse {
         let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
         return try await fetchLatestSnapshot(groupV2Params: groupV2Params, justUploadedAvatars: justUploadedAvatars)
@@ -582,7 +582,7 @@ public class GroupsV2Impl: GroupsV2 {
 
     private func fetchLatestSnapshot(
         groupV2Params: GroupV2Params,
-        justUploadedAvatars: GroupV2DownloadedAvatars?
+        justUploadedAvatars: GroupAvatarStateMap?
     ) async throws -> GroupV2SnapshotResponse {
         let requestBuilder: RequestBuilder = { (authCredential) in
             try StorageService.buildFetchCurrentGroupV2SnapshotRequest(
@@ -843,11 +843,11 @@ public class GroupsV2Impl: GroupsV2 {
     private func fetchAllAvatarData(
         groupProtos: [GroupsProtoGroup] = [],
         changeActionsProtos: [GroupsProtoGroupChangeActions] = [],
-        justUploadedAvatars: GroupV2DownloadedAvatars? = nil,
+        justUploadedAvatars: GroupAvatarStateMap? = nil,
         groupV2Params: GroupV2Params
-    ) async throws -> GroupV2DownloadedAvatars {
+    ) async throws -> GroupAvatarStateMap {
 
-        var downloadedAvatars = GroupV2DownloadedAvatars()
+        var downloadedAvatars = GroupAvatarStateMap()
 
         // Creating or updating a group is a multi-step process
         // that can involve uploading an avatar, updating the
@@ -868,7 +868,7 @@ public class GroupsV2Impl: GroupsV2 {
             let groupModel = groupThread.groupModel as? TSGroupModelV2
         {
             // Try to add avatar from group model, if any.
-            downloadedAvatars.merge(GroupV2DownloadedAvatars.from(groupModel: groupModel))
+            downloadedAvatars.merge(GroupAvatarStateMap.from(groupModel: groupModel))
         }
 
         let protoAvatarUrlPaths = GroupsV2Protos.collectAvatarUrlPaths(
@@ -876,19 +876,42 @@ public class GroupsV2Impl: GroupsV2 {
             changeActionsProtos: changeActionsProtos
         )
 
-        return try await fetchAvatarData(
+        return try await fetchAvatarDataIfNotBlurred(
             avatarUrlPaths: protoAvatarUrlPaths,
-            downloadedAvatars: downloadedAvatars,
+            knownAvatarStates: downloadedAvatars,
             groupV2Params: groupV2Params
         )
     }
 
-    private func fetchAvatarData(
+    private func fetchAvatarDataIfNotBlurred(
         avatarUrlPaths: [String],
-        downloadedAvatars: GroupV2DownloadedAvatars,
+        knownAvatarStates: GroupAvatarStateMap,
         groupV2Params: GroupV2Params
-    ) async throws -> GroupV2DownloadedAvatars {
-        var downloadedAvatars = downloadedAvatars
+    ) async throws -> GroupAvatarStateMap {
+        let shouldBlurAvatars = try DependenciesBridge.shared.db.read { tx in
+            let groupThread = TSGroupThread.fetch(
+                forGroupId: try groupV2Params.groupPublicParams.getGroupIdentifier(),
+                tx: tx
+            )
+
+            guard let groupThread else {
+                return true
+            }
+
+            return SSKEnvironment.shared.contactManagerImplRef.shouldBlockAvatarDownload(groupThread: groupThread, tx: tx)
+        }
+
+        var downloadedAvatars = knownAvatarStates
+
+        if shouldBlurAvatars {
+            let undownloadedAvatarUrlPaths = Set(avatarUrlPaths).subtracting(downloadedAvatars.avatarUrlPaths)
+            undownloadedAvatarUrlPaths.forEach { urlPath in
+                downloadedAvatars.set(avatarDataState: .lowTrustDownloadWasBlocked, avatarUrlPath: urlPath)
+            }
+            return downloadedAvatars
+        }
+
+        downloadedAvatars.removeBlockedAvatars()
         let undownloadedAvatarUrlPaths = Set(avatarUrlPaths).subtracting(downloadedAvatars.avatarUrlPaths)
 
         try await withThrowingTaskGroup(of: (String, Data).self) { taskGroup in
@@ -1473,9 +1496,9 @@ public class GroupsV2Impl: GroupsV2 {
         groupSecretParams: GroupSecretParams
     ) async throws -> Data {
         let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
-        let downloadedAvatars = try await fetchAvatarData(
+        let downloadedAvatars = try await fetchAvatarDataIfNotBlurred(
             avatarUrlPaths: [avatarUrlPath],
-            downloadedAvatars: GroupV2DownloadedAvatars(),
+            knownAvatarStates: GroupAvatarStateMap(),
             groupV2Params: groupV2Params
         )
 
@@ -1491,9 +1514,9 @@ public class GroupsV2Impl: GroupsV2 {
         avatarUrlPath: String
     ) async throws -> TSGroupModel.AvatarDataState {
         let groupV2Params = try GroupV2Params(groupSecretParams: groupModel.secretParams())
-        let downloadedAvatars = try await fetchAvatarData(
+        let downloadedAvatars = try await fetchAvatarDataIfNotBlurred(
             avatarUrlPaths: [avatarUrlPath],
-            downloadedAvatars: GroupV2DownloadedAvatars(),
+            knownAvatarStates: GroupAvatarStateMap(),
             groupV2Params: groupV2Params
         )
 

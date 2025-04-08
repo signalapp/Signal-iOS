@@ -29,6 +29,20 @@ public struct AvatarDefaultColorManager {
     /// `defaultColor(useCase:tx:)` unless they know a color is never persisted
     /// for the given use case.
     public static func deriveDefaultColor(useCase: UseCase) -> AvatarTheme {
+        guard let index = deriveIndex(useCase: useCase) else {
+            return .default
+        }
+        return .forIndex(index)
+    }
+
+    public static func deriveGradient(useCase: UseCase) -> AvatarGradient {
+        guard let index = deriveIndex(useCase: useCase) else {
+            return AvatarGradient.gradients[0]
+        }
+        return AvatarGradient.gradients[index % AvatarGradient.gradients.count]
+    }
+
+    private static func deriveIndex(useCase: UseCase) -> Int? {
         let seedData: Data
         switch useCase {
         case .contact(let recipient):
@@ -39,7 +53,7 @@ public struct AvatarDefaultColorManager {
             } else if let pni = recipient.pni {
                 seedData = Data(pni.serviceIdBinary)
             } else {
-                return .default
+                return nil
             }
         case .contactWithoutRecipient(let address):
             if let aci = address.serviceId as? Aci {
@@ -49,13 +63,13 @@ public struct AvatarDefaultColorManager {
             } else if let pni = address.serviceId as? Pni {
                 seedData = Data(pni.serviceIdBinary)
             } else {
-                return .default
+                return nil
             }
         case .group(let groupId):
             seedData = groupId
         case .callLink(let rootKey):
             // Per spec, these don't go through SHA256 to determine the color.
-            return .forIndex(Int(rootKey.bytes.first!))
+            return Int(rootKey.bytes.first!)
         }
 
         // We'll take a SHA256 hash of the seed, and then use the first byte of
@@ -64,12 +78,12 @@ public struct AvatarDefaultColorManager {
         sha256.update(data: seedData)
         guard let firstSHA256Byte = Data(sha256.finalize()).first else {
             owsFailDebug("Unexpectedly empty SHA256!")
-            return .default
+            return nil
         }
 
         // The indexing uses modulo internally, so we can pass an arbitrarily
         // large index.
-        return .forIndex(Int(firstSHA256Byte))
+        return Int(firstSHA256Byte)
     }
 
     // MARK: -

@@ -155,9 +155,17 @@ public class AvatarBuilder {
         localUserDisplayMode: LocalUserDisplayMode,
         transaction: DBReadTransaction
     ) -> Request {
-        let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurContactAvatar(address: address, transaction: transaction)
-        let requestType: RequestType = .contactAddress(address: address, localUserDisplayMode: localUserDisplayMode)
-        return Request(requestType: requestType, diameterPixels: diameterPixels, shouldBlurAvatar: shouldBlurAvatar)
+        let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurContactAvatar(address: address, tx: transaction)
+
+        let requestType: RequestType = if shouldBlurAvatar {
+            .gradient(AvatarDefaultColorManager.deriveGradient(
+                useCase: .contactWithoutRecipient(address: address)
+            ))
+        } else {
+            .contactAddress(address: address, localUserDisplayMode: localUserDisplayMode)
+        }
+
+        return Request(requestType: requestType, diameterPixels: diameterPixels)
     }
 
     public func avatarImage(
@@ -219,9 +227,18 @@ public class AvatarBuilder {
         transaction tx: DBReadTransaction
     ) -> Request {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurGroupAvatar(groupThread: groupThread, transaction: tx)
-        let requestType = buildRequestType(forGroupThread: groupThread, diameterPixels: diameterPixels, transaction: tx)
-        return Request(requestType: requestType, diameterPixels: diameterPixels, shouldBlurAvatar: shouldBlurAvatar)
+        let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurGroupAvatar(
+            groupId: groupThread.groupId,
+            tx: tx
+        )
+        let requestType: RequestType = if shouldBlurAvatar {
+            .gradient(AvatarDefaultColorManager.deriveGradient(
+                useCase: .group(groupId: groupThread.groupId)
+            ))
+        } else {
+            buildRequestType(forGroupThread: groupThread, diameterPixels: diameterPixels, transaction: tx)
+        }
+        return Request(requestType: requestType, diameterPixels: diameterPixels)
     }
 
     public func avatarImage(
@@ -273,9 +290,8 @@ public class AvatarBuilder {
             owsFailDebug("Missing localAddress.")
             return nil
         }
-        let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurContactAvatar(address: address, transaction: transaction)
         let requestType: RequestType = .contactAddress(address: address, localUserDisplayMode: localUserDisplayMode)
-        let request = Request(requestType: requestType, diameterPixels: diameterPixels, shouldBlurAvatar: shouldBlurAvatar)
+        let request = Request(requestType: requestType, diameterPixels: diameterPixels)
         return avatarImage(forRequest: request, transaction: transaction)
     }
 
@@ -286,7 +302,6 @@ public class AvatarBuilder {
         transaction: DBReadTransaction
     ) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        let shouldBlurAvatar = false
         let theme: AvatarTheme
         if let address {
             let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
@@ -306,7 +321,7 @@ public class AvatarBuilder {
                 return .contactDefaultIcon(theme: theme)
             }
         }()
-        let request = Request(requestType: requestType, diameterPixels: diameterPixels, shouldBlurAvatar: shouldBlurAvatar)
+        let request = Request(requestType: requestType, diameterPixels: diameterPixels)
         return avatarImage(forRequest: request, transaction: transaction)
     }
 
@@ -316,12 +331,10 @@ public class AvatarBuilder {
         transaction tx: DBReadTransaction
     ) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        let shouldBlurAvatar = false
         let requestType: RequestType = .groupDefaultIcon(groupId: groupId)
         let request = Request(
             requestType: requestType,
-            diameterPixels: CGFloat(diameterPixels),
-            shouldBlurAvatar: shouldBlurAvatar
+            diameterPixels: CGFloat(diameterPixels)
         )
         let avatarContentType: AvatarContentType = .groupDefault(
             theme: DependenciesBridge.shared.avatarDefaultColorManager
@@ -331,8 +344,7 @@ public class AvatarBuilder {
             request: request,
             contentType: avatarContentType,
             failoverContentType: nil,
-            diameterPixels: request.diameterPixels,
-            shouldBlurAvatar: request.shouldBlurAvatar
+            diameterPixels: request.diameterPixels
         )
         return avatarImage(forAvatarContent: avatarContent, transaction: nil)
     }
@@ -375,8 +387,7 @@ public class AvatarBuilder {
 
         let request = Request(
             requestType: requestType,
-            diameterPixels: CGFloat(diameterPixels),
-            shouldBlurAvatar: false
+            diameterPixels: CGFloat(diameterPixels)
         )
 
         return avatarImage(forRequest: request, transaction: transaction)
@@ -390,8 +401,7 @@ public class AvatarBuilder {
     public func avatarImage(model: AvatarModel, diameterPixels: UInt) -> UIImage? {
         let request = Request(
             requestType: .model(model),
-            diameterPixels: CGFloat(diameterPixels),
-            shouldBlurAvatar: false
+            diameterPixels: CGFloat(diameterPixels)
         )
 
         let avatarContentType: AvatarContentType
@@ -408,8 +418,7 @@ public class AvatarBuilder {
             request: request,
             contentType: avatarContentType,
             failoverContentType: nil,
-            diameterPixels: request.diameterPixels,
-            shouldBlurAvatar: request.shouldBlurAvatar
+            diameterPixels: request.diameterPixels
         )
 
         return avatarImage(forAvatarContent: avatarContent, transaction: nil)
@@ -430,8 +439,9 @@ public class AvatarBuilder {
         case group(groupId: Data, avatarData: Data, digestString: String)
         case groupDefaultIcon(groupId: Data)
         case model(AvatarModel)
+        case gradient(AvatarGradient)
 
-        fileprivate var cacheKey: String? {
+        fileprivate var cacheKey: String {
             switch self {
             case .contactAddress(let address, let localUserDisplayMode):
                 let indirectAvatarIdentifier = AvatarBuilder.shared.addressToAvatarIdentifierCache[address] ?? {
@@ -457,6 +467,8 @@ public class AvatarBuilder {
                 case .image(let url):
                     return "file.\(url.path)"
                 }
+            case .gradient(let gradient):
+                return "gradient.\(gradient.id)"
             }
         }
     }
@@ -464,14 +476,9 @@ public class AvatarBuilder {
     public struct Request {
         let requestType: RequestType
         let diameterPixels: CGFloat
-        let shouldBlurAvatar: Bool
 
         fileprivate var cacheKey: String? {
-            guard let typeKey = requestType.cacheKey else {
-                owsFailDebug("Missing typeKey.")
-                return nil
-            }
-            return "\(typeKey).\(diameterPixels).\(shouldBlurAvatar)"
+            "\(requestType.cacheKey).\(diameterPixels)"
         }
     }
 
@@ -481,37 +488,51 @@ public class AvatarBuilder {
         localUserDisplayMode: LocalUserDisplayMode,
         transaction: DBReadTransaction
     ) -> Request? {
-        func buildRequestType() -> (RequestType, Bool)? {
+        func buildRequestType() -> RequestType? {
             if let contactThread = thread as? TSContactThread {
-                let requestType: RequestType = .contactAddress(
-                    address: contactThread.contactAddress,
-                    localUserDisplayMode: localUserDisplayMode
-                )
                 let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurContactAvatar(
                     address: contactThread.contactAddress,
-                    transaction: transaction
+                    tx: transaction
                 )
-                return (requestType, shouldBlurAvatar)
+                let requestType: RequestType = if shouldBlurAvatar {
+                    .gradient(AvatarDefaultColorManager.deriveGradient(
+                        useCase: .contactWithoutRecipient(address: contactThread.contactAddress)
+                    ))
+                } else {
+                    .contactAddress(
+                        address: contactThread.contactAddress,
+                        localUserDisplayMode: localUserDisplayMode
+                    )
+                }
+                return requestType
             } else if let groupThread = thread as? TSGroupThread {
-                let requestType = self.buildRequestType(
-                    forGroupThread: groupThread,
-                    diameterPixels: diameterPixels,
-                    transaction: transaction
-                )
-                let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurGroupAvatar(
-                    groupThread: groupThread,
-                    transaction: transaction
-                )
-                return (requestType, shouldBlurAvatar)
+                let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef
+                    .shouldBlurGroupAvatar(
+                        groupId: groupThread.groupId,
+                        tx: transaction
+                    )
+
+                let requestType: RequestType = if shouldBlurAvatar {
+                    .gradient(AvatarDefaultColorManager.deriveGradient(
+                        useCase: .group(groupId: groupThread.groupId)
+                    ))
+                } else {
+                    self.buildRequestType(
+                        forGroupThread: groupThread,
+                        diameterPixels: diameterPixels,
+                        transaction: transaction
+                    )
+                }
+                return requestType
             } else {
                 owsFailDebug("Invalid thread.")
                 return nil
             }
         }
-        guard let (requestType, shouldBlurAvatar) = buildRequestType() else {
+        guard let requestType = buildRequestType() else {
             return nil
         }
-        return Request(requestType: requestType, diameterPixels: diameterPixels, shouldBlurAvatar: shouldBlurAvatar)
+        return Request(requestType: requestType, diameterPixels: diameterPixels)
     }
 
     private func buildRequestType(
@@ -579,6 +600,7 @@ public class AvatarBuilder {
         case tintedImage(name: String, theme: AvatarTheme)
         case avatarIcon(icon: AvatarIcon, theme: AvatarTheme)
         case cachedContact(address: SignalServiceAddress, cacheKey: String)
+        case gradient(AvatarGradient)
 
         static func noteToSelf(theme: AvatarTheme) -> Self {
             return .tintedImage(
@@ -612,6 +634,8 @@ public class AvatarBuilder {
                 return "avatarIcon.\(icon.rawValue).\(theme.rawValue)"
             case .cachedContact(_, let cacheKey):
                 return cacheKey
+            case .gradient(let gradient):
+                return "gradient.\(gradient.id)"
             }
         }
     }
@@ -623,24 +647,24 @@ public class AvatarBuilder {
         let contentType: AvatarContentType
         let failoverContentType: AvatarContentType?
         let diameterPixels: CGFloat
-        let shouldBlurAvatar: Bool
 
         init(
             request: Request,
             contentType: AvatarContentType,
             failoverContentType: AvatarContentType?,
-            diameterPixels: CGFloat,
-            shouldBlurAvatar: Bool
+            diameterPixels: CGFloat
         ) {
             self.request = request
             self.contentType = contentType
             self.failoverContentType = failoverContentType
             self.diameterPixels = diameterPixels
-            self.shouldBlurAvatar = shouldBlurAvatar
         }
 
         fileprivate var cacheKey: String {
-            "\(contentType.cacheKey).\(diameterPixels).\(shouldBlurAvatar)"
+            // We used to blur avatar images from message requests (now we
+            // prevent the download in the first place). This "false" at
+            // the end indicates the normal, unblurred avatar.
+            "\(contentType.cacheKey).\(diameterPixels).\(false)"
         }
     }
 
@@ -854,6 +878,11 @@ public class AvatarBuilder {
                         failoverContentType: nil
                     )
                 }
+            case .gradient(let gradient):
+                return AvatarContentTypes(
+                    contentType: .gradient(gradient),
+                    failoverContentType: nil
+                )
             }
         }
         let contentTypes = buildAvatarContentTypes()
@@ -861,8 +890,7 @@ public class AvatarBuilder {
             request: request,
             contentType: contentTypes.contentType,
             failoverContentType: contentTypes.failoverContentType,
-            diameterPixels: request.diameterPixels,
-            shouldBlurAvatar: request.shouldBlurAvatar
+            diameterPixels: request.diameterPixels
         )
     }
 
@@ -910,6 +938,8 @@ public class AvatarBuilder {
                 return buildAvatar(avatarContent: avatarContent, tintedImageName: name, theme: theme)
             case .avatarIcon(let icon, let theme):
                 return buildAvatar(avatarContent: avatarContent, avatarIcon: icon, theme: theme)
+            case .gradient(let gradient):
+                return buildAvatar(diameterPixels: avatarContent.diameterPixels, gradient: gradient)
             }
         }
         func buildOrLoad() -> UIImage? {
@@ -936,22 +966,7 @@ public class AvatarBuilder {
         owsAssertDebug(CGFloat(image.pixelWidth) <= avatarContent.diameterPixels)
         owsAssertDebug(CGFloat(image.pixelHeight) <= avatarContent.diameterPixels)
 
-        if avatarContent.shouldBlurAvatar {
-            guard let blurredImage = SSKEnvironment.shared.contactManagerImplRef.blurAvatar(image) else {
-                owsFailDebug("Could not blur image.")
-                return nil
-            }
-
-            // Output should always be square.
-            owsAssertDebug(blurredImage.pixelWidth == blurredImage.pixelHeight)
-            // Output should always be target size or smaller.
-            owsAssertDebug(CGFloat(blurredImage.pixelWidth) <= avatarContent.diameterPixels)
-            owsAssertDebug(CGFloat(blurredImage.pixelHeight) <= avatarContent.diameterPixels)
-
-            return blurredImage
-        } else {
-            return image
-        }
+        return image
     }
 
     // Ensure image scale matches main screen scale.
@@ -1107,6 +1122,31 @@ public class AvatarBuilder {
                 context: context
             )
         }
+    }
+
+    private static func buildAvatar(
+        diameterPixels: CGFloat,
+        gradient: AvatarGradient
+    ) -> UIImage? {
+        guard diameterPixels > 0 else {
+            owsFailDebug("Invalid diameter.")
+            return nil
+        }
+
+        let frame = CGRect(origin: .zero, size: .square(diameterPixels))
+
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let image = UIGraphicsImageRenderer(size: frame.size, format: format).image { context in
+            let layer = CAGradientLayer()
+            layer.frame = frame
+            layer.colors = [gradient.topColor.cgColor, gradient.bottomColor.cgColor]
+            layer.startPoint = CGPoint(x: 0.5, y: 0.0)
+            layer.endPoint = CGPoint(x: 0.5, y: 1.0)
+            layer.render(in: context.cgContext)
+        }
+
+        return normalizeImageScale(image)
     }
 
     private static func buildAvatar(
