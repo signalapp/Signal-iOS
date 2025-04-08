@@ -63,7 +63,7 @@ public enum FeatureFlags {
 
     public static let enableAccountEntropyPool = true
 
-    public static let libsignalForChat = build.includes(.beta)
+    public static let libsignalForChat = true
 }
 
 // MARK: -
