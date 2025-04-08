@@ -130,10 +130,6 @@ extension ShareAppExtensionContext: AppContext {
         owsAssertBeta(backgroundTaskIdentifier == .invalid)
     }
 
-    func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjectsDescription: String) {
-        Logger.debug("Ignoring request to block sleep.")
-    }
-
     func frontmostViewController() -> UIViewController? {
         return rootViewController.findFrontmostViewController(ignoringAlerts: true)
     }

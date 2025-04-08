@@ -59,7 +59,6 @@ public class TestAppContext: NSObject, AppContext {
     public func isAppForegroundAndActive() -> Bool { true }
     public func beginBackgroundTask(with expirationHandler: BackgroundTaskExpirationHandler) -> UIBackgroundTaskIdentifier { .invalid }
     public func endBackgroundTask(_ backgroundTaskIdentifier: UIBackgroundTaskIdentifier) {}
-    public func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjectsDescription: String) {}
     public func frontmostViewController() -> UIViewController? { nil }
     public func openSystemSettings() {}
     public func open(_ url: URL, completion: ((Bool) -> Void)?) {}

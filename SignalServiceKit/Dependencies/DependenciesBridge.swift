@@ -85,7 +85,7 @@ public class DependenciesBridge {
     public let deviceManager: OWSDeviceManager
     public let deviceService: OWSDeviceService
     public let deviceStore: OWSDeviceStore
-    public let deviceSleepManager: DeviceSleepManager
+    public let deviceSleepManager: (any DeviceSleepManager)?
     public let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     public let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     public let editManager: EditManager
@@ -206,7 +206,7 @@ public class DependenciesBridge {
         deleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManager,
         deviceManager: OWSDeviceManager,
         deviceService: OWSDeviceService,
-        deviceSleepManager: DeviceSleepManager,
+        deviceSleepManager: (any DeviceSleepManager)?,
         deviceStore: OWSDeviceStore,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,

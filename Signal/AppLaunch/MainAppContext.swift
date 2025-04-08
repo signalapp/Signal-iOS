@@ -129,18 +129,6 @@ class MainAppContext: NSObject, AppContext {
         UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier)
     }
 
-    @MainActor
-    func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjectsDescription: String) {
-        if UIApplication.shared.isIdleTimerDisabled != shouldBeBlocking {
-            if shouldBeBlocking {
-                Logger.info("Blocking sleep because of: \(blockingObjectsDescription)")
-            } else {
-                Logger.info("Unblocking sleep.")
-            }
-        }
-        UIApplication.shared.isIdleTimerDisabled = shouldBeBlocking
-    }
-
     func frontmostViewController() -> UIViewController? { UIApplication.shared.frontmostViewControllerIgnoringAlerts }
 
     func openSystemSettings() { UIApplication.shared.openSystemSettings() }

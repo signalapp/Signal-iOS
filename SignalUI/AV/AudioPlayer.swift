@@ -72,7 +72,7 @@ public class AudioPlayer: NSObject {
 
     private let audioActivity: AudioActivity
 
-    private let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "audio player")
+    private let sleepBlockObject = DeviceSleepBlockObject(blockReason: "audio player")
 
     public convenience init(decryptedFileUrl: URL, audioBehavior: AudioBehavior) {
         self.init(source: .decryptedFile(decryptedFileUrl), audioBehavior: audioBehavior)
@@ -105,7 +105,7 @@ public class AudioPlayer: NSObject {
 
     deinit {
         Task { [sleepBlockObject] in
-            await DependenciesBridge.shared.deviceSleepManager.removeBlock(blockObject: sleepBlockObject)
+            await DependenciesBridge.shared.deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
         }
         stop()
     }
@@ -168,7 +168,7 @@ public class AudioPlayer: NSObject {
 
         // Prevent device from sleeping while playing audio.
         MainActor.assumeIsolated {
-            DependenciesBridge.shared.deviceSleepManager.addBlock(blockObject: sleepBlockObject)
+            DependenciesBridge.shared.deviceSleepManager?.addBlock(blockObject: sleepBlockObject)
         }
     }
 
@@ -193,7 +193,7 @@ public class AudioPlayer: NSObject {
         endAudioActivities()
 
         MainActor.assumeIsolated {
-            DependenciesBridge.shared.deviceSleepManager.removeBlock(blockObject: sleepBlockObject)
+            DependenciesBridge.shared.deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
         }
     }
 
@@ -280,7 +280,7 @@ public class AudioPlayer: NSObject {
 
         endAudioActivities()
         MainActor.assumeIsolated {
-            DependenciesBridge.shared.deviceSleepManager.removeBlock(blockObject: sleepBlockObject)
+            DependenciesBridge.shared.deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
         }
         teardownRemoteCommandCenter()
     }

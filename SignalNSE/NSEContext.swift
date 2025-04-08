@@ -79,8 +79,6 @@ class NSEContext: NSObject, AppContext {
     func beginBackgroundTask(with expirationHandler: BackgroundTaskExpirationHandler) -> UIBackgroundTaskIdentifier { .invalid }
     func endBackgroundTask(_ backgroundTaskIdentifier: UIBackgroundTaskIdentifier) {}
 
-    func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjectsDescription: String) {}
-
     func frontmostViewController() -> UIViewController? { nil }
     func openSystemSettings() {}
     func open(_ url: URL, completion: ((Bool) -> Void)? = nil) {}

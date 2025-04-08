@@ -183,7 +183,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         MessageFetchBGRefreshTask.register(appReadiness: appReadiness)
 
-        let deviceSleepManager = DeviceSleepManager(appContext: mainAppContext)
+        let deviceSleepManager = DeviceSleepManagerImpl()
         let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
         let deviceTransferService = DeviceTransferService(
             appReadiness: appReadiness,
@@ -367,7 +367,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private struct LaunchContext {
         var appContext: MainAppContext
         var databaseStorage: SDSDatabaseStorage
-        var deviceSleepManager: DeviceSleepManager
+        var deviceSleepManager: DeviceSleepManagerImpl
         var keychainStorage: any KeychainStorage
         var launchStartedAt: CFTimeInterval
         var incrementalMessageTSAttachmentMigrationStore: IncrementalTSAttachmentMigrationStore
@@ -400,8 +400,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private func setUpMainAppEnvironment(
         launchContext: LaunchContext,
         loadingViewController: LoadingViewController?
-    ) async -> (AppSetup.FinalContinuation, DeviceSleepManager.BlockObject) {
-        let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "app launch")
+    ) async -> (AppSetup.FinalContinuation, DeviceSleepBlockObject) {
+        let sleepBlockObject = DeviceSleepBlockObject(blockReason: "app launch")
         launchContext.deviceSleepManager.addBlock(blockObject: sleepBlockObject)
 
         let _currentCall = AtomicValue<SignalCall?>(nil, lock: .init())
@@ -513,7 +513,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private func didLoadDatabase(
         finalContinuation: AppSetup.FinalContinuation,
         launchContext: LaunchContext,
-        sleepBlockObject: DeviceSleepManager.BlockObject,
+        sleepBlockObject: DeviceSleepBlockObject,
         window: UIWindow
     ) {
         AssertIsOnMainThread()
@@ -572,7 +572,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         launchInterface: launchInterface,
                         launchContext: launchContext
                     )
-                    finalContinuation.dependenciesBridge.deviceSleepManager.removeBlock(blockObject: sleepBlockObject)
+                    finalContinuation.dependenciesBridge.deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
                 }
             }
         }
@@ -1030,7 +1030,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         window: UIWindow
     ) {
         var launchContext = launchContext
-        let recoveryViewController = DatabaseRecoveryViewController<(AppSetup.FinalContinuation, DeviceSleepManager.BlockObject)>(
+        let recoveryViewController = DatabaseRecoveryViewController<(AppSetup.FinalContinuation, DeviceSleepBlockObject)>(
             appReadiness: appReadiness,
             corruptDatabaseStorage: launchContext.databaseStorage,
             keychainStorage: launchContext.keychainStorage,

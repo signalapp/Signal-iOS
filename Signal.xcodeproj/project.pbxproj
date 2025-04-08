@@ -613,6 +613,7 @@
 		505166D72BB37DAE00FF6B4A /* IncomingCallEventSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC202AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift */; };
 		505166D82BB37DB400FF6B4A /* IncomingContactSyncJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */; };
 		5052AF5E2ACB0E9700D7EE9F /* MergePair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */; };
+		505347F92DA08548004AF0B5 /* DeviceSleepManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505347F82DA08548004AF0B5 /* DeviceSleepManagerImpl.swift */; };
 		50552C2A2BAB8E7D00815474 /* AuthCredentialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C292BAB8E7D00815474 /* AuthCredentialManager.swift */; };
 		50552C2C2BAB8E8500815474 /* AuthCredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C2B2BAB8E8500815474 /* AuthCredentialStore.swift */; };
 		50597BBA2B97C38C004681E1 /* SignalAccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50597BB92B97C38C004681E1 /* SignalAccountStore.swift */; };
@@ -4504,6 +4505,7 @@
 		5050A8782B76E2E100E9BFA4 /* PreKeyId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyId.swift; sourceTree = "<group>"; };
 		5050A87A2B76EEC500E9BFA4 /* PreKeyIdTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyIdTest.swift; sourceTree = "<group>"; };
 		5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergePair.swift; sourceTree = "<group>"; };
+		505347F82DA08548004AF0B5 /* DeviceSleepManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSleepManagerImpl.swift; sourceTree = "<group>"; };
 		50552C292BAB8E7D00815474 /* AuthCredentialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthCredentialManager.swift; sourceTree = "<group>"; };
 		50552C2B2BAB8E8500815474 /* AuthCredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthCredentialStore.swift; sourceTree = "<group>"; };
 		50552C2D2BAC066A00815474 /* CallLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLink.swift; sourceTree = "<group>"; };
@@ -10401,6 +10403,7 @@
 				4C751BE423FA0284002A8AF1 /* ContactSupportActionSheet.swift */,
 				50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */,
 				34067EAA2710D61A000407C3 /* DebugLogs.swift */,
+				505347F82DA08548004AF0B5 /* DeviceSleepManagerImpl.swift */,
 				34A95500271B503E00B05242 /* DisplayableText.swift */,
 				F9D289B5291EDC8D00187394 /* DonationJobError.swift */,
 				F93461B8291ED28900366682 /* PaymentDetailsValidity.swift */,
@@ -16828,6 +16831,7 @@
 				D9E8EDF32C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift in Sources */,
 				D9E8EDF12C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift in Sources */,
 				C17A54982D7B3DCD00E1D267 /* DeviceProvisioningURL.swift in Sources */,
+				505347F92DA08548004AF0B5 /* DeviceSleepManagerImpl.swift in Sources */,
 				887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */,
 				887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */,
 				887CD48324730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift in Sources */,

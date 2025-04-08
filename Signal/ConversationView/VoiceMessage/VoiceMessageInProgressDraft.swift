@@ -22,9 +22,9 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
     private let audioFileUrl: URL
     private let audioActivity: AudioActivity
     private let audioSession: AudioSession
-    private let sleepManager: DeviceSleepManager
+    private let sleepManager: any DeviceSleepManager
 
-    init(thread: TSThread, audioSession: AudioSession, sleepManager: DeviceSleepManager) {
+    init(thread: TSThread, audioSession: AudioSession, sleepManager: any DeviceSleepManager) {
         self.threadUniqueId = thread.uniqueId
         self.audioFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: "m4a")
         self.audioActivity = AudioActivity(audioDescription: "Voice Message Recording", behavior: .playAndRecord)
@@ -38,7 +38,7 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
         }
     }
 
-    private let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "voice message")
+    private let sleepBlockObject = DeviceSleepBlockObject(blockReason: "voice message")
 
     private var audioRecorder: AVAudioRecorder?
 

@@ -42,7 +42,7 @@ public class MockSSKEnvironment {
                 databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
                 keychainStorage: MockKeychainStorage()
             ),
-            deviceSleepManager: DeviceSleepManager(appContext: testAppContext),
+            deviceSleepManager: nil,
             paymentsEvents: PaymentsEventsNoop(),
             mobileCoinHelper: MobileCoinHelperMock(),
             callMessageHandler: callMessageHandler,

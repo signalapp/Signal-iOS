@@ -92,7 +92,7 @@ public class AppSetup {
         appContext: AppContext,
         appReadiness: AppReadiness,
         databaseStorage: SDSDatabaseStorage,
-        deviceSleepManager: DeviceSleepManager,
+        deviceSleepManager: (any DeviceSleepManager)?,
         paymentsEvents: PaymentsEvents,
         mobileCoinHelper: MobileCoinHelper,
         callMessageHandler: CallMessageHandler,

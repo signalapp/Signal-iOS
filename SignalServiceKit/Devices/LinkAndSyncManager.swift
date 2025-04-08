@@ -129,7 +129,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private let attachmentUploadManager: AttachmentUploadManager
     private let dateProvider: DateProvider
     private let db: any DB
-    private let deviceSleepManager: DeviceSleepManager
+    private let deviceSleepManager: (any DeviceSleepManager)?
     private let kvStore: KeyValueStore
     private let messageBackupManager: MessageBackupManager
     private let messagePipelineSupervisor: MessagePipelineSupervisor
@@ -142,7 +142,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         attachmentUploadManager: AttachmentUploadManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
-        deviceSleepManager: DeviceSleepManager,
+        deviceSleepManager: (any DeviceSleepManager)?,
         messageBackupManager: MessageBackupManager,
         messagePipelineSupervisor: MessagePipelineSupervisor,
         networkManager: NetworkManager,
@@ -186,11 +186,11 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             return
         }
 
-        let blockObject = DeviceSleepManager.BlockObject(blockReason: Constants.sleepBlockingDescription)
-        await deviceSleepManager.addBlock(blockObject: blockObject)
+        let blockObject = DeviceSleepBlockObject(blockReason: Constants.sleepBlockingDescription)
+        await deviceSleepManager?.addBlock(blockObject: blockObject)
         defer {
             Task {
-                await deviceSleepManager.removeBlock(blockObject: blockObject)
+                await deviceSleepManager?.removeBlock(blockObject: blockObject)
             }
         }
 
@@ -317,11 +317,11 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             return
         }
 
-        let blockObject = DeviceSleepManager.BlockObject(blockReason: Constants.sleepBlockingDescription)
-        await deviceSleepManager.addBlock(blockObject: blockObject)
+        let blockObject = DeviceSleepBlockObject(blockReason: Constants.sleepBlockingDescription)
+        await deviceSleepManager?.addBlock(blockObject: blockObject)
         defer {
             Task {
-                await deviceSleepManager.removeBlock(blockObject: blockObject)
+                await deviceSleepManager?.removeBlock(blockObject: blockObject)
             }
         }
 

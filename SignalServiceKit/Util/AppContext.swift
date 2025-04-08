@@ -76,10 +76,6 @@ public protocol AppContext {
     /// Should be a NOOP if isMainApp is NO.
     func endBackgroundTask(_ backgroundTaskIdentifier: UIBackgroundTaskIdentifier)
 
-    /// Should be a NOOP if isMainApp is NO.
-    @MainActor
-    func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjectsDescription: String)
-
     /// Returns the VC that should be used to present alerts, modals, etc.
     func frontmostViewController() -> UIViewController?
     func openSystemSettings()

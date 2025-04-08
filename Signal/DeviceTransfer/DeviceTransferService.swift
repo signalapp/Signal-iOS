@@ -90,7 +90,7 @@ class DeviceTransferService: NSObject {
         set { serialQueue.sync { _transferState = newValue } }
     }
 
-    private let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "device transfer")
+    private let sleepBlockObject = DeviceSleepBlockObject(blockReason: "device transfer")
 
     private(set) var identity: SecIdentity?
     private(set) var session: MCSession?
@@ -117,10 +117,10 @@ class DeviceTransferService: NSObject {
     // MARK: -
 
     let appReadiness: AppReadiness
-    let deviceSleepManager: DeviceSleepManager
+    let deviceSleepManager: DeviceSleepManagerImpl
     let keychainStorage: any KeychainStorage
 
-    init(appReadiness: AppReadiness, deviceSleepManager: DeviceSleepManager, keychainStorage: any KeychainStorage) {
+    init(appReadiness: AppReadiness, deviceSleepManager: DeviceSleepManagerImpl, keychainStorage: any KeychainStorage) {
         self.appReadiness = appReadiness
         self.deviceSleepManager = deviceSleepManager
         self.keychainStorage = keychainStorage

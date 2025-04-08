@@ -37,7 +37,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     public var callUIAdapter: CallUIAdapter
 
-    let deviceSleepManager: DeviceSleepManager
+    let deviceSleepManager: DeviceSleepManagerImpl
     nonisolated let individualCallService: IndividualCallService
     let groupCallRemoteVideoManager: GroupCallRemoteVideoManager
     let callLinkManager: CallLinkManagerImpl
@@ -87,7 +87,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         callRecordDeleteManager: any CallRecordDeleteManager,
         callRecordStore: any CallRecordStore,
         db: any DB,
-        deviceSleepManager: DeviceSleepManager,
+        deviceSleepManager: DeviceSleepManagerImpl,
         mutableCurrentCall: AtomicValue<SignalCall?>,
         networkManager: NetworkManager,
         tsAccountManager: any TSAccountManager
@@ -191,7 +191,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         self.callUIAdapter = CallUIAdapter()
     }
 
-    private let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "call")
+    private let sleepBlockObject = DeviceSleepBlockObject(blockReason: "call")
 
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         switch oldValue?.mode {
