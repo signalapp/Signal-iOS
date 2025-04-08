@@ -98,9 +98,7 @@ final class ProvisioningCipherTests {
                 initializationVector: knownInitializationVector
             )
 
-            let encrypted = try cipher.encrypt(Randomness.generateRandomBytes(i), theirPublicKey: knownPublicKey)
-
-            #expect(encrypted != nil)
+            _ = try cipher.encrypt(Randomness.generateRandomBytes(i), theirPublicKey: knownPublicKey)
         }
     }
 }
