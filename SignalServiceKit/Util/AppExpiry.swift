@@ -132,7 +132,7 @@ public class AppExpiryImpl: AppExpiry {
 
     public func setExpirationDateForCurrentVersion(_ newExpirationDate: Date?, db: any DB) {
         guard !isExpired else {
-            owsFailDebug("Ignoring expiration date change for expired build.")
+            Logger.warn("Ignoring expiration date change for expired build.")
             return
         }
 

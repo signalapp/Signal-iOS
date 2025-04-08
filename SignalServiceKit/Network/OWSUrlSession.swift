@@ -177,7 +177,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
 
     public func performRequest(request: URLRequest, ignoreAppExpiry: Bool) async throws -> any HTTPResponse {
         if !ignoreAppExpiry && DependenciesBridge.shared.appExpiry.isExpired {
-            throw OWSAssertionError("App is expired.")
+            throw OWSGenericError("App is expired.")
         }
 
         let request = prepareRequest(request: request)
@@ -409,7 +409,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
 
         let appExpiry = DependenciesBridge.shared.appExpiry
         guard !appExpiry.isExpired else {
-            owsFailDebug("App is expired.")
+            Logger.warn("App is expired.")
             throw OWSHTTPError.invalidAppState
         }
 
@@ -493,7 +493,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
         taskBlock: () -> URLSessionUploadTask
     ) async throws -> HTTPResponse {
         if !ignoreAppExpiry && DependenciesBridge.shared.appExpiry.isExpired {
-            throw OWSAssertionError("App is expired.")
+            throw OWSGenericError("App is expired.")
         }
 
         let request = prepareRequest(request: request)
@@ -523,7 +523,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
     ) async throws -> OWSUrlDownloadResponse {
         let appExpiry = DependenciesBridge.shared.appExpiry
         if appExpiry.isExpired {
-            throw OWSAssertionError("App is expired.")
+            throw OWSGenericError("App is expired.")
         }
 
         let requestConfig = self.requestConfig(requestUrl: requestUrl)
