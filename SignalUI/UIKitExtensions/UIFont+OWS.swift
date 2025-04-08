@@ -45,27 +45,27 @@ public extension UIFont {
 
     // MARK: - Dynamic Type
 
-    class var dynamicTypeTitle1: UIFont { UIFont.preferredFont(forTextStyle: .title1) }
+    class var dynamicTypeTitle1: UIFont { UIFont.preferredFont(forTextStyle: .title1, compatibleWith: .current) }
 
-    class var dynamicTypeTitle2: UIFont { UIFont.preferredFont(forTextStyle: .title2) }
+    class var dynamicTypeTitle2: UIFont { UIFont.preferredFont(forTextStyle: .title2, compatibleWith: .current) }
 
-    class var dynamicTypeTitle3: UIFont { UIFont.preferredFont(forTextStyle: .title3) }
+    class var dynamicTypeTitle3: UIFont { UIFont.preferredFont(forTextStyle: .title3, compatibleWith: .current) }
 
-    class var dynamicTypeHeadline: UIFont { UIFont.preferredFont(forTextStyle: .headline) }
+    class var dynamicTypeHeadline: UIFont { UIFont.preferredFont(forTextStyle: .headline, compatibleWith: .current) }
 
-    class var dynamicTypeBody: UIFont { UIFont.preferredFont(forTextStyle: .body) }
+    class var dynamicTypeBody: UIFont { UIFont.preferredFont(forTextStyle: .body, compatibleWith: .current) }
 
-    class var dynamicTypeBody2: UIFont { UIFont.preferredFont(forTextStyle: .subheadline) }
+    class var dynamicTypeBody2: UIFont { UIFont.preferredFont(forTextStyle: .subheadline, compatibleWith: .current) }
 
-    class var dynamicTypeCallout: UIFont { UIFont.preferredFont(forTextStyle: .callout) }
+    class var dynamicTypeCallout: UIFont { UIFont.preferredFont(forTextStyle: .callout, compatibleWith: .current) }
 
-    class var dynamicTypeSubheadline: UIFont { UIFont.preferredFont(forTextStyle: .subheadline) }
+    class var dynamicTypeSubheadline: UIFont { UIFont.preferredFont(forTextStyle: .subheadline, compatibleWith: .current) }
 
-    class var dynamicTypeFootnote: UIFont { UIFont.preferredFont(forTextStyle: .footnote) }
+    class var dynamicTypeFootnote: UIFont { UIFont.preferredFont(forTextStyle: .footnote, compatibleWith: .current) }
 
-    class var dynamicTypeCaption1: UIFont { UIFont.preferredFont(forTextStyle: .caption1) }
+    class var dynamicTypeCaption1: UIFont { UIFont.preferredFont(forTextStyle: .caption1, compatibleWith: .current) }
 
-    class var dynamicTypeCaption2: UIFont { UIFont.preferredFont(forTextStyle: .caption2) }
+    class var dynamicTypeCaption2: UIFont { UIFont.preferredFont(forTextStyle: .caption2, compatibleWith: .current) }
 
     // MARK: - Dynamic Type Clamped
 
@@ -105,7 +105,11 @@ public extension UIFont {
             owsFailDebug("Missing max point size for style: \(textStyle)")
             return desiredStyleMetrics.scaledFont(for: unscaledFont)
         }
-        return desiredStyleMetrics.scaledFont(for: unscaledFont, maximumPointSize: maxPointSize)
+        return desiredStyleMetrics.scaledFont(
+            for: unscaledFont,
+            maximumPointSize: maxPointSize,
+            compatibleWith: .current
+        )
     }
 
     class var dynamicTypeLargeTitle1Clamped: UIFont { preferredFontClamped(forTextStyle: .largeTitle) }
