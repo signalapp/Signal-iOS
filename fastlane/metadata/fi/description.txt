@@ -2,7 +2,7 @@ Signal on viestisovellus, joka keskittyy yksityisyyteen. Se on ilmainen ja helpp
 
 • Lähetä tekstiä, ääniviestejä, kuvia, videoita, GIF-tiedostoja ja muita tiedostoja ilmaiseksi. Signal käyttää puhelimesi verkkoyhteyttä, joten vältät tekstiviesti- ja multimediamaksut.
 
-• Soita ystävillesi kristallinkirkkaita, salattuja ääni- ja videopuheluita. Sovellus tukee jopa 40 henkilön ryhmäpuheluita.
+• Soita ystävillesi kristallinkirkkaita, salattuja ääni- ja videopuheluita. Sovellus tukee jopa 50 henkilön ryhmäpuheluita.
 
 • Pidä yhteyttä osallistumalla jopa 1 000 henkilön ryhmäkeskusteluihin. Hallinnoi julkaisuoikeuksia ja ryhmän jäsenyyksiä järjestelmänvalvojan käyttöoikeuksien asetuksilla.
 

@@ -401,7 +401,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. This string is in a compact horizontal space, so it should be short if possible. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal has limited access to photos";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal 对照片的访问受限";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "位置";
@@ -2735,7 +2735,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "发生了未知错误。";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Couldn’t send message because this person is no longer using Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "无法发送消息，因为该用户已不再使用 Signal。";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "附件上传失败。";
@@ -5114,16 +5114,16 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "您尝试输入密码的次数已超过限定的次数，不过您仍然可以通过验证您的手机号码来登录您的 Signal 账户。出于对您的隐私和安全的考虑，您的账户在恢复时将不保留任何保存过的个人资料信息或设置。";
 
 /* Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "Or you're reinstalling Signal on the same device";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "您可以在同一个设备上重新安装 Signal";
 
 /* Title for the 'do not have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "I don't have my old phone";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "我无法用旧手机";
 
 /* Explanation of 'have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scan a QR code from your current Signal account to get started quickly";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "从您当前的 Signal 账户扫描二维码以快速开始操作";
 
 /* Title for the 'have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "I have my old phone";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "我可以用旧手机";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "恢复或转移账户";
@@ -6179,7 +6179,7 @@
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "手机号码无效";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "Invite";
+"RECIPIENT_PICKER_INVITE_ACTION" = "邀请";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@不是 Signal 用户。您想邀请这个号码加入 Signal 吗？";

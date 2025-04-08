@@ -2,7 +2,7 @@ L'application de messagerie Signal est conçue pour protéger votre vie privée.
 
 • Envoyez des messages textes ou vocaux, partagez des photos, des vidéos, des GIF et des fichiers gratuitement. Signal utilise la connexion de données de votre téléphone, vous évitant ainsi les coûts liés à l'envoi de SMS et de MMS.
 
-• Passez des appels vocaux et vidéo de très grande qualité et entièrement chiffrés. Les appels de groupe peuvent compter jusqu'à 40 personnes.
+• Passez des appels vocaux et vidéo de très grande qualité et entièrement chiffrés. Les appels de groupe peuvent compter jusqu'à 50 participants.
 
 • Gardez le contact avec des groupes de discussion pouvant réunir jusqu'à 1 000 personnes. Les paramètres d'administration vous permettent de gérer les membres du groupe, mais aussi de décider quels utilisateurs sont autorisés à publier des messages.
 

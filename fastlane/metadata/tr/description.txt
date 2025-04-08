@@ -2,7 +2,7 @@ Signal, gizlilik odaklı bir mesajlaşma uygulamasıdır. İletişimi tamamen gi
 
 • Metinleri, sesli mesajları, fotoğrafları, videoları, GIF'leri ve dosyaları ücretsiz olarak gönderebilirsin. Signal, telefonunun veri bağlantısını kullanır böylece SMS ve MMS ücretlerinden kurtulursun.
 
-• Son derece net bir şekilde şifrelenmiş sesli ve görüntülü aramalarla arkadaşlarını arayabilirsin. Signal 40 kişiye kadar olan grup görüşmeleriyle destekliyor.
+• Son derece net bir şekilde şifrelenmiş sesli ve görüntülü aramalarla arkadaşlarını arayabilirsin. 50 kişiye kadar olan grup görüşmelerini destekler.
 
 • 1.000 kişiye kadar grup sohbetleriyle her zaman bağlantıda kal. Yönetici izin ayarları ile kimlerin paylaşım yapabileceğini ve grup üyelerini yönetebileceğini kontrol et.
 

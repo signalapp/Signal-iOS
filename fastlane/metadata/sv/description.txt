@@ -2,7 +2,7 @@
 
 • Skicka text- och röstmeddelanden, foton, videor, GIF- och andra filer gratis. Signal använder telefonens dataanslutning, så att du undviker sms- och mms-avgifter.
 
-• Ring dina vänner med kristallklara krypterade röst- och videosamtal. Gruppsamtal stöds för upp till 40 personer.
+• Ring dina vänner med kristallklara krypterade röst- och videosamtal. Gruppsamtal stöds för upp till 50 personer.
 
 • Håll kontakten med gruppchattar på upp till 1 000 personer. Styr vem som kan göra inlägg och hantera gruppmedlemmar med inställningar för administratörsbehörighet.
 

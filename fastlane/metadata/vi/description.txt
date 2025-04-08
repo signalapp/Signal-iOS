@@ -2,7 +2,7 @@ Signal là một ứng dụng nhắn tin được xây dựng trên nền tảng
 
 • Gửi tin nhắn văn bản, tin nhắn thoại, ảnh, video, hình GIF, và tập tin miễn phí. Signal dùng kết nối dữ liệu trên điện thoại của bạn, để bạn không mất phí gửi SMS và MMS.
 
-• Gọi bạn bè với cuộc gọi thoại và cuộc gọi video có tín hiệu được mã hoá và cực kỳ rõ. Cuộc gọi nhóm hỗ trợ đến 40 người.
+• Gọi bạn bè với cuộc gọi thoại và cuộc gọi video có tín hiệu được mã hóa và cực kỳ rõ. Cuộc gọi nhóm hỗ trợ đến 50 người.
 
 • Giữ kết nối với các nhóm trò chuyện với lên đến 1.000 người. Kiểm soát người có thể đăng nội dung và quản lý thành viên nhóm với cài đặt quyền quản lý.
 

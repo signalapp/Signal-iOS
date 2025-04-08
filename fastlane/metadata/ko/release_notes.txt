@@ -1,2 +1,2 @@
-• We made it easier to select additional pictures when Limited Access photo permissions are enabled in iOS. The Manage button has been repositioned so that it's always visible, and updating your chosen selection is so fast that it's never a photo finish.
-• Now when you tap on a notification during a voice or video call, the call will automatically minimize to show the relevant chat without any extra steps. Save your extra steps (especially when they're taps) for tap dancing.
+• iOS에서 제한된 액세스 사진 사용 권한을 활성화한 경우 추가 사진을 더 쉽게 선택할 수 있도록 했습니다. 메시지 버튼을 더 쉽게 볼 수 있도록 위치를 변경했습니다.
+• 이제 음성 또는 영상 통화 중 알림을 탭할 경우 추가 단계 없이 통화가 자동으로 최소화되고 관련 대화가 표시됩니다.

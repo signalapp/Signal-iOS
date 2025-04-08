@@ -401,7 +401,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. This string is in a compact horizontal space, so it should be short if possible. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal has limited access to photos";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal heeft beperkte toegang tot foto's";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Locatie";
@@ -2735,7 +2735,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Er is een onbekende fout opgetreden.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Couldn’t send message because this person is no longer using Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kan bericht niet verzenden omdat deze persoon Signal niet meer gebruikt.";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Het uploaden van bijlagen is mislukt.";
@@ -5114,16 +5114,16 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Je hebt geen pogingen meer om je pincode te raden, maar je kunt nog steeds proberen toegang te krijgen tot je Signal-account door je telefoonnummer te verifiëren. Voor je privacy en veiligheid wordt je account hersteld zonder opgeslagen profielinformatie of instellingen.";
 
 /* Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "Or you're reinstalling Signal on the same device";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "Of je installeert Signal opnieuw op hetzelfde apparaat";
 
 /* Title for the 'do not have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "I don't have my old phone";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "Ik heb mijn oude telefoon niet";
 
 /* Explanation of 'have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scan a QR code from your current Signal account to get started quickly";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scan een QR-code met je oude telefoon om snel aan de slag te gaan";
 
 /* Title for the 'have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "I have my old phone";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "Ik heb mijn oude telefoon";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Account herstellen of overzetten";
@@ -6179,7 +6179,7 @@
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Ongeldig telefoonnummer";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "Invite";
+"RECIPIENT_PICKER_INVITE_ACTION" = "Uitnodigen";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ is geen Signal-gebruiker. Wil je dit nummer uitnodigen?";
@@ -6998,7 +6998,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Video's";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "Bekijk en deel wanneer berichten worden gelezen of getypt. Als leesbevestigingen of typindicatoren zijn uitgeschakeld, kun je ook geen leesbevestigingen of typindicatoren van anderen zien.";
+"SETTINGS_MESSAGING_FOOTER" = "Bekijk en deel wanneer berichten worden gelezen of getypt. Als leesbevestigingen of typindicatoren zijn uitgeschakeld, kun je deze van anderen ook niet zien.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Instellingen";

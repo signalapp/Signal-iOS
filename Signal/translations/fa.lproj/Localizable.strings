@@ -401,7 +401,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "گیف";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. This string is in a compact horizontal space, so it should be short if possible. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal has limited access to photos";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "سیگنال دسترسی محدودی به عکس‌ها دارد";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "مکان";
@@ -2735,7 +2735,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "خطایی ناشناخته رخ داده است.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Couldn’t send message because this person is no longer using Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "پیام ارسال نشد زیرا این شخص دیگر از سیگنال استفاده نمی‌کند.";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "بارگذاری پیوست انجام نشد.";
@@ -5114,16 +5114,16 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "فرصت شما برای حدس پین تمام شد، ولی همچنان می‌توانید با تأیید شماره تلفن خود، سعی کنید و به حساب سیگنال خود دسترسی پیدا کنید. برای حفظ امنیت و حریم خصوصی، حسابتان بدون هیچ‌گونه اطلاعات یا تنظیمات ذخیره‌شده نمایه بازیابی خواهد شد.";
 
 /* Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "Or you're reinstalling Signal on the same device";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "یا در حال نصب مجدد سیگنال روی همین دستگاه هستید";
 
 /* Title for the 'do not have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "I don't have my old phone";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "تلفن قدیمی‌ام را ندارم";
 
 /* Explanation of 'have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scan a QR code from your current Signal account to get started quickly";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "برای شروع سریع، کد QR را از حساب فعلی سیگنال خود اسکن کنید";
 
 /* Title for the 'have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "I have my old phone";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "تلفن قدیمی‌ام را دارم";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "بازیابی یا انتقال حساب";
@@ -6179,7 +6179,7 @@
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "شماره تلفن معتبر نیست";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "Invite";
+"RECIPIENT_PICKER_INVITE_ACTION" = "دعوت";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ کاربر سیگنال نیست. آیا می خواهید این شماره را دعوت کنید؟";

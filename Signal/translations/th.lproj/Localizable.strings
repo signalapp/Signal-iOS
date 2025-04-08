@@ -401,7 +401,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. This string is in a compact horizontal space, so it should be short if possible. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal has limited access to photos";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal ได้รับสิทธิ์จำกัดในการเข้าถึงรูปภาพ";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "ตำแหน่ง";
@@ -2735,7 +2735,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "เกิดข้อผิดพลาดที่ไม่รู้จัก";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Couldn’t send message because this person is no longer using Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "ไม่สามารถส่งข้อความได้เนื่องจากผู้ติดต่อคนนี้ไม่ได้ใช้ Signal แล้ว";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "อัปโหลดไฟล์แนบไม่สำเร็จ";
@@ -5114,16 +5114,16 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "คุณลองใส่ PIN จนครบจำนวนครั้งที่อนุญาตแล้ว แต่คุณยังสามารถลองเข้าถึงบัญชี Signal ของคุณได้ด้วยการยืนยันหมายเลขโทรศัพท์ เพื่อความเป็นส่วนตัวและความปลอดภัยของคุณ บัญชีของคุณจะถูกกู้คืนโดยปราศจากข้อมูลโปรไฟล์หรือการตั้งค่าที่คุณบันทึกไว้";
 
 /* Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "Or you're reinstalling Signal on the same device";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "หรือติดตั้ง Signal ใหม่บนอุปกรณ์เครื่องเดียวกันนั้น";
 
 /* Title for the 'do not have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "I don't have my old phone";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "ฉันไม่มีโทรศัพท์เครื่องเก่า";
 
 /* Explanation of 'have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scan a QR code from your current Signal account to get started quickly";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "เริ่มใช้งานได้เร็วทันใจด้วยการสแกนคิวอาร์โค้ดจากบัญชี Signal ที่คุณใช้อยู่";
 
 /* Title for the 'have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "I have my old phone";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "ฉันมีโทรศัพท์เครื่องเก่า";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "กู้คืนหรือถ่ายโอนบัญชี";
@@ -6179,7 +6179,7 @@
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "หมายเลขโทรศัพท์ไม่ถูกต้อง";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "Invite";
+"RECIPIENT_PICKER_INVITE_ACTION" = "เชิญ";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ ไม่ได้เป็นผู้ใช้ Signal คุณต้องการเชิญเจ้าของหมายเลขนี้มาใช้งานหรือไม่";

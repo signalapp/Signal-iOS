@@ -2,7 +2,7 @@ Signal je aplikacija za razmjenu poruka u kojoj je privatnost na prvom mjestu. B
 
 • Besplatno šaljite tekstualne i glasovne poruke, fotografije, videozapise, GIF-ove i datoteke. Signal koristi podatkovnu vezu vašeg mobilnog uređaja kako biste izbjegli SMS i MMS naknade.
 
-• Uputite šifrirane glasovne pozive i videopozive vrhunske kvalitete svojim prijateljima. Grupni pozivi podržavaju do 40 sudionika.
+• Uputite šifrirane glasovne pozive i videopozive vrhunske kvalitete svojim prijateljima. Grupni pozivi podržavaju do 50 sudionika.
 
 • Ostanite povezani uz grupne razgovore za do 1000 osoba. Kontrolirajte tko može objavljivati i upravljati članovima grupe u postavkama dopuštenja administratora.
 

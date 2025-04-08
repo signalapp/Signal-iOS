@@ -2,7 +2,7 @@ Signal er en meldingsapp som setter personvern i fokus. Den er helt gratis å br
 
 • Send tekst- og talemeldinger, bilder, videoer, GIF-er og filer gratis. Signal bruker telefonens datanettverk, slik at du unngår SMS- og MMS-avgifter.
 
-• Ring vennene dine med krystallklar lyd og bilde i krypterte samtaler. Gruppesamtaler med plass til opptil 40 personer.
+• Ring vennene dine med krystallklar lyd og bilde i krypterte samtaler. Gruppesamtaler har plass til opptil 50 personer.
 
 • Hold kontakten, med gruppechatter med plass til opptil 1000 personer. Velg hvem som kan legge ut innlegg og styre medlemslisten via innstillingene for administratortillatelser.
 

@@ -401,7 +401,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. This string is in a compact horizontal space, so it should be short if possible. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal has limited access to photos";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal رەسىملەرنى چەكلىك دائىرىدىلا زىيارەت قىلالايدۇ";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "ئورنى";
@@ -2735,7 +2735,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "يوچۇن خاتالىققا يولۇقتى.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Couldn’t send message because this person is no longer using Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "ئۇچۇر يوللانمىدى ، چۈنكى بۇ ئادەم Signal ئىشلىتىشنى توختاتقان.";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "قىستۇرما يۈكلەنمىدى.";
@@ -5114,16 +5114,16 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "‫PIN پۇرسىتىڭىز تۈگەپ كەتتى ، ئەمما تېلېفون نومۇرىڭىزنى دەلىللەش ئارقىلىق Signal ھېساباتىڭىزنى يەنىلا زىيارەت قىلالايسىز. شەخسىي مەخپىيەتلىكىڭىز ۋە بىخەتەرلىكىڭىز ئۈچۈن ھېساباتىڭىز ساقلانغان ئارخىپ ئۇچۇرلىرىڭىز ۋە تەڭشەكلىرىڭىز ساقلانمىغان ھالەتتە ئەسلىگە كېلىدۇ.";
 
 /* Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "Or you're reinstalling Signal on the same device";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "ياكى ئوخشاش ئۈسكۈنىدە سىگنالنى قايتا قاچىلاۋاتىسىز";
 
 /* Title for the 'do not have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "I don't have my old phone";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "كونا تېلېفونۇم يېنىمدا يوق";
 
 /* Explanation of 'have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scan a QR code from your current Signal account to get started quickly";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "تېز باشلاش ئۈچۈن نۆۋەتتىكى سىگنال ھېساباتىڭىزدىن QR كودىنى سىكانىرلاڭ";
 
 /* Title for the 'have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "I have my old phone";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "مېنىڭ كونا تېلېفونىم بار";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "ھېساباتنى ئەسلىگە كەلتۈرۈش ياكى يۆتكەش";
@@ -6179,7 +6179,7 @@
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "ئىناۋەتسىز تېلېفون نومۇر";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "Invite";
+"RECIPIENT_PICKER_INVITE_ACTION" = "تەكلىپ";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ Signal ئىشلەتكۈچى ئەمەس. بۇ نومۇرنى تەكلىپ قىلامسىز؟";

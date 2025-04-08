@@ -2,7 +2,7 @@ Signal ialah aplikasi pemesejan yang mementingkan privasi. Ia percuma dan mudah 
 
 • Hantar teks, mesej suara, foto, video, GIF dan fail secara percuma. Signal menggunakan sambungan data telefon anda, jadi anda mengelakkan bayaran SMS dan MMS.
 
-• Panggil rakan anda dengan panggilan suara dan video yang disulitkan dengan jelas. Panggilan kumpulan disokong untuk sehingga 40 orang.
+• Hubungi rakan anda dengan panggilan suara dan video yang disulitkan dengan jelas. Panggilan kumpulan disokong untuk sehingga 50 orang.
 
 • Kekal berhubung dengan sembang kumpulan sehingga 1,000 orang. Kawal siapa yang boleh menyiarkan dan mengurus ahli kumpulan dengan tetapan kebenaran pentadbir.
 

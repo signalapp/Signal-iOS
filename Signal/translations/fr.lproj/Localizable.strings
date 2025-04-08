@@ -401,7 +401,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. This string is in a compact horizontal space, so it should be short if possible. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal has limited access to photos";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal n'a qu'un accès limité à vos photos";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Position";
@@ -1085,13 +1085,13 @@
 "CAMERA_VO_ZOOM_LEVEL" = "%1$@ fois";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Un numéro de sécurité sera créé avec cette personne après l'échange de messages.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Un numéro de sécurité sera associé à cet utilisateur une fois que vous aurez échangé des messages.";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "Numéro de carte non valide";
 
 /* Users can donate to Signal with a credit or debit card. This is the label for the card number field on that screen. */
-"CARD_DONATION_CARD_NUMBER_LABEL" = "Numéro de la carte";
+"CARD_DONATION_CARD_NUMBER_LABEL" = "Numéro de carte";
 
 /* Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is invalid for reasons we cannot determine, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CVV_GENERIC_ERROR" = "Cryptogramme visuel incorrect";
@@ -1106,7 +1106,7 @@
 "CARD_DONATION_EXPIRATION_DATE_GENERIC_ERROR" = "Date d'exp. incorrecte";
 
 /* Users can donate to Signal with a credit or debit card. This is the label for the expiration date field on that screen. Try to use a short string to make space in the UI. (For example, the English text uses \"Exp. Date\" instead of \"Expiration Date\"). */
-"CARD_DONATION_EXPIRATION_DATE_LABEL" = "Date d’expiration";
+"CARD_DONATION_EXPIRATION_DATE_LABEL" = "Date d'expiration";
 
 /* Users can donate to Signal with a credit or debit card. This is the label for the card expiration date field on that screen. */
 "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER" = "MM/AA";
@@ -1121,7 +1121,7 @@
 "CARD_DONATION_SUBHEADER_LEARN_MORE" = "En savoir plus.";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information. */
-"CARD_DONATION_SUBHEADER_TEXT" = "Veuillez saisir les informations de votre carte. Signal ne collecte ni ne sauvegarde vos informations personnelles.";
+"CARD_DONATION_SUBHEADER_TEXT" = "Veuillez saisir les informations de votre carte. Signal ne collecte pas et ne stocke pas vos informations personnelles.";
 
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Sélectionner un pays";
@@ -1211,7 +1211,7 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groupes";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Trouver par numéro";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Rechercher par numéro";
 
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Rechercher par nom d’utilisateur";
@@ -1334,7 +1334,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Autoriser l'accès aux contacts";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Pour voir le nom et la photo des contacts dans vos conversations :";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Pour afficher le nom et la photo de vos contacts dans les conversations :";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Touchez \"Accéder aux réglages\" ci-dessous.";
@@ -1382,7 +1382,7 @@
 "CONTACT_SHARING_NO_ACCESS_BODY" = "Signal doit accéder à vos contacts. Ouvrez les réglages iOS et autorisez l'accès aux contacts. Votre liste de contacts est chiffrée : le service Signal n'en a jamais connaissance.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_TITLE" = "Autoriser l’accès aux contacts";
+"CONTACT_SHARING_NO_ACCESS_TITLE" = "Autoriser l'accès aux contacts";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "Contacter l'assistance";
@@ -1478,7 +1478,7 @@
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Transférer";
 
 /* Context menu button title */
-"CONTEXT_MENU_PAYMENT_DETAILS" = "Détails des paiements";
+"CONTEXT_MENU_PAYMENT_DETAILS" = "Infos du paiement";
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "Répondre";
@@ -1571,7 +1571,7 @@
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Bloquer le groupe";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Bloquer l’utilisateur";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "Bloquer l'utilisateur";
 
 /* A label indicating that a call was an incoming video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Appel vidéo entrant";
@@ -1697,7 +1697,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Révoquer les droits d'admin";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Retirer %1$@ en tant qu’administrateur du groupe ?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Révoquer les droits d'admin de %1$@ ?";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "rechercher";
@@ -1718,7 +1718,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Débloquer le groupe";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Débloquer l’utilisateur";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Débloquer l'utilisateur";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Réactiver le son";
@@ -2597,7 +2597,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Vous pouvez accorder l’accès dans l’appli Réglages d’iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Pour modifier les informations relatives aux contacts, Signal doit pouvoir accéder à l’appli Contacts.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Pour modifier les informations relatives aux contacts, Signal doit accéder à l'app Contacts.";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Modifier le groupe";
@@ -2735,7 +2735,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Une erreur inconnue s'est produite.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Couldn’t send message because this person is no longer using Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Ce contact n'utilise plus Signal : impossible de lui envoyer ce message.";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Impossible d’importer la pièce jointe.";
@@ -4412,7 +4412,7 @@
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Afficher le pack de stickers";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_PAYMENT_DETAILS" = "Détails des paiements";
+"MESSAGE_ACTION_PAYMENT_DETAILS" = "Infos du paiement";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Appeler";
@@ -5114,16 +5114,16 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Vous avez atteint le nombre maximal de tentatives autorisées, mais vous pouvez toujours tenter d’accéder à votre compte Signal en procédant à une vérification de votre numéro de téléphone. Afin de protéger vos données personnelles et votre sécurité, votre compte sera restauré sans informations de profil enregistrées ni préférences.";
 
 /* Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "Or you're reinstalling Signal on the same device";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "ou vous réinstallez Signal sur le même appareil";
 
 /* Title for the 'do not have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "I don't have my old phone";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "Vous n'avez pas accès à votre ancien téléphone";
 
 /* Explanation of 'have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scan a QR code from your current Signal account to get started quickly";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scannez un code QR depuis votre compte Signal existant pour démarrer rapidement";
 
 /* Title for the 'have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "I have my old phone";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "Vous avez accès à votre ancien téléphone";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Restaurer ou transférer le compte";
@@ -6179,7 +6179,7 @@
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Numéro de téléphone incorrect";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "Invite";
+"RECIPIENT_PICKER_INVITE_ACTION" = "Inviter";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ n'utilise pas Signal. Voulez-vous inviter ce numéro ?";

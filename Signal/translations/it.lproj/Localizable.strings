@@ -401,7 +401,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. This string is in a compact horizontal space, so it should be short if possible. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal has limited access to photos";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal ha un accesso limitato alle tue foto";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Posizione";
@@ -1175,13 +1175,13 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Abbina automaticamente il colore allo sfondo";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Rimuovi filtro non letti";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Rimuovi filtro non lette";
 
 /* Button displayed in chat list to clear the unread filter when no chats are unread */
 "CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Rimuovi filtro";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
-"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtra per non letti";
+"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtra per non lette";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Chat";
@@ -2735,7 +2735,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Si è verificato un errore sconosciuto.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Couldn’t send message because this person is no longer using Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Impossibile inviare il messaggio perché questa persona non usa più Signal.";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Caricamento dell'allegato non riuscito.";
@@ -4211,7 +4211,7 @@
 "LINKED_DEVICES_RENAME_TITLE" = "Modifica nome dispositivo";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Dispositivi associati";
+"LINKED_DEVICES_TITLE" = "Dispositivi collegati";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Associazione dispositivo non riuscita";
@@ -4895,7 +4895,7 @@
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "Scegli chi può vedere la Storia";
 
 /* Header for the 'viewers' section of the 'new private story' view */
-"NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Visualizzatori";
+"NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Persone";
 
 /* table section header button to add a new story */
 "NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Nuova";
@@ -5114,16 +5114,16 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Hai esaurito i tentativi del PIN, ma puoi comunque provare ad accedere al tuo account Signal verificando il tuo numero di telefono. Per la tua privacy e sicurezza, il tuo account verrà ripristinato senza alcuna informazione o impostazione del profilo salvata.";
 
 /* Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "Or you're reinstalling Signal on the same device";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "Oppure stai reinstallando Signal sullo stesso dispositivo";
 
 /* Title for the 'do not have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "I don't have my old phone";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "Non ho il mio vecchio telefono";
 
 /* Explanation of 'have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scan a QR code from your current Signal account to get started quickly";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scansiona un codice QR dal tuo attuale account Signal per iniziare subito";
 
 /* Title for the 'have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "I have my old phone";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "Ho il mio vecchio telefono";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Ripristina o trasferisci il tuo account";
@@ -6179,7 +6179,7 @@
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Numero di telefono non valido";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "Invite";
+"RECIPIENT_PICKER_INVITE_ACTION" = "Invita";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ non è un utente di Signal. Vorresti invitare questo numero di telefono su Signal?";
@@ -6623,7 +6623,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installa Signal sul tuo telefono";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Fai clic sulla tua foto del profilo per aprire le impostazioni di Signal sul tuo telefono. Poi “Dispositivi associati” e “Associa nuovo dispositivo” per scansionare questo codice con il tuo telefono:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Fai clic sulla tua foto del profilo per aprire le impostazioni di Signal sul tuo telefono. Poi “Dispositivi collegati” e “Associa nuovo dispositivo” per scansionare questo codice con il tuo telefono:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Qui puoi ottenere aiuto per associare il tuo iPad";
@@ -8204,7 +8204,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Aggiornare contributo?";
 
 /* Label for 'off' state of a switch control. */
-"SWITCH_OFF" = "Off";
+"SWITCH_OFF" = "No";
 
 /* Label for 'on' state of a switch control. */
 "SWITCH_ON" = "On";
@@ -8240,7 +8240,7 @@
 "TEXT_MENU_LOOK_UP" = "Cerca info";
 
 /* Option in selected text edit menu to make text monospace */
-"TEXT_MENU_MONOSPACE" = "Monospace";
+"TEXT_MENU_MONOSPACE" = "Monospaziato";
 
 /* Option in selected text edit menu to replace text with suggestions */
 "TEXT_MENU_REPLACE" = "Sostituisci";

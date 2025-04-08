@@ -1,2 +1,2 @@
-• We made it easier to select additional pictures when Limited Access photo permissions are enabled in iOS. The Manage button has been repositioned so that it's always visible, and updating your chosen selection is so fast that it's never a photo finish.
-• Now when you tap on a notification during a voice or video call, the call will automatically minimize to show the relevant chat without any extra steps. Save your extra steps (especially when they're taps) for tap dancing.
+• Vi har gjort det nemmere at vælge flere billeder, når billedtilladelser med "Begrænset adgang" er aktiveret i iOS. Knappen Administration er blevet flyttet, så den altid er synlig, og opdatering af dit valg er blevet lynhurtig.
+• Når du nu trykker på en notifikation under et tale- eller videoopkald, minimeres opkaldet automatisk for at vise den relevante chat uden ekstra trin. Gem dine ekstra trin (især når de er "taps") til stepdans.

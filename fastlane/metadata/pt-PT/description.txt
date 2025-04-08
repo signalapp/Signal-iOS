@@ -2,7 +2,7 @@
 
 • Envie mensagens de texto, mensagens de voz, fotos, vídeos, GIFs e ficheiros gratuitamente. O Signal utiliza a ligação de dados do seu telemóvel, evitando taxas de envio de SMS e MMS.
 
-• Ligue para os seus amigos com chamadas de voz e vídeo encriptadas e com a melhor qualidade. Chamadas de grupo com suporte até 40 pessoas.
+• Ligue para os seus amigos com chamadas de voz e vídeo encriptadas e com a melhor qualidade. Chamadas de grupo com suporte até 50 pessoas.
 
 • Ligue-se a chats de grupo com até 1000 pessoas. Controle quem pode postar e gerir membros do grupo com as definições de permissão de administrador.
 

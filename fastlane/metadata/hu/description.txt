@@ -2,7 +2,7 @@ A Signal egy olyan üzenetküldő alkalmazás, amelynek középpontjában az ada
 
 • Ingyenesen küldhetsz szöveges üzeneteket, hangüzeneteket, fotókat, videókat, GIF-eket és fájlokat. A Signal a telefon adatkapcsolatát használja, így elkerülheted az SMS- és MMS-díjakat.
 
-• Hívd barátaidat kristálytiszta, titkosított hang- és videohívásokkal. Csoportos hívások, akár 40 főig.
+• Hívd barátaidat kristálytiszta, titkosított hang- és videohívásokkal. Csoportos hívások, akár 50 főig.
 
 • Kapcsolódj akár 1000 fős csoportos csevegésekkel. Adminisztrátori jogosultságokkal szabályozhatod, hogy kik posztolhatnak és kezelhetik a csoporttagokat.
 

@@ -401,7 +401,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. This string is in a compact horizontal space, so it should be short if possible. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal has limited access to photos";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal ફોટા પર મર્યાદિત ઍક્સેસ ધરાવે છે";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "સ્થાન";
@@ -2735,7 +2735,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "એક અજાણ એરર આવી.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Couldn’t send message because this person is no longer using Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "આ વ્યક્તિ હવે Signalનો ઉપયોગ કરતી ન હોવાથી મેસેજ મોકલી શકાયો નથી.";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "અટેચમેન્ટ અપલોડ કરવાનું નિષ્ફળ થયું.";
@@ -5114,16 +5114,16 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "તમે ઘણી બધી વાર પિન અનુમાન કરી લીધા છે, પરંતુ તમે હજી પણ પ્રયાસ કરી શકો છો અને તમારા ફોન નંબરની ચકાસણી કરાવીને તમારા Signal એકાઉન્ટને ઍક્સેસ કરી શકો છો. તમારી ગોપનીયતા અને સુરક્ષા માટે તમારું એકાઉન્ટ કોઈ પણ સેવ કરેલી પ્રોફાઇલ માહિતી અથવા સેટિંગ્સ વિના રિસ્ટોર કરવામાં આવશે.";
 
 /* Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "Or you're reinstalling Signal on the same device";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "અથવા તમે તે જ ડિવાઇસ પર Signal ફરીથી ઇન્સ્ટોલ કરી રહ્યાં છો";
 
 /* Title for the 'do not have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "I don't have my old phone";
+"ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE" = "મારી પાસે મારો જૂનો ફોન નથી";
 
 /* Explanation of 'have old device' flow for the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "Scan a QR code from your current Signal account to get started quickly";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY" = "ઝડપથી શરૂ કરવા માટે તમારા વર્તમાન Signal અકાઉન્ટમાંથી QR કોડ સ્કેન કરો";
 
 /* Title for the 'have my old device' choice of the 'Restore or Transfer' prompt */
-"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "I have my old phone";
+"ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "મારી પાસે મારો જૂનો ફોન છે";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "એકાઉન્ટ રિસ્ટોર અથવા ટ્રાન્સફર કરો";
@@ -6179,7 +6179,7 @@
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "અમાન્ય ફોન નંબર";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "Invite";
+"RECIPIENT_PICKER_INVITE_ACTION" = "આમંત્રણ આપો";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ એ Signal ઉપયોગકર્તા નથી. શું તમે આ નંબરને આમંત્રિત કરવા માંગો છો?";

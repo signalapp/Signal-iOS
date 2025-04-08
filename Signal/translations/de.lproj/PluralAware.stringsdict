@@ -419,9 +419,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$dmin</string>
+			<string>%1$d Min.</string>
 			<key>other</key>
-			<string>%1$dmin</string>
+			<string>%1$d Min.</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
