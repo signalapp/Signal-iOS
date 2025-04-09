@@ -1484,15 +1484,26 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
         // Unique while live.
         let token = NSObject()
         connection = .connecting(token: token, task: Task { [token] in
-            func connectionAttemptCompleted(_ state: ConnectionState) {
-                self.serialQueue.async {
-                    guard self.connection.isCurrentlyConnecting(token) else {
-                        // We finished connecting, but we've since been asked to disconnect
-                        // (either because we should be offline, or because config has changed).
-                        return
-                    }
+            func connectionAttemptCompleted(_ state: ConnectionState) async -> Connection? {
+                // We're not done until self.connection has been updated.
+                // (Otherwise, we might try to send requests before calling start(listener:).)
+                return await withCheckedContinuation { continuation in
+                    self.serialQueue.async {
+                        guard self.connection.isCurrentlyConnecting(token) else {
+                            // We finished connecting, but we've since been asked to disconnect
+                            // (either because we should be offline, or because config has changed).
+                            continuation.resume(returning: nil)
+                            return
+                        }
 
-                    self.connection = state
+                        self.connection = state
+
+                        if case .open(let connection) = state {
+                            continuation.resume(returning: connection)
+                        } else {
+                            continuation.resume(returning: nil)
+                        }
+                    }
                 }
             }
 
@@ -1501,9 +1512,8 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                 if type == .identified {
                     self.didConnectIdentified()
                 }
-                connectionAttemptCompleted(.open(chatService))
                 OutageDetection.shared.reportConnectionSuccess()
-                return chatService
+                return await connectionAttemptCompleted(.open(chatService))
 
             } catch is CancellationError {
                 // We've been asked to disconnect, no other action necessary.
@@ -1525,8 +1535,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
             }
 
             // Only failure cases get here.
-            connectionAttemptCompleted(.closed)
-            return nil
+            return await connectionAttemptCompleted(.closed)
         })
     }
 
