@@ -145,40 +145,16 @@ struct SignalServiceProtos_Envelope: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-    typealias RawValue = Int
-    case unknown // = 0
-    case ciphertext // = 1
-    case prekeyBundle // = 3
-    case receipt // = 5
-    case unidentifiedSender // = 6
-    case plaintextContent // = 8
+  enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    case unknown = 0
+    case ciphertext = 1
+    case prekeyBundle = 3
+    case receipt = 5
+    case unidentifiedSender = 6
+    case plaintextContent = 8
 
     init() {
       self = .unknown
-    }
-
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 0: self = .unknown
-      case 1: self = .ciphertext
-      case 3: self = .prekeyBundle
-      case 5: self = .receipt
-      case 6: self = .unidentifiedSender
-      case 8: self = .plaintextContent
-      default: return nil
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .unknown: return 0
-      case .ciphertext: return 1
-      case .prekeyBundle: return 3
-      case .receipt: return 5
-      case .unidentifiedSender: return 6
-      case .plaintextContent: return 8
-      }
     }
 
   }
@@ -233,28 +209,12 @@ struct SignalServiceProtos_TypingMessage: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Action: SwiftProtobuf.Enum, Swift.CaseIterable {
-    typealias RawValue = Int
-    case started // = 0
-    case stopped // = 1
+  enum Action: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    case started = 0
+    case stopped = 1
 
     init() {
       self = .started
-    }
-
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 0: self = .started
-      case 1: self = .stopped
-      default: return nil
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .started: return 0
-      case .stopped: return 1
-      }
     }
 
   }
@@ -461,40 +421,16 @@ struct SignalServiceProtos_TextAttachment: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Style: SwiftProtobuf.Enum, Swift.CaseIterable {
-    typealias RawValue = Int
-    case `default` // = 0
-    case regular // = 1
-    case bold // = 2
-    case serif // = 3
-    case script // = 4
-    case condensed // = 5
+  enum Style: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    case `default` = 0
+    case regular = 1
+    case bold = 2
+    case serif = 3
+    case script = 4
+    case condensed = 5
 
     init() {
       self = .default
-    }
-
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 0: self = .default
-      case 1: self = .regular
-      case 2: self = .bold
-      case 3: self = .serif
-      case 4: self = .script
-      case 5: self = .condensed
-      default: return nil
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .default: return 0
-      case .regular: return 1
-      case .bold: return 2
-      case .serif: return 3
-      case .script: return 4
-      case .condensed: return 5
-      }
     }
 
   }
@@ -779,30 +715,14 @@ struct SignalServiceProtos_CallMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
-      case offerAudioCall // = 0
+    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case offerAudioCall = 0
 
       /// next index 3, skip 2 – it was the unused "NEED_PERMISSION" type
-      case offerVideoCall // = 1
+      case offerVideoCall = 1
 
       init() {
         self = .offerAudioCall
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .offerAudioCall
-        case 1: self = .offerVideoCall
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .offerAudioCall: return 0
-        case .offerVideoCall: return 1
-        }
       }
 
     }
@@ -935,37 +855,15 @@ struct SignalServiceProtos_CallMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
-      case hangupNormal // = 0
-      case hangupAccepted // = 1
-      case hangupDeclined // = 2
-      case hangupBusy // = 3
-      case hangupNeedPermission // = 4
+    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case hangupNormal = 0
+      case hangupAccepted = 1
+      case hangupDeclined = 2
+      case hangupBusy = 3
+      case hangupNeedPermission = 4
 
       init() {
         self = .hangupNormal
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .hangupNormal
-        case 1: self = .hangupAccepted
-        case 2: self = .hangupDeclined
-        case 3: self = .hangupBusy
-        case 4: self = .hangupNeedPermission
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .hangupNormal: return 0
-        case .hangupAccepted: return 1
-        case .hangupDeclined: return 2
-        case .hangupBusy: return 3
-        case .hangupNeedPermission: return 4
-        }
       }
 
     }
@@ -1002,28 +900,12 @@ struct SignalServiceProtos_CallMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum Urgency: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
-      case droppable // = 0
-      case handleImmediately // = 1
+    enum Urgency: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case droppable = 0
+      case handleImmediately = 1
 
       init() {
         self = .droppable
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .droppable
-        case 1: self = .handleImmediately
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .droppable: return 0
-        case .handleImmediately: return 1
-        }
       }
 
     }
@@ -1226,76 +1108,30 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Flags: SwiftProtobuf.Enum, Swift.CaseIterable {
-    typealias RawValue = Int
-    case endSession // = 1
-    case expirationTimerUpdate // = 2
-    case profileKeyUpdate // = 4
+  enum Flags: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    case endSession = 1
+    case expirationTimerUpdate = 2
+    case profileKeyUpdate = 4
 
     init() {
       self = .endSession
     }
 
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 1: self = .endSession
-      case 2: self = .expirationTimerUpdate
-      case 4: self = .profileKeyUpdate
-      default: return nil
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .endSession: return 1
-      case .expirationTimerUpdate: return 2
-      case .profileKeyUpdate: return 4
-      }
-    }
-
   }
 
-  enum ProtocolVersion: SwiftProtobuf.Enum, Swift.CaseIterable {
-    typealias RawValue = Int
-    case initial // = 0
-    case messageTimers // = 1
-    case viewOnce // = 2
-    case viewOnceVideo // = 3
-    case reactions // = 4
-    case cdnSelectorAttachments // = 5
-    case mentions // = 6
-    case payments // = 7
+  enum ProtocolVersion: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    case initial = 0
+    case messageTimers = 1
+    case viewOnce = 2
+    case viewOnceVideo = 3
+    case reactions = 4
+    case cdnSelectorAttachments = 5
+    case mentions = 6
+    case payments = 7
     static let current = payments
 
     init() {
       self = .initial
-    }
-
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 0: self = .initial
-      case 1: self = .messageTimers
-      case 2: self = .viewOnce
-      case 3: self = .viewOnceVideo
-      case 4: self = .reactions
-      case 5: self = .cdnSelectorAttachments
-      case 6: self = .mentions
-      case 7: self = .payments
-      default: return nil
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .initial: return 0
-      case .messageTimers: return 1
-      case .viewOnce: return 2
-      case .viewOnceVideo: return 3
-      case .reactions: return 4
-      case .cdnSelectorAttachments: return 5
-      case .mentions: return 6
-      case .payments: return 7
-      }
     }
 
   }
@@ -1348,28 +1184,12 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
-      case normal // = 0
-      case giftBadge // = 1
+    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case normal = 0
+      case giftBadge = 1
 
       init() {
         self = .normal
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .normal
-        case 1: self = .giftBadge
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .normal: return 0
-        case .giftBadge: return 1
-        }
       }
 
     }
@@ -1556,34 +1376,14 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-        typealias RawValue = Int
-        case home // = 1
-        case mobile // = 2
-        case work // = 3
-        case custom // = 4
+      enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+        case home = 1
+        case mobile = 2
+        case work = 3
+        case custom = 4
 
         init() {
           self = .home
-        }
-
-        init?(rawValue: Int) {
-          switch rawValue {
-          case 1: self = .home
-          case 2: self = .mobile
-          case 3: self = .work
-          case 4: self = .custom
-          default: return nil
-          }
-        }
-
-        var rawValue: Int {
-          switch self {
-          case .home: return 1
-          case .mobile: return 2
-          case .work: return 3
-          case .custom: return 4
-          }
         }
 
       }
@@ -1629,34 +1429,14 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-        typealias RawValue = Int
-        case home // = 1
-        case mobile // = 2
-        case work // = 3
-        case custom // = 4
+      enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+        case home = 1
+        case mobile = 2
+        case work = 3
+        case custom = 4
 
         init() {
           self = .home
-        }
-
-        init?(rawValue: Int) {
-          switch rawValue {
-          case 1: self = .home
-          case 2: self = .mobile
-          case 3: self = .work
-          case 4: self = .custom
-          default: return nil
-          }
-        }
-
-        var rawValue: Int {
-          switch self {
-          case .home: return 1
-          case .mobile: return 2
-          case .work: return 3
-          case .custom: return 4
-          }
         }
 
       }
@@ -1756,31 +1536,13 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-        typealias RawValue = Int
-        case home // = 1
-        case work // = 2
-        case custom // = 3
+      enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+        case home = 1
+        case work = 2
+        case custom = 3
 
         init() {
           self = .home
-        }
-
-        init?(rawValue: Int) {
-          switch rawValue {
-          case 1: self = .home
-          case 2: self = .work
-          case 3: self = .custom
-          default: return nil
-          }
-        }
-
-        var rawValue: Int {
-          switch self {
-          case .home: return 1
-          case .work: return 2
-          case .custom: return 3
-          }
         }
 
       }
@@ -2135,28 +1897,12 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-        typealias RawValue = Int
-        case request // = 0
-        case activated // = 1
+      enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+        case request = 0
+        case activated = 1
 
         init() {
           self = .request
-        }
-
-        init?(rawValue: Int) {
-          switch rawValue {
-          case 0: self = .request
-          case 1: self = .activated
-          default: return nil
-          }
-        }
-
-        var rawValue: Int {
-          switch self {
-          case .request: return 0
-          case .activated: return 1
-          }
         }
 
       }
@@ -2268,31 +2014,13 @@ struct SignalServiceProtos_ReceiptMessage: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-    typealias RawValue = Int
-    case delivery // = 0
-    case read // = 1
-    case viewed // = 2
+  enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    case delivery = 0
+    case read = 1
+    case viewed = 2
 
     init() {
       self = .delivery
-    }
-
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 0: self = .delivery
-      case 1: self = .read
-      case 2: self = .viewed
-      default: return nil
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .delivery: return 0
-      case .read: return 1
-      case .viewed: return 2
-      }
     }
 
   }
@@ -2345,31 +2073,13 @@ struct SignalServiceProtos_Verified: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum State: SwiftProtobuf.Enum, Swift.CaseIterable {
-    typealias RawValue = Int
-    case `default` // = 0
-    case verified // = 1
-    case unverified // = 2
+  enum State: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    case `default` = 0
+    case verified = 1
+    case unverified = 2
 
     init() {
       self = .default
-    }
-
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 0: self = .default
-      case 1: self = .verified
-      case 2: self = .unverified
-      default: return nil
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .default: return 0
-      case .verified: return 1
-      case .unverified: return 2
-      }
     }
 
   }
@@ -2789,37 +2499,15 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
-      case unknown // = 0
-      case contacts // = 1
-      case blocked // = 3
-      case configuration // = 4
-      case keys // = 5
+    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case unknown = 0
+      case contacts = 1
+      case blocked = 3
+      case configuration = 4
+      case keys = 5
 
       init() {
         self = .unknown
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .unknown
-        case 1: self = .contacts
-        case 3: self = .blocked
-        case 4: self = .configuration
-        case 5: self = .keys
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .unknown: return 0
-        case .contacts: return 1
-        case .blocked: return 3
-        case .configuration: return 4
-        case .keys: return 5
-        }
       }
 
     }
@@ -2990,28 +2678,12 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
-      case install // = 0
-      case remove // = 1
+    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case install = 0
+      case remove = 1
 
       init() {
         self = .install
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .install
-        case 1: self = .remove
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .install: return 0
-        case .remove: return 1
-        }
       }
 
     }
@@ -3071,34 +2743,14 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
-      case unknown // = 0
-      case localProfile // = 1
-      case storageManifest // = 2
-      case subscriptionStatus // = 3
+    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case unknown = 0
+      case localProfile = 1
+      case storageManifest = 2
+      case subscriptionStatus = 3
 
       init() {
         self = .unknown
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .unknown
-        case 1: self = .localProfile
-        case 2: self = .storageManifest
-        case 3: self = .subscriptionStatus
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .unknown: return 0
-        case .localProfile: return 1
-        case .storageManifest: return 2
-        case .subscriptionStatus: return 3
-        }
       }
 
     }
@@ -3183,43 +2835,17 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
-      case unknown // = 0
-      case accept // = 1
-      case delete // = 2
-      case block // = 3
-      case blockAndDelete // = 4
-      case spam // = 5
-      case blockAndSpam // = 6
+    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case unknown = 0
+      case accept = 1
+      case delete = 2
+      case block = 3
+      case blockAndDelete = 4
+      case spam = 5
+      case blockAndSpam = 6
 
       init() {
         self = .unknown
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .unknown
-        case 1: self = .accept
-        case 2: self = .delete
-        case 3: self = .block
-        case 4: self = .blockAndDelete
-        case 5: self = .spam
-        case 6: self = .blockAndSpam
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .unknown: return 0
-        case .accept: return 1
-        case .delete: return 2
-        case .block: return 3
-        case .blockAndDelete: return 4
-        case .spam: return 5
-        case .blockAndSpam: return 6
-        }
       }
 
     }
@@ -3481,101 +3107,39 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
-      case unknownType // = 0
-      case audioCall // = 1
-      case videoCall // = 2
-      case groupCall // = 3
-      case adHocCall // = 4
+    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case unknownType = 0
+      case audioCall = 1
+      case videoCall = 2
+      case groupCall = 3
+      case adHocCall = 4
 
       init() {
         self = .unknownType
       }
 
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .unknownType
-        case 1: self = .audioCall
-        case 2: self = .videoCall
-        case 3: self = .groupCall
-        case 4: self = .adHocCall
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .unknownType: return 0
-        case .audioCall: return 1
-        case .videoCall: return 2
-        case .groupCall: return 3
-        case .adHocCall: return 4
-        }
-      }
-
     }
 
-    enum Direction: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
-      case unknownDirection // = 0
-      case incoming // = 1
-      case outgoing // = 2
+    enum Direction: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case unknownDirection = 0
+      case incoming = 1
+      case outgoing = 2
 
       init() {
         self = .unknownDirection
       }
 
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .unknownDirection
-        case 1: self = .incoming
-        case 2: self = .outgoing
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .unknownDirection: return 0
-        case .incoming: return 1
-        case .outgoing: return 2
-        }
-      }
-
     }
 
-    enum Event: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
-      case unknownAction // = 0
-      case accepted // = 1
-      case notAccepted // = 2
-      case deleted // = 3
-      case observed // = 4
+    enum Event: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case unknownAction = 0
+      case accepted = 1
+      case notAccepted = 2
+      case deleted = 3
+      case observed = 4
 
       init() {
         self = .unknownAction
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .unknownAction
-        case 1: self = .accepted
-        case 2: self = .notAccepted
-        case 3: self = .deleted
-        case 4: self = .observed
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .unknownAction: return 0
-        case .accepted: return 1
-        case .notAccepted: return 2
-        case .deleted: return 3
-        case .observed: return 4
-        }
       }
 
     }
@@ -3625,25 +3189,11 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
-      case update // = 0
+    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case update = 0
 
       init() {
         self = .update
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .update
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .update: return 0
-        }
       }
 
     }
@@ -3703,31 +3253,13 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
-      case cleared // = 0
-      case markedAsRead // = 1
-      case markedAsReadInConversation // = 2
+    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case cleared = 0
+      case markedAsRead = 1
+      case markedAsReadInConversation = 2
 
       init() {
         self = .cleared
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .cleared
-        case 1: self = .markedAsRead
-        case 2: self = .markedAsReadInConversation
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .cleared: return 0
-        case .markedAsRead: return 1
-        case .markedAsReadInConversation: return 2
-        }
       }
 
     }
@@ -4173,31 +3705,13 @@ struct SignalServiceProtos_AttachmentPointer: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Flags: SwiftProtobuf.Enum, Swift.CaseIterable {
-    typealias RawValue = Int
-    case voiceMessage // = 1
-    case borderless // = 2
-    case gif // = 8
+  enum Flags: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    case voiceMessage = 1
+    case borderless = 2
+    case gif = 8
 
     init() {
       self = .voiceMessage
-    }
-
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 1: self = .voiceMessage
-      case 2: self = .borderless
-      case 8: self = .gif
-      default: return nil
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .voiceMessage: return 1
-      case .borderless: return 2
-      case .gif: return 8
-      }
     }
 
   }
@@ -4638,40 +4152,16 @@ struct SignalServiceProtos_BodyRange: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Style: SwiftProtobuf.Enum, Swift.CaseIterable {
-    typealias RawValue = Int
-    case none // = 0
-    case bold // = 1
-    case italic // = 2
-    case spoiler // = 3
-    case strikethrough // = 4
-    case monospace // = 5
+  enum Style: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    case none = 0
+    case bold = 1
+    case italic = 2
+    case spoiler = 3
+    case strikethrough = 4
+    case monospace = 5
 
     init() {
       self = .none
-    }
-
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 0: self = .none
-      case 1: self = .bold
-      case 2: self = .italic
-      case 3: self = .spoiler
-      case 4: self = .strikethrough
-      case 5: self = .monospace
-      default: return nil
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .none: return 0
-      case .bold: return 1
-      case .italic: return 2
-      case .spoiler: return 3
-      case .strikethrough: return 4
-      case .monospace: return 5
-      }
     }
 
   }

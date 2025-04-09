@@ -178,31 +178,13 @@ struct WebSocketProtos_WebSocketMessage: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
-    typealias RawValue = Int
-    case unknown // = 0
-    case request // = 1
-    case response // = 2
+  enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    case unknown = 0
+    case request = 1
+    case response = 2
 
     init() {
       self = .unknown
-    }
-
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 0: self = .unknown
-      case 1: self = .request
-      case 2: self = .response
-      default: return nil
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .unknown: return 0
-      case .request: return 1
-      case .response: return 2
-      }
     }
 
   }
