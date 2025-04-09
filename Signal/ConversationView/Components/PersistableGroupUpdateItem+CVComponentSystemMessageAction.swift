@@ -130,7 +130,7 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
             let .unnamedUsersWereInvitedByOtherUser(_, count),
             let .unnamedUsersWereInvitedByUnknownUser(count):
             return Action.forNewlyRequestingMembers(count: count)
-        case .localUserRequestedToJoin, .otherUserRequestedToJoin:
+        case .otherUserRequestedToJoin:
             return Action.forNewlyRequestingMembers(count: 1)
 
         default:
