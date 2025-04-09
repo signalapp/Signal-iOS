@@ -49,8 +49,6 @@ public enum FeatureFlags {
         public static let fileAlphaRegistrationFlow = build.includes(.dev)
         public static let quickRestoreFlow = build.includes(.dev)
 
-        public static let settings = build.includes(.dev)
-
         public static let restoreFailOnAnyError = build.includes(.beta)
         public static let detailedBenchLogging = build.includes(.internal)
         public static let errorDisplay = build.includes(.internal)

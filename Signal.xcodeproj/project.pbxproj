@@ -2460,6 +2460,7 @@
 		D93830812A7065C7006CDCDE /* UsernameValidationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */; };
 		D93830832A708E95006CDCDE /* UsernameChangeDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830822A708E95006CDCDE /* UsernameChangeDelegate.swift */; };
 		D93830852A784210006CDCDE /* UsernameApiClientImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830842A784210006CDCDE /* UsernameApiClientImpl.swift */; };
+		D9388C912DA475230048D4F9 /* BackupSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9388C902DA4751F0048D4F9 /* BackupSettingsStore.swift */; };
 		D9392DE02D88AA5800728C01 /* ZoomableMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9392DDF2D88AA5000728C01 /* ZoomableMediaView.swift */; };
 		D93CE1242A5C84F600D916B7 /* OWSSyncRequestMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */; };
 		D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */; };
@@ -6361,6 +6362,7 @@
 		D938307F2A705D64006CDCDE /* UsernameLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsernameLogger.swift; sourceTree = "<group>"; };
 		D93830822A708E95006CDCDE /* UsernameChangeDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameChangeDelegate.swift; sourceTree = "<group>"; };
 		D93830842A784210006CDCDE /* UsernameApiClientImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameApiClientImpl.swift; sourceTree = "<group>"; };
+		D9388C902DA4751F0048D4F9 /* BackupSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSettingsStore.swift; sourceTree = "<group>"; };
 		D938CD5F29283402006FB16A /* Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paypal.swift; sourceTree = "<group>"; };
 		D9392DDF2D88AA5000728C01 /* ZoomableMediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableMediaView.swift; sourceTree = "<group>"; };
 		D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSyncRequestMessage.swift; sourceTree = "<group>"; };
@@ -9505,6 +9507,7 @@
 				66CD25572B0685CF00139E17 /* Archivers */,
 				667BB2042C58073600E79B57 /* Attachments */,
 				66CD25732B08079C00139E17 /* FileStreams */,
+				D9388C8F2DA4751A0048D4F9 /* Settings */,
 				660A603D2D371C8B00D2765B /* MessageBackup+Bench.swift */,
 				665C0D5F2ADF57D000539A37 /* MessageBackup+Shims.swift */,
 				661429182D35B9EA0043AA22 /* MessageBackup+Timestamp.swift */,
@@ -12334,6 +12337,14 @@
 				D9CAFAE92A53CB1F00B32BDE /* UsernameLinkTooltipView.swift */,
 			);
 			path = Links;
+			sourceTree = "<group>";
+		};
+		D9388C8F2DA4751A0048D4F9 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				D9388C902DA4751F0048D4F9 /* BackupSettingsStore.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		D9392DDE2D88AA4900728C01 /* Media */ = {
@@ -17440,6 +17451,7 @@
 				D97054202CFE4D0200AC7954 /* BackupPaymentProcessor.swift in Sources */,
 				D9EE79112CF525A4007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift in Sources */,
 				D9EE790F2CF5232C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift in Sources */,
+				D9388C912DA475230048D4F9 /* BackupSettingsStore.swift in Sources */,
 				C113994B2CA1B32C00D4D90C /* BackupStickerPackDownloadStore.swift in Sources */,
 				D9E43AF62CC193D70001536E /* BackupSubscriptionManager.swift in Sources */,
 				F9C5CE3A289453B400548EEE /* BadgeAssets.swift in Sources */,
