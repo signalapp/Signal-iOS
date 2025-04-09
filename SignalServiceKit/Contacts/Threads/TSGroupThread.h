@@ -78,10 +78,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 // --- CODE GENERATION MARKER
 
 @property (nonatomic) TSGroupModel *groupModel;
-
-+ (nullable instancetype)fetchWithGroupId:(NSData *)groupId
-                              transaction:(DBReadTransaction *)transaction NS_SWIFT_NAME(fetch(groupId:transaction:));
-
 @property (nonatomic, readonly) NSString *groupNameOrDefault;
 @property (nonatomic, readonly, class) NSString *defaultGroupName;
 

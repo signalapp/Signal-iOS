@@ -3,10 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 public import LibSignalClient
-
-// MARK: -
 
 extension TSGroupThread {
     func update(
@@ -50,11 +47,9 @@ extension TSGroupThread {
             }
         }
     }
-}
 
-// MARK: -
+    // MARK: -
 
-extension TSGroupThread {
     public var groupIdentifier: GroupIdentifier {
         get throws {
             return try GroupIdentifier(contents: [UInt8](self.groupId))
@@ -64,6 +59,14 @@ extension TSGroupThread {
     public static func fetch(forGroupId groupId: GroupIdentifier, tx: DBReadTransaction) -> TSGroupThread? {
         return fetch(groupId: groupId.serialize().asData, transaction: tx)
     }
+
+    @objc
+    public static func fetch(groupId: Data, transaction: DBReadTransaction) -> TSGroupThread? {
+        let uniqueId = threadId(forGroupId: groupId, transaction: transaction)
+        return TSGroupThread.anyFetchGroupThread(uniqueId: uniqueId, transaction: transaction)
+    }
+
+    // MARK: -
 
     @objc
     func clearGroupSendEndorsementsIfNeeded(oldGroupMembers: [SignalServiceAddress], tx: DBWriteTransaction) {
@@ -82,12 +85,10 @@ extension TSGroupThread {
             groupSendEndorsementStore.deleteEndorsements(groupThreadId: self.sqliteRowId!, tx: tx)
         }
     }
-}
 
-// MARK: -
+    // MARK: -
 
-public extension TSGroupThread {
-    func updateWithStorySendEnabled(
+    public func updateWithStorySendEnabled(
         _ storySendEnabled: Bool,
         transaction: DBWriteTransaction,
         updateStorageService: Bool = true
@@ -114,7 +115,7 @@ public extension TSGroupThread {
         }
     }
 
-    func updateWithStoryViewMode(
+    public func updateWithStoryViewMode(
         _ storyViewMode: TSThreadStoryViewMode,
         transaction tx: DBWriteTransaction
     ) {
@@ -123,51 +124,17 @@ public extension TSGroupThread {
         }
     }
 
-    var isStorySendExplicitlyEnabled: Bool {
+    public var isStorySendExplicitlyEnabled: Bool {
         storyViewMode == .explicit
     }
 
-    func isStorySendEnabled(transaction: DBReadTransaction) -> Bool {
+    public func isStorySendEnabled(transaction: DBReadTransaction) -> Bool {
         if isStorySendExplicitlyEnabled { return true }
         return StoryFinder.latestStoryForThread(self, transaction: transaction) != nil
     }
-}
 
-// MARK: -
+    // MARK: -
 
-public extension TSThreadStoryViewMode {
-    var storageServiceMode: StorageServiceProtoGroupV2RecordStorySendMode {
-        switch self {
-        case .default:
-            return .default
-        case .explicit:
-            return .enabled
-        case .disabled:
-            return .disabled
-        case .blockList:
-            owsFailDebug("Unexpected story mode")
-            return .default
-        }
-    }
-
-    init(storageServiceMode: StorageServiceProtoGroupV2RecordStorySendMode) {
-        switch storageServiceMode {
-        case .default:
-            self = .default
-        case .disabled:
-            self = .disabled
-        case .enabled:
-            self = .explicit
-        case .UNRECOGNIZED(let value):
-            owsFailDebug("Unexpected story mode \(value)")
-            self = .default
-        }
-    }
-}
-
-// MARK: -
-
-extension TSGroupThread {
     override open func update(
         withInsertedMessage message: TSInteraction,
         transaction tx: DBWriteTransaction
@@ -198,15 +165,11 @@ extension TSGroupThread {
             transaction: tx
         )
     }
-}
 
-// MARK: - Testable build
+    // MARK: - Testable build
 
 #if TESTABLE_BUILD
-
-extension TSGroupThread {
-
-    public static func forUnitTest(
+    static func forUnitTest(
         groupId: UInt8 = 0,
         groupMembers: [SignalServiceAddress] = []
     ) -> TSGroupThread {
@@ -275,6 +238,37 @@ extension TSGroupThread {
         groupThread.clearRowId()
         return groupThread
     }
+#endif
 }
 
-#endif
+// MARK: -
+
+public extension TSThreadStoryViewMode {
+    var storageServiceMode: StorageServiceProtoGroupV2RecordStorySendMode {
+        switch self {
+        case .default:
+            return .default
+        case .explicit:
+            return .enabled
+        case .disabled:
+            return .disabled
+        case .blockList:
+            owsFailDebug("Unexpected story mode")
+            return .default
+        }
+    }
+
+    init(storageServiceMode: StorageServiceProtoGroupV2RecordStorySendMode) {
+        switch storageServiceMode {
+        case .default:
+            self = .default
+        case .disabled:
+            self = .disabled
+        case .enabled:
+            self = .explicit
+        case .UNRECOGNIZED(let value):
+            owsFailDebug("Unexpected story mode \(value)")
+            self = .default
+        }
+    }
+}

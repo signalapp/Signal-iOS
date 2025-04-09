@@ -100,14 +100,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     return self;
 }
 
-+ (nullable instancetype)fetchWithGroupId:(NSData *)groupId transaction:(DBReadTransaction *)transaction
-{
-    OWSAssertDebug(groupId.length > 0);
-
-    NSString *uniqueId = [self threadIdForGroupId:groupId transaction:transaction];
-    return [TSGroupThread anyFetchGroupThreadWithUniqueId:uniqueId transaction:transaction];
-}
-
 - (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(DBReadTransaction *)transaction
 {
     NSMutableArray<SignalServiceAddress *> *groupMembers = [self.groupModel.groupMembers mutableCopy];
