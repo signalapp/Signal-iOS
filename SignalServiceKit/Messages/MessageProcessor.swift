@@ -14,13 +14,24 @@ public class MessageProcessor {
         !pendingEnvelopes.isEmpty
     }
 
-    public func waitForProcessingComplete() -> Guarantee<Void> {
+    public struct ProcessingTypes: OptionSet {
+        public var rawValue: UInt8
+
+        public init(rawValue: UInt8) {
+            self.rawValue = rawValue
+        }
+
+        public static let messageProcessor = ProcessingTypes(rawValue: 1 << 0)
+        public static let groupMessageProcessor = ProcessingTypes(rawValue: 1 << 1)
+    }
+
+    public func waitForProcessingComplete(processingTypes: ProcessingTypes = [.messageProcessor, .groupMessageProcessor]) -> Guarantee<Void> {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             return Guarantee.value(())
         }
 
         let shouldWaitForMessageProcessing: () -> Bool = {
-            return self.hasPendingEnvelopes
+            return processingTypes.contains(.messageProcessor) && self.hasPendingEnvelopes
         }
         if shouldWaitForMessageProcessing() {
             let messageProcessingPromise = NotificationCenter.default.observe(once: Self.messageProcessorDidDrainQueue)
@@ -36,7 +47,7 @@ public class MessageProcessor {
         }
 
         let shouldWaitForGroupMessageProcessing: () -> Bool = {
-            return SSKEnvironment.shared.databaseStorageRef.read {
+            return processingTypes.contains(.groupMessageProcessor) && SSKEnvironment.shared.databaseStorageRef.read {
                 SSKEnvironment.shared.groupsV2MessageProcessorRef.hasPendingJobs(tx: $0)
             }
         }

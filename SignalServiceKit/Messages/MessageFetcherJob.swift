@@ -227,7 +227,7 @@ public class MessageFetcherJob {
 
     private func fetchMessagesViaRestWhenReady() async throws {
         owsPrecondition(CurrentAppContext().isNSE)
-        await SSKEnvironment.shared.messageProcessorRef.waitForProcessingComplete().awaitable()
+        await SSKEnvironment.shared.messageProcessorRef.waitForProcessingComplete(processingTypes: [.messageProcessor]).awaitable()
         try await waitForPendingAcks()
         try await fetchMessagesViaRest()
     }
