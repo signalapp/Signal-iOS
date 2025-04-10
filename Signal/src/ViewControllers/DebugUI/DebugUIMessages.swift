@@ -1108,7 +1108,7 @@ class DebugUIMessages: DebugUIPage {
                 let outgoingMessage = outgoingMessageBuilder.build(transaction: transaction)
                 outgoingMessage.anyInsert(transaction: transaction)
                 outgoingMessage.updateWithFakeMessageState(.sent, tx: transaction)
-                outgoingMessage.updateWithSentRecipient(incomingSenderAci, wasSentByUD: false, transaction: transaction)
+                outgoingMessage.updateWithSentRecipients([incomingSenderAci], wasSentByUD: false, transaction: transaction)
                 outgoingMessage.update(
                     withDeliveredRecipient: SignalServiceAddress(incomingSenderAci),
                     deviceId: .primary,

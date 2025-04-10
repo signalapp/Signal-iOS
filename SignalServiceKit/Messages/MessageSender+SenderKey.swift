@@ -215,12 +215,6 @@ extension MessageSender {
             }
 
             sendResult.success.forEach { recipient in
-                message.updateWithSentRecipient(
-                    recipient.serviceId,
-                    wasSentByUD: true,
-                    transaction: tx
-                )
-
                 // If we're sending a story, we generally get a 200, even if the account
                 // doesn't exist. Therefore, don't use this to mark accounts as registered.
                 if !message.isStorySend {
@@ -253,6 +247,14 @@ extension MessageSender {
                     )
                 }
             }
+
+            // Do this after `recordPendingDelivery` because doing this will clear the
+            // payload if we haven't yet recorded any pending recipients.
+            message.updateWithSentRecipients(
+                sendResult.success.map(\.serviceId),
+                wasSentByUD: true,
+                transaction: tx
+            )
 
             return failedRecipients
         }

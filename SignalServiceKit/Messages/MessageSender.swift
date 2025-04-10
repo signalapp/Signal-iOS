@@ -1583,7 +1583,7 @@ public class MessageSender {
                 }
             }
 
-            message.updateWithSentRecipient(messageSend.serviceId, wasSentByUD: wasSentByUD, transaction: transaction)
+            message.updateWithSentRecipients([messageSend.serviceId], wasSentByUD: wasSentByUD, transaction: transaction)
 
             if let resendResponse = message as? OWSOutgoingResendResponse {
                 resendResponse.didPerformMessageSend(sentDeviceMessages, to: messageSend.serviceId, tx: transaction)

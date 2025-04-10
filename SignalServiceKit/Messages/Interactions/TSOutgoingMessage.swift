@@ -118,21 +118,22 @@ public extension TSOutgoingMessage {
     }
 
     /// Records a successful send to a one recipient.
-    func updateWithSentRecipient(
-        _ serviceId: ServiceId,
+    func updateWithSentRecipients(
+        _ serviceIds: [ServiceId],
         wasSentByUD: Bool,
         transaction tx: DBWriteTransaction
     ) {
-        let address = SignalServiceAddress(serviceId)
-
         anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
-            guard let recipientState = outgoingMessage.recipientAddressStates?[address] else {
-                owsFailDebug("Missing recipient state for recipient: \(address)!")
-                return
-            }
+            for serviceId in serviceIds {
+                let address = SignalServiceAddress(serviceId)
+                guard let recipientState = outgoingMessage.recipientAddressStates?[address] else {
+                    owsFailDebug("Missing recipient state for recipient: \(address)!")
+                    continue
+                }
 
-            recipientState.updateStatusIfPossible(.sent)
-            recipientState.wasSentByUD = wasSentByUD
+                recipientState.updateStatusIfPossible(.sent)
+                recipientState.wasSentByUD = wasSentByUD
+            }
         }
     }
 

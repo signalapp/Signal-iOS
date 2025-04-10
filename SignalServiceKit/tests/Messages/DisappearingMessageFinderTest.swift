@@ -218,8 +218,8 @@ final class DisappearingMessageFinderTest: SSKBaseTest {
             ] {
                 // To model production behavior, mark messages as "sent" before
                 // optionally marking as "delivered" or "read".
-                message.updateWithSentRecipient(
-                    otherAddress.serviceId!,
+                message.updateWithSentRecipients(
+                    [otherAddress.serviceId!],
                     wasSentByUD: false,
                     transaction: transaction
                 )
