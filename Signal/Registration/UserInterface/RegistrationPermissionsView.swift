@@ -96,7 +96,7 @@ struct RegistrationPermissionsView: View {
                     Button(CommonStrings.continueButton) {
                         requestPermissions = RequestPermissionsTask(presenter: presenter)
                     }
-                    .buttonStyle(ContinueButtonStyle())
+                    .buttonStyle(Registration.UI.FilledButtonStyle())
                     .dynamicTypeSize(...DynamicTypeSize.accessibility2)
                     .frame(maxWidth: 400)
                 }
@@ -152,22 +152,6 @@ struct RegistrationPermissionsView: View {
 }
 
 private extension RegistrationPermissionsView {
-    struct ContinueButtonStyle: PrimitiveButtonStyle {
-        func makeBody(configuration: Configuration) -> some View {
-            Button(action: configuration.trigger) {
-                HStack {
-                    Spacer()
-                    configuration.label
-                        .colorScheme(.dark)
-                        .font(.headline)
-                    Spacer()
-                }
-                .frame(minHeight: 32)
-            }
-            .buttonStyle(.borderedProminent)
-        }
-    }
-
     struct PermissionDescription<Icon: View, Title: View, Description: View>: View {
         var icon: Icon
         var title: Title
