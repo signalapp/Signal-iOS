@@ -103,13 +103,13 @@ class NSEEnvironment {
     // MARK: - Setup
 
     @MainActor private var didStartAppSetup = false
-    @MainActor private var didFinishDatabaseSetup = false
+    @MainActor private var finalContinuation: AppSetup.FinalContinuation?
 
     /// Called for each notification the NSE receives.
     ///
     /// Will be invoked multiple times in the same NSE process.
     @MainActor
-    func setUp(logger: NSELogger) async throws {
+    func setUp(logger: NSELogger) {
         let debugLogger = DebugLogger.shared
 
         if !didStartAppSetup {
@@ -124,9 +124,12 @@ class NSEEnvironment {
             "pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsageString)",
             flushImmediately: true
         )
+    }
 
-        if didFinishDatabaseSetup {
-            return
+    @MainActor
+    func setUpDatabase(logger: NSELogger) async throws -> AppSetup.FinalContinuation {
+        if let finalContinuation {
+            return finalContinuation
         }
 
         let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
@@ -137,9 +140,7 @@ class NSEEnvironment {
         )
         databaseStorage.grdbStorage.setUpDatabasePathKVO()
 
-        didFinishDatabaseSetup = true
-
-        let databaseContinuation = AppSetup().start(
+        let finalContinuation = await AppSetup().start(
             appContext: CurrentAppContext(),
             appReadiness: appReadiness,
             databaseStorage: databaseStorage,
@@ -151,25 +152,19 @@ class NSEEnvironment {
             notificationPresenter: NotificationPresenterImpl(),
             incrementalMessageTSAttachmentMigratorFactory: NoOpIncrementalMessageTSAttachmentMigratorFactory(),
             messageBackupErrorPresenterFactory: NoOpMessageBackupErrorPresenterFactory()
-        )
-
-        let finalSetupContinuation = await databaseContinuation.prepareDatabase()
-        switch finalSetupContinuation.finish(willResumeInProgressRegistration: false) {
-        case .corruptRegistrationState:
-            // TODO: Maybe notify that you should open the main app.
-            return owsFailDebug("Couldn't launch because of corrupted registration state.")
-        case nil:
-            self.setAppIsReady()
-        }
-
-        logger.info("completed.")
+        ).prepareDatabase()
+        self.finalContinuation = finalContinuation
 
         listenForMainAppLaunch(logger: logger)
+
+        return finalContinuation
     }
 
     @MainActor
-    private func setAppIsReady() {
-        owsPrecondition(!appReadiness.isAppReady)
+    func setAppIsReady() {
+        if appReadiness.isAppReady {
+            return
+        }
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         appReadiness.setAppIsReady()

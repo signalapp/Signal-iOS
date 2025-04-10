@@ -189,7 +189,7 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
 
     // MARK: - Disabling
 
-    /// Should only be written to while holding the database write lock.
+    /// Should only be touched while holding the database write lock.
     private var isObserving = false
 
     public func beginObserving(pool: DatabasePool) throws {

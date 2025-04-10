@@ -29,7 +29,7 @@ import SignalServiceKit
 // database, logging, etc. are only ever setup once per *process*
 private let globalEnvironment = NSEEnvironment()
 
-private let hasShownFirstUnlockError = AtomicBool(false, lock: .sharedGlobal)
+@MainActor private var hasShownFirstUnlockError = false
 
 class NotificationService: UNNotificationServiceExtension {
     private typealias ContentHandler = (UNNotificationContent) -> Void
@@ -95,11 +95,14 @@ class NotificationService: UNNotificationServiceExtension {
 
     @MainActor
     private func _didReceive(_ request: UNNotificationRequest, logger: NSELogger) async -> UNNotificationContent {
+        globalEnvironment.setUp(logger: logger)
+        let finalContinuation: AppSetup.FinalContinuation
         do {
-            try await globalEnvironment.setUp(logger: logger)
+            finalContinuation = try await globalEnvironment.setUpDatabase(logger: logger)
         } catch KeychainError.notAllowed {
             // Detect and handle "no GRDB file" and "no keychain access".
-            if hasShownFirstUnlockError.tryToSetFlag() {
+            if !hasShownFirstUnlockError {
+                hasShownFirstUnlockError = true
                 logger.error("DB Keys not accessible; showing error.", flushImmediately: true)
                 let content = UNMutableNotificationContent()
                 let notificationFormat = OWSLocalizedString(
@@ -117,6 +120,17 @@ class NotificationService: UNNotificationServiceExtension {
             }
         } catch {
             owsFail("Couldn't load database: \(error.grdbErrorForLogging)")
+        }
+
+        // Re-warm the caches each time to pick up changes made by the main app.
+        finalContinuation.runLaunchTasksIfNeededAndReloadCaches()
+        // Re-set up the local identifiers to ensure they're propagated throughout the system.
+        switch finalContinuation.setUpLocalIdentifiers(willResumeInProgressRegistration: false) {
+        case .corruptRegistrationState:
+            Logger.warn("Ignoring request to process notifications when the user isn't registered.")
+            return UNNotificationContent()
+        case nil:
+            globalEnvironment.setAppIsReady()
         }
 
         // Mark down that the APNS token is working since we got a push.

@@ -34,7 +34,7 @@ public class MockSSKEnvironment {
         /// subdirectory of our temp directory unique to the instantiation of
         /// the app context.
 
-        _ = await AppSetup().start(
+        let finalContinuation = await AppSetup().start(
             appContext: testAppContext,
             appReadiness: appReadiness,
             databaseStorage: try! SDSDatabaseStorage(
@@ -73,6 +73,7 @@ public class MockSSKEnvironment {
                 webSocketFactory: WebSocketFactoryMock()
             )
         ).prepareDatabase()
+        finalContinuation.runLaunchTasksIfNeededAndReloadCaches()
     }
 
     @MainActor

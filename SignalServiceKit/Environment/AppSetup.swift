@@ -1584,23 +1584,20 @@ extension AppSetup.DatabaseContinuation {
             }
         }
         databaseStorage.runGrdbSchemaMigrationsOnMainDatabase()
-        // NOTE: I'm not sure why the code below needs to run on the main actor but it was doing so before this refactor.
-        return await MainActor.run {
-            do {
-                try databaseStorage.grdbStorage.setupDatabaseChangeObserver()
-            } catch {
-                owsFail("Couldn't set up change observer: \(error.grdbErrorForLogging)")
-            }
-            self.sskEnvironment.warmCaches(appReadiness: self.appReadiness)
-
-            self.backgroundTask.end()
-            return AppSetup.FinalContinuation(
-                appReadiness: self.appReadiness,
-                authCredentialStore: self.authCredentialStore,
-                dependenciesBridge: self.dependenciesBridge,
-                sskEnvironment: self.sskEnvironment
-            )
+        do {
+            try databaseStorage.grdbStorage.setupDatabaseChangeObserver()
+        } catch {
+            owsFail("Couldn't set up change observer: \(error.grdbErrorForLogging)")
         }
+
+        self.backgroundTask.end()
+        return AppSetup.FinalContinuation(
+            appContext: self.appContext,
+            appReadiness: self.appReadiness,
+            authCredentialStore: self.authCredentialStore,
+            dependenciesBridge: self.dependenciesBridge,
+            sskEnvironment: self.sskEnvironment
+        )
     }
 
     private func shouldTruncateGrdbWal() -> Bool {
@@ -1612,17 +1609,22 @@ extension AppSetup.DatabaseContinuation {
 
 extension AppSetup {
     public class FinalContinuation {
+        private let appContext: AppContext
         private let appReadiness: AppReadiness
         private let authCredentialStore: AuthCredentialStore
         public let dependenciesBridge: DependenciesBridge
         private let sskEnvironment: SSKEnvironment
 
+        @MainActor private var didRunLaunchTasks = false
+
         fileprivate init(
+            appContext: AppContext,
             appReadiness: AppReadiness,
             authCredentialStore: AuthCredentialStore,
             dependenciesBridge: DependenciesBridge,
             sskEnvironment: SSKEnvironment
         ) {
+            self.appContext = appContext
             self.appReadiness = appReadiness
             self.authCredentialStore = authCredentialStore
             self.dependenciesBridge = dependenciesBridge
@@ -1637,8 +1639,20 @@ extension AppSetup.FinalContinuation {
     }
 
     @MainActor
-    public func finish(willResumeInProgressRegistration: Bool) -> SetupError? {
-        AssertIsOnMainThread()
+    public func runLaunchTasksIfNeededAndReloadCaches() {
+        // Warm (or re-warm) all of the caches. In theory, every cache is
+        // susceptible to diverging state between the Main App & NSE and should be
+        // reloaded here. In practice, some caches exist but aren't used by the
+        // NSE, or they are used but behave properly even if they're not reloaded.
+        self.sskEnvironment.warmCaches(appReadiness: self.appReadiness)
+
+        if self.didRunLaunchTasks {
+            return
+        }
+        self.didRunLaunchTasks = true
+
+        // See above.
+        self.sskEnvironment.signalServiceAddressCacheRef.prepareCache()
 
         ZkParamsMigrator(
             appReadiness: appReadiness,
@@ -1649,11 +1663,16 @@ extension AppSetup.FinalContinuation {
             versionedProfiles: sskEnvironment.versionedProfilesRef
         ).migrateIfNeeded()
 
-        guard setUpLocalIdentifiers(willResumeInProgressRegistration: willResumeInProgressRegistration) else {
-            return .corruptRegistrationState
-        }
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [appContext, dependenciesBridge, sskEnvironment] in
+            sskEnvironment.localUserLeaveGroupJobQueueRef.start(appContext: appContext)
+            sskEnvironment.callRecordDeleteAllJobQueueRef.start(appContext: appContext)
+            sskEnvironment.bulkDeleteInteractionJobQueueRef.start(appContext: appContext)
+            sskEnvironment.backupReceiptCredentialRedemptionJobQueue.start(appContext: appContext)
+            sskEnvironment.donationReceiptCredentialRedemptionJobQueue.start(appContext: appContext)
+            sskEnvironment.smJobQueuesRef.incomingContactSyncJobQueue.start(appContext: appContext)
+            sskEnvironment.smJobQueuesRef.sendGiftBadgeJobQueue.start(appContext: appContext)
+            sskEnvironment.smJobQueuesRef.sessionResetJobQueue.start(appContext: appContext)
 
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [dependenciesBridge] in
             let preKeyManager = dependenciesBridge.preKeyManager
             Task {
                 // Rotate ACI keys first since PNI keys may block on incoming messages.
@@ -1662,12 +1681,10 @@ extension AppSetup.FinalContinuation {
                 try await preKeyManager.rotatePreKeysOnUpgradeIfNecessary(for: .pni)
             }
         }
-
-        return nil
     }
 
-    private func setUpLocalIdentifiers(willResumeInProgressRegistration: Bool) -> Bool {
-        let databaseStorage = sskEnvironment.databaseStorageRef
+    @MainActor
+    public func setUpLocalIdentifiers(willResumeInProgressRegistration: Bool) -> SetupError? {
         let storageServiceManager = sskEnvironment.storageServiceManagerRef
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
@@ -1675,9 +1692,9 @@ extension AppSetup.FinalContinuation {
             tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
             && !willResumeInProgressRegistration
         {
-            let localIdentifiers = databaseStorage.read { tsAccountManager.localIdentifiers(tx: $0) }
+            let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
             guard let localIdentifiers else {
-                return false
+                return .corruptRegistrationState
             }
             storageServiceManager.setLocalIdentifiers(localIdentifiers)
             // We are fully registered, and we're not in the middle of registration, so
@@ -1685,7 +1702,7 @@ extension AppSetup.FinalContinuation {
             setUpDefaultDiscoverability()
         }
 
-        return true
+        return nil
     }
 
     private func setUpDefaultDiscoverability() {

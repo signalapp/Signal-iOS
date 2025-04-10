@@ -236,13 +236,17 @@ public class SSKEnvironment: NSObject {
         }
     }
 
-    public static let warmCachesNotification = Notification.Name("WarmCachesNotification")
+    /// Warms (or re-warms) various caches throughout the app.
+    ///
+    /// This may be called multiple times within a single process.
+    ///
+    /// Re-warming helps ensure the NSE sees the same state as the Main App.
+    public func warmCaches(appReadiness: AppReadiness) {
+        // Note: All of these methods must be safe to invoke repeatedly.
 
-    func warmCaches(appReadiness: AppReadiness) {
-        SignalProxy.warmCaches(appReadiness: appReadiness)
         DependenciesBridge.shared.tsAccountManager.warmCaches()
         fixLocalRecipientIfNeeded()
-        SSKEnvironment.shared.signalServiceAddressCacheRef.warmCaches()
+        SignalProxy.warmCaches(appReadiness: appReadiness)
         SSKEnvironment.shared.signalServiceRef.warmCaches()
         SSKEnvironment.shared.remoteConfigManagerRef.warmCaches()
         SSKEnvironment.shared.profileManagerRef.warmCaches()
@@ -254,20 +258,6 @@ public class SSKEnvironment: NSObject {
         StoryManager.setup(appReadiness: appReadiness)
         DonationSubscriptionManager.warmCaches()
         DependenciesBridge.shared.db.read { tx in appExpiryRef.warmCaches(with: tx) }
-
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.localUserLeaveGroupJobQueueRef.start(appContext: CurrentAppContext())
-            self.callRecordDeleteAllJobQueueRef.start(appContext: CurrentAppContext())
-            self.bulkDeleteInteractionJobQueueRef.start(appContext: CurrentAppContext())
-            self.backupReceiptCredentialRedemptionJobQueue.start(appContext: CurrentAppContext())
-            self.donationReceiptCredentialRedemptionJobQueue.start(appContext: CurrentAppContext())
-
-            self.smJobQueuesRef.incomingContactSyncJobQueue.start(appContext: CurrentAppContext())
-            self.smJobQueuesRef.sendGiftBadgeJobQueue.start(appContext: CurrentAppContext())
-            self.smJobQueuesRef.sessionResetJobQueue.start(appContext: CurrentAppContext())
-        }
-
-        NotificationCenter.default.post(name: SSKEnvironment.warmCachesNotification, object: nil)
     }
 
     /// Ensures the local SignalRecipient is correct.

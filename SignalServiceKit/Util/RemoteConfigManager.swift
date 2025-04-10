@@ -556,7 +556,7 @@ private enum ValueFlag: String, FlagType {
         case .automaticSessionResetAttemptInterval: true
         case .backgroundRefreshInterval: true
         case .cdsSyncInterval: false
-        case .clientExpiration: false
+        case .clientExpiration: true
         case .creditAndDebitCardDisabledRegions: true
         case .groupsV2MaxGroupSizeHardLimit: true
         case .groupsV2MaxGroupSizeRecommended: true
@@ -761,11 +761,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             remoteConfig = .emptyConfig
         }
         updateCachedConfig { _ in remoteConfig }
-        warmSecondaryCaches(valueFlags: valueFlags ?? [:])
-    }
-
-    fileprivate func warmSecondaryCaches(valueFlags: [String: String]) {
-        checkClientExpiration(valueFlags: valueFlags)
     }
 
     private static let refreshInterval: TimeInterval = 2 * .hour
@@ -943,7 +938,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         let mergedConfig = self.updateCachedConfig { oldConfig in
             return (oldConfig ?? .emptyConfig).mergingHotSwappableFlags(from: newConfig)
         }
-        self.warmSecondaryCaches(valueFlags: mergedConfig.valueFlags)
+        checkClientExpiration(valueFlags: mergedConfig.valueFlags)
 
         newConfig.logFlags()
     }

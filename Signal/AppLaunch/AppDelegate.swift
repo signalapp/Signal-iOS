@@ -443,6 +443,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             )
         )
         let continuation = await databaseContinuation.prepareDatabase()
+        continuation.runLaunchTasksIfNeededAndReloadCaches()
         guard FeatureFlags.runTSAttachmentMigrationBlockingOnLaunch else {
             return (continuation, sleepBlockObject)
         }
@@ -543,7 +544,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             hasInProgressRegistration = false
         }
 
-        switch finalContinuation.finish(willResumeInProgressRegistration: hasInProgressRegistration) {
+        switch finalContinuation.setUpLocalIdentifiers(willResumeInProgressRegistration: hasInProgressRegistration) {
         case .corruptRegistrationState:
             let viewController = terminalErrorViewController()
             window.rootViewController = viewController

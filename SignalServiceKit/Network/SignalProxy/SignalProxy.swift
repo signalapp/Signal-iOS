@@ -47,6 +47,8 @@ public class SignalProxy: NSObject {
         }
     }
 
+    private static var didAddObserver = false
+
     public class func warmCaches(appReadiness: AppReadiness) {
         appReadiness.runNowOrWhenAppWillBecomeReady {
             SSKEnvironment.shared.databaseStorageRef.read { transaction in
@@ -54,7 +56,10 @@ public class SignalProxy: NSObject {
                 useProxy = keyValueStore.getBool(proxyUseKey, defaultValue: false, transaction: transaction)
             }
 
-            NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: .OWSApplicationDidBecomeActive, object: nil)
+            if !didAddObserver {
+                NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: .OWSApplicationDidBecomeActive, object: nil)
+                didAddObserver = true
+            }
 
             ensureProxyState()
         }

@@ -492,7 +492,7 @@ public class SignalServiceAddressCache: NSObject {
         self._phoneNumberVisibilityFetcher = phoneNumberVisibilityFetcher
     }
 
-    func warmCaches() {
+    func prepareCache() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
         SSKEnvironment.shared.databaseStorageRef.read { tx in

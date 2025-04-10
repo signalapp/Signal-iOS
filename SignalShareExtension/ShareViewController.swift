@@ -109,7 +109,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             }()
 
             let finalContinuation = await databaseContinuation.prepareDatabase()
-            switch finalContinuation.finish(willResumeInProgressRegistration: false) {
+            finalContinuation.runLaunchTasksIfNeededAndReloadCaches()
+            switch finalContinuation.setUpLocalIdentifiers(willResumeInProgressRegistration: false) {
             case .corruptRegistrationState:
                 self.showNotRegisteredView()
                 return
