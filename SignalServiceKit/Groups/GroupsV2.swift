@@ -144,8 +144,7 @@ public protocol GroupsV2 {
     func joinGroupViaInviteLink(
         secretParams: GroupSecretParams,
         inviteLinkPassword: Data,
-        inviteLinkPreview: GroupInviteLinkPreview,
-        avatarData: Data?
+        downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?
     ) async throws
 
     func cancelRequestToJoin(groupModel: TSGroupModelV2) async throws
@@ -647,8 +646,7 @@ public class MockGroupsV2: GroupsV2 {
     public func joinGroupViaInviteLink(
         secretParams: GroupSecretParams,
         inviteLinkPassword: Data,
-        inviteLinkPreview: GroupInviteLinkPreview,
-        avatarData: Data?
+        downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?
     ) async throws {
         owsFail("Not implemented.")
     }

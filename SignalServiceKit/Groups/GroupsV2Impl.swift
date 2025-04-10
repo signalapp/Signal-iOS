@@ -1526,8 +1526,7 @@ public class GroupsV2Impl: GroupsV2 {
     public func joinGroupViaInviteLink(
         secretParams: GroupSecretParams,
         inviteLinkPassword: Data,
-        inviteLinkPreview: GroupInviteLinkPreview,
-        avatarData: Data?
+        downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?
     ) async throws {
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             throw OWSAssertionError("Missing localAci.")
@@ -1555,8 +1554,7 @@ public class GroupsV2Impl: GroupsV2 {
                     secretParams: secretParams,
                     localIdentifiers: localIdentifiers,
                     inviteLinkPassword: inviteLinkPassword,
-                    inviteLinkPreview: inviteLinkPreview,
-                    avatarData: avatarData
+                    downloadedAvatar: downloadedAvatar
                 )
             }
         )
@@ -1566,8 +1564,7 @@ public class GroupsV2Impl: GroupsV2 {
         secretParams: GroupSecretParams,
         localIdentifiers: LocalIdentifiers,
         inviteLinkPassword: Data,
-        inviteLinkPreview: GroupInviteLinkPreview,
-        avatarData: Data?
+        downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?
     ) async throws {
         // There are many edge cases around joining groups via invite links.
         //
@@ -1599,8 +1596,7 @@ public class GroupsV2Impl: GroupsV2 {
                 inviteLinkPassword: inviteLinkPassword,
                 secretParams: secretParams,
                 localIdentifiers: localIdentifiers,
-                inviteLinkPreview: inviteLinkPreview,
-                avatarData: avatarData
+                downloadedAvatar: downloadedAvatar
             )
         }
     }
@@ -1649,8 +1645,7 @@ public class GroupsV2Impl: GroupsV2 {
         inviteLinkPassword: Data,
         secretParams: GroupSecretParams,
         localIdentifiers: LocalIdentifiers,
-        inviteLinkPreview oldInviteLinkPreview: GroupInviteLinkPreview,
-        avatarData oldAvatarData: Data?
+        downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?
     ) async throws {
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
 
@@ -1728,8 +1723,8 @@ public class GroupsV2Impl: GroupsV2 {
             inviteLinkPassword: inviteLinkPassword,
             secretParams: secretParams,
             localIdentifiers: localIdentifiers,
-            inviteLinkPreview: oldInviteLinkPreview,
-            avatarData: oldAvatarData,
+            inviteLinkPreview: inviteLinkPreview,
+            downloadedAvatar: downloadedAvatar,
             revisionForPlaceholderModel: revisionForPlaceholderModel
         )
 
@@ -1751,10 +1746,25 @@ public class GroupsV2Impl: GroupsV2 {
         secretParams: GroupSecretParams,
         localIdentifiers: LocalIdentifiers,
         inviteLinkPreview: GroupInviteLinkPreview,
-        avatarData: Data?,
+        downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?,
         revisionForPlaceholderModel revision: UInt32
     ) async throws -> TSGroupThread {
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
+
+        let avatarUrlPath = inviteLinkPreview.avatarUrlPath
+        let avatarData: Data?
+        if let avatarUrlPath {
+            if let downloadedAvatar, downloadedAvatar.avatarUrlPath == avatarUrlPath {
+                avatarData = downloadedAvatar.avatarData
+            } else {
+                // We might fail to download the avatar. That's fine; this is just a
+                // placeholder model.
+                avatarData = try? await self.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath, groupSecretParams: secretParams)
+            }
+        } else {
+            avatarData = nil
+        }
+
         // We might be creating a placeholder for a revision that we just
         // created or for one we learned about from a GroupInviteLinkPreview.
         return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (transaction) throws -> TSGroupThread in
@@ -1811,10 +1821,6 @@ public class GroupsV2Impl: GroupsV2 {
                 builder.inviteLinkPassword = inviteLinkPassword
                 builder.isJoinRequestPlaceholder = true
                 builder.avatarUrlPath = inviteLinkPreview.avatarUrlPath
-
-                // The "group invite link" UI might not have downloaded
-                // the avatar. That's fine; this is just a placeholder
-                // model.
                 builder.avatarDataState = TSGroupModel.AvatarDataState(avatarData: avatarData)
 
                 var membershipBuilder = GroupMembership.Builder()

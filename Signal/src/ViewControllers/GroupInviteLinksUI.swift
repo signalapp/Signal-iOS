@@ -71,7 +71,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
     private let groupDescriptionPreview = GroupDescriptionPreviewView()
 
     private var groupInviteLinkPreview: GroupInviteLinkPreview?
-    private var avatarData: Data?
+    private var downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?
 
     init(groupInviteLinkInfo: GroupInviteLinkInfo, groupV2ContextInfo: GroupV2ContextInfo) {
         self.groupInviteLinkInfo = groupInviteLinkInfo
@@ -245,8 +245,16 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                             avatarUrlPath: avatarUrlPath,
                             groupSecretParams: groupV2ContextInfo.groupSecretParams
                         )
-                        self?.applyGroupAvatar(avatarData)
+                        guard avatarData.ows_isValidImage else {
+                            throw OWSAssertionError("Invalid group avatar.")
+                        }
+                        guard let image = UIImage(data: avatarData) else {
+                            throw OWSAssertionError("Could not load group avatar.")
+                        }
+                        self?.downloadedAvatar = (avatarUrlPath, avatarData: avatarData)
+                        self?.avatarView.image = image
                     } catch {
+                        self?.downloadedAvatar = (avatarUrlPath, avatarData: nil)
                         owsFailDebugUnlessNetworkFailure(error)
                     }
                 }
@@ -348,23 +356,6 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         }
     }
 
-    // MARK: - Group avatar
-
-    private func applyGroupAvatar(_ groupAvatar: Data) {
-        AssertIsOnMainThread()
-
-        guard groupAvatar.ows_isValidImage else {
-            owsFailDebug("Invalid group avatar.")
-            return
-        }
-        guard let image = UIImage(data: groupAvatar) else {
-            owsFailDebug("Could not load group avatar.")
-            return
-        }
-        avatarView.image = image
-        self.avatarData = groupAvatar
-    }
-
     // MARK: - Actions
 
     @objc
@@ -394,57 +385,18 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
         Logger.info("")
 
-        // These values may not be filled in yet.
-        // They may be being downloaded now or their downloads may have failed.
-        let existingGroupInviteLinkPreview = self.groupInviteLinkPreview
-        let existingAvatarData = self.avatarData
+        // If we've already downloaded the avatar, reuse it.
+        let downloadedAvatar = self.downloadedAvatar
 
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
             canCancel: false,
             asyncBlock: { [weak self, groupInviteLinkInfo, groupV2ContextInfo] modal in
                 do {
-                    let groupInviteLinkPreview: GroupInviteLinkPreview
-                    if let existingGroupInviteLinkPreview {
-                        groupInviteLinkPreview = existingGroupInviteLinkPreview
-                    } else {
-                        // Kick off a fresh attempt to download the link preview.
-                        // We cannot join the group without the preview.
-                        groupInviteLinkPreview = try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreview(
-                            inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-                            groupSecretParams: groupV2ContextInfo.groupSecretParams,
-                            allowCached: false
-                        )
-                    }
-
-                    let avatarData: Data?
-                    if let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath {
-                        if let existingAvatarData {
-                            avatarData = existingAvatarData
-                        } else {
-                            do {
-                                avatarData = try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkAvatar(
-                                    avatarUrlPath: avatarUrlPath,
-                                    groupSecretParams: groupV2ContextInfo.groupSecretParams
-                                )
-                            } catch {
-                                Logger.warn("Error: \(error)")
-                                // We made a best effort to fill in the avatar. Don't block joining the
-                                // group on downloading the avatar. It will only be used in a placeholder
-                                // model if at all.
-                                avatarData = nil
-                            }
-                        }
-                    } else {
-                        // Group has no avatar.
-                        avatarData = nil
-                    }
-
                     try await GroupManager.joinGroupViaInviteLink(
                         secretParams: groupV2ContextInfo.groupSecretParams,
                         inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-                        inviteLinkPreview: groupInviteLinkPreview,
-                        avatarData: avatarData
+                        downloadedAvatar: downloadedAvatar
                     )
 
                     modal.dismiss {

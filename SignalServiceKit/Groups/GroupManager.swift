@@ -635,8 +635,7 @@ public class GroupManager: NSObject {
     public static func joinGroupViaInviteLink(
         secretParams: GroupSecretParams,
         inviteLinkPassword: Data,
-        inviteLinkPreview: GroupInviteLinkPreview,
-        avatarData: Data?
+        downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?
     ) async throws {
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
 
@@ -644,8 +643,7 @@ public class GroupManager: NSObject {
         try await SSKEnvironment.shared.groupsV2Ref.joinGroupViaInviteLink(
             secretParams: secretParams,
             inviteLinkPassword: inviteLinkPassword,
-            inviteLinkPreview: inviteLinkPreview,
-            avatarData: avatarData
+            downloadedAvatar: downloadedAvatar
         )
 
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
