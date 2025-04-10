@@ -414,7 +414,7 @@ public class RemoteConfig {
     }
 
     public func logFlags() {
-        for (key, value) in debugDescriptions() {
+        for (key, value) in debugDescriptions().sorted(by: { $0.key < $1.key }) {
             Logger.info("RemoteConfig: \(key) = \(value)")
         }
     }
