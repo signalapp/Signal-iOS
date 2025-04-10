@@ -19,9 +19,7 @@ public enum GroupsV2Error: Error {
     case cannotBuildGroupChangeProto_lastAdminCantLeaveGroup
     case cannotBuildGroupChangeProto_tooManyMembers
     case gv2NotEnabled
-    case localUserIsAlreadyRequestingMember
     case localUserIsNotARequestingMember
-    case requestingMemberCantLoadGroupState
     case cantApplyChangesToPlaceholder
     case expiredGroupInviteLink
     case groupDoesNotExistOnService
@@ -144,10 +142,9 @@ public protocol GroupsV2 {
     ) async throws -> TSGroupModel.AvatarDataState
 
     func joinGroupViaInviteLink(
-        groupId: Data,
-        groupSecretParams: GroupSecretParams,
+        secretParams: GroupSecretParams,
         inviteLinkPassword: Data,
-        groupInviteLinkPreview: GroupInviteLinkPreview,
+        inviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
     ) async throws
 
@@ -648,10 +645,9 @@ public class MockGroupsV2: GroupsV2 {
     }
 
     public func joinGroupViaInviteLink(
-        groupId: Data,
-        groupSecretParams: GroupSecretParams,
+        secretParams: GroupSecretParams,
         inviteLinkPassword: Data,
-        groupInviteLinkPreview: GroupInviteLinkPreview,
+        inviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
     ) async throws {
         owsFail("Not implemented.")

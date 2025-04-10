@@ -1524,14 +1524,51 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     public func joinGroupViaInviteLink(
-        groupId: Data,
-        groupSecretParams: GroupSecretParams,
+        secretParams: GroupSecretParams,
         inviteLinkPassword: Data,
-        groupInviteLinkPreview: GroupInviteLinkPreview,
+        inviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
     ) async throws {
-        let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
+            throw OWSAssertionError("Missing localAci.")
+        }
 
+        try await Retry.performWithBackoff(
+            maxAttempts: 5,
+            isRetryable: {
+                // If multiple people try to join a group at the same time, some of them
+                // may encounter HTTP 409 errors. If this happens, we should back off and
+                // try again. By also incorporating jitter, multiple clients should be able
+                // to avoid each others' requests when retrying.
+                //
+                // We retry the *entire* operation (are we a member? are we invited? can we
+                // join via the invite link?) because HTTP 409 conflicts indicate that the
+                // group state has changed, and those changes might add us to the group via
+                // some other mechanism.
+                if case GroupsV2Error.conflictingChangeOnService = $0 {
+                    return true
+                }
+                return false
+            },
+            block: {
+                try await _joinGroupViaInviteLink(
+                    secretParams: secretParams,
+                    localIdentifiers: localIdentifiers,
+                    inviteLinkPassword: inviteLinkPassword,
+                    inviteLinkPreview: inviteLinkPreview,
+                    avatarData: avatarData
+                )
+            }
+        )
+    }
+
+    private func _joinGroupViaInviteLink(
+        secretParams: GroupSecretParams,
+        localIdentifiers: LocalIdentifiers,
+        inviteLinkPassword: Data,
+        inviteLinkPreview: GroupInviteLinkPreview,
+        avatarData: Data?
+    ) async throws {
         // There are many edge cases around joining groups via invite links.
         //
         // * We might have previously been a member or not.
@@ -1550,42 +1587,38 @@ public class GroupsV2Impl: GroupsV2 {
             //
             // Note: this will typically fail.
             try await joinGroupViaInviteLinkUsingAlternateMeans(
-                groupId: groupId,
                 inviteLinkPassword: inviteLinkPassword,
-                groupV2Params: groupV2Params
+                secretParams: secretParams,
+                localIdentifiers: localIdentifiers
             )
+        } catch where error.isNetworkFailureOrTimeout {
+            throw error
         } catch {
-            if error.isNetworkFailureOrTimeout {
-                throw error
-            }
             Logger.warn("Error: \(error)")
             try await self.joinGroupViaInviteLinkUsingPatch(
-                groupId: groupId,
                 inviteLinkPassword: inviteLinkPassword,
-                groupV2Params: groupV2Params,
-                groupInviteLinkPreview: groupInviteLinkPreview,
+                secretParams: secretParams,
+                localIdentifiers: localIdentifiers,
+                inviteLinkPreview: inviteLinkPreview,
                 avatarData: avatarData
             )
         }
     }
 
     private func joinGroupViaInviteLinkUsingAlternateMeans(
-        groupId: Data,
         inviteLinkPassword: Data,
-        groupV2Params: GroupV2Params
+        secretParams: GroupSecretParams,
+        localIdentifiers: LocalIdentifiers
     ) async throws {
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier()
 
         // First try to fetch latest group state from service.
         // This will fail for users trying to join via group link
         // who are not yet in the group.
-        try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(secretParams: groupV2Params.groupSecretParams)
-
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
-            throw OWSAssertionError("Missing localAci.")
-        }
+        try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(secretParams: secretParams)
 
         let groupThread = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return TSGroupThread.fetch(groupId: groupId, transaction: tx)
+            return TSGroupThread.fetch(forGroupId: groupId, tx: tx)
         }
         guard let groupModelV2 = groupThread?.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
@@ -1613,34 +1646,41 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     private func joinGroupViaInviteLinkUsingPatch(
-        groupId: Data,
         inviteLinkPassword: Data,
-        groupV2Params: GroupV2Params,
-        groupInviteLinkPreview: GroupInviteLinkPreview,
-        avatarData: Data?
+        secretParams: GroupSecretParams,
+        localIdentifiers: LocalIdentifiers,
+        inviteLinkPreview oldInviteLinkPreview: GroupInviteLinkPreview,
+        avatarData oldAvatarData: Data?
     ) async throws {
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier()
 
-        let revisionForPlaceholderModel = AtomicOptional<UInt32>(nil, lock: .sharedGlobal)
+        let inviteLinkPreview = try await fetchGroupInviteLinkPreview(
+            inviteLinkPassword: inviteLinkPassword,
+            groupSecretParams: secretParams,
+            allowCached: false
+        )
 
-        let requestBuilder: RequestBuilder = { (authCredential) in
+        let revisionForPlaceholderModel: UInt32
+        if inviteLinkPreview.isLocalUserRequestingMember {
+            // Use the current revision when creating a placeholder group.
+            revisionForPlaceholderModel = inviteLinkPreview.revision
+        } else {
             let groupChangeProto = try await self.buildChangeActionsProtoToJoinGroupLink(
-                groupId: groupId,
-                inviteLinkPassword: inviteLinkPassword,
-                groupV2Params: groupV2Params,
-                revisionForPlaceholderModel: revisionForPlaceholderModel
+                groupInviteLinkPreview: inviteLinkPreview,
+                secretParams: secretParams,
+                localIdentifiers: localIdentifiers
             )
-            return try StorageService.buildUpdateGroupRequest(
-                groupChangeProto: groupChangeProto,
-                groupV2Params: groupV2Params,
-                authCredential: authCredential,
-                groupInviteLinkPassword: inviteLinkPassword
-            )
-        }
-
-        do {
+            let requestBuilder: RequestBuilder = { (authCredential) in
+                return try StorageService.buildUpdateGroupRequest(
+                    groupChangeProto: groupChangeProto,
+                    groupV2Params: try GroupV2Params(groupSecretParams: secretParams),
+                    authCredential: authCredential,
+                    groupInviteLinkPassword: inviteLinkPassword
+                )
+            }
             let response = try await performServiceRequest(
                 requestBuilder: requestBuilder,
-                groupId: groupId,
+                groupId: groupId.serialize().asData,
                 behavior400: .fail,
                 behavior403: .reportInvalidOrBlockedGroupLink,
                 behavior404: .fail
@@ -1657,84 +1697,68 @@ public class GroupsV2Impl: GroupsV2 {
             // so we need to separately GET the latest group state and update the database.
             //
             // Download and update database with the group state.
-            do {
+            let refreshResult = await Result {
                 try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(
-                    secretParams: groupV2Params.groupSecretParams,
+                    secretParams: secretParams,
                     options: [.didJustAddSelfViaGroupLink]
                 )
-            } catch {
-                throw GroupsV2Error.requestingMemberCantLoadGroupState
             }
-
-            await GroupManager.sendGroupUpdateMessage(
-                groupId: try groupV2Params.groupPublicParams.getGroupIdentifier(),
-                groupChangeProtoData: try changeProto.serializedData()
-            )
-        } catch {
-            // We create a placeholder in a couple of different scenarios:
-            //
-            // * We successfully request to join a group via group invite link.
-            //   Afterward we do not have access to group state on the service.
-            // * The GroupInviteLinkPreview indicates that we are already a
-            //   requesting member of the group but the group does not yet exist
-            //   in the database.
-            var shouldCreatePlaceholder = false
-            if case GroupsV2Error.localUserIsAlreadyRequestingMember = error {
-                shouldCreatePlaceholder = true
-            } else if case GroupsV2Error.requestingMemberCantLoadGroupState = error {
-                shouldCreatePlaceholder = true
-            }
-            guard shouldCreatePlaceholder else {
-                throw error
-            }
-
-            let groupThread = try await createPlaceholderGroupForJoinRequest(
-                groupId: groupId,
-                inviteLinkPassword: inviteLinkPassword,
-                groupV2Params: groupV2Params,
-                groupInviteLinkPreview: groupInviteLinkPreview,
-                avatarData: avatarData,
-                revisionForPlaceholderModel: revisionForPlaceholderModel
-            )
-
-            let isJoinRequestPlaceholder: Bool
-            if let groupModel = groupThread.groupModel as? TSGroupModelV2 {
-                isJoinRequestPlaceholder = groupModel.isJoinRequestPlaceholder
-            } else {
-                isJoinRequestPlaceholder = false
-            }
-            guard !isJoinRequestPlaceholder else {
-                // There's no point in sending a group update for a placeholder
-                // group, since we don't know who to send it to.
+            switch refreshResult {
+            case .success:
+                await GroupManager.sendGroupUpdateMessage(
+                    groupId: groupId,
+                    groupChangeProtoData: try changeProto.serializedData()
+                )
                 return
+            case .failure(_):
+                // Fall through -- we're a requesting member and not a full member.
+                revisionForPlaceholderModel = groupChangeProto.revision
             }
+        }
 
-            await GroupManager.sendGroupUpdateMessage(
-                groupId: try groupV2Params.groupPublicParams.getGroupIdentifier(),
-                groupChangeProtoData: nil
-            )
+        // We create a placeholder in a couple of different scenarios:
+        //
+        // * The GroupInviteLinkPreview indicates that we are already a requesting
+        // member of the group but the group does not yet exist in the database.
+        //
+        // * We successfully request to join a group via group invite link.
+        // Afterward we do not have access to group state on the service.
+
+        let groupThread = try await createPlaceholderGroupForJoinRequest(
+            inviteLinkPassword: inviteLinkPassword,
+            secretParams: secretParams,
+            localIdentifiers: localIdentifiers,
+            inviteLinkPreview: oldInviteLinkPreview,
+            avatarData: oldAvatarData,
+            revisionForPlaceholderModel: revisionForPlaceholderModel
+        )
+
+        let isJoinRequestPlaceholder: Bool
+        if let groupModel = groupThread.groupModel as? TSGroupModelV2 {
+            isJoinRequestPlaceholder = groupModel.isJoinRequestPlaceholder
+        } else {
+            isJoinRequestPlaceholder = false
+        }
+        // There's no point in sending a group update for a placeholder
+        // group, since we don't know who to send it to.
+        if !isJoinRequestPlaceholder {
+            await GroupManager.sendGroupUpdateMessage(groupId: groupId, groupChangeProtoData: nil)
         }
     }
 
     private func createPlaceholderGroupForJoinRequest(
-        groupId: Data,
         inviteLinkPassword: Data,
-        groupV2Params: GroupV2Params,
-        groupInviteLinkPreview: GroupInviteLinkPreview,
+        secretParams: GroupSecretParams,
+        localIdentifiers: LocalIdentifiers,
+        inviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?,
-        revisionForPlaceholderModel: AtomicOptional<UInt32>
+        revisionForPlaceholderModel revision: UInt32
     ) async throws -> TSGroupThread {
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier()
         // We might be creating a placeholder for a revision that we just
         // created or for one we learned about from a GroupInviteLinkPreview.
-        guard let revision = revisionForPlaceholderModel.get() else {
-            throw OWSAssertionError("Missing revisionForPlaceholderModel.")
-        }
         return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (transaction) throws -> TSGroupThread in
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
-                throw OWSAssertionError("Missing localIdentifiers.")
-            }
-
-            if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+            if let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) {
                 // The group already existing in the database; make sure
                 // that we are a requesting member.
                 guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
@@ -1775,18 +1799,18 @@ public class GroupsV2Impl: GroupsV2 {
             } else {
                 // Create a placeholder group.
                 var builder = TSGroupModelBuilder()
-                builder.groupId = groupId
-                builder.name = groupInviteLinkPreview.title
-                builder.descriptionText = groupInviteLinkPreview.descriptionText
+                builder.groupId = groupId.serialize().asData
+                builder.name = inviteLinkPreview.title
+                builder.descriptionText = inviteLinkPreview.descriptionText
                 builder.groupAccess = GroupAccess(members: GroupAccess.defaultForV2.members,
                                                   attributes: GroupAccess.defaultForV2.attributes,
-                                                  addFromInviteLink: groupInviteLinkPreview.addFromInviteLinkAccess)
+                                                  addFromInviteLink: inviteLinkPreview.addFromInviteLinkAccess)
                 builder.groupsVersion = .V2
                 builder.groupV2Revision = revision
-                builder.groupSecretParamsData = groupV2Params.groupSecretParamsData
+                builder.groupSecretParamsData = secretParams.serialize().asData
                 builder.inviteLinkPassword = inviteLinkPassword
                 builder.isJoinRequestPlaceholder = true
-                builder.avatarUrlPath = groupInviteLinkPreview.avatarUrlPath
+                builder.avatarUrlPath = inviteLinkPreview.avatarUrlPath
 
                 // The "group invite link" UI might not have downloaded
                 // the avatar. That's fine; this is just a placeholder
@@ -1820,32 +1844,11 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     private func buildChangeActionsProtoToJoinGroupLink(
-        groupId: Data,
-        inviteLinkPassword: Data,
-        groupV2Params: GroupV2Params,
-        revisionForPlaceholderModel: AtomicOptional<UInt32>
+        groupInviteLinkPreview: GroupInviteLinkPreview,
+        secretParams: GroupSecretParams,
+        localIdentifiers: LocalIdentifiers
     ) async throws -> GroupsProtoGroupChangeActions {
-
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-            throw OWSAssertionError("Missing localAci.")
-        }
-
-        // We re-fetch the GroupInviteLinkPreview with every attempt in order to get the latest:
-        //
-        // * revision
-        // * addFromInviteLinkAccess
-        // * local user's request status.
-        let groupInviteLinkPreview = try await fetchGroupInviteLinkPreview(
-            inviteLinkPassword: inviteLinkPassword,
-            groupSecretParams: groupV2Params.groupSecretParams,
-            allowCached: false
-        )
-
-        guard !groupInviteLinkPreview.isLocalUserRequestingMember else {
-            // Use the current revision when creating a placeholder group.
-            revisionForPlaceholderModel.set(groupInviteLinkPreview.revision)
-            throw GroupsV2Error.localUserIsAlreadyRequestingMember
-        }
+        let localAci = localIdentifiers.aci
 
         let profileKeyCredentialMap = try await loadProfileKeyCredentials(for: [localAci], forceRefresh: false)
 
@@ -1857,11 +1860,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         let oldRevision = groupInviteLinkPreview.revision
         let newRevision = oldRevision + 1
-        Logger.verbose("Revision: \(oldRevision) -> \(newRevision)")
         actionsBuilder.setRevision(newRevision)
-
-        // Use the new revision when creating a placeholder group.
-        revisionForPlaceholderModel.set(newRevision)
 
         switch groupInviteLinkPreview.addFromInviteLinkAccess {
         case .any:
@@ -1871,7 +1870,7 @@ public class GroupsV2Impl: GroupsV2 {
                 try GroupsV2Protos.buildMemberProto(
                     profileKeyCredential: localProfileKeyCredential,
                     role: role.asProtoRole,
-                    groupV2Params: groupV2Params
+                    groupV2Params: try GroupV2Params(groupSecretParams: secretParams)
                 ))
             actionsBuilder.addAddMembers(actionBuilder.buildInfallibly())
         case .administrator:
@@ -1879,7 +1878,7 @@ public class GroupsV2Impl: GroupsV2 {
             actionBuilder.setAdded(
                 try GroupsV2Protos.buildRequestingMemberProto(
                     profileKeyCredential: localProfileKeyCredential,
-                    groupV2Params: groupV2Params
+                    groupV2Params: try GroupV2Params(groupSecretParams: secretParams)
                 ))
             actionsBuilder.addAddRequestingMembers(actionBuilder.buildInfallibly())
         default:

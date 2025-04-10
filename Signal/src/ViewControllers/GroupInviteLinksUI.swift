@@ -441,10 +441,9 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                     }
 
                     try await GroupManager.joinGroupViaInviteLink(
-                        groupId: groupV2ContextInfo.groupId,
-                        groupSecretParams: groupV2ContextInfo.groupSecretParams,
+                        secretParams: groupV2ContextInfo.groupSecretParams,
                         inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-                        groupInviteLinkPreview: groupInviteLinkPreview,
+                        inviteLinkPreview: groupInviteLinkPreview,
                         avatarData: avatarData
                     )
 

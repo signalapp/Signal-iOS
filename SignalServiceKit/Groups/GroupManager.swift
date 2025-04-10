@@ -633,24 +633,24 @@ public class GroupManager: NSObject {
     }
 
     public static func joinGroupViaInviteLink(
-        groupId: Data,
-        groupSecretParams: GroupSecretParams,
+        secretParams: GroupSecretParams,
         inviteLinkPassword: Data,
-        groupInviteLinkPreview: GroupInviteLinkPreview,
+        inviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
     ) async throws {
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier()
+
         try await ensureLocalProfileHasCommitmentIfNecessary()
         try await SSKEnvironment.shared.groupsV2Ref.joinGroupViaInviteLink(
-            groupId: groupId,
-            groupSecretParams: groupSecretParams,
+            secretParams: secretParams,
             inviteLinkPassword: inviteLinkPassword,
-            groupInviteLinkPreview: groupInviteLinkPreview,
+            inviteLinkPreview: inviteLinkPreview,
             avatarData: avatarData
         )
 
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             SSKEnvironment.shared.profileManagerRef.addGroupId(
-                toProfileWhitelist: groupId,
+                toProfileWhitelist: groupId.serialize().asData,
                 userProfileWriter: .localUser,
                 transaction: transaction
             )
