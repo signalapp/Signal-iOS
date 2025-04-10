@@ -459,12 +459,12 @@ public class OWSUDManagerImpl: OWSUDManager {
         }
 
         // Try to update the account attributes to reflect this change.
-        firstly(on: DispatchQueue.global()) {
-            return Promise.wrapAsync {
+        Task {
+            do {
                 try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
+            } catch {
+                Logger.warn("Error: \(error)")
             }
-        }.catch(on: DispatchQueue.global()) { error in
-            Logger.warn("Error: \(error)")
         }
     }
 
