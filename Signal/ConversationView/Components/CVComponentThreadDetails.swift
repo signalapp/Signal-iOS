@@ -406,14 +406,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                         "SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING",
                         comment: "Indicator warning about an unknown contact thread"
                     ),
-                ])
+                ]).styled(with: .alignment(.center))
             ),
             displayConfig: .forUnstyledText(
                 font: Self.reviewCarefullyFont,
                 textColor: Self.reviewCarefullyTextColor
             ),
             font: Self.reviewCarefullyFont,
-            textColor: Self.reviewCarefullyTextColor
+            textColor: Self.reviewCarefullyTextColor,
+            numberOfLines: 0
         )
     }
 
@@ -477,14 +478,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                     ),
                     SignalSymbol.LeadingCharacter.nonBreakingSpace.rawValue,
                     self.underlinedNamesEducationString(type: type)
-                ])
+                ]).styled(with: .alignment(.center))
             ),
             displayConfig: .forUnstyledText(
                 font: Self.mutualGroupsFont,
                 textColor: Self.mutualGroupsTextColor
             ),
             font: Self.mutualGroupsFont,
-            textColor: Self.mutualGroupsTextColor
+            textColor: Self.mutualGroupsTextColor,
+            numberOfLines: 0
         )
     }
 
