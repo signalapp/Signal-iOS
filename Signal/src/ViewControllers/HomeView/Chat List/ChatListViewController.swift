@@ -87,7 +87,12 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         searchResultsController.delegate = self
 
         updateBarButtonItems()
-        updateReminderViews()
+        updateArchiveReminderView()
+        updateRegistrationReminderView()
+        updateOutageDetectionReminderView()
+        updateExpirationReminderView()
+        updatePaymentReminderView()
+        updateUsernameReminderView()
         applyTheme()
         observeNotifications()
     }

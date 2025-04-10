@@ -219,38 +219,46 @@ extension ChatListViewController {
 
     public var reminderViews: CLVReminderViews { viewState.reminderViews }
 
-    public func updateReminderViews() {
-        AssertIsOnMainThread()
-
+    public func updateArchiveReminderView() {
         archiveReminderView.isHidden = viewState.chatListMode != .archive
+    }
+
+    public func updateRegistrationReminderView() {
         let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
         deregisteredView.isHidden = !tsRegistrationState.isDeregistered
+    }
+
+    public func updateOutageDetectionReminderView() {
         outageView.isHidden = !OutageDetection.shared.hasOutage
+    }
 
+    public func updateExpirationReminderView() {
         expiredView.update()
+    }
 
-        if unreadPaymentNotificationsCount == 1,
-           let firstUnreadPaymentModel = self.firstUnreadPaymentModel {
+    public func updatePaymentReminderView() {
+        if unreadPaymentNotificationsCount == 1, let firstUnreadPaymentModel = self.firstUnreadPaymentModel {
             self.paymentsReminderView.isHidden = false
 
             SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                self.configureUnreadPaymentsBannerSingle(paymentsReminderView,
-                                                         paymentModel: firstUnreadPaymentModel,
-                                                         transaction: transaction)
+                self.configureUnreadPaymentsBannerSingle(
+                    paymentsReminderView,
+                    paymentModel: firstUnreadPaymentModel,
+                    transaction: transaction
+                )
             }
         } else if unreadPaymentNotificationsCount == 0 || firstUnreadPaymentModel == nil {
             self.paymentsReminderView.isHidden = true
         } else {
             self.paymentsReminderView.isHidden = false
-            self.configureUnreadPaymentsBannerMultiple(paymentsReminderView,
-                                                       unreadCount: unreadPaymentNotificationsCount)
+            self.configureUnreadPaymentsBannerMultiple(paymentsReminderView, unreadCount: unreadPaymentNotificationsCount)
         }
+    }
 
+    public func updateUsernameReminderView() {
         SSKEnvironment.shared.databaseStorageRef.read { tx in
             updateUsernameStateViews(tx: tx)
         }
-
-        updateShouldBeUpdatingView()
     }
 
     public func updateUnreadPaymentNotificationsCountWithSneakyTransaction() {
@@ -270,7 +278,7 @@ extension ChatListViewController {
             }
 
             if needsUpdate {
-                updateReminderViews()
+                updatePaymentReminderView()
             }
 
             return
@@ -286,7 +294,7 @@ extension ChatListViewController {
         self.unreadPaymentNotificationsCount = unreadPaymentNotificationsCount
         self.firstUnreadPaymentModel = firstUnreadPaymentModel
 
-        updateReminderViews()
+        updatePaymentReminderView()
     }
 
     /// Update reminder views as appropriate for the current username state.

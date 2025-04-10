@@ -115,7 +115,7 @@ extension ChatListViewController {
     private func registrationStateDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        updateReminderViews()
+        updateRegistrationReminderView()
         loadCoordinator.loadIfNecessary()
     }
 
@@ -123,7 +123,7 @@ extension ChatListViewController {
     private func outageStateDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        updateReminderViews()
+        updateOutageDetectionReminderView()
         loadCoordinator.loadIfNecessary()
     }
 
@@ -138,7 +138,7 @@ extension ChatListViewController {
     private func appExpiryDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        updateReminderViews()
+        updateExpirationReminderView()
         loadCoordinator.loadIfNecessary()
     }
 
@@ -230,7 +230,7 @@ extension ChatListViewController {
 
     @objc
     private func localUsernameStateDidChange() {
-        updateReminderViews()
+        updateUsernameReminderView()
         loadCoordinator.loadIfNecessary()
     }
 }
