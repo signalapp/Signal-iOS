@@ -106,7 +106,7 @@ public enum WhoAmIRequestFactory {
     public static func whoAmIRequest(
         auth: ChatServiceAuth
     ) -> TSRequest {
-        let result = TSRequest(
+        var result = TSRequest(
             url: URL(string: "v1/accounts/whoami")!,
             method: "GET",
             parameters: [:]
@@ -119,7 +119,7 @@ public enum WhoAmIRequestFactory {
     /// This means the result contents are irrelevant; all that matters is if we get a 200, 401, or something else.
     /// See `Responses.AmIDeregistered`
     public static func amIDeregisteredRequest() -> TSRequest {
-        let whoAmI = whoAmIRequest(auth: .implicit())
+        var whoAmI = whoAmIRequest(auth: .implicit())
 
         // As counterintuitive as this is, we want this flag to be false.
         // (As of writing, it defaults to false anyway, but we want to be sure).

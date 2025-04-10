@@ -710,18 +710,18 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
                                                                            path: "/\(requestUrl.relativeString)",
                                                                            requestID: requestInfo.requestId)
 
-        var httpHeaders = HttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: false)
+        var httpHeaders = request.headers
         httpHeaders.addDefaultHeaders()
-
         request.applyAuth(to: &httpHeaders, willSendViaWebSocket: true)
 
-        if let existingBody = request.httpBody {
-            requestBuilder.setBody(existingBody)
-        } else {
+        switch request.body {
+        case .data(let bodyData):
+            requestBuilder.setBody(bodyData)
+        case .parameters(let bodyParameters):
             // TODO: Do we need body & headers for requests with no parameters?
             let jsonData: Data
             do {
-                jsonData = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
+                jsonData = try TSRequest.Body.encodedParameters(bodyParameters)
             } catch {
                 owsFailDebug("[\(requestId)]: \(error)")
                 requestInfo.didFailInvalidRequest()
@@ -731,9 +731,7 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
             requestBuilder.setBody(jsonData)
             // If we're going to use the json serialized parameters as our body, we should overwrite
             // the Content-Type on the request.
-            httpHeaders.addHeader("Content-Type",
-                                  value: "application/json",
-                                  overwriteOnConflict: true)
+            httpHeaders["Content-Type"] = "application/json"
         }
 
         for (key, value) in httpHeaders.headers {
@@ -1068,12 +1066,8 @@ private class RequestInfo {
         success: @escaping RequestSuccess,
         failure: @escaping RequestFailure
     ) {
-        guard let requestUrl = request.url else {
-            owsFailDebug("[\(requestId)]: Missing requestUrl.")
-            failure(.invalidRequest)
-            return nil
-        }
-        guard let httpMethod = request.httpMethod.nilIfEmpty else {
+        let requestUrl = request.url
+        guard let httpMethod = request.method.nilIfEmpty else {
             owsFailDebug("[\(requestId)]: Missing httpMethod.")
             failure(.invalidRequest)
             return nil
@@ -1601,18 +1595,18 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
             return
         }
 
-        var httpHeaders = HttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: false)
+        var httpHeaders = request.headers
         httpHeaders.addDefaultHeaders()
-
         request.applyAuth(to: &httpHeaders, willSendViaWebSocket: true)
 
         let body: Data
-        if let existingBody = request.httpBody {
-            body = existingBody
-        } else {
+        switch request.body {
+        case .data(let bodyData):
+            body = bodyData
+        case .parameters(let bodyParameters):
             // TODO: Do we need body & headers for requests with no parameters?
             do {
-                body = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
+                body = try TSRequest.Body.encodedParameters(bodyParameters)
             } catch {
                 owsFailDebug("[\(requestId)]: \(error).")
                 requestInfo.didFailInvalidRequest()
@@ -1621,9 +1615,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
 
             // If we're going to use the json serialized parameters as our body, we should overwrite
             // the Content-Type on the request.
-            httpHeaders.addHeader("Content-Type",
-                                  value: "application/json",
-                                  overwriteOnConflict: true)
+            httpHeaders["Content-Type"] = "application/json"
         }
 
         let requestUrl = requestInfo.requestUrl

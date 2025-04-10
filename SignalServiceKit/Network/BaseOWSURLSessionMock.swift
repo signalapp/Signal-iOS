@@ -87,7 +87,7 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
     public func performRequest(_ rawRequest: TSRequest) async throws -> any HTTPResponse {
         // Want different behavior? Write a custom mock class
         return HTTPResponseImpl(
-            requestUrl: rawRequest.url!,
+            requestUrl: rawRequest.url,
             status: 200,
             headers: HttpHeaders(),
             bodyData: nil

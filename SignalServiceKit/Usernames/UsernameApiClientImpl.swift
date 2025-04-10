@@ -103,7 +103,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
         encryptedUsernameForLink: Data,
         chatServiceAuth: ChatServiceAuth
     ) -> Promise<Usernames.ApiClientConfirmationResult> {
-        let request = OWSRequestFactory.confirmReservedUsernameRequest(
+        var request = OWSRequestFactory.confirmReservedUsernameRequest(
             reservedUsernameHash: reservedUsername.hashString,
             reservedUsernameZKProof: reservedUsername.proofString,
             encryptedUsernameForLink: encryptedUsernameForLink

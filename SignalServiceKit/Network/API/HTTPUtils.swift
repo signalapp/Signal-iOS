@@ -36,9 +36,38 @@ public class HTTPUtils {
             Logger.debug("attempted to log curl on a request with no http method")
             return
         }
+        guard let url = request.url else {
+            Logger.debug("attempted to log curl on a request with no url")
+            return
+        }
+        logCurl(
+            url: url,
+            method: httpMethod,
+            headers: HttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: true),
+            body: request.httpBody
+        )
+    }
+
+    public static func logCurl(for request: TSRequest) {
+        logCurl(
+            url: request.url,
+            method: request.method,
+            headers: request.headers,
+            body: {
+                switch request.body {
+                case .data(let bodyData):
+                    return bodyData
+                case .parameters(_):
+                    return nil
+                }
+            }()
+        )
+    }
+
+    public static func logCurl(url: URL, method httpMethod: String, headers: HttpHeaders, body httpBody: Data?) {
         var curlComponents = ["curl", "-v", "-k", "-X", httpMethod]
 
-        for (header, headerValue) in request.allHTTPHeaderFields ?? [:] {
+        for (header, headerValue) in headers.headers {
             // We don't yet support escaping header values.
             // If these asserts trip, we'll need to add that.
             owsAssertDebug(!header.contains("'"))
@@ -48,9 +77,8 @@ public class HTTPUtils {
             curlComponents.append("'\(header): \(headerValue)'")
         }
 
-        if let httpBody = request.httpBody,
-           !httpBody.isEmpty {
-            let contentType = request.allHTTPHeaderFields?[header: "Content-Type"]
+        if let httpBody, !httpBody.isEmpty {
+            let contentType = headers["Content-Type"]
             switch contentType {
             case MimeType.applicationJson.rawValue:
                 guard let jsonBody = String(data: httpBody, encoding: .utf8) else {
@@ -79,10 +107,6 @@ public class HTTPUtils {
 
         }
         // TODO: Add support for cookies.
-        guard let url = request.url else {
-            Logger.debug("attempted to log curl on a request with no url")
-            return
-        }
         curlComponents.append("\"\(url.absoluteString)\"")
         let curlCommand = curlComponents.joined(separator: " ")
         Logger.verbose("curl for request: \(curlCommand)")
@@ -110,7 +134,7 @@ public class HTTPUtils {
         applyHTTPError(httpError)
 
 #if TESTABLE_BUILD
-        HTTPUtils.logCurl(for: request as URLRequest)
+        HTTPUtils.logCurl(for: request)
 #endif
 
         return httpError

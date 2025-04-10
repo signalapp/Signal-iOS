@@ -503,7 +503,7 @@ private extension TSRequest {
         _ subscriberId: Data,
         withOriginalTransactionId originalTransactionId: UInt64
     ) -> TSRequest {
-        let request = TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/subscription/\(subscriberId.asBase64Url)/appstore/\(originalTransactionId)")!,
             method: "POST",
             parameters: nil

@@ -26,9 +26,9 @@ public class RegistrationRequestFactoryTest: XCTestCase {
                 countryCode: countryCode,
                 transport: .sms
             )
-            XCTAssertEqual(request.url?.relativeString, "v1/verification/session/123/code")
+            XCTAssertEqual(request.url.relativeString, "v1/verification/session/123/code")
             XCTAssertEqual(request.parameters["transport"] as? String, "sms")
-            XCTAssertEqual(request.value(forHTTPHeaderField: "Accept-Language"), expectedHeader)
+            XCTAssertEqual(request.headers["Accept-Language"], expectedHeader)
         }
     }
 }

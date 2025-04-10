@@ -72,7 +72,7 @@ fileprivate extension RemoteAttestation.Auth {
         forService service: RemoteAttestation.Service,
         auth: ChatServiceAuth
     ) -> Promise<RemoteAttestation.Auth> {
-        let request = service.authRequest()
+        var request = service.authRequest()
 
         switch auth.credentials {
         case .implicit:
@@ -89,7 +89,7 @@ fileprivate extension RemoteAttestation.Auth {
             SSKEnvironment.shared.networkManagerRef.makePromise(request: request, canUseWebSocket: false)
         }.map(on: DispatchQueue.global()) { response in
 #if TESTABLE_BUILD
-            HTTPUtils.logCurl(for: request as URLRequest)
+            HTTPUtils.logCurl(for: request)
 #endif
 
             guard let json = response.responseBodyJson else {

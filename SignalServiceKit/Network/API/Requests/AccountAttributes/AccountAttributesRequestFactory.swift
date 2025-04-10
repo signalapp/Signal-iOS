@@ -34,12 +34,12 @@ public struct AccountAttributesRequestFactory {
         let data = try! JSONEncoder().encode(attributes)
         let parameters = try! JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) as! [String: Any]
 
-        let result = TSRequest(
+        var result = TSRequest(
             url: url,
             method: "PUT",
             parameters: parameters
         )
-        result.addValue("OWI", forHTTPHeaderField: "X-Signal-Agent")
+        result.headers["X-Signal-Agent"] = "OWI"
         result.auth = .identified(auth)
         return result
     }
@@ -53,7 +53,7 @@ public struct AccountAttributesRequestFactory {
             "Trying to set seconday device attributes from primary device"
         )
 
-        let result = TSRequest(
+        var result = TSRequest(
             url: URL(string: "v1/devices/capabilities")!,
             method: "PUT",
             parameters: capabilities.requestParameters

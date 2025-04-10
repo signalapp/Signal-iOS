@@ -282,7 +282,7 @@ extension RegistrationCoordinatorImpl {
             schedulers: Schedulers,
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
         ) -> Promise<Void> {
-            let request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken)
+            var request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken)
             request.auth = .identified(auth)
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request).asVoid()
                 .recover(on: schedulers.sync) { error in

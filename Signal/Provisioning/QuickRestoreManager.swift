@@ -176,7 +176,7 @@ public class QuickRestoreManager {
                     name: "timeout",
                     value: "\(Constants.longPollRequestTimeoutSeconds)"
                 )]
-                let request = TSRequest(
+                var request = TSRequest(
                     url: urlComponents.url!,
                     method: "GET",
                     parameters: nil

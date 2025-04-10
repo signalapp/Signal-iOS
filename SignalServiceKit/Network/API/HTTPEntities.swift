@@ -38,7 +38,6 @@ public struct HTTPErrorServiceResponse {
 // MARK: -
 
 public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvider, UserErrorDescriptionProvider {
-    case missingRequest
     case invalidAppState
     case invalidRequest
     case wrappedFailure(any Error)
@@ -123,7 +122,7 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
             return customLocalizedDescription
         }
         switch self {
-        case .missingRequest, .invalidAppState, .invalidRequest, .networkFailure:
+        case .invalidAppState, .invalidRequest, .networkFailure:
             return OWSLocalizedString("ERROR_DESCRIPTION_REQUEST_FAILED",
                                      comment: "Error indicating that a socket request failed.")
         case .wrappedFailure, .serviceResponse:
@@ -134,8 +133,6 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
 
     public var debugDescription: String {
         switch self {
-        case .missingRequest:
-            return "missingRequest"
         case .invalidAppState:
             return "invalidAppState"
         case .invalidRequest:
@@ -156,7 +153,7 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
             return true
         }
         switch self {
-        case .missingRequest, .invalidAppState, .invalidRequest:
+        case .invalidAppState, .invalidRequest:
             return false
         case .wrappedFailure:
             return true
@@ -181,7 +178,7 @@ extension OWSHTTPError {
     // NOTE: This function should only be called from NetworkManager.swiftHTTPStatusCodeForError.
     public var responseStatusCode: Int {
         switch self {
-        case .missingRequest, .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
+        case .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
             return 0
         case .serviceResponse(let serviceResponse):
             return Int(serviceResponse.responseStatus)
@@ -190,7 +187,7 @@ extension OWSHTTPError {
 
     public var responseHeaders: HttpHeaders? {
         switch self {
-        case .missingRequest, .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
+        case .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
             return nil
         case .serviceResponse(let serviceResponse):
             return serviceResponse.headers
@@ -199,7 +196,7 @@ extension OWSHTTPError {
 
     public var responseError: Error? {
         switch self {
-        case .missingRequest, .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
+        case .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
             return nil
         case .serviceResponse(let serviceResponse):
             return serviceResponse.responseError
@@ -208,7 +205,7 @@ extension OWSHTTPError {
 
     public var responseBodyData: Data? {
         switch self {
-        case .missingRequest, .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
+        case .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
             return nil
         case .serviceResponse(let serviceResponse):
             return serviceResponse.responseData
@@ -221,7 +218,7 @@ extension OWSHTTPError {
         }
 
         switch self {
-        case .missingRequest, .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
+        case .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
             return nil
         case .serviceResponse(let serviceResponse):
             return serviceResponse.customRetryAfterDate
@@ -230,7 +227,7 @@ extension OWSHTTPError {
 
     fileprivate var customLocalizedDescription: String? {
         switch self {
-        case .missingRequest, .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
+        case .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
             return nil
         case .serviceResponse(let serviceResponse):
             return serviceResponse.customLocalizedDescription
@@ -239,7 +236,7 @@ extension OWSHTTPError {
 
     fileprivate var customLocalizedRecoverySuggestion: String? {
         switch self {
-        case .missingRequest, .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
+        case .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
             return nil
         case .serviceResponse(let serviceResponse):
             return serviceResponse.customLocalizedRecoverySuggestion
@@ -249,7 +246,7 @@ extension OWSHTTPError {
     // NOTE: This function should only be called from NetworkManager.isSwiftNetworkConnectivityError.
     public var isNetworkConnectivityError: Bool {
         switch self {
-        case .missingRequest, .invalidAppState, .invalidRequest, .wrappedFailure:
+        case .invalidAppState, .invalidRequest, .wrappedFailure:
             return false
         case .networkFailure:
             return true

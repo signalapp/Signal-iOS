@@ -63,7 +63,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
             bodyJson: Codable? = nil
         ) {
             self.init(
-                matcher: { $0.url?.relativeString.hasSuffix(urlSuffix) ?? false },
+                matcher: { $0.url.relativeString.hasSuffix(urlSuffix) },
                 statusCode: statusCode,
                 headers: headers,
                 bodyJson: bodyJson
@@ -164,7 +164,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
                 throw error
             }
             return .value(HTTPResponseImpl(
-                requestUrl: rawRequest.url!,
+                requestUrl: rawRequest.url,
                 status: response.statusCode,
                 headers: response.headers,
                 bodyData: response.bodyData
@@ -181,7 +181,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
             throw error
         }
         return HTTPResponseImpl(
-            requestUrl: rawRequest.url!,
+            requestUrl: rawRequest.url,
             status: response.statusCode,
             headers: response.headers,
             bodyData: response.bodyData

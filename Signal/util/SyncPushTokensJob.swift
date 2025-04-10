@@ -104,7 +104,7 @@ class SyncPushTokensJob: NSObject {
 
     func updatePushTokens(pushToken: String, auth: ChatServiceAuth) async throws {
         return try await Retry.performWithBackoff(maxAttempts: 3) {
-            let request = OWSRequestFactory.registerForPushRequest(apnsToken: pushToken)
+            var request = OWSRequestFactory.registerForPushRequest(apnsToken: pushToken)
             request.auth = .identified(auth)
             _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: false)
         }

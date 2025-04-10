@@ -32,7 +32,7 @@ class RESTNetworkManager {
 
 #if TESTABLE_BUILD
         if DebugFlags.logCurlOnSuccess {
-            HTTPUtils.logCurl(for: request as URLRequest)
+            HTTPUtils.logCurl(for: request)
         }
 #endif
 

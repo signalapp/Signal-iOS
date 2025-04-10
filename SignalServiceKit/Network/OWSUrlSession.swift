@@ -402,66 +402,51 @@ public class OWSURLSession: OWSURLSessionProtocol {
     // MARK: - Issuing Requests
 
     public func performRequest(_ rawRequest: TSRequest) async throws -> any HTTPResponse {
-        guard let rawRequestUrl = rawRequest.url else {
-            owsFailDebug("Missing requestUrl.")
-            throw OWSHTTPError.missingRequest
-        }
-
         let appExpiry = DependenciesBridge.shared.appExpiry
         guard !appExpiry.isExpired else {
             Logger.warn("App is expired.")
             throw OWSHTTPError.invalidAppState
         }
 
-        var httpHeaders = HttpHeaders()
-
-        // Set User-Agent and Accept-Language headers.
-        httpHeaders.addDefaultHeaders()
-
-        // Then apply any custom headers for the request
-        httpHeaders.addHeaderMap(rawRequest.allHTTPHeaderFields, overwriteOnConflict: true)
-
+        var httpHeaders = rawRequest.headers
         rawRequest.applyAuth(to: &httpHeaders, willSendViaWebSocket: false)
 
         let method: HTTPMethod
         do {
-            method = try HTTPMethod.method(for: rawRequest.httpMethod)
+            method = try HTTPMethod.method(for: rawRequest.method)
         } catch {
-            owsFailDebug("Invalid HTTP method: \(rawRequest.httpMethod)")
+            owsFailDebug("Invalid HTTP method: \(rawRequest.method)")
             throw OWSHTTPError.invalidRequest
         }
 
-        var requestBody = Data()
-        if let httpBody = rawRequest.httpBody {
-            owsAssertDebug(rawRequest.parameters.isEmpty)
-
-            requestBody = httpBody
-        } else if !rawRequest.parameters.isEmpty {
-            let jsonData: Data?
+        let requestBody: Data
+        switch rawRequest.body {
+        case .data(let bodyData):
+            requestBody = bodyData
+        case .parameters(let bodyParameters) where !bodyParameters.isEmpty:
             do {
-                jsonData = try JSONSerialization.data(withJSONObject: rawRequest.parameters, options: [])
+                requestBody = try TSRequest.Body.encodedParameters(bodyParameters)
             } catch {
                 owsFailDebug("Could not serialize JSON parameters: \(error).")
                 throw OWSHTTPError.invalidRequest
             }
 
-            if let jsonData = jsonData {
-                requestBody = jsonData
-                // If we're going to use the json serialized parameters as our body, we should overwrite
-                // the Content-Type on the request.
-                httpHeaders.addHeader("Content-Type", value: "application/json", overwriteOnConflict: true)
-            }
+            // If we're going to use the json serialized parameters as our body, we should overwrite
+            // the Content-Type on the request.
+            httpHeaders.addHeader("Content-Type", value: "application/json", overwriteOnConflict: true)
+        case .parameters:
+            requestBody = Data()
         }
 
         var request: URLRequest
         do {
             request = try self.endpoint.buildRequest(
-                rawRequestUrl.absoluteString,
+                rawRequest.url.absoluteString,
                 method: method,
                 headers: httpHeaders
             )
         } catch {
-            owsFailDebug("Missing or invalid request: \(rawRequestUrl).")
+            owsFailDebug("Missing or invalid request: \(rawRequest.url).")
             throw OWSHTTPError.invalidRequest
         }
 
@@ -473,15 +458,15 @@ public class OWSURLSession: OWSURLSessionProtocol {
         request.timeoutInterval = rawRequest.timeoutInterval
 
         do {
-            Logger.info("Sending… -> \(rawRequest.description)")
+            Logger.info("Sending… -> \(rawRequest)")
             let response = try await performUpload(request: request, requestData: requestBody, progress: nil)
-            Logger.info("HTTP \(response.responseStatusCode) <- \(rawRequest.description)")
+            Logger.info("HTTP \(response.responseStatusCode) <- \(rawRequest)")
             return response
         } catch where error.httpStatusCode != nil {
-            Logger.warn("HTTP \(error.httpStatusCode!) <- \(rawRequest.description)")
+            Logger.warn("HTTP \(error.httpStatusCode!) <- \(rawRequest)")
             throw error
         } catch {
-            Logger.warn("Failure. <- \(rawRequest.description): \(error)")
+            Logger.warn("Failure. <- \(rawRequest): \(error)")
             throw error
         }
     }

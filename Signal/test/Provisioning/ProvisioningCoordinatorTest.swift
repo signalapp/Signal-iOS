@@ -113,9 +113,9 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         )
 
         mockSession.responder = { request in
-            if request.url!.absoluteString.hasSuffix("v1/devices/link") {
+            if request.url.absoluteString.hasSuffix("v1/devices/link") {
                 return try! JSONEncoder().encode(verificationResponse)
-            } else if request.url!.absoluteString.hasSuffix("v1/devices/capabilities") {
+            } else if request.url.absoluteString.hasSuffix("v1/devices/capabilities") {
                 return Data()
             } else {
                 XCTFail("Unexpected request!")
@@ -186,7 +186,7 @@ extension ProvisioningCoordinatorTest {
         override func performRequest(_ rawRequest: TSRequest) async throws -> any HTTPResponse {
             let responseBody = responder!(rawRequest)
             return HTTPResponseImpl(
-                requestUrl: rawRequest.url!,
+                requestUrl: rawRequest.url,
                 status: 200,
                 headers: HttpHeaders(),
                 bodyData: responseBody

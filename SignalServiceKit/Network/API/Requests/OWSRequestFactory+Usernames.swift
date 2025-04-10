@@ -88,7 +88,7 @@ public extension OWSRequestFactory {
             forUsernameHash: usernameHash
         ))!
 
-        let request = TSRequest(
+        var request = TSRequest(
             url: url,
             method: HTTPMethod.get.methodName,
             parameters: nil
@@ -130,7 +130,7 @@ public extension OWSRequestFactory {
             handle: handle
         ))!
 
-        let request = TSRequest(
+        var request = TSRequest(
             url: url,
             method: HTTPMethod.get.methodName,
             parameters: nil

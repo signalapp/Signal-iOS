@@ -340,10 +340,8 @@ extension StoryManager {
         }
     }
 
-    public static func appendStoryHeaders(to request: TSRequest) {
-        for (key, value) in buildStoryHeaders().headers {
-            request.setValue(value, forHTTPHeaderField: key)
-        }
+    public static func appendStoryHeaders(to request: inout TSRequest) {
+        request.headers.merge(buildStoryHeaders())
     }
 
     public static func buildStoryHeaders() -> HttpHeaders {

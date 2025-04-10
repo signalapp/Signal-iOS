@@ -62,7 +62,7 @@ public enum OWSRequestFactory {
     }
 
     static func storageAuthRequest(auth: ChatServiceAuth) -> TSRequest {
-        let result = TSRequest(url: URL(string: "v1/storage/auth")!, method: "GET", parameters: [:])
+        var result = TSRequest(url: URL(string: "v1/storage/auth")!, method: "GET", parameters: [:])
         result.auth = .identified(auth)
         return result
     }
@@ -84,8 +84,8 @@ public enum OWSRequestFactory {
     // MARK: - Messages
 
     static func getMessagesRequest() -> TSRequest {
-        let request = TSRequest(url: URL(string: "v1/messages")!, method: "GET", parameters: [:])
-        StoryManager.appendStoryHeaders(to: request)
+        var request = TSRequest(url: URL(string: "v1/messages")!, method: "GET", parameters: [:])
+        StoryManager.appendStoryHeaders(to: &request)
         request.shouldCheckDeregisteredOn401 = true
         return request
     }
@@ -130,7 +130,7 @@ public enum OWSRequestFactory {
             "urgent": isUrgent
         ]
 
-        let request = TSRequest(url: URL(string: path)!, method: "PUT", parameters: parameters)
+        var request = TSRequest(url: URL(string: path)!, method: "PUT", parameters: parameters)
         if let auth {
             request.auth = .sealedSender(auth)
         }
@@ -156,10 +156,10 @@ public enum OWSRequestFactory {
             URLQueryItem(name: "story", value: auth.isStory ? "true" : "false"),
         ]
 
-        let request = TSRequest(url: components.url!, method: "PUT", parameters: nil)
-        request.setValue("application/vnd.signal-messenger.mrm", forHTTPHeaderField: "Content-Type")
+        var request = TSRequest(url: components.url!, method: "PUT", parameters: nil)
+        request.headers["Content-Type"] = "application/vnd.signal-messenger.mrm"
         request.auth = .sealedSender(auth)
-        request.httpBody = ciphertext
+        request.body = .data(ciphertext)
         return request
     }
 
@@ -230,7 +230,7 @@ public enum OWSRequestFactory {
     // MARK: - Donations
 
     static func donationConfiguration() -> TSRequest {
-        let result = TSRequest(
+        var result = TSRequest(
             url: .init(string: "v1/subscription/configuration")!,
             method: "GET",
             parameters: nil
@@ -240,7 +240,7 @@ public enum OWSRequestFactory {
     }
 
     static func setSubscriberID(_ subscriberID: Data) -> TSRequest {
-        let result = TSRequest(
+        var result = TSRequest(
             url: .init(pathComponents: ["v1", "subscription", subscriberID.asBase64Url])!,
             method: "PUT",
             parameters: nil
@@ -251,7 +251,7 @@ public enum OWSRequestFactory {
     }
 
     static func deleteSubscriberID(_ subscriberID: Data) -> TSRequest {
-        let result = TSRequest(
+        var result = TSRequest(
             url: .init(pathComponents: ["v1", "subscription", subscriberID.asBase64Url])!,
             method: "DELETE",
             parameters: nil
@@ -266,7 +266,7 @@ public enum OWSRequestFactory {
         processor: String,
         paymentMethodId: String
     ) -> TSRequest {
-        let result = TSRequest(
+        var result = TSRequest(
             url: .init(pathComponents: [
                 "v1",
                 "subscription",
@@ -287,7 +287,7 @@ public enum OWSRequestFactory {
         subscriberId: Data,
         setupIntentId: String
     ) -> TSRequest {
-        let result = TSRequest(
+        var result = TSRequest(
             url: .init(pathComponents: [
                 "v1",
                 "subscription",
@@ -304,7 +304,7 @@ public enum OWSRequestFactory {
     }
 
     static func subscriptionCreateStripePaymentMethodRequest(subscriberID: Data) -> TSRequest {
-        let result = TSRequest(
+        var result = TSRequest(
             url: .init(pathComponents: [
                 "v1",
                 "subscription",
@@ -324,7 +324,7 @@ public enum OWSRequestFactory {
         returnURL: URL,
         cancelURL: URL
     ) -> TSRequest {
-        let result = TSRequest(
+        var result = TSRequest(
             url: .init(pathComponents: [
                 "v1",
                 "subscription",
@@ -349,7 +349,7 @@ public enum OWSRequestFactory {
         currency: String,
         idempotencyKey: String
     ) -> TSRequest {
-        let result = TSRequest(
+        var result = TSRequest(
             url: .init(pathComponents: [
                 "v1",
                 "subscription",
@@ -371,7 +371,7 @@ public enum OWSRequestFactory {
         subscriberID: Data,
         request: Data
     ) -> TSRequest {
-        let result = TSRequest(
+        var result = TSRequest(
             url: .init(pathComponents: [
                 "v1",
                 "subscription",
@@ -411,7 +411,7 @@ public enum OWSRequestFactory {
         for paymentProcessor: String,
         request: Data
     ) -> TSRequest {
-        let result = TSRequest(
+        var result = TSRequest(
             url: .init(pathComponents: [
                 "v1",
                 "subscription",
@@ -430,7 +430,7 @@ public enum OWSRequestFactory {
     }
 
     public static func bankMandateRequest(bankTransferType: StripePaymentMethod.BankTransfer) -> TSRequest {
-        let result = TSRequest(
+        var result = TSRequest(
             url: .init(pathComponents: [
                 "v1",
                 "subscription",
@@ -440,7 +440,7 @@ public enum OWSRequestFactory {
             method: "GET",
             parameters: nil
         )
-        result.addValue(HttpHeaders.acceptLanguageHeaderValue, forHTTPHeaderField: HttpHeaders.acceptLanguageHeaderKey)
+        result.headers[HttpHeaders.acceptLanguageHeaderKey] = HttpHeaders.acceptLanguageHeaderValue
         result.auth = .anonymous
         return result
     }
@@ -481,7 +481,7 @@ public enum OWSRequestFactory {
     static func recipientPreKeyRequest(serviceId: ServiceId, deviceId: DeviceId, auth: TSRequest.SealedSenderAuth?) -> TSRequest {
         let path = "\(self.textSecureKeysAPI)/\(serviceId.serviceIdString)/\(deviceId)"
 
-        let request = TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
+        var request = TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
         if let auth {
             request.auth = .sealedSender(auth)
         }
@@ -519,7 +519,7 @@ public enum OWSRequestFactory {
             parameters["pqPreKeys"] = pqPreKeyRecords.map { self.pqPreKeyRequestParameters($0) }
         }
 
-        let request = TSRequest(
+        var request = TSRequest(
             url: URL(string: path)!,
             method: "PUT",
             parameters: parameters
@@ -541,7 +541,7 @@ public enum OWSRequestFactory {
 
     static func getUnversionedProfileRequest(serviceId: ServiceId, auth: TSRequest.Auth) -> TSRequest {
         let path = "v1/profile/\(serviceId.serviceIdString)"
-        let request = TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
+        var request = TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
         request.auth = auth
         return request
     }
@@ -561,7 +561,7 @@ public enum OWSRequestFactory {
 
         let path = "v1/profile/\(components.joined(separator: "/"))"
 
-        let request = TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
+        var request = TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
         request.auth = auth
         return request
     }
@@ -599,7 +599,7 @@ public enum OWSRequestFactory {
         if let paymentAddress {
             parameters["paymentAddress"] = paymentAddress.encryptedBase64Value
         }
-        let request = TSRequest(url: URL(string: "v1/profile/")!, method: "PUT", parameters: parameters)
+        var request = TSRequest(url: URL(string: "v1/profile/")!, method: "PUT", parameters: parameters)
         request.auth = .identified(auth)
         return request
     }

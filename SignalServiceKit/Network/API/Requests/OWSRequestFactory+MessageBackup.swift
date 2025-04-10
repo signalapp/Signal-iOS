@@ -13,7 +13,7 @@ extension OWSRequestFactory {
         mediaBackupId: String,
         auth: ChatServiceAuth = .implicit()
     ) throws -> TSRequest {
-        let request = TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/archives/backupid")!,
             method: "PUT",
             parameters: [
@@ -32,13 +32,13 @@ extension OWSRequestFactory {
     ) -> TSRequest {
         owsAssertDebug(fromRedemptionSeconds > 0)
         owsAssertDebug(toRedemptionSeconds > 0)
-        let request = TSRequest(url: URL(string: "v1/archives/auth?redemptionStartSeconds=\(fromRedemptionSeconds)&redemptionEndSeconds=\(toRedemptionSeconds)")!, method: "GET", parameters: nil)
+        var request = TSRequest(url: URL(string: "v1/archives/auth?redemptionStartSeconds=\(fromRedemptionSeconds)&redemptionEndSeconds=\(toRedemptionSeconds)")!, method: "GET", parameters: nil)
         request.auth = .identified(auth)
         return request
     }
 
     public static func backupSetPublicKeyRequest(auth: MessageBackupServiceAuth) -> TSRequest {
-        let request = TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/archives/keys")!,
             method: "PUT",
             parameters: ["backupIdPublicKey": Data(auth.publicKey.serialize()).base64EncodedString()]
@@ -48,7 +48,7 @@ extension OWSRequestFactory {
     }
 
     public static func backupUploadFormRequest(auth: MessageBackupServiceAuth) -> TSRequest {
-        let request = TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/archives/upload/form")!,
             method: "GET",
             parameters: nil
@@ -58,7 +58,7 @@ extension OWSRequestFactory {
     }
 
     public static func backupMediaUploadFormRequest(auth: MessageBackupServiceAuth) -> TSRequest {
-        let request = TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/archives/media/upload/form")!,
             method: "GET",
             parameters: nil
@@ -68,7 +68,7 @@ extension OWSRequestFactory {
     }
 
     public static func backupInfoRequest(auth: MessageBackupServiceAuth) -> TSRequest {
-        let request = TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/archives")!,
             method: "GET",
             parameters: nil
@@ -78,7 +78,7 @@ extension OWSRequestFactory {
     }
 
     public static func backupRefreshInfoRequest(auth: MessageBackupServiceAuth) -> TSRequest {
-        let request = TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/archives")!,
             method: "PUT",
             parameters: nil
@@ -88,7 +88,7 @@ extension OWSRequestFactory {
     }
 
     public static func deleteBackupRequest(auth: MessageBackupServiceAuth) -> TSRequest {
-        let request = TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/archives")!,
             method: "DELETE",
             parameters: nil
@@ -98,7 +98,7 @@ extension OWSRequestFactory {
     }
 
     public static func fetchCDNCredentials(auth: MessageBackupServiceAuth, cdn: Int32) -> TSRequest {
-        let request = TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/archives/auth/read?cdn=\(cdn)")!,
             method: "GET",
             parameters: nil
@@ -111,7 +111,7 @@ extension OWSRequestFactory {
         auth: MessageBackupServiceAuth,
         item: MessageBackup.Request.MediaItem
     ) -> TSRequest {
-        let request = TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/archives/media")!,
             method: "PUT",
             parameters: item.asParameters
@@ -125,7 +125,7 @@ extension OWSRequestFactory {
         items: [MessageBackup.Request.MediaItem]
     ) -> TSRequest {
         let parameters: [String: Any] = [ "items": items.map(\.asParameters) ]
-        let request = TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/archives/media/batch")!,
             method: "PUT",
             parameters: parameters
@@ -150,7 +150,7 @@ extension OWSRequestFactory {
         if !queryItems.isEmpty {
             urlComponents.queryItems = queryItems
         }
-        let request = TSRequest(
+        var request = TSRequest(
             url: urlComponents.url!,
             method: "GET",
             parameters: [:]
@@ -163,7 +163,7 @@ extension OWSRequestFactory {
         auth: MessageBackupServiceAuth,
         objects: [MessageBackup.Request.DeleteMediaTarget]
     ) -> TSRequest {
-        let request = TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/archives/media/delete")!,
             method: "POST",
             parameters: ["mediaToDelete": NSArray(array: objects.map(\.asParameters))]
@@ -175,11 +175,10 @@ extension OWSRequestFactory {
     public static func redeemReceipt(
         receiptCredentialPresentation: Data
     ) -> TSRequest {
-        let request = TSRequest(
+        return TSRequest(
             url: URL(string: "v1/archives/redeem-receipt")!,
             method: "POST",
             parameters: ["receiptCredentialPresentation": receiptCredentialPresentation.base64EncodedString()]
         )
-        return request
     }
 }

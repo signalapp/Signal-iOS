@@ -38,7 +38,7 @@ public enum RegistrationRequestFactory {
             parameters["mnc"] = mnc
         }
 
-        let result = TSRequest(url: url, method: "POST", parameters: parameters)
+        var result = TSRequest(url: url, method: "POST", parameters: parameters)
         result.auth = .registration(nil)
         return result
     }
@@ -56,9 +56,9 @@ public enum RegistrationRequestFactory {
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
         let url = urlComponents.url!
 
-        let result = TSRequest(url: url, method: "GET", parameters: nil)
+        var result = TSRequest(url: url, method: "GET", parameters: nil)
         result.auth = .registration(nil)
-        redactSessionIdFromLogs(sessionId, in: result)
+        redactSessionIdFromLogs(sessionId, in: &result)
         return result
     }
 
@@ -88,9 +88,9 @@ public enum RegistrationRequestFactory {
             parameters["pushChallenge"] = pushChallengeToken
         }
 
-        let result = TSRequest(url: url, method: "PATCH", parameters: parameters)
+        var result = TSRequest(url: url, method: "PATCH", parameters: parameters)
         result.auth = .registration(nil)
-        redactSessionIdFromLogs(sessionId, in: result)
+        redactSessionIdFromLogs(sessionId, in: &result)
         return result
     }
 
@@ -137,10 +137,10 @@ public enum RegistrationRequestFactory {
 
         let languageHeader: String = HttpHeaders.formatAcceptLanguageHeader(languageCodes)
 
-        let result = TSRequest(url: url, method: "POST", parameters: parameters)
+        var result = TSRequest(url: url, method: "POST", parameters: parameters)
         result.auth = .registration(nil)
-        result.setValue(languageHeader, forHTTPHeaderField: HttpHeaders.acceptLanguageHeaderKey)
-        redactSessionIdFromLogs(sessionId, in: result)
+        result.headers[HttpHeaders.acceptLanguageHeaderKey] = languageHeader
+        redactSessionIdFromLogs(sessionId, in: &result)
         return result
     }
 
@@ -163,9 +163,9 @@ public enum RegistrationRequestFactory {
             "code": code
         ]
 
-        let result = TSRequest(url: url, method: "PUT", parameters: parameters)
+        var result = TSRequest(url: url, method: "PUT", parameters: parameters)
         result.auth = .registration(nil)
-        redactSessionIdFromLogs(sessionId, in: result)
+        redactSessionIdFromLogs(sessionId, in: &result)
         return result
     }
 
@@ -191,7 +191,7 @@ public enum RegistrationRequestFactory {
             }
         ]
 
-        let result = TSRequest(url: url, method: "POST", parameters: parameters)
+        var result = TSRequest(url: url, method: "POST", parameters: parameters)
         result.auth = .registration(nil)
         return result
     }
@@ -280,10 +280,10 @@ public enum RegistrationRequestFactory {
             parameters["apnToken"] = apnRegistrationIdDict
         }
 
-        let result = TSRequest(url: url, method: "POST", parameters: parameters)
+        var result = TSRequest(url: url, method: "POST", parameters: parameters)
         // As odd as this is, it is to spec.
         result.auth = .registration((username: e164.stringValue, password: authPassword))
-        result.addValue("OWI", forHTTPHeaderField: "X-Signal-Agent")
+        result.headers["X-Signal-Agent"] = "OWI"
         return result
     }
 
@@ -347,7 +347,7 @@ public enum RegistrationRequestFactory {
         let data = try! JSONEncoder().encode(accountAttributes)
         let parameters = try! JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) as! [String: Any]
 
-        let result = TSRequest(url: url, method: "PUT", parameters: parameters)
+        var result = TSRequest(url: url, method: "PUT", parameters: parameters)
         result.auth = .identified(auth)
         return result
     }
@@ -367,9 +367,9 @@ public enum RegistrationRequestFactory {
 
     // MARK: - Helpers
 
-    private static func redactSessionIdFromLogs(_ sessionId: String, in request: TSRequest) {
+    private static func redactSessionIdFromLogs(_ sessionId: String, in request: inout TSRequest) {
         request.applyRedactionStrategy(.redactURLForSuccessResponses(
-            replacementString: request.url?.absoluteString.replacingOccurrences(of: sessionId, with: "[REDACTED]") ?? "[REDACTED]"
+            replacementString: request.url.absoluteString.replacingOccurrences(of: sessionId, with: "[REDACTED]")
         ))
     }
 }

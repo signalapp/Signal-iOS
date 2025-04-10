@@ -215,7 +215,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
     public func unregisterFromService(auth: ChatServiceAuth) async throws {
         owsAssertBeta(appContext.isMainAppAndActive)
-        let request = OWSRequestFactory.unregisterAccountRequest()
+        var request = OWSRequestFactory.unregisterAccountRequest()
         request.auth = .identified(auth)
         do {
             try await signalService.urlSessionForMainSignalService()

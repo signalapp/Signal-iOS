@@ -139,7 +139,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
     // MARK: -
 
     func unlinkDevice(deviceId: DeviceId, auth: ChatServiceAuth) async throws {
-        let request = TSRequest.deleteDevice(deviceId: deviceId)
+        var request = TSRequest.deleteDevice(deviceId: deviceId)
         request.auth = .identified(auth)
         _ = try await networkManager.asyncRequest(request, canUseWebSocket: false)
     }
@@ -241,7 +241,7 @@ private extension TSRequest {
             name: "deviceId",
             value: "\(device.deviceId)"
         )]
-        let request = TSRequest(
+        var request = TSRequest(
             url: urlComponents.url!,
             method: "PUT",
             parameters: [

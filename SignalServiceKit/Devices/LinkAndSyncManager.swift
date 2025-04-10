@@ -810,7 +810,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 name: "timeout",
                 value: "\(LinkAndSyncManagerImpl.Constants.longPollRequestTimeoutSeconds)"
             )]
-            let request = TSRequest(
+            var request = TSRequest(
                 url: urlComponents.url!,
                 method: "GET",
                 parameters: nil
@@ -838,7 +838,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             waitForDeviceToLinkResponse: WaitForDeviceToLinkResponse,
             result: ExportAndUploadBackupResult
         ) -> TSRequest {
-            let request = TSRequest(
+            var request = TSRequest(
                 url: URL(string: "v1/devices/transfer_archive")!,
                 method: "PUT",
                 parameters: [
@@ -885,7 +885,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 name: "timeout",
                 value: "\(Constants.longPollRequestTimeoutSeconds)"
             )]
-            let request = TSRequest(
+            var request = TSRequest(
                 url: urlComponents.url!,
                 method: "GET",
                 parameters: nil

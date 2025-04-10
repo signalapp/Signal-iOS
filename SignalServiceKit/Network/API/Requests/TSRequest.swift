@@ -6,9 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-// TODO: Rework to _not_ extend NSMutableURLRequest.
-@objcMembers
-public class TSRequest: NSMutableURLRequest {
+public struct TSRequest: CustomDebugStringConvertible {
     /// If true, an HTTP 401 will trigger a follow up request to see if the account is deregistered.
     /// If it is, the account will be marked as de-registered.
     ///
@@ -17,41 +15,28 @@ public class TSRequest: NSMutableURLRequest {
     /// during the processing for individual requests.
     public var shouldCheckDeregisteredOn401: Bool = false
 
-    public let parameters: [String: Any]
+    public let url: URL
+    public let method: String
+    public var headers: HttpHeaders
+    public var body: Body
+    public var timeoutInterval: TimeInterval = OWSRequestFactory.textSecureHTTPTimeOut
 
-    public init(url: URL) {
-        parameters = [:]
-        super.init(
-            url: url,
-            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
-            timeoutInterval: OWSRequestFactory.textSecureHTTPTimeOut
-        )
+    public enum Body {
+        case parameters([String: Any])
+        case data(Data)
+
+        static func encodedParameters(_ parameters: [String: Any]) throws -> Data {
+            return try JSONSerialization.data(withJSONObject: parameters, options: [])
+        }
     }
 
-    public init(url: URL, method: String, parameters: [String: Any]?) {
+    public init(url: URL, method: String = "GET", parameters: [String: Any]? = [:]) {
         owsAssertDebug(method.isEmpty.negated)
 
-        self.parameters = parameters ?? [:]
-        super.init(
-            url: url,
-            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
-            timeoutInterval: OWSRequestFactory.textSecureHTTPTimeOut
-        )
-        self.httpMethod = method
-    }
-
-    @objc(requestWithUrl:method:parameters:)
-    public static func request(url: URL, method: String, paramters: [String: Any]?) -> TSRequest {
-        return TSRequest(url: url, method: method, parameters: paramters)
-    }
-
-    @available(*, unavailable)
-    public override init(url: URL, cachePolicy: NSURLRequest.CachePolicy, timeoutInterval: TimeInterval) {
-        fatalError()
-    }
-
-    public required init?(coder: NSCoder) {
-        fatalError("init(coder:) unavailable")
+        self.url = url
+        self.method = method
+        self.headers = HttpHeaders()
+        self.body = .parameters(parameters ?? [:])
     }
 
     // MARK: - Authorization
@@ -169,26 +154,33 @@ public class TSRequest: NSMutableURLRequest {
 
     private var redactionStrategy = RedactionStrategy.none
 
-    public func applyRedactionStrategy(_ strategy: RedactionStrategy) {
+    public mutating func applyRedactionStrategy(_ strategy: RedactionStrategy) {
         self.redactionStrategy = strategy
     }
 
-    public func objc_applySuccessResponsesURLRedactionStrategy() {
-        self.applyRedactionStrategy(.redactURLForSuccessResponses())
-    }
-
-    public override var description: String {
-        var result = "\(self.auth.logTag) \(self.httpMethod)"
+    public var debugDescription: String {
+        var result = "\(self.auth.logTag) \(self.method)"
         switch redactionStrategy {
         case .none:
-            result += " \(self.url?.relativeString ?? "")"
+            result += " \(self.url.relativeString)"
         case .redactURLForSuccessResponses(let replacementString):
             result += " \(replacementString)"
         }
-        if let headerFields = self.allHTTPHeaderFields, !headerFields.isEmpty {
-            let formattedHeaderFields = headerFields.keys.sorted().joined(separator: "; ")
+        if !self.headers.headers.isEmpty {
+            let formattedHeaderFields = self.headers.headers.keys.sorted().joined(separator: "; ")
             result += " [\(formattedHeaderFields)]"
         }
         return result
     }
+
+    #if TESTABLE_BUILD
+    var parameters: [String: Any] {
+        switch body {
+        case .data(_):
+            fatalError()
+        case .parameters(let bodyParameters):
+            return bodyParameters
+        }
+    }
+    #endif
 }

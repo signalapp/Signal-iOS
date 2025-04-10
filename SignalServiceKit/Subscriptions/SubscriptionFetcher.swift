@@ -45,7 +45,7 @@ public struct SubscriptionFetcher {
 
 private extension TSRequest {
     static func fetchSubscription(subscriberID: Data) -> TSRequest {
-        let result = TSRequest(
+        var result = TSRequest(
             url: URL(string: "v1/subscription/\(subscriberID.asBase64Url)")!,
             method: "GET",
             parameters: nil

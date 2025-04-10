@@ -179,7 +179,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
         var responseSession = sessionConverter(responseBody)
 
         mockURLSession.addResponse(
-            forUrlSuffix: beginSessionRequest.url!.relativeString,
+            forUrlSuffix: beginSessionRequest.url.relativeString,
             bodyJson: responseBody
         )
         do {
@@ -209,7 +209,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
         responseSession = sessionConverter(responseBody)
 
         mockURLSession.addResponse(
-            forUrlSuffix: fetchSessionRequest.url!.relativeString,
+            forUrlSuffix: fetchSessionRequest.url.relativeString,
             bodyJson: responseBody
         )
         do {
@@ -239,11 +239,11 @@ public class RegistrationSessionManagerTest: XCTestCase {
         responseSession = sessionConverter(responseBody)
 
         mockURLSession.addResponse(
-            forUrlSuffix: fetchSessionRequest.url!.relativeString,
+            forUrlSuffix: fetchSessionRequest.url.relativeString,
             statusCode: RegistrationServiceResponses.FetchSessionResponseCodes.missingSession.rawValue
         )
         mockURLSession.addResponse(
-            forUrlSuffix: beginSessionRequest.url!.relativeString,
+            forUrlSuffix: beginSessionRequest.url.relativeString,
             bodyJson: responseBody
         )
         do {
@@ -282,7 +282,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
         responseSession = sessionConverter(responseBody)
 
         mockURLSession.addResponse(
-            forUrlSuffix: beginSessionRequest.url!.relativeString,
+            forUrlSuffix: beginSessionRequest.url.relativeString,
             bodyJson: responseBody
         )
         do {
@@ -309,7 +309,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
         responseSession = sessionConverter(responseBody, e164: newE164)
 
         mockURLSession.addResponse(
-            forUrlSuffix: beginSessionRequest.url!.relativeString,
+            forUrlSuffix: beginSessionRequest.url.relativeString,
             bodyJson: responseBody
         )
         do {
@@ -358,7 +358,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
         ]
         for (statusCode, expectedResponse, sessionInBody) in statusCodeResponsePairs {
             mockURLSession.addResponse(
-                forUrlSuffix: expectedRequest.url!.relativeString,
+                forUrlSuffix: expectedRequest.url.relativeString,
                 statusCode: statusCode.rawValue,
                 bodyJson: sessionInBody ? responseBody : nil
             )
@@ -383,7 +383,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
         )
 
         mockURLSession.addResponse(
-            forUrlSuffix: expectedRequest.url!.relativeString,
+            forUrlSuffix: expectedRequest.url.relativeString,
             statusCode: RegistrationServiceResponses.FulfillChallengeResponseCodes.success.rawValue,
             bodyJson: nil /* empty json */
         )
@@ -422,7 +422,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
         ]
         for (statusCode, expectedResponse, sessionInBody) in statusCodeResponsePairs {
             mockURLSession.addResponse(
-                forUrlSuffix: expectedRequest.url!.relativeString,
+                forUrlSuffix: expectedRequest.url.relativeString,
                 statusCode: statusCode.rawValue,
                 bodyJson: sessionInBody ? responseBody : nil
             )
@@ -527,7 +527,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
         ]
         for (statusCode, expectedResponse, sessionInBody) in statusCodeResponsePairs {
             mockURLSession.addResponse(
-                forUrlSuffix: expectedRequest.url!.relativeString,
+                forUrlSuffix: expectedRequest.url.relativeString,
                 statusCode: statusCode.rawValue,
                 bodyJson: sessionInBody
             )

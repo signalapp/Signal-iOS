@@ -40,7 +40,7 @@ public enum ProvisioningRequestFactory {
             "pniPqLastResortPreKey": OWSRequestFactory.pqPreKeyRequestParameters(prekeyBundles.pni.lastResortPreKey)
         ]
 
-        let result = TSRequest(url: url, method: "PUT", parameters: parameters)
+        var result = TSRequest(url: url, method: "PUT", parameters: parameters)
         // The "verify code" request handles auth differently.
         result.auth = .registration((username: phoneNumber, password: authPassword))
         return result

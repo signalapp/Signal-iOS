@@ -196,7 +196,7 @@ class AttachmentUploadManagerMockHelper {
         authFormRequestBlock.append(.uploadForm({ request, _ in
             self.activeUploadRequestMocks = self.authToUploadRequestMockMap[authString] ?? .init()
             return HTTPResponseImpl(
-                requestUrl: request.url!,
+                requestUrl: request.url,
                 status: statusCode,
                 headers: HttpHeaders(),
                 bodyData: try! JSONEncoder().encode(form)

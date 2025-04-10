@@ -709,7 +709,7 @@ public class RegistrationCoordinatorTest {
 
         // Fail the request at t=3; the reg recovery pw is invalid.
         let failResponse = TSRequestOWSURLSessionMock.Response(
-            urlSuffix: expectedRecoveryPwRequest.url!.absoluteString,
+            urlSuffix: expectedRecoveryPwRequest.url.absoluteString,
             statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.unauthorized.rawValue
         )
         mockURLSession.addResponse(failResponse, atTime: 3, on: scheduler)
@@ -860,7 +860,7 @@ public class RegistrationCoordinatorTest {
 
         // Fail the first request; the reglock is invalid.
         let failResponse = TSRequestOWSURLSessionMock.Response(
-            urlSuffix: expectedRecoveryPwRequest.url!.absoluteString,
+            urlSuffix: expectedRecoveryPwRequest.url.absoluteString,
             statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
             bodyJson: EncodableRegistrationLockFailureResponse(
                 timeRemainingMs: 10,
@@ -1008,7 +1008,7 @@ public class RegistrationCoordinatorTest {
                 actualSteps.append(.failedRequest)
                 return true
             },
-            url: expectedRecoveryPwRequest.url!
+            url: expectedRecoveryPwRequest.url
         )
         mockURLSession.addResponse(failResponse, atTime: 3, on: scheduler)
 
@@ -1221,7 +1221,7 @@ public class RegistrationCoordinatorTest {
             credentials: svr2CredentialCandidates
         )
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
-            urlSuffix: expectedSVR2CheckRequest.url!.absoluteString,
+            urlSuffix: expectedSVR2CheckRequest.url.absoluteString,
             statusCode: 200,
             bodyJson: RegistrationServiceResponses.SVR2AuthCheckResponse(matches: [
                 "\(Stubs.svr2AuthCredential.credential.username):\(Stubs.svr2AuthCredential.credential.password)": .match,
@@ -1498,7 +1498,7 @@ public class RegistrationCoordinatorTest {
         )
         mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
-                urlSuffix: expectedSVRCheckRequest.url!.absoluteString,
+                urlSuffix: expectedSVRCheckRequest.url.absoluteString,
                 statusCode: 200,
                 bodyJson: RegistrationServiceResponses.SVR2AuthCheckResponse(matches: [
                     "\(Stubs.svr2AuthCredential.credential.username):\(Stubs.svr2AuthCredential.credential.password)": .notMatch,
@@ -1592,7 +1592,7 @@ public class RegistrationCoordinatorTest {
         )
         mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
-                urlSuffix: expectedSVRCheckRequest.url!.absoluteString,
+                urlSuffix: expectedSVRCheckRequest.url.absoluteString,
                 statusCode: 200,
                 bodyJson: RegistrationServiceResponses.SVR2AuthCheckResponse(matches: [
                     "\(Stubs.svr2AuthCredential.credential.username):\(Stubs.svr2AuthCredential.credential.password)": .notMatch
@@ -1653,7 +1653,7 @@ public class RegistrationCoordinatorTest {
         )
         mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
-                urlSuffix: expectedSVRCheckRequest.url!.absoluteString,
+                urlSuffix: expectedSVRCheckRequest.url.absoluteString,
                 statusCode: 200,
                 bodyJson: RegistrationServiceResponses.SVR2AuthCheckResponse(matches: [
                     "\(Stubs.svr2AuthCredential.credential.username):\(Stubs.svr2AuthCredential.credential.password)": .match
