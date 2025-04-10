@@ -809,7 +809,7 @@ class RegistrationPinViewController: OWSViewController {
             ),
             style: .destructive
         ) { [weak self] _ in
-            self?.presenter?.submitWithSkippedPin()
+            self?.presenter?.submitWithCreateNewPinInstead()
         })
 
         actionSheet.addAction(OWSActionSheets.cancelAction)

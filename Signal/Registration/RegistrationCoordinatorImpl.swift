@@ -471,12 +471,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 .opening,
                 .quickRestore,
                 .registrationRecoveryPassword,
-                .svrAuthCredential,
                 .svrAuthCredentialCandidates,
                 .session:
             Logger.error("Invalid state from which to skip!")
             return nextStep()
-        case .profileSetup:
+        case
+                .svrAuthCredential,
+                .profileSetup:
             break
         }
         db.write { tx in
