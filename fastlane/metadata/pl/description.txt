@@ -2,7 +2,7 @@ Signal to komunikator, w którym liczy się przede wszystkim prywatność. Aplik
 
 • Bezpłatnie wysyłaj wiadomości tekstowe i głosowe, zdjęcia, wideo, GIF-y czy też pliki. Signal wykorzystuje połączenie z internetem, dzięki czemu unikasz opłat za SMS-y oraz MMS-y.
 
-• Prowadź szyfrowane rozmowy z dźwiękiem i obrazem wysokiej jakości. Obsługujemy połączenia grupowe z maksymalnie 40 osobami naraz.
+• Prowadź szyfrowane rozmowy z dźwiękiem i obrazem wysokiej jakości. Obsługujemy połączenia grupowe z maksymalnie 50 osobami naraz.
 
 • Korzystaj z czatów grupowych, w których może uczestniczyć nawet tysiąc osób. Jako administrator kontroluj, kto może wysyłać wiadomości, i zarządzaj listą członków grupy.
 

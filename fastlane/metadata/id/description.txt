@@ -2,7 +2,7 @@ Signal adalah aplikasi perpesanan yang mengutamakan privasi. Aplikasi ini gratis
 
 • Kirim teks, pesan suara, foto, video, GIF, dan file secara gratis. Signal menggunakan koneksi data ponsel, sehingga Anda terhindar dari biaya SMS dan MMS.
 
-• Panggil teman Anda dengan panggilan suara dan video terenkripsi yang memiliki kualitas sangat jernih. Panggilan grup didukung untuk maksimal 40 orang.
+• Hubungi teman lewat panggilan suara dan video call terenkripsi dengan kualitas yang jernih. Jumlah peserta panggilan grup maksimal 50 orang.
 
 • Tetap terhubung dengan obrolan grup yang maksimal beranggotakan 1.000 orang. Kontrol siapa yang dapat memposting dan mengelola anggota grup dengan pengaturan izin admin.
 

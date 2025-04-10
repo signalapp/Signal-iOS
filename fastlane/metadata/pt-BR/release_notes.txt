@@ -1,2 +1,2 @@
-• We made it easier to select additional pictures when Limited Access photo permissions are enabled in iOS. The Manage button has been repositioned so that it's always visible, and updating your chosen selection is so fast that it's never a photo finish.
-• Now when you tap on a notification during a voice or video call, the call will automatically minimize to show the relevant chat without any extra steps. Save your extra steps (especially when they're taps) for tap dancing.
+• Ficou mais fácil carregar mais fotos quando as permissões de fotos de Acesso Limitado estão ativadas no iOS. O botão Gerenciar foi reposicionado para ficar sempre visível. É super-rápido atualizar a seleção de foto.
+• Agora, quando você toca em uma notificação durante uma chamada de voz ou vídeo, a chamada será minimizada automaticamente para mostrar a conversa relevante. Não precisa de nenhum passo extra.

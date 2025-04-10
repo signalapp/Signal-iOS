@@ -2,7 +2,7 @@ Signal es una aplicación de mensajería diseñada para proteger tu privacidad. 
 
 • Envía y recibe mensajes, audios, fotos, vídeos, GIF y archivos de forma gratuita. Signal usa la conexión de datos de tu teléfono, por lo que no se generan gastos por SMS ni MMS.
 
-• Disfruta de llamadas y videollamadas cifradas de alta calidad. Puedes hacer llamadas grupales de hasta 40 personas.
+• Disfruta de llamadas y videollamadas totalmente cifradas y de alta calidad. Puedes hacer llamadas grupales de hasta 50 personas.
 
 • Descubre un nuevo nivel de comunicación con chats grupales de hasta 1000 personas. Elige quién puede publicar contenido y gestionar la lista de participantes del grupo en los ajustes de permisos de admin.
 

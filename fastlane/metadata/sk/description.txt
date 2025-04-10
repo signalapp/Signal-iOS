@@ -2,7 +2,7 @@ Signal je aplikácia na odosielanie správ, ktorej záleží na vašom súkromí
 
 • Posielajte bezplatné textové či hlasové správy, fotografie, videá, GIFy a ďalšie súbory. Signal používa vaše mobilné dáta, aby ste sa vyhli poplatkom za SMS a MMS.
 
-• Uskutočňujte s priateľmi krištáľovo čisté šifrované hlasové hovory a videohovory. Skupinové hovory až pre 40 účastníkov.
+• Uskutočňujte s priateľmi krištáľovo čisté šifrované hlasové hovory a videohovory. Skupinové hovory podporujú až 50 účastníkov.
 
 • Zostaňte v spojení vďaka skupinovým četom až pre 1 000 ľudí. Majte pod kontrolou kto môže uverejňovať príspevky a spravujte členov skupiny upravením povolení.
 

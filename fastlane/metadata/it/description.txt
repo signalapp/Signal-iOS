@@ -2,7 +2,7 @@ Signal è un'app di messaggistica dove la privacy è alla base di tutto. Semplic
 
 • Invia messaggi scritti, vocali, foto, video, GIF, file e molto altro senza costi di alcun tipo. Signal usa la connessione dati del tuo telefono, così potrai evitare costi associati a SMS e MMS.
 
-• Parla con chi vuoi grazie a chiamate audio e video di qualità, tutte crittografate. Le chiamate di gruppo supportano fino a 40 persone!
+• Parla con chi vuoi grazie a chiamate audio e video di qualità, tutte crittografate. Le chiamate di gruppo supportano fino a 50 persone!
 
 • Parla con più persone contemporaneamente: i gruppi supportano fino a 1000 persone. Gestisci le persone che fanno parte del gruppo, scegli chi può interagire e come tramite le Impostazioni da admin.
 

@@ -2,7 +2,7 @@
 
 • Envia de manera gratuïta missatges, notes de veu, fotos, vídeos, GIFs i arxius. Signal utilitza la connexió de dades del telèfon, així pots evitar les tarifes d'SMS i MMS.
 
-• Truca als teus amics amb trucades de veu i videotrucades encriptades i nítides. S'admeten trucades en grup per a un màxim de 40 persones.
+• Comunica't amb els teus amics amb trucades de veu i videotrucades encriptades i nítides. S'admeten trucades en grup per a un màxim de 50 persones.
 
 • No perdis mai el contacte amb xats grupals de fins a 1.000 persones. Controla qui pot publicar i gestionar els membres del grup amb la configuració de permisos d'administrador.
 

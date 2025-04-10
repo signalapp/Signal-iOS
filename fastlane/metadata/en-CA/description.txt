@@ -2,7 +2,7 @@ Signal is a messaging app with privacy at its core. It is free and easy to use, 
 
 • Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 50 people.
 
 • Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
 

@@ -2,7 +2,7 @@ O Signal é um app de mensagens que tem a privacidade como prioridade. É gratui
 
 • Envie mensagens, áudios, fotos, vídeos, GIFs e arquivos de graça. O Signal usa a conexão de dados do seu telefone, assim, você não paga as taxas de SMS e MMS.
 
-• Ligue para seus amigos com chamadas de voz e de vídeo de ótima qualidade. É possível fazer chamadas em grupo com até 40 pessoas.
+• Ligue para seus amigos com chamadas de voz e de vídeo criptografadas de ótima qualidade. É possível fazer chamadas em grupo com até 50 pessoas.
 
 • Fique por dentro de tudo com os chats em grupo de até 1.000 pessoas. Controle quem pode publicar e gerencie membros do grupo com as configurações de permissão de administrador.
 
