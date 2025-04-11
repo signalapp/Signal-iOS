@@ -672,7 +672,7 @@ extension CallDrawerSheet: UITableViewDelegate {
         switch row {
         case .callLink(.share):
             tableView.deselectRow(at: indexPath, animated: true)
-            self.shareCallLink()
+            self.shareCallLink(sourceView: tableView.cellForRow(at: indexPath) ?? tableView)
         case .callLink(.editName):
             tableView.deselectRow(at: indexPath, animated: true)
             self.editCallName()
@@ -681,7 +681,7 @@ extension CallDrawerSheet: UITableViewDelegate {
         }
     }
 
-    private func shareCallLink() {
+    private func shareCallLink(sourceView: UIView) {
         AssertIsOnMainThread()
         guard let callLinkDataSource else {
             owsFailDebug("Contains call link section without a call link data source")
@@ -692,6 +692,7 @@ extension CallDrawerSheet: UITableViewDelegate {
             activityItems: [callLinkDataSource.url()],
             applicationActivities: nil
         )
+        shareSheet.popoverPresentationController?.sourceView = sourceView
         present(shareSheet, animated: true)
     }
 
