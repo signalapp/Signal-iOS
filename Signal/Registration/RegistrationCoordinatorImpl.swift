@@ -1207,7 +1207,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             .then { _ in
                 self.db.write { tx in
                     /// For new registrations, we want to force-set some state.
-                    if self.persistedState.restoreMethod?.backupType != nil {
+                    if self.persistedState.restoreMethod?.backupType == nil {
                         /// Read receipts should be on by default.
                         self.deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
                         self.deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
