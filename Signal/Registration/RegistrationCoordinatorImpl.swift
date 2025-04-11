@@ -1215,12 +1215,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
                         /// Enable the onboarding banner cards.
                         self.deps.experienceManager.enableAllGetStartedCards(tx)
-
-                        /// Disable PNI Hello World operations – these aren't necessary
-                        /// since we are the only device and know that our
-                        /// just-generated our PNI identity key is correct.
-                        self.deps.pniHelloWorldManager.markHelloWorldAsUnnecessary(tx: tx)
                     }
+
+                    /// Disable PNI Hello World operations – these aren't necessary
+                    /// since we are the only device and know that our
+                    /// just-generated our PNI identity key is correct.
+                    self.deps.pniHelloWorldManager.markHelloWorldAsUnnecessary(tx: tx)
 
                     writeState(tx)
                     persistLocalIdentifiers(tx: tx)
