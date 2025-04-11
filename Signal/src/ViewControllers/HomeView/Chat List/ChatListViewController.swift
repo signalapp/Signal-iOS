@@ -42,6 +42,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         super.viewDidLoad()
 
         keyboardObservationBehavior = .never
+        self.extendedLayoutIncludesOpaqueBars = true
 
         switch viewState.chatListMode {
         case .inbox:
