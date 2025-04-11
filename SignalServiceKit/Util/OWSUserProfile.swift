@@ -1035,6 +1035,7 @@ extension OWSUserProfile {
                 case .messageBackupRestore: fallthrough
                 case .registration: fallthrough
                 case .storageService: fallthrough
+                case .reupload: fallthrough
                 case .tests:
                     return true
 
@@ -1043,7 +1044,6 @@ extension OWSUserProfile {
                 case .linking: fallthrough
                 case .metadataUpdate: fallthrough
                 case .profileFetch: fallthrough
-                case .reupload: fallthrough
                 case .syncMessage:
                     return false
 
@@ -1070,7 +1070,7 @@ extension OWSUserProfile {
         }
 
         // We special-case avatar changes in a few places.
-        let canUpdateAvatarUrlPath = canModifyStorageServiceProperties || userProfileWriter == .reupload
+        let canUpdateAvatarUrlPath = canModifyStorageServiceProperties
         let canUpdateAvatarFileName = canUpdateAvatarUrlPath || userProfileWriter == .avatarDownload
         let didChangeAvatar = updateAvatar(
             avatarUrlPath: canUpdateAvatarUrlPath ? changes.avatarUrlPath : .noChange,
