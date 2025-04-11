@@ -54,16 +54,22 @@ class ProvisioningController: NSObject {
 
     private let provisioningSocketManager: ProvisioningSocketManager
 
-    private init(appReadiness: AppReadinessSetter) {
+    private init(
+        appReadiness: AppReadinessSetter,
+        provisioningSocketManager: ProvisioningSocketManager
+    ) {
         self.appReadiness = appReadiness
-
-        self.provisioningSocketManager = ProvisioningSocketManager(linkType: .linkDevice)
+        self.provisioningSocketManager = provisioningSocketManager
 
         super.init()
     }
 
     static func presentProvisioningFlow(appReadiness: AppReadinessSetter) {
-        let provisioningController = ProvisioningController(appReadiness: appReadiness)
+        let provisioningSocketManager = ProvisioningSocketManager(linkType: .linkDevice)
+        let provisioningController = ProvisioningController(
+            appReadiness: appReadiness,
+            provisioningSocketManager: provisioningSocketManager
+        )
         let navController = ProvisioningNavigationController(provisioningController: provisioningController)
         provisioningController.setUpDebugLogsGesture(on: navController)
 
@@ -74,11 +80,13 @@ class ProvisioningController: NSObject {
     }
 
     static func presentRelinkingFlow(appReadiness: AppReadinessSetter) {
-        let provisioningController = ProvisioningController(appReadiness: appReadiness)
+        let provisioningSocketManager = ProvisioningSocketManager(linkType: .linkDevice)
+        let provisioningController = ProvisioningController(
+            appReadiness: appReadiness,
+            provisioningSocketManager: provisioningSocketManager
+        )
         let navController = ProvisioningNavigationController(provisioningController: provisioningController)
         provisioningController.setUpDebugLogsGesture(on: navController)
-
-        let provisioningSocketManager = ProvisioningSocketManager(linkType: .linkDevice)
 
         let vc = ProvisioningQRCodeViewController(
             provisioningController: provisioningController,
@@ -97,7 +105,7 @@ class ProvisioningController: NSObject {
 
 #if DEBUG
     static func preview() -> ProvisioningController {
-        ProvisioningController(appReadiness: AppReadinessMock())
+        ProvisioningController(appReadiness: AppReadinessMock(), provisioningSocketManager: ProvisioningSocketManager(linkType: .linkDevice))
     }
 #endif
 
