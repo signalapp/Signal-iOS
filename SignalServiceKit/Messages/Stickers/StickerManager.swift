@@ -197,27 +197,13 @@ public class StickerManager: NSObject {
         wasLocallyInitiated: Bool,
         transaction: DBWriteTransaction
     ) {
-        uninstallStickerPack(
-            stickerPackInfo: stickerPackInfo,
-            uninstallEverything: false,
-            wasLocallyInitiated: wasLocallyInitiated,
-            transaction: transaction
-        )
-    }
-
-    private class func uninstallStickerPack(
-        stickerPackInfo: StickerPackInfo,
-        uninstallEverything: Bool,
-        wasLocallyInitiated: Bool,
-        transaction: DBWriteTransaction
-    ) {
         guard let stickerPack = fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction) else {
             Logger.info("Skipping uninstall; not saved or installed.")
             return
         }
 
         let isDefaultStickerPack = DefaultStickerPack.isDefaultStickerPack(packId: stickerPackInfo.packId)
-        let shouldRemove = uninstallEverything || !isDefaultStickerPack
+        let shouldRemove = !isDefaultStickerPack
 
         if shouldRemove {
             uninstallSticker(stickerInfo: stickerPack.coverInfo, transaction: transaction)
