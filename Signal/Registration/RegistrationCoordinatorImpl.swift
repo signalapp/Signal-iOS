@@ -1633,25 +1633,27 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         case .rejectedVerificationMethod:
             // The reg recovery password was wrong. This can happen for two reasons:
-            // 1) We have the wrong SVR master key
+            // 1) We have the wrong SVR master key locally
             // 2) We have been reglock challenged, forcing us to re-register via session
             // If it were just the former case, we'd wipe our known-wrong SVR master key.
             // But the latter case means we want to go through session path registration,
             // and re-upload our local SVR master secret, so we don't want to wipe it.
             // (If we wiped it and our SVR server guesses were consumed by the reglock-challenger,
             // we'd be outta luck and have no way to recover).
-            db.write { tx in
-                // We do want to clear out any credentials permanently; we know we
-                // have to use the session path so credentials aren't helpful.
-                if let svr2Credential = inMemoryState.svrAuthCredential {
-                    deps.svrAuthCredentialStore.deleteInvalidCredentials([svr2Credential], tx)
-                }
-            }
-            // Wipe our in memory SVR state; its now useless.
-            wipeInMemoryStateToPreventSVRPathAttempts()
+            //
+            // However, because the master key can be much more fluid in an AEP world, there is a
+            // much more common case that the SVR master key is wrong, but we can still fetch a
+            // valid master key from SVR. To that point, don't clear out the SVR auth credentials here.
+            // Instead, clear out just the piece of information we now know to be invalid to inform
+            // the state machine to bypass any RRP attempts and fall back to fetching from SVR (or
+            // restoring to starting a session from scratch)
+            inMemoryState.regRecoveryPw = nil
 
-            // Now we have to start a session; its the only way to recover.
-            return self.startSession(e164: e164)
+            // Instead of moving directly to starting a session, like we do in the .reglockFailed case above,
+            // let the state machine determine next steps.  It may be the user had a bad
+            // local key, and can still fetch from SVR.  If we attempt to refetch SVR credentials and fail,
+            // we'll implicitly end up in the startSession() state anyway.
+            return nextStep()
 
         case .retryAfter(let timeInterval):
             if timeInterval < Constants.autoRetryInterval {
@@ -1706,7 +1708,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func wipeInMemoryStateToPreventSVRPathAttempts() {
         inMemoryState.regRecoveryPw = nil
-        inMemoryState.reglockToken = nil
         inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = true
         // Wiping auth credential state too. It's possible that the remote master key is current
         // even if our local one is outdated, so we'll make a note to restore the remote one after
