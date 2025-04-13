@@ -4433,6 +4433,9 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
+"MEDIA_VIEWER_GO_TO_MESSAGE" = "Go to message";
+
+/* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
 "MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Save";
 
 /* button title to snooze a megaphone */
