@@ -10,10 +10,16 @@ import Foundation
 public struct PreloadedTextAttachment: Equatable {
     public let textAttachment: TextAttachment
     public let linkPreviewAttachment: ReferencedAttachment?
+    public let isFailedImageAttachmentDownload: Bool
 
-    private init(textAttachment: TextAttachment, linkPreviewAttachment: ReferencedAttachment?) {
+    private init(
+        textAttachment: TextAttachment,
+        linkPreviewAttachment: ReferencedAttachment?,
+        isFailedImageAttachmentDownload: Bool
+    ) {
         self.textAttachment = textAttachment
         self.linkPreviewAttachment = linkPreviewAttachment
+        self.isFailedImageAttachmentDownload = isFailedImageAttachmentDownload
     }
 
     public static func from(
@@ -28,7 +34,22 @@ public struct PreloadedTextAttachment: Equatable {
                     tx: tx
                 )
         } ?? nil
-        return .init(textAttachment: textAttachment, linkPreviewAttachment: linkPreviewAttachment)
+        let isFailedImageAttachmentDownload: Bool
+        if linkPreviewAttachment?.attachment.asStream() == nil {
+            switch linkPreviewAttachment?.attachment.asAnyPointer()?.downloadState(tx: tx) ?? .none {
+            case .none, .enqueuedOrDownloading:
+                isFailedImageAttachmentDownload = false
+            case .failed:
+                isFailedImageAttachmentDownload = true
+            }
+        } else {
+            isFailedImageAttachmentDownload = false
+        }
+        return .init(
+            textAttachment: textAttachment,
+            linkPreviewAttachment: linkPreviewAttachment,
+            isFailedImageAttachmentDownload: isFailedImageAttachmentDownload
+        )
     }
 
     public static func == (lhs: PreloadedTextAttachment, rhs: PreloadedTextAttachment) -> Bool {

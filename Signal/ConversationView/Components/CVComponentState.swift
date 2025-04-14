@@ -1684,9 +1684,22 @@ fileprivate extension CVComponentState.Builder {
                 }
             }()
 
+            let isFailedImageAttachmentDownload: Bool
+            if linkPreviewAttachment?.attachment.asStream() == nil {
+                switch linkPreviewAttachment?.attachment.asAnyPointer()?.downloadState(tx: transaction) ?? .none {
+                case .none, .enqueuedOrDownloading:
+                    isFailedImageAttachmentDownload = false
+                case .failed:
+                    isFailedImageAttachmentDownload = true
+                }
+            } else {
+                isFailedImageAttachmentDownload = false
+            }
+
             let state = LinkPreviewSent(
                 linkPreview: linkPreview,
                 imageAttachment: linkPreviewAttachment,
+                isFailedImageAttachmentDownload: isFailedImageAttachmentDownload,
                 conversationStyle: conversationStyle
             )
             self.linkPreview = LinkPreview(

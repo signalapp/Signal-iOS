@@ -8,10 +8,10 @@ import YYImage
 
 public enum LinkPreviewImageState: Equatable {
     case none
-    case loading
+    case loading(blurHash: String?)
     case loaded
     case invalid
-    case blurHash(String)
+    case failed(blurHash: String?)
 }
 
 // MARK: -
@@ -57,12 +57,12 @@ public protocol LinkPreviewState: AnyObject {
 // MARK: -
 
 extension LinkPreviewState {
-    var hasLoadedImage: Bool {
+    var hasLoadedImageOrBlurHash: Bool {
         switch imageState {
         case .loaded:
             return isLoaded
-        case .blurHash:
-            return true
+        case let .loading(blurHash), let .failed(blurHash):
+            return blurHash != nil
         default:
             return false
         }
@@ -70,8 +70,8 @@ extension LinkPreviewState {
 
     var shouldShowInvalidImageIcon: Bool {
         switch imageState {
-        case .blurHash:
-            return true
+        case let .failed(blurHash):
+            return blurHash != nil
         default:
             return false
         }
@@ -241,16 +241,19 @@ public class LinkPreviewSent: LinkPreviewState {
 
     private let linkPreview: OWSLinkPreview
     private let imageAttachment: ReferencedAttachment?
+    private let isFailedImageAttachmentDownload: Bool
 
     public let conversationStyle: ConversationStyle?
 
     public init(
         linkPreview: OWSLinkPreview,
         imageAttachment: ReferencedAttachment?,
+        isFailedImageAttachmentDownload: Bool,
         conversationStyle: ConversationStyle?
     ) {
         self.linkPreview = linkPreview
         self.imageAttachment = imageAttachment
+        self.isFailedImageAttachmentDownload = isFailedImageAttachmentDownload
         self.conversationStyle = conversationStyle
     }
 
@@ -280,7 +283,11 @@ public class LinkPreviewSent: LinkPreviewState {
         }
         guard let attachmentStream = imageAttachment.attachment.asStream() else {
             if let blurHash = imageAttachment.attachment.blurHash {
-                return .blurHash(blurHash)
+                if isFailedImageAttachmentDownload {
+                    return .failed(blurHash: blurHash)
+                } else {
+                    return .loading(blurHash: blurHash)
+                }
             } else {
                 return .none
             }
@@ -296,10 +303,11 @@ public class LinkPreviewSent: LinkPreviewState {
 
     public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality, completion: @escaping (UIImage) -> Void) {
         switch imageState {
-        case .none, .invalid, .loading:
+        case .none, .invalid:
             owsFailDebug("Unexpected image state")
-        case .blurHash(let blurHash):
+        case let .loading(blurHash), let .failed(blurHash):
             DispatchQueue.global().async {
+                guard let blurHash else { return }
                 guard let image = BlurHash.image(for: blurHash) else {
                     owsFailDebug("Could not load blurHash")
                     return
@@ -350,10 +358,11 @@ public class LinkPreviewSent: LinkPreviewState {
 
     public var imagePixelSize: CGSize {
         switch imageState {
-        case .none, .invalid, .loading:
+        case .none, .invalid:
             owsFailDebug("Unexpected image state")
             return .zero
-        case .blurHash(_):
+        case let .loading(blurHash), let .failed(blurHash):
+            guard blurHash != nil else { return .zero }
             return imageAttachment?.reference.sourceMediaSizePixels
                 // Fall back to default size to render the blurhash in.
                 ?? CGSize(width: 400, height: 236)

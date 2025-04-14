@@ -67,7 +67,7 @@ class LinkPreviewGroupLink: LinkPreviewState {
         guard groupInviteLinkPreview?.avatarUrlPath != nil else {
             return .none
         }
-        return .loading
+        return .loading(blurHash: nil)
     }
 
     func imageAsync(thumbnailQuality: AttachmentThumbnailQuality, completion: @escaping (UIImage) -> Void) {

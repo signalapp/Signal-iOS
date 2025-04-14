@@ -140,7 +140,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         } else if state.isGroupInviteLink {
             return LinkPreviewViewAdapterGroupLink(state: state)
         } else {
-            if state.hasLoadedImage {
+            if state.hasLoadedImageOrBlurHash {
                 if Self.sentIsHero(state: state) {
                     return LinkPreviewViewAdapterSentHero(state: state)
                 } else if state.previewDescription?.isEmpty == false, state.title?.isEmpty == false {
@@ -469,7 +469,7 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
     }
 
     var rootStackConfig: ManualStackView.Config {
-        let hMarginLeading: CGFloat = state.hasLoadedImage ? 6 : 12
+        let hMarginLeading: CGFloat = state.hasLoadedImageOrBlurHash ? 6 : 12
         let hMarginTrailing: CGFloat = 12
         let layoutMargins = UIEdgeInsets(
             top: Self.draftMarginTop,
@@ -554,7 +554,7 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
 
         // Image
 
-        if state.hasLoadedImage {
+        if state.hasLoadedImageOrBlurHash {
             let linkPreviewImageView = linkPreviewView.linkPreviewImageView
             if let imageView = linkPreviewImageView.configureForDraft(state: state, hasAsymmetricalRounding: hasAsymmetricalRounding) {
                 imageView.clipsToBounds = true
@@ -669,7 +669,7 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
 
         // Image
 
-        if state.hasLoadedImage {
+        if state.hasLoadedImageOrBlurHash {
             rootStackSubviewInfos.append(CGSize.square(imageSize).asManualSubviewInfo(hasFixedSize: true))
             maxLabelWidth -= imageSize + rootStackConfig.spacing
         }
@@ -826,7 +826,7 @@ private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
         var rootStackSubviews = [UIView]()
 
         let linkPreviewImageView = linkPreviewView.linkPreviewImageView
-        if state.hasLoadedImage {
+        if state.hasLoadedImageOrBlurHash {
             if let imageView = linkPreviewImageView.configure(state: state, rounding: .circular) {
                 imageView.clipsToBounds = true
                 rootStackSubviews.append(imageView)
@@ -871,7 +871,7 @@ private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
         ))
 
         var rootStackSubviewInfos = [ManualStackSubviewInfo]()
-        if state.hasLoadedImage {
+        if state.hasLoadedImageOrBlurHash {
             let imageSize = LinkPreviewView.sentNonHeroImageSize
             rootStackSubviewInfos.append(CGSize.square(imageSize).asManualSubviewInfo(hasFixedSize: true))
             maxLabelWidth -= imageSize + rootStackConfig.spacing
@@ -1072,7 +1072,7 @@ private class LinkPreviewViewAdapterSent: LinkPreviewViewAdapter {
 
         var rootStackSubviews = [UIView]()
 
-        if state.hasLoadedImage {
+        if state.hasLoadedImageOrBlurHash {
             let linkPreviewImageView = linkPreviewView.linkPreviewImageView
             if let imageView = linkPreviewImageView.configure(state: state) {
                 imageView.clipsToBounds = true
@@ -1112,7 +1112,7 @@ private class LinkPreviewViewAdapterSent: LinkPreviewViewAdapter {
         ))
 
         var rootStackSubviewInfos = [ManualStackSubviewInfo]()
-        if state.hasLoadedImage {
+        if state.hasLoadedImageOrBlurHash {
             let imageSize = LinkPreviewView.sentNonHeroImageSize
             rootStackSubviewInfos.append(CGSize.square(imageSize).asManualSubviewInfo(hasFixedSize: true))
             maxLabelWidth -= imageSize + rootStackConfig.spacing
@@ -1177,7 +1177,7 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
 
         var titleStackSubviews = [UIView]()
 
-        if state.hasLoadedImage {
+        if state.hasLoadedImageOrBlurHash {
             let linkPreviewImageView = linkPreviewView.linkPreviewImageView
             if let imageView = linkPreviewImageView.configure(state: state) {
                 imageView.clipsToBounds = true
@@ -1236,7 +1236,7 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
         var maxTitleLabelWidth = maxRootLabelWidth
 
         var titleStackSubviewInfos = [ManualStackSubviewInfo]()
-        if state.hasLoadedImage {
+        if state.hasLoadedImageOrBlurHash {
             let imageSize = LinkPreviewView.sentNonHeroImageSize
             titleStackSubviewInfos.append(CGSize.square(imageSize).asManualSubviewInfo(hasFixedSize: true))
             maxTitleLabelWidth -= imageSize + titleStackConfig.spacing
@@ -1471,7 +1471,9 @@ private class LinkPreviewImageView: ManualLayoutViewWithLayer {
         switch state.imageState {
         case .loaded:
             break
-        case .blurHash:
+        case let .loading(blurHash) where blurHash != nil:
+            break
+        case let .failed(blurHash) where blurHash != nil:
             if let icon = UIImage(named: "photo-slash-36") {
                 iconView.tintColor = Theme.primaryTextColor.withAlphaComponent(0.6)
                 iconView.image = icon
