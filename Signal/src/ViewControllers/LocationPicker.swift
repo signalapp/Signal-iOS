@@ -427,62 +427,54 @@ public class Location: NSObject {
         case assertion
     }
 
-    public func generateSnapshot() -> Promise<UIImage> {
-        return Promise { future in
-            let options = MKMapSnapshotter.Options()
+    @MainActor
+    private func generateSnapshot() async throws -> UIImage {
+        let options = MKMapSnapshotter.Options()
 
-            // this is the plus/minus meter range from the given coordinate
-            // that we'd like to capture in our map snapshot.
-            let metersOffset: CLLocationDistance = 300
+        // this is the plus/minus meter range from the given coordinate that we'd
+        // like to capture in our map snapshot.
+        let metersOffset: CLLocationDistance = 300
 
-            options.region = MKCoordinateRegion(center: coordinate, latitudinalMeters: metersOffset, longitudinalMeters: metersOffset)
+        options.region = MKCoordinateRegion(
+            center: self.coordinate,
+            latitudinalMeters: metersOffset,
+            longitudinalMeters: metersOffset
+        )
 
-            // The output size will be 256 * the device's scale. We don't adjust the
-            // scale directly on the options to ensure a consistent size because it
-            // produces poor results on some devices.
-            options.size = CGSize(square: 256)
+        // The output size will be 256 * the device's scale. We don't adjust the
+        // scale directly on the options to ensure a consistent size because it
+        // produces poor results on some devices.
+        options.size = CGSize(square: 256)
 
-            MKMapSnapshotter(options: options).start(with: .global()) { snapshot, error in
-                guard error == nil else {
-                    owsFailDebug("Unexpectedly failed to capture map snapshot \(error!)")
-                    return future.reject(LocationError.assertion)
-                }
+        let snapshot = try await MKMapSnapshotter(options: options).start()
 
-                guard let snapshot = snapshot else {
-                    owsFailDebug("snapshot unexpectedly nil")
-                    return future.reject(LocationError.assertion)
-                }
+        // Draw our location pin on the snapshot
 
-                // Draw our location pin on the snapshot
+        UIGraphicsBeginImageContextWithOptions(options.size, true, 0)
+        snapshot.image.draw(at: .zero)
 
-                UIGraphicsBeginImageContextWithOptions(options.size, true, 0)
-                snapshot.image.draw(at: .zero)
+        let pinView = MKPinAnnotationView(annotation: nil, reuseIdentifier: nil)
+        pinView.pinTintColor = Theme.accentBlueColor
+        let pinImage = pinView.image
 
-                let pinView = MKPinAnnotationView(annotation: nil, reuseIdentifier: nil)
-                pinView.pinTintColor = Theme.accentBlueColor
-                let pinImage = pinView.image
+        var point = snapshot.point(for: self.coordinate)
 
-                var point = snapshot.point(for: self.coordinate)
+        let pinCenterOffset = pinView.centerOffset
+        point.x -= pinView.bounds.size.width / 2
+        point.y -= pinView.bounds.size.height / 2
+        point.x += pinCenterOffset.x
+        point.y += pinCenterOffset.y
+        pinImage?.draw(at: point)
 
-                let pinCenterOffset = pinView.centerOffset
-                point.x -= pinView.bounds.size.width / 2
-                point.y -= pinView.bounds.size.height / 2
-                point.x += pinCenterOffset.x
-                point.y += pinCenterOffset.y
-                pinImage?.draw(at: point)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
 
-                let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
 
-                UIGraphicsEndImageContext()
-
-                guard let finalImage = image else {
-                    owsFailDebug("image unexpectedly nil")
-                    return future.reject(LocationError.assertion)
-                }
-
-                future.resolve(finalImage)
-            }
+        guard let image else {
+            throw OWSAssertionError("image unexpectedly nil")
         }
+
+        return image
     }
 
     public init(name: String?, location: CLLocation? = nil, placemark: CLPlacemark) {
@@ -491,15 +483,13 @@ public class Location: NSObject {
         self.placemark = placemark
     }
 
-    public func prepareAttachment() -> Promise<SignalAttachment> {
-        return generateSnapshot().map(on: DispatchQueue.global()) { image in
-            guard let jpegData = image.jpegData(compressionQuality: 1.0) else {
-                throw LocationError.assertion
-            }
-
-            let dataSource = DataSourceValue(jpegData, utiType: UTType.jpeg.identifier)
-            return SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
+    public func prepareAttachment() async throws -> SignalAttachment {
+        let image = try await generateSnapshot()
+        guard let jpegData = image.jpegData(compressionQuality: 1.0) else {
+            throw LocationError.assertion
         }
+        let dataSource = DataSourceValue(jpegData, utiType: UTType.jpeg.identifier)
+        return SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
     }
 
     public var messageText: String {

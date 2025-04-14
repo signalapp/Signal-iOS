@@ -699,24 +699,28 @@ extension ConversationViewController: LocationPickerDelegate {
     public func didPickLocation(_ locationPicker: LocationPicker, location: Location) {
         AssertIsOnMainThread()
 
-        firstly(on: DispatchQueue.global()) { () -> Promise<SignalAttachment> in
-            location.prepareAttachment()
-        }.done(on: DispatchQueue.main) { [weak self] attachment in
-            // TODO: Can we move this off the main thread?
-            AssertIsOnMainThread()
+        Task { @MainActor in
+            let attachment: SignalAttachment
+            do {
+                attachment = try await location.prepareAttachment()
+            } catch {
+                owsFailDebug("Error: \(error).")
+                return
+            }
 
-            guard let self = self else { return }
+            // TODO: Can we move this off the main thread?
 
             let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
 
-            ThreadUtil.enqueueMessage(body: MessageBody(text: location.messageText,
-                                                        ranges: .empty),
-                                      mediaAttachments: [ attachment ],
-                                      thread: self.thread,
-                                      persistenceCompletionHandler: {
-                                            AssertIsOnMainThread()
-                                            self.loadCoordinator.enqueueReload()
-                                      })
+            ThreadUtil.enqueueMessage(
+                body: MessageBody(text: location.messageText, ranges: .empty),
+                mediaAttachments: [attachment],
+                thread: self.thread,
+                persistenceCompletionHandler: {
+                    AssertIsOnMainThread()
+                    self.loadCoordinator.enqueueReload()
+                }
+            )
 
             self.messageWasSent()
 
@@ -725,8 +729,6 @@ extension ConversationViewController: LocationPickerDelegate {
             }
 
             NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
-        }.catch(on: DispatchQueue.global()) { error in
-            owsFailDebug("Error: \(error).")
         }
     }
 }
