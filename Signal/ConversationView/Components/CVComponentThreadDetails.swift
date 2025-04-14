@@ -147,7 +147,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         } else {
             innerViews.append(avatarView)
         }
-        innerViews.append(UIView.spacer(withHeight: 1))
+        innerViews.append(UIView.spacer(withHeight: vSpacingTitle))
 
         if conversationStyle.hasWallpaper {
             let wallpaperBlurView = componentView.ensureWallpaperBlurView()
@@ -176,7 +176,6 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             let config = groupDescriptionTextLabelConfig(text: groupDescriptionText)
             groupDescriptionPreviewView.apply(config: config)
             groupDescriptionPreviewView.groupName = titleText
-            innerViews.append(UIView.spacer(withHeight: vSpacingMutualGroups))
             innerViews.append(groupDescriptionPreviewView)
         }
 
@@ -198,7 +197,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 groupInfoSubviewInfos.append(reviewCarefullyLabel.sizeThatFitsMaxSize.asManualSubviewInfo)
             }
 
-            innerViews.append(UIView.spacer(withHeight: vSpacingMutualGroups))
+            innerViews.append(UIView.spacer(withHeight: vSpacingSafetySection(hasWallpaper: conversationStyle.hasWallpaper)))
 
             if conversationStyle.hasWallpaper {
                 // Add divider before mutual groups
@@ -228,7 +227,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             let maxWidth = cellMeasurement.cellSize.width
             - outerStackConfig.layoutMargins.totalWidth
             - innerStackConfig.layoutMargins.totalWidth
-            - (mutualGroupsPadding * 2)
+            - (hPaddingSafetySection * 2)
 
             if safetySection.shouldShowProfileNamesEducation {
                 groupInfoSubviews.append(namesEducationLabel)
@@ -293,6 +292,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 groupInfoStack,
                 size: groupInfoStackMeasurement.measuredSize
             )
+        } else {
+            innerViews.append(UIView.spacer(withHeight: minBottomPadding))
         }
 
         innerStackView.configure(config: innerStackConfig,
@@ -305,10 +306,6 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                  measurementKey: Self.measurementKey_outerStack,
                                  subviews: outerViews)
     }
-
-    private let vSpacingSubtitle: CGFloat = 2
-    private let vSpacingMutualGroups: CGFloat = 16
-    private let mutualGroupsPadding: CGFloat = 24
 
     private var titleLabelConfig: CVLabelConfig {
         let font = UIFont.dynamicTypeTitle1.semibold()
@@ -665,6 +662,14 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         )
     }
 
+    private let vSpacingTitle: CGFloat = 12
+    private let vSpacingSubtitle: CGFloat = 2
+    private let hPaddingSafetySection: CGFloat = 24
+    private func vSpacingSafetySection(hasWallpaper: Bool) -> CGFloat {
+        hasWallpaper ? 12 : 16
+    }
+    private let minBottomPadding: CGFloat = 4
+
     private var outerStackConfig: CVStackViewConfig {
         CVStackViewConfig(
             axis: .vertical,
@@ -678,8 +683,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         CVStackViewConfig(
             axis: .vertical,
             alignment: .center,
-            spacing: 3,
-            layoutMargins: UIEdgeInsets(top: 20, leading: 16, bottom: 24, trailing: 16)
+            spacing: 0,
+            layoutMargins: UIEdgeInsets(top: 20, leading: 16, bottom: 8, trailing: 16)
         )
     }
 
@@ -688,7 +693,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             axis: .vertical,
             alignment: .center,
             spacing: 12,
-            layoutMargins: .init(hMargin: mutualGroupsPadding, vMargin: 24.0)
+            layoutMargins: .init(hMargin: hPaddingSafetySection, vMargin: 16)
         )
     }
 
@@ -704,7 +709,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                             innerStackConfig.layoutMargins.totalWidth)
 
         innerSubviewInfos.append(avatarSizeClass.size.asManualSubviewInfo)
-        innerSubviewInfos.append(CGSize(square: 1).asManualSubviewInfo)
+        innerSubviewInfos.append(CGSize(square: vSpacingTitle).asManualSubviewInfo)
 
         let titleSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: maxContentWidth)
         innerSubviewInfos.append(titleSize.asManualSubviewInfo)
@@ -722,14 +727,11 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 maxWidth: maxContentWidth
             )
             groupDescriptionSize.width = maxContentWidth
-            innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
             innerSubviewInfos.append(groupDescriptionSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
-        let maxGroupWidth = maxContentWidth - mutualGroupsPadding * 2
+        let maxGroupWidth = maxContentWidth - hPaddingSafetySection * 2
         var groupInfoSubviewInfos = [ManualStackSubviewInfo]()
-
-        innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
 
         if let safetySection = threadDetails.safetySection {
             if safetySection.shouldShowLowTrustWarning {
@@ -739,6 +741,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 )
                 groupInfoSubviewInfos.append(reviewCarefullySize.asManualSubviewInfo)
             }
+
+            innerSubviewInfos.append(CGSize(square: vSpacingSafetySection(hasWallpaper: conversationStyle.hasWallpaper)).asManualSubviewInfo)
 
             let mutualGroupsSize: CGSize
             if conversationStyle.hasWallpaper {
@@ -782,6 +786,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 subviewInfos: groupInfoSubviewInfos
             ).measuredSize
             innerSubviewInfos.append(mutualGroupsSize.asManualSubviewInfo)
+        } else {
+            innerSubviewInfos.append(CGSize(square: minBottomPadding).asManualSubviewInfo)
         }
 
         let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
