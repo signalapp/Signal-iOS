@@ -4,7 +4,6 @@
 //
 
 import Foundation
-public import LibSignalClient
 
 public protocol SVRLocalStorage {
     func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool
@@ -141,10 +140,6 @@ public class SVRLocalStorageMock: SVRLocalStorage {
     var isMasterKeyBackedUp: Bool = false
 
     public func clearStorageServiceKeys(_ transaction: DBWriteTransaction) {
-        fatalError("not implemented")
-    }
-
-    public func getMessageRootBackupKey(tx: DBReadTransaction) throws -> BackupKey? {
         fatalError("not implemented")
     }
 
