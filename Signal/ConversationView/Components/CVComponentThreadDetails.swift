@@ -944,18 +944,116 @@ extension CVComponentThreadDetails {
         from groupThread: TSGroupThread,
         tx: DBReadTransaction
     ) -> CVComponentState.ThreadDetails.SafetySection {
-        let memberCount = groupThread.groupModel.groupMembership.fullMembers.count
-        let memberCountString = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
+        let accountManager = DependenciesBridge.shared.tsAccountManager
 
-        let memberCountAttributedText = NSAttributedString.composed(of: [
+        let groupMembership = groupThread.groupModel.groupMembership
+        var members = groupMembership.fullMembers
+
+        let localUserIsAMember: Bool
+        if let localIdentifiers = accountManager.localIdentifiers(tx: tx) {
+            // Remove yourself because we don't want to show your display name
+            let removedMember = members.remove(localIdentifiers.aciAddress)
+            localUserIsAMember = removedMember != nil
+        } else {
+            localUserIsAMember = false
+        }
+
+        let sortedMemberNames = SSKEnvironment.shared.contactManagerImplRef
+            .sortedComparableNames(for: members, tx: tx)
+            .map { $0.displayName.resolvedValue() }
+
+        let formatString: String
+        var underlinedPortion: String?
+        var arguments: [CVarArg] = sortedMemberNames
+        switch (sortedMemberNames.count, localUserIsAMember) {
+        case (0, _):
+            formatString = OWSLocalizedString(
+                "THREAD_DETAILS_NO_MEMBERS",
+                comment: "Label for a group with no members or no members but yourself"
+            )
+        case (1, false):
+            formatString = OWSLocalizedString(
+                "THREAD_DETAILS_ONE_MEMBER",
+                comment: "Label for a group with one member (not counting yourself), displaying their name"
+            )
+        case (1, true):
+            formatString = OWSLocalizedString(
+                "THREAD_DETAILS_ONE_MEMBER_AND_YOURSELF",
+                comment: "Label for a group you are in with one other member, listing their name and yourself"
+            )
+        case (2, false):
+            formatString = OWSLocalizedString(
+                "THREAD_DETAILS_TWO_MEMBERS",
+                comment: "Label for a group you are not in which has two members, listing their names"
+            )
+        case (2, true):
+            formatString = OWSLocalizedString(
+                "THREAD_DETAILS_TWO_MEMBERS_AND_YOURSELF",
+                comment: "Label for a group you are in which has two other members, listing their names and yourself"
+            )
+        case (3, false):
+            formatString = OWSLocalizedString(
+                "THREAD_DETAILS_THREE_MEMBERS",
+                comment: "Label for a group you are not in which has three members, listing their names"
+            )
+        case (3, true):
+            formatString = OWSLocalizedString(
+                "THREAD_DETAILS_THREE_MEMBERS_AND_YOURSELF",
+                comment: "Label for a group you are in which has three other members, listing their names and yourself"
+            )
+        case (4, false):
+            formatString = OWSLocalizedString(
+                "THREAD_DETAILS_FOUR_MEMBERS",
+                comment: "Label for a group you are not in which has four members, listing their names"
+            )
+        default:
+            formatString = OWSLocalizedString(
+                "THREAD_DETAILS_MANY_MEMBERS",
+                comment: "Label for a group with more than four members, listing the first three members' names and embedding THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld as a count of other members"
+            )
+
+            let otherMembersFormat = OWSLocalizedString(
+                "THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld",
+                tableName: "PluralAware",
+                comment: "The number of other members in a group. Embedded into the last parameter of THREAD_DETAILS_MANY_MEMBERS"
+            )
+
+            let firstThreeMembers = Array(arguments.prefix(3))
+            let remainingMembersCount = sortedMemberNames.count + (localUserIsAMember ? 1 : 0) - firstThreeMembers.count
+
+            let otherMembersString = String(format: otherMembersFormat, remainingMembersCount)
+
+            underlinedPortion = otherMembersString
+            arguments = firstThreeMembers + [otherMembersString]
+        }
+
+        let membersString = String(
+            format: formatString,
+            arguments: arguments
+        )
+        let membersAttributedString: NSAttributedString
+        if let underlinedPortion {
+            let underlinedRange = NSString(string: membersString).range(of: underlinedPortion)
+            let attributedString = NSMutableAttributedString(string: membersString)
+            attributedString.addAttributes(
+                [
+                    .underlineStyle: NSUnderlineStyle.single.rawValue,
+                    .underlineColor: Self.underlineColor,
+                ],
+                range: underlinedRange
+            )
+            membersAttributedString = attributedString
+        } else {
+            membersAttributedString = NSAttributedString(string: membersString)
+        }
+
+        let membersAttributedText = NSAttributedString.composed(of: [
             NSAttributedString.with(
                 image: UIImage(named: "group-resizable")!,
                 font: Self.mutualGroupsFont
             ),
             "  ",
-            memberCountString.styled(
-                with: .underline(.single, Self.underlineColor)
-            ),
+            membersAttributedString,
         ]).styled(
             with: .font(Self.mutualGroupsFont),
             .color(Self.mutualGroupsTextColor)
@@ -966,7 +1064,7 @@ extension CVComponentThreadDetails {
         return .init(
             shouldShowLowTrustWarning: shouldShowUnknownThreadWarning,
             shouldShowProfileNamesEducation: shouldShowUnknownThreadWarning,
-            detailsText: memberCountAttributedText,
+            detailsText: membersAttributedText,
             mutualGroupsText: nil,
             threadType: .group,
             shouldShowSafetyTipsButton: shouldShowUnknownThreadWarning && groupThread.hasPendingMessageRequest(transaction: tx)
@@ -1041,8 +1139,9 @@ extension CVComponentThreadDetails {
             )
         default:
             formatString = OWSLocalizedString(
-                "THREAD_DETAILS_MORE_MUTUAL_GROUP",
-                comment: "A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}}"
+                "THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld",
+                tableName: "PluralAware",
+                comment: "A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{group name, group name, number of other groups}}"
             )
 
             // For this string, we want to use the first two groups' names
