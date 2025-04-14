@@ -184,7 +184,7 @@ public class DateUtil {
         if minutesDiff < 1 {
             return OWSLocalizedString("DATE_NOW",
                                      comment: "The present; the current time.")
-        } else if minutesDiff <= 60 {
+        } else if minutesDiff < 60 {
             let shortFormat = OWSLocalizedString("DATE_MINUTES_AGO_%d", tableName: "PluralAware",
                                                 comment: "Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}.")
             let longFormat = OWSLocalizedString("DATE_MINUTES_AGO_LONG_%d", tableName: "PluralAware",
