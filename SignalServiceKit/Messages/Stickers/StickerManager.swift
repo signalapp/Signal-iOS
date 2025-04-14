@@ -766,9 +766,6 @@ public class StickerManager: NSObject {
     private let stickerOperationQueue = ConcurrentTaskQueue(concurrentLimit: 4)
 
     private func tryToDownloadSticker(stickerPack: StickerPack, stickerInfo: StickerInfo) -> Promise<URL> {
-        if let stickerUrl = DownloadStickerOperation.cachedUrl(for: stickerInfo) {
-            return Promise.value(stickerUrl)
-        }
         let (stickerDownload, shouldStartTask) = stickerDownloads.update {
             if let stickerDownload = $0[stickerInfo.asKey()] {
                 return (stickerDownload, false)

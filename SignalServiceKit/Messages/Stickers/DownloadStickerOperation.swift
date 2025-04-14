@@ -11,7 +11,7 @@ enum DownloadStickerOperation {
 
     private static let cache = LRUCache<String, URL>(maxSize: 256)
 
-    public static func cachedUrl(for stickerInfo: StickerInfo) -> URL? {
+    private static func cachedUrl(for stickerInfo: StickerInfo) -> URL? {
         guard let stickerUrl = cache.object(forKey: stickerInfo.asKey()) else {
             return nil
         }
