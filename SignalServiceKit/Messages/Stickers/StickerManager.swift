@@ -44,7 +44,7 @@ public class StickerManager: NSObject {
     private static let packsDidChangeEvent: DebouncedEvent = DebouncedEvents.build(
         mode: .firstLast,
         maxFrequencySeconds: 0.5,
-        onQueue: .asyncOnQueue(queue: .global()),
+        onQueue: .global(),
         notifyBlock: {
             NotificationCenter.default.postOnMainThread(name: packsDidChange, object: nil)
             NotificationCenter.default.postOnMainThread(name: stickersOrPacksDidChange, object: nil)
@@ -54,7 +54,7 @@ public class StickerManager: NSObject {
     private static let stickersDidChangeEvent: DebouncedEvent = DebouncedEvents.build(
         mode: .firstLast,
         maxFrequencySeconds: 0.5,
-        onQueue: .asyncOnQueue(queue: .global()),
+        onQueue: .global(),
         notifyBlock: {
             NotificationCenter.default.postOnMainThread(name: stickersOrPacksDidChange, object: nil)
         }

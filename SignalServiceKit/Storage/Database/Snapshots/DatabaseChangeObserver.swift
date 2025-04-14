@@ -314,7 +314,7 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
         return DebouncedEvents.build(
             mode: .firstLast,
             maxFrequencySeconds: 3.0,
-            onQueue: .asyncOnQueue(queue: .main),
+            onQueue: .main,
             notifyBlock: { [weak self] in self?.fireDidUpdateExternally() }
         )
     }()

@@ -53,7 +53,7 @@ public final class ConversationViewController: OWSViewController {
     lazy var updateContentInsetsEvent = DebouncedEvents.build(
         mode: .lastOnly,
         maxFrequencySeconds: 0.01,
-        onQueue: .asyncOnQueue(queue: .main),
+        onQueue: .main,
         notifyBlock: { [weak self] in
             self?.updateContentInsets()
         })
@@ -193,7 +193,7 @@ public final class ConversationViewController: OWSViewController {
         self.otherUsersProfileDidChangeEvent = DebouncedEvents.build(
             mode: .firstLast,
             maxFrequencySeconds: 1.0,
-            onQueue: .asyncOnQueue(queue: .main)
+            onQueue: .main
         ) { [weak self] in
             // Reload all cells if this is a group conversation,
             // since we may need to update the sender names on the messages.

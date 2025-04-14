@@ -439,7 +439,7 @@ public class CVLoadCoordinator: NSObject {
     private lazy var loadIfNecessaryEvent: DebouncedEvent = {
         DebouncedEvents.build(mode: .lastOnly,
                               maxFrequencySeconds: DebouncedEvents.thetaInterval,
-                              onQueue: .asyncOnQueue(queue: .main)) { [weak self] in
+                              onQueue: .main) { [weak self] in
             AssertIsOnMainThread()
             self?.loadIfNecessaryDebounced()
         }

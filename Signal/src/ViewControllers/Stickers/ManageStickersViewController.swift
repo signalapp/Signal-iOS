@@ -103,7 +103,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         DebouncedEvents.build(
             mode: .firstLast,
             maxFrequencySeconds: 0.75,
-            onQueue: .asyncOnQueue(queue: .main),
+            onQueue: .main,
             notifyBlock: { [weak self] in
                 guard let self = self else { return }
                 if self.needsStateUpdate {
