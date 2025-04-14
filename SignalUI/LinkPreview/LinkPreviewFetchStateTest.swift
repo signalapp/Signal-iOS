@@ -197,7 +197,7 @@ class LinkPreviewFetchStateTest: XCTestCase {
         XCTAssert(linkPreviewFetchState.currentState.isLoaded)
         XCTAssertEqual(linkPreviewFetchState.linkPreviewDraftIfLoaded?.url, url2)
         XCTAssertEqual(linkPreviewFetchState.currentUrl, url2)
-        XCTAssertEqual(mockLinkPreviewFetcher.fetchedURLs, [url1, url2])
+        XCTAssertEqual(Set(mockLinkPreviewFetcher.fetchedURLs), [url1, url2])
     }
 
     func testUpdatePrependScheme() async throws {
@@ -214,7 +214,7 @@ class LinkPreviewFetchStateTest: XCTestCase {
         await linkPreviewFetchState.update(.init(text: "signal.org", ranges: .empty), prependSchemeIfNeeded: true)?.value
         XCTAssert(linkPreviewFetchState.currentState.isLoaded)
         XCTAssertEqual(mockLinkPreviewFetcher.fetchedURLs, [URL(string: "https://signal.org")!])
-        mockLinkPreviewFetcher.fetchedURLs.removeAll()
+        mockLinkPreviewFetcher._fetchedURLs.update { $0.removeAll() }
 
         // If there's already a scheme, we don't add "https://". (We require
         // "https://", so specify anything other scheme disables link previews.
@@ -272,7 +272,7 @@ class LinkPreviewFetchStateTest: XCTestCase {
         await linkPreviewFetchState.update(.init(text: "https://signal.org", ranges: .empty))?.value
         XCTAssertEqual(linkPreviewFetchState.linkPreviewDraftIfLoaded?.url, url)
         XCTAssertEqual(mockLinkPreviewFetcher.fetchedURLs, [url])
-        mockLinkPreviewFetcher.fetchedURLs.removeAll()
+        mockLinkPreviewFetcher._fetchedURLs.update { $0.removeAll() }
 
         // Dismiss the preview; make sure it goes away.
         linkPreviewFetchState.disable()

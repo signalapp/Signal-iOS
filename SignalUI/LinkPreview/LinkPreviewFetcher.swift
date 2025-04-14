@@ -13,12 +13,13 @@ public protocol LinkPreviewFetcher {
 #if TESTABLE_BUILD
 
 class MockLinkPreviewFetcher: LinkPreviewFetcher {
-    var fetchedURLs = [URL]()
+    var fetchedURLs: [URL] { _fetchedURLs.get() }
+    let _fetchedURLs = AtomicValue<[URL]>([], lock: .init())
 
     var fetchLinkPreviewBlock: ((URL) async throws -> OWSLinkPreviewDraft)?
 
     func fetchLinkPreview(for url: URL) async throws -> OWSLinkPreviewDraft {
-        fetchedURLs.append(url)
+        _fetchedURLs.update { $0.append(url) }
         return try await fetchLinkPreviewBlock!(url)
     }
 }
