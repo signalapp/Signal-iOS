@@ -110,17 +110,12 @@ public class ReceiptSender: NSObject {
         )
     }
 
-    @objc
-    public func enqueueReadReceipt(
-        for address: SignalServiceAddress,
+    func enqueueReadReceipt(
+        for aci: Aci,
         timestamp: UInt64,
         messageUniqueId: String?,
         tx: DBWriteTransaction
     ) {
-        guard let aci = address.aci else {
-            Logger.warn("Dropping receipt for message without ACI.")
-            return
-        }
         enqueueReceipt(
             for: aci,
             timestamp: timestamp,
@@ -130,17 +125,12 @@ public class ReceiptSender: NSObject {
         )
     }
 
-    @objc
-    public func enqueueViewedReceipt(
-        for address: SignalServiceAddress,
+    func enqueueViewedReceipt(
+        for aci: Aci,
         timestamp: UInt64,
         messageUniqueId: String?,
         tx: DBWriteTransaction
     ) {
-        guard let aci = address.aci else {
-            Logger.warn("Dropping receipt for message without ACI.")
-            return
-        }
         enqueueReceipt(
             for: aci,
             timestamp: timestamp,

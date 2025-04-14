@@ -143,13 +143,12 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
         }
 
         for receipt in pendingReadReceipts {
-            let address = SignalServiceAddress.legacyAddress(aciString: receipt.authorAciString, phoneNumber: receipt.authorPhoneNumber)
-            guard address.isValid else {
-                owsFailDebug("address was invalid")
+            guard let authorAci = self.authorAci(aciString: receipt.authorAciString, phoneNumber: receipt.authorPhoneNumber, tx: transaction) else {
+                Logger.warn("Address was invalid or missing an ACI.")
                 continue
             }
             SSKEnvironment.shared.receiptSenderRef.enqueueReadReceipt(
-                for: address,
+                for: authorAci,
                 timestamp: UInt64(receipt.messageTimestamp),
                 messageUniqueId: receipt.messageUniqueId,
                 tx: transaction
@@ -158,19 +157,29 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
         try finder.delete(pendingReadReceipts: pendingReadReceipts, transaction: transaction)
 
         for receipt in pendingViewedReceipts {
-            let address = SignalServiceAddress.legacyAddress(aciString: receipt.authorAciString, phoneNumber: receipt.authorPhoneNumber)
-            guard address.isValid else {
-                owsFailDebug("address was invalid")
+            guard let authorAci = self.authorAci(aciString: receipt.authorAciString, phoneNumber: receipt.authorPhoneNumber, tx: transaction) else {
+                Logger.warn("Address was invalid or missing an ACI.")
                 continue
             }
             SSKEnvironment.shared.receiptSenderRef.enqueueViewedReceipt(
-                for: address,
+                for: authorAci,
                 timestamp: UInt64(receipt.messageTimestamp),
                 messageUniqueId: receipt.messageUniqueId,
                 tx: transaction
             )
         }
         try finder.delete(pendingViewedReceipts: pendingViewedReceipts, transaction: transaction)
+    }
+
+    private func authorAci(aciString: String?, phoneNumber: String?, tx: DBReadTransaction) -> Aci? {
+        if let aciString, let aci = Aci.parseFrom(aciString: aciString) {
+            return aci
+        }
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        if let phoneNumber, let aci = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx)?.aci {
+            return aci
+        }
+        return nil
     }
 }
 

@@ -136,8 +136,12 @@ public class OWSReceiptManager: NSObject {
                 owsFailDebug("We don't support incoming messages from self.")
                 return
             }
+            guard let authorAci = self.authorAci(forMessage: message, tx: transaction) else {
+                Logger.warn("Dropping receipt for message without an Aci.")
+                return
+            }
             if areReadReceiptsEnabled() {
-                receiptSender.enqueueReadReceipt(for: message.authorAddress, timestamp: message.timestamp, messageUniqueId: message.uniqueId, tx: transaction)
+                receiptSender.enqueueReadReceipt(for: authorAci, timestamp: message.timestamp, messageUniqueId: message.uniqueId, tx: transaction)
             }
         case .onThisDeviceWhilePendingMessageRequest:
             enqueueLinkedDeviceReadReceipt(forMessage: message, transaction: transaction)
@@ -163,8 +167,12 @@ public class OWSReceiptManager: NSObject {
                 owsFailDebug("We don't support incoming messages from self.")
                 return
             }
+            guard let authorAci = self.authorAci(forMessage: message, tx: transaction) else {
+                Logger.warn("Dropping receipt for message without an Aci.")
+                return
+            }
             if areReadReceiptsEnabled() {
-                receiptSender.enqueueViewedReceipt(for: message.authorAddress, timestamp: message.timestamp, messageUniqueId: message.uniqueId, tx: transaction)
+                receiptSender.enqueueViewedReceipt(for: authorAci, timestamp: message.timestamp, messageUniqueId: message.uniqueId, tx: transaction)
             }
         case .onThisDeviceWhilePendingMessageRequest:
             enqueueLinkedDeviceViewedReceipt(forIncomingMessage: message, transaction: transaction)
@@ -172,6 +180,18 @@ public class OWSReceiptManager: NSObject {
                 pendingReceiptRecorder.recordPendingViewedReceipt(for: message, thread: thread, transaction: transaction)
             }
         }
+    }
+
+    private func authorAci(forMessage message: TSIncomingMessage, tx: DBReadTransaction) -> Aci? {
+        if let authorAddressAci = message.authorAddress.aci {
+            // By far the most common case.
+            return authorAddressAci
+        }
+        if let authorAddressPhoneNumber = message.authorAddress.phoneNumber {
+            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+            return recipientDatabaseTable.fetchRecipient(phoneNumber: authorAddressPhoneNumber, transaction: tx)?.aci
+        }
+        return nil
     }
 
     public func storyWasRead(_ storyMessage: StoryMessage, circumstance: OWSReceiptCircumstance, transaction: DBWriteTransaction) {
@@ -451,7 +471,7 @@ extension OWSReceiptManager {
         }
 
         receiptSender.enqueueViewedReceipt(
-            for: message.authorAddress,
+            for: message.authorAci,
             timestamp: message.timestamp,
             messageUniqueId: message.uniqueId,
             tx: transaction
