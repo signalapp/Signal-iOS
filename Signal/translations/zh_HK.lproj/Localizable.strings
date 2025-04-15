@@ -518,100 +518,100 @@
 "BACKUP_KEY_PLACEHOLDER" = "備份金鑰";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Upgrade";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "升級";
 
 /* Text describing the user's free backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "Your backup plan is free";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "你的備份計畫是免費的";
 
 /* Header describing what the free backup plan includes. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "Text + 45 days of media backup";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "文字 + 45 天的媒體備份";
 
 /* Text shown when we fail to load someone's backup plan due to a generic error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR" = "Failed to fetch your backup plan. Please contact support.";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR" = "無法取得你的備份計畫。請聯絡支援團隊。";
 
 /* Text shown when we fail to load someone's backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR" = "Failed to fetch your backup plan. Check your internet connection and try again.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR" = "無法取得你的備份計畫。請檢查你的網路連線，然後重試。";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Manage or Cancel";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "辦理或取消";
 
 /* Title for a button allowing users to reenable a paid backup plan that has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE" = "Resubscribe";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE" = "再次定期贊助";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION" = "Subscription canceled";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION" = "備份定期贊助已取消";
 
 /* Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "Expires %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "到期日為 %1$@";
 
 /* Text explaining that a user's paid plan, which has been canceled, has expired. Embeds {{ the formatted expiration date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Expired %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "已於 %1$@ 到期";
 
 /* Header describing what the paid backup plan includes. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Text + all media backup";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "文字 + 所有媒體備份";
 
 /* Text explaining the price of the user's paid backup plan. Embeds {{ the formatted price }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_PRICE_FORMAT" = "%1$@/month";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_PRICE_FORMAT" = "每月 %1$@";
 
 /* Text explaining when the user's paid backup plan renews. Embeds {{ the formatted renewal date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "Renews %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "%1$@ 續期";
 
 /* Footer for a menu section related to settings for when Backups are disabled. */
-"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Backups have been turned off and your data has been deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "備份已關閉，而且你的資料已從 Signal 的安全儲存服務中刪除。";
 
 /* Header for a menu section related to settings for when Backups are enabled. */
-"BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Backup Details";
+"BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "備份詳細資料";
 
 /* Footer for a menu section allowing users to turn off Backups. */
-"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "This will delete all your backup data. No new backups will be created.";
+"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "這將刪除所有備份資料。系統也不會建立新的備份。";
 
 /* Title for a button allowing users to turn off Backups. */
-"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Turn Off & Delete Backup";
+"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "關閉並刪除備份";
 
 /* Text describing that a user's backup will be automatically performed daily. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Daily";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "每日";
 
 /* Label for a menu item explaining the frequency of automatic backups. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL" = "Backup Frequency";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL" = "備份頻率";
 
 /* Text describing that a user's backup will only be performed manually. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MANUALLY" = "Manually";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MANUALLY" = "手動";
 
 /* Text describing that a user's backup will be automatically performed monthly. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MONTHLY" = "Monthly";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MONTHLY" = "每月";
 
 /* Text describing that a user's backup will be automatically performed weekly. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_WEEKLY" = "Weekly";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_WEEKLY" = "每週";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Back Up Using Cellular";
+"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "使用行動數據備份";
 
 /* Label for a menu item explaining the size of the user's backup. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL" = "Backup Size";
+"BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL" = "備份大小";
 
 /* Label for a menu item explaining when the user's last backup occurred. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL" = "Last Backup";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL" = "上次備份";
 
 /* Text explaining that the user's last backup was in the past. Embeds 1:{{ the date of the backup }} and 2:{{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_PAST_FORMAT" = "%1$@ at %2$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_PAST_FORMAT" = "%1$@，於 %2$@ 換算";
 
 /* Text explaining that the user's last backup was today. Embeds {{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_TODAY_FORMAT" = "Today at %1$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_TODAY_FORMAT" = "今天 %1$@";
 
 /* Text explaining that the user's last backup was yesterday. Embeds {{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "Yesterday at %1$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "昨天 %1$@";
 
 /* Label for a menu item offering to show the user their backup key. */
-"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "View Backup Key";
+"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "檢視備份金鑰";
 
 /* Title for a button allowing users to trigger a manual backup. */
-"BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Back Up Now";
+"BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "立即備份";
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
-"BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Re-enable Backups";
+"BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "重新啟用備份";
 
 /* Title for the 'Backup' settings menu. */
-"BACKUPS_SETTINGS_TITLE" = "Signal Backups";
+"BACKUPS_SETTINGS_TITLE" = "Signal 備份";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "我的徽章";
@@ -3896,7 +3896,7 @@
 "IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "確認你的捐款";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "To setup your recurring donation, tap continue to confirm a %1$@ charge with your bank. This will be automatically refunded and allows your %2$@/month donation to be debited from your account.";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "要設定你的定期捐款，請輕按「繼續」以向銀行確認 %1$@ 的費用。這筆款項將自動退還，並允許從你的帳戶中扣除每月 %2$@ 的捐款。";
 
 /* Title confirming recurring donation with bank. */
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "與 %1$@ 確認你的捐款";
@@ -5258,7 +5258,7 @@
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "驗證碼";
 
 /* Title for button which opens the in-app settings */
-"OPEN_APP_SETTINGS_BUTTON" = "Settings";
+"OPEN_APP_SETTINGS_BUTTON" = "設定";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "設定";
@@ -6911,7 +6911,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@（預設）";
 
 /* Label for the 'backups' section of app settings. */
-"SETTINGS_BACKUPS" = "Backups";
+"SETTINGS_BACKUPS" = "備份";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "新增被封鎖的用戶";

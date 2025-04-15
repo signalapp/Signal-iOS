@@ -518,100 +518,100 @@
 "BACKUP_KEY_PLACEHOLDER" = "Back-upsleutel";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Upgrade";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Upgraden";
 
 /* Text describing the user's free backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "Your backup plan is free";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "Je back-upabonnement is gratis";
 
 /* Header describing what the free backup plan includes. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "Text + 45 days of media backup";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "Tekstberichten + 45 dagen media";
 
 /* Text shown when we fail to load someone's backup plan due to a generic error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR" = "Failed to fetch your backup plan. Please contact support.";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR" = "Je backup-abonnement kon niet worden opgehaald. Neem contact op met ondersteuning.";
 
 /* Text shown when we fail to load someone's backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR" = "Failed to fetch your backup plan. Check your internet connection and try again.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR" = "Je backup-abonnement kon niet worden opgehaald. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Manage or Cancel";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Beheren of annuleren";
 
 /* Title for a button allowing users to reenable a paid backup plan that has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE" = "Resubscribe";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE" = "Opnieuw abonneren";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION" = "Subscription canceled";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION" = "Abonnement opgezegd";
 
 /* Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "Expires %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "Verloopt op %1$@";
 
 /* Text explaining that a user's paid plan, which has been canceled, has expired. Embeds {{ the formatted expiration date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Expired %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Verlopen op %1$@";
 
 /* Header describing what the paid backup plan includes. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Text + all media backup";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Tekstberichten + alle media";
 
 /* Text explaining the price of the user's paid backup plan. Embeds {{ the formatted price }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_PRICE_FORMAT" = "%1$@/month";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_PRICE_FORMAT" = "%1$@/maand";
 
 /* Text explaining when the user's paid backup plan renews. Embeds {{ the formatted renewal date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "Renews %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "Verlengt op %1$@";
 
 /* Footer for a menu section related to settings for when Backups are disabled. */
-"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Backups have been turned off and your data has been deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Back-ups zijn uitgeschakeld en je gegevens zijn verwijderd uit de beveiligde opslagservice van Signal.";
 
 /* Header for a menu section related to settings for when Backups are enabled. */
-"BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Backup Details";
+"BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Back-updetails";
 
 /* Footer for a menu section allowing users to turn off Backups. */
-"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "This will delete all your backup data. No new backups will be created.";
+"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "Hiermee worden al je back-upgegevens verwijderd. Er worden geen nieuwe back-ups gemaakt.";
 
 /* Title for a button allowing users to turn off Backups. */
-"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Turn Off & Delete Backup";
+"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Back-ups uitschakelen en verwijderen";
 
 /* Text describing that a user's backup will be automatically performed daily. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Daily";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Dagelijks";
 
 /* Label for a menu item explaining the frequency of automatic backups. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL" = "Backup Frequency";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL" = "Back-upfrequentie";
 
 /* Text describing that a user's backup will only be performed manually. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MANUALLY" = "Manually";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MANUALLY" = "Handmatig";
 
 /* Text describing that a user's backup will be automatically performed monthly. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MONTHLY" = "Monthly";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MONTHLY" = "Maandelijks";
 
 /* Text describing that a user's backup will be automatically performed weekly. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_WEEKLY" = "Weekly";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_WEEKLY" = "Wekelijks";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Back Up Using Cellular";
+"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Back-up maken via mobiel netwerk";
 
 /* Label for a menu item explaining the size of the user's backup. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL" = "Backup Size";
+"BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL" = "Back-upgrootte";
 
 /* Label for a menu item explaining when the user's last backup occurred. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL" = "Last Backup";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL" = "Laatste back-up";
 
 /* Text explaining that the user's last backup was in the past. Embeds 1:{{ the date of the backup }} and 2:{{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_PAST_FORMAT" = "%1$@ at %2$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_PAST_FORMAT" = "%1$@ om %2$@";
 
 /* Text explaining that the user's last backup was today. Embeds {{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_TODAY_FORMAT" = "Today at %1$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_TODAY_FORMAT" = "Vandaag om %1$@";
 
 /* Text explaining that the user's last backup was yesterday. Embeds {{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "Yesterday at %1$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "Gisteren om %1$@";
 
 /* Label for a menu item offering to show the user their backup key. */
-"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "View Backup Key";
+"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "Back-upsleutel weergeven";
 
 /* Title for a button allowing users to trigger a manual backup. */
-"BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Back Up Now";
+"BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Nu back-up maken";
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
-"BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Re-enable Backups";
+"BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Back-ups opnieuw inschakelen";
 
 /* Title for the 'Backup' settings menu. */
-"BACKUPS_SETTINGS_TITLE" = "Signal Backups";
+"BACKUPS_SETTINGS_TITLE" = "Signal back-ups";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Jouw badges";
@@ -2330,7 +2330,7 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "De ontvanger wordt in een persoonlijk bericht op de hoogte gebracht van de donatie. Voeg hieronder je eigen bericht toe.";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Berichttekst toevoegen";
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Bericht toevoegen";
 
 /* If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat. */
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Verlopen";
@@ -2378,7 +2378,7 @@
 "DONATE_SCREEN_MONTHLY_CHOICE" = "Maandelijks";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these and it expires soon, this text is shown below it indicating when it will expire. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Verloopt %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Verloopt op %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Verlengt op %1$@";
@@ -2984,7 +2984,7 @@
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "Berichten verzonden";
 
 /* Indicates that the user can add a text message to forwarded messages. */
-"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Berichttekst toevoegen";
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Bericht toevoegen";
 
 /* Title for the 'forward message(s)' view. */
 "FORWARD_MESSAGE_TITLE" = "Doorsturen naar";
@@ -3896,7 +3896,7 @@
 "IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Bevestig je donatie";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "To setup your recurring donation, tap continue to confirm a %1$@ charge with your bank. This will be automatically refunded and allows your %2$@/month donation to be debited from your account.";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Om je maandelijkse donatie in te stellen, tik op Doorgaan om dit met een afschrijving van %1$@ bij je bank te bevestigen. Dit bedrag wordt automatisch teruggestort en maakt het mogelijk om je donatie van %2$@/maand van je rekening af te schrijven.";
 
 /* Title confirming recurring donation with bank. */
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Bevestig je donatie via %1$@";
@@ -5258,7 +5258,7 @@
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "Verificatiecode";
 
 /* Title for button which opens the in-app settings */
-"OPEN_APP_SETTINGS_BUTTON" = "Settings";
+"OPEN_APP_SETTINGS_BUTTON" = "Instellingen";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Instellingen";
@@ -6911,7 +6911,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (systeemstandaard)";
 
 /* Label for the 'backups' section of app settings. */
-"SETTINGS_BACKUPS" = "Backups";
+"SETTINGS_BACKUPS" = "Back-ups";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Geblokkeerde persoon toevoegen";

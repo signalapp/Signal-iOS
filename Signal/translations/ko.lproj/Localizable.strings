@@ -518,100 +518,100 @@
 "BACKUP_KEY_PLACEHOLDER" = "백업 키";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Upgrade";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "업그레이드";
 
 /* Text describing the user's free backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "Your backup plan is free";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "백업 플랜이 무료입니다.";
 
 /* Header describing what the free backup plan includes. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "Text + 45 days of media backup";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "텍스트 + 45일간의 미디어 백업";
 
 /* Text shown when we fail to load someone's backup plan due to a generic error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR" = "Failed to fetch your backup plan. Please contact support.";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR" = "백업 플랜을 가져오지 못했습니다. 고객 지원팀에 문의하세요.";
 
 /* Text shown when we fail to load someone's backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR" = "Failed to fetch your backup plan. Check your internet connection and try again.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR" = "백업 플랜을 가져오지 못했습니다. 인터넷 연결을 확인하고 다시 시도하세요.";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Manage or Cancel";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "관리 또는 취소";
 
 /* Title for a button allowing users to reenable a paid backup plan that has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE" = "Resubscribe";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE" = "다시 구독";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION" = "Subscription canceled";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION" = "구독을 취소했습니다.";
 
 /* Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "Expires %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "%1$@ 만료";
 
 /* Text explaining that a user's paid plan, which has been canceled, has expired. Embeds {{ the formatted expiration date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Expired %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "%1$@ 만료";
 
 /* Header describing what the paid backup plan includes. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Text + all media backup";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "텍스트 + 모든 미디어 백업";
 
 /* Text explaining the price of the user's paid backup plan. Embeds {{ the formatted price }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_PRICE_FORMAT" = "%1$@/month";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_PRICE_FORMAT" = "%1$@/월";
 
 /* Text explaining when the user's paid backup plan renews. Embeds {{ the formatted renewal date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "Renews %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "%1$@ 갱신";
 
 /* Footer for a menu section related to settings for when Backups are disabled. */
-"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Backups have been turned off and your data has been deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "백업을 사용하지 않도록 설정했으며, Signal의 안전한 저장소 서비스에서 데이터를 삭제했습니다.";
 
 /* Header for a menu section related to settings for when Backups are enabled. */
-"BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Backup Details";
+"BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "백업 세부 정보";
 
 /* Footer for a menu section allowing users to turn off Backups. */
-"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "This will delete all your backup data. No new backups will be created.";
+"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "모든 백업 데이터를 삭제하고, 새로운 백업을 생성하지 않습니다.";
 
 /* Title for a button allowing users to turn off Backups. */
-"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Turn Off & Delete Backup";
+"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "백업 끄기 및 삭제";
 
 /* Text describing that a user's backup will be automatically performed daily. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Daily";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "매일";
 
 /* Label for a menu item explaining the frequency of automatic backups. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL" = "Backup Frequency";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL" = "백업 빈도";
 
 /* Text describing that a user's backup will only be performed manually. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MANUALLY" = "Manually";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MANUALLY" = "수동";
 
 /* Text describing that a user's backup will be automatically performed monthly. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MONTHLY" = "Monthly";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MONTHLY" = "월간";
 
 /* Text describing that a user's backup will be automatically performed weekly. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_WEEKLY" = "Weekly";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_WEEKLY" = "매주";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Back Up Using Cellular";
+"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "셀룰러 데이터를 사용하여 백업";
 
 /* Label for a menu item explaining the size of the user's backup. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL" = "Backup Size";
+"BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL" = "백업 크기";
 
 /* Label for a menu item explaining when the user's last backup occurred. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL" = "Last Backup";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL" = "마지막 백업";
 
 /* Text explaining that the user's last backup was in the past. Embeds 1:{{ the date of the backup }} and 2:{{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_PAST_FORMAT" = "%1$@ at %2$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_PAST_FORMAT" = "%1$@ %2$@";
 
 /* Text explaining that the user's last backup was today. Embeds {{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_TODAY_FORMAT" = "Today at %1$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_TODAY_FORMAT" = "오늘 %1$@";
 
 /* Text explaining that the user's last backup was yesterday. Embeds {{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "Yesterday at %1$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "어제 %1$@";
 
 /* Label for a menu item offering to show the user their backup key. */
-"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "View Backup Key";
+"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "백업 키 보기";
 
 /* Title for a button allowing users to trigger a manual backup. */
-"BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Back Up Now";
+"BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "지금 백업";
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
-"BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Re-enable Backups";
+"BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "백업 재활성화";
 
 /* Title for the 'Backup' settings menu. */
-"BACKUPS_SETTINGS_TITLE" = "Signal Backups";
+"BACKUPS_SETTINGS_TITLE" = "Signal 백업";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "내 배지";
@@ -3896,7 +3896,7 @@
 "IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "기부 확인";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "To setup your recurring donation, tap continue to confirm a %1$@ charge with your bank. This will be automatically refunded and allows your %2$@/month donation to be debited from your account.";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "정기 기부를 설정하려면 계속을 탭하여 은행을 통한 %1$@ 청구를 확인해 주세요. 이렇게 하면 청구 금액은 자동으로 환불되고 계정에서 월 %2$@ 기부가 승인됩니다.";
 
 /* Title confirming recurring donation with bank. */
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "%1$@을(를) 통한 기부 확인";
@@ -5258,7 +5258,7 @@
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "확인 코드";
 
 /* Title for button which opens the in-app settings */
-"OPEN_APP_SETTINGS_BUTTON" = "Settings";
+"OPEN_APP_SETTINGS_BUTTON" = "설정";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "설정";
@@ -6911,7 +6911,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@(기본)";
 
 /* Label for the 'backups' section of app settings. */
-"SETTINGS_BACKUPS" = "Backups";
+"SETTINGS_BACKUPS" = "백업";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "차단한 사용자 추가";

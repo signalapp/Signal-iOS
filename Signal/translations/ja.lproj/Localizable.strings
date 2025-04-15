@@ -518,100 +518,100 @@
 "BACKUP_KEY_PLACEHOLDER" = "バックアップキー";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Upgrade";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "アップグレードする";
 
 /* Text describing the user's free backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "Your backup plan is free";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "現在のバックアッププランは無料プランです";
 
 /* Header describing what the free backup plan includes. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "Text + 45 days of media backup";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "テキストと45日間のメディアのバックアップ";
 
 /* Text shown when we fail to load someone's backup plan due to a generic error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR" = "Failed to fetch your backup plan. Please contact support.";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR" = "バックアッププランを読み込めませんでした。サポートにお問い合わせください。";
 
 /* Text shown when we fail to load someone's backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR" = "Failed to fetch your backup plan. Check your internet connection and try again.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR" = "バックアッププランを読み込めませんでした。インターネット接続を確認して再度試してください。";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Manage or Cancel";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "変更またはキャンセルする";
 
 /* Title for a button allowing users to reenable a paid backup plan that has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE" = "Resubscribe";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE" = "再開する";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION" = "Subscription canceled";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION" = "サブスクリプションが解除されました";
 
 /* Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "Expires %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "有効期限%1$@";
 
 /* Text explaining that a user's paid plan, which has been canceled, has expired. Embeds {{ the formatted expiration date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Expired %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "%1$@に失効しています";
 
 /* Header describing what the paid backup plan includes. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Text + all media backup";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "テキストとすべてのメディアのバックアップ";
 
 /* Text explaining the price of the user's paid backup plan. Embeds {{ the formatted price }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_PRICE_FORMAT" = "%1$@/month";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_PRICE_FORMAT" = "%1$@/月";
 
 /* Text explaining when the user's paid backup plan renews. Embeds {{ the formatted renewal date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "Renews %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "更新 %1$@";
 
 /* Footer for a menu section related to settings for when Backups are disabled. */
-"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Backups have been turned off and your data has been deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "バックアップがオフになり、データはSignalの安全なストレージサービスから消去されました。";
 
 /* Header for a menu section related to settings for when Backups are enabled. */
-"BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Backup Details";
+"BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "バックアップの詳細";
 
 /* Footer for a menu section allowing users to turn off Backups. */
-"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "This will delete all your backup data. No new backups will be created.";
+"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "バックアップデータはすべて消去されます。新しいバックアップは作成されません。";
 
 /* Title for a button allowing users to turn off Backups. */
-"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Turn Off & Delete Backup";
+"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "バックアップをオフにして消去する";
 
 /* Text describing that a user's backup will be automatically performed daily. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Daily";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "毎日";
 
 /* Label for a menu item explaining the frequency of automatic backups. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL" = "Backup Frequency";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL" = "バックアップの頻度";
 
 /* Text describing that a user's backup will only be performed manually. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MANUALLY" = "Manually";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MANUALLY" = "手動";
 
 /* Text describing that a user's backup will be automatically performed monthly. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MONTHLY" = "Monthly";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MONTHLY" = "毎月";
 
 /* Text describing that a user's backup will be automatically performed weekly. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_WEEKLY" = "Weekly";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_WEEKLY" = "1週間ごと";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Back Up Using Cellular";
+"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "モバイルデータ通信を使ってバックアップする";
 
 /* Label for a menu item explaining the size of the user's backup. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL" = "Backup Size";
+"BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL" = "バックアップの容量";
 
 /* Label for a menu item explaining when the user's last backup occurred. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL" = "Last Backup";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL" = "最終バックアップ";
 
 /* Text explaining that the user's last backup was in the past. Embeds 1:{{ the date of the backup }} and 2:{{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_PAST_FORMAT" = "%1$@ at %2$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_PAST_FORMAT" = "%1$@ (%2$@)";
 
 /* Text explaining that the user's last backup was today. Embeds {{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_TODAY_FORMAT" = "Today at %1$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_TODAY_FORMAT" = "今日 %1$@";
 
 /* Text explaining that the user's last backup was yesterday. Embeds {{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "Yesterday at %1$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "昨日 %1$@";
 
 /* Label for a menu item offering to show the user their backup key. */
-"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "View Backup Key";
+"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "バックアップキーを表示する";
 
 /* Title for a button allowing users to trigger a manual backup. */
-"BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Back Up Now";
+"BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "いますぐバックアップする";
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
-"BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Re-enable Backups";
+"BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "バックアップをもう一度有効にする";
 
 /* Title for the 'Backup' settings menu. */
-"BACKUPS_SETTINGS_TITLE" = "Signal Backups";
+"BACKUPS_SETTINGS_TITLE" = "Signalバックアップ";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "マイバッジ";
@@ -3896,7 +3896,7 @@
 "IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "寄付をご確認ください";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "To setup your recurring donation, tap continue to confirm a %1$@ charge with your bank. This will be automatically refunded and allows your %2$@/month donation to be debited from your account.";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "定期的な寄付を設定するには「続ける」をタップして、銀行で%1$@の手数料がかかることをご確認ください。この手数料は自動的に返金され、%2$@/月の寄付金がお口座から引き落とされます。";
 
 /* Title confirming recurring donation with bank. */
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "%1$@を通しての寄付をご確認ください";
@@ -5258,7 +5258,7 @@
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "認証コード";
 
 /* Title for button which opens the in-app settings */
-"OPEN_APP_SETTINGS_BUTTON" = "Settings";
+"OPEN_APP_SETTINGS_BUTTON" = "設定";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "設定";
@@ -6911,7 +6911,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (既定)";
 
 /* Label for the 'backups' section of app settings. */
-"SETTINGS_BACKUPS" = "Backups";
+"SETTINGS_BACKUPS" = "バックアップ";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "ブロックするユーザーを追加";

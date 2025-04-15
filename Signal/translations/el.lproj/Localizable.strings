@@ -518,100 +518,100 @@
 "BACKUP_KEY_PLACEHOLDER" = "Εφεδρικό κλειδί";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Upgrade";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Αναβάθμιση";
 
 /* Text describing the user's free backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "Your backup plan is free";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "Το πρόγραμμα αντιγράφων ασφαλείας σου είναι δωρεάν";
 
 /* Header describing what the free backup plan includes. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "Text + 45 days of media backup";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "Αντίγραφα ασφαλείας κειμένου + των πολυμέσων 45 ημερών";
 
 /* Text shown when we fail to load someone's backup plan due to a generic error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR" = "Failed to fetch your backup plan. Please contact support.";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR" = "Αποτυχία λήψης του προγράμματος αντιγράφων ασφαλείας. Επικοινώνησε με την υποστήριξη.";
 
 /* Text shown when we fail to load someone's backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR" = "Failed to fetch your backup plan. Check your internet connection and try again.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR" = "Αποτυχία λήψης του προγράμματος αντιγράφων ασφαλείας. Έλεγξε τη σύνδεσή σου στο διαδίκτυο και ξαναδοκίμασε.";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Manage or Cancel";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Διαχείριση ή ακύρωση";
 
 /* Title for a button allowing users to reenable a paid backup plan that has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE" = "Resubscribe";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE" = "Εγγραφή εκ νέου";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION" = "Subscription canceled";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION" = "Η συνδρομή ακυρώθηκε";
 
 /* Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "Expires %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "Λήγει στις %1$@";
 
 /* Text explaining that a user's paid plan, which has been canceled, has expired. Embeds {{ the formatted expiration date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Expired %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Έληξε στις %1$@";
 
 /* Header describing what the paid backup plan includes. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Text + all media backup";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Αντίγραφα ασφαλείας κειμένου + όλων των πολυμέσων";
 
 /* Text explaining the price of the user's paid backup plan. Embeds {{ the formatted price }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_PRICE_FORMAT" = "%1$@/month";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_PRICE_FORMAT" = "%1$@/μήνα";
 
 /* Text explaining when the user's paid backup plan renews. Embeds {{ the formatted renewal date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "Renews %1$@";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "Ανανέωση: %1$@";
 
 /* Footer for a menu section related to settings for when Backups are disabled. */
-"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Backups have been turned off and your data has been deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Τα αντίγραφα ασφαλείας έχουν απενεργοποιηθεί και τα δεδομένα σου έχουν διαγραφεί από την υπηρεσία ασφαλούς αποθήκευσης της Signal.";
 
 /* Header for a menu section related to settings for when Backups are enabled. */
-"BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Backup Details";
+"BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Λεπτομέρειες αντιγράφου ασφαλείας";
 
 /* Footer for a menu section allowing users to turn off Backups. */
-"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "This will delete all your backup data. No new backups will be created.";
+"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "Αυτό θα διαγράψει όλα τα αντίγραφα ασφαλείας σου. Δεν θα δημιουργηθούν νέα αντίγραφα ασφαλείας.";
 
 /* Title for a button allowing users to turn off Backups. */
-"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Turn Off & Delete Backup";
+"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Απενεργοποίηση και διαγραφή αντιγράφων ασφαλείας";
 
 /* Text describing that a user's backup will be automatically performed daily. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Daily";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Καθημερινά";
 
 /* Label for a menu item explaining the frequency of automatic backups. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL" = "Backup Frequency";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL" = "Συχνότητα αντιγράφου ασφαλείας";
 
 /* Text describing that a user's backup will only be performed manually. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MANUALLY" = "Manually";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MANUALLY" = "Μη αυτόματα";
 
 /* Text describing that a user's backup will be automatically performed monthly. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MONTHLY" = "Monthly";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MONTHLY" = "Μηνιαία";
 
 /* Text describing that a user's backup will be automatically performed weekly. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_WEEKLY" = "Weekly";
+"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_WEEKLY" = "Κάθε εβδομάδα";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Back Up Using Cellular";
+"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Αντίγραφο ασφαλείας με δεδομένα κινητής";
 
 /* Label for a menu item explaining the size of the user's backup. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL" = "Backup Size";
+"BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL" = "Μέγεθος αντίγραφου ασφαλείας";
 
 /* Label for a menu item explaining when the user's last backup occurred. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL" = "Last Backup";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL" = "Τελευταίο αντίγραφο ασφαλείας";
 
 /* Text explaining that the user's last backup was in the past. Embeds 1:{{ the date of the backup }} and 2:{{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_PAST_FORMAT" = "%1$@ at %2$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_PAST_FORMAT" = "%1$@ στις %2$@";
 
 /* Text explaining that the user's last backup was today. Embeds {{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_TODAY_FORMAT" = "Today at %1$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_TODAY_FORMAT" = "Σήμερα στις %1$@";
 
 /* Text explaining that the user's last backup was yesterday. Embeds {{ the time of the backup }}. */
-"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "Yesterday at %1$@";
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "Χθες στις %1$@";
 
 /* Label for a menu item offering to show the user their backup key. */
-"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "View Backup Key";
+"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "Προβολή εφεδρικού κλειδιού";
 
 /* Title for a button allowing users to trigger a manual backup. */
-"BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Back Up Now";
+"BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Δημιουργία αντίγραφου τώρα";
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
-"BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Re-enable Backups";
+"BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Ενεργοποίηση αντιγράφων ασφαλείας εκ νέου";
 
 /* Title for the 'Backup' settings menu. */
-"BACKUPS_SETTINGS_TITLE" = "Signal Backups";
+"BACKUPS_SETTINGS_TITLE" = "Αντίγραφα ασφαλείας Signal";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Τα σήματά μου";
@@ -3896,7 +3896,7 @@
 "IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Επιβεβαίωση δωρεάς";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "To setup your recurring donation, tap continue to confirm a %1$@ charge with your bank. This will be automatically refunded and allows your %2$@/month donation to be debited from your account.";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Για να ρυθμίσεις την επαναλαμβανόμενη δωρεά σου, πάτα \"Συνέχεια\" για να επιβεβαιώσεις μια χρέωση %1$@ στην τράπεζά σου. Το ποσό θα επιστραφεί αυτόματα και θα επιτρέψει τη χρέωση της δωρεάς σου για %2$@/μήνα από τον λογαριασμό σου.";
 
 /* Title confirming recurring donation with bank. */
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "%1$@: Επιβεβαίωσε τη δωρεά σου";
@@ -5258,7 +5258,7 @@
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "Κωδικός επαλήθευσης";
 
 /* Title for button which opens the in-app settings */
-"OPEN_APP_SETTINGS_BUTTON" = "Settings";
+"OPEN_APP_SETTINGS_BUTTON" = "Ρυθμίσεις";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Ρυθμίσεις";
@@ -6911,7 +6911,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (προεπιλογή)";
 
 /* Label for the 'backups' section of app settings. */
-"SETTINGS_BACKUPS" = "Backups";
+"SETTINGS_BACKUPS" = "Αντίγραφα ασφαλείας";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Προσθήκη αποκλεισμένου χρήστη";
