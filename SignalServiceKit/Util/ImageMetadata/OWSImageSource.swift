@@ -258,6 +258,7 @@ extension OWSImageSource {
         return (imageMetadata.isValid
                 && imageMetadata.pixelSize.width <= maxStickerHeight
                 && imageMetadata.pixelSize.height <= maxStickerHeight
+                && imageMetadata.pixelSize != CGSize(width: 1, height: 1)
                 && imageMetadata.hasAlpha)
     }
 
