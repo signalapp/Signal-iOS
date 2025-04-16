@@ -295,6 +295,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler/register(fortaskwithidentifier:using:launchhandler:)
         // WARNING: Apple docs say we can only have 10 BGProcessingTasks registered.
         let attachmentMigrationRunner = IncrementalMessageTSAttachmentMigrationRunner(
+            appContext: mainAppContext,
             db: databaseStorage,
             store: incrementalMessageTSAttachmentMigrationStore,
             migrator: { DependenciesBridge.shared.incrementalMessageTSAttachmentMigrator }
@@ -455,7 +456,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         let migrateTask = Task {
             _ = await continuation.dependenciesBridge.incrementalMessageTSAttachmentMigrator
-                .runUntilFinished(ignorePastFailures: false, progress: progressSink)
+                .runInMainAppUntilFinished(ignorePastFailures: false, progress: progressSink)
         }
         Task {
             loadingViewController?.setCancellableTask(migrateTask)
@@ -930,8 +931,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         if incrementalTSAttachmentMigrationStore.shouldReportFailureInUI() {
-            if let logString = incrementalTSAttachmentMigrationStore.consumeLastBGProcessingTaskError() {
-                Logger.error("Failed TSAttachment migration in BGProcessingTask: \(logString)")
+            if let (logString, wasLoggedBefore) = incrementalTSAttachmentMigrationStore.consumeLastBGProcessingTaskError() {
+                if wasLoggedBefore {
+                    Logger.error("Previously failed TSAttachment migration in some BGProcessingTask: \(logString)")
+                } else {
+                    Logger.error("Failed TSAttachment migration in last BGProcessingTask: \(logString)")
+                }
+            } else if let checkpointString = incrementalTSAttachmentMigrationStore.getLastCheckpoint() {
+                Logger.error("Previously failed TSAttachment migration, last checkpoint: \(checkpointString)")
             }
             return .incrementalTSAttachmentMigrationFailed
         }

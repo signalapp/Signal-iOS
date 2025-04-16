@@ -1284,7 +1284,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     /// TSAttachments must be migrated to v2 Attachments before we can create or restore backups.
     /// Normally this migration happens in the background; force it to run and finish now.
     private func migrateAttachmentsBeforeBackup(progress: OWSProgressSink?) async {
-        let didMigrateAnything = await incrementalTSAttachmentMigrator.runUntilFinished(
+        let didMigrateAnything = await incrementalTSAttachmentMigrator.runInMainAppUntilFinished(
             ignorePastFailures: true,
             progress: progress
         )

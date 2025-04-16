@@ -39,7 +39,8 @@ public class IncrementalTSAttachmentMigrationStore {
     /// v1 = initial launch
     /// v2 = bug where we'd count migrations that got interrupted by app termination before finishing one batch
     ///    as "failed"; we increment the number so they retry now that this is resolved.
-    private static let currentMigrationVersion = 2
+    /// v3 = a couple failures that mostly look like db corruption; added db corruption checks.
+    private static let currentMigrationVersion = 3
     /// NOTE: in reality one more attempt than this number may happen before we give up. This is because
     /// we count an attempt as successful if it completes a single batch; if a subsequent batch fails the attempt
     /// was still counted as success so we will try again (with the failing batch now being the first batch) and
@@ -106,14 +107,33 @@ public class IncrementalTSAttachmentMigrationStore {
     // MARK: BGProcessingTask
 
     private static let bgProcessingTaskErrorKey = "TSAttachmentMigration_bgProcessingTaskErrorKey"
+    private static let hasLoggedBgProcessingTaskErrorKey = "TSAttachmentMigration_hasLoggedBGProcessingTaskErrorKey"
 
     public func bgProcessingTaskDidExperienceError(logString: String) {
         userDefaults.set(logString, forKey: Self.bgProcessingTaskErrorKey)
+        userDefaults.setValue(false, forKey: Self.hasLoggedBgProcessingTaskErrorKey)
     }
 
-    public func consumeLastBGProcessingTaskError() -> String? {
+    /// Returns (error string, has been logged before)
+    public func consumeLastBGProcessingTaskError() -> (String, Bool)? {
         let value = userDefaults.string(forKey: Self.bgProcessingTaskErrorKey)
-        userDefaults.removeObject(forKey: Self.bgProcessingTaskErrorKey)
-        return value
+        guard let value else { return nil }
+        let wasLoggedBefore = userDefaults.bool(forKey: Self.hasLoggedBgProcessingTaskErrorKey)
+        if !wasLoggedBefore {
+            userDefaults.setValue(true, forKey: Self.hasLoggedBgProcessingTaskErrorKey)
+        }
+        return (value, wasLoggedBefore)
+    }
+
+    // MARK: Checkpoints
+
+    private static let lastCheckpointKey = "TSAttachmentMigration_lastCheckpointKey"
+
+    public func saveLastCheckpoint(_ checkpointString: String) {
+        userDefaults.set(checkpointString, forKey: Self.lastCheckpointKey)
+    }
+
+    public func getLastCheckpoint() -> String? {
+        userDefaults.string(forKey: Self.lastCheckpointKey)
     }
 }

@@ -9,15 +9,18 @@ import SignalServiceKit
 /// Manages the BGProcessingTask for doing the migration as well as the runner for
 /// doing so while the main app is running.
 class IncrementalMessageTSAttachmentMigrationRunner: BGProcessingTaskRunner {
+    private let appContext: AppContext
     private let db: SDSDatabaseStorage
     private let store: IncrementalTSAttachmentMigrationStore
     private let migrator: () -> any IncrementalMessageTSAttachmentMigrator
 
     init(
+        appContext: AppContext,
         db: SDSDatabaseStorage,
         store: IncrementalTSAttachmentMigrationStore,
         migrator: @escaping () -> any IncrementalMessageTSAttachmentMigrator
     ) {
+        self.appContext = appContext
         self.db = db
         self.store = store
         self.migrator = migrator
@@ -30,13 +33,11 @@ class IncrementalMessageTSAttachmentMigrationRunner: BGProcessingTaskRunner {
     public static let requiresNetworkConnectivity = false
 
     func run() async throws {
+        let logger = MigrationLogger(appContext: appContext, store: store)
         try await self.runInBatches(
             willBegin: { store.willAttemptMigrationUntilFinished() },
             runNextBatch: {
-                return await migrator().runNextBatch(errorLogger: {
-                    let logString = ScrubbingLogFormatter().redactMessage($0)
-                    store.bgProcessingTaskDidExperienceError(logString: logString)
-                })
+                return await migrator().runNextBatch(logger: logger)
             }
         )
     }
@@ -44,5 +45,32 @@ class IncrementalMessageTSAttachmentMigrationRunner: BGProcessingTaskRunner {
     public func shouldLaunchBGProcessingTask() -> Bool {
         let state = db.read(block: store.getState(tx:))
         return state != .finished
+    }
+
+    private class MigrationLogger: TSAttachmentMigrationLogger {
+
+        private let appContext: AppContext
+        private let store: IncrementalTSAttachmentMigrationStore
+
+        init(
+            appContext: AppContext,
+            store: IncrementalTSAttachmentMigrationStore
+        ) {
+            self.appContext = appContext
+            self.store = store
+        }
+
+        func didFatalError(_ logString: String) {
+            let logString = ScrubbingLogFormatter().redactMessage(logString)
+            store.bgProcessingTaskDidExperienceError(logString: logString)
+        }
+
+        func flagDBCorrupted() {
+            DatabaseCorruptionState.flagDatabaseAsCorrupted(userDefaults: appContext.appUserDefaults())
+        }
+
+        func checkpoint(_ checkpointString: String) {
+            store.saveLastCheckpoint(checkpointString)
+        }
     }
 }
