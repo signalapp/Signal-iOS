@@ -348,8 +348,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     private func fetchPreSelectedThread() -> TSThread? {
+        let hasIntent = self.extensionContext?.intent != nil
+        Logger.info("hasIntent? \(hasIntent)")
         if let threadUniqueId = (self.extensionContext?.intent as? INSendMessageIntent)?.conversationIdentifier {
-            return SSKEnvironment.shared.databaseStorageRef.read { TSThread.anyFetch(uniqueId: threadUniqueId, transaction: $0) }
+            let result = SSKEnvironment.shared.databaseStorageRef.read { TSThread.anyFetch(uniqueId: threadUniqueId, transaction: $0) }
+            Logger.info("hasThread? \(result != nil)")
+            return result
         } else {
             return nil
         }
