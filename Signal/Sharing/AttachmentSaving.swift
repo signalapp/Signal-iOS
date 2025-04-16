@@ -4,45 +4,53 @@
 //
 
 import Photos
-public import SignalServiceKit
+import SignalUI
+import SignalServiceKit
 
-public enum AttachmentSaving {
+enum AttachmentSaving {
     /// Save the given attachments to the photo library.
     ///
     /// - Note
     /// Only attachments representing media that can be saved to the photo
     /// library will be saved. Others will be ignored.
-    public static func saveToPhotoLibrary(
+    static func saveToPhotoLibrary(
         referencedAttachmentStreams: [ReferencedAttachmentStream]
     ) {
-        let assetCreationRequests: [PHAssetCreationRequestType] = referencedAttachmentStreams.compactMap {
-            let reference = $0.reference
-            let attachmentStream = $0.attachmentStream
+        let (assetCreationRequests, _) = referencedAttachmentStreams.reduce(
+            into: (requests: [PHAssetCreationRequestType](), filenames: Set<String>())
+        ) { result, referencedAttachmentStream in
+            let reference = referencedAttachmentStream.reference
+            let attachmentStream = referencedAttachmentStream.attachmentStream
 
             switch attachmentStream.contentType {
             case .invalid, .audio, .file:
-                return nil
+                return
             case .image, .animatedImage, .video:
                 break
             }
 
+            let filename = uniqueFilename(
+                sourceFilename: reference.sourceFilename,
+                existingFilenames: &result.filenames
+            )
+
             let decryptedFileUrl: URL
             do {
                 decryptedFileUrl = try attachmentStream.makeDecryptedCopy(
-                    filename: reference.sourceFilename
+                    filename: filename
                 )
             } catch let error {
                 owsFailDebug("Failed to save decrypted copy of attachment for photo library! \(error)")
-                return nil
+                return
             }
 
             switch attachmentStream.contentType {
             case .invalid, .audio, .file:
                 owsFail("Impossible: checked above!")
             case .image, .animatedImage:
-                return .imageTempFile(tmpFileUrl: decryptedFileUrl)
+                result.requests.append(.imageTempFile(tmpFileUrl: decryptedFileUrl))
             case .video:
-                return .videoTempFile(tmpFileUrl: decryptedFileUrl)
+                result.requests.append(.videoTempFile(tmpFileUrl: decryptedFileUrl))
             }
         }
 
@@ -50,7 +58,7 @@ public enum AttachmentSaving {
     }
 
     /// Save the given image to the photo library.
-    public static func saveToPhotoLibrary(image: UIImage) {
+    static func saveToPhotoLibrary(image: UIImage) {
         _confirmAndSaveToPhotoLibrary(assetCreationRequests: [.image(image)])
     }
 
@@ -158,6 +166,38 @@ public enum AttachmentSaving {
                     }
                 }
             })
+        }
+    }
+
+    // MARK: -
+
+    static func uniqueFilename(
+        sourceFilename: String?,
+        existingFilenames: inout Set<String>
+    ) -> String? {
+        if
+            let sourceFilename,
+            existingFilenames.contains(sourceFilename)
+        {
+            // Avoid source filename collisions.
+            let pathExtension = (sourceFilename as NSString).pathExtension
+            let normalizedFilename = (sourceFilename as NSString)
+                .deletingPathExtension
+                .trimmingCharacters(in: .whitespaces)
+
+            var i = 0
+            while true {
+                i += 1
+                var newSourceFilename = normalizedFilename + "_\(i)"
+                newSourceFilename = (newSourceFilename as NSString).appendingPathExtension(pathExtension) ?? newSourceFilename
+                if !existingFilenames.contains(newSourceFilename) {
+                    existingFilenames.insert(newSourceFilename)
+                    return newSourceFilename
+                }
+            }
+        } else {
+            _ = sourceFilename.map { existingFilenames.insert($0) }
+            return sourceFilename
         }
     }
 

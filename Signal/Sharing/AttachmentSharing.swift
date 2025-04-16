@@ -151,31 +151,11 @@ extension Array where Element == ReferencedAttachmentStream {
                 types.append(.image)
             }
 
-            if
-                let sourceFilename = attachment.reference.sourceFilename,
-                sourceFilenamesSet.contains(sourceFilename)
-            {
-                // Avoid source filename collisions.
-                let pathExtension = (sourceFilename as NSString).pathExtension
-                let normalizedFilename = (sourceFilename as NSString)
-                    .deletingPathExtension
-                    .trimmingCharacters(in: .whitespaces)
-
-                var i = 0
-                sourceFilenameLoop: while true {
-                    i += 1
-                    var newSourceFilename = normalizedFilename + "_\(i)"
-                    newSourceFilename = (newSourceFilename as NSString).appendingPathExtension(pathExtension) ?? newSourceFilename
-                    if !sourceFilenamesSet.contains(newSourceFilename) {
-                        dedupedSourceFilenames.append(newSourceFilename)
-                        sourceFilenamesSet.insert(newSourceFilename)
-                        break sourceFilenameLoop
-                    }
-                }
-            } else {
-                dedupedSourceFilenames.append(attachment.reference.sourceFilename)
-                _ = attachment.reference.sourceFilename.map { sourceFilenamesSet.insert($0) }
-            }
+            let filename = AttachmentSaving.uniqueFilename(
+                sourceFilename: attachment.reference.sourceFilename,
+                existingFilenames: &sourceFilenamesSet
+            )
+            dedupedSourceFilenames.append(filename)
         }
         if hadUrlType {
             // Once one of them are all file, they all have to be files.

@@ -1641,6 +1641,7 @@
 		B99288002CF124AC000D62C4 /* Text+Links.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99287FF2CF124AC000D62C4 /* Text+Links.swift */; };
 		B995C2362D669FA3001EE321 /* NameEducationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B995C2352D669FA3001EE321 /* NameEducationSheet.swift */; };
 		B99B155D2A71BA5200E26DAC /* StoryContextViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */; };
+		B99CD9452DB066740035C77B /* AttachmentSaving.swift in Sources */ = {isa = PBXBuildFile; fileRef = D954A5AC2D7BA7DA00F61C36 /* AttachmentSaving.swift */; };
 		B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */; };
 		B9A47ACE2D36DA6B0024DD9C /* circular_indeterminate.json in Resources */ = {isa = PBXBuildFile; fileRef = B9A47ACD2D36DA6B0024DD9C /* circular_indeterminate.json */; };
 		B9A53B912CF507FB0000578B /* LinkAndSyncProgressModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B902CF507FB0000578B /* LinkAndSyncProgressModal.swift */; };
@@ -2534,7 +2535,6 @@
 		D953427B2D8B71190087AD93 /* recipient_self_08.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D95342422D8B71190087AD93 /* recipient_self_08.binproto */; };
 		D953427C2D8B71190087AD93 /* recipient_self_08.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D95342432D8B71190087AD93 /* recipient_self_08.txtproto */; };
 		D953427D2D8B71190087AD93 /* recipient_groups_11.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D95342312D8B71190087AD93 /* recipient_groups_11.txtproto */; };
-		D954A5AD2D7BA7DD00F61C36 /* AttachmentSaving.swift in Sources */ = {isa = PBXBuildFile; fileRef = D954A5AC2D7BA7DA00F61C36 /* AttachmentSaving.swift */; };
 		D954A5AE2D7BA9B200F61C36 /* AttachmentSharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */; };
 		D95787772C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95787762C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift */; };
 		D95787792C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95787782C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift */; };
@@ -16278,7 +16278,6 @@
 				665D9B452C111C6D00E73E94 /* AttachmentMultisend+OversizeText.swift in Sources */,
 				661566722BCEDD58003F1647 /* AttachmentMultisend.swift in Sources */,
 				3402AA3D271D9DCD0084CBAE /* AttachmentPrepViewController.swift in Sources */,
-				D954A5AD2D7BA7DD00F61C36 /* AttachmentSaving.swift in Sources */,
 				3402AA42271D9DCD0084CBAE /* AttachmentTextToolbar.swift in Sources */,
 				3402AA55271D9DCD0084CBAE /* AttachmentTextView.swift in Sources */,
 				7609818C2936EF22008F8300 /* AudioPlayer.swift in Sources */,
@@ -16585,6 +16584,7 @@
 				661AEE482C2088FD0046B1D8 /* AttachmentDownloadRetryRunner.swift in Sources */,
 				88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */,
 				8809CE8722F8FE6D00D38867 /* AttachmentKeyboard.swift in Sources */,
+				B99CD9452DB066740035C77B /* AttachmentSaving.swift in Sources */,
 				D954A5AE2D7BA9B200F61C36 /* AttachmentSharing.swift in Sources */,
 				66DA8DFA2C91125200799E70 /* AttachmentValidationBackfillRunner.swift in Sources */,
 				45B3680B2A1D75DF0067D05A /* AudioAllMediaPresenter.swift in Sources */,
