@@ -75,7 +75,7 @@ public enum FormattedNumberField {
     ///
     /// [0]: https://developer.apple.com/documentation/uikit/uitextfielddelegate/1619599-textfield
     public static func textField(
-        _ textField: UITextField,
+        _ textField: any TextInput,
         shouldChangeCharactersIn range: NSRange,
         replacementString: String,
         allowedCharacters: AllowedCharacters,
@@ -83,7 +83,7 @@ public enum FormattedNumberField {
         format: (String) -> String
     ) -> Bool {
         let operationResult: OperationResult? = {
-            let oldFormattedString = textField.text ?? ""
+            let oldFormattedString = textField.safeText
             let isSingleDeletion = range.length == 1 && replacementString.isEmpty
             if isSingleDeletion {
                 let cursorPosition = textField.offset(
@@ -111,7 +111,7 @@ public enum FormattedNumberField {
         }()
 
         if let operationResult {
-            textField.text = operationResult.formattedString
+            textField.safeText = operationResult.formattedString
             let newCursorPosition = textField.position(
                 from: textField.beginningOfDocument,
                 offset: operationResult.cursorPosition
@@ -360,5 +360,22 @@ public enum FormattedNumberField {
             formattedString: newFormattedString,
             cursorPosition: cursorPositionInNewFormattedString
         )
+    }
+
+    public protocol TextInput: UITextInput {
+        var safeText: String { get set }
+    }
+}
+
+extension UITextField: FormattedNumberField.TextInput {
+    public var safeText: String {
+        get { self.text ?? "" }
+        set { self.text = newValue }
+    }
+}
+extension UITextView: FormattedNumberField.TextInput {
+    public var safeText: String {
+        get { self.text ?? "" }
+        set { self.text = newValue }
     }
 }

@@ -20,6 +20,8 @@ public protocol TextViewWithPlaceholderDelegate: AnyObject {
 }
 
 public extension TextViewWithPlaceholderDelegate {
+    func textViewDidUpdateSelection(_ textView: TextViewWithPlaceholder) {}
+    func textViewDidUpdateText(_ textView: TextViewWithPlaceholder) {}
     func textView(_ textView: TextViewWithPlaceholder, uiTextView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         return true
     }
@@ -54,6 +56,11 @@ public class TextViewWithPlaceholder: UIView {
         }
     }
 
+    public var editorFont: UIFont? {
+        get { textView.font }
+        set { textView.font = newValue }
+    }
+
     public var textContainerInset: UIEdgeInsets {
         get { textView.textContainerInset }
         set {
@@ -62,9 +69,24 @@ public class TextViewWithPlaceholder: UIView {
         }
     }
 
+    public var autocorrectionType: UITextAutocorrectionType {
+        get { textView.autocorrectionType }
+        set { textView.autocorrectionType = newValue }
+    }
+
+    public var spellCheckingType: UITextSpellCheckingType {
+        get { textView.spellCheckingType }
+        set { textView.spellCheckingType = newValue }
+    }
+
     public var returnKeyType: UIReturnKeyType {
         get { textView.returnKeyType }
         set { textView.returnKeyType = newValue }
+    }
+
+    public var keyboardType: UIKeyboardType {
+        get { textView.keyboardType }
+        set { textView.keyboardType = newValue }
     }
 
     public var dataDetectorTypes: UIDataDetectorTypes {
@@ -233,7 +255,7 @@ public class TextViewWithPlaceholder: UIView {
     }
 }
 
-// MARK: -
+// MARK: - UITextViewDelegate
 
 extension TextViewWithPlaceholder: UITextViewDelegate {
 

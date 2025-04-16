@@ -21,29 +21,20 @@ class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigation
         // TODO: [Backups] Disable this next button until the input is valid
         navigationItem.rightBarButtonItem = nextBarButton
 
-        self.view.backgroundColor = Theme.backgroundColor
+        self.view.backgroundColor = UIColor.Signal.background
 
-        self.view.addSubview(titleLabel)
-        self.view.addSubview(descriptionLabel)
-        self.view.addSubview(textView)
-        self.view.addSubview(noKeyButton)
-
-        NSLayoutConstraint.activate([
-            self.titleLabel.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
-            self.descriptionLabel.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: 12),
-            self.textView.topAnchor.constraint(equalTo: self.descriptionLabel.bottomAnchor, constant: 24),
-            self.noKeyButton.topAnchor.constraint(equalTo: self.textView.bottomAnchor, constant: 24),
-
-            self.titleLabel.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 12),
-            self.titleLabel.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -12),
-
-            self.descriptionLabel.leadingAnchor.constraint(equalTo: self.titleLabel.leadingAnchor),
-            self.descriptionLabel.trailingAnchor.constraint(equalTo: self.titleLabel.trailingAnchor),
-
-            self.textView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-
-            self.noKeyButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
+        let stackView = UIStackView(arrangedSubviews: [
+            titleLabel,
+            descriptionLabel,
+            codeEntry,
+            noKeyButton,
         ])
+        self.view.addSubview(stackView)
+        stackView.axis = .vertical
+        stackView.spacing = 24
+        stackView.setCustomSpacing(12, after: titleLabel)
+        stackView.autoPinWidthToSuperview(withMargin: 20)
+        stackView.autoPinEdge(toSuperviewMargin: .top)
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
@@ -57,13 +48,9 @@ class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigation
 
     // MARK: UI
 
-    private lazy var textView: BackupCodeTextView = {
-        let textView = BackupCodeTextView()
-        textView.autocorrectionType = .no
-        return textView
-    }()
+    private lazy var codeEntry = BackupCodeEntry(frame: .zero)
 
-    private lazy var titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = OWSLocalizedString(
             "REGISTRATION_ENTER_BACKUP_KEY_TITLE",
@@ -71,11 +58,11 @@ class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigation
         )
         label.textAlignment = .center
         label.font = .dynamicTypeTitle1.semibold()
-        label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 0
         return label
     }()
 
-    private lazy var descriptionLabel: UILabel = {
+    private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.text = OWSLocalizedString(
             "REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION",
@@ -84,7 +71,6 @@ class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigation
         label.textColor = .secondaryLabel
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
 
@@ -99,9 +85,7 @@ class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigation
         )
         button.titleLabel?.font = .dynamicTypeBody.semibold()
         button.setTitleColor(UIColor.Signal.ultramarine, for: .normal)
-        button.sizeToFit()
         button.addTarget(self, action: #selector(didTapNoKeyButton), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
 
@@ -152,8 +136,8 @@ class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigation
     @objc
     private func didTapNext() {
         guard canSubmit else { return }
-        textView.resignFirstResponder()
-        guard let aep = try? AccountEntropyPool(key: textView.text.filter({!$0.isWhitespace})) else {
+        codeEntry.resignFirstResponder()
+        guard let aep = try? AccountEntropyPool(key: codeEntry.text.filter({!$0.isWhitespace})) else {
             // TODO: [Backups] Present an error about invalid AEP entry here
             return
         }
@@ -161,126 +145,136 @@ class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigation
     }
 
     private var canSubmit: Bool {
-        let codeCharCount = textView.text.filter {
+        let codeCharCount = codeEntry.text.filter {
             $0.isNumber || $0.isLetter
         }.count
 
-        let expectedCodeCharCount = BackupCodeTextView.Constants.totalChunks * BackupCodeTextView.Constants.chunkSize
+        let expectedCodeCharCount = BackupCodeEntry.Constants.maxCharacterCount
 
         return codeCharCount == expectedCodeCharCount
     }
 }
 
-private class BackupCodeTextView: UITextView, UITextViewDelegate {
+private class BackupCodeEntry: UIView {
     fileprivate enum Constants {
         static let chunkSize = 4
         static let chunksPerRow = 4
         static let spacesBetweenChunks = 4
         static let totalChunks = 16
-        static let insets = UIEdgeInsets(top: 14, left: 20, bottom: 14, right: 20)
-        static let font = UIFont.monospacedSystemFont(ofSize: 17, weight: .regular)
-        static let placeholderFont = UIFont.systemFont(ofSize: 17)
-        static let lineSpacing = 10.0
-        static let backgroundColor = UIColor.secondarySystemBackground
-        static let placeholderTextColor = UIColor.secondaryLabel
-        static let textColor = UIColor.label
+
+        static var maxCharacterCount: Int {
+            Constants.totalChunks * Constants.chunkSize
+        }
     }
 
-    let placeholderText = OWSLocalizedString(
-        "BACKUP_KEY_PLACEHOLDER",
-        comment: "Text used as placeholder in backup key text view."
-    )
+    private let textView = TextViewWithPlaceholder()
+    private lazy var heightConstraint = textView.autoSetDimension(.height, toSize: 400)
 
-    convenience init() {
-        self.init(frame: .zero, textContainer: nil)
-    }
+    var text: String { textView.text ?? "" }
 
-    override init(frame: CGRect, textContainer: NSTextContainer?) {
-        super.init(frame: frame, textContainer: textContainer)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
-        self.backgroundColor = Constants.backgroundColor
-        self.textContainerInset = Constants.insets
-        self.textContainer.lineFragmentPadding = 0
-        self.delegate = self
-        self.isEditable = true
-        self.isSelectable = true
-        self.layer.cornerRadius = 10
+        backgroundColor = UIColor.Signal.quaternaryFill
+        layer.cornerRadius = 10
 
-        self.text = placeholderText
-        self.font = Constants.placeholderFont
-        self.textColor = Constants.placeholderTextColor
+        layoutMargins = .init(hMargin: 20, vMargin: 14)
+        addSubview(textView)
+        textView.delegate = self
+        textView.spellCheckingType = .no
+        textView.autocorrectionType = .no
+        textView.textContainerInset = .zero
+        textView.keyboardType = .asciiCapable
+        textView.autoPinEdgesToSuperviewMargins()
+        textView.placeholderText = OWSLocalizedString(
+            "BACKUP_KEY_PLACEHOLDER",
+            comment: "Text used as placeholder in backup key text view."
+        )
 
         self.translatesAutoresizingMaskIntoConstraints = false
-
-        // Any character will do because font is monospaced.
-        let charSize = " ".size(withAttributes: [.font: Constants.font])
-
-        let totalChars = (Constants.chunksPerRow * Constants.chunkSize) + (Constants.spacesBetweenChunks * (Constants.chunksPerRow-1))
-        let horizontalEdgeInsetSpace = Constants.insets.left + Constants.insets.right
-        let desiredWidth = (charSize.width * CGFloat(totalChars)).rounded(.up) + horizontalEdgeInsetSpace
-
-        let heightPerChar = charSize.height
-        let rows = Constants.totalChunks / Constants.chunksPerRow
-        let heightFromRows = CGFloat(rows) * heightPerChar
-        let heightFromLineSpacing = Constants.lineSpacing * (Double(rows) - 1)
-        let height = (heightFromRows + Constants.insets.top + Constants.insets.bottom + heightFromLineSpacing).rounded(.up)
-
-        NSLayoutConstraint.activate([
-            self.widthAnchor.constraint(equalToConstant: desiredWidth),
-            self.heightAnchor.constraint(equalToConstant: height)
-        ])
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: UITextViewDelegate
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.updateSizing()
+    }
 
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        let currentText = textView.text ?? ""
-        let updatedText = (currentText as NSString).replacingCharacters(in: range, with: text)
-        let filtered = updatedText.filter { $0.isNumber || $0.isLetter }
-        let prefixed = filtered.prefix(Constants.totalChunks * Constants.chunkSize)
-        let lowercased = prefixed.lowercased()
-        let formatted = String(lowercased.formattedWithSpaces(every: Constants.chunkSize))
+    private func updateSizing() {
+        let width = self.width - self.layoutMargins.totalWidth
 
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = Constants.lineSpacing
-        let attributes: [NSAttributedString.Key: Any] = [
-            .paragraphStyle: paragraphStyle,
-            .font: Constants.font,
-            .foregroundColor: Constants.textColor
-        ]
-        let attributedStr = NSAttributedString(string: formatted, attributes: attributes)
-        textView.attributedText = attributedStr
+        let referenceFontSizePts: CGFloat = 17
+        // Any character will do because font is monospaced.
+        let referenceFontSize = "0".size(withAttributes: [.font: UIFont.monospacedSystemFont(ofSize: referenceFontSizePts, weight: .regular)])
+
+        let charactersPerLine: Int = Constants.chunkSize * Constants.chunksPerRow + Constants.spacesBetweenChunks * (Constants.chunksPerRow - 1)
+
+        let characterWidth = width / CGFloat(charactersPerLine)
+        let fontSize = (characterWidth / referenceFontSize.width) * referenceFontSizePts
+
+        let font = UIFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
+        self.textView.editorFont = font
+
+        let maxLineCount = Constants.totalChunks / Constants.chunksPerRow
+        let sizingString = Array(repeating: "0", count: maxLineCount).joined(separator: "\n")
+        let sizingAttributedString = self.attributedString(for: sizingString)
+        self.heightConstraint.constant = sizingAttributedString.boundingRect(
+            with: CGSize(width: width, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            context: nil
+        ).size.ceil.height
+    }
+}
+
+extension BackupCodeEntry: TextViewWithPlaceholderDelegate {
+    private nonisolated static func formatBackupKey(unformatted: String) -> String {
+        unformatted.lowercased().formattedWithSpaces(
+            every: Constants.chunkSize,
+            separator: String(repeating: " ", count: Constants.spacesBetweenChunks)
+        )
+    }
+
+    func textView(_ textView: TextViewWithPlaceholder, uiTextView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        defer {
+            // This isn't called when this function returns false, but
+            // we need it to to show and hide the placeholder text
+            textView.textViewDidChange(uiTextView)
+        }
+        _ = FormattedNumberField.textField(
+            uiTextView,
+            shouldChangeCharactersIn: range,
+            replacementString: text,
+            allowedCharacters: .alphanumeric,
+            maxCharacters: Constants.maxCharacterCount,
+            format: Self.formatBackupKey(unformatted:)
+        )
+
+        let selectedTextRange = uiTextView.selectedTextRange
+        uiTextView.attributedText = self.attributedString(for: uiTextView.text)
+        uiTextView.selectedTextRange = selectedTextRange
 
         return false
     }
 
-    private var isShowingPlaceholder = true
-
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if self.isShowingPlaceholder {
-            textView.text = nil
-            textView.font = Constants.font
-            // textView:shouldChangeTextIn takes care of the text color.
-            self.isShowingPlaceholder = false
-        }
-    }
-
-    func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.text.isEmpty {
-            textView.text = placeholderText
-            textView.font = Constants.placeholderFont
-            textView.textColor = Constants.placeholderTextColor
-            self.isShowingPlaceholder = true
-        }
+    func attributedString(for string: String) -> NSAttributedString {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 14
+        return NSAttributedString(
+            string: string,
+            attributes: [
+                .font: textView.editorFont ?? UIFont.monospacedDigitFont(ofSize: 17),
+                .foregroundColor: UIColor.Signal.label,
+                .paragraphStyle: paragraphStyle,
+            ]
+        )
     }
 }
 
 private extension String {
-    func formattedWithSpaces(every n: Int, separator: String = "    ") -> String {
+    func formattedWithSpaces(every n: Int, separator: String) -> String {
         guard n > 0 else { return self }
         return self.enumerated().map { $0.offset % n == 0 && $0.offset != 0 ? "\(separator)\($0.element)" : "\($0.element)" }.joined()
     }
