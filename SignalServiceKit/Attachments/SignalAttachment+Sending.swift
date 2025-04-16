@@ -37,6 +37,7 @@ extension Array<SignalAttachment> {
         for attachment in self {
             let dataSource = try attachment.buildAttachmentDataSource()
             let result = SignalAttachment.ForSending(dataSource: dataSource, isViewOnce: attachment.isViewOnceAttachment, renderingFlag: attachment.renderingFlag)
+            results.append(result)
         }
         return results
     }
