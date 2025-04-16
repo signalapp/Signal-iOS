@@ -7,10 +7,11 @@ import Foundation
 
 public struct OrderedSet<Element> where Element: Hashable {
     public private(set) var orderedMembers: [Element] = []
-    private var set: Set<Element> = []
+    public private(set) var unorderedMembers: Set<Element>  = []
 
+    /// - Complexity: O(n)
     public init(_ members: [Element]) {
-        set = []
+        unorderedMembers = []
         orderedMembers = []
 
         for element in members {
@@ -18,9 +19,10 @@ public struct OrderedSet<Element> where Element: Hashable {
         }
     }
 
+    /// - Complexity: O(1) on average
     @discardableResult
     public mutating func append(_ element: Element) -> (Bool, Element) {
-        let (wasInserted, elementAfterInsert) = set.insert(element)
+        let (wasInserted, elementAfterInsert) = unorderedMembers.insert(element)
 
         if wasInserted {
             orderedMembers.append(element)
@@ -29,39 +31,31 @@ public struct OrderedSet<Element> where Element: Hashable {
         return (wasInserted, elementAfterInsert)
     }
 
+    /// - Complexity: O(n)
     public mutating func remove(_ element: Element) {
-        set.remove(element)
-        orderedMembers = orderedMembers.filter { $0 != element }
-    }
-
-    public mutating func remove(_ elements: [Element]) {
-        for element in elements {
-            remove(element)
+        if let removedMember = unorderedMembers.remove(element) {
+            orderedMembers.removeAll(where: { $0 == removedMember })
         }
     }
 
+    /// - Complexity: O(1)
     public func contains(_ element: Element) -> Bool {
-        return set.contains(element)
+        return unorderedMembers.contains(element)
     }
 
+    /// - Complexity: O(1)
     public var isEmpty: Bool {
-        return set.isEmpty
+        return unorderedMembers.isEmpty
     }
 
+    /// - Complexity: O(1)
     public var count: Int {
-        return set.count
+        return unorderedMembers.count
     }
 
+    /// - Complexity: O(1)
     public var first: Element? {
         return orderedMembers.first
-    }
-
-    public static func == (lhs: OrderedSet<Element>, rhs: OrderedSet<Element>) -> Bool {
-        lhs.set == rhs.set
-    }
-
-    public static func != (lhs: OrderedSet<Element>, rhs: OrderedSet<Element>) -> Bool {
-        lhs.set != rhs.set
     }
 
     // TODO: I only implemented the minimum API that I needed. There's lots more that could

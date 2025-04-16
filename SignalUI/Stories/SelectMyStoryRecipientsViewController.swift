@@ -10,9 +10,9 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
     let thread: TSPrivateStoryThread
     let mode: TSThreadStoryViewMode
     var recipientSet: OrderedSet<PickedRecipient>
-    let originalRecipientSet: OrderedSet<PickedRecipient>
+    let originalRecipientSet: Set<PickedRecipient>
 
-    public override var hasUnsavedChanges: Bool { originalRecipientSet != recipientSet }
+    public override var hasUnsavedChanges: Bool { originalRecipientSet != recipientSet.unorderedMembers }
 
     let completionBlock: () -> Void
 
@@ -46,7 +46,7 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
         } else {
             self.recipientSet = OrderedSet()
         }
-        self.originalRecipientSet = self.recipientSet
+        self.originalRecipientSet = self.recipientSet.unorderedMembers
         self.completionBlock = completionBlock
         super.init()
 
