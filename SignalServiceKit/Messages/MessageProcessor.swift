@@ -211,7 +211,7 @@ public class MessageProcessor {
             }
             let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx)
 
-            var remainingEnvelopes = batchEnvelopes
+            var remainingEnvelopes = batchEnvelopes[...]
             while !remainingEnvelopes.isEmpty {
                 guard SSKEnvironment.shared.messagePipelineSupervisorRef.isMessageProcessingPermitted else {
                     break
@@ -244,7 +244,7 @@ public class MessageProcessor {
     // If envelopes is not empty, this will emit a single request for a non-delivery receipt or one or more requests
     // all for delivery receipts.
     private func buildNextCombinedRequest(
-        envelopes: inout [ReceivedEnvelope],
+        envelopes: inout ArraySlice<ReceivedEnvelope>,
         localIdentifiers: LocalIdentifiers,
         localDeviceId: LocalDeviceId,
         tx: DBWriteTransaction
