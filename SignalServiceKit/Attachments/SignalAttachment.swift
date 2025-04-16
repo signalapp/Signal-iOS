@@ -417,18 +417,19 @@ public class SignalAttachment: NSObject {
     }
 
     // Use the filename if known. If not, e.g. if the attachment was copy/pasted, we'll generate a filename
-    // like: "signal-2017-04-24-095918.zip"
+    // like: "signal-2017-04-24-095918-UUIDString.zip"
     public var filenameOrDefault: String {
         if let filename = sourceFilename {
             return filename.filterFilename()
         } else {
             let kDefaultAttachmentName = "signal"
+            let uuid = UUID().uuidString
 
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd-HHmmss"
             let dateString = dateFormatter.string(from: Date())
 
-            let withoutExtension = "\(kDefaultAttachmentName)-\(dateString)"
+            let withoutExtension = "\(kDefaultAttachmentName)-\(dateString)-\(uuid)"
             if let fileExtension = self.fileExtension {
                 return "\(withoutExtension).\(fileExtension)"
             }

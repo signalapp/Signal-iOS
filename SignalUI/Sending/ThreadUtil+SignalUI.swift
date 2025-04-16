@@ -30,8 +30,9 @@ extension ThreadUtil {
                 let linkPreviewDataSource = try linkPreviewDraft.map {
                     try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
                 }
-                let mediaAttachmentsForSending = try mediaAttachments.forSending()
-                
+                let mediaAttachmentsForSending = try mediaAttachments.map {
+                    try $0.forSending()
+                }
                 let quotedReplyDraft = try quotedReplyDraft.map {
                     try DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending($0)
                 }
