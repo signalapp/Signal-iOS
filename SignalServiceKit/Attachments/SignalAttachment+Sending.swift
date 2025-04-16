@@ -6,7 +6,7 @@
 import Foundation
 
 extension SignalAttachment {
-
+    
     public struct ForSending {
         public let dataSource: AttachmentDataSource
         public let isViewOnce: Bool
@@ -18,13 +18,26 @@ extension SignalAttachment {
             self.renderingFlag = renderingFlag
         }
     }
+    
+}
 
-    public func forSending() throws -> ForSending {
-        let dataSource = try self.buildAttachmentDataSource()
-        return .init(
-            dataSource: dataSource,
-            isViewOnce: self.isViewOnceAttachment,
-            renderingFlag: self.renderingFlag
-        )
+extension Array<SignalAttachment> {
+
+//    public func forSending() throws -> [SignalAttachment.ForSending] {
+//        let dataSource = try self.buildAttachmentDataSource()
+//        return .init(
+//            dataSource: dataSource,
+//            isViewOnce: self.isViewOnceAttachment,
+//            renderingFlag: self.renderingFlag
+//        )
+//    }
+    
+    public func forSending() throws -> [SignalAttachment.ForSending] {
+        var results = [SignalAttachment.ForSending]()
+        for attachment in self {
+            let dataSource = try attachment.buildAttachmentDataSource()
+            let result = SignalAttachment.ForSending(dataSource: dataSource, isViewOnce: attachment.isViewOnceAttachment, renderingFlag: attachment.renderingFlag)
+        }
+        return results
     }
 }
