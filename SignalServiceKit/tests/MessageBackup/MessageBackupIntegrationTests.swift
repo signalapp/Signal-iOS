@@ -465,6 +465,10 @@ class MessageBackupIntegrationTests: XCTestCase {
                 webSocketFactory: CrashyMocks.MockWebSocketFactory()
             )
         )
+
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            _ = TSPrivateStoryThread.getOrCreateMyStory(transaction: tx)
+        }
     }
 
     private func deinitializeApp(oldContext: any AppContext) async {
