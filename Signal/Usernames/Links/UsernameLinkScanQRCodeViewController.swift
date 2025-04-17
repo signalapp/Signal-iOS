@@ -4,6 +4,7 @@
 //
 
 import Photos
+import PhotosUI
 import PureLayout
 import SignalServiceKit
 import SignalUI
@@ -18,8 +19,6 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         .portrait
     }
-
-    var selectedAttachment: ImagePickerAttachment?
 
     weak var scanDelegate: UsernameLinkScanDelegate?
 
@@ -61,23 +60,6 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
         return label
     }()
 
-    private lazy var uploadPhotoButton: UIButton = {
-        let button = OWSRoundedButton { [weak self] in
-            self?.didTapUploadPhotoButton()
-        }
-
-        button.ows_contentEdgeInsets = UIEdgeInsets(margin: 14)
-
-        // Always use dark theming since it sits over the scan mask.
-        button.setTemplateImageName(
-            Theme.iconName(.buttonPhotoLibrary),
-            tintColor: .ows_white
-        )
-        button.backgroundColor = .ows_whiteAlpha20
-
-        return button
-    }()
-
     // MARK: - Lifecycle
 
     var navbarBackgroundColorOverride: UIColor? {
@@ -103,14 +85,9 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
 
         view.addSubview(scanViewController.view)
         view.addSubview(instructionsWrapperView)
-        view.addSubview(uploadPhotoButton)
 
         scanViewController.view.autoPinEdgesToSuperviewEdges()
         instructionsWrapperView.autoPinEdges(toSuperviewSafeAreaExcludingEdge: .bottom)
-
-        uploadPhotoButton.autoSetDimensions(to: .square(52))
-        uploadPhotoButton.autoHCenterInSuperview()
-        uploadPhotoButton.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 16)
 
         themeDidChange()
         contentSizeCategoryDidChange()
@@ -121,24 +98,21 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
     }
 
     // MARK: Actions
-
-    func didTapUploadPhotoButton() {
-        // [Photo Picker] TODO: Replace with native
-        let imagePickerViewController = ImagePickerGridController()
-        imagePickerViewController.delegate = self
-        imagePickerViewController.dataSource = self
-
-        let imagePickerNavController = OWSNavigationController(
-            rootViewController: imagePickerViewController
-        )
-
-        presentFormSheet(imagePickerNavController, animated: true)
-    }
 }
 
 // MARK: - Scan delegate
 
-extension UsernameLinkScanQRCodeViewController: QRCodeScanOrPickDelegate {
+extension UsernameLinkScanQRCodeViewController: QRCodeScanDelegate {
+    var shouldShowUploadPhotoButton: Bool { true }
+
+    func didTapUploadPhotoButton(_ qrCodeScanViewController: QRCodeScanViewController) {
+        var config = PHPickerConfiguration()
+        config.filter = .images
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        self.present(picker, animated: true)
+    }
+
     func qrCodeScanViewScanned(
         qrCodeData: Data?,
         qrCodeString: String?
@@ -171,5 +145,73 @@ extension UsernameLinkScanQRCodeViewController: QRCodeScanOrPickDelegate {
         _ qrCodeScanViewController: QRCodeScanViewController
     ) {
         dismiss(animated: true)
+    }
+}
+
+extension UsernameLinkScanQRCodeViewController: PHPickerViewControllerDelegate {
+    private enum QRCodeImagePickerError: Error {
+        case noAttachmentImage
+        case ciDetectorError
+        case noQRCodeFound
+    }
+
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        guard let selectedItem = results.first else {
+            picker.dismiss(animated: true)
+            return
+        }
+
+        Task { @MainActor in
+            async let dismiss: Void = { @MainActor () async -> Void in
+                await withCheckedContinuation { continuation in
+                    picker.dismiss(animated: true) {
+                        continuation.resume()
+                    }
+                }
+            }()
+
+            do {
+                let typedItemProvider = try TypedItemProvider.make(for: selectedItem.itemProvider)
+                let attachment = try await typedItemProvider.buildAttachment()
+                guard
+                    let image = attachment.image(),
+                    let ciImage = CIImage(image: image)
+                else {
+                    throw QRCodeImagePickerError.noAttachmentImage
+                }
+
+                guard let qrCodeDetector = CIDetector(
+                    ofType: CIDetectorTypeQRCode,
+                    context: nil,
+                    options: [CIDetectorAccuracy: CIDetectorAccuracyHigh]
+                ) else {
+                    throw QRCodeImagePickerError.ciDetectorError
+                }
+
+                let detectedFeatures = qrCodeDetector.features(in: ciImage)
+
+                guard
+                    detectedFeatures.count == 1,
+                    let qrCodeFeature = detectedFeatures.first as? CIQRCodeFeature,
+                    let qrCodeMessageString = qrCodeFeature.messageString
+                else {
+                    throw QRCodeImagePickerError.noQRCodeFound
+                }
+
+                _ = await dismiss
+
+                _ = self.qrCodeScanViewScanned(
+                    qrCodeData: nil,
+                    qrCodeString: qrCodeMessageString
+                )
+            } catch {
+                UsernameLogger.shared.error("Error building attachment for QC code scan: \(error)")
+                _ = await dismiss
+                OWSActionSheets.showErrorAlert(
+                    message: CommonStrings.somethingWentWrongError,
+                    fromViewController: self
+                )
+            }
+        }
     }
 }

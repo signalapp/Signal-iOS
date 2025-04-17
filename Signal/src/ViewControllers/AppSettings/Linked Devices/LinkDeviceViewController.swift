@@ -28,10 +28,6 @@ class LinkDeviceViewController: OWSViewController {
         super.init()
     }
 
-    // MARK: QRCodeScanOrPickDelegate
-
-    var selectedAttachment: ImagePickerAttachment?
-
     // MARK: -
 
     override func viewDidLoad() {
@@ -267,8 +263,7 @@ class LinkDeviceViewController: OWSViewController {
     #endif
 }
 
-extension LinkDeviceViewController: QRCodeScanOrPickDelegate {
-
+extension LinkDeviceViewController: QRCodeScanDelegate {
     @discardableResult
     func qrCodeScanViewScanned(
         qrCodeData: Data?,

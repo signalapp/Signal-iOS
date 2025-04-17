@@ -1660,7 +1660,6 @@
 		B9D721762C87B8EB007EDA85 /* SwiftUI+Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */; };
 		B9DB91702AF46B9A0051A3FD /* BankTransferMandateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */; };
 		B9E02DF02D974F2B00C9DDF8 /* LimitedPhotoPermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E02DEF2D974F2B00C9DDF8 /* LimitedPhotoPermissionsView.swift */; };
-		B9E322D52CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E322D42CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift */; };
 		B9E322D82CD024A2006DAF3B /* linking-device-light.json in Resources */ = {isa = PBXBuildFile; fileRef = B9E322D72CD024A2006DAF3B /* linking-device-light.json */; };
 		B9E322D92CD024A2006DAF3B /* linking-device-dark.json in Resources */ = {isa = PBXBuildFile; fileRef = B9E322D62CD024A2006DAF3B /* linking-device-dark.json */; };
 		B9E322E72CD170ED006DAF3B /* SignalList.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E322E62CD170ED006DAF3B /* SignalList.swift */; };
@@ -5561,7 +5560,6 @@
 		B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUI+Animations.swift"; sourceTree = "<group>"; };
 		B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankTransferMandateViewController.swift; sourceTree = "<group>"; };
 		B9E02DEF2D974F2B00C9DDF8 /* LimitedPhotoPermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitedPhotoPermissionsView.swift; sourceTree = "<group>"; };
-		B9E322D42CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanOrPickDelegate.swift; sourceTree = "<group>"; };
 		B9E322D62CD024A2006DAF3B /* linking-device-dark.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "linking-device-dark.json"; sourceTree = "<group>"; };
 		B9E322D72CD024A2006DAF3B /* linking-device-light.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "linking-device-light.json"; sourceTree = "<group>"; };
 		B9E322E62CD170ED006DAF3B /* SignalList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalList.swift; sourceTree = "<group>"; };
@@ -8098,7 +8096,6 @@
 				E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */,
 				4CA485BA2232339F004B9E7D /* PhotoCaptureViewController.swift */,
 				3496955B219B605E00DCFE74 /* PhotoLibrary.swift */,
-				B9E322D42CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift */,
 				4C4AE69F224AF21900D4AF6F /* SendMediaNavigationController.swift */,
 			);
 			path = Photos;
@@ -17132,7 +17129,6 @@
 				88DF81A328E15D1600F8BA80 /* ProxySettingsViewController.swift in Sources */,
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
 				D9DCFDB02A3BC4A400C73C0B /* QRCodeGenerator.swift in Sources */,
-				B9E322D52CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift in Sources */,
 				D9BF53362D0814A000EC3DF0 /* QRCodeView.swift in Sources */,
 				C1AE7C5A2D7B4451007A618D /* QuickRestoreManager.swift in Sources */,
 				3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */,
