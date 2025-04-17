@@ -1,2 +1,3 @@
-• Wir haben die Auswahl weiterer Fotos in iOS vereinfacht, wenn die Berechtigung »Beschränkter Zugriff« aktiviert ist. Die Schaltfläche »Verwalten« wurde neu positioniert, sodass sie immer sichtbar ist. Und die Aktualisierung deiner Fotoauswahl erfolgt jetzt blitzschnell.
-Wenn du jetzt während eines Sprach- oder Videoanrufs auf eine Mitteilung tippst, wird der Anruf automatisch minimiert, um den entsprechenden Chat anzuzeigen, ohne dass weitere Schritte erforderlich sind.
+• Saint Patrick's Day was so last month, so we added a workaround for an iOS bug that occasionally causes a green square to appear after pasting an image.
+• We squashed another bug that prevented you from saving multiple images to your camera roll in messages that included an album.
+• And we also fixed a crash that could happen after trying to share a call link on your iPad, so you don't need to pick up your phone in order to make a new call.
