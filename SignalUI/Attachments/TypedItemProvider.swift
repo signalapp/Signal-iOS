@@ -136,11 +136,13 @@ public struct TypedItemProvider {
 
     // MARK: Methods
 
-    public nonisolated func buildAttachment(progress: Progress) async throws -> SignalAttachment {
+    public nonisolated func buildAttachment(progress: Progress? = nil) async throws -> SignalAttachment {
         // Whenever this finishes, mark its progress as fully complete. This
         // handles item providers that can't provide partial progress updates.
         defer {
-            progress.completedUnitCount = progress.totalUnitCount
+            if let progress {
+                progress.completedUnitCount = progress.totalUnitCount
+            }
         }
 
         switch itemType {
@@ -212,10 +214,10 @@ public struct TypedItemProvider {
         }
     }
 
-    private nonisolated func buildFileAttachment(progress: Progress) async throws -> SignalAttachment {
+    private nonisolated func buildFileAttachment(progress: Progress?) async throws -> SignalAttachment {
         let (dataSource, dataUTI): (DataSource, String) = try await withCheckedThrowingContinuation { continuation in
             let typeIdentifier = itemType.typeIdentifier
-            _ = itemProvider.loadInPlaceFileRepresentation(forTypeIdentifier: typeIdentifier, completionHandler: { fileUrl, _, error in
+            _ = itemProvider.loadFileRepresentation(forTypeIdentifier: typeIdentifier)  { fileUrl, error in
                 if let error {
                     continuation.resume(throwing: error)
                 } else if let fileUrl {
@@ -232,7 +234,7 @@ public struct TypedItemProvider {
                 } else {
                     continuation.resume(throwing: ItemProviderError.loadInPlaceFileRepresentationFailed)
                 }
-            })
+            }
         }
 
         return try await compressVideoIfNecessary(dataSource: dataSource, dataUTI: dataUTI, progress: progress)
@@ -342,7 +344,7 @@ public struct TypedItemProvider {
     private nonisolated func compressVideoIfNecessary(
         dataSource: DataSource,
         dataUTI: String,
-        progress: Progress
+        progress: Progress?
     ) async throws -> SignalAttachment {
         if SignalAttachment.isVideoThatNeedsCompression(
             dataSource: dataSource,
@@ -357,6 +359,7 @@ public struct TypedItemProvider {
                 dataSource: dataSource,
                 dataUTI: dataUTI,
                 sessionCallback: { exportSession in
+                    guard let progress else { return }
                     progressPoller = ProgressPoller(progress: progress, pollInterval: 0.1, fractionCompleted: { return exportSession.progress })
                     progressPoller?.startPolling()
                 }

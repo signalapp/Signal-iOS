@@ -524,7 +524,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             delegate: self,
             dataSource: self
         )
-        presentFullScreen(pickerModal, animated: true)
+        let presenter = self.splitViewController ?? self
+        presenter.present(pickerModal, animated: true)
     }
 }
 
@@ -663,20 +664,13 @@ fileprivate extension ConversationViewController {
     func chooseFromLibrary() {
         AssertIsOnMainThread()
 
-        ows_askForMediaLibraryPermissions { [weak self] granted in
-            guard let self = self else { return }
-            guard granted else {
-                Logger.warn("Media Library permission denied.")
-                return
-            }
+        let pickerModal = SendMediaNavigationController.showingNativePicker()
+        pickerModal.sendMediaNavDelegate = self
+        pickerModal.sendMediaNavDataSource = self
 
-            let pickerModal = SendMediaNavigationController.showingMediaLibraryFirst()
-            pickerModal.sendMediaNavDelegate = self
-            pickerModal.sendMediaNavDataSource = self
-
-            self.dismissKeyBoard()
-            self.presentFullScreen(pickerModal, animated: true)
-        }
+        self.dismissKeyBoard()
+        let presenter = self.splitViewController ?? self
+        presenter.present(pickerModal, animated: false)
     }
 }
 

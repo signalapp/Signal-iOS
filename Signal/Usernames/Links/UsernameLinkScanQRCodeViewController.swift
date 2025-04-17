@@ -123,6 +123,7 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
     // MARK: Actions
 
     func didTapUploadPhotoButton() {
+        // [Photo Picker] TODO: Replace with native
         let imagePickerViewController = ImagePickerGridController()
         imagePickerViewController.delegate = self
         imagePickerViewController.dataSource = self

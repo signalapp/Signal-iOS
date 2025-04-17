@@ -309,17 +309,13 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         case single
         case multi
     }
-    private(set) var captureMode: CaptureMode = .single {
+    var captureMode: CaptureMode = .single {
         didSet {
             topBar.batchModeButton.setCaptureMode(captureMode, animated: true)
             if let sideBar = sideBar {
                 sideBar.batchModeButton.setCaptureMode(captureMode, animated: true)
             }
         }
-    }
-
-    func switchToMultiCaptureMode() {
-        self.captureMode = .multi
     }
 
     private let topBar = CameraTopBar(frame: .zero)
@@ -659,10 +655,8 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         }
     }
 
-    private func updateDoneButtonAppearance() {
-        if captureMode == .multi, let badgeNumber = dataSource?.numberOfMediaItems, badgeNumber > 0 {
-            doneButton.badgeNumber = badgeNumber
-        }
+    func updateDoneButtonAppearance() {
+        doneButton.badgeNumber = dataSource?.numberOfMediaItems ?? 0
         doneButton.isHidden = shouldHideDoneButton
         if bottomBar.isCompactHeightLayout {
             bottomBar.switchCameraButton.isHidden = !doneButton.isHidden

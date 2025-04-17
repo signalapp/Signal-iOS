@@ -27,6 +27,7 @@ extension QRCodeScanOrPickDelegate {
     // MARK: QRCodeScanDelegate
 
     func didTapUploadPhotoButton(_ qrCodeScanViewController: QRCodeScanViewController) {
+        // [Photo Picker] TODO: Replace with native
         let imagePickerViewController = ImagePickerGridController()
         imagePickerViewController.delegate = self
         imagePickerViewController.dataSource = self
