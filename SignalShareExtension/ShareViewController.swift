@@ -13,8 +13,6 @@ import UniformTypeIdentifiers
 public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate {
 
     enum ShareViewControllerError: Error {
-        case unsupportedMedia
-        case notRegistered
         case obsoleteShare
         case screenLockEnabled
         case tooManyAttachments
@@ -23,16 +21,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         case noConformingInputItem
         case nilAttachments
         case noAttachments
-        case cannotLoadUIImageObject
-        case loadUIImageObjectFailed
-        case uiImageMissingOrCorruptImageData
-        case cannotLoadURLObject
-        case loadURLObjectFailed
-        case cannotLoadStringObject
-        case loadStringObjectFailed
-        case loadDataRepresentationFailed
-        case loadInPlaceFileRepresentationFailed
-        case fileUrlWasBplist
     }
 
     public var shareViewNavigationController: OWSNavigationController?
@@ -382,7 +370,16 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             throw ShareViewControllerError.noAttachments
         }
 
-        return try Self.typedItemProviders(for: itemProviders)
+        let candidates = try itemProviders.map(TypedItemProvider.make(for:))
+
+        // URL shares can come in with text preview and favicon attachments so we ignore other attachments with a URL
+        if let webUrlCandidate = candidates.first(where: { $0.isWebUrl }) {
+            return [webUrlCandidate]
+        }
+
+        // only 1 attachment is supported unless it's visual media so select just the first or just the visual media elements with a preference for visual media
+        let visualMediaCandidates = candidates.filter { $0.isVisualMedia }
+        return visualMediaCandidates.isEmpty ? Array(candidates.prefix(1)) : visualMediaCandidates
     }
 
     private func buildAndValidateAttachments(
@@ -464,335 +461,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         throw ShareViewControllerError.noConformingInputItem
     }
 
-    private struct TypedItemProvider {
-        enum ItemType {
-            case movie
-            case image
-            case webUrl
-            case fileUrl
-            case contact
-            // Apple docs and runtime checks seem to imply "public.plain-text"
-            // should be able to be loaded from an NSItemProvider as
-            // "public.text", but in practice it fails with:
-            // "A string could not be instantiated because of an unknown error."
-            case plainText
-            case text
-            case pdf
-            case pkPass
-            case json
-            case data
-
-            var typeIdentifier: String {
-                switch self {
-                case .movie:
-                    return UTType.movie.identifier
-                case .image:
-                    return UTType.image.identifier
-                case .webUrl:
-                    return UTType.url.identifier
-                case .fileUrl:
-                    return UTType.fileURL.identifier
-                case .contact:
-                    return UTType.vCard.identifier
-                case .plainText:
-                    return UTType.plainText.identifier
-                case .text:
-                    return UTType.text.identifier
-                case .pdf:
-                    return UTType.pdf.identifier
-                case .pkPass:
-                    return "com.apple.pkpass"
-                case .json:
-                    return UTType.json.identifier
-                case .data:
-                    return UTType.data.identifier
-                }
-            }
-        }
-
-        let itemProvider: NSItemProvider
-        let itemType: ItemType
-
-        var isWebUrl: Bool {
-            itemType == .webUrl
-        }
-
-        var isVisualMedia: Bool {
-            itemType == .image || itemType == .movie
-        }
-
-        var isStoriesCompatible: Bool {
-            switch itemType {
-            case .movie, .image, .webUrl, .plainText, .text:
-                return true
-            case .fileUrl, .contact, .pdf, .pkPass, .json, .data:
-                return false
-            }
-        }
-    }
-
-    private static func typedItemProviders(for itemProviders: [NSItemProvider]) throws -> [TypedItemProvider] {
-        // for some data types the OS is just awful and apparently says they conform to something else but then returns useless versions of the information
-        // - com.topografix.gpx
-        //     conforms to public.text, but when asking the OS for text it returns a file URL instead
-        let forcedDataTypeIdentifiers: [String] = ["com.topografix.gpx"]
-        // due to UT conformance fallbacks the order these are checked is important; more specific types need to come earlier in the list than their fallbacks
-        let itemTypeOrder: [TypedItemProvider.ItemType] = [.movie, .image, .contact, .json, .plainText, .text, .pdf, .pkPass, .fileUrl, .webUrl, .data]
-        let candidates: [TypedItemProvider] = try itemProviders.map { itemProvider in
-            for typeIdentifier in forcedDataTypeIdentifiers {
-                if itemProvider.hasItemConformingToTypeIdentifier(typeIdentifier) {
-                    return TypedItemProvider(itemProvider: itemProvider, itemType: .data)
-                }
-            }
-            for itemType in itemTypeOrder {
-                if itemProvider.hasItemConformingToTypeIdentifier(itemType.typeIdentifier) {
-                    return TypedItemProvider(itemProvider: itemProvider, itemType: itemType)
-                }
-            }
-            owsFailDebug("unexpected share item: \(itemProvider)")
-            throw ShareViewControllerError.unsupportedMedia
-        }
-
-        // URL shares can come in with text preview and favicon attachments so we ignore other attachments with a URL
-        if let webUrlCandidate = candidates.first(where: { $0.isWebUrl }) {
-            return [webUrlCandidate]
-        }
-
-        // only 1 attachment is supported unless it's visual media so select just the first or just the visual media elements with a preference for visual media
-        let visualMediaCandidates = candidates.filter { $0.isVisualMedia }
-        return visualMediaCandidates.isEmpty ? Array(candidates.prefix(1)) : visualMediaCandidates
-    }
-
     nonisolated private func buildAttachments(for itemsAndProgresses: [(TypedItemProvider, Progress)]) async throws -> [SignalAttachment] {
         // FIXME: does not use a task group because SignalAttachment likes to load things into RAM and resize them; doing this in parallel can exhaust available RAM
         var result: [SignalAttachment] = []
         for (typedItemProvider, progress) in itemsAndProgresses {
-            result.append(try await self.buildAttachment(for: typedItemProvider, progress: progress))
+            result.append(try await typedItemProvider.buildAttachment(progress: progress))
         }
         return result
-    }
-
-    nonisolated private func buildAttachment(for typedItemProvider: TypedItemProvider, progress: Progress) async throws -> SignalAttachment {
-        // Whenever this finishes, mark its progress as fully complete. This
-        // handles item providers that can't provide partial progress updates.
-        defer {
-            progress.completedUnitCount = progress.totalUnitCount
-        }
-
-        let itemProvider = typedItemProvider.itemProvider
-        switch typedItemProvider.itemType {
-        case .image:
-            // some apps send a usable file to us and some throw a UIImage at us, the UIImage can come in either directly
-            // or as a bplist containing the NSKeyedArchiver output of a UIImage. the code below executes the following
-            // order of attempts to load the input in the right way:
-            //   1) try attaching the image from a file so we don't have to load the image into RAM in the common case
-            //   2) try to load a UIImage directly in the case that is what was sent over
-            //   3) try to NSKeyedUnarchive NSData directly into a UIImage
-            do {
-                return try await self.buildFileAttachment(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, progress: progress)
-            } catch SignalAttachmentError.couldNotParseImage, ShareViewControllerError.fileUrlWasBplist {
-                Logger.warn("failed to parse image directly from file; checking for loading UIImage directly")
-                let image: UIImage = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, cannotLoadError: .cannotLoadUIImageObject, failedLoadError: .loadUIImageObjectFailed)
-                return try Self.createAttachment(withImage: image)
-            }
-        case .movie, .pdf, .data:
-            return try await self.buildFileAttachment(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, progress: progress)
-        case .fileUrl, .json:
-            let url: NSURL = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: TypedItemProvider.ItemType.fileUrl.typeIdentifier, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
-
-            let (dataSource, dataUTI) = try Self.copyFileUrl(
-                fileUrl: url as URL,
-                defaultTypeIdentifier: UTType.data.identifier
-            )
-
-            return try await compressVideoIfNecessary(
-                dataSource: dataSource,
-                dataUTI: dataUTI,
-                progress: progress
-            )
-        case .webUrl:
-            let url: NSURL = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
-            return try Self.createAttachment(withText: (url as URL).absoluteString)
-        case .contact:
-            let contactData = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
-            let dataSource = DataSourceValue(contactData, utiType: typedItemProvider.itemType.typeIdentifier)
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: typedItemProvider.itemType.typeIdentifier)
-            attachment.isConvertibleToContactShare = true
-            if let attachmentError = attachment.error {
-                throw attachmentError
-            }
-            return attachment
-        case .plainText, .text:
-            let text: NSString = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, cannotLoadError: .cannotLoadStringObject, failedLoadError: .loadStringObjectFailed)
-            return try Self.createAttachment(withText: text as String)
-        case .pkPass:
-            let pkPass = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
-            let dataSource = DataSourceValue(pkPass, utiType: typedItemProvider.itemType.typeIdentifier)
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: typedItemProvider.itemType.typeIdentifier)
-            if let attachmentError = attachment.error {
-                throw attachmentError
-            }
-            return attachment
-        }
-    }
-
-    nonisolated private static func copyFileUrl(
-        fileUrl: URL,
-        defaultTypeIdentifier: String
-    ) throws -> (DataSource, dataUTI: String) {
-        guard fileUrl.isFileURL else {
-            throw OWSAssertionError("Unexpectedly not a file URL: \(fileUrl)")
-        }
-
-        let copiedUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileUrl.pathExtension)
-        try FileManager.default.copyItem(at: fileUrl, to: copiedUrl)
-
-        let dataSource = try DataSourcePath(fileUrl: copiedUrl, shouldDeleteOnDeallocation: true)
-        dataSource.sourceFilename = fileUrl.lastPathComponent
-
-        let dataUTI = MimeTypeUtil.utiTypeForFileExtension(fileUrl.pathExtension) ?? defaultTypeIdentifier
-
-        return (dataSource, dataUTI)
-    }
-
-    nonisolated private func compressVideoIfNecessary(
-        dataSource: DataSource,
-        dataUTI: String,
-        progress: Progress
-    ) async throws -> SignalAttachment {
-        if SignalAttachment.isVideoThatNeedsCompression(
-            dataSource: dataSource,
-            dataUTI: dataUTI
-        ) {
-            // TODO: Move waiting for this export to the end of the share flow rather than up front
-            var progressPoller: ProgressPoller?
-            defer {
-                progressPoller?.stopPolling()
-            }
-            let compressedAttachment = try await SignalAttachment.compressVideoAsMp4(
-                dataSource: dataSource,
-                dataUTI: dataUTI,
-                sessionCallback: { exportSession in
-                    progressPoller = ProgressPoller(progress: progress, pollInterval: 0.1, fractionCompleted: { return exportSession.progress })
-                    progressPoller?.startPolling()
-                }
-            )
-
-            if let attachmentError = compressedAttachment.error {
-                throw attachmentError
-            }
-
-            return compressedAttachment
-        } else {
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
-
-            if let attachmentError = attachment.error {
-                throw attachmentError
-            }
-
-            return attachment
-        }
-    }
-
-    nonisolated private func buildFileAttachment(fromItemProvider itemProvider: NSItemProvider, forTypeIdentifier typeIdentifier: String, progress: Progress) async throws -> SignalAttachment {
-        let (dataSource, dataUTI): (DataSource, String) = try await withCheckedThrowingContinuation { continuation in
-            _ = itemProvider.loadInPlaceFileRepresentation(forTypeIdentifier: typeIdentifier, completionHandler: { fileUrl, _, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else if let fileUrl {
-                    if Self.isBplist(url: fileUrl) {
-                        continuation.resume(throwing: ShareViewControllerError.fileUrlWasBplist)
-                    } else {
-                        do {
-                            // NOTE: Compression here rather than creating an additional temp file would be nice but blocking this completion handler for video encoding is probably not a good way to go.
-                            continuation.resume(returning: try Self.copyFileUrl(fileUrl: fileUrl, defaultTypeIdentifier: typeIdentifier))
-                        } catch {
-                            continuation.resume(throwing: error)
-                        }
-                    }
-                } else {
-                    continuation.resume(throwing: ShareViewControllerError.loadInPlaceFileRepresentationFailed)
-                }
-            })
-        }
-
-        return try await compressVideoIfNecessary(dataSource: dataSource, dataUTI: dataUTI, progress: progress)
-    }
-
-    nonisolated private static func loadDataRepresentation(fromItemProvider itemProvider: NSItemProvider, forTypeIdentifier typeIdentifier: String) async throws -> Data {
-        try await withCheckedThrowingContinuation { continuation in
-            _ = itemProvider.loadDataRepresentation(forTypeIdentifier: typeIdentifier) { data, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else if let data {
-                    continuation.resume(returning: data)
-                } else {
-                    continuation.resume(throwing: ShareViewControllerError.loadDataRepresentationFailed)
-                }
-            }
-        }
-    }
-
-    nonisolated private static func loadObjectWithKeyedUnarchiverFallback<T>(fromItemProvider itemProvider: NSItemProvider,
-                                                                             forTypeIdentifier typeIdentifier: String,
-                                                                             cannotLoadError: ShareViewControllerError,
-                                                                             failedLoadError: ShareViewControllerError) async throws -> T
-    where T: NSItemProviderReading, T: NSCoding, T: NSObject {
-        do {
-            guard itemProvider.canLoadObject(ofClass: T.self) else {
-                throw cannotLoadError
-            }
-            return try await withCheckedThrowingContinuation { continuation in
-                _ = itemProvider.loadObject(ofClass: T.self) { object, error in
-                    if let error {
-                        continuation.resume(throwing: error)
-                    } else if let typedObject = object as? T {
-                        continuation.resume(returning: typedObject)
-                    } else {
-                        continuation.resume(throwing: failedLoadError)
-                    }
-                }
-            }
-        } catch {
-            let data = try await loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: typeIdentifier)
-            if let result = try? NSKeyedUnarchiver.unarchivedObject(ofClass: T.self, from: data) {
-                return result
-            } else {
-                throw error
-            }
-        }
-    }
-
-    nonisolated private static func createAttachment(withText text: String) throws -> SignalAttachment {
-        let dataSource = DataSourceValue(oversizeText: text)
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.text.identifier)
-        if let attachmentError = attachment.error {
-            throw attachmentError
-        }
-        attachment.isConvertibleToTextMessage = true
-        return attachment
-    }
-
-    nonisolated private static func createAttachment(withImage image: UIImage) throws -> SignalAttachment {
-        guard let imagePng = image.pngData() else {
-            throw ShareViewControllerError.uiImageMissingOrCorruptImageData
-        }
-        let type = UTType.png
-        let dataSource = DataSourceValue(imagePng, utiType: type.identifier)
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: type.identifier)
-        if let attachmentError = attachment.error {
-            throw attachmentError
-        }
-        return attachment
-    }
-
-    nonisolated private static func isBplist(url: URL) -> Bool {
-        if let handle = try? FileHandle(forReadingFrom: url) {
-            let data = handle.readData(ofLength: 6)
-            return data == Data("bplist".utf8)
-        } else {
-            return false
-        }
     }
 }
 
@@ -822,42 +497,6 @@ extension ShareViewController: UINavigationControllerDelegate {
             navigationController.setNavigationBarHidden(true, animated: animated)
         default:
             navigationController.setNavigationBarHidden(false, animated: animated)
-        }
-    }
-}
-
-// Exposes a Progress object, whose progress is updated by polling the return of a given block
-private class ProgressPoller: NSObject {
-    private let progress: Progress
-    private let pollInterval: TimeInterval
-    private let fractionCompleted: () -> Float
-
-    init(progress: Progress, pollInterval: TimeInterval, fractionCompleted: @escaping () -> Float) {
-        self.progress = progress
-        self.pollInterval = pollInterval
-        self.fractionCompleted = fractionCompleted
-    }
-
-    private var timer: Timer?
-
-    func stopPolling() {
-        timer?.invalidate()
-    }
-
-    func startPolling() {
-        guard self.timer == nil else {
-            owsFailDebug("already started timer")
-            return
-        }
-
-        self.timer = WeakTimer.scheduledTimer(timeInterval: pollInterval, target: self, userInfo: nil, repeats: true) { [weak self] (timer) in
-            guard let self else {
-                timer.invalidate()
-                return
-            }
-
-            let fractionCompleted = self.fractionCompleted()
-            self.progress.completedUnitCount = Int64(fractionCompleted * Float(self.progress.totalUnitCount))
         }
     }
 }
