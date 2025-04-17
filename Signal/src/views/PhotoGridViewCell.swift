@@ -55,7 +55,6 @@ public struct MediaMetadata {
 
 protocol PhotoGridItem: AnyObject {
     var type: PhotoGridItemType { get }
-    var isFavorite: Bool { get }
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void)
     var mediaMetadata: MediaMetadata? { get }
 }
@@ -65,9 +64,6 @@ class PhotoGridViewCell: UICollectionViewCell {
     static let reuseIdentifier = "PhotoGridViewCell"
 
     public let imageView: UIImageView
-
-    // Contains icon and shadow.
-    private var isFavoriteBadge: UIView?
 
     private var durationLabel: UILabel?
     private var durationLabelBackground: UIView?
@@ -95,51 +91,6 @@ class PhotoGridViewCell: UICollectionViewCell {
     override public var isSelected: Bool {
         didSet {
             updateSelectionState()
-        }
-    }
-
-    private var isFavorite: Bool = false {
-        didSet {
-            guard isFavorite else {
-                isFavoriteBadge?.isHidden = true
-                return
-            }
-            let badgeIconView: UIView
-            if let isFavoriteBadge {
-                badgeIconView = isFavoriteBadge
-            } else {
-                badgeIconView = UIView.container()
-                badgeIconView.clipsToBounds = false
-
-                let badgeShadow = GradientView(colors: [ .ows_blackAlpha40, .ows_blackAlpha40, .clear ])
-                badgeShadow.gradientLayer.type = .radial
-                badgeShadow.gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.5)
-                badgeShadow.gradientLayer.endPoint = CGPoint(x: 1, y: 1)
-                badgeIconView.addSubview(badgeShadow)
-
-                let badgeIcon = UIImageView(image: UIImage(imageLiteralResourceName: "heart-fill-compact"))
-                badgeIcon.tintColor = .white
-                badgeIconView.addSubview(badgeIcon)
-
-                badgeShadow.autoPinEdge(.top, to: .top, of: badgeIcon, withOffset: -20)
-                badgeShadow.autoPinEdge(.trailing, to: .trailing, of: badgeIcon, withOffset: 20)
-                badgeShadow.centerXAnchor.constraint(equalTo: badgeIconView.leadingAnchor).isActive = true
-                badgeShadow.centerYAnchor.constraint(equalTo: badgeIconView.bottomAnchor).isActive = true
-
-                badgeIcon.autoSetDimensions(to: .square(14))
-                badgeIcon.autoPinEdge(toSuperviewEdge: .leading, withInset: 6)
-                badgeIcon.autoPinEdge(toSuperviewEdge: .top)
-                badgeIcon.autoPinEdge(toSuperviewEdge: .trailing)
-                badgeIcon.autoPinEdge(toSuperviewEdge: .bottom, withInset: 5)
-
-                contentView.addSubview(badgeIconView)
-                badgeIconView.autoPinEdge(toSuperviewEdge: .leading)
-                badgeIconView.autoPinEdge(toSuperviewEdge: .bottom)
-
-                isFavoriteBadge = badgeIconView
-            }
-            badgeIconView.isHidden = false
-            contentView.bringSubviewToFront(badgeIconView)
         }
     }
 
@@ -276,10 +227,6 @@ class PhotoGridViewCell: UICollectionViewCell {
         durationLabelBackground.isHidden = false
         durationLabel.text = caption
         durationLabel.sizeToFit()
-
-        if let isFavoriteBadge {
-            contentView.bringSubviewToFront(isFavoriteBadge)
-        }
     }
 
     private func setUpAccessibility(item: PhotoGridItem?) {
@@ -330,9 +277,7 @@ class PhotoGridViewCell: UICollectionViewCell {
             self.image = image
         }
 
-        isFavorite = item.isFavorite
         setMedia(itemType: item.type)
-        isFavorite = item.isFavorite
         setUpAccessibility(item: item)
     }
 
@@ -341,7 +286,6 @@ class PhotoGridViewCell: UICollectionViewCell {
 
         photoGridItem = nil
         imageView.image = nil
-        isFavoriteBadge?.isHidden = true
         durationLabel?.isHidden = true
         durationLabelBackground?.isHidden = true
         highlightedMaskView.isHidden = true

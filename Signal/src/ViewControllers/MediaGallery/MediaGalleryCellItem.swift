@@ -121,8 +121,6 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
         }
     }
 
-    var isFavorite: Bool { false }
-
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) {
         galleryItem.thumbnailImage(completion: completion)
     }

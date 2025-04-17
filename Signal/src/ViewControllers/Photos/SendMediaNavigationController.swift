@@ -421,35 +421,7 @@ extension SendMediaNavigationController: UIAdaptivePresentationControllerDelegat
     }
 }
 
-extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
-
-    func imagePickerDidComplete(_ imagePicker: ImagePickerGridController) {
-        if let navigationController = presentedViewController as? OWSNavigationController,
-           navigationController.viewControllers.contains(imagePicker) {
-            dismiss(animated: true) {
-                self.showApprovalAfterProcessingAnyMediaLibrarySelections()
-            }
-            return
-        }
-        showApprovalAfterProcessingAnyMediaLibrarySelections()
-    }
-
-    func imagePickerDidCancel(_ imagePicker: ImagePickerGridController) {
-        // Image picker was presented from the in-app camera.
-        if let navigationController = presentedViewController as? OWSNavigationController,
-           navigationController.viewControllers.contains(imagePicker) {
-            dismiss(animated: true)
-            return
-        }
-
-        // Image picker presented initially doesn't need confirmation when canceling.
-        if let sendMediaNavDelegate {
-            sendMediaNavDelegate.sendMediaNavDidCancel(self)
-        } else {
-            dismiss(animated: true)
-        }
-    }
-
+extension SendMediaNavigationController {
     func showApprovalAfterProcessingAnyMediaLibrarySelections(
         picker: PHPickerViewController? = nil
     ) {
@@ -507,39 +479,6 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
             canCancel: true,
             backgroundBlock: backgroundBlock
         )
-    }
-
-    func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>) {
-        guard !attachmentDraftCollection.hasPickerAttachment(forAsset: asset) else { return }
-
-        let attachmentApprovalItemPromise = attachmentPromise.map { attachment in
-            AttachmentApprovalItem(attachment: attachment, canSave: false)
-        }
-
-        let libraryMedia = MediaLibraryAttachment(asset: asset, attachmentApprovalItemPromise: attachmentApprovalItemPromise)
-        attachmentDraftCollection.append(.picker(attachment: libraryMedia))
-    }
-
-    func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset) {
-        guard let draft = attachmentDraftCollection.pickerAttachment(forAsset: asset) else {
-            return
-        }
-        attachmentDraftCollection.remove(.picker(attachment: draft))
-    }
-
-    func imagePickerDidTryToSelectTooMany(_ imagePicker: ImagePickerGridController) {
-        showTooManySelectedToast()
-    }
-}
-
-extension SendMediaNavigationController: ImagePickerGridControllerDataSource {
-
-    func imagePicker(_ imagePicker: ImagePickerGridController, isAssetSelected asset: PHAsset) -> Bool {
-        return attachmentDraftCollection.hasPickerAttachment(forAsset: asset)
-    }
-
-    func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool {
-        return attachmentCount < SignalAttachment.maxAttachmentsAllowed
     }
 }
 

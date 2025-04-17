@@ -45,11 +45,11 @@ class RecentPhotosCollectionView: UICollectionView {
 
     private lazy var photoLibrary: PhotoLibrary = {
         let library = PhotoLibrary()
-        library.add(delegate: self)
+        library.delegate = self
         return library
     }()
     private lazy var collection = photoLibrary.defaultPhotoAlbum()
-    private lazy var collectionContents = collection.contents(ascending: false, limit: RecentPhotosCollectionView.maxRecentPhotos)
+    private lazy var collectionContents = collection.contents(limit: RecentPhotosCollectionView.maxRecentPhotos)
 
     // Cell Sizing
 
@@ -59,7 +59,7 @@ class RecentPhotosCollectionView: UICollectionView {
         didSet {
             guard oldValue != cellSize else { return }
 
-            photoMediaSize = PhotoMediaSize(thumbnailSize: cellSize * UIScreen.main.scale)
+            thumbnailSize = cellSize * UIScreen.main.scale
 
             // Replacing the collection view layout is the only reliable way
             // to change cell size when `collectionView(_:layout:sizeForItemAt:)` is implemented.
@@ -92,7 +92,7 @@ class RecentPhotosCollectionView: UICollectionView {
         }
     }
 
-    private var photoMediaSize = PhotoMediaSize(thumbnailSize: initialCellSize * UIScreen.main.scale)
+    private var thumbnailSize = initialCellSize * UIScreen.main.scale
 
     private static func collectionViewLayout(itemSize: CGSize) -> UICollectionViewFlowLayout {
         let layout = RTLEnabledCollectionViewFlowLayout()
@@ -254,7 +254,7 @@ extension RecentPhotosCollectionView: PhotoLibraryDelegate {
 
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
         let hadPhotos = hasPhotos
-        collectionContents = collection.contents(ascending: false, limit: RecentPhotosCollectionView.maxRecentPhotos)
+        collectionContents = collection.contents(limit: RecentPhotosCollectionView.maxRecentPhotos)
         reloadData()
         if hasPhotos != hadPhotos {
             reloadUIOnMediaLibraryAuthorizationStatusChange()
@@ -328,7 +328,7 @@ extension RecentPhotosCollectionView: UICollectionViewDataSource {
             owsFail("cell was unexpectedly nil")
         }
 
-        let assetItem = collectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
+        let assetItem = collectionContents.assetItem(at: indexPath.item, thumbnailSize: thumbnailSize)
         cell.configure(item: assetItem, isLoading: fetchingAttachmentIndex == indexPath)
         #if DEBUG
         // These accessibilityIdentifiers won't be stable, but they
@@ -349,7 +349,7 @@ private class RecentPhotoCell: UICollectionViewCell {
     private var durationLabelBackground: UIView?
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
 
-    private var item: PhotoGridItem?
+    private var item: PhotoPickerAssetItem?
 
     override init(frame: CGRect) {
 
@@ -483,7 +483,7 @@ private class RecentPhotoCell: UICollectionViewCell {
         durationLabel.sizeToFit()
     }
 
-    func configure(item: PhotoGridItem, isLoading: Bool) {
+    func configure(item: PhotoPickerAssetItem, isLoading: Bool) {
         self.item = item
 
         image = nil

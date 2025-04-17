@@ -5803,9 +5803,6 @@
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Video too long.";
 
-/* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
-
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "Pin";
 
