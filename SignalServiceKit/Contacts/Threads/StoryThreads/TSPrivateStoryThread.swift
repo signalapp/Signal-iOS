@@ -19,7 +19,7 @@ extension TSPrivateStoryThread {
     }
 
     @discardableResult
-    public class func getOrCreateMyStory(transaction: DBWriteTransaction) -> TSPrivateStoryThread! {
+    public class func getOrCreateMyStory(transaction: DBWriteTransaction) -> TSPrivateStoryThread {
         if let myStory = getMyStory(transaction: transaction) { return myStory }
 
         let myStory = TSPrivateStoryThread(uniqueId: myStoryUniqueId, name: "", allowsReplies: true, viewMode: .blockList)
