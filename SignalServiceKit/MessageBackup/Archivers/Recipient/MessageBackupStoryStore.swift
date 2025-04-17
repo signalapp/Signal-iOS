@@ -60,6 +60,7 @@ public final class MessageBackupStoryStore {
         )
         if let existingMyStoryRowId {
             record.id = existingMyStoryRowId
+            myStory.updateRowId(existingMyStoryRowId)
         }
 
         // Use save to insert or update as my story might already exist.
