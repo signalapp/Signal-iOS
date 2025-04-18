@@ -87,6 +87,14 @@ class SendMediaNavigationController: OWSNavigationController {
 
     fileprivate var nativePickerToPresent: PHPickerViewController?
 
+    private static func phPickerConfiguration(cameraAttachmentCount: Int) -> PHPickerConfiguration {
+        var config = PHPickerConfiguration(photoLibrary: .shared())
+        config.preferredAssetRepresentationMode = .current
+        config.selectionLimit = SignalAttachment.maxAttachmentsAllowed - cameraAttachmentCount
+        config.selection = .ordered
+        return config
+    }
+
     class func showingNativePicker() -> SendMediaNavigationController {
         // We want to present the photo picker in a sheet and then have the
         // editor appear behind it after you select photos, so present this
@@ -97,9 +105,7 @@ class SendMediaNavigationController: OWSNavigationController {
         navController.view.layer.opacity = 0
         navController.modalPresentationStyle = .overCurrentContext
 
-        var config = PHPickerConfiguration(photoLibrary: .shared())
-        config.preferredAssetRepresentationMode = .current
-        config.selectionLimit = SignalAttachment.maxAttachmentsAllowed
+        let config = Self.phPickerConfiguration(cameraAttachmentCount: 0)
         let vc = PHPickerViewController(configuration: config)
         vc.delegate = navController
 
@@ -133,7 +139,7 @@ class SendMediaNavigationController: OWSNavigationController {
         let approvalItem = AttachmentApprovalItem(attachment: attachment, canSave: false)
         let libraryMedia = MediaLibraryAttachment(asset: asset,
                                                   attachmentApprovalItemPromise: .value(approvalItem))
-        navController.attachmentDraftCollection.append(.picker(attachment: libraryMedia))
+        navController.attachmentDrafts.append(.picker(attachment: libraryMedia))
 
         navController.showApprovalViewController(
             attachmentApprovalItems: [approvalItem]
@@ -155,14 +161,10 @@ class SendMediaNavigationController: OWSNavigationController {
     // MARK: - Attachments
 
     private var attachmentCount: Int {
-        return attachmentDraftCollection.count
+        return attachmentDrafts.count
     }
 
-    private var attachmentDraftCollection: AttachmentDraftCollection = .empty
-
-    private var attachmentApprovalItemPromises: [Promise<AttachmentApprovalItem>] {
-        return attachmentDraftCollection.attachmentApprovalItemPromises
-    }
+    private var attachmentDrafts: [AttachmentDraft] = []
 
     // MARK: - Child View Controllers
 
@@ -221,7 +223,7 @@ class SendMediaNavigationController: OWSNavigationController {
     }
 
     private func didRequestExit(dontAbandonText: String) {
-        if attachmentDraftCollection.count == 0 {
+        if attachmentDrafts.count == 0 {
             self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
         } else {
             let alert = ActionSheetController(title: nil, message: nil, theme: .translucentDark)
@@ -262,7 +264,7 @@ extension SendMediaNavigationController {
 extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
 
     func photoCaptureViewControllerDidFinish(_ photoCaptureViewController: PhotoCaptureViewController) {
-        guard attachmentDraftCollection.count > 0 else {
+        guard attachmentDrafts.count > 0 else {
             owsFailDebug("No camera attachments found")
             return
         }
@@ -280,7 +282,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     }
 
     func photoCaptureViewControllerViewWillAppear(_ photoCaptureViewController: PhotoCaptureViewController) {
-        if photoCaptureViewController.captureMode == .single, attachmentCount == 1, case .camera = attachmentDraftCollection.attachmentDrafts.last {
+        if photoCaptureViewController.captureMode == .single, attachmentCount == 1, case .camera = attachmentDrafts.last {
             // User is navigating back to the camera screen, indicating they want to discard the previously captured item.
             discardDraft()
         }
@@ -295,11 +297,11 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     }
 
     func discardDraft() {
-        owsAssertDebug(attachmentDraftCollection.attachmentDrafts.count <= 1)
-        if let lastAttachmentDraft = attachmentDraftCollection.attachmentDrafts.last {
-            attachmentDraftCollection.remove(lastAttachmentDraft)
+        owsAssertDebug(attachmentDrafts.count <= 1)
+        if let lastAttachmentDraft = attachmentDrafts.last {
+            attachmentDrafts.removeAll { $0 == lastAttachmentDraft }
         }
-        owsAssertDebug(attachmentDraftCollection.attachmentDrafts.count == 0)
+        owsAssertDebug(attachmentDrafts.count == 0)
     }
 
     func photoCaptureViewControllerDidRequestPresentPhotoLibrary(_ photoCaptureViewController: PhotoCaptureViewController) {
@@ -328,7 +330,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
                                             comment: "In-app camera: confirmation button in the prompt to turn off multi-mode.")
         let actionSheet = ActionSheetController(title: title, message: message, theme: .translucentDark)
         actionSheet.addAction(ActionSheetAction(title: buttonTitle, style: .destructive) { _ in
-            self.attachmentDraftCollection.removeAll()
+            self.attachmentDrafts.removeAll()
             completion(true)
         })
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
@@ -350,16 +352,69 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDataSource {
 
     func addMedia(attachment: SignalAttachment) {
         let cameraCaptureAttachment = CameraCaptureAttachment(signalAttachment: attachment)
-        attachmentDraftCollection.append(.camera(attachment: cameraCaptureAttachment))
+        attachmentDrafts.append(.camera(attachment: cameraCaptureAttachment))
     }
 }
 
 extension SendMediaNavigationController: PHPickerViewControllerDelegate {
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        var oldAttachments = Set(attachmentDraftCollection.attachmentSystemIdentifiers)
+    private struct PHPickerResultsLoadResult {
+        let attachmentDrafts: [AttachmentDraft]
+        let didAddAttachments: Bool
+    }
 
-        var attachmentsWereAdded = false
+    /// Load the `results` in the order they are given. Any other existing
+    /// `AttachmentDraft`s will be removed from `self.attachmentDrafts`.
+    private func loadOrderedPHPickerResults(
+        _ results: [PHPickerResult]
+    ) -> PHPickerResultsLoadResult {
+        var didAddAttachments = false
+        let attachmentDraftsByAssetID: [String: AttachmentDraft] = Dictionary(
+            uniqueKeysWithValues: attachmentDrafts.compactMap { attachmentDraft in
+                guard let systemID = attachmentDraft.systemIdentifier else {
+                    return nil
+                }
+                return (systemID, attachmentDraft)
+            }
+        )
 
+        let attachmentDrafts: [AttachmentDraft] = results.map { result in
+            if
+                let assetID = result.assetIdentifier,
+                let existingItem = attachmentDraftsByAssetID[assetID]
+            {
+                return existingItem
+            }
+
+            didAddAttachments = true
+            let attachment = PHPickerAttachment(
+                result: result,
+                attachmentApprovalItemPromise: Promise.wrapAsync {
+                    let attachment = try await TypedItemProvider
+                        .make(for: result.itemProvider)
+                        .buildAttachment()
+                    return AttachmentApprovalItem(
+                        attachment: attachment,
+                        canSave: false
+                    )
+                }
+            )
+            return .phPicker(attachment: attachment)
+        }
+
+        return PHPickerResultsLoadResult(
+            attachmentDrafts: attachmentDrafts,
+            didAddAttachments: didAddAttachments
+        )
+    }
+
+    /// Load the `results` on top of the existing `AttachmentDraft`s in
+    /// `self.attachmentDrafts`, adding new items to the end.
+    private func loadUnorderedPHPickerResults(
+        _ results: [PHPickerResult]
+    ) -> PHPickerResultsLoadResult {
+        var attachmentDrafts = self.attachmentDrafts
+        var oldAttachments = Set(attachmentDrafts.attachmentSystemIdentifiers)
+        var didAddAttachments = false
         results.filter { result in
             if let assetID = result.assetIdentifier {
                 let removedItem = oldAttachments.remove(assetID)
@@ -368,7 +423,7 @@ extension SendMediaNavigationController: PHPickerViewControllerDelegate {
                     return false
                 }
             }
-            attachmentsWereAdded = true
+            didAddAttachments = true
             return true
         }.map { result in
             PHPickerAttachment(
@@ -384,15 +439,37 @@ extension SendMediaNavigationController: PHPickerViewControllerDelegate {
                 }
             )
         }.forEach { attachment in
-            attachmentDraftCollection.append(.phPicker(attachment: attachment))
+            attachmentDrafts.append(.phPicker(attachment: attachment))
         }
 
         // Anything left in here was deselected
         oldAttachments.forEach { oldAttachment in
-            attachmentDraftCollection.remove(itemWithSystemID: oldAttachment)
+            attachmentDrafts.remove(itemWithSystemID: oldAttachment)
         }
 
-        if !attachmentsWereAdded, viewControllers.first is PhotoCaptureViewController {
+        return PHPickerResultsLoadResult(
+            attachmentDrafts: attachmentDrafts,
+            didAddAttachments: didAddAttachments
+        )
+    }
+
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        let loadResult = if attachmentDrafts.contains(where: {
+            if case .camera = $0 { true } else { false }
+        }) {
+            // When there are camera attachments, there isn't a straightforward
+            // way to handle re-ordering selection, so we just drop the order
+            loadUnorderedPHPickerResults(results)
+        } else {
+            loadOrderedPHPickerResults(results)
+        }
+
+        self.attachmentDrafts = loadResult.attachmentDrafts
+
+        if
+            !loadResult.didAddAttachments,
+            viewControllers.first is PhotoCaptureViewController
+        {
             picker.dismiss(animated: true)
             if attachmentCount <= 0 {
                 captureViewController.captureMode = .single
@@ -426,7 +503,7 @@ extension SendMediaNavigationController {
         picker: PHPickerViewController? = nil
     ) {
         let backgroundBlock: (ModalActivityIndicatorViewController) -> Void = { modal in
-            let approvalItemsPromise: Promise<[AttachmentApprovalItem]> = Promise.when(fulfilled: self.attachmentDraftCollection.attachmentApprovalItemPromises)
+            let approvalItemsPromise: Promise<[AttachmentApprovalItem]> = Promise.when(fulfilled: self.attachmentDrafts.map(\.attachmentApprovalItemPromise))
             firstly { () -> Promise<Result<[AttachmentApprovalItem], Error>> in
                 return Promise.race(
                     approvalItemsPromise.map { attachmentApprovalItems -> Result<[AttachmentApprovalItem], Error> in
@@ -493,12 +570,12 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
-        guard let removedDraft = attachmentDraftCollection.attachmentDraft(forAttachment: attachment) else {
+        guard let removedDraft = attachmentDrafts.attachmentDraft(for: attachment) else {
             owsFailDebug("removedDraft was unexpectedly nil")
             return
         }
 
-        attachmentDraftCollection.remove(removedDraft)
+        attachmentDrafts.removeAll { $0 == removedDraft }
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?) {
@@ -522,11 +599,10 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
     }
 
     private func presentAdditionalPhotosPicker() {
-        var config = PHPickerConfiguration(photoLibrary: .shared())
-        let photoCount = attachmentDraftCollection.cameraAttachmentCount
-        config.selectionLimit = SignalAttachment.maxAttachmentsAllowed - photoCount
-        config.preferredAssetRepresentationMode = .current
-        config.preselectedAssetIdentifiers = attachmentDraftCollection.attachmentSystemIdentifiers
+        var config = Self.phPickerConfiguration(
+            cameraAttachmentCount: attachmentDrafts.cameraAttachmentCount
+        )
+        config.preselectedAssetIdentifiers = attachmentDrafts.attachmentSystemIdentifiers
 
         let vc = PHPickerViewController(configuration: config)
         vc.delegate = self
@@ -574,7 +650,6 @@ private enum AttachmentDraft: Equatable {
 }
 
 private extension AttachmentDraft {
-
     var attachmentApprovalItemPromise: Promise<AttachmentApprovalItem> {
         switch self {
         case .camera(let cameraAttachment):
@@ -585,39 +660,24 @@ private extension AttachmentDraft {
             return phPickerAttachment.attachmentApprovalItemPromise
         }
     }
-}
 
-private struct AttachmentDraftCollection {
-
-    private(set) var attachmentDrafts: [AttachmentDraft]
-
-    static var empty: AttachmentDraftCollection {
-        return AttachmentDraftCollection(attachmentDrafts: [])
-    }
-
-    // MARK: -
-
-    var count: Int {
-        return attachmentDrafts.count
-    }
-
-    var attachmentApprovalItemPromises: [Promise<AttachmentApprovalItem>] {
-        return attachmentDrafts.map { $0.attachmentApprovalItemPromise }
-    }
-
-    var pickerAttachments: [MediaLibraryAttachment] {
-        return attachmentDrafts.compactMap { attachmentDraft in
-            switch attachmentDraft {
-            case .picker(let pickerAttachment):
-                return pickerAttachment
-            case .camera, .phPicker:
-                return nil
-            }
+    var systemIdentifier: String? {
+        switch self {
+        case .picker(let attachment):
+            attachment.asset.localIdentifier
+        case .camera:
+            nil
+        case .phPicker(let phPickerAttachment):
+            phPickerAttachment.result.assetIdentifier
         }
     }
+}
 
+// MARK: - AttachmentDrafts
+
+private extension Array where Element == AttachmentDraft {
     var cameraAttachmentCount: Int {
-        attachmentDrafts.count { attachmentDraft in
+        count { attachmentDraft in
             switch attachmentDraft {
             case .camera: true
             case .picker, .phPicker: false
@@ -626,28 +686,13 @@ private struct AttachmentDraftCollection {
     }
 
     var attachmentSystemIdentifiers: [String] {
-        return attachmentDrafts.compactMap { attachmentDraft in
-            switch attachmentDraft {
-            case .picker(let attachment):
-                attachment.asset.localIdentifier
-            case .camera:
-                nil
-            case .phPicker(let phPickerAttachment):
-                phPickerAttachment.result.assetIdentifier
-            }
+        compactMap { attachmentDraft in
+            attachmentDraft.systemIdentifier
         }
     }
 
-    mutating func append(_ element: AttachmentDraft) {
-        attachmentDrafts.append(element)
-    }
-
-    mutating func remove(_ element: AttachmentDraft) {
-        attachmentDrafts.removeAll { $0 == element }
-    }
-
     mutating func remove(itemWithSystemID id: String) {
-        attachmentDrafts.removeAll { item in
+        self.removeAll { item in
             switch item {
             case .camera:
                 false
@@ -659,32 +704,19 @@ private struct AttachmentDraftCollection {
         }
     }
 
-    mutating func removeAll() {
-        attachmentDrafts.removeAll()
-    }
-
-    func attachmentDraft(forAttachment: SignalAttachment) -> AttachmentDraft? {
-        for attachmentDraft in attachmentDrafts {
+    func attachmentDraft(for attachment: SignalAttachment) -> AttachmentDraft? {
+        self.first { attachmentDraft in
             guard let attachmentApprovalItem = attachmentDraft.attachmentApprovalItemPromise.value else {
                 // method should only be used after draft promises have been resolved.
                 owsFailDebug("attachment was unexpectedly nil")
-                continue
+                return false
             }
-            if attachmentApprovalItem.attachment == forAttachment {
-                return attachmentDraft
-            }
+            return attachmentApprovalItem.attachment == attachment
         }
-        return nil
-    }
-
-    func pickerAttachment(forAsset asset: PHAsset) -> MediaLibraryAttachment? {
-        return pickerAttachments.first { $0.asset == asset }
-    }
-
-    func hasPickerAttachment(forAsset asset: PHAsset) -> Bool {
-        return pickerAttachment(forAsset: asset) != nil
     }
 }
+
+// MARK: - CameraCaptureAttachment
 
 private struct CameraCaptureAttachment: Hashable, Equatable {
 
