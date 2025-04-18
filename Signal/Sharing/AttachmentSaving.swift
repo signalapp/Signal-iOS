@@ -15,6 +15,7 @@ public enum AttachmentSaving {
     public static func saveToPhotoLibrary(
         referencedAttachmentStreams: [ReferencedAttachmentStream]
     ) {
+        var previouslySeenFileNames = Set<String>()
         let assetCreationRequests: [PHAssetCreationRequestType] = referencedAttachmentStreams.compactMap {
             let reference = $0.reference
             let attachmentStream = $0.attachmentStream
@@ -27,12 +28,37 @@ public enum AttachmentSaving {
             }
 
             let decryptedFileUrl: URL
-            do {
-                decryptedFileUrl = try attachmentStream.makeDecryptedCopy(
-                    filename: reference.sourceFilename
-                )
-            } catch let error {
-                owsFailDebug("Failed to save decrypted copy of attachment for photo library! \(error)")
+            // Avoid source filename collisions.
+            if let sourceFilename = reference.sourceFilename {
+                let pathExtension = (sourceFilename as NSString).pathExtension
+                let normalizedFileName = (sourceFilename as NSString).deletingPathExtension.trimmingCharacters(in: .whitespaces)
+                
+                var newSourceFileName: String = sourceFilename
+                if (previouslySeenFileNames.contains(newSourceFileName)) {
+                    var i = 0
+                    sourceFilenameLoop: while true {
+                        i += 1
+                        newSourceFileName = normalizedFileName + "_\(i)"
+                        newSourceFileName = (newSourceFileName as NSString).appendingPathExtension(pathExtension) ?? newSourceFileName
+                        if !previouslySeenFileNames.contains(newSourceFileName) {
+                            previouslySeenFileNames.insert(newSourceFileName)
+                            break sourceFilenameLoop
+                        }
+                    }
+                } else {
+                    previouslySeenFileNames.insert(newSourceFileName)
+                }
+                
+                do {
+                    decryptedFileUrl = try attachmentStream.makeDecryptedCopy(
+                        filename: newSourceFileName
+                    )
+                } catch let error {
+                    owsFailDebug("Failed to save decrypted copy of attachment for photo library! \(error)")
+                    return nil
+                }
+                
+            } else {
                 return nil
             }
 
