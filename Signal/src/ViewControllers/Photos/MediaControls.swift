@@ -1201,68 +1201,12 @@ class CaptureModeButton: RoundMediaButton {
     }
 }
 
-class MediaPickerThumbnailButton: UIButton {
-
+class MediaPickerButton: RoundMediaButton {
     init() {
-        let buttonSize = MediaPickerThumbnailButton.visibleSize + 2*MediaPickerThumbnailButton.contentMargin
-        super.init(frame: CGRect(origin: .zero, size: .square(buttonSize)))
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private static let visibleSize: CGFloat = 42
-    private static let contentMargin: CGFloat = 8
-
-    func configure() {
-        ows_contentEdgeInsets = UIEdgeInsets(margin: MediaPickerThumbnailButton.contentMargin)
-
-        let placeholderView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-        placeholderView.layer.cornerRadius = 10
-        placeholderView.layer.borderWidth = 1.5
-        placeholderView.layer.borderColor = UIColor.ows_whiteAlpha80.cgColor
-        placeholderView.clipsToBounds = true
-        placeholderView.isUserInteractionEnabled = false
-        insertSubview(placeholderView, at: 0)
-        placeholderView.autoPinEdgesToSuperviewEdges(with: ows_contentEdgeInsets)
-
-        var authorizationStatus: PHAuthorizationStatus
-        authorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
-        guard authorizationStatus == .authorized else { return }
-
-        // Async Fetch last image
-        DispatchQueue.global(qos: .userInteractive).async {
-            let fetchResult = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: nil)
-            if let asset = fetchResult.lastObject {
-                let targetImageSize = CGSize(square: MediaPickerThumbnailButton.visibleSize)
-                PHImageManager.default().requestImage(for: asset, targetSize: targetImageSize, contentMode: .aspectFill, options: nil) { (image, _) in
-                    if let image = image {
-                        DispatchQueue.main.async {
-                            self.updateWith(image: image)
-                            placeholderView.alpha = 0
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private func updateWith(image: UIImage) {
-        setImage(image, animated: self.window != nil)
-        if let imageView {
-            imageView.contentMode = .scaleAspectFill
-            imageView.layer.cornerRadius = 10
-            imageView.layer.borderWidth = 1.5
-            imageView.layer.borderColor = UIColor.ows_whiteAlpha80.cgColor
-            imageView.clipsToBounds = true
-        }
-    }
-
-    override var intrinsicContentSize: CGSize {
-        return CGSize(
-            width: ows_contentEdgeInsets.leading + Self.visibleSize + ows_contentEdgeInsets.trailing,
-            height: ows_contentEdgeInsets.top + Self.visibleSize + ows_contentEdgeInsets.bottom
+        super.init(
+            image: UIImage(named: "album-tilt-28"),
+            backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor),
+            customView: nil
         )
     }
 }
@@ -1403,7 +1347,7 @@ class CameraBottomBar: UIView {
         }
     }
 
-    let photoLibraryButton = MediaPickerThumbnailButton()
+    let photoLibraryButton = MediaPickerButton()
     let switchCameraButton = CameraChooserButton(backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor))
     let proceedButton: UIButton = {
         let button = UIButton(type: .system)
@@ -1618,7 +1562,7 @@ class CameraSideBar: UIView {
     let batchModeButton = CaptureModeButton()
     let switchCameraButton = CameraChooserButton(backgroundStyle: .blur)
 
-    let photoLibraryButton = MediaPickerThumbnailButton()
+    let photoLibraryButton = MediaPickerButton()
 
     private(set) var cameraCaptureControl = CameraCaptureControl(axis: .vertical)
 
@@ -1836,7 +1780,7 @@ extension CaptureModeButton {
     }
 }
 
-extension MediaPickerThumbnailButton {
+extension MediaPickerButton {
 
     override var accessibilityLabel: String? {
         get {

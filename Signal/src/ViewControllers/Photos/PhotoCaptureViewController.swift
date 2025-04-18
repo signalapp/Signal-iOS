@@ -113,11 +113,6 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             interactiveDismiss.addGestureRecognizer(to: view)
             self.interactiveDismiss = interactiveDismiss
         }
-
-        bottomBar.photoLibraryButton.configure()
-        if let sideBar = sideBar {
-            sideBar.photoLibraryButton.configure()
-        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
