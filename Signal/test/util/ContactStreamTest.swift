@@ -43,15 +43,10 @@ final class ContactStreamTest: XCTestCase {
         var contacts: [ContactDetails] = []
 
         let data = Data(base64Encoded: outputContactSyncData)!
-        try data.withUnsafeBytes { bufferPtr in
-            if let baseAddress = bufferPtr.baseAddress, bufferPtr.count > 0 {
-                let pointer = baseAddress.assumingMemoryBound(to: UInt8.self)
-                let inputStream = ChunkedInputStream(forReadingFrom: pointer, count: bufferPtr.count)
-                let contactStream = ContactsInputStream(inputStream: inputStream)
-                while let nextContact = try contactStream.decodeContact() {
-                    contacts.append(nextContact)
-                }
-            }
+        let inputStream = ChunkedInputStream(forReadingFrom: data)
+        let contactStream = ContactsInputStream(inputStream: inputStream)
+        while let nextContact = try contactStream.decodeContact() {
+            contacts.append(nextContact)
         }
 
         guard contacts.count == 3 else {

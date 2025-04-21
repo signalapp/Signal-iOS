@@ -106,9 +106,10 @@ private class IncomingContactSyncJobRunner: JobRunner {
             ).awaitable()
         }
 
-        let insertedThreads = try await firstly(on: DispatchQueue.global()) {
-            try self.processContactSync(decryptedFileUrl: fileUrl, isComplete: jobRecord.isCompleteContactSync)
-        }.awaitable()
+        let insertedThreads = try await processContactSync(
+            decryptedFileUrl: fileUrl,
+            isComplete: jobRecord.isCompleteContactSync
+        )
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             jobRecord.anyRemove(transaction: tx)
         }
@@ -122,37 +123,33 @@ private class IncomingContactSyncJobRunner: JobRunner {
     private func processContactSync(
         decryptedFileUrl fileUrl: URL,
         isComplete: Bool
-    ) throws -> [(threadUniqueId: String, sortOrder: UInt32)] {
-
+    ) async throws -> [(threadUniqueId: String, sortOrder: UInt32)] {
         var insertedThreads = [(threadUniqueId: String, sortOrder: UInt32)]()
-        try Data(contentsOf: fileUrl, options: .mappedIfSafe).withUnsafeBytes { bufferPtr in
-            if let baseAddress = bufferPtr.baseAddress, bufferPtr.count > 0 {
-                let pointer = baseAddress.assumingMemoryBound(to: UInt8.self)
-                let inputStream = ChunkedInputStream(forReadingFrom: pointer, count: bufferPtr.count)
-                let contactStream = ContactsInputStream(inputStream: inputStream)
+        let fileData = try Data(contentsOf: fileUrl, options: .mappedIfSafe)
+        let inputStream = ChunkedInputStream(forReadingFrom: fileData)
+        let contactStream = ContactsInputStream(inputStream: inputStream)
 
-                // We use batching to avoid long-running write transactions
-                // and to place an upper bound on memory usage.
-                var allPhoneNumbers = [E164]()
-                while try processBatch(
-                    contactStream: contactStream,
-                    insertedThreads: &insertedThreads,
-                    processedPhoneNumbers: &allPhoneNumbers
-                ) {}
+        // We use batching to avoid long-running write transactions
+        // and to place an upper bound on memory usage.
+        var allPhoneNumbers = [E164]()
+        while try await processBatch(
+            contactStream: contactStream,
+            insertedThreads: &insertedThreads,
+            processedPhoneNumbers: &allPhoneNumbers
+        ) {}
 
-                if isComplete {
-                    try pruneContacts(exceptThoseReceivedFromCompleteSync: allPhoneNumbers)
-                }
-
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    // Always fire just one identity change notification, rather than potentially
-                    // once per contact. It's possible that *no* identities actually changed,
-                    // but we have no convenient way to track that.
-                    let identityManager = DependenciesBridge.shared.identityManager
-                    identityManager.fireIdentityStateChangeNotification(after: transaction)
-                }
-            }
+        if isComplete {
+            try await pruneContacts(exceptThoseReceivedFromCompleteSync: allPhoneNumbers)
         }
+
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+            // Always fire just one identity change notification, rather than potentially
+            // once per contact. It's possible that *no* identities actually changed,
+            // but we have no convenient way to track that.
+            let identityManager = DependenciesBridge.shared.identityManager
+            identityManager.fireIdentityStateChangeNotification(after: transaction)
+        }
+
         return insertedThreads
     }
 
@@ -161,25 +158,23 @@ private class IncomingContactSyncJobRunner: JobRunner {
         contactStream: ContactsInputStream,
         insertedThreads: inout [(threadUniqueId: String, sortOrder: UInt32)],
         processedPhoneNumbers: inout [E164]
-    ) throws -> Bool {
-        try autoreleasepool {
-            // We use batching to avoid long-running write transactions.
-            guard let contactBatch = try Self.buildBatch(contactStream: contactStream) else {
-                return false
-            }
-            guard !contactBatch.isEmpty else {
-                owsFailDebug("Empty batch.")
-                return false
-            }
-            try SSKEnvironment.shared.databaseStorageRef.write { tx in
-                for contact in contactBatch {
-                    if let phoneNumber = try processContactDetails(contact, insertedThreads: &insertedThreads, tx: tx) {
-                        processedPhoneNumbers.append(phoneNumber)
-                    }
+    ) async throws -> Bool {
+        // We use batching to avoid long-running write transactions.
+        guard let contactBatch = try Self.buildBatch(contactStream: contactStream) else {
+            return false
+        }
+        guard !contactBatch.isEmpty else {
+            owsFailDebug("Empty batch.")
+            return false
+        }
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            for contact in contactBatch {
+                if let phoneNumber = try processContactDetails(contact, insertedThreads: &insertedThreads, tx: tx) {
+                    processedPhoneNumbers.append(phoneNumber)
                 }
             }
-            return true
         }
+        return true
     }
 
     private static func buildBatch(contactStream: ContactsInputStream) throws -> [ContactDetails]? {
@@ -273,8 +268,8 @@ private class IncomingContactSyncJobRunner: JobRunner {
     /// StorageService, so this job continues to fulfill that role. In the
     /// future, if you're removing this method, you should first ensure that
     /// periodic full syncs of contact details happen with StorageService.
-    private func pruneContacts(exceptThoseReceivedFromCompleteSync phoneNumbers: [E164]) throws {
-        try SSKEnvironment.shared.databaseStorageRef.write { transaction in
+    private func pruneContacts(exceptThoseReceivedFromCompleteSync phoneNumbers: [E164]) async throws {
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             // Every contact sync includes your own address. However, we shouldn't
             // create a SignalAccount for your own address. (If you're a primary, this
             // is handled by FetchedSystemContacts.phoneNumbers(…).)

@@ -4,9 +4,9 @@
 //
 
 import Foundation
-public import LibSignalClient
+import LibSignalClient
 
-public struct ContactDetails {
+struct ContactDetails {
     public let aci: Aci?
     public let phoneNumber: E164?
     public let expireTimer: UInt32
@@ -14,35 +14,32 @@ public struct ContactDetails {
     public let inboxSortOrder: UInt32?
 }
 
-public class ContactsInputStream {
+class ContactsInputStream {
     var inputStream: ChunkedInputStream
 
-    public init(inputStream: ChunkedInputStream) {
+    init(inputStream: ChunkedInputStream) {
         self.inputStream = inputStream
     }
 
-    public func decodeContact() throws -> ContactDetails? {
+    func decodeContact() throws -> ContactDetails? {
         guard !inputStream.isEmpty else {
             return nil
         }
 
-        var contactDataLength: UInt32 = 0
-        try inputStream.decodeSingularUInt32Field(value: &contactDataLength)
+        let contactDataLength = try inputStream.decodeSingularUInt32Field()
 
         guard contactDataLength > 0 else {
             owsFailDebug("Empty contactDataLength.")
             return nil
         }
 
-        var contactData: Data = Data()
-        try inputStream.decodeData(value: &contactData, count: Int(contactDataLength))
+        let contactData = try inputStream.decodeData(count: Int(contactDataLength))
 
         let contactDetails = try SignalServiceProtos_ContactDetails(serializedBytes: contactData)
 
         if contactDetails.hasAvatar {
             // Consume but discard the incoming contact avatar.
-            var decodedData = Data()
-            try inputStream.decodeData(value: &decodedData, count: Int(contactDetails.avatar.length))
+            _ = try inputStream.decodeData(count: Int(contactDetails.avatar.length))
         }
 
         let aci = Aci.parseFrom(aciString: contactDetails.hasAci ? contactDetails.aci : nil)
