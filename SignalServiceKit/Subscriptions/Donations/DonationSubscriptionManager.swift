@@ -218,31 +218,12 @@ public enum DonationSubscriptionManager {
 
         Logger.info("[Donations] Cancelling subscription")
 
-        // Fetch the latest subscription state
-        if
-            let subscription = try await SubscriptionFetcher(networkManager: networkManager)
-                .fetch(subscriberID: subscriberID)
-        {
-            // Check the subscription is in a state that can be cancelled
-            // If the state isn't in active or pastDue, skip deleting the
-            // subscription on the backend, and continue to clearing out the
-            // local subscription information.
-            let needsDeleteRequest = switch subscription.status {
-            case .active, .pastDue:
-                true
-            case .canceled, .incomplete, .unpaid, .unknown:
-                false
-            }
-
-            if needsDeleteRequest {
-                let request = OWSRequestFactory.deleteSubscriberID(subscriberID)
-                let response = try await networkManager.asyncRequest(request)
-                if response.responseStatusCode != 200, response.responseStatusCode != 404 {
-                    throw OWSAssertionError("Got bad response code \(response.responseStatusCode).")
-                }
-                Logger.info("[Donations] Deleted remote subscription.")
-            }
+        let request = OWSRequestFactory.deleteSubscriberID(subscriberID)
+        let response = try await networkManager.asyncRequest(request)
+        if response.responseStatusCode != 200, response.responseStatusCode != 404 {
+            throw OWSAssertionError("Got bad response code \(response.responseStatusCode).")
         }
+        Logger.info("[Donations] Deleted remote subscription.")
 
         await databaseStorage.awaitableWrite { transaction in
             self.setSubscriberID(nil, transaction: transaction)
