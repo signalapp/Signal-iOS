@@ -974,6 +974,7 @@
 		668478FD2CAF364C00430D68 /* ChatItemContexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668478FC2CAF364800430D68 /* ChatItemContexts.swift */; };
 		668479012CB0A77C00430D68 /* OrphanedBackupAttachmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668479002CB0A77C00430D68 /* OrphanedBackupAttachmentManager.swift */; };
 		6685FEEE2DB06F7C0086CF3C /* BackupAttachmentDownloadEligibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6685FEED2DB06F740086CF3C /* BackupAttachmentDownloadEligibility.swift */; };
+		6685FEF02DB073FD0086CF3C /* BackupAttachmentDownloadProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6685FEEF2DB073F60086CF3C /* BackupAttachmentDownloadProgress.swift */; };
 		66883A3A29D7630A00E898CF /* MessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66883A3829D7630300E898CF /* MessageBodyTests.swift */; };
 		6688E602298232A4004467C8 /* PaymentActionSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6688E601298232A4004467C8 /* PaymentActionSheets.swift */; };
 		6689B23A2C055F7C003D5B2F /* OrphanedAttachmentRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6689B2392C055F7C003D5B2F /* OrphanedAttachmentRecord.swift */; };
@@ -4872,6 +4873,7 @@
 		668478FC2CAF364800430D68 /* ChatItemContexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatItemContexts.swift; sourceTree = "<group>"; };
 		668479002CB0A77C00430D68 /* OrphanedBackupAttachmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedBackupAttachmentManager.swift; sourceTree = "<group>"; };
 		6685FEED2DB06F740086CF3C /* BackupAttachmentDownloadEligibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadEligibility.swift; sourceTree = "<group>"; };
+		6685FEEF2DB073F60086CF3C /* BackupAttachmentDownloadProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadProgress.swift; sourceTree = "<group>"; };
 		66883A3829D7630300E898CF /* MessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyTests.swift; sourceTree = "<group>"; };
 		6688E601298232A4004467C8 /* PaymentActionSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentActionSheets.swift; sourceTree = "<group>"; };
 		6689B2392C055F7C003D5B2F /* OrphanedAttachmentRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedAttachmentRecord.swift; sourceTree = "<group>"; };
@@ -9599,6 +9601,7 @@
 			children = (
 				6685FEED2DB06F740086CF3C /* BackupAttachmentDownloadEligibility.swift */,
 				66E257022CA3860B00100A08 /* BackupAttachmentDownloadManager.swift */,
+				6685FEEF2DB073F60086CF3C /* BackupAttachmentDownloadProgress.swift */,
 				667BB2072C580C1400E79B57 /* BackupAttachmentDownloadStore.swift */,
 				66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */,
 				66734F002CA1ED3A00558494 /* BackupAttachmentUploadManager.swift */,
@@ -17456,6 +17459,7 @@
 				D972E2FF2C542BCD001D7337 /* Backup.pb.swift in Sources */,
 				6685FEEE2DB06F7C0086CF3C /* BackupAttachmentDownloadEligibility.swift in Sources */,
 				66E257032CA3861200100A08 /* BackupAttachmentDownloadManager.swift in Sources */,
+				6685FEF02DB073FD0086CF3C /* BackupAttachmentDownloadProgress.swift in Sources */,
 				667BB2082C580C1400E79B57 /* BackupAttachmentDownloadStore.swift in Sources */,
 				66734F012CA1ED3F00558494 /* BackupAttachmentUploadManager.swift in Sources */,
 				66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */,

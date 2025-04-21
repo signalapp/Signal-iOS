@@ -287,6 +287,15 @@ public class Attachment {
         return Data(hasher.finalize()).base64EncodedString()
     }
 
+    /// Unencrypted byte count on CDN of the fullsize attachment _before_ encryption and padding,
+    /// as obtained either from the sender or ourselves.
+    /// Media and transit tier byte counts should be interchangeable.
+    /// Still, we shouldn't rely on this for anything critical; assume the value can be spoofed.
+    /// Safe to use for size estimation, UI progress display, etc.
+    public var anyPointerFullsizeUnencryptedByteCount: UInt32? {
+        return mediaTierInfo?.unencryptedByteCount ?? transitTierInfo?.unencryptedByteCount
+    }
+
     public enum TransitUploadStrategy {
         case reuseExistingUpload(Upload.ReusedUploadMetadata)
         case reuseStreamEncryption(Upload.LocalUploadMetadata)

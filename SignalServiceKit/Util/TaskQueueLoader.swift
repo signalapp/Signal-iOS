@@ -123,6 +123,14 @@ public protocol TaskRecordRunner {
         record: Store.Record,
         tx: DBWriteTransaction
     ) throws
+
+    /// Called by ``TaskQueueLoader`` when all tasks have finished.
+    /// In other words, when ``TaskRecordStore`` peek returns an empty array.
+    func didDrainQueue() async
+}
+
+extension TaskRecordRunner {
+    public func didDrainQueue() async {}
 }
 
 /// Utility class that helps working with serialized queues for which each needs to run
@@ -213,6 +221,7 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner> {
         }
         let task = Task {
             try await self._loadAndRunTasks()
+            await self.runner.didDrainQueue()
             self.runningTask = nil
         }
         self.runningTask = task

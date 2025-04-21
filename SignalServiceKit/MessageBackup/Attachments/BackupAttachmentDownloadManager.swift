@@ -36,6 +36,8 @@ public protocol BackupAttachmentDownloadManager {
     /// Cancel any pending attachment downloads, e.g. when backups are disabled.
     /// Removes all enqueued downloads and attempts to cancel in progress ones.
     func cancelPendingDownloads() async throws
+
+    var progress: BackupAttachmentDownloadProgress { get }
 }
 
 public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManager {
@@ -50,6 +52,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private let remoteConfigProvider: RemoteConfigProvider
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
+
+    public let progress: BackupAttachmentDownloadProgress
 
     public init(
         appReadiness: AppReadiness,
@@ -77,6 +81,14 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.remoteConfigProvider = remoteConfigProvider
         self.tsAccountManager = tsAccountManager
 
+        self.progress = BackupAttachmentDownloadProgress(
+            appReadiness: appReadiness,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            dateProvider: dateProvider,
+            db: db,
+            remoteConfigProvider: remoteConfigProvider
+        )
+
         self.listMediaManager = ListMediaManager(
             attachmentStore: attachmentStore,
             attachmentUploadStore: attachmentUploadStore,
@@ -95,6 +107,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             db: db,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             messageBackupRequestManager: messageBackupRequestManager,
+            progress: progress,
             remoteConfigProvider: remoteConfigProvider,
             tsAccountManager: tsAccountManager
         )
@@ -155,6 +168,16 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             return
         }
 
+        // As we go enqueuing attachments, increment the total byte count we
+        // need to download.
+        if let byteCount = referencedAttachment.attachment.anyPointerFullsizeUnencryptedByteCount {
+            let totalPendingByteCount = backupAttachmentDownloadStore.getTotalPendingDownloadByteCount(tx: tx) ?? 0
+            backupAttachmentDownloadStore.setTotalPendingDownloadByteCount(
+                totalPendingByteCount + UInt64(byteCount),
+                tx: tx
+            )
+        }
+
         try backupAttachmentDownloadStore.enqueue(
             referencedAttachment.reference,
             tx: tx
@@ -180,6 +203,11 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         if FeatureFlags.MessageBackup.remoteExportAlpha {
             try await listMediaManager.queryListMediaIfNeeded()
         }
+        do {
+            try await progress.beginObserving()
+        } catch {
+            owsFailDebug("Unable to observe download progres \(error.grdbErrorForLogging)")
+        }
         try await taskQueue.loadAndRunTasks()
     }
 
@@ -187,7 +215,11 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         try await taskQueue.stop()
         try await db.awaitableWrite { tx in
             try self.backupAttachmentDownloadStore.removeAll(tx: tx)
+            backupAttachmentDownloadStore.setTotalPendingDownloadByteCount(nil, tx: tx)
+            backupAttachmentDownloadStore.setCachedRemainingPendingDownloadByteCount(nil, tx: tx)
         }
+        // Reset progress calculation
+        try? await progress.beginObserving()
     }
 
     // MARK: - Reachability
@@ -624,6 +656,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         private let db: any DB
         private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
         private let messageBackupRequestManager: MessageBackupRequestManager
+        private let progress: BackupAttachmentDownloadProgress
         private let remoteConfigProvider: RemoteConfigProvider
         private let tsAccountManager: TSAccountManager
 
@@ -639,6 +672,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             db: any DB,
             mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
             messageBackupRequestManager: MessageBackupRequestManager,
+            progress: BackupAttachmentDownloadProgress,
             remoteConfigProvider: RemoteConfigProvider,
             tsAccountManager: TSAccountManager
         ) {
@@ -649,6 +683,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.db = db
             self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
             self.messageBackupRequestManager = messageBackupRequestManager
+            self.progress = progress
             self.remoteConfigProvider = remoteConfigProvider
             self.tsAccountManager = tsAccountManager
 
@@ -656,11 +691,11 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
-            let eligibility = db.read { tx in
+            let (attachment, eligibility) = db.read { (tx) -> (Attachment?, BackupAttachmentDownloadEligibility?) in
                 return attachmentStore
                     .fetch(id: record.record.attachmentRowId, tx: tx)
                     .map { attachment in
-                        return BackupAttachmentDownloadEligibility.forAttachment(
+                        let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
                             attachment,
                             attachmentTimestamp: record.record.timestamp,
                             dateProvider: dateProvider,
@@ -668,11 +703,19 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                             remoteConfigProvider: remoteConfigProvider,
                             tx: tx
                         )
-                    }
+                        return (attachment, eligibility)
+                    } ?? (nil, nil)
             }
-            guard let eligibility, eligibility.canBeDownloadedAtAll else {
+            guard let attachment, let eligibility, eligibility.canBeDownloadedAtAll else {
                 return .cancelled
             }
+
+            /// Media and transit tier byte counts should be interchangeable.
+            /// Still, we shouldn't rely on this for anything other that progress tracking,
+            /// where its just a UI glitch if it turns out they are not.
+            let fullsizeByteCountForProgress = UInt64(
+                attachment.anyPointerFullsizeUnencryptedByteCount ?? 0
+            )
 
             // Separately from "eligibility" on a per-download basis, we check
             // network state level eligibility (require wifi). If not capable,
@@ -699,10 +742,16 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             // Try media tier fullsize first.
             if eligibility.canDownloadMediaTierFullsize {
                 do {
+                    let progressSink = await progress.willBeginDownloadingAttachment(withId: record.record.attachmentRowId)
                     try await self.attachmentDownloadManager.downloadAttachment(
                         id: record.record.attachmentRowId,
                         priority: eligibility.downloadPriority,
-                        source: .mediaTierFullsize
+                        source: .mediaTierFullsize,
+                        progress: progressSink
+                    )
+                    await progress.didFinishDownloadOfAttachment(
+                        withId: record.record.attachmentRowId,
+                        byteCount: fullsizeByteCountForProgress
                     )
                     didDownloadFullsize = true
                 } catch let error {
@@ -714,10 +763,16 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             // or because the download failed), try transit tier fullsize next.
             if !didDownloadFullsize, eligibility.canDownloadTransitTierFullsize {
                 do {
+                    let progressSink = await progress.willBeginDownloadingAttachment(withId: record.record.attachmentRowId)
                     try await self.attachmentDownloadManager.downloadAttachment(
                         id: record.record.attachmentRowId,
                         priority: eligibility.downloadPriority,
-                        source: .transitTier
+                        source: .transitTier,
+                        progress: progressSink
+                    )
+                    await progress.didFinishDownloadOfAttachment(
+                        withId: record.record.attachmentRowId,
+                        byteCount: fullsizeByteCountForProgress
                     )
                     didDownloadFullsize = true
                 } catch let error {
@@ -756,6 +811,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         func didCancel(record: Store.Record, tx: DBWriteTransaction) throws {
             Logger.warn("Cancelled restoring attachment \(record.id)")
+        }
+
+        func didDrainQueue() async {
+            await progress.didEmptyDownloadQueue()
         }
     }
 
@@ -811,6 +870,10 @@ open class BackupAttachmentDownloadManagerMock: BackupAttachmentDownloadManager 
 
     public func cancelPendingDownloads() async throws {
         // Do nothing
+    }
+
+    public var progress: BackupAttachmentDownloadProgress {
+        fatalError("Unimplemented")
     }
 }
 

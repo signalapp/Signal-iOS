@@ -42,6 +42,31 @@ public protocol BackupAttachmentDownloadStore {
 
     /// Remove all enqueued downloads from the table.
     func removeAll(tx: DBWriteTransaction) throws
+
+    // MARK: Progress tracking cache
+
+    /// We display the total byte count of backup attachment downloads. We want this number to remain consistent
+    /// even as we download attachments and pop them off the queue. Once we do download an attachment, we
+    /// don't keep state that it was downloaded because of backups. So we have to compute the total count once
+    /// before downloading anything, and then use that cached value going forwards.
+    ///
+    /// Only set this value when scheduling a fresh batch of backup downloads, namely:
+    /// 1. When restoring from a backup
+    /// 2. When turning "media optimization" off (requires downloading older, previously offloaded, attachments)
+    /// 3. When disabling backups (and therefore downloading all attachments)
+    func setTotalPendingDownloadByteCount(_ byteCount: UInt64?, tx: DBWriteTransaction)
+
+    /// See documentation for `setTotalPendingDownloadByteCount`.
+    func getTotalPendingDownloadByteCount(tx: DBReadTransaction) -> UInt64?
+
+    /// Cached value for the remaining bytes to download of backup attachments. Updated as attachments
+    /// are downloaded.
+    /// Computing the remaining byte count is expensive (requires a table join) so we cache the latest value
+    /// to have it available immediately for UI population on app launch.
+    func setCachedRemainingPendingDownloadByteCount(_ byteCount: UInt64?, tx: DBWriteTransaction)
+
+    /// See documentation for `setCachedRemainingPendingDownloadByteCount`.
+    func getCachedRemainingPendingDownloadByteCount(tx: DBReadTransaction) -> UInt64?
 }
 
 public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
@@ -143,5 +168,32 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
 
     public func removeAll(tx: DBWriteTransaction) throws {
         try QueuedBackupAttachmentDownload.deleteAll(tx.database)
+    }
+
+    private let totalPendingDownloadByteCountKey = "totalPendingDownloadByteCountKey"
+    private let cachedRemainingPendingDownloadByteCountKey = "cachedRemainingPendingDownloadByteCountKey"
+
+    public func setTotalPendingDownloadByteCount(_ byteCount: UInt64?, tx: DBWriteTransaction) {
+        if let byteCount {
+            kvStore.setUInt64(byteCount, key: totalPendingDownloadByteCountKey, transaction: tx)
+        } else {
+            kvStore.removeValue(forKey: totalPendingDownloadByteCountKey, transaction: tx)
+        }
+    }
+
+    public func getTotalPendingDownloadByteCount(tx: DBReadTransaction) -> UInt64? {
+        return kvStore.getUInt64(totalPendingDownloadByteCountKey, transaction: tx)
+    }
+
+    public func setCachedRemainingPendingDownloadByteCount(_ byteCount: UInt64?, tx: DBWriteTransaction) {
+        if let byteCount {
+            kvStore.setUInt64(byteCount, key: cachedRemainingPendingDownloadByteCountKey, transaction: tx)
+        } else {
+            kvStore.removeValue(forKey: cachedRemainingPendingDownloadByteCountKey, transaction: tx)
+        }
+    }
+
+    public func getCachedRemainingPendingDownloadByteCount(tx: DBReadTransaction) -> UInt64? {
+        return kvStore.getUInt64(cachedRemainingPendingDownloadByteCountKey, transaction: tx)
     }
 }
