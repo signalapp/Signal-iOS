@@ -141,7 +141,7 @@ public enum DonationSubscriptionManager {
         let subscriberID = try await setupNewSubscriberID()
         Logger.info("[Donations] Caching params after setting up new subscription")
 
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             self.setUserManuallyCancelledSubscription(false, transaction: transaction)
             self.setSubscriberID(subscriberID, transaction: transaction)
             self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
