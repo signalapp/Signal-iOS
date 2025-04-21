@@ -51,37 +51,62 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
 
-        configureSegmentedControl()
-
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
+        createSegmentedControl()
         updateTableContents()
     }
 
-    private func configureSegmentedControl() {
+    // MARK: -
+
+    private func createSegmentedControl() {
         for mode in Mode.allCases {
-            assert(mode.rawValue == segmentedControl.numberOfSegments)
-
-            var title: String
-            switch mode {
-            case .memberRequests:
-                title = OWSLocalizedString("GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE",
-                                         comment: "Label for the 'member requests' mode of the 'group requests and invites' view.")
-                if groupModel.groupMembership.requestingMembers.count > 0 {
-                    title.append(" (\(OWSFormat.formatInt(groupModel.groupMembership.requestingMembers.count)))")
-                }
-            case .pendingInvites:
-                title = OWSLocalizedString("GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE",
-                                         comment: "Label for the 'pending invites' mode of the 'group requests and invites' view.")
-                if groupModel.groupMembership.invitedMembers.count > 0 {
-                    title.append(" (\(OWSFormat.formatInt(groupModel.groupMembership.invitedMembers.count)))")
-                }
-            }
-
-            segmentedControl.insertSegment(withTitle: title, at: mode.rawValue, animated: false)
+            segmentedControl.insertSegment(
+                withTitle: segmentTitle(forMode: mode),
+                at: mode.rawValue,
+                animated: false
+            )
         }
+
         segmentedControl.selectedSegmentIndex = 0
         segmentedControl.addTarget(self, action: #selector(segmentedControlDidChange), for: .valueChanged)
+    }
+
+    private func updateSegmentedControl() {
+        owsPrecondition(Mode.allCases.count == segmentedControl.numberOfSegments)
+
+        for mode in Mode.allCases {
+            segmentedControl.setTitle(
+                segmentTitle(forMode: mode),
+                forSegmentAt: mode.rawValue
+            )
+        }
+    }
+
+    private func segmentTitle(forMode mode: Mode) -> String {
+        let groupMembership = groupModel.groupMembership
+
+        var title: String
+        switch mode {
+        case .memberRequests:
+            title = OWSLocalizedString(
+                "GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE",
+                comment: "Label for the 'member requests' mode of the 'group requests and invites' view."
+            )
+            if groupMembership.requestingMembers.count > 0 {
+                title.append(" (\(OWSFormat.formatInt(groupMembership.requestingMembers.count)))")
+            }
+        case .pendingInvites:
+            title = OWSLocalizedString(
+                "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE",
+                comment: "Label for the 'pending invites' mode of the 'group requests and invites' view."
+            )
+            if groupMembership.invitedMembers.count > 0 {
+                title.append(" (\(OWSFormat.formatInt(groupMembership.invitedMembers.count)))")
+            }
+        }
+
+        return title
     }
 
     @objc
@@ -374,6 +399,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         }
 
         groupModel = newModel
+        updateSegmentedControl()
         updateTableContents()
     }
 
