@@ -51,6 +51,25 @@ public actor BackupAttachmentDownloadProgress {
             backupAttachmentDownloadStore.getTotalPendingDownloadByteCount(tx: tx) ?? pendingByteCount
         }
 
+        if pendingByteCount == 0 {
+            await db.awaitableWrite { tx in
+                backupAttachmentDownloadStore.setCachedRemainingPendingDownloadByteCount(
+                    pendingByteCount,
+                    tx: tx
+                )
+            }
+            latestProgress = OWSProgress(
+                completedUnitCount: totalByteCount,
+                totalUnitCount: totalByteCount,
+                sourceProgresses: [:]
+            )
+            return
+        }
+
+        if totalByteCount == 0 {
+            return
+        }
+
         let sink = OWSProgress.createSink({ [weak self] progress in
             await self?.updateObservers(progress)
         })
