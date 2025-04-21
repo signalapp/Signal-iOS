@@ -32,107 +32,96 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
         var hasCalledCompletion = false
+        @MainActor
         func wrappedCompletion(_ result: PKPaymentAuthorizationResult) {
             guard !hasCalledCompletion else { return }
             hasCalledCompletion = true
             completion(result)
         }
 
-        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            try SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                try DonationViewsUtil.Gifts.throwIfAlreadySendingGift(
-                    threadId: self.thread.uniqueId,
-                    transaction: transaction
+        Task {
+            do {
+                try SSKEnvironment.shared.databaseStorageRef.read { transaction in
+                    try DonationViewsUtil.Gifts.throwIfAlreadySendingGift(
+                        threadId: self.thread.uniqueId,
+                        transaction: transaction
+                    )
+                }
+
+                let preparedPayment = try await DonationViewsUtil.Gifts.prepareToPay(amount: self.price, applePayPayment: payment).awaitable()
+
+                let safetyNumberConfirmationResult = DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(
+                    for: self.thread
                 )
-            }
-            return Promise.value(())
-        }.then(on: DispatchQueue.global()) {
-            DonationViewsUtil.Gifts.prepareToPay(amount: self.price, applePayPayment: payment)
-        }.then(on: DispatchQueue.main) { [weak self] preparedPayment -> Promise<PreparedGiftPayment> in
-            guard let self else {
-                throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
-            }
+                if safetyNumberConfirmationResult.needsUserInteraction {
+                    wrappedCompletion(.init(status: .success, errors: nil))
+                }
 
-            let safetyNumberConfirmationResult = DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(
-                for: self.thread
-            )
-            if safetyNumberConfirmationResult.needsUserInteraction {
-                wrappedCompletion(.init(status: .success, errors: nil))
-            }
-
-            return safetyNumberConfirmationResult.promise.map { safetyNumberConfirmationResult in
-                switch safetyNumberConfirmationResult {
+                switch try await safetyNumberConfirmationResult.promise.awaitable() {
                 case .userDidNotConfirmSafetyNumberChange:
                     throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
                 case .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded:
-                    return preparedPayment
+                    break
                 }
-            }
-        }.then { [weak self] preparedPayment -> Promise<Void> in
-            guard let self else {
-                throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
-            }
 
-            var modalActivityIndicatorViewController: ModalActivityIndicatorViewController?
-            var shouldDismissActivityIndicator = false
-            func presentModalActivityIndicatorIfNotAlreadyPresented() {
-                guard modalActivityIndicatorViewController == nil else { return }
-                ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-                    DispatchQueue.main.async {
-                        modalActivityIndicatorViewController = modal
-                        // Depending on how things are dispatched, we could need the modal closed immediately.
-                        if shouldDismissActivityIndicator {
-                            modal.dismiss()
+                var modalActivityIndicatorViewController: ModalActivityIndicatorViewController?
+                var shouldDismissActivityIndicator = false
+                @MainActor
+                func presentModalActivityIndicatorIfNotAlreadyPresented() {
+                    guard modalActivityIndicatorViewController == nil else { return }
+                    ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
+                        DispatchQueue.main.async {
+                            modalActivityIndicatorViewController = modal
+                            // Depending on how things are dispatched, we could need the modal closed immediately.
+                            if shouldDismissActivityIndicator {
+                                modal.dismiss()
+                            }
                         }
                     }
                 }
-            }
 
-            // This is unusual, but can happen if the Apple Pay sheet was dismissed earlier in the
-            // process, which can happen if the user needed to confirm a safety number change.
-            if hasCalledCompletion {
-                presentModalActivityIndicatorIfNotAlreadyPresented()
-            }
-
-            func finish() {
-                if let modalActivityIndicatorViewController = modalActivityIndicatorViewController {
-                    modalActivityIndicatorViewController.dismiss()
-                } else {
-                    shouldDismissActivityIndicator = true
-                }
-            }
-
-            return DonationViewsUtil.Gifts.startJob(
-                amount: self.price,
-                preparedPayment: preparedPayment,
-                thread: self.thread,
-                messageText: self.messageText,
-                databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-                blockingManager: SSKEnvironment.shared.blockingManagerRef,
-                onChargeSucceeded: {
-                    wrappedCompletion(.init(status: .success, errors: nil))
-                    controller.dismiss()
+                // This is unusual, but can happen if the Apple Pay sheet was dismissed earlier in the
+                // process, which can happen if the user needed to confirm a safety number change.
+                if hasCalledCompletion {
                     presentModalActivityIndicatorIfNotAlreadyPresented()
                 }
-            ).done(on: DispatchQueue.main) {
-                finish()
-            }.recover(on: DispatchQueue.main) { error in
-                finish()
-                throw error
-            }
-        }.done { [weak self] in
-            // We shouldn't need to dismiss the Apple Pay sheet here, but if the `chargeSucceeded`
-            // event was missed, we do our best.
-            wrappedCompletion(.init(status: .success, errors: nil))
-            self?.didCompleteDonation()
-        }.catch { error in
-            guard let error = error as? DonationViewsUtil.Gifts.SendGiftError else {
-                owsFail("\(error)")
-            }
 
-            wrappedCompletion(.init(status: .failure, errors: [error]))
+                do {
+                    defer {
+                        if let modalActivityIndicatorViewController {
+                            modalActivityIndicatorViewController.dismiss()
+                        } else {
+                            shouldDismissActivityIndicator = true
+                        }
+                    }
 
-            DonationViewsUtil.Gifts.presentErrorSheetIfApplicable(for: error)
+                    try await DonationViewsUtil.Gifts.startJob(
+                        amount: self.price,
+                        preparedPayment: preparedPayment,
+                        thread: self.thread,
+                        messageText: self.messageText,
+                        databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+                        blockingManager: SSKEnvironment.shared.blockingManagerRef,
+                        onChargeSucceeded: {
+                            wrappedCompletion(.init(status: .success, errors: nil))
+                            controller.dismiss()
+                            presentModalActivityIndicatorIfNotAlreadyPresented()
+                        }
+                    ).awaitable()
+                }
+
+                // We shouldn't need to dismiss the Apple Pay sheet here, but if the `chargeSucceeded`
+                // event was missed, we do our best.
+                wrappedCompletion(.init(status: .success, errors: nil))
+                self.didCompleteDonation()
+            } catch {
+                guard let error = error as? DonationViewsUtil.Gifts.SendGiftError else {
+                    owsFail("\(error)")
+                }
+
+                wrappedCompletion(.init(status: .failure, errors: [error]))
+                DonationViewsUtil.Gifts.presentErrorSheetIfApplicable(for: error)
+            }
         }
     }
 
