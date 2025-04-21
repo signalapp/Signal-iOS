@@ -163,7 +163,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
 private extension OWSDevice {
     static func primary() -> OWSDevice {
         return OWSDevice(
-            deviceId: Int(OWSDevice.primaryDeviceId),
+            deviceId: .primary,
             encryptedName: nil,
             createdAt: .distantPast,
             lastSeenAt: Date()
@@ -175,7 +175,7 @@ private extension OWSDevice {
         lastSeenAt: Date
     ) -> OWSDevice {
         return OWSDevice(
-            deviceId: 24,
+            deviceId: DeviceId(validating: 24)!,
             encryptedName: name,
             createdAt: .distantPast,
             lastSeenAt: lastSeenAt

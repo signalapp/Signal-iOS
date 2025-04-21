@@ -73,9 +73,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
             .getDevices()
         )
 
-        guard let devices = Self.parseDeviceList(response: getDevicesResponse) else {
-            throw OWSAssertionError("Unable to parse devices response.")
-        }
+        let devices = try Self.parseDeviceList(response: getDevicesResponse)
 
         let didAddOrRemove = await db.awaitableWrite { tx in
             // If we have more than one device we may have a linked device.
@@ -94,7 +92,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
         return didAddOrRemove
     }
 
-    private static func parseDeviceList(response: HTTPResponse) -> [OWSDevice]? {
+    private static func parseDeviceList(response: HTTPResponse) throws -> [OWSDevice] {
         struct DeviceListResponse: Decodable {
             struct Device: Decodable {
                 enum CodingKeys: String, CodingKey {
@@ -106,27 +104,16 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
                 let createdAtMs: UInt64
                 let lastSeenAtMs: UInt64
-                let id: Int
+                let id: DeviceId
                 let encryptedName: String?
             }
 
             let devices: [Device]
         }
 
-        guard
-            let devicesJsonData = response.responseBodyData,
-            let devicesResponse = try? JSONDecoder().decode(DeviceListResponse.self, from: devicesJsonData)
-        else {
-            owsFailDebug("Missing or invalid devices response!")
-            return nil
-        }
+        let devicesResponse = try JSONDecoder().decode(DeviceListResponse.self, from: response.responseBodyData ?? Data())
 
-        return devicesResponse.devices.compactMap { device in
-            guard device.id >= OWSDevice.primaryDeviceId else {
-                owsFailBeta("Invalid device ID: \(device.id)!")
-                return nil
-            }
-
+        return devicesResponse.devices.map { device in
             return OWSDevice(
                 deviceId: device.id,
                 encryptedName: device.encryptedName,

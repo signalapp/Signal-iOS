@@ -32,21 +32,21 @@ public final class OWSDevice: SDSCodableModel, Decodable {
     public let lastSeenAt: Date
 
     init(
-        deviceId: Int,
+        deviceId: DeviceId,
         encryptedName: String?,
         createdAt: Date,
         lastSeenAt: Date
     ) {
         self.uniqueId = UUID().uuidString
 
-        self.deviceId = deviceId
+        self.deviceId = Int(deviceId.rawValue)
         self.encryptedName = encryptedName
         self.createdAt = createdAt
         self.lastSeenAt = lastSeenAt
     }
 
 #if DEBUG
-    public static func previewItem(id: Int) -> OWSDevice {
+    public static func previewItem(id: DeviceId) -> OWSDevice {
         OWSDevice(
             deviceId: id,
             encryptedName: nil,

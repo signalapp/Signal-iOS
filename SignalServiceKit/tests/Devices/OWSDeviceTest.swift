@@ -70,7 +70,7 @@ extension OWSDevice: ValidatableModel {
     static let constants: [(OWSDevice, jsonData: Data)] = [
         (
             OWSDevice(
-                deviceId: 1,
+                deviceId: DeviceId(validating: 1)!,
                 encryptedName: "UklQIE5hdGhhbiBTaGVsbHkgLSBtaXNzIHlvdSwgbWFuLgo=",
                 createdAt: Date(millisecondsSince1970: 814929600000),
                 lastSeenAt: Date(millisecondsSince1970: 1680897600000)
@@ -79,7 +79,7 @@ extension OWSDevice: ValidatableModel {
         ),
         (
             OWSDevice(
-                deviceId: 12,
+                deviceId: DeviceId(validating: 12)!,
                 encryptedName: nil,
                 createdAt: Date(millisecondsSince1970: 0),
                 lastSeenAt: Date(millisecondsSince1970: 1)

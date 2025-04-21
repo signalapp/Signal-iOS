@@ -87,8 +87,8 @@ class LinkedDevicesViewModel: ObservableObject {
             try? await Task.sleep(nanoseconds: NSEC_PER_SEC)
             withAnimation {
                 self.displayableDevices = [
-                    .init(device: .previewItem(id: 1), displayName: "iPad"),
-                    .init(device: .previewItem(id: 2), displayName: "macOS"),
+                    .init(device: .previewItem(id: DeviceId(validating: 1)!), displayName: "iPad"),
+                    .init(device: .previewItem(id: DeviceId(validating: 2)!), displayName: "macOS"),
                 ]
             }
             self.isLoading = false
