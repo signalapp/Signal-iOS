@@ -215,15 +215,6 @@ extension MessageSender {
             }
 
             sendResult.success.forEach { recipient in
-                // If we're sending a story, we generally get a 200, even if the account
-                // doesn't exist. Therefore, don't use this to mark accounts as registered.
-                if !message.isStorySend {
-                    let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-                    let recipient = recipientFetcher.fetchOrCreate(serviceId: recipient.serviceId, tx: tx)
-                    let recipientManager = DependenciesBridge.shared.recipientManager
-                    recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: tx)
-                }
-
                 SSKEnvironment.shared.profileManagerRef.didSendOrReceiveMessage(
                     serviceId: recipient.serviceId,
                     localIdentifiers: localIdentifiers,

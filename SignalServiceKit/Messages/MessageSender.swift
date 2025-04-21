@@ -1589,23 +1589,6 @@ public class MessageSender {
                 resendResponse.didPerformMessageSend(sentDeviceMessages, to: messageSend.serviceId, tx: transaction)
             }
 
-            // If we've just delivered a message to a user, we know they have a valid
-            // Signal account. However, if we're sending a story, the server will
-            // always tell us the recipient is registered, so we can't use this as an
-            // affirmate indication for the existence of an account.
-            //
-            // This is low trust because we don't actually know for sure the fully
-            // qualified address is valid.
-            if !message.isStorySend {
-                let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-                let recipient = recipientFetcher.fetchOrCreate(
-                    serviceId: messageSend.serviceId,
-                    tx: transaction
-                )
-                let recipientManager = DependenciesBridge.shared.recipientManager
-                recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: transaction)
-            }
-
             SSKEnvironment.shared.profileManagerRef.didSendOrReceiveMessage(
                 serviceId: messageSend.serviceId,
                 localIdentifiers: messageSend.localIdentifiers,
