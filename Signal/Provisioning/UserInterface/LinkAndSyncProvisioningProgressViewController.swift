@@ -340,7 +340,7 @@ struct LinkAndSyncProvisioningProgressView: View {
     let view = LinkAndSyncProvisioningProgressViewController(viewModel: LinkAndSyncSecondaryProgressViewModel())
 
     let progressSink = OWSProgress.createSink { progress in
-        Task { @MainActor in
+        await MainActor.run {
             view.viewModel.updateProgress(progress)
         }
     }

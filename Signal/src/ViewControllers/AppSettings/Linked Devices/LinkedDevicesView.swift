@@ -297,7 +297,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
         }
 
         let progress = OWSProgress.createSink { progress in
-            Task { @MainActor in
+            await MainActor.run {
                 linkAndSyncProgressModal.viewModel.updateProgress(progress: progress)
             }
         }

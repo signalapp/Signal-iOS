@@ -109,7 +109,7 @@ extension SomeOWSProgress {
 
 /// Sinks are thread-safe and can have children added from any thread context.
 public protocol OWSProgressSink {
-    typealias Observer = (OWSProgress) -> Void
+    typealias Observer = (OWSProgress) async -> Void
 
     /// Add a child sink, returning it.
     /// Child sinks contribute to the total unit count of their parent.
@@ -341,7 +341,7 @@ private actor OWSProgressRootNode: OWSProgressSink {
         if progressDidChange {
             latestEmittedProgress = progress
             Task { [progress] in
-                observer(progress)
+                await observer(progress)
             }
         }
     }

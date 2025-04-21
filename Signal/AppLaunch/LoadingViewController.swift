@@ -289,7 +289,7 @@ class LoadingViewController: UIViewController {
 #Preview {
     let viewController = LoadingViewController()
     let progressSink = OWSProgress.createSink { progress in
-        Task { @MainActor in
+        await MainActor.run {
             viewController.updateProgress(progress)
         }
     }

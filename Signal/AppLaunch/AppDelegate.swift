@@ -450,7 +450,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         let progressSink = OWSProgress.createSink { [weak loadingViewController] progress in
-            Task {
+            await MainActor.run {
                 loadingViewController?.updateProgress(progress)
             }
         }

@@ -352,9 +352,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         )
 
         let wrappedProgress: OWSProgressSink = OWSProgress.createSink { [weak self] progressValue in
-            Task {
-                await self?.updateProgress(id: attachmentId, progress: Double(progressValue.percentComplete))
-            }
+            self?.updateProgress(id: attachmentId, progress: Double(progressValue.percentComplete))
             if let progressSource, progressSource.completedUnitCount < progressValue.completedUnitCount {
                 progressSource.incrementCompletedUnitCount(
                     by: progressValue.completedUnitCount - progressSource.completedUnitCount
@@ -1076,7 +1074,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         return try .validateAndBuild(fileUrl: tmpReencryptedFile, metadata: reencryptedMetadata)
     }
 
-    private func updateProgress(id: Attachment.IDType, progress: Double) {
+    private nonisolated func updateProgress(id: Attachment.IDType, progress: Double) {
         NotificationCenter.default.postOnMainThread(
             name: Upload.Constants.attachmentUploadProgressNotification,
             object: nil,

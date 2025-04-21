@@ -462,7 +462,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         undoAllPreviousSteps: @escaping () async throws -> Void
     ) async throws(CompleteProvisioningError) -> OWSProgressSource? {
         let progress = OWSProgress.createSink { progress in
-            Task { @MainActor in
+            await MainActor.run {
                 progressViewModel.updateProgress(progress)
             }
         }
