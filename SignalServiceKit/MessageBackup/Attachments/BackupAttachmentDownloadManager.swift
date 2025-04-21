@@ -142,7 +142,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             timestamp = nil
         }
 
-        let eligibility = Eligibility.forAttachment(
+        let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
             referencedAttachment.attachment,
             attachmentTimestamp: timestamp,
             dateProvider: dateProvider,
@@ -660,7 +660,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 return attachmentStore
                     .fetch(id: record.record.attachmentRowId, tx: tx)
                     .map { attachment in
-                        return Eligibility.forAttachment(
+                        return BackupAttachmentDownloadEligibility.forAttachment(
                             attachment,
                             attachmentTimestamp: record.record.timestamp,
                             dateProvider: dateProvider,
@@ -782,83 +782,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         func removeRecord(_ record: Record, tx: DBWriteTransaction) throws {
             try backupAttachmentDownloadStore.removeQueuedDownload(record.record, tx: tx)
-        }
-    }
-
-    // MARK: - Eligibility
-
-    private struct Eligibility {
-        let canDownloadTransitTierFullsize: Bool
-        let canDownloadMediaTierFullsize: Bool
-        let canDownloadThumbnail: Bool
-        let downloadPriority: AttachmentDownloadPriority
-
-        var canBeDownloadedAtAll: Bool {
-            canDownloadTransitTierFullsize || canDownloadMediaTierFullsize || canDownloadThumbnail
-        }
-
-        static func forAttachment(
-            _ attachment: Attachment,
-            attachmentTimestamp: UInt64?,
-            dateProvider: DateProvider,
-            backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
-            remoteConfigProvider: RemoteConfigProvider,
-            tx: DBReadTransaction
-        ) -> Eligibility {
-            if attachment.asStream() != nil {
-                // If we have a stream already, no need to download anything.
-                return Eligibility(
-                    canDownloadTransitTierFullsize: false,
-                    canDownloadMediaTierFullsize: false,
-                    canDownloadThumbnail: false,
-                    downloadPriority: .default /* irrelevant */
-                )
-            }
-
-            let shouldStoreAllMediaLocally = backupAttachmentDownloadStore
-                .getShouldStoreAllMediaLocally(tx: tx)
-
-            let now = dateProvider()
-            let isRecent: Bool
-            if let attachmentTimestamp {
-                // We're "recent" if our newest owning message wouldn't have expired off the queue.
-                isRecent = now.ows_millisecondsSince1970 - attachmentTimestamp <= remoteConfigProvider.currentConfig().messageQueueTimeMs
-            } else {
-                // If we don't have a timestamp, its a wallpaper and we should always pass
-                // the recency check.
-                isRecent = true
-            }
-
-            let canDownloadMediaTierFullsize =
-                FeatureFlags.MessageBackup.fileAlpha
-                && attachment.mediaTierInfo != nil
-                && (isRecent || shouldStoreAllMediaLocally)
-
-            let canDownloadTransitTierFullsize: Bool
-            if let transitTierInfo = attachment.transitTierInfo {
-                let timestampForComparison = max(transitTierInfo.uploadTimestamp, attachmentTimestamp ?? 0)
-                // Download if the upload was < 45 days old,
-                // otherwise don't bother trying automatically.
-                // (The user could still try a manual download later).
-                canDownloadTransitTierFullsize = Date(millisecondsSince1970: timestampForComparison).addingTimeInterval(45 * .day) > now
-            } else {
-                canDownloadTransitTierFullsize = false
-            }
-
-            let canDownloadThumbnail =
-                FeatureFlags.MessageBackup.fileAlpha
-                && AttachmentBackupThumbnail.canBeThumbnailed(attachment)
-                && attachment.thumbnailMediaTierInfo != nil
-
-            let downloadPriority: AttachmentDownloadPriority =
-                isRecent ? .backupRestoreHigh : .backupRestoreLow
-
-            return Eligibility(
-                canDownloadTransitTierFullsize: canDownloadTransitTierFullsize,
-                canDownloadMediaTierFullsize: canDownloadMediaTierFullsize,
-                canDownloadThumbnail: canDownloadThumbnail,
-                downloadPriority: downloadPriority
-            )
         }
     }
 
