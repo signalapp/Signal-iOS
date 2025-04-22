@@ -22,6 +22,7 @@ extension Registration {
                     .frame(minHeight: 32)
                 }
                 .buttonStyle(.borderedProminent)
+                .tint(Color.Signal.ultramarine)
             }
         }
 
