@@ -48,24 +48,20 @@ enum ContactSupportActionSheet {
 
             ModalActivityIndicatorViewController.present(
                 fromViewController: fromViewController,
-                canCancel: true
-            ) { modal in
-                let composeTask = Task {
-                    return try await ComposeSupportEmailOperation(model: emailRequest).perform()
-                }
-                _ = modal.wasCancelledPromise.done { composeTask.cancel() }
-
-                Promise.wrapAsync {
-                    try await composeTask.value
-                }.done {
-                    modal.dismiss()
-                }.catch { error in
-                    guard !modal.wasCancelled else { return }
-                    modal.dismiss(completion: {
-                        showError(error, emailFilter: emailFilter, fromViewController: fromViewController)
+                canCancel: true,
+                asyncBlock: { modal in
+                    let result = await Result {
+                        return try await ComposeSupportEmailOperation(model: emailRequest).perform()
+                    }
+                    modal.dismissIfNotCanceled(completionIfNotCanceled: {
+                        do {
+                            try result.get()
+                        } catch {
+                            showError(error, emailFilter: emailFilter, fromViewController: fromViewController)
+                        }
                     })
                 }
-            }
+            )
         }
 
         let submitWithoutLogTitle = OWSLocalizedString("CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG", comment: "Button text")

@@ -502,22 +502,21 @@ extension SendMediaNavigationController {
     func showApprovalAfterProcessingAnyMediaLibrarySelections(
         picker: PHPickerViewController? = nil
     ) {
-        let backgroundBlock: (ModalActivityIndicatorViewController) -> Void = { modal in
-            let approvalItemsPromise: Promise<[AttachmentApprovalItem]> = Promise.when(fulfilled: self.attachmentDrafts.map(\.attachmentApprovalItemPromise))
-            firstly { () -> Promise<Result<[AttachmentApprovalItem], Error>> in
-                return Promise.race(
-                    approvalItemsPromise.map { attachmentApprovalItems -> Result<[AttachmentApprovalItem], Error> in
-                        .success(attachmentApprovalItems)
-                    },
-                    modal.wasCancelledPromise.map { _ -> Result<[AttachmentApprovalItem], Error> in
-                        .failure(OWSGenericError("Modal was cancelled."))
-                    })
-            }.map { (result: Result<[AttachmentApprovalItem], Error>) in
-                modal.dismiss {
-                    switch result {
-                    case .success(let attachmentApprovalItems):
-                        Logger.debug("built all attachments")
-
+        ModalActivityIndicatorViewController.present(
+            fromViewController: picker ?? self,
+            canCancel: true,
+            asyncBlock: { modal in
+                let result = await Result<[AttachmentApprovalItem], any Error> {
+                    var attachmentApprovalItems = [AttachmentApprovalItem]()
+                    for attachmentApprovalItemPromise in self.attachmentDrafts.map(\.attachmentApprovalItemPromise) {
+                        try Task.checkCancellation()
+                        attachmentApprovalItems.append(try await attachmentApprovalItemPromise.awaitable())
+                    }
+                    return attachmentApprovalItems
+                }
+                modal.dismissIfNotCanceled(completionIfNotCanceled: {
+                    do {
+                        let attachmentApprovalItems = try result.get()
                         for item in attachmentApprovalItems {
                             switch item.attachment.error {
                             case nil:
@@ -535,26 +534,14 @@ extension SendMediaNavigationController {
                                 return
                             }
                         }
-
                         self.showApprovalViewController(attachmentApprovalItems: attachmentApprovalItems)
                         picker?.dismiss(animated: true)
-                    case .failure:
-                        // Do nothing.
-                        break
+                    } catch {
+                        Logger.warn("failed to prepare attachments. error: \(error)")
+                        OWSActionSheets.showActionSheet(title: OWSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
                     }
-                }
-            }.catch { error in
-                Logger.error("failed to prepare attachments. error: \(error)")
-                modal.dismiss {
-                    OWSActionSheets.showActionSheet(title: OWSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
-                }
+                })
             }
-        }
-
-        ModalActivityIndicatorViewController.present(
-            fromViewController: picker ?? self,
-            canCancel: true,
-            backgroundBlock: backgroundBlock
         )
     }
 }
