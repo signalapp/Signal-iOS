@@ -1233,7 +1233,7 @@ public final class MessageReceiver {
         }
 
         DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(message, tx: tx)
-        SSKEnvironment.shared.notificationPresenterRef.notifyUser(forIncomingMessage: message, thread: thread, transaction: tx)
+        SSKEnvironment.shared.notificationPresenterRef.notifyUser(forIncomingMessage: message, thread: updatedThread, transaction: tx)
 
         if CurrentAppContext().isMainApp {
             DispatchQueue.main.async {
