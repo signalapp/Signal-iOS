@@ -1319,7 +1319,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>%1$@、%2$@和其他 %3$ld 个群组的成员</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld</key>
@@ -1333,7 +1333,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld others</string>
+			<string>%1$ld 个其他人</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

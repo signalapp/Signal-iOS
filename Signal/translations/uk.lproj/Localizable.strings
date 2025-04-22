@@ -5132,28 +5132,28 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Не вводити PIN-код?";
 
 /* Header text describing what the backup includes. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "Your backup includes:";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "Ваша резервна копія містить:";
 
 /* Backup content list item describing all messages. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_2" = "All of your messages";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_2" = "Усі ваші повідомлення";
 
 /* Backup content list item describing paid media. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE" = "The last 45 days of your media";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE" = "Медіафайли за минулі 45 днів";
 
 /* Backup content list item describing free media. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID" = "All of your media";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID" = "Усі ваші медіафайли";
 
 /* Text for action button confirming the restore. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "Restore Backup";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "Відновити з резервної копії";
 
 /* Description for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Your last backup was made on %1$@ at %2$@. You can create a newer backup if you still have your old device. [See How](https://signal.org)";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Дата і час створення останньої резервної копії: %1$@, %2$@. Якщо ви ще маєте старий пристрій, ви можете створити новішу копію. [Дізнатися, як](https://signal.org)";
 
 /* Text for action button to explore other options. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "More Options";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "Доступні дії";
 
 /* Title for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "Restore from Backup";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "Відновлення з резервної копії";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Зареєструвати iPad";
@@ -8372,7 +8372,7 @@
 "THIS_MESSAGE_WAS_DELETED" = "Це повідомлення було видалено.";
 
 /* Label for a group you are not in which has four members, listing their names */
-"THREAD_DETAILS_FOUR_MEMBERS" = "%1$@, %2$@, %3$@, and %4$@";
+"THREAD_DETAILS_FOUR_MEMBERS" = "%1$@, %2$@, %3$@ і %4$@";
 
 /* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
 "THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ не проходять перевірку";
@@ -8381,10 +8381,10 @@
 "THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Назви груп";
 
 /* Label for a group with more than four members, listing the first three members' names and embedding THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld as a count of other members */
-"THREAD_DETAILS_MANY_MEMBERS" = "%1$@, %2$@, %3$@, and %4$@";
+"THREAD_DETAILS_MANY_MEMBERS" = "%1$@, %2$@, %3$@ і %4$@";
 
 /* Label for a group with no members or no members but yourself */
-"THREAD_DETAILS_NO_MEMBERS" = "No other group members yet";
+"THREAD_DETAILS_NO_MEMBERS" = "Інших учасників поки що немає";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "У цьому чаті ви можете робити для себе нотатки. Якщо ваш акаунт має зв'язані пристрої, нові нотатки буде синхронізовано.";
@@ -8393,7 +8393,7 @@
 "THREAD_DETAILS_ONE_MEMBER" = "%1$@";
 
 /* Label for a group you are in with one other member, listing their name and yourself */
-"THREAD_DETAILS_ONE_MEMBER_AND_YOURSELF" = "%1$@ and you";
+"THREAD_DETAILS_ONE_MEMBER_AND_YOURSELF" = "%1$@ і ви";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Учасник «%1$@»";
@@ -8408,19 +8408,19 @@
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Показати";
 
 /* Label for a group you are not in which has three members, listing their names */
-"THREAD_DETAILS_THREE_MEMBERS" = "%1$@, %2$@, and %3$@";
+"THREAD_DETAILS_THREE_MEMBERS" = "%1$@, %2$@ і %3$@";
 
 /* Label for a group you are in which has three other members, listing their names and yourself */
-"THREAD_DETAILS_THREE_MEMBERS_AND_YOURSELF" = "%1$@, %2$@, %3$@, and you";
+"THREAD_DETAILS_THREE_MEMBERS_AND_YOURSELF" = "%1$@, %2$@, %3$@ і ви";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Учасник «%1$@», «%2$@» і «%3$@»";
 
 /* Label for a group you are not in which has two members, listing their names */
-"THREAD_DETAILS_TWO_MEMBERS" = "%1$@ and %2$@";
+"THREAD_DETAILS_TWO_MEMBERS" = "%1$@ і %2$@";
 
 /* Label for a group you are in which has two other members, listing their names and yourself */
-"THREAD_DETAILS_TWO_MEMBERS_AND_YOURSELF" = "%1$@, %2$@, and you";
+"THREAD_DETAILS_TWO_MEMBERS_AND_YOURSELF" = "%1$@, %2$@ і ви";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Учасник «%1$@» і «%2$@»";

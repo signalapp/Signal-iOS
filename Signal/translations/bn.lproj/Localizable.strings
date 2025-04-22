@@ -5132,28 +5132,28 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "পিন লেখা এড়িয়ে যাবেন?";
 
 /* Header text describing what the backup includes. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "Your backup includes:";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "আপনার ব্যাকআপের মধ্য়ে যা যা রয়েছে:";
 
 /* Backup content list item describing all messages. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_2" = "All of your messages";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_2" = "আপনার সকল মেসেজ";
 
 /* Backup content list item describing paid media. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE" = "The last 45 days of your media";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE" = "আপনার মিডিয়া ব্যাকআপের সর্বশেষ 45 দিন";
 
 /* Backup content list item describing free media. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID" = "All of your media";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID" = "আপনার সকল মিডিয়া";
 
 /* Text for action button confirming the restore. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "Restore Backup";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "ব্যাকঅাপ পুনরুদ্ধার";
 
 /* Description for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Your last backup was made on %1$@ at %2$@. You can create a newer backup if you still have your old device. [See How](https://signal.org)";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "আপনার সর্বশেষ ব্যাকআপ নেওয়া হয়েছিল %1$@ তারিখে %2$@-টার সময়। আপনার যদি এখনো পুরানো ডিভাইস থেকে থাকে তবে আপনি একটি নতুন ব্যাকআপ তৈরি করতে পারেন। [কীভাবে পারবেন তা দেখুন](https://signal.org)";
 
 /* Text for action button to explore other options. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "More Options";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "আরো অপশন";
 
 /* Title for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "Restore from Backup";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "ব্যাকআপ থেকে পুনরুদ্ধার করুন";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad রেজিস্টার করুন";
@@ -8372,7 +8372,7 @@
 "THIS_MESSAGE_WAS_DELETED" = "এই বার্তাটি মুছে ফেলা হয়েছে।";
 
 /* Label for a group you are not in which has four members, listing their names */
-"THREAD_DETAILS_FOUR_MEMBERS" = "%1$@, %2$@, %3$@, and %4$@";
+"THREAD_DETAILS_FOUR_MEMBERS" = "%1$@, %2$@, %3$@, ও %4$@";
 
 /* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
 "THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ যাচাইকৃত নয়";
@@ -8381,10 +8381,10 @@
 "THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "গ্রুপের নাম";
 
 /* Label for a group with more than four members, listing the first three members' names and embedding THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld as a count of other members */
-"THREAD_DETAILS_MANY_MEMBERS" = "%1$@, %2$@, %3$@, and %4$@";
+"THREAD_DETAILS_MANY_MEMBERS" = "%1$@, %2$@, %3$@, ও %4$@";
 
 /* Label for a group with no members or no members but yourself */
-"THREAD_DETAILS_NO_MEMBERS" = "No other group members yet";
+"THREAD_DETAILS_NO_MEMBERS" = "এখনো গ্রুপের অন্য কোনো সদস্য নেই";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "আপনি এই চ্যাটটিতে আপনার নিজের জন্য নোট যোগ করতে পারবেন। আপনার অ্যাকাউন্টের সাথে সংযুক্ত কোনো ডিভাইস থাকলে, নতুন নোট সমন্বয় করা হবে।";
@@ -8393,7 +8393,7 @@
 "THREAD_DETAILS_ONE_MEMBER" = "%1$@";
 
 /* Label for a group you are in with one other member, listing their name and yourself */
-"THREAD_DETAILS_ONE_MEMBER_AND_YOURSELF" = "%1$@ and you";
+"THREAD_DETAILS_ONE_MEMBER_AND_YOURSELF" = "%1$@ ও আপনি";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%1$@এর সদস্য";
@@ -8408,19 +8408,19 @@
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "দেখুন";
 
 /* Label for a group you are not in which has three members, listing their names */
-"THREAD_DETAILS_THREE_MEMBERS" = "%1$@, %2$@, and %3$@";
+"THREAD_DETAILS_THREE_MEMBERS" = "%1$@, %2$@, ও %3$@";
 
 /* Label for a group you are in which has three other members, listing their names and yourself */
-"THREAD_DETAILS_THREE_MEMBERS_AND_YOURSELF" = "%1$@, %2$@, %3$@, and you";
+"THREAD_DETAILS_THREE_MEMBERS_AND_YOURSELF" = "%1$@, %2$@, %3$@, এবং আপনি";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%1$@,%2$@, এবং %3$@এর সদস্য";
 
 /* Label for a group you are not in which has two members, listing their names */
-"THREAD_DETAILS_TWO_MEMBERS" = "%1$@ and %2$@";
+"THREAD_DETAILS_TWO_MEMBERS" = "%1$@ এবং %2$@";
 
 /* Label for a group you are in which has two other members, listing their names and yourself */
-"THREAD_DETAILS_TWO_MEMBERS_AND_YOURSELF" = "%1$@, %2$@, and you";
+"THREAD_DETAILS_TWO_MEMBERS_AND_YOURSELF" = "%1$@, %2$@, ও আপনি";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%1$@এবং%2$@এর সদস্য";

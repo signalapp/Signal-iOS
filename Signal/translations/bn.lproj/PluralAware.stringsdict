@@ -1507,9 +1507,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional group</string>
+			<string>%1$@, %2$@, এবং 1টি অতিরিক্ত গ্ৰুপের সদস্য</string>
 			<key>other</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>%1$@, %2$@, এবং %3$ldটি অতিরিক্ত গ্ৰুপের সদস্য</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld</key>
@@ -1523,9 +1523,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld other</string>
+			<string>%1$ld অন্যান্য</string>
 			<key>other</key>
-			<string>%1$ld others</string>
+			<string>%1$ld অন্যান্য</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

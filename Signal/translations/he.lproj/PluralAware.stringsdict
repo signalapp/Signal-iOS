@@ -1883,13 +1883,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional group</string>
+			<string>חבר/ה ב%1$@, %2$@ וקבוצה 1 נוספת</string>
 			<key>two</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>חבר/ה ב%1$@, %2$@ ו–%3$ld קבוצות נוספות</string>
 			<key>many</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>חבר/ה ב%1$@, %2$@ ו–%3$ld קבוצות נוספות</string>
 			<key>other</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>חבר/ה ב%1$@, %2$@ ו–%3$ld קבוצות נוספות</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld</key>
@@ -1903,13 +1903,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld other</string>
+			<string>%1$ld אחר</string>
 			<key>two</key>
-			<string>%1$ld others</string>
+			<string>%1$ld אחרים</string>
 			<key>many</key>
-			<string>%1$ld others</string>
+			<string>%1$ld אחרים</string>
 			<key>other</key>
-			<string>%1$ld others</string>
+			<string>%1$ld אחרים</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

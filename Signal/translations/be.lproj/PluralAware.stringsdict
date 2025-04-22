@@ -1883,13 +1883,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional group</string>
+			<string>Удзельнік групы %1$@, %2$@ і яшчэ %3$ld дадатковай групы</string>
 			<key>few</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>Удзельнік групы %1$@, %2$@ і яшчэ %3$ld дадатковых груп</string>
 			<key>many</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>Удзельнік групы %1$@, %2$@ і яшчэ %3$ld дадатковых груп</string>
 			<key>other</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>Удзельнік групы %1$@, %2$@ і яшчэ %3$ld дадатковых груп</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld</key>
@@ -1903,13 +1903,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld other</string>
+			<string>%1$ld іншы</string>
 			<key>few</key>
-			<string>%1$ld others</string>
+			<string>%1$ld іншыя</string>
 			<key>many</key>
-			<string>%1$ld others</string>
+			<string>%1$ld іншых</string>
 			<key>other</key>
-			<string>%1$ld others</string>
+			<string>%1$ld іншых</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

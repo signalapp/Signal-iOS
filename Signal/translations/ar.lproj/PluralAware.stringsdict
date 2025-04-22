@@ -2259,17 +2259,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>عضو في %1$@، %2$@، و %3$ld مجموعة أُخرى</string>
 			<key>one</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional group</string>
+			<string>عضو في %1$@، %2$@، ومجموعة واحدة أُخرى</string>
 			<key>two</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>عضو في %1$@، %2$@، ومجموعتين %3$ld أُخريين</string>
 			<key>few</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>عضو في %1$@، %2$@، و %3$ld مجموعات أُخرى</string>
 			<key>many</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>عضو في %1$@، %2$@، و %3$ld مجموعة أُخرى</string>
 			<key>other</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>عضو في %1$@، %2$@، و %3$ld مجموعة أُخرى</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld</key>
@@ -2283,17 +2283,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>%1$ld others</string>
+			<string>%1$ld آخر</string>
 			<key>one</key>
-			<string>%1$ld other</string>
+			<string>%1$ld آخر</string>
 			<key>two</key>
-			<string>%1$ld others</string>
+			<string>%1$ld آخران</string>
 			<key>few</key>
-			<string>%1$ld others</string>
+			<string>%1$ld آخرون</string>
 			<key>many</key>
-			<string>%1$ld others</string>
+			<string>%1$ld آخرون</string>
 			<key>other</key>
-			<string>%1$ld others</string>
+			<string>%1$ld آخرون</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
