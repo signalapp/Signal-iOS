@@ -179,8 +179,4 @@ private class MockDeviceManager: OWSDeviceManager {
     func setHasReceivedSyncMessage(lastReceivedAt: Date, transaction: DBWriteTransaction) { }
 
     func hasReceivedSyncMessage(inLastSeconds seconds: UInt, transaction: DBReadTransaction) -> Bool { return true }
-
-    func setMightHaveUnknownLinkedDevice(_ mightHaveUnknownLinkedDevice: Bool, transaction: DBWriteTransaction) { }
-
-    func mightHaveUnknownLinkedDevice(transaction: DBReadTransaction) -> Bool { return true }
 }

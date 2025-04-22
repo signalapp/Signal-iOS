@@ -52,7 +52,7 @@ final class OWSMessageSend {
     public let serviceId: ServiceId
     public let localIdentifiers: LocalIdentifiers
 
-    public init(
+    init(
         message: TSOutgoingMessage,
         plaintextContent: Data,
         plaintextPayloadId: Int64?,
@@ -66,5 +66,9 @@ final class OWSMessageSend {
         self.thread = thread
         self.serviceId = serviceId
         self.localIdentifiers = localIdentifiers
+    }
+
+    var isSelfSend: Bool {
+        return self.localIdentifiers.contains(serviceId: self.serviceId)
     }
 }

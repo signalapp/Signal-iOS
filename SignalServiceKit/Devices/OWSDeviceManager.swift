@@ -15,13 +15,6 @@ public protocol OWSDeviceManager {
         inLastSeconds seconds: UInt,
         transaction: DBReadTransaction
     ) -> Bool
-
-    func setMightHaveUnknownLinkedDevice(
-        _ mightHaveUnknownLinkedDevice: Bool,
-        transaction: DBWriteTransaction
-    )
-
-    func mightHaveUnknownLinkedDevice(transaction: DBReadTransaction) -> Bool
 }
 
 extension OWSDeviceManager {
@@ -33,7 +26,6 @@ extension OWSDeviceManager {
 class OWSDeviceManagerImpl: OWSDeviceManager {
     private enum Constants {
         static let keyValueStoreCollectionName = "kTSStorageManager_OWSDeviceCollection"
-        static let mightHaveUnknownLinkedDeviceKey = "kTSStorageManager_MayHaveLinkedDevices"
         static let lastReceivedSyncMessageKey = "kLastReceivedSyncMessage"
     }
 
@@ -69,38 +61,6 @@ class OWSDeviceManagerImpl: OWSDeviceManager {
         keyValueStore.setDate(
             lastReceivedAt,
             key: Constants.lastReceivedSyncMessageKey,
-            transaction: transaction
-        )
-    }
-
-    // MARK: May have linked devices
-
-    /// Returns true if there might be an unknown linked device.
-    ///
-    /// Don't read this value if the local SignalRecipient indicates that there
-    /// are linked devices (because you MUST send sync messages to those linked
-    /// devices). If the local SignalRecipient indicates that there aren't any
-    /// linked devices, you MUST send sync messages iff this value is true (this
-    /// will confirm whether or not there are linked devices and update
-    /// `mightHaveUnknownLinkedDevice` accordingly).
-    ///
-    /// This situation may occur after linking a new device on the primary
-    /// before we've had a chance to update the local user's SignalRecipient.
-    func mightHaveUnknownLinkedDevice(transaction: DBReadTransaction) -> Bool {
-        return keyValueStore.getBool(
-            Constants.mightHaveUnknownLinkedDeviceKey,
-            defaultValue: true,
-            transaction: transaction
-        )
-    }
-
-    func setMightHaveUnknownLinkedDevice(
-        _ mightHaveUnknownLinkedDevice: Bool,
-        transaction: DBWriteTransaction
-    ) {
-        keyValueStore.setBool(
-            mightHaveUnknownLinkedDevice,
-            key: Constants.mightHaveUnknownLinkedDeviceKey,
             transaction: transaction
         )
     }

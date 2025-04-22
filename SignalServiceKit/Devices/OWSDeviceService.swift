@@ -47,6 +47,9 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
     private let deviceManager: OWSDeviceManager
     private let deviceStore: OWSDeviceStore
     private let networkManager: NetworkManager
+    private let recipientFetcher: any RecipientFetcher
+    private let recipientManager: any SignalRecipientManager
+    private let tsAccountManager: any TSAccountManager
 
     init(
         db: any DB,
@@ -54,7 +57,10 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
         deviceStore: OWSDeviceStore,
         messageSenderJobQueue: MessageSenderJobQueue,
         networkManager: NetworkManager,
-        threadStore: ThreadStore
+        recipientFetcher: any RecipientFetcher,
+        recipientManager: any SignalRecipientManager,
+        threadStore: ThreadStore,
+        tsAccountManager: any TSAccountManager
     ) {
         self.db = db
         self.deviceNameChangeSyncMessageSender = DeviceNameChangeSyncMessageSender(
@@ -64,6 +70,9 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
         self.deviceManager = deviceManager
         self.deviceStore = deviceStore
         self.networkManager = networkManager
+        self.recipientFetcher = recipientFetcher
+        self.recipientManager = recipientManager
+        self.tsAccountManager = tsAccountManager
     }
 
     // MARK: -
@@ -75,16 +84,19 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
         let devices = try Self.parseDeviceList(response: getDevicesResponse)
 
+        // TODO: This can't fail. Remove it once OWSDevice's deviceId is updated.
+        let deviceIds = devices.compactMap { DeviceId(validating: $0.deviceId) }
+
         let didAddOrRemove = await db.awaitableWrite { tx in
-            // If we have more than one device we may have a linked device.
-            // Setting this flag here shouldn't be necessary, but we do so
-            // because the "cost" is low and it will improve robustness.
-            if !devices.isEmpty {
-                deviceManager.setMightHaveUnknownLinkedDevice(
-                    true,
-                    transaction: tx
-                )
-            }
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)!
+            let localRecipient = recipientFetcher.fetchOrCreate(serviceId: localIdentifiers.aci, tx: tx)
+            recipientManager.modifyAndSave(
+                localRecipient,
+                deviceIdsToAdd: Array(Set(deviceIds).subtracting(localRecipient.deviceIds)),
+                deviceIdsToRemove: Array(Set(localRecipient.deviceIds).subtracting(deviceIds)),
+                shouldUpdateStorageService: false,
+                tx: tx
+            )
 
             return deviceStore.replaceAll(with: devices, tx: tx)
         }

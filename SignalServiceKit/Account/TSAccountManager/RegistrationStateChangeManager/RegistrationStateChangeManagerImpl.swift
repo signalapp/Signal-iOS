@@ -83,7 +83,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             tx: tx
         )
 
-        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, tx: tx)
+        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, deviceId: .primary, tx: tx)
 
         tx.addSyncCompletion {
             self.postLocalNumberDidChangeNotification()
@@ -107,7 +107,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             serverAuthToken: authToken,
             tx: tx
         )
-        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, tx: tx)
+        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, deviceId: deviceId, tx: tx)
 
         tx.addSyncCompletion {
             self.postLocalNumberDidChangeNotification()
@@ -123,7 +123,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     ) {
         tsAccountManager.changeLocalNumber(newE164: e164, aci: aci, pni: pni, tx: tx)
 
-        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, tx: tx)
+        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, deviceId: .primary, tx: tx)
 
         tx.addSyncCompletion {
             self.postLocalNumberDidChangeNotification()
@@ -237,6 +237,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         e164: E164,
         aci: Aci,
         pni: Pni,
+        deviceId: DeviceId,
         tx: DBWriteTransaction
     ) {
         udManager.removeSenderCertificates(tx: tx)
@@ -253,9 +254,15 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             pni: pni,
             tx: tx
         )
-        // At this stage, the device IDs on the self-recipient are irrelevant (and we always
-        // append the primary device id anyway), just use the primary regardless of the local device id.
-        recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx)
+        // Always add the .primary DeviceId as well as our own. This is how linked
+        // devices know to send their initial sync messages to the primary.
+        recipientManager.modifyAndSave(
+            recipient,
+            deviceIdsToAdd: [deviceId, .primary],
+            deviceIdsToRemove: [],
+            shouldUpdateStorageService: false,
+            tx: tx
+        )
     }
 
     // MARK: Notifications
@@ -353,6 +360,7 @@ extension RegistrationStateChangeManagerImpl {
             e164: E164(localIdentifiers.phoneNumber)!,
             aci: localIdentifiers.aci,
             pni: localIdentifiers.pni!,
+            deviceId: .primary,
             tx: tx
         )
     }

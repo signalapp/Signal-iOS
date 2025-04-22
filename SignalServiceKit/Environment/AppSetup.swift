@@ -1223,7 +1223,10 @@ public class AppSetup {
             deviceStore: deviceStore,
             messageSenderJobQueue: messageSenderJobQueue,
             networkManager: networkManager,
-            threadStore: threadStore
+            recipientFetcher: recipientFetcher,
+            recipientManager: recipientManager,
+            threadStore: threadStore,
+            tsAccountManager: tsAccountManager
         )
         let inactiveLinkedDeviceFinder = InactiveLinkedDeviceFinderImpl(
             dateProvider: dateProvider,

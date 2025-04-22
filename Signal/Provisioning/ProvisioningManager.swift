@@ -45,9 +45,6 @@ public class ProvisioningManager {
         with deviceProvisioningUrl: DeviceProvisioningURL,
         shouldLinkNSync: Bool
     ) async throws -> (BackupKey?, DeviceProvisioningTokenId) {
-        // Optimistically set this flag.
-        await db.awaitableWrite { deviceManager.setMightHaveUnknownLinkedDevice(true, transaction: $0) }
-
         struct ProvisioningState {
             var localIdentifiers: LocalIdentifiers
             var aciIdentityKeyPair: ECKeyPair
