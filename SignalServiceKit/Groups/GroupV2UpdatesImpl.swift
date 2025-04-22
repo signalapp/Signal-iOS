@@ -226,7 +226,19 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
             return
         }
 
-        try await self.operationQueue.run {
+        let taskQueue: ConcurrentTaskQueue
+        switch source {
+        case .groupMessage:
+            // The upstream caller handles the concurrency for these requests, so
+            // create a dummy queue that just runs it immediately. This avoids deadlock
+            // that may happen if group message processing gets stuck behind an
+            // unrelated group refresh that's waiting for group message processing.
+            taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
+        case .other:
+            taskQueue = self.operationQueue
+        }
+
+        try await taskQueue.run {
             try await self.runUpdateOperation(
                 secretParams: secretParams,
                 spamReportingMetadata: spamReportingMetadata,
