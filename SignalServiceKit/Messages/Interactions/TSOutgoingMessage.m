@@ -182,9 +182,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 }
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
-                          additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
+                          additionalRecipients:(NSArray<ServiceIdObjC *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
-                             skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
+                             skippedRecipients:(NSArray<ServiceIdObjC *> *)skippedRecipients
                                    transaction:(DBReadTransaction *)transaction
 {
     self = [super initMessageWithBuilder:outgoingMessageBuilder];
@@ -216,11 +216,13 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
         // Group updates should also be sent to pending members of the group.
         if (additionalRecipients.count > 0) {
-            [recipientAddresses addObjectsFromArray:additionalRecipients];
+            for (ServiceIdObjC *serviceId in additionalRecipients) {
+                [recipientAddresses addObject:[[SignalServiceAddress alloc] initWithServiceIdObjC:serviceId]];
+            }
         }
     }
 
-    NSSet<SignalServiceAddress *> *skippedRecipientsSet = [NSSet setWithArray:skippedRecipients];
+    NSSet<ServiceIdObjC *> *skippedRecipientsSet = [NSSet setWithArray:skippedRecipients];
     NSMutableDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates =
         [NSMutableDictionary new];
     for (SignalServiceAddress *recipientAddress in recipientAddresses) {
@@ -228,8 +230,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             OWSFailDebug(@"Ignoring invalid address.");
             continue;
         }
+        ServiceIdObjC *serviceId = recipientAddress.serviceIdObjC;
 
-        OWSOutgoingMessageRecipientStatus recipientStatus = [skippedRecipientsSet containsObject:recipientAddress]
+        OWSOutgoingMessageRecipientStatus recipientStatus
+            = serviceId != nil && [skippedRecipientsSet containsObject:serviceId]
             ? OWSOutgoingMessageRecipientStatusSkipped
             : OWSOutgoingMessageRecipientStatusSending;
 

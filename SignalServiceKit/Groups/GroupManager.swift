@@ -846,12 +846,8 @@ public class GroupManager: NSObject {
         }
     }
 
-    private static func invitedMembers(in thread: TSGroupThread) -> Set<SignalServiceAddress> {
-        thread.groupModel.groupMembership.invitedMembers.filter { doesUserSupportGroupsV2(address: $0) }
-    }
-
-    private static func invitedOrRequestedMembers(in thread: TSGroupThread) -> Set<SignalServiceAddress> {
-        thread.groupModel.groupMembership.invitedOrRequestMembers.filter { doesUserSupportGroupsV2(address: $0) }
+    private static func invitedMembers(in thread: TSGroupThread) -> some Sequence<ServiceId> {
+        thread.groupModel.groupMembership.invitedMembers.compactMap(\.serviceId)
     }
 
     public static func shouldMessageHaveAdditionalRecipients(_ message: TSOutgoingMessage,

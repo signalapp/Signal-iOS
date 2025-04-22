@@ -837,7 +837,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             // longer access it from any contexts. We also need to make sure we
             // only delete it for ourselves if nobody has access remaining.
             var hasRemainingRecipients = false
-            var skippedRecipients = Set<SignalServiceAddress>()
+            var skippedRecipients = Set<ServiceId>()
 
             guard let threadUuid = UUID(uuidString: thread.uniqueId) else {
                 return owsFailDebug("Thread has invalid uniqueId \(thread.logString)")
@@ -852,7 +852,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                     // This recipient still has access via other contexts, so
                     // don't send them the delete message yet!
                     if !state.contexts.isEmpty {
-                        skippedRecipients.insert(SignalServiceAddress(serviceId))
+                        skippedRecipients.insert(serviceId)
                     }
                 }
 
@@ -863,7 +863,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             let deleteMessage = TSOutgoingDeleteMessage(
                 thread: thread,
                 storyMessage: self,
-                skippedRecipients: Array(skippedRecipients),
+                skippedRecipients: skippedRecipients.map { ServiceIdObjC.wrapValue($0) },
                 transaction: transaction
             )
             let preparedDeleteMessage = PreparedOutgoingMessage.preprepared(

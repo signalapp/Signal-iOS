@@ -109,9 +109,9 @@ typedef NS_ENUM(NSInteger, EncryptionStyle) {
 /// A transaction is required for this initializer in order to look up intended
 /// recipients and compute `recipientAddressStates` on the fly.
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
-                          additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
+                          additionalRecipients:(NSArray<ServiceIdObjC *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
-                             skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
+                             skippedRecipients:(NSArray<ServiceIdObjC *> *)skippedRecipients
                                    transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 /// Create a `TSOutgoingMessage` with precomputed recipient states.

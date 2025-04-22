@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
                   storyMessage:(StoryMessage *)storyMessage
-             skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
+             skippedRecipients:(NSArray<ServiceIdObjC *> *)skippedRecipients
                    transaction:(DBReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];

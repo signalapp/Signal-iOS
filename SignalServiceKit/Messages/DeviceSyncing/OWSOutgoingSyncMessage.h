@@ -24,9 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
                             (NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)
                                 recipientAddressStates NS_UNAVAILABLE;
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
-                          additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
+                          additionalRecipients:(NSArray<ServiceIdObjC *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
-                             skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
+                             skippedRecipients:(NSArray<ServiceIdObjC *> *)skippedRecipients
                                    transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
