@@ -116,53 +116,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             envelopeData,
             serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
             envelopeSource: .tests
-        ) { error in
-            switch error {
-            case MessageProcessingError.replacedEnvelope?:
-                XCTFail("replacedEnvelope")
-            case .some:
-                XCTFail("failure")
-            case nil:
-                break
-            }
-        }
-        waitForExpectations(timeout: 1.0)
-    }
-
-    func testWrongDestinationUuid() {
-        write { transaction in
-            try! self.runner.initialize(senderClient: self.bobClient,
-                                        recipientClient: self.localClient,
-                                        transaction: transaction)
-        }
-
-        // Wait until message processing has completed, otherwise future
-        // tests may break as we try and drain the processing queue.
-        let expectFlushNotification = expectation(description: "queue flushed")
-        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidDrainQueue).done { _ in
-            expectFlushNotification.fulfill()
-        }
-
-        let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
-        envelopeBuilder.setSourceServiceID(bobClient.serviceId.serviceIdString)
-        envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
-        envelopeBuilder.setServerGuid(UUID().uuidString)
-        envelopeBuilder.setDestinationServiceID(Aci.randomForTesting().serviceIdString)
-        let envelopeData = try! envelopeBuilder.buildSerializedData()
-        SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
-            envelopeData,
-            serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-            envelopeSource: .tests
-        ) { error in
-            switch error {
-            case MessageProcessingError.wrongDestinationUuid?:
-                break
-            case let error?:
-                XCTFail("unexpected error \(error)")
-            case nil:
-                XCTFail("should have failed")
-            }
-        }
+        ) {}
         waitForExpectations(timeout: 1.0)
     }
 
@@ -209,18 +163,11 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             envelopeData,
             serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
             envelopeSource: .tests
-        ) { error in
-            switch error {
-            case let error?:
-                XCTFail("failure \(error)")
-            case nil:
-                break
-            }
-            self.read { transaction in
-                XCTAssert(identityManager.shouldSharePhoneNumber(with: self.bobClient.serviceId, tx: transaction))
-            }
-        }
+        ) {}
         waitForExpectations(timeout: 1.0)
+        self.read { transaction in
+            XCTAssert(identityManager.shouldSharePhoneNumber(with: self.bobClient.serviceId, tx: transaction))
+        }
     }
 
     func testEarlyServerGeneratedDeliveryReceipt() async throws {
@@ -238,14 +185,12 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             envelopeBuilder.setSourceDevice(2)
             envelopeBuilder.setSourceServiceID(self.bobClient.serviceId.serviceIdString)
             let envelopeData = try envelopeBuilder.buildSerializedData()
-            try await withCheckedThrowingContinuation { continuation in
+            await withCheckedContinuation { continuation in
                 SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
                     envelopeData,
                     serverDeliveryTimestamp: 102,
                     envelopeSource: .websocketUnidentified
-                ) { error in
-                    continuation.resume(with: error.map({ .failure($0) }) ?? .success(()))
-                }
+                ) { continuation.resume() }
             }
         }
 
@@ -277,14 +222,12 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             let envelopeData = try envelopeBuilder.buildSerializedData()
 
             // Process the message
-            try await withCheckedThrowingContinuation { continuation in
+            await withCheckedContinuation { continuation in
                 SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
                     envelopeData,
                     serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                     envelopeSource: .tests
-                ) { error in
-                    continuation.resume(with: error.map({ .failure($0) }) ?? .success(()))
-                }
+                ) { continuation.resume() }
             }
         }
         try SSKEnvironment.shared.databaseStorageRef.read { transaction in
@@ -336,18 +279,12 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             envelopeBuilder.setDestinationServiceID(self.localClient.serviceId.serviceIdString)
             let envelopeData = try envelopeBuilder.buildSerializedData()
 
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+            await withCheckedContinuation { continuation in
                 SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
                     envelopeData,
                     serverDeliveryTimestamp: 102,
                     envelopeSource: .websocketUnidentified
-                ) { error in
-                    if let error {
-                        continuation.resume(throwing: error)
-                    } else {
-                        continuation.resume(returning: ())
-                    }
-                }
+                ) { continuation.resume() }
             }
         }
 
@@ -377,19 +314,13 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             envelopeBuilder.setDestinationServiceID(self.localClient.serviceId.serviceIdString)
             let envelopeData = try! envelopeBuilder.buildSerializedData()
 
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+            await withCheckedContinuation { continuation in
                 // Process the message
                 SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
                     envelopeData,
                     serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                     envelopeSource: .tests
-                ) { error in
-                    if let error {
-                        continuation.resume(throwing: error)
-                    } else {
-                        continuation.resume(returning: ())
-                    }
-                }
+                ) { continuation.resume() }
             }
             self.read { transaction in
                 // Now make sure the status is delivered.

@@ -177,7 +177,7 @@ public class MessageFetcherJob {
 
     private struct EnvelopeJob {
         let encryptedEnvelope: SSKProtoEnvelope
-        let completion: (Error?) -> Void
+        let completion: () -> Void
     }
 
     private let didFinishFetchingViaREST = AtomicBool(false, lock: .init())
@@ -196,14 +196,8 @@ public class MessageFetcherJob {
 
         let envelopeJobs: [EnvelopeJob] = batch.envelopes.map { envelope in
             let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
-            return EnvelopeJob(encryptedEnvelope: envelope) { error in
-                let ackBehavior = MessageProcessor.handleMessageProcessingOutcome(error: error)
-                switch ackBehavior {
-                case .shouldAck:
-                    self.acknowledgeDelivery(envelopeInfo: envelopeInfo)
-                case .shouldNotAck(let error):
-                    Logger.info("Skipping ack of message with timestamp \(envelopeInfo.timestamp) because of error: \(error)")
-                }
+            return EnvelopeJob(encryptedEnvelope: envelope) {
+                self.acknowledgeDelivery(envelopeInfo: envelopeInfo)
             }
         }
 

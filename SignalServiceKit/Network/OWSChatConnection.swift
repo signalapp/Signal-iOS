@@ -829,15 +829,8 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "handleIncomingMessage")
 
-        let ackMessage = { (processingError: Error?, serverTimestamp: UInt64) in
-            let ackBehavior = MessageProcessor.handleMessageProcessingOutcome(error: processingError)
-            switch ackBehavior {
-            case .shouldAck:
-                self.sendWebSocketMessageAcknowledgement(message, currentWebSocket: currentWebSocket)
-            case .shouldNotAck(let error):
-                Logger.info("Skipping ack of message with serverTimestamp \(serverTimestamp) because of error: \(error)")
-            }
-
+        let ackMessage = {
+            self.sendWebSocketMessageAcknowledgement(message, currentWebSocket: currentWebSocket)
             owsAssertDebug(backgroundTask != nil)
             backgroundTask = nil
         }
@@ -859,7 +852,8 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
         }
 
         guard let encryptedEnvelope = message.body else {
-            ackMessage(OWSGenericError("Missing encrypted envelope on message \(currentWebSocket.logPrefix)"), serverDeliveryTimestamp)
+            Logger.warn("Missing encrypted envelope on message \(currentWebSocket.logPrefix)")
+            ackMessage()
             return
         }
         let envelopeSource: EnvelopeSource = {
@@ -876,10 +870,8 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
                 encryptedEnvelope,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 envelopeSource: envelopeSource
-            ) { error in
-                self.serialQueue.async {
-                    ackMessage(error, serverDeliveryTimestamp)
-                }
+            ) {
+                self.serialQueue.async(ackMessage)
             }
         }
     }
@@ -1859,20 +1851,14 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
                 envelope,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 envelopeSource: .websocketIdentified
-            ) { error in
+            ) {
                 defer { backgroundTask.end() }
 
-                let ackBehavior = MessageProcessor.handleMessageProcessingOutcome(error: error)
-                switch ackBehavior {
-                case .shouldAck:
-                    do {
-                        // Note that this does not wait for a response.
-                        try sendAck()
-                    } catch {
-                        Logger.warn("Failed to ack message with serverTimestamp \(serverDeliveryTimestamp): \(error)")
-                    }
-                case .shouldNotAck(let error):
-                    Logger.info("Skipping ack of message with serverTimestamp \(serverDeliveryTimestamp) because of error: \(error)")
+                do {
+                    // Note that this does not wait for a response.
+                    try sendAck()
+                } catch {
+                    Logger.warn("Failed to ack message with serverTimestamp \(serverDeliveryTimestamp): \(error)")
                 }
             }
         }

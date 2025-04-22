@@ -93,10 +93,11 @@ public class MessageProcessor {
         _ envelopeData: Data,
         serverDeliveryTimestamp: UInt64,
         envelopeSource: EnvelopeSource,
-        completion: @escaping (Error?) -> Void
+        completion: @escaping () -> Void
     ) {
         guard !envelopeData.isEmpty else {
-            completion(OWSAssertionError("Empty envelope, envelopeSource: \(envelopeSource)."))
+            owsFailDebug("Empty envelope, envelopeSource: \(envelopeSource).")
+            completion()
             return
         }
 
@@ -105,13 +106,14 @@ public class MessageProcessor {
             protoEnvelope = try SSKProtoEnvelope(serializedData: envelopeData)
         } catch {
             owsFailDebug("Failed to parse encrypted envelope \(error), envelopeSource: \(envelopeSource)")
-            completion(error)
+            completion()
             return
         }
 
         // Drop any too-large messages on the floor. Well behaving clients should never send them.
         guard (protoEnvelope.content ?? Data()).count <= Self.maxEnvelopeByteCount else {
-            completion(OWSAssertionError("Oversize envelope, envelopeSource: \(envelopeSource)."))
+            owsFailDebug("Oversize envelope, envelopeSource: \(envelopeSource).")
+            completion()
             return
         }
 
@@ -129,7 +131,7 @@ public class MessageProcessor {
         _ envelopeProto: SSKProtoEnvelope,
         serverDeliveryTimestamp: UInt64,
         envelopeSource: EnvelopeSource,
-        completion: @escaping (Error?) -> Void
+        completion: @escaping () -> Void
     ) {
         processReceivedEnvelope(
             ReceivedEnvelope(
@@ -142,11 +144,7 @@ public class MessageProcessor {
     }
 
     private func processReceivedEnvelope(_ receivedEnvelope: ReceivedEnvelope, envelopeSource: EnvelopeSource) {
-        let replacedEnvelope = pendingEnvelopes.enqueue(receivedEnvelope)
-        if let replacedEnvelope {
-            Logger.warn("Replaced \(replacedEnvelope.envelope.timestamp) serverGuid: \(replacedEnvelope.envelope.serverGuid as Optional)")
-            replacedEnvelope.completion(MessageProcessingError.replacedEnvelope)
-        }
+        pendingEnvelopes.enqueue(receivedEnvelope)
         drainPendingEnvelopes()
     }
 
@@ -283,11 +281,10 @@ public class MessageProcessor {
         context: DeliveryReceiptContext,
         localIdentifiers: LocalIdentifiers,
         transaction: DBWriteTransaction
-    ) -> Error? {
+    ) {
         switch request.state {
         case .completed(error: let error):
             Logger.info("Envelope completed early with error \(String(describing: error))")
-            return error
         case .enqueueForGroup(let decryptedEnvelope, let envelopeData):
             SSKEnvironment.shared.groupsV2MessageProcessorRef.enqueue(
                 envelopeData: envelopeData,
@@ -297,17 +294,13 @@ public class MessageProcessor {
                 tx: transaction
             )
             SSKEnvironment.shared.messageReceiverRef.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
-            return nil
         case .messageReceiverRequest(let messageReceiverRequest):
             SSKEnvironment.shared.messageReceiverRef.handleRequest(messageReceiverRequest, context: context, localIdentifiers: localIdentifiers, tx: transaction)
             SSKEnvironment.shared.messageReceiverRef.finishProcessingEnvelope(messageReceiverRequest.decryptedEnvelope, tx: transaction)
-            return nil
         case .clearPlaceholdersOnly(let decryptedEnvelope):
             SSKEnvironment.shared.messageReceiverRef.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
-            return nil
         case .serverReceipt(let serverReceiptEnvelope):
             SSKEnvironment.shared.messageReceiverRef.handleDeliveryReceipt(envelope: serverReceiptEnvelope, context: context, tx: transaction)
-            return nil
         }
     }
 
@@ -317,41 +310,14 @@ public class MessageProcessor {
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) {
-        let error = reallyHandleProcessingRequest(request, context: context, localIdentifiers: localIdentifiers, transaction: tx)
-        tx.addSyncCompletion { request.receivedEnvelope.completion(error) }
+        reallyHandleProcessingRequest(request, context: context, localIdentifiers: localIdentifiers, transaction: tx)
+        tx.addSyncCompletion { request.receivedEnvelope.completion() }
     }
 
     @objc
     private func registrationStateDidChange() {
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.drainPendingEnvelopes()
-        }
-    }
-
-    public enum MessageAckBehavior {
-        case shouldAck
-        case shouldNotAck(error: Error)
-    }
-
-    public static func handleMessageProcessingOutcome(error: Error?) -> MessageAckBehavior {
-        guard let error = error else {
-            // Success.
-            return .shouldAck
-        }
-        if case MessageProcessingError.replacedEnvelope = error {
-            // _DO NOT_ ACK if de-duplicated before decryption.
-            return .shouldNotAck(error: error)
-        } else if case MessageProcessingError.blockedSender = error {
-            return .shouldAck
-        } else if let owsError = error as? OWSError,
-                  owsError.errorCode == OWSErrorCode.failedToDecryptDuplicateMessage.rawValue {
-            // _DO_ ACK if de-duplicated during decryption.
-            return .shouldAck
-        } else {
-            Logger.warn("Failed to process message: \(error)")
-            // This should only happen for malformed envelopes. We may eventually
-            // want to show an error in this case.
-            return .shouldAck
         }
     }
 }
@@ -597,7 +563,7 @@ extension MessageProcessor: MessageProcessingPipelineStage {
 private struct ReceivedEnvelope {
     let envelope: SSKProtoEnvelope
     let serverDeliveryTimestamp: UInt64
-    let completion: (Error?) -> Void
+    let completion: () -> Void
 
     enum DecryptionResult {
         case serverReceipt(ServerReceiptEnvelope)
@@ -629,18 +595,6 @@ private struct ReceivedEnvelope {
                 )
             )
         }
-    }
-
-    func isDuplicateOf(_ other: ReceivedEnvelope) -> Bool {
-        guard let serverGuid = self.envelope.serverGuid else {
-            owsFailDebug("Missing serverGuid.")
-            return false
-        }
-        guard let otherServerGuid = other.envelope.serverGuid else {
-            owsFailDebug("Missing other.serverGuid.")
-            return false
-        }
-        return serverGuid == otherServerGuid
     }
 }
 
@@ -691,16 +645,9 @@ private class PendingEnvelopes {
         }
     }
 
-    func enqueue(_ receivedEnvelope: ReceivedEnvelope) -> ReceivedEnvelope? {
-        return unfairLock.withLock { () -> ReceivedEnvelope? in
-            if let indexToReplace = pendingEnvelopes.firstIndex(where: { receivedEnvelope.isDuplicateOf($0) }) {
-                let replacedEnvelope = pendingEnvelopes[indexToReplace]
-                pendingEnvelopes[indexToReplace] = receivedEnvelope
-                return replacedEnvelope
-            } else {
-                pendingEnvelopes.append(receivedEnvelope)
-                return nil
-            }
+    func enqueue(_ receivedEnvelope: ReceivedEnvelope) {
+        unfairLock.withLock {
+            pendingEnvelopes.append(receivedEnvelope)
         }
     }
 }
@@ -710,6 +657,5 @@ private class PendingEnvelopes {
 public enum MessageProcessingError: Error {
     case wrongDestinationUuid
     case invalidMessageTypeForDestinationUuid
-    case replacedEnvelope
     case blockedSender
 }

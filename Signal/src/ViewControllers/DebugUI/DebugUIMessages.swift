@@ -1167,7 +1167,7 @@ class DebugUIMessages: DebugUIPage {
             envelopeData,
             serverDeliveryTimestamp: 0,
             envelopeSource: .debugUI
-        ) { _ in }
+        ) {}
     }
 
     private static func createUUIDGroup() {
