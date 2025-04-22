@@ -9,16 +9,7 @@ import SignalUI
 import SwiftUI
 import UIKit
 
-class BackupSettingsViewController: UIViewController {
-    private let backupSettingsStore: BackupSettingsStore
-    private let backupSubscriptionManager: BackupSubscriptionManager
-    private let dateProvider: DateProvider
-    private let db: DB
-    private let networkManager: NetworkManager
-
-    private var hostingController: HostingController<BackupSettingsView>!
-    private var viewModel: BackupSettingsViewModel!
-
+class BackupSettingsViewController: HostingController<BackupSettingsView> {
     init(
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
@@ -26,29 +17,13 @@ class BackupSettingsViewController: UIViewController {
         db: DB,
         networkManager: NetworkManager
     ) {
-        self.backupSettingsStore = backupSettingsStore
-        self.backupSubscriptionManager = backupSubscriptionManager
-        self.dateProvider = dateProvider
-        self.db = db
-        self.networkManager = networkManager
-
-        super.init(nibName: nil, bundle: nil)
-
-        title = OWSLocalizedString(
-            "BACKUPS_SETTINGS_TITLE",
-            comment: "Title for the 'Backup' settings menu."
-        )
-    }
-
-    required init?(coder: NSCoder) { owsFail("Not implemented!") }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        viewModel = db.read { tx -> BackupSettingsViewModel in
-            let backupPlanViewModel = BackupPlanViewModel(loadBackupPlanBlock: { [weak self] in
-                guard let self else { throw OWSGenericError("Deallocated!") }
-                return try await loadBackupPlan()
+        let viewModel = db.read { tx -> BackupSettingsViewModel in
+            let backupPlanViewModel = BackupPlanViewModel(loadBackupPlanBlock: {
+                return try await Self.loadBackupPlan(
+                    backupSubscriptionManager: backupSubscriptionManager,
+                    db: db,
+                    networkManager: networkManager
+                )
             })
 
             let enabledState = BackupSettingsViewModel.EnabledState.load(
@@ -67,26 +42,30 @@ class BackupSettingsViewController: UIViewController {
             )
         }
 
-        hostingController = HostingController(
-            wrappedView: BackupSettingsView(viewModel: viewModel)
-        )
+        super.init(wrappedView: BackupSettingsView(viewModel: viewModel))
 
-        addChild(hostingController)
-        view.addSubview(hostingController.view)
-        hostingController.view.autoPinEdgesToSuperviewEdges()
-        hostingController.didMove(toParent: self)
+        title = OWSLocalizedString(
+            "BACKUPS_SETTINGS_TITLE",
+            comment: "Title for the 'Backup' settings menu."
+        )
     }
+
+    required init?(coder: NSCoder) { owsFail("Not implemented!") }
 
     // MARK: -
 
-    private func loadBackupPlan() async throws -> BackupPlanViewModel.BackupPlan {
-        let backupSubscriberID: Data? = self.db.read { tx in
-            self.backupSubscriptionManager.getIAPSubscriberData(tx: tx)?.subscriberId
+    private static func loadBackupPlan(
+        backupSubscriptionManager: BackupSubscriptionManager,
+        db: DB,
+        networkManager: NetworkManager,
+    ) async throws -> BackupPlanViewModel.BackupPlan {
+        let backupSubscriberID: Data? = db.read { tx in
+            backupSubscriptionManager.getIAPSubscriberData(tx: tx)?.subscriberId
         }
 
         guard
             let backupSubscriberID,
-            let backupSubscription = try await SubscriptionFetcher(networkManager: self.networkManager)
+            let backupSubscription = try await SubscriptionFetcher(networkManager: networkManager)
                 .fetch(subscriberID: backupSubscriberID)
         else {
             return .free
@@ -121,14 +100,6 @@ class BackupSettingsViewController: UIViewController {
             owsFailDebug("Unexpected backup subscription status! \(backupSubscription.status)")
             return .free
         }
-    }
-}
-
-// MARK: -
-
-extension BackupSettingsViewController: OWSNavigationChildController {
-    public var childForOWSNavigationConfiguration: (any OWSNavigationChildController)? {
-        hostingController
     }
 }
 
@@ -228,10 +199,10 @@ private class BackupSettingsViewModel: ObservableObject {
     }
 }
 
-private struct BackupSettingsView: View {
+struct BackupSettingsView: View {
     @ObservedObject private var viewModel: BackupSettingsViewModel
 
-    init(viewModel: BackupSettingsViewModel) {
+    fileprivate init(viewModel: BackupSettingsViewModel) {
         self.viewModel = viewModel
     }
 
