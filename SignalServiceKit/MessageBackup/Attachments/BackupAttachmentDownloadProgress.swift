@@ -171,7 +171,7 @@ public actor BackupAttachmentDownloadProgress {
         }
         if let totalByteCount {
             self.latestProgress = OWSProgress(
-                completedUnitCount: totalByteCount - (remainingByteCount ?? totalByteCount),
+                completedUnitCount: min(totalByteCount, totalByteCount - (remainingByteCount ?? totalByteCount)),
                 totalUnitCount: totalByteCount,
                 sourceProgresses: [:]
             )
@@ -210,10 +210,12 @@ public actor BackupAttachmentDownloadProgress {
             return
         }
         let prevByteCount = activeDownloadByteCounts[id] ?? 0
-        let diff = completedByteCount - prevByteCount
-        owsAssertDebug(self.source != nil, "Updating progress before setting up observation!")
-        if diff > 0 {
-            self.source?.incrementCompletedUnitCount(by: diff)
+        if let source {
+            let diff = min(completedByteCount - prevByteCount, source.totalUnitCount - source.completedUnitCount)
+            owsAssertDebug(self.source != nil, "Updating progress before setting up observation!")
+            if diff > 0 {
+                self.source?.incrementCompletedUnitCount(by: diff)
+            }
         }
         if completedByteCount >= totalByteCount {
             recentlyCompletedDownloads.set(key: id, value: ())
