@@ -29,20 +29,22 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
 
     // MARK: Rendering
 
-    // TODO: [Backups] localize
     private lazy var titleLabel: UILabel = {
         let result = UILabel.titleLabelForRegistration(
-            text: "Restore from backup"
-            // comment: "If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup."
+            text: OWSLocalizedString(
+                "ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE",
+                comment: "If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup."
+            )
         )
         return result
     }()
 
-    // TODO: [Backups] localize
     private lazy var explanationLabel: UILabel = {
-        let result = UILabel.explanationLabelForRegistration(text:
-            "Restore message history from a local backup. Only media sent or received in the past 30 days is included."
-            // comment: "If a userk is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question."
+        let result = UILabel.explanationLabelForRegistration(
+            text: OWSLocalizedString(
+                "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION",
+                comment: "If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question."
+            )
         )
         return result
     }()
@@ -58,33 +60,41 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         return button
     }
 
-    // TODO: [Backups] localize
     private lazy var restoreFromBackupButton = choiceButton(
-        title: "Restore Signal Backup",
-        // comment: "The title for the device transfer 'choice' view 'transfer' option"
-        body:
-            "Restore all your text messages + your last 30 days of media",
-        // comment: "The body for the device transfer 'choice' view 'transfer' option"
+        title: OWSLocalizedString(
+            "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE",
+            comment: "The title for the device transfer 'choice' view 'transfer' option"
+        ),
+        body: OWSLocalizedString(
+            "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY",
+            comment: "The body for the device transfer 'choice' view 'transfer' option"
+        ),
         iconName: Theme.iconName(.backup),
         selector: #selector(didSelectRestoreLocal)
     )
 
-    // TODO: [Backups] localize
     private lazy var transferButton = choiceButton(
-        title: "Transfer from another device",
-        // comment: "The title for the device transfer 'choice' view 'transfer' option"
-        body: "Transfer directly from an existing device",
-        // comment: "The body for the device transfer 'choice' view 'transfer' option"
+        title: OWSLocalizedString(
+            "ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE",
+            comment: "The title for the device transfer 'choice' view 'transfer' option"
+        ),
+        body: OWSLocalizedString(
+            "ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY",
+            comment: "The body for the device transfer 'choice' view 'transfer' option"
+        ),
         iconName: Theme.iconName(.transfer),
         selector: #selector(didSelectDeviceTransfer)
     )
 
-    // TODO: [Backups] localize
-    private lazy var continueButton = choiceButton(
-        title: "Continue without restoring",
-        // comment: "The title for the device transfer 'choice' view 'transfer' option"
-        body: "Don't attempt to restore, continue with a new instance.",
-        // comment: "The body for the device transfer 'choice' view 'transfer' option"
+    private lazy var skipRestoreButton = choiceButton(
+        title: OWSLocalizedString(
+            "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE",
+            comment: "The title for the skip restore 'choice' option"
+        ),
+        body: OWSLocalizedString(
+            "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY",
+            comment: "The body for the skip restore 'choice' option"
+        ),
         iconName: Theme.iconName(.register),
         selector: #selector(didSkipRestore)
     )
@@ -106,12 +116,16 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         view.addSubview(scrollView)
         scrollView.autoPinEdgesToSuperviewMargins()
 
+        // TODO: [Backups]: Check for list of available restore options
+        // and build list based on that.
+        // This should also check if this is a QuickRestore or not
+        // to change the position of the 'Skip Restore' button
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
             explanationLabel,
-            restoreFromBackupButton,
             transferButton,
-            continueButton,
+            restoreFromBackupButton,
+            skipRestoreButton,
             UIView.vStretchingSpacer()
         ])
         stackView.axis = .vertical
@@ -165,6 +179,11 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         documentPicker.allowsMultipleSelection = false
         vc.present(documentPicker, animated: true)
     }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        render()
+    }
 }
 
 extension RegistrationChooseRestoreMethodViewController: UIDocumentPickerDelegate {
@@ -175,3 +194,18 @@ extension RegistrationChooseRestoreMethodViewController: UIDocumentPickerDelegat
         presenter?.didChooseRestoreMethod(method: .local(fileUrl: fileUrl))
     }
 }
+
+#if DEBUG
+private class PreviewRegistrationChooseRestoreMethodPresenter: RegistrationChooseRestoreMethodPresenter {
+    func didChooseRestoreMethod(method: RegistrationRestoreMethod) {
+        print("restore method: \(method)")
+    }
+}
+
+// Need to hold a reference to this since it's held weakly by the VC
+private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
+@available(iOS 17, *)
+#Preview {
+    RegistrationChooseRestoreMethodViewController(presenter: presenter)
+}
+#endif

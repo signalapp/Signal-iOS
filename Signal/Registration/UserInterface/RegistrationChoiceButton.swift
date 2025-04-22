@@ -8,13 +8,18 @@ import SignalUI
 
 class RegistrationChoiceButton: OWSFlatButton
 {
+    let titleLabel: UILabel
+    let bodyLabel: UILabel
+    let disclosureView: UIImageView
     init(
         title: String,
         body: String,
         iconName: String
     ) {
+        titleLabel = UILabel()
+        bodyLabel = UILabel()
+        disclosureView = UIImageView()
         super.init()
-        setBackgroundColors(upColor: Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray02)
         layer.cornerRadius = 8
         clipsToBounds = true
 
@@ -31,19 +36,13 @@ class RegistrationChoiceButton: OWSFlatButton
 
         // Labels
 
-        let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.font = UIFont.dynamicTypeBody.semibold()
-        titleLabel.textColor = Theme.primaryTextColor
 
-        let bodyLabel = UILabel()
         bodyLabel.text = body
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
-        bodyLabel.font = .dynamicTypeBody2
-        bodyLabel.textColor = Theme.secondaryTextAndIconColor
 
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
@@ -62,7 +61,6 @@ class RegistrationChoiceButton: OWSFlatButton
         // Disclosure Indicator
 
         let disclosureContainer = UIView()
-        let disclosureView = UIImageView()
         disclosureView.setTemplateImage(
             UIImage(imageLiteralResourceName: "chevron-right-20"),
             tintColor: Theme.secondaryTextAndIconColor
@@ -85,5 +83,21 @@ class RegistrationChoiceButton: OWSFlatButton
 
         addSubview(hStack)
         hStack.autoPinEdgesToSuperviewEdges()
+
+        themeDidChange()
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        themeDidChange()
+    }
+
+    private func themeDidChange() {
+        setBackgroundColors(upColor: Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray02)
+        titleLabel.font = .dynamicTypeBody.semibold()
+        titleLabel.textColor = Theme.primaryTextColor
+        bodyLabel.font = .dynamicTypeBody2
+        bodyLabel.textColor = Theme.secondaryTextAndIconColor
+        disclosureView.tintColor = Theme.secondaryTextAndIconColor
     }
 }
