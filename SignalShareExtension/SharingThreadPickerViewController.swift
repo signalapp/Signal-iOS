@@ -707,7 +707,7 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDel
         send()
     }
 
-    func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
+    func attachmentApprovalDidCancel() {
         shareViewDelegate?.shareViewWasCancelled()
     }
 

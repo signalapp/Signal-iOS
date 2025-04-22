@@ -474,6 +474,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         let locationPicker = LocationPicker()
         locationPicker.delegate = self
         let navigationController = OWSNavigationController(rootViewController: locationPicker)
+        navigationController.presentationController?.delegate = self
         dismissKeyBoard()
         presentFormSheet(navigationController, animated: true)
     }
@@ -600,7 +601,9 @@ fileprivate extension ConversationViewController {
                     "CONTACT_PICKER_TITLE",
                     comment: "navbar title for contact picker when sharing a contact"
                 )
-                self.presentFormSheet(OWSNavigationController(rootViewController: contactsPicker), animated: true)
+                let sheet = OWSNavigationController(rootViewController: contactsPicker)
+                sheet.presentationController?.delegate = self
+                self.presentFormSheet(sheet, animated: true)
             },
             presentErrorFrom: self
         )
@@ -616,6 +619,7 @@ fileprivate extension ConversationViewController {
         let pickerController = UIDocumentPickerViewController(forOpeningContentTypes: [.item],
                                                               asCopy: true)
         pickerController.delegate = self
+        pickerController.presentationController?.delegate = self
 
         dismissKeyBoard()
         presentFormSheet(pickerController, animated: true)
@@ -681,6 +685,7 @@ public extension ConversationViewController {
         let gifModal = GifPickerNavigationViewController(initialMessageBody: inputToolbar?.messageBodyForSending)
         gifModal.approvalDelegate = self
         gifModal.approvalDataSource = self
+        gifModal.presentationController?.delegate = self
         dismissKeyBoard()
         present(gifModal, animated: true)
     }
@@ -725,11 +730,19 @@ extension ConversationViewController: LocationPickerDelegate {
             NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
         }
     }
+
+    public func locationPickerDidCancel() {
+        self.dismiss(animated: true)
+        self.openAttachmentKeyboard()
+    }
 }
 
 // MARK: -
 
 extension ConversationViewController: UIDocumentPickerDelegate {
+    public func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        self.openAttachmentKeyboard()
+    }
 
     public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
         Logger.debug("Picked document at url: \(url)")
@@ -862,15 +875,9 @@ extension ConversationViewController: UIDocumentPickerDelegate {
 // MARK: -
 
 extension ConversationViewController: SendMediaNavDelegate {
-
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController) {
-        // Restore status bar visibility (if current VC hides it) so that
-        // there's no visible UI updates in the presenter.
-        if sendMediaNavigationController.topViewController?.prefersStatusBarHidden ?? false {
-            sendMediaNavigationController.modalPresentationCapturesStatusBarAppearance = false
-            sendMediaNavigationController.setNeedsStatusBarAppearanceUpdate()
-        }
         self.dismiss(animated: true, completion: nil)
+        self.openAttachmentKeyboard()
     }
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController,

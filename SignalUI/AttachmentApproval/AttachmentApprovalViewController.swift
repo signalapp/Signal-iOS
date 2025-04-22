@@ -15,7 +15,7 @@ public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
                             didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?)
 
-    func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController)
+    func attachmentApprovalDidCancel()
 
     func attachmentApproval(
         _ attachmentApproval: AttachmentApprovalViewController,
@@ -791,7 +791,7 @@ extension AttachmentApprovalViewController {
 
     @objc
     private func cancelPressed() {
-        self.approvalDelegate?.attachmentApprovalDidCancel(self)
+        self.approvalDelegate?.attachmentApprovalDidCancel()
     }
 
     @objc

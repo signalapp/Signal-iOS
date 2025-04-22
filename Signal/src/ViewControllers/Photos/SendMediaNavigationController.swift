@@ -481,9 +481,7 @@ extension SendMediaNavigationController: PHPickerViewControllerDelegate {
         if attachmentCount <= 0 {
             // The user tapped the cancel button or deselected everything
             self.view.layer.opacity = 0
-            picker.dismiss(animated: true) {
-                self.dismiss(animated: false)
-            }
+            self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
             return
         }
 
@@ -494,7 +492,7 @@ extension SendMediaNavigationController: PHPickerViewControllerDelegate {
 extension SendMediaNavigationController: UIAdaptivePresentationControllerDelegate {
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         // The user swiped the photo picker down
-        self.dismiss(animated: false)
+        self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
     }
 }
 
@@ -569,7 +567,7 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
         sendMediaNavDelegate?.sendMediaNav(self, didApproveAttachments: attachments, messageBody: messageBody)
     }
 
-    func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
+    func attachmentApprovalDidCancel() {
         sendMediaNavDelegate?.sendMediaNavDidCancel(self)
     }
 

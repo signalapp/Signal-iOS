@@ -18,6 +18,7 @@ import UniformTypeIdentifiers
 
 public protocol LocationPickerDelegate: AnyObject {
     func didPickLocation(_ locationPicker: LocationPicker, location: Location)
+    func locationPickerDidCancel()
 }
 
 public class LocationPicker: UIViewController {
@@ -85,12 +86,12 @@ public class LocationPicker: UIViewController {
 
         title = OWSLocalizedString("LOCATION_PICKER_TITLE", comment: "The title for the location picker view")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: Theme.iconImage(.buttonX),
-            style: .plain,
-            target: self,
-            action: #selector(cancelButtonPressed)
-        )
+        navigationItem.leftBarButtonItem = .button(
+            icon: .buttonX,
+            style: .done
+        ) { [weak delegate] in
+            delegate?.locationPickerDidCancel()
+        }
 
         locationManager.delegate = self
         mapView.delegate = self
@@ -131,15 +132,6 @@ public class LocationPicker: UIViewController {
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(true)
         navigationController?.navigationBar.isTranslucent = true
-    }
-
-    @objc
-    private func cancelButtonPressed(_ sender: UIButton) {
-        if let navigation = navigationController, navigation.viewControllers.count > 1 {
-            navigation.popViewController(animated: true)
-        } else {
-            presentingViewController?.dismiss(animated: true, completion: nil)
-        }
     }
 
     @objc

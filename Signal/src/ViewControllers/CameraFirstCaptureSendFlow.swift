@@ -55,14 +55,7 @@ class CameraFirstCaptureSendFlow {
 }
 
 extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
-
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController) {
-        // Restore status bar visibility (if current VC hides it) so that
-        // there's no visible UI updates in the presenter.
-        if sendMediaNavigationController.topViewController?.prefersStatusBarHidden ?? false {
-            sendMediaNavigationController.modalPresentationCapturesStatusBarAppearance = false
-            sendMediaNavigationController.setNeedsStatusBarAppearanceUpdate()
-        }
         delegate?.cameraFirstCaptureSendFlowDidCancel(self)
     }
 

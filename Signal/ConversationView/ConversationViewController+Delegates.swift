@@ -32,8 +32,9 @@ extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
         scrollToBottomOfConversation(animated: false)
     }
 
-    public func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
+    public func attachmentApprovalDidCancel() {
         dismiss(animated: true, completion: nil)
+        self.openAttachmentKeyboard()
     }
 
     public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
@@ -76,12 +77,31 @@ extension ConversationViewController: AttachmentApprovalViewControllerDataSource
     }
 }
 
+extension ConversationViewController: UIAdaptivePresentationControllerDelegate {
+    public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        switch presentationController.presentedViewController {
+        case is GifPickerNavigationViewController, is UIDocumentPickerViewController:
+            self.openAttachmentKeyboard()
+        case let navigationController as OWSNavigationController:
+            switch navigationController.viewControllers.first {
+            case is ContactPickerViewController, is LocationPicker:
+                self.openAttachmentKeyboard()
+            default:
+                break
+            }
+        default:
+            break
+        }
+    }
+}
+
 // MARK: -
 
 extension ConversationViewController: ContactPickerDelegate {
 
     public func contactPickerDidCancel(_: ContactPickerViewController) {
         dismiss(animated: true, completion: nil)
+        self.openAttachmentKeyboard()
     }
 
     public func contactPicker(_ contactPicker: ContactPickerViewController, didSelect systemContact: SystemContact) {
