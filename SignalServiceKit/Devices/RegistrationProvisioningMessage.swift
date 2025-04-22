@@ -118,6 +118,10 @@ public struct RegistrationProvisioningMessage {
             messageBuilder.backupSizeBytes = backupSizeBytes
         }
 
+        if let restoreMethodToken {
+            messageBuilder.restoreMethodToken = restoreMethodToken
+        }
+
         let plainTextMessage = try messageBuilder.serializedData()
 
         let ourKeyPair = IdentityKeyPair.generate()
