@@ -567,6 +567,8 @@
 		5020EFA22BA8A5390038C2D5 /* CanonicalPhoneNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5020EFA12BA8A5390038C2D5 /* CanonicalPhoneNumber.swift */; };
 		5021B0332C0106470028AC87 /* CallOfferHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5021B0322C0106470028AC87 /* CallOfferHandler.swift */; };
 		502346752DB017420029DB97 /* ValidatedIncomingEnvelopeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502346742DB017420029DB97 /* ValidatedIncomingEnvelopeTest.swift */; };
+		502346772DB039320029DB97 /* SetDeque.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502346762DB039320029DB97 /* SetDeque.swift */; };
+		502346792DB03DEB0029DB97 /* SetDequeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502346782DB03DEB0029DB97 /* SetDequeTest.swift */; };
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
 		502C69702B06CE9C00012867 /* OutgoingAttachmentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C696F2B06CE9C00012867 /* OutgoingAttachmentInfo.swift */; };
 		502C69742B06F0A400012867 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C69732B06F0A400012867 /* Result.swift */; };
@@ -4457,6 +4459,8 @@
 		5020EFA12BA8A5390038C2D5 /* CanonicalPhoneNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanonicalPhoneNumber.swift; sourceTree = "<group>"; };
 		5021B0322C0106470028AC87 /* CallOfferHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallOfferHandler.swift; sourceTree = "<group>"; };
 		502346742DB017420029DB97 /* ValidatedIncomingEnvelopeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatedIncomingEnvelopeTest.swift; sourceTree = "<group>"; };
+		502346762DB039320029DB97 /* SetDeque.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDeque.swift; sourceTree = "<group>"; };
+		502346782DB03DEB0029DB97 /* SetDequeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDequeTest.swift; sourceTree = "<group>"; };
 		5027A6AB2AFC48D000D5AB95 /* LogFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogFormatter.swift; sourceTree = "<group>"; };
 		502B1B54297B28AF00FDB3AE /* ErrorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTest.swift; sourceTree = "<group>"; };
 		502C696F2B06CE9C00012867 /* OutgoingAttachmentInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingAttachmentInfo.swift; sourceTree = "<group>"; };
@@ -13073,6 +13077,7 @@
 				F908AA7728CB894400472E68 /* PngChunkerTest.swift */,
 				F94261F0289B1B5400460798 /* RefineryTest.swift */,
 				F94261EC289B1B5400460798 /* RemoteConfigManagerTests.swift */,
+				502346782DB03DEB0029DB97 /* SetDequeTest.swift */,
 				F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */,
 				C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */,
 				7205701F2C8E860300826421 /* StringExtensionTests.swift */,
@@ -14330,6 +14335,7 @@
 				F9C5CB1C289453B200548EEE /* SDS+SSK.swift */,
 				F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */,
 				1700E34028BD41140073D949 /* SetAlgebra+SSK.swift */,
+				502346762DB039320029DB97 /* SetDeque.swift */,
 				F9613CDB2981F11400894B55 /* SqliteUtil.swift */,
 				F9C5CB47289453B200548EEE /* SSKPreferences.swift */,
 				F9C5CB12289453B200548EEE /* StorageService.swift */,
@@ -18264,6 +18270,7 @@
 				725465242BA017D500EABFD2 /* SessionResetJob.swift in Sources */,
 				D9AE0AD729187A700063488B /* SessionResetJobRecord.swift in Sources */,
 				1700E34128BD41150073D949 /* SetAlgebra+SSK.swift in Sources */,
+				502346772DB039320029DB97 /* SetDeque.swift in Sources */,
 				66C2B14D2A13E2C7008DDE72 /* SgxWebsocketConfigurator.swift in Sources */,
 				66C2B14B2A13E2AC008DDE72 /* SgxWebsocketConnection.swift in Sources */,
 				66C2B1492A13E2A0008DDE72 /* SgxWebsocketConnectionFactory.swift in Sources */,
@@ -18727,6 +18734,7 @@
 				6605B98A2B211BD500E8A68A /* SerialTaskQueueTest.swift in Sources */,
 				503158F22B57B0010023A5DB /* ServiceIdTest.swift in Sources */,
 				5AA002E62CA24566002D1CC2 /* SessionStoreTest.swift in Sources */,
+				502346792DB03DEB0029DB97 /* SetDequeTest.swift in Sources */,
 				7267B1582C5D4F2800612C34 /* Sha256HmacSivTest.swift in Sources */,
 				F942626C289B1B5500460798 /* SignalAccountFinderTest.swift in Sources */,
 				E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */,

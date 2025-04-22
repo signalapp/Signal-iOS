@@ -174,6 +174,10 @@ public class MessageProcessor {
         }
     }
 
+    private var recentlyProcessedGuids = SetDeque<String>()
+    /// Should ideally match `MESSAGE_SENDER_MAX_CONCURRENCY`.
+    private var recentlyProcessedGuidLimit = 256
+
     /// Returns whether or not to continue draining the queue.
     private func drainNextBatch() -> Bool {
         assertOnQueue(serialQueue)
@@ -192,6 +196,10 @@ public class MessageProcessor {
         let batch = pendingEnvelopes.nextBatch(batchSize: batchSize)
         let batchEnvelopes = batch.batchEnvelopes
         let pendingEnvelopesCount = batch.pendingEnvelopesCount
+
+        if pendingEnvelopesCount > self.recentlyProcessedGuidLimit {
+            self.recentlyProcessedGuidLimit = pendingEnvelopesCount
+        }
 
         guard !batchEnvelopes.isEmpty else {
             return false
@@ -231,6 +239,15 @@ public class MessageProcessor {
                 }
             }
             processedEnvelopesCount += batchEnvelopes.count - remainingEnvelopes.count
+        }
+        for processedEnvelope in batchEnvelopes.prefix(processedEnvelopesCount) {
+            guard let serverGuid = processedEnvelope.envelope.serverGuid else {
+                continue
+            }
+            recentlyProcessedGuids.pushBack(serverGuid)
+        }
+        while recentlyProcessedGuids.count > recentlyProcessedGuidLimit {
+            _ = recentlyProcessedGuids.popFront()
         }
         pendingEnvelopes.removeProcessedEnvelopes(processedEnvelopesCount)
         let endTime = CACurrentMediaTime()
@@ -538,6 +555,9 @@ private extension MessageProcessor {
         tx: DBWriteTransaction
     ) -> ProcessingRequest {
         assertOnQueue(serialQueue)
+        if let serverGuid = envelope.envelope.serverGuid, recentlyProcessedGuids.contains(serverGuid) {
+            return ProcessingRequest(envelope, state: .completed(error: OWSGenericError("Skipping because it was recently processed.")))
+        }
         let builder = ProcessingRequestBuilder(
             envelope,
             blockingManager: SSKEnvironment.shared.blockingManagerRef,
