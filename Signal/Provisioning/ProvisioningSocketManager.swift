@@ -232,11 +232,13 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
             case .delinked, .relinking:
                 // We don't allow relinking secondaries to link'n'sync.
                 return false
+            case .transferred:
+                // Transferring back to a transfered device will result in hitting this.
+                return false
             case
                 .registered,
                 .provisioned,
                 .reregistering,
-                .transferred,
                 .transferringIncoming,
                 .transferringLinkedOutgoing,
                 .transferringPrimaryOutgoing,

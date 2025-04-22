@@ -48,7 +48,7 @@ class RegistrationQuickRestoreQRCodeViewController:
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        provisioningSocketManager.start()
+        provisioningSocketManager.reset()
 
         Task {
             do {
