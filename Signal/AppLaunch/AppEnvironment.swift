@@ -90,8 +90,7 @@ public class AppEnvironment: NSObject {
             db: bridge.db,
             deviceProvisioningService: deviceProvisioningService,
             networkManager: SSKEnvironment.shared.networkManagerRef,
-            tsAccountManager: bridge.tsAccountManager,
-            twoFAManager: SSKEnvironment.shared.ows2FAManagerRef
+            tsAccountManager: bridge.tsAccountManager
         )
 
         self.usernameValidationObserverRef = UsernameValidationObserver(

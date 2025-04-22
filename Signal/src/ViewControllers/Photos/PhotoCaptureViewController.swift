@@ -1343,7 +1343,7 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
                             do {
                                 let quickRestoreManager = AppEnvironment.shared.quickRestoreManager!
                                 let token = try await quickRestoreManager.register(deviceProvisioningUrl: provisioningURL)
-                                let method = try await quickRestoreManager.waitForNewDeviceToRegister(restoreMethodToken: token)
+                                let method = try await quickRestoreManager.waitForRestoreMethodChoice(restoreMethodToken: token)
 
                                 switch method {
                                 case .decline, .localBackup:

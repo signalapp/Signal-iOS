@@ -22,22 +22,19 @@ public class QuickRestoreManager {
     private let deviceProvisioningService: DeviceProvisioningService
     private let networkManager: NetworkManager
     private let tsAccountManager: TSAccountManager
-    private let twoFAManager: OWS2FAManager
 
     init(
         accountKeyStore: AccountKeyStore,
         db: any DB,
         deviceProvisioningService: DeviceProvisioningService,
         networkManager: NetworkManager,
-        tsAccountManager: TSAccountManager,
-        twoFAManager: OWS2FAManager
+        tsAccountManager: TSAccountManager
     ) {
         self.accountKeyStore = accountKeyStore
         self.db = db
         self.deviceProvisioningService = deviceProvisioningService
         self.networkManager = networkManager
         self.tsAccountManager = tsAccountManager
-        self.twoFAManager = twoFAManager
     }
 
     public func register(deviceProvisioningUrl: DeviceProvisioningURL) async throws -> RestoreMethodToken {
@@ -92,7 +89,7 @@ public class QuickRestoreManager {
         case deviceTransfer(String)
         case decline
 
-        fileprivate init?(response: Requests.WaitForDeviceToRegister.Response) {
+        fileprivate init?(response: Requests.WaitForRestoreMethodChoice.Response) {
             switch response.method {
             case .decline: self = .decline
             case .localBackup: self = .localBackup
@@ -103,13 +100,37 @@ public class QuickRestoreManager {
         }
     }
 
-    public func waitForNewDeviceToRegister(restoreMethodToken: RestoreMethodToken) async throws -> RestoreMethodType {
+    public func reportRestoreMethodChoice(method: RestoreMethodType, restoreMethodToken: RestoreMethodToken) async throws {
+        whileLoop: while true {
+            let response = try await networkManager.asyncRequest(
+                Requests.ChooseRestoreMethod.buildRequest(
+                    token: restoreMethodToken,
+                    method: method
+                ),
+                canUseWebSocket: false
+            )
+            switch response.responseStatusCode {
+            case 200, 204:
+                return
+            case 429:
+                try await Task.sleep(
+                    nanoseconds: HTTPUtils.retryDelayNanoSeconds(response, defaultRetryTime: Constants.defaultRetryTime)
+                )
+                continue whileLoop
+            default:
+                owsFailDebug("Unexpected response")
+                throw Error.unknown
+            }
+        }
+    }
+
+    public func waitForRestoreMethodChoice(restoreMethodToken: RestoreMethodToken) async throws -> RestoreMethodType {
         whileLoop: while true {
             do {
                 // TODO: this cannot use websocket until the websocket implementation
                 // supports cooperative cancellation; we need this to be cancellable.
                 let response = try await networkManager.asyncRequest(
-                    Requests.WaitForDeviceToRegister.buildRequest(token: restoreMethodToken),
+                    Requests.WaitForRestoreMethodChoice.buildRequest(token: restoreMethodToken),
                     canUseWebSocket: false
                 )
                 switch response.responseStatusCode {
@@ -117,7 +138,7 @@ public class QuickRestoreManager {
                     guard
                         let data = response.responseBodyData,
                         let response = try? JSONDecoder().decode(
-                            Requests.WaitForDeviceToRegister.Response.self,
+                            Requests.WaitForRestoreMethodChoice.Response.self,
                             from: data
                         )
                     else {
@@ -155,17 +176,17 @@ public class QuickRestoreManager {
     }
 
     fileprivate enum Requests {
-        enum WaitForDeviceToRegister {
-            struct Response: Codable {
-                enum Method: String, Codable {
-                    case remoteBackup = "REMOTE_BACKUP"
-                    case localBackup = "LOCAL_BACKUP"
-                    case deviceTransfer = "DEVICE_TRANSFER"
-                    case decline = "DECLINE"
-                }
+        enum RestoreMethod: String, Codable {
+            case remoteBackup = "REMOTE_BACKUP"
+            case localBackup = "LOCAL_BACKUP"
+            case deviceTransfer = "DEVICE_TRANSFER"
+            case decline = "DECLINE"
+        }
 
+        enum WaitForRestoreMethodChoice {
+            struct Response: Codable {
                 /// The method of restore chosen by the new device
-                let method: Method
+                let method: RestoreMethod
                 /// Additional data used to bootstrap device transfer
                 let deviceTransferBootstrap: String
             }
@@ -182,10 +203,45 @@ public class QuickRestoreManager {
                     parameters: nil
                 )
 
-                request.auth = .identified(.implicit())
+                request.auth = .anonymous
                 request.applyRedactionStrategy(.redactURLForSuccessResponses())
                 // The timeout is server side; apply wiggle room for our local clock.
                 request.timeoutInterval = 10 + TimeInterval(Constants.longPollRequestTimeoutSeconds)
+                return request
+            }
+        }
+
+        enum ChooseRestoreMethod {
+            static func buildRequest(token: RestoreMethodToken, method: RestoreMethodType) -> TSRequest {
+                var deviceTransferBootstrap: String?
+                let method: RestoreMethod = {
+                    switch method {
+                    case .decline: return .decline
+                    case .deviceTransfer(let data):
+                        deviceTransferBootstrap = data
+                        return .deviceTransfer
+                    case .remoteBackup:
+                        return .remoteBackup
+                    case .localBackup:
+                        return .localBackup
+                    }
+                }()
+
+                var parameters: [String: Any] = [ "method": method.rawValue ]
+                // `deviceTransferBootstrap` contains unpadded base64 encoded data that is used by
+                // the other device to initiate device transfer. Note that server enforces a
+                // 4096 bytes limit on this field.
+                deviceTransferBootstrap.map { parameters["deviceTransferBootstrap"] = $0 }
+
+                let urlComponents = URLComponents(string: "v1/devices/restore_account/\(token)")!
+                var request = TSRequest(
+                    url: urlComponents.url!,
+                    method: "PUT",
+                    parameters: parameters
+                )
+
+                request.auth = .anonymous
+                request.applyRedactionStrategy(.redactURLForSuccessResponses())
                 return request
             }
         }
