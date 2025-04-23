@@ -1194,6 +1194,7 @@
 		66F6D6A52C7D0E0000EFAF75 /* ColorOrGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D6A42C7D0E0000EFAF75 /* ColorOrGradient.swift */; };
 		66F6D6A72C7D0FF300EFAF75 /* Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D6A62C7D0FF300EFAF75 /* Wallpaper.swift */; };
 		66F6D6A92C7D106100EFAF75 /* Wallpaper+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D6A82C7D106100EFAF75 /* Wallpaper+Constants.swift */; };
+		66F98DDE2DB7073F009F1A86 /* BackupAttachmentDownloadQueueStatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManager.swift */; };
 		66F98DE02DB710F8009F1A86 /* DeviceBatteryLevelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DDF2DB710EA009F1A86 /* DeviceBatteryLevelManager.swift */; };
 		66F98DE22DB71220009F1A86 /* DeviceBatteryLevelManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE12DB71219009F1A86 /* DeviceBatteryLevelManagerImpl.swift */; };
 		66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */; };
@@ -5104,6 +5105,7 @@
 		66F6D6A42C7D0E0000EFAF75 /* ColorOrGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorOrGradient.swift; sourceTree = "<group>"; };
 		66F6D6A62C7D0FF300EFAF75 /* Wallpaper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallpaper.swift; sourceTree = "<group>"; };
 		66F6D6A82C7D106100EFAF75 /* Wallpaper+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Wallpaper+Constants.swift"; sourceTree = "<group>"; };
+		66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadQueueStatusManager.swift; sourceTree = "<group>"; };
 		66F98DDF2DB710EA009F1A86 /* DeviceBatteryLevelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceBatteryLevelManager.swift; sourceTree = "<group>"; };
 		66F98DE12DB71219009F1A86 /* DeviceBatteryLevelManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceBatteryLevelManagerImpl.swift; sourceTree = "<group>"; };
 		66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsBiometryLockPromptViewController.swift; sourceTree = "<group>"; };
@@ -9625,6 +9627,7 @@
 				6685FEED2DB06F740086CF3C /* BackupAttachmentDownloadEligibility.swift */,
 				66E257022CA3860B00100A08 /* BackupAttachmentDownloadManager.swift */,
 				6685FEEF2DB073F60086CF3C /* BackupAttachmentDownloadProgress.swift */,
+				66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManager.swift */,
 				667BB2072C580C1400E79B57 /* BackupAttachmentDownloadStore.swift */,
 				66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */,
 				66734F002CA1ED3A00558494 /* BackupAttachmentUploadManager.swift */,
@@ -17482,6 +17485,7 @@
 				6685FEEE2DB06F7C0086CF3C /* BackupAttachmentDownloadEligibility.swift in Sources */,
 				66E257032CA3861200100A08 /* BackupAttachmentDownloadManager.swift in Sources */,
 				6685FEF02DB073FD0086CF3C /* BackupAttachmentDownloadProgress.swift in Sources */,
+				66F98DDE2DB7073F009F1A86 /* BackupAttachmentDownloadQueueStatusManager.swift in Sources */,
 				667BB2082C580C1400E79B57 /* BackupAttachmentDownloadStore.swift in Sources */,
 				66734F012CA1ED3F00558494 /* BackupAttachmentUploadManager.swift in Sources */,
 				66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */,

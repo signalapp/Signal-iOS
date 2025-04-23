@@ -1394,7 +1394,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             maxDownloadSizeBytes: UInt,
             progress: OWSProgressSink?
         ) async throws -> URL {
-            var progresses = (
+            let progresses = (
                 [progress]
                 + (
                     Self.downloadKey(state: downloadState)

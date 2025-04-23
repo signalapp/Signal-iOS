@@ -940,6 +940,16 @@ public class AppSetup {
         )
 
         let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
+        let backupAttachmentDownloadQueueStatusManager = BackupAttachmentDownloadQueueStatusManagerImpl(
+            appContext: appContext,
+            appReadiness: appReadiness,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            db: db,
+            deviceBatteryLevelManager: deviceBatteryLevelManager,
+            reachabilityManager: reachabilityManager,
+            remoteConfigManager: remoteConfigManager,
+            tsAccountManager: tsAccountManager
+        )
         let backupAttachmentDownloadManager = testDependencies.backupAttachmentDownloadManager
             ?? BackupAttachmentDownloadManagerImpl(
                 appReadiness: appReadiness,
@@ -949,13 +959,12 @@ public class AppSetup {
                 backupAttachmentDownloadStore: backupAttachmentDownloadStore,
                 dateProvider: dateProvider,
                 db: db,
-                deviceBatteryLevelManager: deviceBatteryLevelManager,
                 mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
                 messageBackupKeyMaterial: messageBackupKeyMaterial,
                 messageBackupRequestManager: messageBackupRequestManager,
                 orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
-                reachabilityManager: reachabilityManager,
                 remoteConfigProvider: remoteConfigManager,
+                statusManager: backupAttachmentDownloadQueueStatusManager,
                 svr: svr,
                 tsAccountManager: tsAccountManager
             )
@@ -1271,6 +1280,7 @@ public class AppSetup {
             authorMergeHelper: authorMergeHelper,
             avatarDefaultColorManager: avatarDefaultColorManager,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
+            backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             backupSubscriptionManager: backupSubscriptionManager,

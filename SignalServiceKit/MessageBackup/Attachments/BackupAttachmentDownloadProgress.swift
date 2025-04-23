@@ -58,11 +58,11 @@ public actor BackupAttachmentDownloadProgress {
                     tx: tx
                 )
             }
-            latestProgress = OWSProgress(
+            updateObservers(OWSProgress(
                 completedUnitCount: totalByteCount,
                 totalUnitCount: totalByteCount,
                 sourceProgresses: [:]
-            )
+            ))
             return
         }
 
@@ -120,7 +120,9 @@ public actor BackupAttachmentDownloadProgress {
         }
         activeDownloadByteCounts = [:]
         if let source {
-            source.incrementCompletedUnitCount(by: source.totalUnitCount - source.completedUnitCount)
+            if source.totalUnitCount > 0 {
+                source.incrementCompletedUnitCount(by: source.totalUnitCount - source.completedUnitCount)
+            }
             await self.updateCache()
         }
     }
@@ -170,11 +172,11 @@ public actor BackupAttachmentDownloadProgress {
             )
         }
         if let totalByteCount {
-            self.latestProgress = OWSProgress(
+            updateObservers(OWSProgress(
                 completedUnitCount: min(totalByteCount, totalByteCount - (remainingByteCount ?? totalByteCount)),
                 totalUnitCount: totalByteCount,
                 sourceProgresses: [:]
-            )
+            ))
         }
     }
 

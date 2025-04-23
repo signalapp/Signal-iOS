@@ -46,11 +46,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let dateProvider: DateProvider
     private let db: any DB
-    private let deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?
     private let listMediaManager: ListMediaManager
     private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
-    private let reachabilityManager: SSKReachabilityManager
     private let remoteConfigProvider: RemoteConfigProvider
+    private let statusManager: BackupAttachmentDownloadQueueStatusUpdates
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
 
@@ -64,13 +63,12 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
-        deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         messageBackupRequestManager: MessageBackupRequestManager,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
-        reachabilityManager: SSKReachabilityManager,
         remoteConfigProvider: RemoteConfigProvider,
+        statusManager: BackupAttachmentDownloadQueueStatusUpdates,
         svr: SecureValueRecovery,
         tsAccountManager: TSAccountManager
     ) {
@@ -78,10 +76,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.dateProvider = dateProvider
         self.db = db
-        self.deviceBatteryLevelManager = deviceBatteryLevelManager
         self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
-        self.reachabilityManager = reachabilityManager
         self.remoteConfigProvider = remoteConfigProvider
+        self.statusManager = statusManager
         self.tsAccountManager = tsAccountManager
 
         self.progress = BackupAttachmentDownloadProgress(
@@ -112,6 +109,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             messageBackupRequestManager: messageBackupRequestManager,
             progress: progress,
             remoteConfigProvider: remoteConfigProvider,
+            statusManager: statusManager,
             tsAccountManager: tsAccountManager
         )
         self.taskQueue = TaskQueueLoader(
@@ -123,10 +121,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         taskRunner.taskQueueLoader = taskQueue
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
+            self?.startObservingQueueStatus()
             Task { [weak self] in
                 try await self?.restoreAttachmentsIfNeeded()
             }
-            self?.startObserving()
         }
     }
 
@@ -188,19 +186,26 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     }
 
     public func restoreAttachmentsIfNeeded() async throws {
-        guard appReadiness.isAppReady else {
+        switch await statusManager.beginObservingIfNeeded() {
+        case .running:
+            break
+        case .empty:
+            // The queue will stop on its own if empty.
             return
-        }
-        guard tsAccountManager.localIdentifiersWithMaybeSneakyTransaction != nil else {
+        case .notRegisteredAndReady:
+            try await taskQueue.stop()
             return
-        }
-
-        let downlodableSources = mediaBandwidthPreferenceStore.downloadableSources()
-        guard
-            downlodableSources.contains(.mediaTierFullsize)
-            || downlodableSources.contains(.mediaTierThumbnail)
-        else {
-            Logger.info("Skipping backup attachment downloads while not on wifi")
+        case .noWifiReachability:
+            Logger.info("Skipping backup attachment downloads while not reachable by wifi")
+            try await taskQueue.stop()
+            return
+        case .lowBattery:
+            Logger.info("Skipping backup attachment downloads while low battery")
+            try await taskQueue.stop()
+            return
+        case .lowDiskSpace:
+            Logger.info("Skipping backup attachment downloads while low on disk space")
+            try await taskQueue.stop()
             return
         }
         if FeatureFlags.MessageBackup.remoteExportAlpha {
@@ -223,38 +228,25 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
         // Reset progress calculation
         try? await progress.beginObserving()
+        // Kill status observation
+        await statusManager.didEmptyQueue()
     }
 
-    // MARK: - Reachability
+    // MARK: - Queue status observation
 
-    private func startObserving() {
+    private func startObservingQueueStatus() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(reachabililityDidChange),
-            name: SSKReachability.owsReachabilityDidChange,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didUpdateRegistrationState),
-            name: .registrationStateDidChange,
+            selector: #selector(queueStatusDidChange),
+            name: BackupAttachmentDownloadQueueStatus.didChangeNotification,
             object: nil
         )
     }
 
     @objc
-    private func reachabililityDidChange() {
-        if reachabilityManager.isReachable(via: .wifi) {
-            Task {
-                try await self.restoreAttachmentsIfNeeded()
-            }
-        }
-    }
-
-    @objc
-    private func didUpdateRegistrationState() {
+    private func queueStatusDidChange() {
         Task {
-            try await restoreAttachmentsIfNeeded()
+            try await self.restoreAttachmentsIfNeeded()
         }
     }
 
@@ -661,6 +653,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         private let messageBackupRequestManager: MessageBackupRequestManager
         private let progress: BackupAttachmentDownloadProgress
         private let remoteConfigProvider: RemoteConfigProvider
+        private let statusManager: BackupAttachmentDownloadQueueStatusUpdates
         private let tsAccountManager: TSAccountManager
 
         let store: TaskStore
@@ -677,6 +670,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             messageBackupRequestManager: MessageBackupRequestManager,
             progress: BackupAttachmentDownloadProgress,
             remoteConfigProvider: RemoteConfigProvider,
+            statusManager: BackupAttachmentDownloadQueueStatusUpdates,
             tsAccountManager: TSAccountManager
         ) {
             self.attachmentStore = attachmentStore
@@ -688,12 +682,41 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.messageBackupRequestManager = messageBackupRequestManager
             self.progress = progress
             self.remoteConfigProvider = remoteConfigProvider
+            self.statusManager = statusManager
             self.tsAccountManager = tsAccountManager
 
             self.store = TaskStore(backupAttachmentDownloadStore: backupAttachmentDownloadStore)
         }
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
+            struct NeedsDiskSpaceError: Error {}
+            struct NeedsBatteryError: Error {}
+            struct NeedsWifiError: Error {}
+            struct NeedsToBeRegisteredError: Error {}
+
+            switch await statusManager.quickCheckDiskSpace() {
+            case nil:
+                // No state change, keep going.
+                break
+            case .running:
+                break
+            case .empty:
+                // The queue will stop on its own, finish this task.
+                break
+            case .lowDiskSpace:
+                try? await taskQueueLoader?.stop()
+                return .retryableError(NeedsDiskSpaceError())
+            case .lowBattery:
+                try? await taskQueueLoader?.stop()
+                return .retryableError(NeedsBatteryError())
+            case .noWifiReachability:
+                try? await taskQueueLoader?.stop()
+                return .retryableError(NeedsWifiError())
+            case .notRegisteredAndReady:
+                try? await taskQueueLoader?.stop()
+                return .retryableError(NeedsToBeRegisteredError())
+            }
+
             let (attachment, eligibility) = db.read { (tx) -> (Attachment?, BackupAttachmentDownloadEligibility?) in
                 return attachmentStore
                     .fetch(id: record.record.attachmentRowId, tx: tx)
@@ -729,7 +752,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 downlodableSources.contains(.mediaTierFullsize)
                 || downlodableSources.contains(.mediaTierThumbnail)
             else {
-                struct NeedsWifiError: Error {}
                 let error = NeedsWifiError()
                 try? await loader.stop(reason: error)
                 // Retryable because we don't want to delete the enqueued record,
@@ -798,6 +820,19 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             }
 
             if let downloadError {
+                switch await statusManager.downloadDidExperienceError(downloadError) {
+                case nil:
+                    // No state change, keep going.
+                    break
+                case .running:
+                    break
+                case .empty:
+                    // The queue will stop on its own, finish this task.
+                    break
+                case .lowDiskSpace, .lowBattery, .noWifiReachability, .notRegisteredAndReady:
+                    // Stop the queue now proactively.
+                    try? await taskQueueLoader?.stop()
+                }
                 return .unretryableError(downloadError)
             }
 
@@ -818,6 +853,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         func didDrainQueue() async {
             await progress.didEmptyDownloadQueue()
+            await statusManager.didEmptyQueue()
         }
     }
 

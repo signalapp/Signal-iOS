@@ -61,7 +61,7 @@ public class AttachmentStream {
         return "\(id.prefix(2))/\(id)"
     }
 
-    private static func attachmentsDirectory() -> URL {
+    public static func attachmentsDirectory() -> URL {
         return OWSFileSystem.appSharedDataDirectoryURL().appendingPathComponent("attachment_files")
     }
 
