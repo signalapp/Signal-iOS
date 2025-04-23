@@ -1,3 +1,2 @@
-• Saint Patrick's Day was so last month, so we added a workaround for an iOS bug that occasionally causes a green square to appear after pasting an image.
-• We squashed another bug that prevented you from saving multiple images to your camera roll in messages that included an album.
-• And we also fixed a crash that could happen after trying to share a call link on your iPad, so you don't need to pick up your phone in order to make a new call.
+• If you've been patiently awaiting a better way to select pictures and videos in Signal, now your expectations aren't just realistic — they're photorealistic. This update includes support for the native iOS photo picker, so you can easily search for images and see a consistent view of available albums.
+• We also added a shortcut to scroll to the associated message when looking at an image or video in the All Media view for a chat.
