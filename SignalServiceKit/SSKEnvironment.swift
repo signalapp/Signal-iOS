@@ -46,7 +46,7 @@ public class SSKEnvironment: NSObject {
     public let remoteConfigManagerRef: RemoteConfigManager
     public let udManagerRef: OWSUDManager
     public let messageDecrypterRef: OWSMessageDecrypter
-    public let groupsV2MessageProcessorRef: GroupsV2MessageProcessor
+    public let groupMessageProcessorManagerRef: GroupMessageProcessorManager
     public let ows2FAManagerRef: OWS2FAManager
     @objc
     public let disappearingMessagesJobRef: OWSDisappearingMessagesJob
@@ -116,7 +116,7 @@ public class SSKEnvironment: NSObject {
         pniSignalProtocolStore: SignalProtocolStore,
         udManager: OWSUDManager,
         messageDecrypter: OWSMessageDecrypter,
-        groupsV2MessageProcessor: GroupsV2MessageProcessor,
+        groupMessageProcessorManager: GroupMessageProcessorManager,
         ows2FAManager: OWS2FAManager,
         disappearingMessagesJob: OWSDisappearingMessagesJob,
         receiptManager: OWSReceiptManager,
@@ -177,7 +177,7 @@ public class SSKEnvironment: NSObject {
         self.pniSignalProtocolStoreRef = pniSignalProtocolStore
         self.udManagerRef = udManager
         self.messageDecrypterRef = messageDecrypter
-        self.groupsV2MessageProcessorRef = groupsV2MessageProcessor
+        self.groupMessageProcessorManagerRef = groupMessageProcessorManager
         self.ows2FAManagerRef = ows2FAManager
         self.disappearingMessagesJobRef = disappearingMessagesJob
         self.receiptManagerRef = receiptManager

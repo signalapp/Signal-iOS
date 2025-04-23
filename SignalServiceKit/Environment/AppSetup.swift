@@ -1397,7 +1397,7 @@ public class AppSetup {
             )
         )
         let messageDecrypter = OWSMessageDecrypter(appReadiness: appReadiness)
-        let groupsV2MessageProcessor = GroupsV2MessageProcessor(appReadiness: appReadiness)
+        let groupMessageProcessorManager = GroupMessageProcessorManager()
         let receiptSender = ReceiptSender(
             appReadiness: appReadiness,
             recipientDatabaseTable: recipientDatabaseTable
@@ -1456,7 +1456,7 @@ public class AppSetup {
             pniSignalProtocolStore: pniSignalProtocolStore,
             udManager: udManager,
             messageDecrypter: messageDecrypter,
-            groupsV2MessageProcessor: groupsV2MessageProcessor,
+            groupMessageProcessorManager: groupMessageProcessorManager,
             ows2FAManager: ows2FAManager,
             disappearingMessagesJob: disappearingMessagesJob,
             receiptManager: receiptManager,

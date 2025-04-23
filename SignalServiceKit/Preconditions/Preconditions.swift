@@ -82,8 +82,10 @@ public final class Preconditions {
     /// the web socket does open, you need to check if the app is still active.
     ///
     /// - Throws: An error if the `Task` is canceled.
-    public func waitUntilSatisfied() async throws {
-        try Task.checkCancellation()
+    public func waitUntilSatisfied() async throws(CancellationError) {
+        if Task.isCancelled {
+            throw CancellationError()
+        }
         for precondition in preconditions {
             switch await precondition.waitUntilSatisfied() {
             case .canceled:

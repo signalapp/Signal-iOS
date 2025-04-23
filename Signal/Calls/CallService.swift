@@ -1516,7 +1516,7 @@ extension CallService: CallManagerDelegate {
                 return .cancel
             }
 
-            guard GroupsV2MessageProcessor.discardMode(
+            guard GroupMessageProcessorManager.discardMode(
                 forMessageFrom: senderAci,
                 groupId: groupId.serialize().asData,
                 tx: transaction

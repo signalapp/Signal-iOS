@@ -69,6 +69,7 @@ public class MessageFetcherJob {
                 self.startFetchingIfNeeded()
             }
             do {
+                await self.startGroupMessageProcessorsIfNeeded()
                 try await self.waitForPendingAcks()
                 try await self.fetchMessages()
                 fetchFuture.resolve()
@@ -76,6 +77,10 @@ public class MessageFetcherJob {
                 fetchFuture.reject(error)
             }
         }
+    }
+
+    private func startGroupMessageProcessorsIfNeeded() async {
+        SSKEnvironment.shared.groupMessageProcessorManagerRef.startAllProcessors()
     }
 
     private var shouldUseWebSocket: Bool {

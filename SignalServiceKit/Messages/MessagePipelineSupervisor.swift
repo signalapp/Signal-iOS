@@ -180,6 +180,41 @@ public class MessagePipelineSuspensionHandle: NSObject {
     }
 }
 
+/// Waits until isMessageProcessingPermitted is true.
+struct ProcessingPermittedPrecondition: Precondition {
+    private let messagePipelineSupervisor: MessagePipelineSupervisor
+
+    init(messagePipelineSupervisor: MessagePipelineSupervisor) {
+        self.messagePipelineSupervisor = messagePipelineSupervisor
+    }
+
+    private class PipelineStageObserver: MessageProcessingPipelineStage {
+        let result = CancellableContinuation<Void>()
+        func supervisorDidResumeMessageProcessing(_ supervisor: MessagePipelineSupervisor) {
+            result.resume(with: .success(()))
+        }
+    }
+
+    func waitUntilSatisfied() async -> WaitResult {
+        let observer = PipelineStageObserver()
+        // Register before checking to ensure we don't miss the resumption
+        // notification when races occur.
+        messagePipelineSupervisor.register(pipelineStage: observer)
+        defer {
+            messagePipelineSupervisor.unregister(pipelineStage: observer)
+        }
+        if messagePipelineSupervisor.isMessageProcessingPermitted {
+            return .satisfiedImmediately
+        }
+        do {
+            try await observer.result.wait()
+            return .wasNotSatisfiedButIsNow
+        } catch {
+            return .canceled
+        }
+    }
+}
+
 @objc(OWSMessageProcessingPipelineStage)
 public protocol MessageProcessingPipelineStage {
     /// Invoked on a registered pipeline stage whenever the supervisor requests suspension of message processing

@@ -47,12 +47,10 @@ public class MessageProcessor {
         }
 
         let shouldWaitForGroupMessageProcessing: () -> Bool = {
-            return processingTypes.contains(.groupMessageProcessor) && SSKEnvironment.shared.databaseStorageRef.read {
-                SSKEnvironment.shared.groupsV2MessageProcessorRef.hasPendingJobs(tx: $0)
-            }
+            return processingTypes.contains(.groupMessageProcessor) && SSKEnvironment.shared.groupMessageProcessorManagerRef.isProcessing()
         }
         if shouldWaitForGroupMessageProcessing() {
-            let groupMessageProcessingPromise = NotificationCenter.default.observe(once: GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue)
+            let groupMessageProcessingPromise = NotificationCenter.default.observe(once: GroupMessageProcessorManager.didFlushGroupsV2MessageQueue)
             if shouldWaitForGroupMessageProcessing() {
                 return groupMessageProcessingPromise.then { _ in
                     // Recur, in case we've enqueued messages handled in another block.
@@ -249,6 +247,8 @@ public class MessageProcessor {
         while recentlyProcessedGuids.count > recentlyProcessedGuidLimit {
             _ = recentlyProcessedGuids.popFront()
         }
+        // The groups processing logic relies on `removeProcessedEnvelopes` being
+        // called after the `write`'s `addSyncCompletion` blocks.
         pendingEnvelopes.removeProcessedEnvelopes(processedEnvelopesCount)
         let endTime = CACurrentMediaTime()
         let formattedDuration = String(format: "%.1f", (endTime - startTime) * 1000)
@@ -303,7 +303,7 @@ public class MessageProcessor {
         case .completed(error: let error):
             Logger.info("Envelope completed early with error \(String(describing: error))")
         case .enqueueForGroup(let decryptedEnvelope, let envelopeData):
-            SSKEnvironment.shared.groupsV2MessageProcessorRef.enqueue(
+            SSKEnvironment.shared.groupMessageProcessorManagerRef.enqueue(
                 envelopeData: envelopeData,
                 plaintextData: decryptedEnvelope.plaintextData,
                 wasReceivedByUD: decryptedEnvelope.wasReceivedByUD,
@@ -441,13 +441,13 @@ private struct ProcessingRequestBuilder {
     ) -> ProcessingStep {
         guard
             let contentProto = decryptedEnvelope.content,
-            let groupContextV2 = GroupsV2MessageProcessor.groupContextV2(from: contentProto)
+            let groupContextV2 = GroupMessageProcessorManager.groupContextV2(from: contentProto)
         else {
             // Non-v2-group messages can be processed immediately.
             return .processNow(shouldDiscardVisibleMessages: false)
         }
 
-        guard GroupsV2MessageProcessor.canContextBeProcessedImmediately(
+        guard GroupMessageProcessorManager.canContextBeProcessedImmediately(
             groupContext: groupContextV2,
             tx: tx
         ) else {
@@ -455,7 +455,7 @@ private struct ProcessingRequestBuilder {
             // updated before they can be processed.
             return .enqueueForGroupProcessing
         }
-        let discardMode = GroupsMessageProcessor.discardMode(
+        let discardMode = SpecificGroupMessageProcessor.discardMode(
             forMessageFrom: decryptedEnvelope.sourceAci,
             groupContext: groupContextV2,
             tx: tx

@@ -647,6 +647,8 @@
 		5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */; };
 		5077B5B82BBC7FE600EF399E /* ContactTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5077B5B72BBC7FE600EF399E /* ContactTest.swift */; };
 		50791B1D2D037A9800D747F8 /* PhoneNumberCountryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50791B1C2D037A9800D747F8 /* PhoneNumberCountryTest.swift */; };
+		5079F3B62DA4713C008430EC /* NotificationPrecondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5079F3B52DA4713C008430EC /* NotificationPrecondition.swift */; };
+		5079F3C22DA47554008430EC /* NotificationPreconditionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5079F3C02DA47554008430EC /* NotificationPreconditionTest.swift */; };
 		507B69112C503FA800F1C6D7 /* CallLinkTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C302BAC079A00815474 /* CallLinkTest.swift */; };
 		507B69122C5044F800F1C6D7 /* LinkPreviewGroupLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95517271B510400B05242 /* LinkPreviewGroupLink.swift */; };
 		507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507CD5E429660D5100E47DAC /* ServiceId.swift */; };
@@ -3520,7 +3522,7 @@
 		F9C5CD9F289453B400548EEE /* OutageDetection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC8289453B200548EEE /* OutageDetection.swift */; };
 		F9C5CDA0289453B400548EEE /* IncomingGroupsV2MessageJob.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACA289453B200548EEE /* IncomingGroupsV2MessageJob.m */; };
 		F9C5CDA1289453B400548EEE /* GroupsV2MessageJobFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACB289453B200548EEE /* GroupsV2MessageJobFinder.swift */; };
-		F9C5CDA2289453B400548EEE /* GroupsV2MessageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACC289453B200548EEE /* GroupsV2MessageProcessor.swift */; };
+		F9C5CDA2289453B400548EEE /* GroupMessageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACC289453B200548EEE /* GroupMessageProcessor.swift */; };
 		F9C5CDA5289453B400548EEE /* IncomingGroupsV2MessageJob+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACF289453B200548EEE /* IncomingGroupsV2MessageJob+SDS.swift */; };
 		F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAD1289453B200548EEE /* IncomingGroupsV2MessageJob.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDAF289453B400548EEE /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CADA289453B200548EEE /* NetworkManager.swift */; };
@@ -4549,6 +4551,8 @@
 		5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMemberUpdaterTest.swift; sourceTree = "<group>"; };
 		5077B5B72BBC7FE600EF399E /* ContactTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactTest.swift; sourceTree = "<group>"; };
 		50791B1C2D037A9800D747F8 /* PhoneNumberCountryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberCountryTest.swift; sourceTree = "<group>"; };
+		5079F3B52DA4713C008430EC /* NotificationPrecondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPrecondition.swift; sourceTree = "<group>"; };
+		5079F3C02DA47554008430EC /* NotificationPreconditionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreconditionTest.swift; sourceTree = "<group>"; };
 		507CD5E429660D5100E47DAC /* ServiceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceId.swift; sourceTree = "<group>"; };
 		507D614B2BE433EE00DA7BA3 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = be; path = translations/be.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		507D614C2BE433EE00DA7BA3 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = be; path = translations/be.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -7467,7 +7471,7 @@
 		F9C5CAC8289453B200548EEE /* OutageDetection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutageDetection.swift; sourceTree = "<group>"; };
 		F9C5CACA289453B200548EEE /* IncomingGroupsV2MessageJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IncomingGroupsV2MessageJob.m; sourceTree = "<group>"; };
 		F9C5CACB289453B200548EEE /* GroupsV2MessageJobFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2MessageJobFinder.swift; sourceTree = "<group>"; };
-		F9C5CACC289453B200548EEE /* GroupsV2MessageProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2MessageProcessor.swift; sourceTree = "<group>"; };
+		F9C5CACC289453B200548EEE /* GroupMessageProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMessageProcessor.swift; sourceTree = "<group>"; };
 		F9C5CACF289453B200548EEE /* IncomingGroupsV2MessageJob+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "IncomingGroupsV2MessageJob+SDS.swift"; sourceTree = "<group>"; };
 		F9C5CAD1289453B200548EEE /* IncomingGroupsV2MessageJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncomingGroupsV2MessageJob.h; sourceTree = "<group>"; };
 		F9C5CADA289453B200548EEE /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
@@ -8984,6 +8988,14 @@
 			path = RecipientPickers;
 			sourceTree = "<group>";
 		};
+		5079F3C12DA47554008430EC /* Preconditions */ = {
+			isa = PBXGroup;
+			children = (
+				5079F3C02DA47554008430EC /* NotificationPreconditionTest.swift */,
+			);
+			path = Preconditions;
+			sourceTree = "<group>";
+		};
 		50A76F512AF565A300FCF02D /* Preconditions */ = {
 			isa = PBXGroup;
 			children = (
@@ -8995,6 +9007,7 @@
 		50A76F542AF573C000FCF02D /* Preconditions */ = {
 			isa = PBXGroup;
 			children = (
+				5079F3B52DA4713C008430EC /* NotificationPrecondition.swift */,
 				50A76F522AF565AC00FCF02D /* Preconditions.swift */,
 			);
 			path = Preconditions;
@@ -13429,6 +13442,7 @@
 				D9C964152BE56DE20058F143 /* MessageBackup */,
 				F942621C289B1B5500460798 /* Messages */,
 				F94261CF289B1B5400460798 /* Network */,
+				5079F3C12DA47554008430EC /* Preconditions */,
 				724D47B42B97C250001BE973 /* Profiles */,
 				F97391A128EF0AFB002DDE5D /* Protos */,
 				6600F365298D9D0000B1EDB7 /* Registration */,
@@ -13474,6 +13488,7 @@
 				F925A3AA29493D0C009024D0 /* DisappearingMessagesFinder.swift */,
 				F9C5C99D289453B100548EEE /* EarlyMessageManager.swift */,
 				F9C5C92B289453B100548EEE /* FailedMessagesJob.swift */,
+				F9C5CACC289453B200548EEE /* GroupMessageProcessor.swift */,
 				6640DD5F2ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift */,
 				F9C5C97B289453B100548EEE /* IncompleteCallsJob.swift */,
 				F9C5C97F289453B100548EEE /* MessageFetcherJob.swift */,
@@ -14183,7 +14198,6 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CACB289453B200548EEE /* GroupsV2MessageJobFinder.swift */,
-				F9C5CACC289453B200548EEE /* GroupsV2MessageProcessor.swift */,
 				F9C5CACF289453B200548EEE /* IncomingGroupsV2MessageJob+SDS.swift */,
 				F9C5CAD1289453B200548EEE /* IncomingGroupsV2MessageJob.h */,
 				F9C5CACA289453B200548EEE /* IncomingGroupsV2MessageJob.m */,
@@ -17710,6 +17724,7 @@
 				F9C5CE72289453B400548EEE /* GroupMembership.swift in Sources */,
 				506695EC29C5305900B6D8D0 /* GroupMemberStore.swift in Sources */,
 				506695EF29C533A400B6D8D0 /* GroupMemberUpdater.swift in Sources */,
+				F9C5CDA2289453B400548EEE /* GroupMessageProcessor.swift in Sources */,
 				F9C5CC90289453B300548EEE /* Groups.pb.swift in Sources */,
 				50F54C2F2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift in Sources */,
 				50C4AEFC2CE6766B005609F6 /* GroupSendEndorsements.swift in Sources */,
@@ -17722,7 +17737,6 @@
 				725465542BA0282D00EABFD2 /* GroupsV2Impl.swift in Sources */,
 				725465572BA0282D00EABFD2 /* GroupsV2IncomingChanges.swift in Sources */,
 				F9C5CDA1289453B400548EEE /* GroupsV2MessageJobFinder.swift in Sources */,
-				F9C5CDA2289453B400548EEE /* GroupsV2MessageProcessor.swift in Sources */,
 				725465562BA0282D00EABFD2 /* GroupsV2OutgoingChangesImpl.swift in Sources */,
 				725465512BA0282D00EABFD2 /* GroupsV2ProfileKeyUpdater.swift in Sources */,
 				724D47BA2B97C51D001BE973 /* GroupsV2Protos.swift in Sources */,
@@ -17946,6 +17960,7 @@
 				F9C5CE62289453B400548EEE /* NoopNotificationPresenterImpl.swift in Sources */,
 				F9C5CE58289453B400548EEE /* NoopPendingReadReceiptRecorder.swift in Sources */,
 				668A01312C2B6088007B8808 /* NotificationCenter+Promise.swift in Sources */,
+				5079F3B62DA4713C008430EC /* NotificationPrecondition.swift in Sources */,
 				664657412AC4FB720099DE1C /* NotificationPresenter.swift in Sources */,
 				725465612BA033E200EABFD2 /* NotificationPresenterImpl.swift in Sources */,
 				D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */,
@@ -18680,6 +18695,7 @@
 				6633B3932BACF3EB003AFF60 /* MessageStickerSerializationTest.swift in Sources */,
 				500BAD822C519F3600B4CD7F /* MessageTimestampGeneratorTest.swift in Sources */,
 				F942624C289B1B5500460798 /* ModelReadCacheTest.swift in Sources */,
+				5079F3C22DA47554008430EC /* NotificationPreconditionTest.swift in Sources */,
 				F9426256289B1B5500460798 /* NSData+ImageTest.swift in Sources */,
 				D979CC3A2AD3964E006AAC49 /* Numbers+Random.swift in Sources */,
 				663D02DF2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift in Sources */,

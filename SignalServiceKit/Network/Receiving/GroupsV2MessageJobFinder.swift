@@ -38,19 +38,6 @@ public class GRDBGroupsV2MessageJobFinder {
         return result
     }
 
-    public func nextJobs(batchSize: UInt, transaction: DBReadTransaction) -> [IncomingGroupsV2MessageJob] {
-        let sql = """
-            SELECT *
-            FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName)
-            ORDER BY \(incomingGroupsV2MessageJobColumn: .id)
-            LIMIT \(batchSize)
-        """
-        let cursor = IncomingGroupsV2MessageJob.grdbFetchCursor(sql: sql,
-                                                                transaction: transaction)
-
-        return try! cursor.all()
-    }
-
     public func nextJobs(forGroupId groupId: Data,
                          batchSize: UInt,
                          transaction: DBReadTransaction) -> [IncomingGroupsV2MessageJob] {
@@ -83,23 +70,6 @@ public class GRDBGroupsV2MessageJobFinder {
                 error: error
             )
             owsFail("Failed to check job")
-        }
-    }
-
-    public func jobCount(forGroupId groupId: Data, transaction: DBReadTransaction) -> UInt {
-        let sql = """
-            SELECT COUNT(*)
-            FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName)
-            WHERE \(incomingGroupsV2MessageJobColumn: .groupId) = ?
-        """
-        do {
-            return try UInt.fetchOne(transaction.database, sql: sql, arguments: [groupId]) ?? 0
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Failed to get job count")
         }
     }
 

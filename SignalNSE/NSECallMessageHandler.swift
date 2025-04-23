@@ -105,7 +105,7 @@ class NSECallMessageHandler: CallMessageHandler {
                         return false
                     }
 
-                    guard GroupsV2MessageProcessor.discardMode(
+                    guard GroupMessageProcessorManager.discardMode(
                         forMessageFrom: caller.aci,
                         groupId: groupId,
                         tx: transaction
