@@ -183,6 +183,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         MessageFetchBGRefreshTask.register(appReadiness: appReadiness)
 
+        let deviceBatteryLevelManager = DeviceBatteryLevelManagerImpl()
         let deviceSleepManager = DeviceSleepManagerImpl()
         let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
         let deviceTransferService = DeviceTransferService(
@@ -255,6 +256,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let launchContext = LaunchContext(
             appContext: mainAppContext,
             databaseStorage: databaseStorage,
+            deviceBatteryLevelManager: deviceBatteryLevelManager,
             deviceSleepManager: deviceSleepManager,
             keychainStorage: keychainStorage,
             launchStartedAt: launchStartedAt,
@@ -368,6 +370,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private struct LaunchContext {
         var appContext: MainAppContext
         var databaseStorage: SDSDatabaseStorage
+        var deviceBatteryLevelManager: DeviceBatteryLevelManagerImpl
         var deviceSleepManager: DeviceSleepManagerImpl
         var keychainStorage: any KeychainStorage
         var launchStartedAt: CFTimeInterval
@@ -412,6 +415,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             appContext: launchContext.appContext,
             appReadiness: appReadiness,
             databaseStorage: launchContext.databaseStorage,
+            deviceBatteryLevelManager: launchContext.deviceBatteryLevelManager,
             deviceSleepManager: launchContext.deviceSleepManager,
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),

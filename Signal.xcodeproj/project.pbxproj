@@ -1190,6 +1190,8 @@
 		66F6D6A52C7D0E0000EFAF75 /* ColorOrGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D6A42C7D0E0000EFAF75 /* ColorOrGradient.swift */; };
 		66F6D6A72C7D0FF300EFAF75 /* Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D6A62C7D0FF300EFAF75 /* Wallpaper.swift */; };
 		66F6D6A92C7D106100EFAF75 /* Wallpaper+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D6A82C7D106100EFAF75 /* Wallpaper+Constants.swift */; };
+		66F98DE02DB710F8009F1A86 /* DeviceBatteryLevelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DDF2DB710EA009F1A86 /* DeviceBatteryLevelManager.swift */; };
+		66F98DE22DB71220009F1A86 /* DeviceBatteryLevelManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE12DB71219009F1A86 /* DeviceBatteryLevelManagerImpl.swift */; };
 		66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */; };
 		66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */; };
 		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
@@ -5097,6 +5099,8 @@
 		66F6D6A42C7D0E0000EFAF75 /* ColorOrGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorOrGradient.swift; sourceTree = "<group>"; };
 		66F6D6A62C7D0FF300EFAF75 /* Wallpaper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallpaper.swift; sourceTree = "<group>"; };
 		66F6D6A82C7D106100EFAF75 /* Wallpaper+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Wallpaper+Constants.swift"; sourceTree = "<group>"; };
+		66F98DDF2DB710EA009F1A86 /* DeviceBatteryLevelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceBatteryLevelManager.swift; sourceTree = "<group>"; };
+		66F98DE12DB71219009F1A86 /* DeviceBatteryLevelManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceBatteryLevelManagerImpl.swift; sourceTree = "<group>"; };
 		66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsBiometryLockPromptViewController.swift; sourceTree = "<group>"; };
 		66FA2B1E28CBA4A5006845CD /* DeviceOwnerAuthenticationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceOwnerAuthenticationType.swift; sourceTree = "<group>"; };
 		66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
@@ -10420,6 +10424,7 @@
 				4C751BE423FA0284002A8AF1 /* ContactSupportActionSheet.swift */,
 				50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */,
 				34067EAA2710D61A000407C3 /* DebugLogs.swift */,
+				66F98DE12DB71219009F1A86 /* DeviceBatteryLevelManagerImpl.swift */,
 				505347F82DA08548004AF0B5 /* DeviceSleepManagerImpl.swift */,
 				34A95500271B503E00B05242 /* DisplayableText.swift */,
 				F9D289B5291EDC8D00187394 /* DonationJobError.swift */,
@@ -14271,6 +14276,7 @@
 				F94C912128FDEAF50065DF75 /* Decimal+IsInteger.swift */,
 				F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */,
 				F9C5CB79289453B200548EEE /* DecodableDefaults.swift */,
+				66F98DDF2DB710EA009F1A86 /* DeviceBatteryLevelManager.swift */,
 				F9C5CB3A289453B200548EEE /* DeviceNames.swift */,
 				66FA2B1E28CBA4A5006845CD /* DeviceOwnerAuthenticationType.swift */,
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
@@ -16868,6 +16874,7 @@
 				887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */,
 				D9E8EDF32C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift in Sources */,
 				D9E8EDF12C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift in Sources */,
+				66F98DE22DB71220009F1A86 /* DeviceBatteryLevelManagerImpl.swift in Sources */,
 				C17A54982D7B3DCD00E1D267 /* DeviceProvisioningURL.swift in Sources */,
 				505347F92DA08548004AF0B5 /* DeviceSleepManagerImpl.swift in Sources */,
 				887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */,
@@ -17611,6 +17618,7 @@
 				D9247EA82BFD28E800DFEF6F /* DeleteForMeSyncMessageReceiver.swift in Sources */,
 				F9C5CC34289453B300548EEE /* DeliveryReceiptContext.swift in Sources */,
 				6698FC1A2980AB45004EFC30 /* DependenciesBridge.swift in Sources */,
+				66F98DE02DB710F8009F1A86 /* DeviceBatteryLevelManager.swift in Sources */,
 				50F401CC2D483BF40094CA56 /* DeviceId.swift in Sources */,
 				505C2ED629971D4E00C23FB2 /* DeviceLimitExceededError.swift in Sources */,
 				50E5E4B129932D9B00E15A1C /* DeviceMessage.swift in Sources */,

@@ -46,6 +46,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let dateProvider: DateProvider
     private let db: any DB
+    private let deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?
     private let listMediaManager: ListMediaManager
     private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
     private let reachabilityManager: SSKReachabilityManager
@@ -63,6 +64,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
+        deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         messageBackupRequestManager: MessageBackupRequestManager,
@@ -76,6 +78,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.dateProvider = dateProvider
         self.db = db
+        self.deviceBatteryLevelManager = deviceBatteryLevelManager
         self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
         self.reachabilityManager = reachabilityManager
         self.remoteConfigProvider = remoteConfigProvider
