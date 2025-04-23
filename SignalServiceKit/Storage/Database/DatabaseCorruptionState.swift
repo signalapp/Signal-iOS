@@ -89,7 +89,7 @@ public final class DatabaseCorruptionState: Codable, Equatable, CustomStringConv
 
     /// If the error is a `SQLITE_CORRUPT` error, set the "has database read corruption" flag, log, but don't crash.
     /// We do this so we can attempt to perform diagnostics/recovery if this read error is coupled with a crash..
-    public static func flagDatabaseReadCorruptionIfNecessary(userDefaults: UserDefaults, error: Error) {
+    public static func flagDatabaseReadCorruptionIfNecessary(userDefaults: UserDefaults = CurrentAppContext().appUserDefaults(), error: Error) {
         if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
             flagDatabaseAsReadCorrupted(userDefaults: userDefaults)
         }

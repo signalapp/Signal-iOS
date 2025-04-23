@@ -659,6 +659,8 @@
 		509085B82C498C3F00409B85 /* HTMLMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CABC289453B200548EEE /* HTMLMetadata.swift */; };
 		509085BA2C498C4400409B85 /* HTMLMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D4289B1B5400460798 /* HTMLMetadataTests.swift */; };
 		509085BC2C498D3600409B85 /* LinkPreviewFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509085BB2C498D3500409B85 /* LinkPreviewFetcher.swift */; };
+		50925DEA2DA86E3A00DAB484 /* GroupMessageProcessorJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50925DE92DA86E3A00DAB484 /* GroupMessageProcessorJob.swift */; };
+		50925DEC2DA87AEF00DAB484 /* GroupMessageProcessorJobTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50925DEB2DA87AEF00DAB484 /* GroupMessageProcessorJobTest.swift */; };
 		509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */; };
 		509DC8DA2BCED88600375E86 /* RemoteMegaphoneFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */; };
 		50A1CE3A2A00931900730C40 /* DebugLogger+MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */; };
@@ -3520,11 +3522,8 @@
 		F9C5CD9B289453B400548EEE /* ChatConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC4289453B200548EEE /* ChatConnectionManager.swift */; };
 		F9C5CD9E289453B400548EEE /* SSKWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC7289453B200548EEE /* SSKWebSocket.swift */; };
 		F9C5CD9F289453B400548EEE /* OutageDetection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC8289453B200548EEE /* OutageDetection.swift */; };
-		F9C5CDA0289453B400548EEE /* IncomingGroupsV2MessageJob.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACA289453B200548EEE /* IncomingGroupsV2MessageJob.m */; };
-		F9C5CDA1289453B400548EEE /* GroupsV2MessageJobFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACB289453B200548EEE /* GroupsV2MessageJobFinder.swift */; };
+		F9C5CDA1289453B400548EEE /* GroupMessageProcessorJobStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACB289453B200548EEE /* GroupMessageProcessorJobStore.swift */; };
 		F9C5CDA2289453B400548EEE /* GroupMessageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACC289453B200548EEE /* GroupMessageProcessor.swift */; };
-		F9C5CDA5289453B400548EEE /* IncomingGroupsV2MessageJob+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACF289453B200548EEE /* IncomingGroupsV2MessageJob+SDS.swift */; };
-		F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAD1289453B200548EEE /* IncomingGroupsV2MessageJob.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDAF289453B400548EEE /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CADA289453B200548EEE /* NetworkManager.swift */; };
 		F9C5CDB0289453B400548EEE /* GiphyDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CADC289453B200548EEE /* GiphyDownloader.swift */; };
 		F9C5CDB1289453B400548EEE /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CADD289453B200548EEE /* GiphyAPI.swift */; };
@@ -4563,6 +4562,8 @@
 		508C72232C2DFCB2000811F3 /* OWSOutgoingResendResponseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingResendResponseTest.swift; sourceTree = "<group>"; };
 		508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCellBackgroundColor.swift; sourceTree = "<group>"; };
 		509085BB2C498D3500409B85 /* LinkPreviewFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewFetcher.swift; sourceTree = "<group>"; };
+		50925DE92DA86E3A00DAB484 /* GroupMessageProcessorJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMessageProcessorJob.swift; sourceTree = "<group>"; };
+		50925DEB2DA87AEF00DAB484 /* GroupMessageProcessorJobTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMessageProcessorJobTest.swift; sourceTree = "<group>"; };
 		5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSyncAttachmentBuilder.swift; sourceTree = "<group>"; };
 		5096BE682AF37A9900668F9F /* ContactOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactOutputStream.swift; sourceTree = "<group>"; };
 		509913BD2913274100F34F8E /* RecipientPickerViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerViewControllerTest.swift; sourceTree = "<group>"; };
@@ -7469,11 +7470,8 @@
 		F9C5CAC4289453B200548EEE /* ChatConnectionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatConnectionManager.swift; sourceTree = "<group>"; };
 		F9C5CAC7289453B200548EEE /* SSKWebSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKWebSocket.swift; sourceTree = "<group>"; };
 		F9C5CAC8289453B200548EEE /* OutageDetection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutageDetection.swift; sourceTree = "<group>"; };
-		F9C5CACA289453B200548EEE /* IncomingGroupsV2MessageJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IncomingGroupsV2MessageJob.m; sourceTree = "<group>"; };
-		F9C5CACB289453B200548EEE /* GroupsV2MessageJobFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2MessageJobFinder.swift; sourceTree = "<group>"; };
+		F9C5CACB289453B200548EEE /* GroupMessageProcessorJobStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMessageProcessorJobStore.swift; sourceTree = "<group>"; };
 		F9C5CACC289453B200548EEE /* GroupMessageProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMessageProcessor.swift; sourceTree = "<group>"; };
-		F9C5CACF289453B200548EEE /* IncomingGroupsV2MessageJob+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "IncomingGroupsV2MessageJob+SDS.swift"; sourceTree = "<group>"; };
-		F9C5CAD1289453B200548EEE /* IncomingGroupsV2MessageJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncomingGroupsV2MessageJob.h; sourceTree = "<group>"; };
 		F9C5CADA289453B200548EEE /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		F9C5CADC289453B200548EEE /* GiphyDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyDownloader.swift; sourceTree = "<group>"; };
 		F9C5CADD289453B200548EEE /* GiphyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyAPI.swift; sourceTree = "<group>"; };
@@ -13170,6 +13168,7 @@
 				F9426222289B1B5500460798 /* Stickers */,
 				F9426233289B1B5500460798 /* DeliveryReceiptContextTests.swift */,
 				F925A3AC29493D35009024D0 /* DisappearingMessageFinderTest.swift */,
+				50925DEB2DA87AEF00DAB484 /* GroupMessageProcessorJobTest.swift */,
 				F942622A289B1B5500460798 /* MessageDecryptionTest.swift */,
 				F942622F289B1B5500460798 /* MessagePipelineSupervisorTest.swift */,
 				F9426234289B1B5500460798 /* MessageProcessingIntegrationTest.swift */,
@@ -13489,6 +13488,8 @@
 				F9C5C99D289453B100548EEE /* EarlyMessageManager.swift */,
 				F9C5C92B289453B100548EEE /* FailedMessagesJob.swift */,
 				F9C5CACC289453B200548EEE /* GroupMessageProcessor.swift */,
+				50925DE92DA86E3A00DAB484 /* GroupMessageProcessorJob.swift */,
+				F9C5CACB289453B200548EEE /* GroupMessageProcessorJobStore.swift */,
 				6640DD5F2ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift */,
 				F9C5C97B289453B100548EEE /* IncompleteCallsJob.swift */,
 				F9C5C97F289453B100548EEE /* MessageFetcherJob.swift */,
@@ -14151,7 +14152,6 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CAD3289453B200548EEE /* API */,
-				F9C5CAC9289453B200548EEE /* Receiving */,
 				66C2B1472A13E290008DDE72 /* SgxWebsocketConnection */,
 				88DF819328E112F600F8BA80 /* SignalProxy */,
 				F9C5CAB4289453B200548EEE /* Spam */,
@@ -14192,17 +14192,6 @@
 				F9C5CAB8289453B200548EEE /* TimeElapsedChallenge.swift */,
 			);
 			path = Spam;
-			sourceTree = "<group>";
-		};
-		F9C5CAC9289453B200548EEE /* Receiving */ = {
-			isa = PBXGroup;
-			children = (
-				F9C5CACB289453B200548EEE /* GroupsV2MessageJobFinder.swift */,
-				F9C5CACF289453B200548EEE /* IncomingGroupsV2MessageJob+SDS.swift */,
-				F9C5CAD1289453B200548EEE /* IncomingGroupsV2MessageJob.h */,
-				F9C5CACA289453B200548EEE /* IncomingGroupsV2MessageJob.m */,
-			);
-			path = Receiving;
 			sourceTree = "<group>";
 		};
 		F9C5CAD3289453B200548EEE /* API */ = {
@@ -14492,7 +14481,6 @@
 			files = (
 				F9C5CD77289453B300548EEE /* BaseModel.h in Headers */,
 				668A00E02C2B5ECF007B8808 /* DebuggerUtils.h in Headers */,
-				F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */,
 				F9C5CC0A289453B300548EEE /* InstalledSticker.h in Headers */,
 				F9C5CBC6289453B300548EEE /* OutgoingPaymentSyncMessage.h in Headers */,
 				F9C5CC1E289453B300548EEE /* OWSAddToContactsOfferMessage.h in Headers */,
@@ -17725,6 +17713,8 @@
 				506695EC29C5305900B6D8D0 /* GroupMemberStore.swift in Sources */,
 				506695EF29C533A400B6D8D0 /* GroupMemberUpdater.swift in Sources */,
 				F9C5CDA2289453B400548EEE /* GroupMessageProcessor.swift in Sources */,
+				50925DEA2DA86E3A00DAB484 /* GroupMessageProcessorJob.swift in Sources */,
+				F9C5CDA1289453B400548EEE /* GroupMessageProcessorJobStore.swift in Sources */,
 				F9C5CC90289453B300548EEE /* Groups.pb.swift in Sources */,
 				50F54C2F2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift in Sources */,
 				50C4AEFC2CE6766B005609F6 /* GroupSendEndorsements.swift in Sources */,
@@ -17736,7 +17726,6 @@
 				725465522BA0282D00EABFD2 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
 				725465542BA0282D00EABFD2 /* GroupsV2Impl.swift in Sources */,
 				725465572BA0282D00EABFD2 /* GroupsV2IncomingChanges.swift in Sources */,
-				F9C5CDA1289453B400548EEE /* GroupsV2MessageJobFinder.swift in Sources */,
 				725465562BA0282D00EABFD2 /* GroupsV2OutgoingChangesImpl.swift in Sources */,
 				725465512BA0282D00EABFD2 /* GroupsV2ProfileKeyUpdater.swift in Sources */,
 				724D47BA2B97C51D001BE973 /* GroupsV2Protos.swift in Sources */,
@@ -17768,8 +17757,6 @@
 				D958C67B2B9FBFBC002F6888 /* IncomingCallLogEventSyncMessageParams.swift in Sources */,
 				505166D82BB37DB400FF6B4A /* IncomingContactSyncJobQueue.swift in Sources */,
 				D9AE0ACF29186D7F0063488B /* IncomingContactSyncJobRecord.swift in Sources */,
-				F9C5CDA5289453B400548EEE /* IncomingGroupsV2MessageJob+SDS.swift in Sources */,
-				F9C5CDA0289453B400548EEE /* IncomingGroupsV2MessageJob.m in Sources */,
 				6640DD602ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift in Sources */,
 				F9C5CC69289453B300548EEE /* IncompleteCallsJob.swift in Sources */,
 				66C1BF532D0CC7EB002296F7 /* IncrementalMessageTSAttachmentMigrator.swift in Sources */,
@@ -18666,6 +18653,7 @@
 				D979CC5E2AD618EA006AAC49 /* GroupCallRecordManagerTest.swift in Sources */,
 				D91F0B4F2B193A7A0086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift in Sources */,
 				5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */,
+				50925DEC2DA87AEF00DAB484 /* GroupMessageProcessorJobTest.swift in Sources */,
 				F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */,
 				F9426243289B1B5500460798 /* HttpHeadersTest.swift in Sources */,
 				D9C0AE672BD7162300FCB05E /* InactiveLinkedDeviceFinderTest.swift in Sources */,

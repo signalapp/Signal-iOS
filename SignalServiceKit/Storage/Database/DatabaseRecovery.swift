@@ -301,6 +301,7 @@ public extension DatabaseRecovery {
             "model_TSAttachment",
             "TSAttachmentMigration",
             "AvatarDefaultColor",
+            GroupMessageProcessorJob.databaseTableName,
         ]
 
         private static func prepareToCopyTablesWithBestEffort(
@@ -461,7 +462,6 @@ public extension DatabaseRecovery {
             PendingReadReceiptRecord.databaseTableName,
             PendingViewedReceiptRecord.databaseTableName,
             // Can be recovered in other ways, after recovery is done.
-            IncomingGroupsV2MessageJob.table.tableName,
             ProfileBadge.databaseTableName,
             StickerPack.table.tableName,
             HiddenRecipient.databaseTableName,

@@ -7,7 +7,7 @@ import Foundation
 public import LibSignalClient
 
 private struct IncomingGroupsV2MessageJobInfo {
-    let job: IncomingGroupsV2MessageJob
+    let job: GroupMessageProcessorJob
     let envelope: SSKProtoEnvelope
     let plaintextData: Data
     let groupContext: SSKProtoGroupContextV2
@@ -24,7 +24,7 @@ private struct IncomingGroupsV2MessageJobInfo {
 /// It returns when all jobs are processed.
 internal class SpecificGroupMessageProcessor {
     fileprivate let groupId: Data
-    private let finder = GRDBGroupsV2MessageJobFinder()
+    private let finder = GroupMessageProcessorJobStore()
 
     fileprivate init(groupId: Data) {
         self.groupId = groupId
@@ -107,16 +107,22 @@ internal class SpecificGroupMessageProcessor {
                     }
 
                     // We want a value that is just high enough to yield perf benefits.
-                    let kIncomingMessageBatchSize: UInt = 16
+                    let kIncomingMessageBatchSize: Int = 16
                     // If the app is in the background, use batch size of 1. This (only
                     // slightly) makes it less likely that we'll hit a 0xdead10cc crash and
                     // need to re-do work we've already done.
                     // TODO: Stop processing batches when suspending.
-                    let batchSize: UInt = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
+                    let batchSize: Int = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
 
                     willFetchNextJobs()
-                    let batchJobs = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                        self.finder.nextJobs(forGroupId: self.groupId, batchSize: batchSize, transaction: transaction)
+                    let batchJobs = SSKEnvironment.shared.databaseStorageRef.read { transaction -> [GroupMessageProcessorJob] in
+                        do {
+                            return try self.finder.nextJobs(forGroupId: self.groupId, batchSize: batchSize, tx: transaction)
+                        } catch {
+                            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: error)
+                            owsFailDebug("Couldn't process group messages: \(error)")
+                            return []
+                        }
                     }
                     if batchJobs.isEmpty {
                         return
@@ -129,7 +135,9 @@ internal class SpecificGroupMessageProcessor {
                     }
 
                     try await self.processBatch(someJobs: batchJobs, didCompleteJob: { job, tx in
-                        self.finder.removeJobs(withUniqueIds: [job.uniqueId], transaction: tx)
+                        failIfThrows {
+                            try self.finder.removeJob(withRowId: job.id, tx: tx)
+                        }
                     })
 
                     // If we successfully process a batch, reset the backoff counter. If we had
@@ -172,8 +180,8 @@ internal class SpecificGroupMessageProcessor {
         }
     }
 
-    private static func jobInfo(forJob job: IncomingGroupsV2MessageJob) -> IncomingGroupsV2MessageJobInfo? {
-        guard let envelope = job.envelope else {
+    private static func jobInfo(forJob job: GroupMessageProcessorJob) -> IncomingGroupsV2MessageJobInfo? {
+        guard let envelope = try? job.parseEnvelope() else {
             owsFailDebug("Missing envelope.")
             return nil
         }
@@ -267,8 +275,8 @@ internal class SpecificGroupMessageProcessor {
 
     /// This method may process only a subset of the jobs.
     private func processBatch(
-        someJobs: [IncomingGroupsV2MessageJob],
-        didCompleteJob: (_ job: IncomingGroupsV2MessageJob, _ tx: DBWriteTransaction) -> Void
+        someJobs: [GroupMessageProcessorJob],
+        didCompleteJob: (_ job: GroupMessageProcessorJob, _ tx: DBWriteTransaction) -> Void
     ) async throws(RetryableError) {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
 
@@ -482,7 +490,7 @@ public class GroupMessageProcessorManager {
 
     public static let didFlushGroupsV2MessageQueue = Notification.Name("didFlushGroupsV2MessageQueue")
 
-    private let finder = GRDBGroupsV2MessageJobFinder()
+    private let finder = GroupMessageProcessorJobStore()
 
     public init() {
         SwiftSingletons.register(self)
@@ -507,7 +515,15 @@ public class GroupMessageProcessorManager {
 
         // Obtain the list of groups that currently need processing.
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        let groupIds = Set(databaseStorage.read { tx in self.finder.allEnqueuedGroupIds(transaction: tx) })
+        let groupIds = Set(databaseStorage.read { tx -> [Data] in
+            do {
+                return try self.finder.allEnqueuedGroupIds(tx: tx)
+            } catch {
+                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: error)
+                owsFailDebug("Can't process group messages: \(error)")
+                return []
+            }
+        })
 
         if !groupIds.isEmpty {
             Logger.info("(Re-)starting \(groupIds.count) group message processor(s) with pending messages.")
@@ -585,18 +601,15 @@ public class GroupMessageProcessorManager {
 
         // We need to persist the decrypted envelope data in this transaction to
         // prevent data loss.
-        finder.addJob(
-            envelopeData: envelopeData,
-            plaintextData: plaintextData,
-            groupId: groupId,
-            wasReceivedByUD: wasReceivedByUD,
-            serverDeliveryTimestamp: serverDeliveryTimestamp,
-            transaction: tx
-        )
-
-        if DebugFlags.internalLogging {
-            let jobCount = self.pendingJobCount(tx: tx)
-            Logger.info("jobCount: \(jobCount)")
+        failIfThrows {
+            _ = try GroupMessageProcessorJob.insertRecord(
+                envelopeData: envelopeData,
+                plaintextData: plaintextData,
+                groupId: groupId,
+                wasReceivedByUD: wasReceivedByUD,
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                tx: tx
+            )
         }
 
         // The new envelope won't be visible to the processor until this
@@ -636,8 +649,16 @@ public class GroupMessageProcessorManager {
         // 1. We don't have any other messages queued for this thread
         // 2. The message can be processed without updates
 
-        guard !GRDBGroupsV2MessageJobFinder().existsJob(forGroupId: groupContextInfo.groupId, transaction: tx) else {
-            Logger.warn("Cannot immediately process GV2 message because there are messages queued")
+        let existsJob: Bool
+        do {
+            existsJob = try GroupMessageProcessorJobStore().existsJob(forGroupId: groupContextInfo.groupId, tx: tx)
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: error)
+            owsFailDebug("Couldn't check for existing group jobs: \(error)")
+            existsJob = true // fall back to assuming it's true
+        }
+        if existsJob {
+            Logger.info("Cannot immediately process GV2 message because there are messages queued.")
             return false
         }
 
@@ -699,10 +720,6 @@ public class GroupMessageProcessorManager {
 
     public func isProcessing() -> Bool {
         return self.state.update(block: { !$0.activeGroupIds.isEmpty })
-    }
-
-    private func pendingJobCount(tx: DBReadTransaction) -> UInt {
-        self.finder.jobCount(transaction: tx)
     }
 
     public enum DiscardMode {
