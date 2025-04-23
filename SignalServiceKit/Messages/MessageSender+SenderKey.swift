@@ -427,7 +427,7 @@ extension MessageSender {
         if serviceIds.isEmpty {
             return SenderKeySendResult(success: [], unregistered: [])
         }
-        Logger.info("Sending sender key message with timestamp \(message.timestamp) to \(serviceIds)")
+        Logger.info("Sending sender key message with timestamp \(message.timestamp) to \(serviceIds.sorted())")
         let recipients: [Recipient]
         let ciphertext: Data
         (recipients, ciphertext) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
@@ -464,7 +464,7 @@ extension MessageSender {
                 }
             }
         )
-        Logger.info("Sent sender key message with timestamp \(message.timestamp) to \(result.successServiceIds) (unregistered: \(result.unregisteredServiceIds))")
+        Logger.info("Sent sender key message with timestamp \(message.timestamp) to \(result.successServiceIds.sorted()) (unregistered: \(result.unregisteredServiceIds.sorted()))")
         return result
     }
 
