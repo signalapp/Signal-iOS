@@ -514,6 +514,8 @@ class MediaPageViewController: UIPageViewController {
         AttachmentSharing.showShareUI(for: attachmentStream, sender: sender)
     }
 
+    // MARK: -
+
     private func saveCurrentMediaToPhotos() {
         guard let mediaItem = currentItem else { return }
 
@@ -523,24 +525,14 @@ class MediaPageViewController: UIPageViewController {
     }
 
     private func presentConversationForCurrentMedia() {
-        guard let currentItem = currentItem else { return }
+        guard let mediaItem = currentItem else { return }
 
         dismissSelf(animated: true) {
-
-            // Present the conversation and scroll to the message
             SignalApp.shared.presentConversationForThread(
-                threadUniqueId: currentItem.message.uniqueThreadId,
-                focusMessageId: currentItem.message.uniqueId,
+                threadUniqueId: mediaItem.message.uniqueThreadId,
+                focusMessageId: mediaItem.message.uniqueId,
                 animated: true
             )
-
-            if let conversationVC = SignalApp.shared.conversationSplitViewController?.selectedConversationViewController {
-                conversationVC.ensureInteractionLoadedThenScrollToInteraction(
-                    currentItem.message.uniqueId,
-                    alignment: .centerIfNotEntirelyOnScreen,
-                    isAnimated: true
-                )
-            }
         }
     }
 

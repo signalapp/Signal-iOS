@@ -174,15 +174,27 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             homeVC.selectedHomeTab = .chatList
         }
 
-        guard selectedThread?.uniqueId != threadUniqueId else {
-            // If this thread is already selected, pop to the thread if
-            // anything else has been presented above the view.
+        if
+            let selectedThreadUniqueId = selectedThread?.uniqueId,
+            selectedThreadUniqueId == threadUniqueId
+        {
             guard let selectedConversationVC = selectedConversationViewController else { return }
+
+            // This thread is already selected, so pop to it.
             if isCollapsed {
                 chatListNavController.popToViewController(selectedConversationVC, animated: animated)
             } else {
                 detailNavController.popToViewController(selectedConversationVC, animated: animated)
             }
+
+            if let focusMessageId {
+                selectedConversationVC.ensureInteractionLoadedThenScrollToInteraction(
+                    focusMessageId,
+                    alignment: .centerIfNotEntirelyOnScreen,
+                    isAnimated: false
+                )
+            }
+
             return
         }
 
