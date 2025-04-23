@@ -1,1 +1,1 @@
-7.57.0.{build_number}-internal
+7.57.0.{build_number}-beta
