@@ -345,6 +345,16 @@ class MediaPageViewController: UIPageViewController {
         ))
         contextMenuActions.append(UIAction(
             title: OWSLocalizedString(
+                "MEDIA_VIEWER_GO_TO_MESSAGE_ACTION",
+                comment: "Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video."
+            ),
+            image: Theme.iconImage(.buttonMessage),
+            handler: { [weak self] _ in
+                self?.presentConversationForCurrentMedia()
+            }
+        ))
+        contextMenuActions.append(UIAction(
+            title: OWSLocalizedString(
                 "MEDIA_VIEWER_DELETE_MEDIA_ACTION",
                 comment: "Context menu item in media viewer. Refers to deleting currently displayed photo/video."
             ),
@@ -510,6 +520,28 @@ class MediaPageViewController: UIPageViewController {
         AttachmentSaving.saveToPhotoLibrary(
             referencedAttachmentStreams: [mediaItem.attachmentStream]
         )
+    }
+
+    private func presentConversationForCurrentMedia() {
+        guard let currentItem = currentItem else { return }
+
+        dismissSelf(animated: true) {
+
+            // Present the conversation and scroll to the message
+            SignalApp.shared.presentConversationForThread(
+                threadUniqueId: currentItem.message.uniqueThreadId,
+                focusMessageId: currentItem.message.uniqueId,
+                animated: true
+            )
+
+            if let conversationVC = SignalApp.shared.conversationSplitViewController?.selectedConversationViewController {
+                conversationVC.ensureInteractionLoadedThenScrollToInteraction(
+                    currentItem.message.uniqueId,
+                    alignment: .centerIfNotEntirelyOnScreen,
+                    isAnimated: true
+                )
+            }
+        }
     }
 
     private func deleteCurrentMedia() {
