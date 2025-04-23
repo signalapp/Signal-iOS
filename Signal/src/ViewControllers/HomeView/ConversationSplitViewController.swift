@@ -191,7 +191,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 selectedConversationVC.ensureInteractionLoadedThenScrollToInteraction(
                     focusMessageId,
                     alignment: .centerIfNotEntirelyOnScreen,
-                    isAnimated: false
+                    isAnimated: animated
                 )
             }
 

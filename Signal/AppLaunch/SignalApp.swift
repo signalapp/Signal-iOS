@@ -174,9 +174,12 @@ extension SignalApp {
         Logger.info("")
 
         DispatchMainThreadSafe {
-            if let visibleThread = conversationSplitViewController.visibleThread,
-               visibleThread.uniqueId == threadUniqueId,
-               let conversationViewController = conversationSplitViewController.selectedConversationViewController {
+            if
+                focusMessageId == nil,
+                let visibleThread = conversationSplitViewController.visibleThread,
+                visibleThread.uniqueId == threadUniqueId,
+                let conversationViewController = conversationSplitViewController.selectedConversationViewController
+            {
                 conversationViewController.popKeyBoard()
                 if case .updateDraft = action {
                     conversationViewController.reloadDraft()
