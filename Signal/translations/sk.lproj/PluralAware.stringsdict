@@ -1883,13 +1883,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional group</string>
+			<string>Člen %1$@, %2$@ a jednej ďalšej skupiny</string>
 			<key>few</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>Člen %1$@, %2$@ a %3$ld ďalších skupín</string>
 			<key>many</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>Člen %1$@, %2$@ a %3$ld ďalšej skupiny</string>
 			<key>other</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>Člen %1$@, %2$@ a %3$ld ďalších skupín</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld</key>
@@ -1903,13 +1903,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld other</string>
+			<string>%1$ld ďalší</string>
 			<key>few</key>
-			<string>%1$ld others</string>
+			<string>%1$ld ďalší</string>
 			<key>many</key>
-			<string>%1$ld others</string>
+			<string>%1$ld ďalších</string>
 			<key>other</key>
-			<string>%1$ld others</string>
+			<string>%1$ld ďalších</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

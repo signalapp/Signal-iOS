@@ -1883,13 +1883,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional group</string>
+			<string>Član %1$@, %2$@ i još 1 dodatne grupe</string>
 			<key>few</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>Član %1$@, %2$@ i još %3$ld dodatne grupe</string>
 			<key>many</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>Član %1$@, %2$@ i još %3$ld dodatnih grupa</string>
 			<key>other</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>Član %1$@, %2$@ i još %3$ld dodatnih grupa</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld</key>
@@ -1903,13 +1903,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld other</string>
+			<string>još %1$ld</string>
 			<key>few</key>
-			<string>%1$ld others</string>
+			<string>još %1$ld</string>
 			<key>many</key>
-			<string>%1$ld others</string>
+			<string>još %1$ld</string>
 			<key>other</key>
-			<string>%1$ld others</string>
+			<string>još %1$ld</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

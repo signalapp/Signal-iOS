@@ -491,7 +491,7 @@
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "الرسالة الصوتية غير مُتوفِّرة";
 
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "اختر لونا";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "اختر لونًا";
 
 /* Segment indicating the user can edit the color of the avatar */
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "اللون";
@@ -1058,7 +1058,7 @@
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "سَيؤدي هذا إلى حذف جميع سجِلات المكالمات بشكلٍ دائم.";
 
 /* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "هل ترغبُ بإزالة سجِل المكالمات؟";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "هل ترغبُ بمسح سجِل المكالمات؟";
 
 /* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "حذف";
@@ -3251,7 +3251,7 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "أنت (متَّصِل من جهازٍ آخر)";
 
 /* Message indicating that group was created by the local user. */
-"GROUP_CREATED_BY_LOCAL_USER" = "أنت أنشأتَ المجموعة.";
+"GROUP_CREATED_BY_LOCAL_USER" = "قُمتَ بإنشاء المجموعة.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "قام %1$@ بإنشاء المجموعة.";
@@ -3434,7 +3434,7 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "رابط المجموعة";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "موافقة المُشرِف مِن المتطلبات لقبول انضمام أعضاء جُدُد عبر رابط المجموعة.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "تتطلب موافقة المُشرِف لقبول انضمام أعضاء جُدُد عبر رابط المجموعة.";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "إعادة تعيين الرابط";
@@ -3467,7 +3467,7 @@
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "أنتَ الآن مُشرِف.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "اختاركَ %1$@ مُشرِفًا.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "قام %1$@ بتعيينك مُشرِفًا.";
 
 /* Message indicating that the local user accepted an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_ACCEPTED" = "قبلتَ الدعوة إلى المجموعة.";
@@ -3755,7 +3755,7 @@
 "GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "يمكن فقط لـ %1$@ إرسال الرسائل.";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "مراسلة مُشرِف على المجموعة";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "مراسلة أحد المشرفين";
 
 /* Label for button that lets the user block a request to join the group. */
 "GROUPS_BLOCK_REQUEST_BUTTON" = "حظر الطلب";
@@ -4432,6 +4432,9 @@
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "حذف";
 
+/* Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video. */
+"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "Go to Message";
+
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
 "MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "حفظ";
 
@@ -4733,7 +4736,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "هل ترغبُ بإلغاء طلبك في الانضمام لهذه المجموعة؟";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "تمَّ إرسال طلبك للانضمام إلى مُشرِف المجموعة. سيتمُّ إخطارك عند اتخاذه للإجراء.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "تمَّ إرسال طلبك للانضمام إلى مُشرِف المجموعة. سيتمُّ إشعارك عند اتخاذه للإجراء.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "استُلِمَت";
@@ -5131,29 +5134,53 @@
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "هل ترغبُ بتخطّي إدخال رقم التعريف الشخصي (PIN)؟";
 
+/* The body for the device transfer 'choice' view 'transfer' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your text messages and media from your paid Signal backup plan";
+
+/* The title for the device transfer 'choice' view 'transfer' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Backup";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Choose how you'd like to restore your message history and account data.";
+
+/* The body for the skip restore 'choice' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Continue without transferring your messages and media";
+
+/* The title for the skip restore 'choice' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Register without Transferring";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Restore or Transfer Account";
+
+/* The body for the device transfer 'choice' view 'transfer' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "Transfer your account and messages from your old iOS device";
+
+/* The title for the device transfer 'choice' view 'transfer' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "Transfer from Device";
+
 /* Header text describing what the backup includes. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "Your backup includes:";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "تتضمن النسخة الاحتياطية:";
 
 /* Backup content list item describing all messages. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_2" = "All of your messages";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_2" = "جميع الرسائل الخاصة بك";
 
 /* Backup content list item describing paid media. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE" = "The last 45 days of your media";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE" = "آخر 45 يوم من الوسائط لديك";
 
 /* Backup content list item describing free media. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID" = "All of your media";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID" = "جميع وسائطك";
 
 /* Text for action button confirming the restore. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "Restore Backup";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "استعادة النسخة الاحتياطية";
 
 /* Description for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Your last backup was made on %1$@ at %2$@. You can create a newer backup if you still have your old device. [See How](https://signal.org)";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "أُجريت آخِر نسخة احتياطية في %1$@ عند الساعة %2$@. بإمكانك إنشاء نسخة احتياطية مُحدَّثة في حال توفر الجهاز السابق. [تعرَّف على الكيفية](https://signal.org)";
 
 /* Text for action button to explore other options. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "More Options";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "خيارات أكثر";
 
 /* Title for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "Restore from Backup";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "استعادة مِن نسخة احتياطية";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "تسجيل الآيباد";
@@ -5316,6 +5343,18 @@
 
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "قُم بتحديث سيجنال للاستمرار في استخدام عمليات الدفع. قد لا يكون رصيدك مُحدَّثًا.";
+
+/* Body text describing the outgoing transfer. */
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Your account will be transferred to a new device. This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+
+/* Action button to begin account transfer. */
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Transfer Account";
+
+/* Body text describing the outgoing transfer. */
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+
+/* Title text describing the outgoing transfer. */
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Transfer Account";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "مكالمة فيديو لم يتم الرد عليها";
@@ -5690,10 +5729,10 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "دعوات غير صالحة";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "المدعوون من قبل الآخرين";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "الذين دعاهم الآخرون";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "المدعوون من قبلك";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "الذين دعوتهم";
 
 /* Label for view-once messages indicating that the message's contents are expired and unavailable to download. */
 "PER_MESSAGE_EXPIRATION_EXPIRED" = "منتهية الصلاحية";
@@ -5802,9 +5841,6 @@
 
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "الفيديو طويل جدًا.";
-
-/* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "ألبوم بدون اسم";
 
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "تثبيت";
@@ -6062,7 +6098,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "تحدَّث بحرية";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "في حالة استراحة";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "أنا في استراحة";
 
 /* The 'Working on something new' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "أَعمَلُ على شيءٍ جَدِيد";
@@ -8372,7 +8408,7 @@
 "THIS_MESSAGE_WAS_DELETED" = "تمَّ حذف هذه الرسالة.";
 
 /* Label for a group you are not in which has four members, listing their names */
-"THREAD_DETAILS_FOUR_MEMBERS" = "%1$@, %2$@, %3$@, and %4$@";
+"THREAD_DETAILS_FOUR_MEMBERS" = "%1$@، و%2$@، و%3$@، و%4$@";
 
 /* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
 "THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ لم يتم التحقُّق منها";
@@ -8381,10 +8417,10 @@
 "THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "أسماء المجموعات";
 
 /* Label for a group with more than four members, listing the first three members' names and embedding THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld as a count of other members */
-"THREAD_DETAILS_MANY_MEMBERS" = "%1$@, %2$@, %3$@, and %4$@";
+"THREAD_DETAILS_MANY_MEMBERS" = "%1$@، و%2$@، و%3$@، و%4$@";
 
 /* Label for a group with no members or no members but yourself */
-"THREAD_DETAILS_NO_MEMBERS" = "No other group members yet";
+"THREAD_DETAILS_NO_MEMBERS" = "لا يوجد أعضاء آخرون في المجموعة حتى الآن";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "يُمكِنُك إضافة مُلاحظات لنفسك في هذه الدردشة. إذا كان حسابك يحتوي على أي أجهزة مُرتبطة، ستتمُّ مُزامنة المُلاحظات.";
@@ -8393,7 +8429,7 @@
 "THREAD_DETAILS_ONE_MEMBER" = "%1$@";
 
 /* Label for a group you are in with one other member, listing their name and yourself */
-"THREAD_DETAILS_ONE_MEMBER_AND_YOURSELF" = "%1$@ and you";
+"THREAD_DETAILS_ONE_MEMBER_AND_YOURSELF" = "%1$@ وأنت";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "عضو في %1$@";
@@ -8408,19 +8444,19 @@
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "عرض";
 
 /* Label for a group you are not in which has three members, listing their names */
-"THREAD_DETAILS_THREE_MEMBERS" = "%1$@, %2$@, and %3$@";
+"THREAD_DETAILS_THREE_MEMBERS" = "%1$@، و%2$@ و%3$@";
 
 /* Label for a group you are in which has three other members, listing their names and yourself */
-"THREAD_DETAILS_THREE_MEMBERS_AND_YOURSELF" = "%1$@, %2$@, %3$@, and you";
+"THREAD_DETAILS_THREE_MEMBERS_AND_YOURSELF" = "%1$@ و%2$@ و%3$@ وأنت";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_THREE_MUTUAL_GROUP" = "عضو في %1$@، و%2$@، و%3$@";
 
 /* Label for a group you are not in which has two members, listing their names */
-"THREAD_DETAILS_TWO_MEMBERS" = "%1$@ and %2$@";
+"THREAD_DETAILS_TWO_MEMBERS" = "%1$@ و%2$@";
 
 /* Label for a group you are in which has two other members, listing their names and yourself */
-"THREAD_DETAILS_TWO_MEMBERS_AND_YOURSELF" = "%1$@, %2$@, and you";
+"THREAD_DETAILS_TWO_MEMBERS_AND_YOURSELF" = "%1$@، و%2$@ وأنت";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "عضو في %1$@ و%2$@";
@@ -8708,7 +8744,7 @@
 "USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "يتمُّ دائمًا إقران أسماء المُستخدِمين بمجموعة من الأرقام.%1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "اختر اسم مُستخدم خاص بك";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "اختر اسم مُستخدِم خاص بك";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "يُمكن أن تحتوي أسماء المُستخدمين على حروف a-z، وأرقام 0-9 وشرطة سُفلية _ فقط.";

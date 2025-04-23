@@ -4432,6 +4432,9 @@
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "ئۆچۈرۈش";
 
+/* Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video. */
+"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "Go to Message";
+
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
 "MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "ساقلا";
 
@@ -5131,29 +5134,53 @@
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "PIN كىرگۈزۈشتىن ئاتلاپ كېتەمسىز؟";
 
+/* The body for the device transfer 'choice' view 'transfer' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your text messages and media from your paid Signal backup plan";
+
+/* The title for the device transfer 'choice' view 'transfer' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Backup";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Choose how you'd like to restore your message history and account data.";
+
+/* The body for the skip restore 'choice' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Continue without transferring your messages and media";
+
+/* The title for the skip restore 'choice' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Register without Transferring";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Restore or Transfer Account";
+
+/* The body for the device transfer 'choice' view 'transfer' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "Transfer your account and messages from your old iOS device";
+
+/* The title for the device transfer 'choice' view 'transfer' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "Transfer from Device";
+
 /* Header text describing what the backup includes. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "Your backup includes:";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "زاپاسلىغان مەلۇماتلار تۆۋەندىكىلەرنى ئۆز ئىچىگە ئالىدۇ:";
 
 /* Backup content list item describing all messages. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_2" = "All of your messages";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_2" = "بارلىق ئۇچۇرلىرىڭىز";
 
 /* Backup content list item describing paid media. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE" = "The last 45 days of your media";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE" = "ئەڭ ئاخىرقى 45 كۈنلۈك مېدىيالىرىڭىز";
 
 /* Backup content list item describing free media. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID" = "All of your media";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID" = "بارلىق مېدىيالىرىڭىز";
 
 /* Text for action button confirming the restore. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "Restore Backup";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "زاپاسنى ئەسلىگە كەلتۈرۈش";
 
 /* Description for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Your last backup was made on %1$@ at %2$@. You can create a newer backup if you still have your old device. [See How](https://signal.org)";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "ئاخىرقى قېتىملىق زاپاسلىشىڭىز %1$@ ، %2$@ دە ئېلىپ بېرىلغان. ئەگەر كونا ئۈسكۈنىڭىز ھازىرمۇ بولسا يېڭى زاپاسلاش قۇرالايسىز. [قانداق قىلىشنى كۆرۈڭ] (https://signal.org)";
 
 /* Text for action button to explore other options. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "More Options";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "تېخىمۇ كۆپ تاللاش";
 
 /* Title for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "Restore from Backup";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "زاپاستىن ئەسلىگە كەلتۈرىدۇ";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad تىزىملىتىڭ";
@@ -5316,6 +5343,18 @@
 
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "پۇل تۆلەش ئىقتىدارىنى داۋاملىق ئىشلىتىش ئۈچۈن Signal نى يېڭىلاڭ. قالدۇق سوممىڭىز ئەڭ يېڭى ھالەتتە بولماسلىقى مۇمكىن.";
+
+/* Body text describing the outgoing transfer. */
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Your account will be transferred to a new device. This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+
+/* Action button to begin account transfer. */
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Transfer Account";
+
+/* Body text describing the outgoing transfer. */
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+
+/* Title text describing the outgoing transfer. */
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Transfer Account";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "جاۋابسىز ۋىدېيولۇق چاقىرىق";
@@ -5802,9 +5841,6 @@
 
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "سىن بەك ئۇزۇن.";
-
-/* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "ئىسىمسىز ئالبۇم";
 
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "مىخلاش";
@@ -8372,7 +8408,7 @@
 "THIS_MESSAGE_WAS_DELETED" = "بۇ ئۇچۇر ئۆچۈرۈلگەن";
 
 /* Label for a group you are not in which has four members, listing their names */
-"THREAD_DETAILS_FOUR_MEMBERS" = "%1$@, %2$@, %3$@, and %4$@";
+"THREAD_DETAILS_FOUR_MEMBERS" = "%1$@ ، %2$@ ، %3$@ ، ۋە%4$@";
 
 /* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
 "THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ دەلىللەنمىگەن";
@@ -8381,10 +8417,10 @@
 "THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "گۇرۇپپا ناملىرى";
 
 /* Label for a group with more than four members, listing the first three members' names and embedding THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld as a count of other members */
-"THREAD_DETAILS_MANY_MEMBERS" = "%1$@, %2$@, %3$@, and %4$@";
+"THREAD_DETAILS_MANY_MEMBERS" = "%1$@ ، %2$@ ، %3$@ ، ۋە%4$@";
 
 /* Label for a group with no members or no members but yourself */
-"THREAD_DETAILS_NO_MEMBERS" = "No other group members yet";
+"THREAD_DETAILS_NO_MEMBERS" = "تېخى باشقا گۇرۇپپا ئەزالىرى يوق";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "بۇ سۆھبەتتە ئۆزىڭىزگە خاتىرە قوشالايسىز. ئەگەر ھېساباتىڭىزدا ئۇلانغان ئۈسكۈنىلەر بولسا، يېڭى خاتىرىلەر ماسقەدەملىنىدۇ.";
@@ -8393,7 +8429,7 @@
 "THREAD_DETAILS_ONE_MEMBER" = "%1$@";
 
 /* Label for a group you are in with one other member, listing their name and yourself */
-"THREAD_DETAILS_ONE_MEMBER_AND_YOURSELF" = "%1$@ and you";
+"THREAD_DETAILS_ONE_MEMBER_AND_YOURSELF" = "%1$@ ۋە سىز";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%1$@ ئەزاسى";
@@ -8408,19 +8444,19 @@
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "كۆرسەت";
 
 /* Label for a group you are not in which has three members, listing their names */
-"THREAD_DETAILS_THREE_MEMBERS" = "%1$@, %2$@, and %3$@";
+"THREAD_DETAILS_THREE_MEMBERS" = "%1$@ ، %2$@ ، ۋە%3$@";
 
 /* Label for a group you are in which has three other members, listing their names and yourself */
-"THREAD_DETAILS_THREE_MEMBERS_AND_YOURSELF" = "%1$@, %2$@, %3$@, and you";
+"THREAD_DETAILS_THREE_MEMBERS_AND_YOURSELF" = "%1$@ ، %2$@ ، %3$@ ، ۋە سىز";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%1$@،%2$@ ۋە %3$@ نىڭ ئەزاسى";
 
 /* Label for a group you are not in which has two members, listing their names */
-"THREAD_DETAILS_TWO_MEMBERS" = "%1$@ and %2$@";
+"THREAD_DETAILS_TWO_MEMBERS" = "%1$@ ۋە %2$@";
 
 /* Label for a group you are in which has two other members, listing their names and yourself */
-"THREAD_DETAILS_TWO_MEMBERS_AND_YOURSELF" = "%1$@, %2$@, and you";
+"THREAD_DETAILS_TWO_MEMBERS_AND_YOURSELF" = "%1$@ ، %2$@ ، ۋە سىز";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%1$@ ۋە %2$@ نىڭ ئەزاسى";

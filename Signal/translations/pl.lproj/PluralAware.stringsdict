@@ -483,13 +483,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d członek</string>
+			<string>%1$d osoba</string>
 			<key>few</key>
-			<string>%1$d członków</string>
+			<string>%1$d osoby</string>
 			<key>many</key>
-			<string>%1$d członków</string>
+			<string>%1$d osób</string>
 			<key>other</key>
-			<string>%1$d członka</string>
+			<string>%1$d osoby</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -923,13 +923,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d członek</string>
+			<string>%1$d osoba</string>
 			<key>few</key>
-			<string>%1$d członków</string>
+			<string>%1$d osoby</string>
 			<key>many</key>
-			<string>%1$d członków</string>
+			<string>%1$d osób</string>
 			<key>other</key>
-			<string>%1$d członka</string>
+			<string>%1$d osoby</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -983,13 +983,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d członek</string>
+			<string>%1$d osoba</string>
 			<key>few</key>
-			<string>%1$d członków</string>
+			<string>%1$d osoby</string>
 			<key>many</key>
-			<string>%1$d członków</string>
+			<string>%1$d osób</string>
 			<key>other</key>
-			<string>%1$d członka</string>
+			<string>%1$d osoby</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -1003,13 +1003,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d członek</string>
+			<string>%1$d osoba</string>
 			<key>few</key>
-			<string>%1$d członków</string>
+			<string>%1$d osoby</string>
 			<key>many</key>
-			<string>%1$d członków</string>
+			<string>%1$d osób</string>
 			<key>other</key>
-			<string>%1$d członka</string>
+			<string>%1$d osoby</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -1523,13 +1523,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d członek</string>
+			<string>%1$d osoba</string>
 			<key>few</key>
-			<string>%1$d członków</string>
+			<string>%1$d osoby</string>
 			<key>many</key>
-			<string>%1$d członków</string>
+			<string>%1$d osób</string>
 			<key>other</key>
-			<string>%1$d członka</string>
+			<string>%1$d osoby</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
@@ -1883,13 +1883,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional group</string>
+			<string>Członek %1$@, %2$@ i 1 dodatkowej grupy</string>
 			<key>few</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>Członek %1$@, %2$@ i %3$ld dodatkowych grup</string>
 			<key>many</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>Członek %1$@, %2$@ i %3$ld dodatkowych grup</string>
 			<key>other</key>
-			<string>Member of %1$@, %2$@, and %3$ld additional groups</string>
+			<string>Członek %1$@, %2$@ i %3$ld dodatkowych grup</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld</key>
@@ -1903,13 +1903,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld other</string>
+			<string>jeszcze %1$ld</string>
 			<key>few</key>
-			<string>%1$ld others</string>
+			<string>jeszcze %1$ld</string>
 			<key>many</key>
-			<string>%1$ld others</string>
+			<string>jeszcze %1$ld</string>
 			<key>other</key>
-			<string>%1$ld others</string>
+			<string>jeszcze %1$ld</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
