@@ -626,7 +626,8 @@ extension RegistrationNavigationController: RegistrationQuickRestoreQRCodePresen
     }
 
     func cancel() {
-        // TODO [Quick Restore]: Pop back to the very first screen in the flow (splash).
+        let guarantee = coordinator.resetRestoreMethodChoice()
+        pushNextController(guarantee)
     }
 }
 
