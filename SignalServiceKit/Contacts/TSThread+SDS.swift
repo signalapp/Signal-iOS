@@ -715,8 +715,13 @@ public extension TSThread {
 
         block(self)
 
-        guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
-                                                   transaction: transaction) else {
+        // If it's not saved, we don't expect to find it in the database, and we
+        // won't save any changes we make back into the database.
+        guard shouldBeSaved else {
+            return
+        }
+
+        guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId, transaction: transaction, ignoreCache: true) else {
             return
         }
 

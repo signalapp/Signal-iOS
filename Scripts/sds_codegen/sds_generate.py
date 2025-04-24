@@ -1867,6 +1867,10 @@ extension %sSerializer {
 
         # ---- Fetch ----
 
+        ignore_cache = ""
+        if cache_get_code_for_class(clazz) is not None:
+            ignore_cache = ", ignoreCache: true"
+
         swift_body += """
 // MARK: - Save/Remove/Update
 
@@ -1922,8 +1926,13 @@ public extension %(class_name)s {
 
         block(self)
 
-        guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
-                                                   transaction: transaction) else {
+        // If it's not saved, we don't expect to find it in the database, and we
+        // won't save any changes we make back into the database.
+        guard shouldBeSaved else {
+            return
+        }
+
+        guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId, transaction: transaction%(ignore_cache)s) else {
             return
         }
 
@@ -1950,7 +1959,8 @@ public extension %(class_name)s {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 """ % {
-            "class_name": str(clazz.name)
+            "class_name": str(clazz.name),
+            "ignore_cache": ignore_cache,
         }
 
         if has_remove_methods:
