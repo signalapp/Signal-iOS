@@ -33,6 +33,19 @@ struct GroupMessageProcessorJobStore {
         }
     }
 
+    func newestJobId(tx: DBReadTransaction) throws -> Int64? {
+        do {
+            let sql = """
+                SELECT \(GroupMessageProcessorJob.CodingKeys.id.rawValue)
+                FROM \(GroupMessageProcessorJob.databaseTableName)
+                ORDER BY \(GroupMessageProcessorJob.CodingKeys.id.rawValue) DESC
+                """
+            return try Int64.fetchOne(tx.database, sql: sql)
+        } catch {
+            throw error.grdbErrorForLogging
+        }
+    }
+
     public func existsJob(forGroupId groupId: Data, tx: DBReadTransaction) throws -> Bool {
         let sql = """
             SELECT 1 FROM \(GroupMessageProcessorJob.databaseTableName)
