@@ -188,7 +188,7 @@ public final class MessageReceiver {
         tx: DBWriteTransaction
     ) {
         let protoContent = request.protoContent
-        Logger.info("Received \(request.decryptedEnvelope.timestamp) w/\(protoContent.contentDescription) from \(request.decryptedEnvelope.sourceAci)")
+        Logger.info("Received \(request.decryptedEnvelope.timestamp) (serverTimestamp: \(request.decryptedEnvelope.serverTimestamp)) w/\(protoContent.contentDescription) from \(request.decryptedEnvelope.sourceAci)")
 
         switch request.messageType {
         case .syncMessage(let syncMessage):
