@@ -8,330 +8,110 @@ import XCTest
 
 @testable import SignalServiceKit
 
-private class FakeAdapter: ModelCacheAdapter<OWSUserProfile.Address, OWSUserProfile> {
-    typealias KeyType = OWSUserProfile.Address
-    typealias ValueType = OWSUserProfile
+private class FakeAdapter: ModelCacheAdapter<String, String> {
+    var storage = [String: String]()
 
-    var storage = [KeyType: ValueType]()
-    override func read(key: KeyType, transaction: DBReadTransaction) -> ValueType? {
-        return storage[key]
+    override func read(key: String, transaction: DBReadTransaction) -> String? {
+        return self.storage[key]
     }
 
-    override func key(forValue value: ValueType) -> KeyType {
-        return value.internalAddress
+    override func key(forValue value: String) -> String {
+        return String(value.first!)
     }
 
-    override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
+    override func cacheKey(forKey key: String) -> ModelCacheKey<String> {
         return ModelCacheKey(key: key)
     }
 
-    override func copy(value: ValueType) throws -> ValueType {
+    override func copy(value: String) throws -> String {
         return value
     }
 }
 
-class ModelReadCacheTest: SSKBaseTest {
-    private lazy var adapter = { FakeAdapter(cacheName: "fake", cacheCountLimit: 1024, cacheCountLimitNSE: 1024) }()
+class ModelReadCacheTest: XCTestCase {
+    private var adapter: FakeAdapter!
+    private var cache: ModelReadCache<String, String>!
+    private var db: InMemoryDB!
 
     override func setUp() {
         super.setUp()
-        // Create local account.
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
-            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .forUnitTests,
-                tx: tx
-            )
-        }
-    }
 
-    // MARK: - Test ModelReadCache.readValues(for:, transaction:)
+        let appReadiness = AppReadinessMock()
+        appReadiness.isAppReady = true
 
-    func testReadNonNilCacheableValues() {
-        let addresses: [OWSUserProfile.Address] = [
-            .otherUser(SignalServiceAddress.randomForTesting()),
-            .otherUser(SignalServiceAddress.randomForTesting()),
-        ]
-        for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
-        }
-        read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
-            cache.performSync {
-                let keys = addresses.map { adapter.cacheKey(forKey: $0) }
-                let actual = cache.readValues(for: AnySequence(keys), transaction: transaction)
-                let expected = addresses.map { adapter.storage[$0]! }
-                XCTAssertEqual(actual, expected)
-            }
-        }
-    }
-
-    func testReadNilCacheableValues() {
-        let addresses: [OWSUserProfile.Address] = [
-            .otherUser(SignalServiceAddress.randomForTesting()),
-            .otherUser(SignalServiceAddress.randomForTesting()),
-        ]
-        read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
-            cache.performSync {
-                // Place values in the cache but not in storage.
-                for address in addresses {
-                    cache.writeToCache(
-                        cacheKey: adapter.cacheKey(forKey: address),
-                        value: OWSUserProfile(address: address)
-                    )
-                }
-                let keys = addresses.map { adapter.cacheKey(forKey: $0) }
-                // This should have a side-effect of removing values from the cache.
-                let actual = cache.readValues(for: AnySequence(keys), transaction: transaction)
-                let expected: [OWSUserProfile?] = [nil, nil]
-                XCTAssertEqual(actual, expected)
-
-                for address in addresses {
-                    if let box = cache.readFromCache(cacheKey: adapter.cacheKey(forKey: address)) {
-                        XCTAssertNil(box.value)
-                    } else {
-                        XCTFail("No cache entry for \(address)")
-                    }
-                }
-            }
-        }
-    }
-
-    func testReadNilUncacheableValues() {
-        let addresses: [OWSUserProfile.Address] = [
-            .otherUser(SignalServiceAddress.randomForTesting()),
-            .otherUser(SignalServiceAddress.randomForTesting()),
-        ]
-        read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
-            cache.performSync {
-                // Place values in the cache but not in storage just to check that they don't get removed.
-                for address in addresses {
-                    let cacheKey = adapter.cacheKey(forKey: address)
-                    cache.writeToCache(
-                        cacheKey: cacheKey,
-                        value: OWSUserProfile(address: address)
-                    )
-                    // Exclude it so that it won't be removed later.
-                    cache.addExclusion(for: cacheKey)
-                }
-                let keys = addresses.map { adapter.cacheKey(forKey: $0) }
-
-                // This should not have a side-effect of changing the cache beacuse the addresses were excluded.
-                let actual = cache.readValues(for: AnySequence(keys), transaction: transaction)
-                let expected: [OWSUserProfile?] = [nil, nil]
-                XCTAssertEqual(actual, expected)
-
-                for address in addresses {
-                    if let box = cache.readFromCache(cacheKey: adapter.cacheKey(forKey: address)) {
-                        // Good! Value is still there even though we didn't read it from db.
-                        XCTAssertNotNil(box.value)
-                    } else {
-                        XCTFail("No cache entry for \(address)")
-                    }
-                }
-            }
-        }
-    }
-
-    func testReadMixOfNilAndNonNilCacheableValues() {
-        // Before: Alice in DB but not cache. Bob in cache but not DB.
-        // Assert: We can retrieve only Alice (because readValue(for:,transaction:) does not read from the cache so it won't see Bob).
-        // After: Cache is empty.
-
-        // 1. Put alice in DB.
-        let alice: OWSUserProfile.Address = .otherUser(SignalServiceAddress.randomForTesting())
-        let bob: OWSUserProfile.Address = .otherUser(SignalServiceAddress.randomForTesting())
-        adapter.storage[alice] = OWSUserProfile(address: alice)
-        read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
-            cache.performSync {
-                // 2. Put bob in cache.
-                cache.writeToCache(
-                    cacheKey: adapter.cacheKey(forKey: bob),
-                    value: OWSUserProfile(address: bob)
-                )
-
-                // 3. Try to read alice and bob
-                let keys = [alice, bob].map { adapter.cacheKey(forKey: $0) }
-                // This should have a side-effect of removing values from the cache.
-                let actual = cache.readValues(for: AnySequence(keys), transaction: transaction)
-                let expected: [OWSUserProfile?] = [adapter.storage[alice]!, nil]
-                XCTAssertEqual(actual, expected)
-
-                // 4. Assert the cache is empty.
-                XCTAssertNil(cache.readFromCache(cacheKey: adapter.cacheKey(forKey: alice)))
-                // Bob has a box because it was removed from cache.
-                XCTAssertNil(cache.readFromCache(cacheKey: adapter.cacheKey(forKey: bob))!.value)
-            }
-        }
-    }
-
-    // MARK: - Test ModelReadCache.getValue(for:, transaction:)
-
-    func testGetUncachedSingleValueThatExists() {
-        let addresses: [OWSUserProfile.Address] = [
-            .otherUser(SignalServiceAddress.randomForTesting()),
-            .otherUser(SignalServiceAddress.randomForTesting()),
-        ]
-        for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
-        }
-        read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
-            cache.performSync {
-                let alice = addresses[0]
-                let key = adapter.cacheKey(forKey: alice)
-                let actual = cache.getValue(for: key, transaction: transaction)
-                let expected = adapter.storage[alice]
-                XCTAssertEqual(actual, expected)
-            }
-        }
-    }
-
-    func testGetSingleValueThatDoesNotExist() {
-        let addresses: [OWSUserProfile.Address] = [
-            .otherUser(SignalServiceAddress.randomForTesting()),
-            .otherUser(SignalServiceAddress.randomForTesting()),
-        ]
-        for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
-        }
-        read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
-            cache.performSync {
-                let alice: OWSUserProfile.Address = .otherUser(SignalServiceAddress.randomForTesting())
-                let key = adapter.cacheKey(forKey: alice)
-                let actual = cache.getValue(for: key, transaction: transaction)
-                XCTAssertNil(actual)
-            }
-        }
-    }
-
-    func testGetCachedSingleValue() {
-        let addresses: [OWSUserProfile.Address] = [
-            .otherUser(SignalServiceAddress.randomForTesting()),
-            .otherUser(SignalServiceAddress.randomForTesting()),
-        ]
-        for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
-        }
-        read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
-            cache.performSync {
-                let alice = addresses[0]
-                let key = adapter.cacheKey(forKey: alice)
-                cache.writeToCache(cacheKey: key, value: adapter.storage[alice]!)
-                // Remove Alice from DB to test that it comes from cache.
-                adapter.storage.removeValue(forKey: alice)
-                let actual = cache.getValue(for: key, transaction: transaction)
-                let expected = OWSUserProfile(address: alice)
-                XCTAssertEqual(actual?.serviceIdString, expected.serviceIdString)
-            }
-        }
-    }
-
-    func testGetSingleValueReturnNilOnCacheMiss() {
-        let addresses: [OWSUserProfile.Address] = [
-            .otherUser(SignalServiceAddress.randomForTesting()),
-            .otherUser(SignalServiceAddress.randomForTesting()),
-        ]
-        for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
-        }
-        read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
-            cache.performSync {
-                let alice = addresses[0]
-                let key = adapter.cacheKey(forKey: alice)
-                let actual = cache.getValue(for: key, transaction: transaction, returnNilOnCacheMiss: true)
-                XCTAssertNil(actual)
-            }
-        }
+        self.adapter = FakeAdapter(cacheName: "fake", cacheCountLimit: 1024)
+        self.cache = ModelReadCache(adapter: adapter, appReadiness: appReadiness)
+        self.db = InMemoryDB()
     }
 
     // MARK: - Test ModelReadCache.getValues(for:, transaction:)
 
     func testGetUncachedMultipleValuesThatExist() {
-        let addresses: [OWSUserProfile.Address] = [
-            .otherUser(SignalServiceAddress.randomForTesting()),
-            .otherUser(SignalServiceAddress.randomForTesting()),
+        let storage = [
+            "1": "1:one",
+            "2": "2:two",
         ]
-        for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
-        }
-        read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
-            cache.performSync {
-                let keys = addresses.map { adapter.cacheKey(forKey: $0) }
-                let actual = cache.getValues(for: keys, transaction: transaction)
-                let expected = addresses.map { adapter.storage[$0] }
-                XCTAssertEqual(actual, expected)
-            }
+        self.adapter.storage = storage
+        self.db.read { tx in
+            let keys = storage.keys.sorted().map { adapter.cacheKey(forKey: $0) }
+            let actual = cache.getValues(for: keys, transaction: tx)
+            XCTAssertEqual(actual, ["1:one", "2:two"])
         }
     }
 
     func testGetMultipleValuesThatDoNotExist() {
-        let addresses: [OWSUserProfile.Address] = [
-            .otherUser(SignalServiceAddress.randomForTesting()),
-            .otherUser(SignalServiceAddress.randomForTesting()),
+        let storage = [
+            "1": "1:one",
+            "2": "2:two",
         ]
-        read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
-            cache.performSync {
-                let keys = addresses.map { adapter.cacheKey(forKey: $0) }
-                let actual = cache.getValues(for: keys, transaction: transaction)
-                XCTAssertEqual(actual, [nil, nil])
-            }
+        self.db.read { tx in
+            let keys = storage.keys.sorted().map { adapter.cacheKey(forKey: $0) }
+            let actual = cache.getValues(for: keys, transaction: tx)
+            XCTAssertEqual(actual, [nil, nil])
         }
     }
 
     func testGetCachedMultipleValues() {
-        let addresses: [OWSUserProfile.Address] = [
-            .otherUser(SignalServiceAddress.randomForTesting()),
-            .otherUser(SignalServiceAddress.randomForTesting()),
+        let storage = [
+            "1": "1:one",
+            "2": "2:two",
         ]
-        for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
+        let keys = ["1", "2", "3"]
+        self.adapter.storage = storage
+        self.db.read { tx in
+            let keys = keys.map { adapter.cacheKey(forKey: $0) }
+            let actual = cache.getValues(for: keys, transaction: tx)
+            XCTAssertEqual(actual, ["1:one", "2:two", nil])
+            cache.didRead(value: "1:one", transaction: tx)
+            cache.didRead(value: "2:two", transaction: tx)
         }
-        read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
-            cache.performSync {
-                let keys = addresses.map { adapter.cacheKey(forKey: $0) }
-                for (key, address) in zip(keys, addresses) {
-                    cache.writeToCache(cacheKey: key, value: adapter.storage[address]!)
-                }
-                // Remove addresses from DB to test that they come from cache.
-                adapter.storage = [:]
-                let actual = cache.getValues(for: keys, transaction: transaction)
-                let expected = addresses.map { OWSUserProfile(address: $0) }
-                XCTAssertEqual(actual.map { $0?.serviceIdString }, expected.map { $0.serviceIdString })
-            }
+        self.adapter.storage = [
+            "1": "1:one-prime",
+            "2": "2:two-prime",
+            "3": "3:three-prime",
+        ]
+        self.db.read { tx in
+            let keys = keys.map { adapter.cacheKey(forKey: $0) }
+            let actual = cache.getValues(for: keys, transaction: tx)
+            // The values should come from the cache and shouldn't be re-fetched.
+            XCTAssertEqual(actual, ["1:one", "2:two", nil])
         }
     }
 
-    func testGetMixOfCachedAndUncachedAndUnknownValues() {
-        let storedAddresses: [OWSUserProfile.Address] = [
-            .otherUser(SignalServiceAddress.randomForTesting()),
-            .otherUser(SignalServiceAddress.randomForTesting()),
-        ]
-        for address in storedAddresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
+    func testExclusion() {
+        let key = "1"
+        let keys = [adapter.cacheKey(forKey: key)]
+        self.db.write { tx in
+            // Mark it as changed to disable the cache.
+            cache.didInsertOrUpdate(value: "1:one-prime", transaction: tx)
+
+            // The existing transaction can't read from the cache.
+            adapter.storage = ["1": "1:old"]
+            XCTAssertEqual(cache.getValues(for: keys, transaction: tx), ["1:old"])
         }
-        // Add a bogus address to test querying a nonexistent key.
-        let addresses: [OWSUserProfile.Address] = storedAddresses + [.otherUser(SignalServiceAddress.randomForTesting())]
-        read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
-            cache.performSync {
-                cache.writeToCache(
-                    cacheKey: adapter.cacheKey(forKey: addresses[0]),
-                    value: adapter.storage[addresses[0]]!
-                )
-                let keys = addresses.map { adapter.cacheKey(forKey: $0) }
-                let actual = cache.getValues(for: keys, transaction: transaction)
-                let expected = addresses.map { adapter.storage[$0] }
-                XCTAssertEqual(actual, expected)
-            }
+        self.db.read { tx in
+            // A new transaction reads from the cache, not the storage.
+            XCTAssertEqual(cache.getValues(for: keys, transaction: tx), ["1:one-prime"])
         }
     }
 }

@@ -9,11 +9,11 @@ public import GRDB
 @objc
 public class DBReadTransaction: NSObject {
     public let database: Database
-    public let startDate: Date
+    public let startDate: MonotonicDate
 
     init(database: Database) {
         self.database = database
-        self.startDate = Date()
+        self.startDate = MonotonicDate()
     }
 }
 
