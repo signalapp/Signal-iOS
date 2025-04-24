@@ -51,11 +51,6 @@ struct GroupMessageProcessorJobStore {
     }
 
     public func removeJob(withRowId rowId: Int64, tx: DBWriteTransaction) throws {
-        let sql = """
-            DELETE
-            FROM \(GroupMessageProcessorJob.databaseTableName)
-            WHERE \(GroupMessageProcessorJob.CodingKeys.id.rawValue) = ?
-            """
         do {
             _ = try GroupMessageProcessorJob.deleteOne(tx.database, key: rowId)
         } catch {
