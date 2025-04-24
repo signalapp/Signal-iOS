@@ -19,24 +19,6 @@ class DebugUIPayments: DebugUIPage {
             sectionItems.append(OWSTableItem(title: "Create all possible payment models") { [weak self] in
                 self?.insertAllPaymentModelVariations(contactThread: contactThread)
             })
-            sectionItems.append(OWSTableItem(title: "Send tiny payments: 10") {
-                Self.sendTinyPayments(contactThread: contactThread, count: 10)
-            })
-            // For testing defragmentation.
-            sectionItems.append(OWSTableItem(title: "Send tiny payments: 17") {
-                Self.sendTinyPayments(contactThread: contactThread, count: 17)
-            })
-            // For testing defragmentation.
-            sectionItems.append(OWSTableItem(title: "Send tiny payments: 40") {
-                Self.sendTinyPayments(contactThread: contactThread, count: 40)
-            })
-            // For testing defragmentation.
-            sectionItems.append(OWSTableItem(title: "Send tiny payments: 100") {
-                Self.sendTinyPayments(contactThread: contactThread, count: 100)
-            })
-            sectionItems.append(OWSTableItem(title: "Send tiny payments: 1000") {
-                Self.sendTinyPayments(contactThread: contactThread, count: 1000)
-            })
         }
 
         sectionItems.append(OWSTableItem(title: "Delete all payment models") { [weak self] in
@@ -186,33 +168,6 @@ class DebugUIPayments: DebugUIPage {
 
             paymentModel = insertPaymentModel(paymentType: .incomingUnidentified, paymentState: .incomingComplete)
             paymentModel = insertPaymentModel(paymentType: .outgoingUnidentified, paymentState: .outgoingComplete)
-        }
-    }
-
-    private static func sendTinyPayments(contactThread: TSContactThread, count: UInt) {
-        let picoMob = PaymentsConstants.picoMobPerMob + UInt64.random(in: 0..<1000)
-        let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
-        let recipient = SendPaymentRecipientImpl.address(address: contactThread .contactAddress)
-        firstly(on: DispatchQueue.global()) { () -> Promise<PreparedPayment> in
-            SUIEnvironment.shared.paymentsImplRef.prepareOutgoingPayment(
-                recipient: recipient,
-                paymentAmount: paymentAmount,
-                memoMessage: "Tiny: \(count)",
-                isOutgoingTransfer: false,
-                canDefragment: false
-            )
-        }.then(on: DispatchQueue.global()) { (preparedPayment: PreparedPayment) in
-            SUIEnvironment.shared.paymentsImplRef.initiateOutgoingPayment(preparedPayment: preparedPayment)
-        }.then(on: DispatchQueue.global()) { (paymentModel: TSPaymentModel) in
-            SUIEnvironment.shared.paymentsImplRef.blockOnOutgoingVerification(paymentModel: paymentModel)
-        }.done(on: DispatchQueue.global()) { _ in
-            if count > 1 {
-                Self.sendTinyPayments(contactThread: contactThread, count: count - 1)
-            } else {
-                Logger.info("Complete.")
-            }
-        }.catch(on: DispatchQueue.global()) { error in
-            owsFailDebug("Error: \(error)")
         }
     }
 
