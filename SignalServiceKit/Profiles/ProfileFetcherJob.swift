@@ -18,6 +18,7 @@ public enum ProfileRequestError: Error {
 public class ProfileFetcherJob {
     private let serviceId: ServiceId
     private let groupIdContext: GroupIdentifier?
+    private let mustFetchNewCredential: Bool
     private let authedAccount: AuthedAccount
 
     private let db: any DB
@@ -38,6 +39,7 @@ public class ProfileFetcherJob {
     init(
         serviceId: ServiceId,
         groupIdContext: GroupIdentifier?,
+        mustFetchNewCredential: Bool,
         authedAccount: AuthedAccount,
         db: any DB,
         disappearingMessagesConfigurationStore: any DisappearingMessagesConfigurationStore,
@@ -56,6 +58,7 @@ public class ProfileFetcherJob {
     ) {
         self.serviceId = serviceId
         self.groupIdContext = groupIdContext
+        self.mustFetchNewCredential = mustFetchNewCredential
         self.authedAccount = authedAccount
         self.db = db
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
@@ -152,6 +155,10 @@ public class ProfileFetcherJob {
             }
         }
 
+        if self.mustFetchNewCredential {
+            throw ProfileFetcherError.couldNotFetchCredential
+        }
+
         // If we can't fetch a versioned profile, or if we run into an auth error
         // when using an access key, fall back to an unversioned profile fetch.
 
@@ -214,7 +221,6 @@ public class ProfileFetcherJob {
             guard let profileKey else {
                 return nil
             }
-            let profileKeyCredential = try versionedProfiles.validProfileKeyCredential(for: aci, transaction: SDSDB.shimOnlyBridge(tx))
             let auth: OWSUDAccess?
             if localIdentifiers.aci == aci {
                 // Don't use UD for "self" profile fetches.
@@ -230,7 +236,10 @@ public class ProfileFetcherJob {
             return VersionedFetchParameters(
                 aci: aci,
                 profileKey: ProfileKey(profileKey),
-                shouldRequestCredential: profileKeyCredential == nil,
+                shouldRequestCredential: try (
+                    self.mustFetchNewCredential
+                    || versionedProfiles.validProfileKeyCredential(for: aci, transaction: tx) == nil
+                ),
                 auth: auth
             )
         }

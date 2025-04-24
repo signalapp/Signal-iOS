@@ -13,9 +13,13 @@ public struct ProfileFetchContext {
     /// If true, the fetch may be arbitrarily dropped if deemed non-critical.
     public var isOpportunistic: Bool
 
-    public init(groupId: GroupIdentifier? = nil, isOpportunistic: Bool = false) {
+    /// If true, the fetch must try to fetch a new credential.
+    public var mustFetchNewCredential: Bool
+
+    public init(groupId: GroupIdentifier? = nil, isOpportunistic: Bool = false, mustFetchNewCredential: Bool = false) {
         self.groupId = groupId
         self.isOpportunistic = isOpportunistic
+        self.mustFetchNewCredential = mustFetchNewCredential
     }
 }
 
@@ -43,12 +47,20 @@ extension ProfileFetcher {
     }
 }
 
-public enum ProfileFetcherError: Error {
+public enum ProfileFetcherError: Error, IsRetryableProvider {
     case skippingOpportunisticFetch
+    case couldNotFetchCredential
+
+    public var isRetryableProvider: Bool {
+        switch self {
+        case .skippingOpportunisticFetch: false
+        case .couldNotFetchCredential: false
+        }
+    }
 }
 
 public actor ProfileFetcherImpl: ProfileFetcher {
-    private let jobCreator: (ServiceId, GroupIdentifier?, AuthedAccount) -> ProfileFetcherJob
+    private let jobCreator: (ServiceId, GroupIdentifier?, _ mustFetchNewCredential: Bool, AuthedAccount) -> ProfileFetcherJob
     private let reachabilityManager: any SSKReachabilityManager
     private let tsAccountManager: any TSAccountManager
 
@@ -98,10 +110,11 @@ public actor ProfileFetcherImpl: ProfileFetcher {
     ) {
         self.reachabilityManager = reachabilityManager
         self.tsAccountManager = tsAccountManager
-        self.jobCreator = { serviceId, groupIdContext, authedAccount in
+        self.jobCreator = { serviceId, groupIdContext, mustFetchNewCredential, authedAccount in
             return ProfileFetcherJob(
                 serviceId: serviceId,
                 groupIdContext: groupIdContext,
+                mustFetchNewCredential: mustFetchNewCredential,
                 authedAccount: authedAccount,
                 db: db,
                 disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
@@ -247,7 +260,7 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         context: ProfileFetchContext,
         authedAccount: AuthedAccount
     ) async throws -> FetchedProfile {
-        let result = await Result { try await jobCreator(serviceId, context.groupId, authedAccount).run() }
+        let result = await Result { try await jobCreator(serviceId, context.groupId, context.mustFetchNewCredential, authedAccount).run() }
         let outcome: FetchResult.Outcome
         do {
             _ = try result.get()

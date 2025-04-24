@@ -1308,8 +1308,8 @@ public class GroupsV2Impl: GroupsV2 {
 
         let credentialMap = self.loadPresentProfileKeyCredentials(for: acis)
 
-        guard acis.symmetricDifference(credentialMap.keys).isEmpty else {
-            throw OWSAssertionError("Missing requested keys from credential map!")
+        guard acis.isSubset(of: credentialMap.keys) else {
+            throw OWSGenericError("Missing requested keys from credential map!")
         }
 
         return credentialMap
@@ -1339,7 +1339,9 @@ public class GroupsV2Impl: GroupsV2 {
             for aciToFetch in acisToFetch {
                 taskGroup.addTask {
                     do {
-                        _ = try await profileFetcher.fetchProfile(for: aciToFetch)
+                        var context = ProfileFetchContext()
+                        context.mustFetchNewCredential = true
+                        _ = try await profileFetcher.fetchProfile(for: aciToFetch, context: context)
                     } catch ProfileRequestError.notFound where ignoreMissingProfiles {
                         // this is fine
                     }
