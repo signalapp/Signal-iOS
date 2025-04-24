@@ -527,30 +527,21 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         // Given name can never be cleared, so ignore all info about the profile if
         // there's no given name.
         if record.hasGivenName && (localUserProfile?.givenName != record.givenName || localUserProfile?.familyName != record.familyName) {
-            // If we already have a profile for this user, ignore any content received
-            // via Storage Service. Instead, we'll just kick off a fetch of that user's
-            // profile to make sure everything is up-to-date.
-            if localUserProfile?.givenName != nil {
-                Task { [profileFetcher] in
-                    _ = try? await profileFetcher.fetchProfile(for: serviceIds.aciOrElsePni, context: .init(isOpportunistic: true))
-                }
-            } else {
-                let profileAddress = OWSUserProfile.insertableAddress(
-                    serviceId: serviceIds.aciOrElsePni,
-                    localIdentifiers: localIdentifiers
-                )
-                let localUserProfile = OWSUserProfile.getOrBuildUserProfile(
-                    for: profileAddress,
-                    userProfileWriter: .storageService,
-                    tx: SDSDB.shimOnlyBridge(tx)
-                )
-                localUserProfile.update(
-                    givenName: .setTo(record.givenName),
-                    familyName: .setTo(record.familyName),
-                    userProfileWriter: .storageService,
-                    transaction: SDSDB.shimOnlyBridge(tx)
-                )
-            }
+            let profileAddress = OWSUserProfile.insertableAddress(
+                serviceId: serviceIds.aciOrElsePni,
+                localIdentifiers: localIdentifiers
+            )
+            let localUserProfile = OWSUserProfile.getOrBuildUserProfile(
+                for: profileAddress,
+                userProfileWriter: .storageService,
+                tx: tx
+            )
+            localUserProfile.update(
+                givenName: .setTo(record.givenName),
+                familyName: .setTo(record.familyName),
+                userProfileWriter: .storageService,
+                transaction: tx
+            )
         } else if localUserProfile?.givenName != nil && !record.hasGivenName || localUserProfile?.familyName != nil && !record.hasFamilyName {
             needsUpdate = true
         }
