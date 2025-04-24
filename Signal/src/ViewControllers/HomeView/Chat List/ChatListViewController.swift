@@ -111,7 +111,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         let shouldHideTabBar = viewState.chatListMode == .archive
         if shouldHideTabBar {
             tabBarController?.tabBar.isHidden = true
-            extendedLayoutIncludesOpaqueBars = true
         }
 
         if isSearching {
