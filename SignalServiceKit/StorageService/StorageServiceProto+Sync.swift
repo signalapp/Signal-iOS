@@ -512,7 +512,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 profileKey,
                 for: serviceIds.aciOrElsePni,
                 onlyFillInIfMissing: false,
-                shouldFetchProfile: true,
+                shouldFetchProfile: false,
                 userProfileWriter: .storageService,
                 localIdentifiers: localIdentifiers,
                 authedAccount: authedAccount,
