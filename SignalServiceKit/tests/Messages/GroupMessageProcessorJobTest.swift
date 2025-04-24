@@ -38,7 +38,7 @@ struct GroupMessageProcessorJobTest {
             )
             """)
         }
-        let job = try db.read { tx in try GroupMessageProcessorJobStore().nextJobs(forGroupId: groupId, batchSize: 1, tx: tx).first! }
+        let job = try db.read { tx in try GroupMessageProcessorJobStore().nextJob(forGroupId: groupId, tx: tx)! }
         #expect(job.id == 42)
         #expect(job.groupId == groupId)
         #expect(job.envelopeData == Data([0x12, 0x34]))

@@ -19,20 +19,15 @@ struct GroupMessageProcessorJobStore {
         }
     }
 
-    func nextJobs(
-        forGroupId groupId: Data,
-        batchSize: Int,
-        tx: DBReadTransaction
-    ) throws -> [GroupMessageProcessorJob] {
+    func nextJob(forGroupId groupId: Data, tx: DBReadTransaction) throws -> GroupMessageProcessorJob? {
         do {
             let sql = """
                 SELECT *
                 FROM \(GroupMessageProcessorJob.databaseTableName)
                 WHERE \(GroupMessageProcessorJob.CodingKeys.groupId.rawValue) = ?
                 ORDER BY \(GroupMessageProcessorJob.CodingKeys.id.rawValue)
-                LIMIT \(batchSize)
                 """
-            return try GroupMessageProcessorJob.fetchAll(tx.database, sql: sql, arguments: [groupId])
+            return try GroupMessageProcessorJob.fetchOne(tx.database, sql: sql, arguments: [groupId])
         } catch {
             throw error.grdbErrorForLogging
         }

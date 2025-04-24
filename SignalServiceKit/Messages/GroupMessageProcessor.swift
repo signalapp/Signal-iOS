@@ -115,18 +115,6 @@ internal class SpecificGroupMessageProcessor {
                     let batchSize: Int = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
 
                     willFetchNextJobs()
-                    let batchJobs = SSKEnvironment.shared.databaseStorageRef.read { transaction -> [GroupMessageProcessorJob] in
-                        do {
-                            return try self.finder.nextJobs(forGroupId: self.groupId, batchSize: batchSize, tx: transaction)
-                        } catch {
-                            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: error)
-                            owsFailDebug("Couldn't process group messages: \(error)")
-                            return []
-                        }
-                    }
-                    if batchJobs.isEmpty {
-                        return
-                    }
 
                     // Keep track of external triggers while we're processing a batch. These
                     // may indicate that immediate retries are worthwhile.
@@ -134,11 +122,10 @@ internal class SpecificGroupMessageProcessor {
                         $0.mightBeAbleToMakeProgress = false
                     }
 
-                    try await self.processBatch(someJobs: batchJobs, didCompleteJob: { job, tx in
-                        failIfThrows {
-                            try self.finder.removeJob(withRowId: job.id, tx: tx)
-                        }
-                    })
+                    let hasMore = try await self.processBatch(batchLimit: batchSize)
+                    if !hasMore {
+                        return
+                    }
 
                     // If we successfully process a batch, reset the backoff counter. If we had
                     // to back off while processing a specific update, the next update
@@ -274,28 +261,32 @@ internal class SpecificGroupMessageProcessor {
     }
 
     /// This method may process only a subset of the jobs.
-    private func processBatch(
-        someJobs: [GroupMessageProcessorJob],
-        didCompleteJob: (_ job: GroupMessageProcessorJob, _ tx: DBWriteTransaction) -> Void
-    ) async throws(RetryableError) {
+    ///
+    /// - Returns: True if there are more jobs to process.
+    private func processBatch(batchLimit: Int) async throws(RetryableError) -> Bool {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
 
+        let hasMore: Bool
         let asyncJob: IncomingGroupsV2MessageJobInfo?
 
-        asyncJob = await databaseStorage.awaitableWrite { tx -> IncomingGroupsV2MessageJobInfo? in
-            for job in someJobs {
+        (hasMore, asyncJob) = await databaseStorage.awaitableWrite { tx -> (Bool, IncomingGroupsV2MessageJobInfo?) in
+            for _ in 1...batchLimit {
+                guard let job = self.nextJob(tx: tx) else {
+                    // Either there's no more jobs or we couldn't fetch jobs. Stop trying.
+                    return (false, nil)
+                }
                 guard let jobInfo = Self.jobInfo(forJob: job) else {
-                    didCompleteJob(job, tx)
+                    self.didCompleteJob(job, tx: tx)
                     continue
                 }
                 if self.canJobBeProcessedWithoutUpdate(jobInfo: jobInfo, tx: tx) {
                     self.performLocalProcessingSync(jobInfo: jobInfo, tx: tx)
-                    didCompleteJob(job, tx)
+                    self.didCompleteJob(job, tx: tx)
                     continue
                 }
-                return jobInfo
+                return (true, jobInfo)
             }
-            return nil
+            return (true, nil)
         }
 
         if let asyncJob {
@@ -310,8 +301,26 @@ internal class SpecificGroupMessageProcessor {
                     // revoked, or c) our request to join via group invite link was denied.
                     Logger.warn("Discarding unprocess-able message \(asyncJob.envelope.timestamp)")
                 }
-                didCompleteJob(asyncJob.job, tx)
+                self.didCompleteJob(asyncJob.job, tx: tx)
             }
+        }
+
+        return hasMore
+    }
+
+    private func nextJob(tx: DBReadTransaction) -> GroupMessageProcessorJob? {
+        do {
+            return try self.finder.nextJob(forGroupId: self.groupId, tx: tx)
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: error)
+            owsFailDebug("Couldn't process group messages: \(error)")
+            return nil
+        }
+    }
+
+    private func didCompleteJob(_ job: GroupMessageProcessorJob, tx: DBWriteTransaction) {
+        failIfThrows {
+            try self.finder.removeJob(withRowId: job.id, tx: tx)
         }
     }
 
