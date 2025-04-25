@@ -1095,7 +1095,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             if previousSectionItems.isEmpty,
                quotedReply != nil {
                 applyTopMargin = true
-                applyBottomMargin = bodyText == nil && standaloneFooter == nil
+                applyBottomMargin = bodyText == nil && standaloneFooter == nil && bodyMedia == nil
             } else if let previousSectionItem = previousSectionItems.last,
                       previousSectionItem.componentKey == .linkPreview,
                       quotedReply != nil {
