@@ -120,7 +120,7 @@ private class BackupSettingsViewModel: ObservableObject {
 
             if areBackupsEnabled == true {
                 let lastBackupDate = backupSettingsStore.lastBackupDate(tx: tx)
-                let lastBackupSizeBytes: Int64? = nil // TODO: Persist
+                let lastBackupSizeBytes: UInt64? = backupSettingsStore.lastBackupSizeBytes(tx: tx)
                 let backupFrequency = backupSettingsStore.backupFrequency(tx: tx)
                 let shouldBackUpOnCellular = backupSettingsStore.shouldBackUpOnCellular(tx: tx)
 
@@ -517,7 +517,7 @@ class BackupEnabledViewModel: ObservableObject {
     private let db: DB
 
     @Published private(set) var lastBackupDate: Date?
-    @Published private(set) var lastBackupSizeBytes: Int64?
+    @Published private(set) var lastBackupSizeBytes: UInt64?
     @Published private(set) var backupFrequency: BackupFrequency
     @Published private(set) var shouldBackUpOnCellular: Bool
 
@@ -526,7 +526,7 @@ class BackupEnabledViewModel: ObservableObject {
         dateProvider: @escaping DateProvider,
         db: DB,
         lastBackupDate: Date?,
-        lastBackupSizeBytes: Int64?,
+        lastBackupSizeBytes: UInt64?,
         backupFrequency: BackupFrequency,
         shouldBackUpOnCellular: Bool
     ) {
@@ -689,40 +689,36 @@ private struct BackupEnabledView: View {
 
 #if DEBUG
 
-private extension BackupEnabledViewModel {
-    static func forPreview() -> BackupEnabledViewModel {
-        return BackupEnabledViewModel(
-            backupSettingsStore: BackupSettingsStore(),
-            dateProvider: { Date() },
-            db: InMemoryDB(mode: .xcodePreview),
-            lastBackupDate: Date().addingTimeInterval(-1 * .day),
-            lastBackupSizeBytes: 2_400_000_000,
-            backupFrequency: .daily,
-            shouldBackUpOnCellular: false
-        )
-    }
-}
-
-private extension BackupPlanViewModel {
-    static func forPreview(
-        loadResult: Result<BackupPlanViewModel.BackupPlan, Error>
-    ) -> BackupPlanViewModel {
-        return BackupPlanViewModel(loadBackupPlanBlock: {
-            try await Task.sleep(nanoseconds: 2.clampedNanoseconds)
-            return try loadResult.get()
-        })
-    }
-}
-
 private extension BackupSettingsViewModel {
     static func forPreview(
-        backupPlanViewModel: BackupPlanViewModel,
-        enabledState: EnabledState
+        backupPlanLoadResult: Result<BackupPlanViewModel.BackupPlan, Error>
     ) -> BackupSettingsViewModel {
+        let backupSettingsStore = BackupSettingsStore()
+        let dateProvider = { Date() }
+        let db = InMemoryDB(mode: .xcodePreview)
+
+        let enabledState = db.write { tx in
+            backupSettingsStore.setAreBackupsEnabled(true, tx: tx)
+            backupSettingsStore.setLastBackupDate(Date().addingTimeInterval(-1 * .day), tx: tx)
+            backupSettingsStore.setLastBackupSizeBytes(2_400_000_000, tx: tx)
+
+            return BackupSettingsViewModel.EnabledState.load(
+                backupSettingsStore: backupSettingsStore,
+                dateProvider: dateProvider,
+                db: db,
+                tx: tx
+            )
+        }
+
+        let backupPlanViewModel = BackupPlanViewModel(loadBackupPlanBlock: {
+            try! await Task.sleep(nanoseconds: 2.clampedNanoseconds)
+            return try backupPlanLoadResult.get()
+        })
+
         return BackupSettingsViewModel(
-            backupSettingsStore: BackupSettingsStore(),
-            db: InMemoryDB(mode: .xcodePreview),
-            dateProvider: { Date() },
+            backupSettingsStore: backupSettingsStore,
+            db: db,
+            dateProvider: dateProvider,
             backupPlanViewModel: backupPlanViewModel,
             enabledState: enabledState
         )
@@ -732,11 +728,10 @@ private extension BackupSettingsViewModel {
 #Preview("Paid Plan") {
     NavigationView {
         BackupSettingsView(viewModel: .forPreview(
-            backupPlanViewModel: .forPreview(loadResult: .success(.paid(
+            backupPlanLoadResult: .success(.paid(
                 price: FiatMoney(currencyCode: "USD", value: 2.99),
                 renewalDate: Date().addingTimeInterval(.week)
-            ))),
-            enabledState: .enabled(.forPreview())
+            ))
         ))
     }
 }
@@ -744,8 +739,7 @@ private extension BackupSettingsViewModel {
 #Preview("Free Plan") {
     NavigationView {
         BackupSettingsView(viewModel: .forPreview(
-            backupPlanViewModel: .forPreview(loadResult: .success(.free)),
-            enabledState: .enabled(.forPreview())
+            backupPlanLoadResult: .success(.free)
         ))
     }
 }
@@ -753,10 +747,9 @@ private extension BackupSettingsViewModel {
 #Preview("Expiring Plan") {
     NavigationView {
         BackupSettingsView(viewModel: .forPreview(
-            backupPlanViewModel: .forPreview(loadResult: .success(.paidButCanceled(
+            backupPlanLoadResult: .success(.paidButCanceled(
                 expirationDate: Date().addingTimeInterval(.week)
-            ))),
-            enabledState: .enabled(.forPreview())
+            ))
         ))
     }
 }
@@ -764,10 +757,9 @@ private extension BackupSettingsViewModel {
 #Preview("Expired Plan") {
     NavigationView {
         BackupSettingsView(viewModel: .forPreview(
-            backupPlanViewModel: .forPreview(loadResult: .success(.paidButCanceled(
+            backupPlanLoadResult: .success(.paidButCanceled(
                 expirationDate: Date().addingTimeInterval(-1 * .week)
-            ))),
-            enabledState: .enabled(.forPreview())
+            ))
         ))
     }
 }
@@ -775,8 +767,7 @@ private extension BackupSettingsViewModel {
 #Preview("Plan Network Error") {
     NavigationView {
         BackupSettingsView(viewModel: .forPreview(
-            backupPlanViewModel: .forPreview(loadResult: .failure(OWSHTTPError.networkFailure(.genericTimeout))),
-            enabledState: .enabled(.forPreview())
+            backupPlanLoadResult: .failure(OWSHTTPError.networkFailure(.genericTimeout))
         ))
     }
 }
@@ -784,8 +775,7 @@ private extension BackupSettingsViewModel {
 #Preview("Plan Generic Error") {
     NavigationView {
         BackupSettingsView(viewModel: .forPreview(
-            backupPlanViewModel: .forPreview(loadResult: .failure(OWSGenericError(""))),
-            enabledState: .enabled(.forPreview())
+            backupPlanLoadResult: .failure(OWSGenericError(""))
         ))
     }
 }

@@ -18,6 +18,7 @@ public struct BackupSettingsStore {
     private enum Keys {
         static let enabled = "enabled"
         static let lastBackupDate = "lastBackupDate"
+        static let lastBackupSizeBytes = "lastBackupSizeBytes"
         static let backupFrequency = "backupFrequency"
         static let shouldBackUpOnCellular = "shouldBackUpOnCellular"
     }
@@ -51,6 +52,16 @@ public struct BackupSettingsStore {
 
     public func setLastBackupDate(_ lastBackupDate: Date, tx: DBWriteTransaction) {
         kvStore.setDate(lastBackupDate, key: Keys.lastBackupDate, transaction: tx)
+    }
+
+    // MARK: -
+
+    public func lastBackupSizeBytes(tx: DBReadTransaction) -> UInt64? {
+        return kvStore.getUInt64(Keys.lastBackupSizeBytes, transaction: tx)
+    }
+
+    public func setLastBackupSizeBytes(_ lastBackupSizeBytes: UInt64, tx: DBWriteTransaction) {
+        kvStore.setUInt64(lastBackupSizeBytes, key: Keys.lastBackupSizeBytes, transaction: tx)
     }
 
     // MARK: -
