@@ -1478,7 +1478,8 @@ public class GroupsV2Impl: GroupsV2 {
 
             await updatePlaceholderGroupModelUsingInviteLinkPreview(
                 groupSecretParams: groupSecretParams,
-                isLocalUserRequestingMember: groupInviteLinkPreview.isLocalUserRequestingMember
+                isLocalUserRequestingMember: groupInviteLinkPreview.isLocalUserRequestingMember,
+                revision: groupInviteLinkPreview.revision
             )
 
             return groupInviteLinkPreview
@@ -1486,7 +1487,8 @@ public class GroupsV2Impl: GroupsV2 {
             if case GroupsV2Error.localUserIsNotARequestingMember = error {
                 await self.updatePlaceholderGroupModelUsingInviteLinkPreview(
                     groupSecretParams: groupSecretParams,
-                    isLocalUserRequestingMember: false
+                    isLocalUserRequestingMember: false,
+                    revision: nil
                 )
             }
             throw error
@@ -2038,15 +2040,16 @@ public class GroupsV2Impl: GroupsV2 {
 
     private func updatePlaceholderGroupModelUsingInviteLinkPreview(
         groupSecretParams: GroupSecretParams,
-        isLocalUserRequestingMember: Bool
+        isLocalUserRequestingMember: Bool,
+        revision: UInt32?
     ) async {
         do {
-            let groupId = try groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
+            let groupId = try groupSecretParams.getPublicParams().getGroupIdentifier()
             try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
                     throw OWSAssertionError("Missing localIdentifiers.")
                 }
-                guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) else {
                     // Thread not yet in database.
                     return
                 }
@@ -2063,6 +2066,10 @@ public class GroupsV2Impl: GroupsV2 {
                 }
                 let oldGroupMembership = oldGroupModel.groupMembership
                 var builder = oldGroupModel.asBuilder
+                builder.isJoinRequestPlaceholder = true
+                if let revision {
+                    builder.groupV2Revision = max(revision, builder.groupV2Revision)
+                }
 
                 var membershipBuilder = oldGroupMembership.asBuilder
                 membershipBuilder.remove(localIdentifiers.aci)
