@@ -1715,8 +1715,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             case .pending:
                 componentDelegate.didTapPendingOutgoingMessage(outgoingMessage)
             case .sending:
-                // Ignore taps on outgoing messages being sent.
-                return true
+                // Sending messages should still allow taps to be processed
+                break
             default:
                 break
             }

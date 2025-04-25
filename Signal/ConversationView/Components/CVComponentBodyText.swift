@@ -77,9 +77,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         guard let outgoingMessage = interaction as? TSOutgoingMessage else {
             return false
         }
-        // Ignore taps on links in outgoing messages that haven't been sent yet, as
+        // Ignore taps on links in outgoing messages that have failed to send, as
         // this interferes with "tap to retry".
-        return outgoingMessage.messageState != .sent
+        return outgoingMessage.messageState == .failed
     }
     private var shouldIgnoreEvents: Bool { Self.shouldIgnoreEvents(interaction: interaction) }
 
