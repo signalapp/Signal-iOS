@@ -288,7 +288,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>adler2 2.0.0, anyhow 1.0.95, anyhow 1.0.97, async-trait 0.1.88, atomic-waker 1.1.2, auto_enums 0.8.7, curve25519-dalek-derive 0.1.1, derive_utils 0.15.0, displaydoc 0.2.5, dyn-clone 1.0.19, fastrand 2.3.0, home 0.5.9, itoa 1.0.14, itoa 1.0.15, linkme 0.3.32, linkme-impl 0.3.32, linux-raw-sys 0.4.15, linux-raw-sys 0.9.3, minimal-lexical 0.2.1, num_enum 0.7.3, num_enum_derive 0.7.3, once_cell 1.20.3, once_cell 1.21.3, paste 1.0.15, pin-project 1.1.10, pin-project-internal 1.1.10, pin-project-lite 0.2.16, prettyplease 0.2.29, prettyplease 0.2.32, proc-macro-crate 3.2.0, proc-macro-crate 3.3.0, proc-macro2 1.0.93, proc-macro2 1.0.94, quote 1.0.38, quote 1.0.40, rustc-hash 1.1.0, rustix 0.38.44, rustix 1.0.5, rustversion 1.0.20, semver 1.0.25, semver 1.0.26, send_wrapper 0.6.0, serde 1.0.217, serde 1.0.219, serde_derive 1.0.217, serde_derive 1.0.219, serde_json 1.0.138, serde_json 1.0.140, syn 1.0.109, syn 2.0.100, syn 2.0.98, syn-mid 0.6.0, thiserror 1.0.69, thiserror 2.0.12, thiserror-impl 1.0.69, thiserror-impl 2.0.12, unicode-ident 1.0.16, unicode-ident 1.0.18, utf-8 0.7.6</string>
+			<string>adler2 2.0.0, anyhow 1.0.95, anyhow 1.0.97, async-trait 0.1.88, atomic-waker 1.1.2, auto_enums 0.8.7, curve25519-dalek-derive 0.1.1, derive_utils 0.15.0, displaydoc 0.2.5, dyn-clone 1.0.19, fastrand 2.3.0, home 0.5.9, itoa 1.0.14, itoa 1.0.15, linkme 0.3.32, linkme-impl 0.3.32, linux-raw-sys 0.4.15, linux-raw-sys 0.9.3, minimal-lexical 0.2.1, num_enum 0.7.3, num_enum_derive 0.7.3, once_cell 1.20.3, once_cell 1.21.3, paste 1.0.15, pin-project 1.1.10, pin-project-internal 1.1.10, pin-project-lite 0.2.16, prettyplease 0.2.29, prettyplease 0.2.32, proc-macro-crate 3.2.0, proc-macro2 1.0.93, proc-macro2 1.0.94, quote 1.0.38, quote 1.0.40, rustc-hash 1.1.0, rustix 0.38.44, rustix 1.0.5, rustversion 1.0.20, semver 1.0.25, semver 1.0.26, send_wrapper 0.6.0, serde 1.0.217, serde 1.0.219, serde_derive 1.0.217, serde_derive 1.0.219, serde_json 1.0.138, serde_json 1.0.140, syn 1.0.109, syn 2.0.100, syn 2.0.98, syn-mid 0.6.0, thiserror 1.0.69, thiserror 2.0.12, thiserror-impl 1.0.69, thiserror-impl 2.0.12, unicode-ident 1.0.16, unicode-ident 1.0.18, utf-8 0.7.6</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -6338,7 +6338,7 @@ THE SOFTWARE.
 			<key>License</key>
 			<string>Apache License 2.0</string>
 			<key>Title</key>
-			<string>libcrux-intrinsics 0.0.2, libcrux-ml-kem 0.0.2-alpha.3, libcrux-platform 0.0.2, libcrux-sha3 0.0.2</string>
+			<string>libcrux-intrinsics 0.0.2, libcrux-ml-kem 0.0.2, libcrux-platform 0.0.2, libcrux-sha3 0.0.2</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -11202,7 +11202,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>rand 0.8.5, rand_chacha 0.3.1, rand_core 0.6.4</string>
+			<string>rand 0.8.5, rand 0.9.0, rand_chacha 0.3.1, rand_chacha 0.9.0, rand_core 0.6.4, rand_core 0.9.3</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -11276,29 +11276,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 			<string>BSD</string>
 			<key>Title</key>
 			<string>Reachability</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
-			<string>Copyright 2015-2025 Brian Smith.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
-SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
-OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-</string>
-			<key>License</key>
-			<string>ISC License</string>
-			<key>Title</key>
-			<string>ring 0.17.14</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -11579,6 +11556,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </string>
 			<key>License</key>
 			<string>Apache License 2.0</string>
+			<key>Title</key>
+			<string>ring 0.17.14</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Copyright 2015-2025 Brian Smith.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+</string>
+			<key>License</key>
+			<string>ISC License</string>
 			<key>Title</key>
 			<string>ring 0.17.14</string>
 			<key>Type</key>
@@ -14656,7 +14656,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>winnow 0.7.2, winnow 0.7.4</string>
+			<string>winnow 0.7.2</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
