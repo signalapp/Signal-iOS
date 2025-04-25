@@ -8,21 +8,39 @@
 public import GRDB
 
 public final class InMemoryDB: DB {
-
-    private let schedulers: Schedulers
-
-    public init(schedulers: Schedulers = DispatchQueueSchedulers()) {
-        self.schedulers = schedulers
+    public enum Mode {
+        case normalXcodeBuild
+        case xcodePreview
     }
 
-    // MARK: - State
+    let databaseQueue: DatabaseQueue
+    private let schedulers: Schedulers
 
-    let databaseQueue: DatabaseQueue = {
-        let result = DatabaseQueue()
-        let schemaUrl = Bundle(for: GRDBSchemaMigrator.self).url(forResource: "schema", withExtension: "sql")!
-        try! result.write { try $0.execute(sql: try String(contentsOf: schemaUrl)) }
-        return result
-    }()
+    public init(
+        mode: Mode = .normalXcodeBuild,
+        schedulers: Schedulers = DispatchQueueSchedulers()
+    ) {
+        self.databaseQueue = DatabaseQueue()
+        self.schedulers = schedulers
+
+        let schemaUrl: URL = switch mode {
+        case .normalXcodeBuild:
+            Bundle(for: GRDBSchemaMigrator.self)
+                .url(forResource: "schema", withExtension: "sql")!
+        case .xcodePreview:
+            /// There's what appears to be a bug in Xcode 16.3, in which for
+            /// Xcode Previews specifically the Bundle returned for SSK types
+            /// refers to the top-level app bundle, not the SSK bundle.
+            /// Searching in that bundle will fail to find `schema.sql`; so
+            /// instead manually search in the SSK subdirectory.
+            ///
+            /// This workaround can hopefully be removed when the Xcode bug is
+            /// resolved.
+            Bundle(for: GRDBSchemaMigrator.self)
+                .url(forResource: "schema", withExtension: "sql", subdirectory: "Frameworks/SignalServiceKit.framework")!
+        }
+        try! databaseQueue.write { try $0.execute(sql: try String(contentsOf: schemaUrl)) }
+    }
 
     // MARK: - Protocol
 

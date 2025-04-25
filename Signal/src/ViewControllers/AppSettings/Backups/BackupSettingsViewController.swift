@@ -694,7 +694,7 @@ private extension BackupEnabledViewModel {
         return BackupEnabledViewModel(
             backupSettingsStore: BackupSettingsStore(),
             dateProvider: { Date() },
-            db: InMemoryDB(),
+            db: InMemoryDB(mode: .xcodePreview),
             lastBackupDate: Date().addingTimeInterval(-1 * .day),
             lastBackupSizeBytes: 2_400_000_000,
             backupFrequency: .daily,
@@ -721,7 +721,7 @@ private extension BackupSettingsViewModel {
     ) -> BackupSettingsViewModel {
         return BackupSettingsViewModel(
             backupSettingsStore: BackupSettingsStore(),
-            db: InMemoryDB(),
+            db: InMemoryDB(mode: .xcodePreview),
             dateProvider: { Date() },
             backupPlanViewModel: backupPlanViewModel,
             enabledState: enabledState
