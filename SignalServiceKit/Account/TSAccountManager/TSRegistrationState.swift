@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public enum TSRegistrationState: Equatable {
+public enum TSRegistrationState {
     /// We are unregistered and never have been.
     /// Depending on the device, the user might register as a primary
     /// or provision as a linked device.

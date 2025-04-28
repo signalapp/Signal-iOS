@@ -498,6 +498,9 @@ extension TSAccountManagerImpl {
                 logger: logger,
                 tx: tx
             )
+            if self.registrationState.isRegistered {
+                owsPrecondition(localIdentifiers != nil, "If we're registered, we must have LocalIdentifiers.")
+            }
             self.registrationDate = kvStore.getDate(Keys.registrationDate, transaction: tx)
 
             self.phoneNumberDiscoverability = kvStore.getBool(Keys.isDiscoverableByPhoneNumber, transaction: tx).map {
