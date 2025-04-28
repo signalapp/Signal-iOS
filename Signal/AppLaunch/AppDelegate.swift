@@ -725,11 +725,19 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         if tsRegistrationState.isRegistered {
-            APNSRotationStore.rotateIfNeededOnAppLaunchAndReadiness(performRotation: {
-                SyncPushTokensJob.run(mode: .rotateIfEligible)
-            }).map {
-                // If the method returns a closure, run it after message processing.
-                _ = SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().done($0)
+            Task {
+                do {
+                    try await APNSRotationStore.rotateIfNeededOnAppLaunchAndReadiness(
+                        waitForFetchingAndProcessing: { () async throws(CancellationError) -> Void in
+                            try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
+                        },
+                        performRotation: {
+                            try await SyncPushTokensJob(mode: .rotateIfEligible).run()
+                        }
+                    )
+                } catch {
+                    Logger.warn("\(error)")
+                }
             }
         }
 

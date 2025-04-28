@@ -45,7 +45,7 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
 
     private func _runJobAttempt(_ jobRecord: LocalUserLeaveGroupJobRecord) async throws {
         if jobRecord.waitForMessageProcessing {
-            try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout(description: #fileID)
+            try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout()
         }
 
         let groupModel = try SSKEnvironment.shared.databaseStorageRef.read { tx in

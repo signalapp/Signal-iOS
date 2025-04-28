@@ -98,26 +98,11 @@ public class MessageFetcherJob {
         }
     }
 
-    public func waitForFetchingComplete() -> Guarantee<Void> {
-        guard CurrentAppContext().shouldProcessIncomingMessages else {
-            return Guarantee.value(())
-        }
-        if hasCompletedInitialFetch {
-            return Guarantee.value(())
-        }
-        if shouldUseWebSocket {
-            return NotificationCenter.default.observe(
-                once: OWSChatConnection.chatConnectionStateDidChange
-            ).then { _ in
-                self.waitForFetchingComplete()
-            }.asVoid()
-        } else {
-            return NotificationCenter.default.observe(
-                once: Self.didChangeStateNotificationName
-            ).then { _ in
-                self.waitForFetchingComplete()
-            }.asVoid()
-        }
+    func preconditionForFetchingComplete() -> some Precondition {
+        return NotificationPrecondition(
+            notificationName: shouldUseWebSocket ? OWSChatConnection.chatConnectionStateDidChange : Self.didChangeStateNotificationName,
+            isSatisfied: { self.hasCompletedInitialFetch }
+        )
     }
 
     // MARK: -
@@ -226,7 +211,7 @@ public class MessageFetcherJob {
 
     private func fetchMessagesViaRestWhenReady() async throws {
         owsPrecondition(CurrentAppContext().isNSE)
-        await SSKEnvironment.shared.messageProcessorRef.waitForProcessingComplete(processingTypes: [.messageProcessor]).awaitable()
+        try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing(stages: [.messageProcessor])
         try await waitForPendingAcks()
         try await fetchMessagesViaRest()
     }

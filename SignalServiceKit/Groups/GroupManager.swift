@@ -491,7 +491,7 @@ public class GroupManager: NSObject {
         waitForMessageProcessing: Bool = false
     ) async throws {
         if waitForMessageProcessing {
-            try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout(description: "Accept invite")
+            try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout()
         }
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             SSKEnvironment.shared.profileManagerRef.addGroupId(
@@ -1362,12 +1362,14 @@ public class GroupManager: NSObject {
 // MARK: -
 
 public extension GroupManager {
-    class func waitForMessageFetchingAndProcessingWithTimeout(description: String) async throws {
-        return try await Promise.wrapAsync {
-            await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
-        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: description) {
-            return GroupsV2Error.timeout
-        }.awaitable()
+    class func waitForMessageFetchingAndProcessingWithTimeout() async throws {
+        do {
+            return try await withCooperativeTimeout(seconds: GroupManager.groupUpdateTimeoutDuration) {
+                try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
+            }
+        } catch is CooperativeTimeoutError {
+            throw GroupsV2Error.timeout
+        }
     }
 }
 

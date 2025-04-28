@@ -242,7 +242,7 @@ class GroupsV2ProfileKeyUpdater {
             throw GroupsV2Error.shouldDiscard
         }
 
-        await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
+        try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
 
         let groupModel = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return TSGroupThread.fetch(groupId: groupId, transaction: tx)?.groupModel as? TSGroupModelV2

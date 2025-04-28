@@ -192,7 +192,7 @@ class NotificationService: UNNotificationServiceExtension {
         do {
             try await SSKEnvironment.shared.messageFetcherJobRef.run().awaitable()
 
-            await SSKEnvironment.shared.messageProcessorRef.waitForProcessingComplete().awaitable()
+            try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing(stages: [.messageProcessor, .groupMessageProcessor])
 
             // Wait for these in parallel.
             do {

@@ -385,7 +385,7 @@ internal struct PreKeyTaskManager {
     // MARK: Message Processing
 
     /// Waits (potentially forever) for message processing. Supports cancellation.
-    private func waitForMessageProcessing(identity: OWSIdentity) async throws {
+    private func waitForMessageProcessing(identity: OWSIdentity) async throws(CancellationError) {
         switch identity {
         case .aci:
             // We can't change our ACI via a message, so there's no need to wait.
@@ -395,12 +395,7 @@ internal struct PreKeyTaskManager {
             break
         }
 
-        let continuation = CancellableContinuation<Void>()
-        Task {
-            await messageProcessor.waitForFetchingAndProcessing().awaitable()
-            continuation.resume(with: .success(()))
-        }
-        try await continuation.wait()
+        try await messageProcessor.waitForFetchingAndProcessing()
     }
 
     // MARK: Persist

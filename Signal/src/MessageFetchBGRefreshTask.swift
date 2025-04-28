@@ -108,7 +108,9 @@ public class MessageFetchBGRefreshTask {
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.messageFetcherJob.run()
                 .then {
-                    return SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
+                    Promise.wrapAsync {
+                        try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
+                    }
                 }
                 .timeout(seconds: 10)
                 .observe { result in

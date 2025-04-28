@@ -140,7 +140,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
     /// After these steps, we can be confident that we have the latest on our
     /// username.
     private func ensureUsernameStateUpToDate() async throws {
-        await self.context.messageProcessor.waitForFetchingAndProcessing().awaitable()
+        try await self.context.messageProcessor.waitForFetchingAndProcessing()
         try await self.context.storageServiceManager.waitForPendingRestores()
     }
 
@@ -268,7 +268,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
 // MARK: MessageProcessor
 
 public protocol _UsernameValidationManager_MessageProcessorShim {
-    func waitForFetchingAndProcessing() -> Guarantee<Void>
+    func waitForFetchingAndProcessing() async throws(CancellationError)
 }
 
 internal class _UsernameValidationManager_MessageProcessorWrapper: Usernames.Validation.Shims.MessageProcessor {
@@ -277,8 +277,8 @@ internal class _UsernameValidationManager_MessageProcessorWrapper: Usernames.Val
         self.messageProcessor = messageProcessor
     }
 
-    public func waitForFetchingAndProcessing() -> Guarantee<Void> {
-        messageProcessor.waitForFetchingAndProcessing()
+    public func waitForFetchingAndProcessing() async throws(CancellationError) {
+        try await messageProcessor.waitForFetchingAndProcessing()
     }
 }
 

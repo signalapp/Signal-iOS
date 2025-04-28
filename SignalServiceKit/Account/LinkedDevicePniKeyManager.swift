@@ -96,7 +96,11 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
             return
         }
 
-        await self.messageProcessor.waitForFetchingAndProcessing()
+        do throws(CancellationError) {
+            try await self.messageProcessor.waitForFetchingAndProcessing()
+        } catch {
+            return
+        }
 
         let hasSuspectedIssue = self.db.read { tx in
             return self.kvStore.getBool(
@@ -166,7 +170,7 @@ extension LinkedDevicePniKeyManagerImpl {
 // MARK: MessageProcessor
 
 protocol _LinkedDevicePniKeyManagerImpl_MessageProcessor_Shim {
-    func waitForFetchingAndProcessing() async
+    func waitForFetchingAndProcessing() async throws(CancellationError)
 }
 
 class _LinkedDevicePniKeyManagerImpl_MessageProcessor_Wrapper: _LinkedDevicePniKeyManagerImpl_MessageProcessor_Shim {
@@ -176,7 +180,7 @@ class _LinkedDevicePniKeyManagerImpl_MessageProcessor_Wrapper: _LinkedDevicePniK
         self.messageProcessor = messageProcessor
     }
 
-    public func waitForFetchingAndProcessing() async {
-        await messageProcessor.waitForFetchingAndProcessing().awaitable()
+    public func waitForFetchingAndProcessing() async throws(CancellationError) {
+        try await messageProcessor.waitForFetchingAndProcessing()
     }
 }

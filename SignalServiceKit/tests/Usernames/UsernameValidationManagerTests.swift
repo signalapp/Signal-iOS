@@ -42,14 +42,14 @@ final class UsernameValidationManagerTest: XCTestCase {
 
     override func tearDown() {
         mockWhoAmIManager.whoamiResponse.ensureUnset()
-        mockMessageProcessor.processingResult.ensureUnset()
+        owsPrecondition(!mockMessageProcessor.canWait)
         mockStorageServiceManager.pendingRestoreResult.ensureUnset()
         mockUsernameLinkManager.decryptLinkResult.ensureUnset()
     }
 
     func testUnsetValidationSuccessful() async {
         mockLocalUsernameManager.startingUsernameState = .unset
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .value(.noRemoteUsername)
 
@@ -64,7 +64,7 @@ final class UsernameValidationManagerTest: XCTestCase {
 
     func testUnsetValidationFailsIfWhoamiFails() async {
         mockLocalUsernameManager.startingUsernameState = .unset
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .error()
 
@@ -79,7 +79,7 @@ final class UsernameValidationManagerTest: XCTestCase {
 
     func testUnsetValidationFailsIfRemoteUsernamePresent() async {
         mockLocalUsernameManager.startingUsernameState = .unset
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
 
@@ -97,7 +97,7 @@ final class UsernameValidationManagerTest: XCTestCase {
             username: "boba_fett.42",
             usernameLink: .mocked
         )
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
         mockUsernameLinkManager.decryptLinkResult = .value("boba_fett.42")
@@ -116,7 +116,7 @@ final class UsernameValidationManagerTest: XCTestCase {
             username: "boba_fett.42",
             usernameLink: .mocked
         )
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .error()
 
@@ -134,7 +134,7 @@ final class UsernameValidationManagerTest: XCTestCase {
             username: "boba_fett.42",
             usernameLink: .mocked
         )
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.43"))
 
@@ -152,7 +152,7 @@ final class UsernameValidationManagerTest: XCTestCase {
             username: "boba_fett.42",
             usernameLink: .mocked
         )
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
         mockUsernameLinkManager.decryptLinkResult = .error()
@@ -171,7 +171,7 @@ final class UsernameValidationManagerTest: XCTestCase {
             username: "boba_fett.42",
             usernameLink: .mocked
         )
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
         mockUsernameLinkManager.decryptLinkResult = .value("boba_fett.43")
@@ -187,7 +187,7 @@ final class UsernameValidationManagerTest: XCTestCase {
 
     func testLinkCorruptedValidationSuccessful() async {
         mockLocalUsernameManager.startingUsernameState = .linkCorrupted(username: "boba_fett.42")
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
 
@@ -202,7 +202,7 @@ final class UsernameValidationManagerTest: XCTestCase {
 
     func testLinkCorruptedValidationFailsIfWhoamiFails() async {
         mockLocalUsernameManager.startingUsernameState = .linkCorrupted(username: "boba_fett.42")
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .error()
 
@@ -217,7 +217,7 @@ final class UsernameValidationManagerTest: XCTestCase {
 
     func testLinkCorruptedValidationFailsIfRemoteUsernameMismatch() async {
         mockLocalUsernameManager.startingUsernameState = .linkCorrupted(username: "boba_fett.42")
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.43"))
 
@@ -232,7 +232,7 @@ final class UsernameValidationManagerTest: XCTestCase {
 
     func testUsernameCorruptedValidationSuccessful() async {
         mockLocalUsernameManager.startingUsernameState = .usernameAndLinkCorrupted
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
 
         await validationManager.validateUsernameIfNecessary()
@@ -246,7 +246,7 @@ final class UsernameValidationManagerTest: XCTestCase {
 
     func testValidationFailsIfStorageServiceRestoreFails() async {
         mockLocalUsernameManager.startingUsernameState = .usernameAndLinkCorrupted
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .error()
 
         await validationManager.validateUsernameIfNecessary()
@@ -284,7 +284,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
 
         mockLocalUsernameManager.startingUsernameState = .usernameAndLinkCorrupted
-        mockMessageProcessor.processingResult = .value(())
+        mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
 
         await validationManager.validateUsernameIfNecessary()
@@ -338,10 +338,11 @@ extension UsernameValidationManagerTest {
     }
 
     private class MockMessageProcessor: Usernames.Validation.Shims.MessageProcessor {
-        var processingResult: ConsumableMockGuarantee<Void> = .unset
+        var canWait = false
 
-        public func waitForFetchingAndProcessing() -> Guarantee<Void> {
-            return processingResult.consumeIntoGuarantee()
+        public func waitForFetchingAndProcessing() async throws(CancellationError) {
+            owsPrecondition(canWait)
+            canWait = false
         }
     }
 

@@ -33,7 +33,11 @@ public class GroupV2UpdatesImpl {
             return
         }
 
-        await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
+        do throws(CancellationError) {
+            try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
+        } catch {
+            return
+        }
 
         guard let groupInfoToRefresh = Self.findGroupToAutoRefresh() else {
             // We didn't find a group to refresh; abort.
@@ -280,7 +284,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
             // messages or we'll deadlock.
             break
         case .other:
-            await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
+            try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
         }
 
         do {

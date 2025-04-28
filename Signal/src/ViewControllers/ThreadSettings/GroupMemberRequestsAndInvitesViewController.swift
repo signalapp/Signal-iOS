@@ -492,7 +492,6 @@ private extension GroupMemberRequestsAndInvitesViewController {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            updateDescription: "[\(type(of: self))]",
             updateBlock: {
                 try await GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModelV2, serviceIds: serviceIds)
             },
@@ -510,7 +509,6 @@ private extension GroupMemberRequestsAndInvitesViewController {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            updateDescription: "[\(type(of: self))]",
             updateBlock: {
                 try await GroupManager.revokeInvalidInvites(groupModel: groupModelV2)
             },
@@ -569,7 +567,6 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            updateDescription: "[\(type(of: self))]",
             updateBlock: {
                 try await GroupManager.acceptOrDenyMemberRequestsV2(groupModel: groupModelV2, aci: aci, shouldAccept: shouldAccept)
             },

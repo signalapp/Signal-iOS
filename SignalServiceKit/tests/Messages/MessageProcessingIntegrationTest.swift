@@ -194,7 +194,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             }
         }
 
-        await SSKEnvironment.shared.messageProcessorRef.waitForProcessingComplete().awaitable()
+        try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing(stages: [.messageProcessor])
 
         // Handle a sync message
         // Build message content

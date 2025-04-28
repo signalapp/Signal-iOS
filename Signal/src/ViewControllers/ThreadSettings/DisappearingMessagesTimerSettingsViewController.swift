@@ -203,7 +203,6 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            updateDescription: "Update disappearing messages configuration",
             updateBlock: {
                 await withCheckedContinuation { continuation in
                     DispatchQueue.global().async {

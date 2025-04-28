@@ -130,7 +130,6 @@ private extension AddGroupMembersViewController {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            updateDescription: "[\(type(of: self))]",
             updateBlock: {
                 try await GroupManager.addOrInvite(
                     serviceIds: newServiceIds,

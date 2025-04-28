@@ -228,10 +228,10 @@ private extension LocalIdentifiers {
 }
 
 private class MessageProcessorMock: LinkedDevicePniKeyManagerImpl.Shims.MessageProcessor {
-    var waitForFetchingAndProcessingMock: (() async -> Void)!
+    var waitForFetchingAndProcessingMock: (() async throws(CancellationError) -> Void)!
 
-    func waitForFetchingAndProcessing() async {
-        await waitForFetchingAndProcessingMock!()
+    func waitForFetchingAndProcessing() async throws(CancellationError) {
+        try await waitForFetchingAndProcessingMock!()
     }
 }
 

@@ -791,6 +791,12 @@ public class _SystemStoryManager_MessageProcessorWrapper: _SystemStoryManager_Me
     }
 
     public func waitForFetchingAndProcessing() -> Guarantee<Void> {
-        return self.messageProcessor.waitForFetchingAndProcessing()
+        return Guarantee.wrapAsync { [messageProcessor] in
+            do throws(CancellationError) {
+                try await messageProcessor.waitForFetchingAndProcessing()
+            } catch {
+                owsFail("Guarantees can't be canceled.")
+            }
+        }
     }
 }

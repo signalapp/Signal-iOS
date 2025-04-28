@@ -227,7 +227,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
 
         showBadgeSheetIfNecessary()
-        Task { await self.checkForFailedServiceExtensionLaunches() }
+        Task { try await self.checkForFailedServiceExtensionLaunches() }
 
         hasEverAppeared = true
         if viewState.multiSelectState.isActive {
@@ -1224,7 +1224,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     // MARK: - Notifications
 
-    func checkForFailedServiceExtensionLaunches() async {
+    func checkForFailedServiceExtensionLaunches() async throws(CancellationError) {
         guard #available(iOS 17.0, *) else {
             return
         }
@@ -1233,7 +1233,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             return
         }
 
-        await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
+        try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
 
         let notificationSettings = await UNUserNotificationCenter.current().notificationSettings()
         guard notificationSettings.authorizationStatus == .authorized else {

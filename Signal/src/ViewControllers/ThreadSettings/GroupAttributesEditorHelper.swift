@@ -298,7 +298,6 @@ class GroupAttributesEditorHelper: NSObject {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: fromViewController,
-            updateDescription: "[\(type(of: self))]",
             updateBlock: {
                 try await GroupManager.updateGroupAttributes(
                     title: currentTitle,

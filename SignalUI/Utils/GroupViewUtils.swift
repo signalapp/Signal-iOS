@@ -18,7 +18,6 @@ public class GroupViewUtils {
 
     public static func updateGroupWithActivityIndicator(
         fromViewController: UIViewController,
-        updateDescription: String,
         updateBlock: @escaping () async throws -> Void,
         completion: (() -> Void)?
     ) {
@@ -28,7 +27,7 @@ public class GroupViewUtils {
             canCancel: false,
             asyncBlock: { modalActivityIndicator in
                 do {
-                    try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout(description: updateDescription)
+                    try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout()
                     try await updateBlock()
                     modalActivityIndicator.dismiss {
                         completion?()

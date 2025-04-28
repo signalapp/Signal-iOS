@@ -66,10 +66,10 @@ public final class APNSRotationStore {
 
     /// Call this on app startup once launched, registered, and ready.
     /// Takes a closure that rotates the APNS token. If the token should be rotated, calls this closure.
-    /// Returns an optional closure, which if present should be run once the message queue is flushed and
-    /// all pending messages are done processing.
-    /// Note the passed in closure may be called after the returned closure is called.
-    public static func rotateIfNeededOnAppLaunchAndReadiness(performRotation: @escaping () -> Void) -> (() -> Void)? {
+    public static func rotateIfNeededOnAppLaunchAndReadiness(
+        waitForFetchingAndProcessing: () async throws(CancellationError) -> Void,
+        performRotation: () async throws -> Void
+    ) async throws {
         // Structuring as efficiently as possible: in a single read we check if we
         // are eligible to rotate, if not whether we need to open an expensive write transaction
         // to write the app version to (which we should only ever do once),
@@ -105,19 +105,17 @@ public final class APNSRotationStore {
             // We are eligible to rotate the APNS token. Wait for fetching and processing to finish,
             // and if the latest message changed that means we had new messages to process
             // and therefore missed messages when the app wasn't active.
-            return {
-                let latestMessageTimestamp = SSKEnvironment.shared.databaseStorageRef.read { transaction -> UInt64? in
-                    return InteractionFinder.lastInsertedIncomingMessage(transaction: transaction)?.timestamp
-                }
-                if let latestMessageTimestamp, latestMessageTimestamp != latestMessageTimestampBeforeProcessing {
-                    // Rotate.
-                    Logger.info("New messages seen on app startup, rotating APNS token.")
-                    performRotation()
-                    return
-                }
+            try await waitForFetchingAndProcessing()
+            let latestMessageTimestamp = SSKEnvironment.shared.databaseStorageRef.read { transaction -> UInt64? in
+                return InteractionFinder.lastInsertedIncomingMessage(transaction: transaction)?.timestamp
+            }
+            if let latestMessageTimestamp, latestMessageTimestamp != latestMessageTimestampBeforeProcessing {
+                // Rotate.
+                Logger.info("New messages seen on app startup, rotating APNS token.")
+                try await performRotation()
             }
         } else if needsAppVersionWrite || needsKnownWorkingWrite {
-            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 if needsAppVersionWrite {
                     APNSRotationStore.setAppVersionTimeForAPNSRotationIfNeeded(transaction: transaction)
                 }
@@ -129,9 +127,6 @@ public final class APNSRotationStore {
                     )
                 }
             }
-            return nil
-        } else {
-            return nil
         }
     }
 

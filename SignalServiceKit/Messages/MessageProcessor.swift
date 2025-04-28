@@ -14,58 +14,40 @@ public class MessageProcessor {
         !pendingEnvelopes.isEmpty
     }
 
-    public struct ProcessingTypes: OptionSet {
+    public struct Stages: OptionSet {
         public var rawValue: UInt8
 
         public init(rawValue: UInt8) {
             self.rawValue = rawValue
         }
 
-        public static let messageProcessor = ProcessingTypes(rawValue: 1 << 0)
-        public static let groupMessageProcessor = ProcessingTypes(rawValue: 1 << 1)
+        public static let messageFetcher = Stages(rawValue: 1 << 0)
+        public static let messageProcessor = Stages(rawValue: 1 << 1)
+        public static let groupMessageProcessor = Stages(rawValue: 1 << 2)
     }
 
-    public func waitForProcessingComplete(processingTypes: ProcessingTypes = [.messageProcessor, .groupMessageProcessor]) -> Guarantee<Void> {
+    public func waitForFetchingAndProcessing(stages: Stages = [.messageFetcher, .messageProcessor, .groupMessageProcessor]) async throws(CancellationError) {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
-            return Guarantee.value(())
+            return
         }
 
-        let shouldWaitForMessageProcessing: () -> Bool = {
-            return processingTypes.contains(.messageProcessor) && self.hasPendingEnvelopes
+        var preconditions = [any Precondition]()
+        if stages.contains(.messageFetcher) {
+            preconditions.append(SSKEnvironment.shared.messageFetcherJobRef.preconditionForFetchingComplete())
         }
-        if shouldWaitForMessageProcessing() {
-            let messageProcessingPromise = NotificationCenter.default.observe(once: Self.messageProcessorDidDrainQueue)
-            // We must check (again) after setting up the observer in case we miss the
-            // notification. If you check before setting up the observer, the
-            // notification might fire while the thread is sleeping.
-            if shouldWaitForMessageProcessing() {
-                return messageProcessingPromise.then { _ in
-                    // Recur, in case we've enqueued messages handled in another block.
-                    self.waitForProcessingComplete()
-                }.asVoid()
-            }
+        if stages.contains(.messageProcessor) {
+            preconditions.append(NotificationPrecondition(
+                notificationName: Self.messageProcessorDidDrainQueue,
+                isSatisfied: { !self.hasPendingEnvelopes }
+            ))
         }
-
-        let shouldWaitForGroupMessageProcessing: () -> Bool = {
-            return processingTypes.contains(.groupMessageProcessor) && SSKEnvironment.shared.groupMessageProcessorManagerRef.isProcessing()
+        if stages.contains(.groupMessageProcessor) {
+            preconditions.append(NotificationPrecondition(
+                notificationName: GroupMessageProcessorManager.didFlushGroupsV2MessageQueue,
+                isSatisfied: { !SSKEnvironment.shared.groupMessageProcessorManagerRef.isProcessing() }
+            ))
         }
-        if shouldWaitForGroupMessageProcessing() {
-            let groupMessageProcessingPromise = NotificationCenter.default.observe(once: GroupMessageProcessorManager.didFlushGroupsV2MessageQueue)
-            if shouldWaitForGroupMessageProcessing() {
-                return groupMessageProcessingPromise.then { _ in
-                    // Recur, in case we've enqueued messages handled in another block.
-                    self.waitForProcessingComplete()
-                }.asVoid()
-            }
-        }
-
-        return Guarantee.value(())
-    }
-
-    public func waitForFetchingAndProcessing() -> Guarantee<Void> {
-        SSKEnvironment.shared.messageFetcherJobRef.waitForFetchingComplete().then { () -> Guarantee<Void> in
-            self.waitForProcessingComplete()
-        }
+        try await Preconditions(preconditions).waitUntilSatisfied()
     }
 
     private let appReadiness: AppReadiness

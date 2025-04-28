@@ -235,7 +235,8 @@ final class APNSRotationStoreTest: SignalBaseTest {
         }
     }
 
-    func testRecentMissedMessages() {
+    @MainActor
+    func testRecentMissedMessages() async throws {
         // Make sure we have an APNS Token
         write { tx in
             SSKEnvironment.shared.preferencesRef.setPushToken("123", tx: tx)
@@ -274,30 +275,27 @@ final class APNSRotationStoreTest: SignalBaseTest {
         }
 
         // We shouldn't rotate without unprocessed messages.
-        var onMessagesFlushed = APNSRotationStore.rotateIfNeededOnAppLaunchAndReadiness(performRotation: {
-            XCTFail("Rotating when we shouldn't!")
-        })
-        XCTAssertNotNil(onMessagesFlushed)
-        onMessagesFlushed?()
+        var didWait = false
+        try await APNSRotationStore.rotateIfNeededOnAppLaunchAndReadiness(
+            waitForFetchingAndProcessing: { didWait = true },
+            performRotation: { XCTFail("Rotating when we shouldn't!") },
+        )
+        XCTAssert(didWait)
 
         // But if we insert some messages on app launch we should rotate!
         var didRotate = false
-        onMessagesFlushed = APNSRotationStore.rotateIfNeededOnAppLaunchAndReadiness(performRotation: {
-            didRotate = true
-        })
-        XCTAssertNotNil(onMessagesFlushed)
-        XCTAssertFalse(didRotate)
-
-        // Insert a message.
-        write { transaction in
-            self.createIncomingMessage(
-                receivedTimestamp: now,
-                transaction: transaction
-            )
-        }
-
-        onMessagesFlushed?()
-
+        try await APNSRotationStore.rotateIfNeededOnAppLaunchAndReadiness(
+            waitForFetchingAndProcessing: { @MainActor in
+                // Insert a message.
+                write { transaction in
+                    self.createIncomingMessage(
+                        receivedTimestamp: now,
+                        transaction: transaction
+                    )
+                }
+            },
+            performRotation: { didRotate = true },
+        )
         XCTAssert(didRotate)
     }
 

@@ -181,7 +181,6 @@ private extension GroupLinkPromotionActionSheet {
         GroupLinkViewUtils.updateLinkMode(
             groupModelV2: groupModelV2,
             linkMode: linkMode,
-            description: "[\(type(of: self))]",
             fromViewController: actionSheetController,
             completion: { [weak self] in
                 let databaseStorage = SSKEnvironment.shared.databaseStorageRef

@@ -1026,7 +1026,6 @@ extension ConversationViewController: CVComponentDelegate {
             handler: { _ in
                 GroupViewUtils.updateGroupWithActivityIndicator(
                     fromViewController: self,
-                    updateDescription: "Blocking join request",
                     updateBlock: {
                         // If the user in question has canceled their request,
                         // this call will still block them.

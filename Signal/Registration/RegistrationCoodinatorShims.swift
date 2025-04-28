@@ -173,7 +173,13 @@ public class _RegistrationCoordinator_MessageProcessorWrapper: _RegistrationCoor
     }
 
     public func waitForFetchingAndProcessing() -> Guarantee<Void> {
-        return processor.waitForFetchingAndProcessing()
+        return Guarantee.wrapAsync { [processor] in
+            do throws(CancellationError) {
+                try await processor.waitForFetchingAndProcessing()
+            } catch {
+                owsFail("Guarantees can't be canceled.")
+            }
+        }
     }
 }
 

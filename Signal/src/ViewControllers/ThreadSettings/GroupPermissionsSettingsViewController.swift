@@ -266,7 +266,6 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         // into a single change.
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            updateDescription: "Update group permissions",
             updateBlock: { @MainActor [thread] in
                 await withCheckedContinuation { continuation in
                     DispatchQueue.global().async {
