@@ -23,12 +23,17 @@ class RegistrationQuickRestoreQRCodeViewController:
     private weak var presenter: RegistrationQuickRestoreQRCodePresenter?
 
     private var provisioningSocketManager: ProvisioningSocketManager
-    private var viewModel: QRCodeViewRepresentable.Model
+    private var model: RotatingQRCodeView.Model
 
     init(presenter: RegistrationQuickRestoreQRCodePresenter) {
         self.presenter = presenter
         self.provisioningSocketManager = ProvisioningSocketManager(linkType: .quickRestore)
-        self.viewModel = QRCodeViewRepresentable.Model(qrCodeURL: nil)
+        self.model = RotatingQRCodeView.Model(
+            urlDisplayMode: .loading,
+            onRefreshButtonPressed: { [weak provisioningSocketManager] in
+                provisioningSocketManager?.reset()
+            }
+        )
         super.init()
 
         self.provisioningSocketManager.delegate = self
@@ -40,7 +45,7 @@ class RegistrationQuickRestoreQRCodeViewController:
     }
 
     private lazy var hostingController = UIHostingController(rootView: ContentStack(
-        viewModel: viewModel,
+        model: model,
         cancelAction: { [weak self] in
             self?.presenter?.cancel()
         }
@@ -67,11 +72,11 @@ class RegistrationQuickRestoreQRCodeViewController:
         _ provisioningSocketManager: ProvisioningSocketManager,
         didUpdateProvisioningURL url: URL
     ) {
-        self.viewModel.qrCodeURL = url
+        self.model.updateURLDisplayMode(.loaded(url))
     }
 
     func provisioningSocketManagerDidPauseQRRotation(_ provisioningSocketManager: ProvisioningSocketManager) {
-        // [TODO: Backups]: Show the 'refresh' UI.
+        self.model.updateURLDisplayMode(.refreshButton)
     }
 
     // MARK: OWSNavigationChildController
@@ -86,7 +91,7 @@ class RegistrationQuickRestoreQRCodeViewController:
 // MARK: - SwiftUI
 
 private struct ContentStack: View {
-    @ObservedObject var viewModel: QRCodeViewRepresentable.Model
+    @ObservedObject var model: RotatingQRCodeView.Model
 
     let cancelAction: () -> Void
 
@@ -102,7 +107,10 @@ private struct ContentStack: View {
                 .padding(.horizontal, 8)
                 .multilineTextAlignment(.center)
             Spacer()
-            QRCodeViewRepresentable(model: viewModel).frame(width: 300, height: 300)
+
+            RotatingQRCodeView(model: model)
+                .padding(.horizontal, 50)
+
             Spacer()
             TutorialStack()
             Spacer()
@@ -147,20 +155,31 @@ private struct TutorialStack: View {
 }
 
 #if DEBUG
-private class PreviewRegistrationQuickRestoreQRCodePresenter: RegistrationQuickRestoreQRCodePresenter {
-    func didReceiveRegistrationMessage(_ message: RegistrationProvisioningMessage) {
-        print("Received Message")
-    }
-
-    func cancel() {
-        print("Cancel")
-    }
-
-}
-
-private let presenter = PreviewRegistrationQuickRestoreQRCodePresenter()
 @available(iOS 17, *)
 #Preview {
-    return RegistrationQuickRestoreQRCodeViewController(presenter: presenter)
+    @Previewable @State var displayMode: RotatingQRCodeView.Model.URLDisplayMode = .loading
+
+    let url1 = URL(string: "https://support.signal.org/hc/en-us/articles/6712070553754-Phone-Number-Privacy-and-Usernames")!
+    let url2 = URL(string: "https://support.signal.org/hc/en-us/articles/6255134251546-Edit-Message")!
+    let cycle: () async -> Void = { @MainActor in
+        displayMode = .loading
+        try? await Task.sleep(nanoseconds: NSEC_PER_SEC/2)
+        displayMode = .loaded(url1)
+        try? await Task.sleep(nanoseconds: NSEC_PER_SEC * 3)
+        displayMode = .loaded(url2)
+        try? await Task.sleep(nanoseconds: NSEC_PER_SEC * 3)
+        displayMode = .refreshButton
+    }
+
+    ContentStack(
+        model: .init(
+            urlDisplayMode: displayMode,
+            onRefreshButtonPressed: { Task { await cycle() } }
+        ),
+        cancelAction: {}
+    )
+    .task {
+        await cycle()
+    }
 }
 #endif

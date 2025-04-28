@@ -181,3 +181,89 @@ struct QRCodeViewRepresentable: UIViewRepresentable {
         }
     }
 }
+
+struct RotatingQRCodeView: View {
+    class Model: ObservableObject {
+        enum URLDisplayMode {
+            case loading
+            case loaded(URL)
+            case refreshButton
+        }
+
+        @Published
+        private(set) var urlDisplayMode: URLDisplayMode
+        let onRefreshButtonPressed: () -> Void
+
+        let qrCodeViewModel: QRCodeViewRepresentable.Model
+
+        init(urlDisplayMode: URLDisplayMode, onRefreshButtonPressed: @escaping () -> Void) {
+            self.urlDisplayMode = .loading
+            self.onRefreshButtonPressed = onRefreshButtonPressed
+            self.qrCodeViewModel = QRCodeViewRepresentable.Model(qrCodeURL: nil)
+
+            updateURLDisplayMode(urlDisplayMode)
+        }
+
+        func updateURLDisplayMode(_ newValue: URLDisplayMode) {
+            urlDisplayMode = newValue
+
+            qrCodeViewModel.qrCodeURL = switch urlDisplayMode {
+            case .loaded(let url): url
+            case .loading, .refreshButton: nil
+            }
+        }
+    }
+
+    @ObservedObject var model: Model
+
+    var body: some View {
+        GeometryReader { qrCodeGeometry in
+            ZStack {
+                Color(UIColor.ows_gray02)
+                    .cornerRadius(24)
+
+                switch model.urlDisplayMode {
+                case .loading, .loaded:
+                    QRCodeViewRepresentable(model: model.qrCodeViewModel)
+                        .padding(qrCodeGeometry.size.height * 0.1)
+                case .refreshButton:
+                    Button(action: model.onRefreshButtonPressed) {
+                        HStack {
+                            Image("refresh")
+
+                            Text(OWSLocalizedString(
+                                "SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON",
+                                comment: "Text for a button offering to refresh the QR code to link an iPad."
+                            ))
+                            .font(.body)
+                            .fontWeight(.bold)
+                        }
+                        .foregroundStyle(Color.black)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 8)
+                    }
+                    .background {
+                        Capsule().fill(Color.white)
+                    }
+                }
+            }
+        }
+        .aspectRatio(1, contentMode: .fit)
+    }
+}
+
+// MARK: - Previews
+
+#Preview {
+    VStack {
+        RotatingQRCodeView(model: .init(
+            urlDisplayMode: .loaded(URL(string: "https://support.signal.org/hc/en-us/articles/6712070553754-Phone-Number-Privacy-and-Usernames")!),
+            onRefreshButtonPressed: {}
+        ))
+
+        RotatingQRCodeView(model: .init(urlDisplayMode: .loading, onRefreshButtonPressed: {}))
+
+        RotatingQRCodeView(model: .init(urlDisplayMode: .refreshButton, onRefreshButtonPressed: {}))
+    }
+    .padding()
+}

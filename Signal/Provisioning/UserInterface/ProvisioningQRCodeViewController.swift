@@ -8,14 +8,19 @@ import SignalUI
 import SwiftUI
 
 class ProvisioningQRCodeViewController: ProvisioningBaseViewController, ProvisioningSocketManagerUIDelegate {
-    private let provisioningQRCodeViewModel: ProvisioningQRCodeView.Model
+    private let provisioningQRCodeViewModel: RotatingQRCodeView.Model
     private let provisioningSocketManager: ProvisioningSocketManager
 
     init(
         provisioningController: ProvisioningController,
         provisioningSocketManager: ProvisioningSocketManager
     ) {
-        provisioningQRCodeViewModel = ProvisioningQRCodeView.Model(urlDisplayMode: .loading)
+        provisioningQRCodeViewModel = RotatingQRCodeView.Model(
+            urlDisplayMode: .loading,
+            onRefreshButtonPressed: { [weak provisioningSocketManager] in
+                provisioningSocketManager?.reset()
+            }
+        )
         self.provisioningSocketManager = provisioningSocketManager
 
         super.init(provisioningController: provisioningController)
@@ -32,10 +37,7 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController, Provisio
         primaryView.autoPinEdgesToSuperviewEdges()
 
         let qrCodeViewHostingContainer = HostingContainer(wrappedView: ProvisioningQRCodeView(
-            model: provisioningQRCodeViewModel,
-            onRefreshButtonPressed: { [weak self] in
-                self?.provisioningSocketManager.reset()
-            }
+            model: provisioningQRCodeViewModel
         ))
 
         addChild(qrCodeViewHostingContainer)
@@ -77,44 +79,7 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController, Provisio
 // MARK: -
 
 private struct ProvisioningQRCodeView: View {
-    class Model: ObservableObject {
-        enum URLDisplayMode {
-            case loading
-            case loaded(URL)
-            case refreshButton
-        }
-
-        @Published
-        private(set) var urlDisplayMode: URLDisplayMode
-
-        let qrCodeViewModel: QRCodeViewRepresentable.Model
-
-        init(urlDisplayMode: URLDisplayMode) {
-            self.urlDisplayMode = .loading
-            self.qrCodeViewModel = QRCodeViewRepresentable.Model(qrCodeURL: nil)
-
-            updateURLDisplayMode(urlDisplayMode)
-        }
-
-        func updateURLDisplayMode(_ newValue: URLDisplayMode) {
-            urlDisplayMode = newValue
-
-            qrCodeViewModel.qrCodeURL = switch urlDisplayMode {
-            case .loaded(let url): url
-            case .loading, .refreshButton: nil
-            }
-        }
-    }
-
-    @ObservedObject
-    private var model: Model
-
-    private let onRefreshButtonPressed: () -> Void
-
-    init(model: Model, onRefreshButtonPressed: @escaping () -> Void) {
-        self.model = model
-        self.onRefreshButtonPressed = onRefreshButtonPressed
-    }
+    @ObservedObject var model: RotatingQRCodeView.Model
 
     var body: some View {
         GeometryReader { overallGeometry in
@@ -137,38 +102,7 @@ private struct ProvisioningQRCodeView: View {
                 Spacer()
                     .frame(height: overallGeometry.size.height * 0.05)
 
-                GeometryReader { qrCodeGeometry in
-                    ZStack {
-                        Color(UIColor.ows_gray02)
-                            .cornerRadius(24)
-
-                        switch model.urlDisplayMode {
-                        case .loading, .loaded:
-                            QRCodeViewRepresentable(model: model.qrCodeViewModel)
-                                .padding(qrCodeGeometry.size.height * 0.1)
-                        case .refreshButton:
-                            Button(action: onRefreshButtonPressed) {
-                                HStack {
-                                    Image("refresh")
-
-                                    Text(OWSLocalizedString(
-                                        "SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON",
-                                        comment: "Text for a button offering to refresh the QR code to link an iPad."
-                                    ))
-                                    .font(.body)
-                                    .fontWeight(.bold)
-                                }
-                                .foregroundStyle(Color.black)
-                                .padding(.horizontal, 24)
-                                .padding(.vertical, 8)
-                            }
-                            .background {
-                                Capsule().fill(Color.white)
-                            }
-                        }
-                    }
-                }
-                .aspectRatio(1, contentMode: .fit)
+                RotatingQRCodeView(model: self.model)
 
                 Spacer()
                     .frame(height: overallGeometry.size.height * (overallGeometry.size.isLandscape ? 0.05 : 0.1))
@@ -222,12 +156,14 @@ private struct ProvisioningQRCodeView: View {
 // MARK: -
 
 private struct PreviewView: View {
-    let urlDisplayMode: ProvisioningQRCodeView.Model.URLDisplayMode
+    let urlDisplayMode: RotatingQRCodeView.Model.URLDisplayMode
 
     var body: some View {
         ProvisioningQRCodeView(
-            model: ProvisioningQRCodeView.Model(urlDisplayMode: urlDisplayMode),
-            onRefreshButtonPressed: {}
+            model: RotatingQRCodeView.Model(
+                urlDisplayMode: urlDisplayMode,
+                onRefreshButtonPressed: {}
+            )
         )
         .padding(112)
     }
