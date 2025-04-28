@@ -391,20 +391,26 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
             if possiblePrefix.unicodeScalars.allSatisfy({ NSCharacterSet.whitespacesAndNewlines.contains($0) }) {
                 state = .notTypingMention
                 return
+            }
 
             // If we find the mention prefix before the selected range, we may be typing a mention.
-            } else if possiblePrefix == Mention.prefix {
+            if possiblePrefix == Mention.prefix {
 
                 // If there's more text before the mention prefix, check if it's whitespace. Mentions
                 // only start at the beginning of the string OR after a whitespace character.
                 if location - Mention.prefix.count > 0 {
-                    let characterPrecedingPrefix = editableBody.hydratedPlaintext.substring(
-                        withRange: NSRange(location: location - Mention.prefix.count - 1, length: Mention.prefix.count)
-                    )
+                    let characterPrecedingPrefix: Character = editableBody.hydratedPlaintext.substring(
+                        withRange: NSRange(
+                            location: location - Mention.prefix.count - 1,
+                            length: 1
+                        )
+                    ).first!
 
-                    // If it's not whitespace, keep looking back. Mention text can contain an "@" character,
-                    // for example when trying to match a profile name that contains "@"
-                    if !characterPrecedingPrefix.unicodeScalars.allSatisfy({ NSCharacterSet.whitespacesAndNewlines.contains($0) }) {
+                    // If it's alphanumeric, keep looking back. We don't want to
+                    // insert a mention in the middle of typed text. Mention
+                    // text can also itself contain an "@", for example when
+                    // trying to match a profile name that contains "@".
+                    if characterPrecedingPrefix.unicodeScalars.allSatisfy({ CharacterSet.alphanumerics.contains($0) }) {
                         location -= 1
                         continue
                     }
