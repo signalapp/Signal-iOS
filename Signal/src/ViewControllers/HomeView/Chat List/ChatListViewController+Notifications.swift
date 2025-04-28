@@ -158,6 +158,8 @@ extension ChatListViewController {
         if !ExperienceUpgradeManager.presentNext(fromViewController: self) {
             presentGetStartedBannerIfNecessary()
         }
+
+        updateExpirationReminderView()
     }
 
     @objc
