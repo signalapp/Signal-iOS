@@ -362,7 +362,16 @@ public class OWSUDManagerImpl: OWSUDManager {
             return certificate
         }
 
-        let senderCertificate = try await self.requestSenderCertificate(aciOnly: aciOnly)
+        let senderCertificate: SenderCertificate
+        do {
+            senderCertificate = try await self.requestSenderCertificate(aciOnly: aciOnly)
+        } catch where error.isNetworkFailureOrTimeout || error.httpStatusCode.map({ $0/100 }) == 5 {
+            throw error
+        } catch {
+            Logger.warn("Couldn't fetch Sealed Sender certificate: \(error)")
+            SSKEnvironment.shared.notificationPresenterRef.notifyTestPopulation(ofErrorMessage: "Couldn't parse Sealed Sender certificate.")
+            throw error
+        }
         await self.setSenderCertificate(aciOnly: aciOnly, certificateData: Data(senderCertificate.serialize()))
         return senderCertificate
     }
