@@ -169,10 +169,11 @@ private extension RemoteMegaphoneFetcher {
     /// Manifests contain metadata about a megaphone, such as when it should be
     /// shown and what actions it should expose. They do not contain any
     /// user-visible content, such as strings.
-    private func fetchManifests(remainingRetries: UInt = 2) async throws -> [RemoteMegaphoneModel.Manifest] {
-        var remainingRetries = remainingRetries
-        while true {
-            do {
+    private func fetchManifests() async throws -> [RemoteMegaphoneModel.Manifest] {
+        return try await Retry.performWithBackoff(
+            maxAttempts: 3,
+            isRetryable: { $0.isNetworkFailureOrTimeout || ($0 as? OWSHTTPError)?.isRetryable == true },
+            block: {
                 let response = try await getUrlSession().performRequest(
                     .manifestUrlPath,
                     method: .get
@@ -183,12 +184,8 @@ private extension RemoteMegaphoneFetcher {
                 }
 
                 return try RemoteMegaphoneModel.Manifest.parseFrom(responseJson: responseJson)
-            } catch where remainingRetries > 0 && error.isNetworkFailureOrTimeout {
-                Logger.warn("Retrying after failure: \(error)")
-                remainingRetries -= 1
-                continue
             }
-        }
+        )
     }
 
     /// Fetch user-displayable localized strings for the given manifest. Will
@@ -224,11 +221,11 @@ private extension RemoteMegaphoneFetcher {
     private func fetchTranslation(
         forMegaphoneManifest manifest: RemoteMegaphoneModel.Manifest,
         withLocaleString localeString: String,
-        remainingRetries: UInt = 2
     ) async throws -> RemoteMegaphoneModel.Translation {
-        var remainingRetries = remainingRetries
-        while true {
-            do {
+        return try await Retry.performWithBackoff(
+            maxAttempts: 3,
+            isRetryable: { $0.isNetworkFailureOrTimeout || ($0 as? OWSHTTPError)?.isRetryable == true },
+            block: {
                 guard let translationUrlPath: String = .translationUrlPath(
                     forManifest: manifest,
                     withLocaleString: localeString
@@ -240,19 +237,14 @@ private extension RemoteMegaphoneFetcher {
                     throw OWSAssertionError("Missing body JSON for translation!")
                 }
                 return try RemoteMegaphoneModel.Translation.parseFrom(responseJson: responseJson)
-            } catch where remainingRetries > 0 && error.isNetworkFailureOrTimeout {
-                Logger.warn("Retrying after failure: \(error)")
-                remainingRetries -= 1
-                continue
             }
-        }
+        )
     }
 
     /// Get a path to the local image file for this translation. Fetches the
     /// image if necessary. Returns ``nil`` if this translation has no image.
     private func downloadImageIfNecessary(
         forTranslation translation: RemoteMegaphoneModel.Translation,
-        remainingRetries: UInt = 2
     ) async throws -> URL? {
         guard let imageRemoteUrlPath = translation.imageRemoteUrlPath else {
             return nil
@@ -262,42 +254,36 @@ private extension RemoteMegaphoneFetcher {
             throw OWSAssertionError("Failed to get image file path for translation with ID \(translation.id)")
         }
 
-        var remainingRetries = remainingRetries
-        while !FileManager.default.fileExists(atPath: imageFileUrl.path) {
-            do {
-                let response = try await getUrlSession().performDownload(
-                    imageRemoteUrlPath,
-                    method: .get
-                )
-
+        return try await Retry.performWithBackoff(
+            maxAttempts: 3,
+            isRetryable: { $0.isNetworkFailureOrTimeout || ($0 as? OWSHTTPError)?.isRetryable == true },
+            block: {
                 do {
-                    try FileManager.default.moveItem(
-                        at: response.downloadUrl,
-                        to: imageFileUrl
-                    )
-                } catch let error {
-                    throw OWSAssertionError("Failed to move downloaded image! \(error)")
-                }
-                break
-            } catch where remainingRetries > 0 && error.isNetworkFailureOrTimeout {
-                remainingRetries -= 1
-                continue
-            } catch let error as OWSHTTPError {
-                switch error.responseStatusCode {
-                case 404:
+                    if !FileManager.default.fileExists(atPath: imageFileUrl.path) {
+                        let response = try await getUrlSession().performDownload(
+                            imageRemoteUrlPath,
+                            method: .get
+                        )
+
+                        do {
+                            try FileManager.default.moveItem(
+                                at: response.downloadUrl,
+                                to: imageFileUrl
+                            )
+                        } catch let error {
+                            throw OWSAssertionError("Failed to move downloaded image! \(error)")
+                        }
+                    }
+                    return imageFileUrl
+                } catch where error.httpStatusCode == 404 {
                     owsFailDebug("Unexpectedly got 404 while fetching remote megaphone image for ID \(translation.id)!")
                     return nil
-                case 500..<600:
-                    owsFailDebug("Encountered server error with status \(error.responseStatusCode) while fetching remote megaphone image!")
-                    return nil
-                default:
+                } catch let error as OWSHTTPError {
                     owsFailDebug("Unexpectedly got error status code \(error.responseStatusCode) while fetching remote megaphone image for ID \(translation.id)!")
                     throw error
                 }
             }
-        }
-
-        return imageFileUrl
+        )
     }
 }
 
