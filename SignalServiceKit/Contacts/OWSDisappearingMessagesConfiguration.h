@@ -50,6 +50,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:durationSeconds:ena
 + (NSArray<NSNumber *> *)presetDurationsSeconds;
 + (uint32_t)maxDurationSeconds;
 
+/// Returns true if two configs have the same duration and enabled state, regardless of timer version.
+- (BOOL)hasSameDurationAs:(OWSDisappearingMessagesConfiguration *)other;
+
 // It's critical that we only modify copies.
 // Otherwise any modifications will be made to the
 // instance in the YDB object cache and hasChangedForThread:

@@ -129,6 +129,15 @@ NS_ASSUME_NONNULL_BEGIN
     return newInstance;
 }
 
+
+- (BOOL)hasSameDurationAs:(OWSDisappearingMessagesConfiguration *)other
+{
+    if (other.isEnabled != self.isEnabled) {
+        return NO;
+    }
+    return other.durationSeconds == self.durationSeconds;
+}
+
 - (BOOL)isEqual:(id)other
 {
     if (![other isKindOfClass:[OWSDisappearingMessagesConfiguration class]]) {

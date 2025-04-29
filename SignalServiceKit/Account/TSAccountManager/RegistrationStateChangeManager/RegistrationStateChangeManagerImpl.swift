@@ -12,6 +12,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
     private let appContext: AppContext
     private let authCredentialStore: AuthCredentialStore
+    private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
     private let identityManager: OWSIdentityManager
     private let notificationPresenter: any NotificationPresenter
@@ -30,6 +31,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     init(
         appContext: AppContext,
         authCredentialStore: AuthCredentialStore,
+        dmConfigurationStore: DisappearingMessagesConfigurationStore,
         groupsV2: GroupsV2,
         identityManager: OWSIdentityManager,
         notificationPresenter: any NotificationPresenter,
@@ -47,6 +49,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     ) {
         self.appContext = appContext
         self.authCredentialStore = authCredentialStore
+        self.dmConfigurationStore = dmConfigurationStore
         self.groupsV2 = groupsV2
         self.identityManager = identityManager
         self.notificationPresenter = notificationPresenter
@@ -139,6 +142,22 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
         if isDeregisteredOrDelinked {
             notificationPresenter.notifyUserOfDeregistration(tx: tx)
+            // On linked devices, reset all DM timer versions. If the user
+            // relinks a new primary and resets all its DM timer versions,
+            // our local higher version number would prevent us getting
+            // back in sync. So we pre-emptively reset too. If we relink
+            // to a primary that preserves versions we'll catch back
+            // up via contact sync.
+            switch tsAccountManager.registrationState(tx: tx) {
+            case .delinked:
+                do {
+                    try dmConfigurationStore.resetAllDMTimerVersions(tx: tx)
+                } catch {
+                    owsFailDebug("Failed to reset dm timer versions \(error.grdbErrorForLogging)")
+                }
+            default:
+                break
+            }
         }
         postRegistrationStateDidChangeNotification()
     }

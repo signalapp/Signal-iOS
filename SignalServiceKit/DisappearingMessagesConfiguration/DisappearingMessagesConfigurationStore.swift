@@ -21,6 +21,14 @@ public protocol DisappearingMessagesConfigurationStore {
         for scope: DisappearingMessagesConfigurationScope,
         tx: DBWriteTransaction
     ) -> SetTokenResult
+
+    /// Keep all DM timers, but reset their versions.
+    /// Done when we may become out of sync with our other devices and need
+    /// to reset versions to get back in sync. For example, if we are a linked device
+    /// that becomes delinked, if a new primary device registers from an empty DB
+    /// its DM timer versions will all reset to 0. They should override ours so we
+    /// have to reset ourselves.
+    func resetAllDMTimerVersions(tx: DBWriteTransaction) throws
 }
 
 extension DisappearingMessagesConfigurationStore {
@@ -147,6 +155,13 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
     func remove(for thread: TSThread, tx: DBWriteTransaction) {
         fetch(for: .thread(thread), tx: tx)?.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
     }
+
+    func resetAllDMTimerVersions(tx: DBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+            UPDATE \(OWSDisappearingMessagesConfigurationSerializer.table.tableName)
+            SET \(OWSDisappearingMessagesConfigurationSerializer.timerVersionColumn.columnName) = 1;
+        """)
+    }
 }
 
 #if TESTABLE_BUILD
@@ -178,6 +193,17 @@ class MockDisappearingMessagesConfigurationStore: DisappearingMessagesConfigurat
 
     func remove(for thread: TSThread, tx: DBWriteTransaction) {
         values[thread.uniqueId] = nil
+    }
+
+    func resetAllDMTimerVersions(tx: DBWriteTransaction) throws {
+        values.forEach { key, value in
+            values[key] = OWSDisappearingMessagesConfiguration(
+                threadId: value.uniqueId,
+                enabled: value.isEnabled,
+                durationSeconds: value.durationSeconds,
+                timerVersion: 1
+            )
+        }
     }
 }
 

@@ -750,6 +750,7 @@ public class AppSetup {
         let registrationStateChangeManager = RegistrationStateChangeManagerImpl(
             appContext: appContext,
             authCredentialStore: authCredentialStore,
+            dmConfigurationStore: disappearingMessagesConfigurationStore,
             groupsV2: groupsV2,
             identityManager: identityManager,
             notificationPresenter: notificationPresenter,
