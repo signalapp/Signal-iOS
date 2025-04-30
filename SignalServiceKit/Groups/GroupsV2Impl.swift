@@ -1434,17 +1434,9 @@ public class GroupsV2Impl: GroupsV2 {
     // inviteLinkPassword is not necessary if we're already a member or have a pending request.
     public func fetchGroupInviteLinkPreview(
         inviteLinkPassword: Data?,
-        groupSecretParams: GroupSecretParams,
-        allowCached: Bool
+        groupSecretParams: GroupSecretParams
     ) async throws -> GroupInviteLinkPreview {
         let cacheKey = groupInviteLinkPreviewCacheKey(groupSecretParams: groupSecretParams)
-
-        if
-            allowCached,
-            let groupInviteLinkPreview = groupInviteLinkPreviewCache.object(forKey: cacheKey)
-        {
-            return groupInviteLinkPreview
-        }
 
         let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
 
@@ -1456,32 +1448,39 @@ public class GroupsV2Impl: GroupsV2 {
             )
         }
 
+        let behavior403: Behavior403 = (
+            inviteLinkPassword != nil
+            ? .reportInvalidOrBlockedGroupLink
+            : .localUserIsNotARequestingMember
+        )
+        let response = try await performServiceRequest(
+            requestBuilder: requestBuilder,
+            groupId: nil,
+            behavior400: .fail,
+            behavior403: behavior403,
+            behavior404: .fail
+        )
+        guard let protoData = response.responseBodyData else {
+            throw OWSAssertionError("Invalid responseObject.")
+        }
+        let groupInviteLinkPreview = try GroupsV2Protos.parseGroupInviteLinkPreview(protoData, groupV2Params: groupV2Params)
+
+        groupInviteLinkPreviewCache.setObject(groupInviteLinkPreview, forKey: cacheKey)
+
+        return groupInviteLinkPreview
+    }
+
+    public func fetchGroupInviteLinkPreviewAndRefreshGroup(
+        inviteLinkPassword: Data?,
+        groupSecretParams: GroupSecretParams
+    ) async throws -> GroupInviteLinkPreview {
         do {
-            let behavior403: Behavior403 = (
-                inviteLinkPassword != nil
-                ? .reportInvalidOrBlockedGroupLink
-                : .localUserIsNotARequestingMember
-            )
-            let response = try await performServiceRequest(
-                requestBuilder: requestBuilder,
-                groupId: nil,
-                behavior400: .fail,
-                behavior403: behavior403,
-                behavior404: .fail
-            )
-            guard let protoData = response.responseBodyData else {
-                throw OWSAssertionError("Invalid responseObject.")
-            }
-            let groupInviteLinkPreview = try GroupsV2Protos.parseGroupInviteLinkPreview(protoData, groupV2Params: groupV2Params)
-
-            groupInviteLinkPreviewCache.setObject(groupInviteLinkPreview, forKey: cacheKey)
-
+            let groupInviteLinkPreview = try await fetchGroupInviteLinkPreview(inviteLinkPassword: inviteLinkPassword, groupSecretParams: groupSecretParams)
             await updatePlaceholderGroupModelUsingInviteLinkPreview(
                 groupSecretParams: groupSecretParams,
                 isLocalUserRequestingMember: groupInviteLinkPreview.isLocalUserRequestingMember,
                 revision: groupInviteLinkPreview.revision
             )
-
             return groupInviteLinkPreview
         } catch {
             if case GroupsV2Error.localUserIsNotARequestingMember = error {
@@ -1655,8 +1654,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         let inviteLinkPreview = try await fetchGroupInviteLinkPreview(
             inviteLinkPassword: inviteLinkPassword,
-            groupSecretParams: secretParams,
-            allowCached: false
+            groupSecretParams: secretParams
         )
 
         let revisionForPlaceholderModel: UInt32
@@ -1989,8 +1987,7 @@ public class GroupsV2Impl: GroupsV2 {
         // * local user's request status.
         let groupInviteLinkPreview = try await fetchGroupInviteLinkPreview(
             inviteLinkPassword: inviteLinkPassword,
-            groupSecretParams: groupV2Params.groupSecretParams,
-            allowCached: false
+            groupSecretParams: groupV2Params.groupSecretParams
         )
         let oldRevision = groupInviteLinkPreview.revision
         let newRevision = oldRevision + 1

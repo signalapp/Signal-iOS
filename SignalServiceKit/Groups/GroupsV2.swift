@@ -127,8 +127,12 @@ public protocol GroupsV2 {
     // inviteLinkPassword is not necessary if we're already a member or have a pending request.
     func fetchGroupInviteLinkPreview(
         inviteLinkPassword: Data?,
-        groupSecretParams: GroupSecretParams,
-        allowCached: Bool
+        groupSecretParams: GroupSecretParams
+    ) async throws -> GroupInviteLinkPreview
+
+    func fetchGroupInviteLinkPreviewAndRefreshGroup(
+        inviteLinkPassword: Data?,
+        groupSecretParams: GroupSecretParams
     ) async throws -> GroupInviteLinkPreview
 
     func fetchGroupInviteLinkAvatar(
@@ -623,8 +627,14 @@ public class MockGroupsV2: GroupsV2 {
 
     public func fetchGroupInviteLinkPreview(
         inviteLinkPassword: Data?,
-        groupSecretParams: GroupSecretParams,
-        allowCached: Bool
+        groupSecretParams: GroupSecretParams
+    ) async throws -> GroupInviteLinkPreview {
+        owsFail("Not implemented.")
+    }
+
+    public func fetchGroupInviteLinkPreviewAndRefreshGroup(
+        inviteLinkPassword: Data?,
+        groupSecretParams: GroupSecretParams
     ) async throws -> GroupInviteLinkPreview {
         owsFail("Not implemented.")
     }

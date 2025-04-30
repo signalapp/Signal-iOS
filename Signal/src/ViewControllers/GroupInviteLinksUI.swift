@@ -228,10 +228,9 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
     private func loadLinkPreview() {
         Task { [weak self, groupInviteLinkInfo, groupV2ContextInfo] in
             do {
-                let groupInviteLinkPreview = try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreview(
+                let groupInviteLinkPreview = try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreviewAndRefreshGroup(
                     inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-                    groupSecretParams: groupV2ContextInfo.groupSecretParams,
-                    allowCached: false
+                    groupSecretParams: groupV2ContextInfo.groupSecretParams
                 )
                 self?.applyLinkPreviewLoadResult(.success(groupInviteLinkPreview))
 

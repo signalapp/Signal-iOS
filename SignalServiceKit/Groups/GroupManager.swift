@@ -723,22 +723,24 @@ public class GroupManager: NSObject {
             let groupModel = groupThread.groupModel
 
             // If this is a join request placeholder, we don't expect to have access to
-            // the group, so we have to check *again* using the inviteLinkPassword
-            // before continuing.
-            if let groupModelV2 = groupModel as? TSGroupModelV2, groupModelV2.isJoinRequestPlaceholder {
+            // the group, but we should have access to the invite link preview without
+            // needing to provide an inviteLinkPassword.
+            if
+                let groupModelV2 = groupModel as? TSGroupModelV2,
+                groupModelV2.isJoinRequestPlaceholder,
+                groupModelV2.groupMembership.isLocalUserRequestingMember
+            {
                 do {
-                    let groupV2Params = try groupModelV2.groupV2Params()
+                    let secretParams = try groupModelV2.secretParams()
                     _ = try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreview(
-                        inviteLinkPassword: groupModelV2.inviteLinkPassword,
-                        groupSecretParams: groupV2Params.groupSecretParams,
-                        allowCached: false
+                        inviteLinkPassword: nil,
+                        groupSecretParams: secretParams
                     )
                     // We still have access to the group, so do nothing.
                     return
-                } catch GroupsV2Error.localUserIsNotARequestingMember, GroupsV2Error.localUserBlockedFromJoining {
-                    // Expected if our request has been cancelled or we're banned. In this
-                    // scenario, we should remove ourselves from the local group (in which
-                    // we will be stored as a requesting member).
+                } catch GroupsV2Error.localUserIsNotARequestingMember {
+                    // Expected if our request has been cancelled. In this scenario, we should
+                    // remove ourselves from the local group state.
                 } catch {
                     // We don't know what went wrong; do nothing.
                     owsFailDebug("Error: \(error)")

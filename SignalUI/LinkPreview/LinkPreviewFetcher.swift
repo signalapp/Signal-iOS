@@ -299,8 +299,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
         let groupV2ContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupInviteLinkInfo.masterKey)
         let groupInviteLinkPreview = try await self.groupsV2.fetchGroupInviteLinkPreview(
             inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-            groupSecretParams: groupV2ContextInfo.groupSecretParams,
-            allowCached: false
+            groupSecretParams: groupV2ContextInfo.groupSecretParams
         )
         let previewThumbnail: PreviewThumbnail? = await {
             guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {

@@ -120,8 +120,7 @@ extension CVComponentState {
                 return Promise.wrapAsync {
                     try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreview(
                         inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-                        groupSecretParams: groupContextInfo.groupSecretParams,
-                        allowCached: false
+                        groupSecretParams: groupContextInfo.groupSecretParams
                     )
                 }
             }.done(on: DispatchQueue.global()) { (_: GroupInviteLinkPreview) in
