@@ -207,6 +207,8 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
 
         let wasLocalUserInGroup = oldGroupModel?.groupMembership.isLocalUserMemberOfAnyKind ?? false
         let isLocalUserInGroup = newGroupModel.groupMembership.isLocalUserMemberOfAnyKind
+        let wasLocalUserRequestingMember = oldGroupModel?.groupMembership.isLocalUserRequestingMember ?? false
+        let isLocalUserRequestingMember = newGroupModel.groupMembership.isLocalUserRequestingMember
 
         let isLocalUserUpdate: Bool
         switch groupUpdateSource {
@@ -215,7 +217,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         default:
             isLocalUserUpdate = false
         }
-        if isLocalUserUpdate {
+        if isLocalUserUpdate || (!wasLocalUserRequestingMember && isLocalUserRequestingMember) {
             infoMessage.markAsRead(
                 atTimestamp: NSDate.ows_millisecondTimeStamp(),
                 thread: groupThread,
