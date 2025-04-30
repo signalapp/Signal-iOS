@@ -468,7 +468,7 @@ public class MessageSenderJobQueue {
                     externalRetryTriggers.insert(.networkBecameReachable)
                 }
                 try? await withCooperativeTimeout(
-                    seconds: OWSOperation.retryIntervalForExponentialBackoff(failureCount: UInt(attemptCount)),
+                    seconds: OWSOperation.retryIntervalForExponentialBackoff(failureCount: attemptCount, maxAverageBackoff: 14.1 * .minute),
                     operation: { try await operation.waitForAnyExternalRetryTrigger(fromExternalRetryTriggers: externalRetryTriggers) }
                 )
             }

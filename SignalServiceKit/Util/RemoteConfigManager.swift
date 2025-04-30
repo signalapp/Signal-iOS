@@ -792,7 +792,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             }
             refreshImmediately = false
 
-            try await Retry.performWithBackoff(maxAttempts: Int.max) {
+            try await Retry.performWithBackoff(maxAttempts: Int.max, maxAverageBackoff: 14.1 * .minute) {
                 do {
                     try await self.refreshIfNeeded()
                 } catch {

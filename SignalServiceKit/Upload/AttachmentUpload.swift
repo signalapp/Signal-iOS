@@ -231,7 +231,7 @@ public struct AttachmentUpload {
                 case .immediately:
                     attempt.logger.warn("Retry upload immediately.")
                 case .afterBackoff:
-                    let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count)
+                    let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count, maxAverageBackoff: 14.1 * .minute)
                     attempt.logger.warn(String(format: "Retry upload after %.3f seconds.", backoff))
                     try await sleepTimer.sleep(for: backoff)
                 case .afterServerRequestedDelay(let delay):

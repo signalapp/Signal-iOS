@@ -145,7 +145,7 @@ internal class SpecificGroupMessageProcessor {
                         Logger.info("Retrying immediately because of an external trigger.")
                         return nil
                     } else {
-                        let retryIntervalNs = OWSOperation.retryIntervalForExponentialBackoff(failureCount: backoffCount, maxBackoff: TimeInterval.infinity).clampedNanoseconds
+                        let retryIntervalNs = OWSOperation.retryIntervalForExponentialBackoff(failureCount: backoffCount).clampedNanoseconds
                         Logger.warn("Waiting for \(OWSOperation.formattedNs(retryIntervalNs))s before retrying.")
                         let retryIntervalTask = Task {
                             try await Task.sleep(nanoseconds: retryIntervalNs)

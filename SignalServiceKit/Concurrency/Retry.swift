@@ -29,7 +29,7 @@ public enum Retry {
     public static func performWithBackoff<T>(
         maxAttempts: Int,
         maxAverageBackoff: TimeInterval = .infinity,
-        isRetryable: (any Error) -> Bool,
+        isRetryable: (any Error) -> Bool = { !$0.isFatalError && $0.isRetryable },
         block: () async throws -> T
     ) async throws -> T {
         return try await performRepeatedly(
@@ -38,24 +38,9 @@ public enum Retry {
                 if attemptCount >= maxAttempts || !isRetryable(error) {
                     throw error
                 }
-                let retryDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: attemptCount, maxBackoff: maxAverageBackoff)
+                let retryDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: attemptCount, maxAverageBackoff: maxAverageBackoff)
                 try await Task.sleep(nanoseconds: retryDelay.clampedNanoseconds)
             }
-        )
-    }
-
-    /// Performs `block` repeatedly with exponential backoff.
-    ///
-    /// This method will invoke `block` at most `maxAttempts` times, propagating
-    /// the error from the final attempt. If `block` throws a fatal error or
-    /// non-retryable error on an earlier attempt, that error will be propagated
-    /// immediately. This method supports cancellation.
-    public static func performWithBackoff<T>(maxAttempts: Int, block: () async throws -> T) async throws -> T {
-        return try await performWithBackoff(
-            maxAttempts: maxAttempts,
-            maxAverageBackoff: 14.1 * .minute,
-            isRetryable: { !$0.isFatalError && $0.isRetryable },
-            block: block
         )
     }
 }

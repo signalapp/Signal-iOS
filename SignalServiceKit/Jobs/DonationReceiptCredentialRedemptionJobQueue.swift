@@ -320,7 +320,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
 
         return OWSOperation.retryIntervalForExponentialBackoff(
             failureCount: transientFailureCount,
-            maxBackoff: .day
+            maxAverageBackoff: .day
         )
     }
 

@@ -105,7 +105,7 @@ class PushChallenge: SpamChallenge {
     }
 
     private var fallbackRetryAfter: Date {
-        let interval = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount)
+        let interval = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount, maxAverageBackoff: 14.1 * .minute)
         return Date(timeIntervalSinceNow: interval)
     }
 
