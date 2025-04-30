@@ -59,8 +59,6 @@ public enum FeatureFlags {
 
     public static let useNewConversationLoadIndex = true
 
-    public static let enableAccountEntropyPool = true
-
     public static let libsignalForChat = true
 }
 

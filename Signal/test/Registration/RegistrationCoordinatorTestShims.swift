@@ -85,8 +85,6 @@ public class _RegistrationCoordinator_FeatureFlagsMock: _RegistrationCoordinator
 
     public init() {}
 
-    public var enableAccountEntropyPool = false
-
     public var messageBackupFileAlphaRegistrationFlow: Bool { false }
 }
 

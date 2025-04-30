@@ -202,18 +202,11 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("Missing thread")
         }
 
-        let accountEntropyPool: AccountEntropyPool?
-        if FeatureFlags.enableAccountEntropyPool {
-            accountEntropyPool = DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: tx)
-        } else {
-            accountEntropyPool = nil
-        }
-
-        if FeatureFlags.enableAccountEntropyPool,
-           accountEntropyPool == nil
-        {
+        let accountEntropyPool = DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: tx)
+        if accountEntropyPool == nil {
             Logger.warn("Expecting AEP present for sync message")
         }
+
         let masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx)
 
         guard accountEntropyPool != nil || masterKey != nil else {

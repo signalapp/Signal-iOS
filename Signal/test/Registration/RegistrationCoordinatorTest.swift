@@ -156,19 +156,10 @@ public class RegistrationCoordinatorTest {
 
         static var testCases: [(old: Self, new: Self)] {
             return [
-                (.masterKey, .masterKey),
                 (.masterKey, .accountEntropyPool),
                 (.accountEntropyPool, .accountEntropyPool)
             ]
         }
-
-        static var noKeyTestCases: [(old: Self, new: Self)] {
-            return [
-                (.none, .masterKey),
-                (.none, .accountEntropyPool)
-            ]
-        }
-
     }
 
     static let testModes: [RegistrationMode] = [
@@ -189,7 +180,6 @@ public class RegistrationCoordinatorTest {
     }
 
     func setupTest(_ testCase: TestCase) -> RegistrationCoordinatorImpl {
-        featureFlags.enableAccountEntropyPool = testCase.newKey == .accountEntropyPool
         return db.write {
             return registrationCoordinatorLoader.coordinator(
                 forDesiredMode: testCase.mode,

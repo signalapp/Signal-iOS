@@ -76,21 +76,12 @@ public class ProvisioningManager {
             }
             let areReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled(tx: tx)
             let rootKey: LinkingProvisioningMessage.RootKey
-            if FeatureFlags.enableAccountEntropyPool {
-                guard let accountEntropyPool = accountKeyStore.getAccountEntropyPool(tx: tx) else {
-                    // This should be impossible; the only times you don't have
-                    // an AEP are during registration.
-                    owsFail("Can't provision without account entropy pool.")
-                }
-                rootKey = .accountEntropyPool(accountEntropyPool)
-            } else {
-                guard let masterKey = accountKeyStore.getMasterKey(tx: tx) else {
-                    // This should be impossible; the only times you don't have
-                    // a master key are during registration.
-                    owsFail("Can't provision without master key.")
-                }
-                rootKey = .masterKey(masterKey)
+            guard let accountEntropyPool = accountKeyStore.getAccountEntropyPool(tx: tx) else {
+                // This should be impossible; the only times you don't have
+                // an AEP are during registration.
+                owsFail("Can't provision without account entropy pool.")
             }
+            rootKey = .accountEntropyPool(accountEntropyPool)
             let mrbk = accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx)
             guard let profileKey = profileManager.localUserProfile(tx: tx)?.profileKey else {
                 owsFail("Can't provision without a profile key.")

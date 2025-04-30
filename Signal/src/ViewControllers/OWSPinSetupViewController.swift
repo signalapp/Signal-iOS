@@ -812,23 +812,13 @@ extension PinSetupViewController {
                     canCancel: false,
                     asyncBlock: { modal in
                         await ViewControllerContext.shared.db.awaitableWrite {
-                            if FeatureFlags.enableAccountEntropyPool {
-                                let (_, newEntropyPool) = ViewControllerContext.shared.accountKeyStore.rotateAccountEntropyPool(tx: $0)
-                                ViewControllerContext.shared.svr.useDeviceLocalAccountEntropyPool(
-                                    newEntropyPool,
-                                    disablePIN: true,
-                                    authedAccount: .implicit(),
-                                    transaction: $0
-                                )
-                            } else {
-                                let (_, newMasterKey) = ViewControllerContext.shared.accountKeyStore.rotateMasterKey(tx: $0)
-                                ViewControllerContext.shared.svr.useDeviceLocalMasterKey(
-                                    newMasterKey,
-                                    disablePIN: true,
-                                    authedAccount: .implicit(),
-                                    transaction: $0
-                                )
-                            }
+                            let (_, newEntropyPool) = ViewControllerContext.shared.accountKeyStore.rotateAccountEntropyPool(tx: $0)
+                            ViewControllerContext.shared.svr.useDeviceLocalAccountEntropyPool(
+                                newEntropyPool,
+                                disablePIN: true,
+                                authedAccount: .implicit(),
+                                transaction: $0
+                            )
                         }
                         modal.dismiss { continuation.resume(returning: true) }
                     }

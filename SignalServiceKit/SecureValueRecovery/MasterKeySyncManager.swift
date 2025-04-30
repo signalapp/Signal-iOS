@@ -21,7 +21,6 @@ public protocol MasterKeySyncManager {
 class MasterKeySyncManagerImpl: MasterKeySyncManager {
     private enum StoreConstants {
         static let collectionName = "MasterKeyOneTimeSyncManager"
-        static let hasDistributedMasterKey = "hasSyncedMasterKey"
         static let hasDistributedAEP = "hasSyncedAEP"
         static let lastKeysSyncRequestMessageDateKey = "lastKeysSyncRequestMessageDateKey"
     }
@@ -63,7 +62,7 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
     }
 
     private func runStartupJobsForPrimaryDevice(tx: DBWriteTransaction) {
-        let key = FeatureFlags.enableAccountEntropyPool ? StoreConstants.hasDistributedAEP : StoreConstants.hasDistributedMasterKey
+        let key = StoreConstants.hasDistributedAEP
         guard !keyValueStore.getBool(
             key,
             defaultValue: false,

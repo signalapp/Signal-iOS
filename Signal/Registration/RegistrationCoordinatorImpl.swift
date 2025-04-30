@@ -1054,10 +1054,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         db.write { tx in
 
             var initialMasterKey: MasterKey?
-            if
-                deps.featureFlags.enableAccountEntropyPool,
-                let aep = deps.accountKeyStore.getAccountEntropyPool(tx: tx)
-            {
+            if let aep = deps.accountKeyStore.getAccountEntropyPool(tx: tx) {
                 updatePersistedState(tx) {
                     $0.accountEntropyPool = aep
                 }
@@ -1149,10 +1146,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
             let userHasPIN = (inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk) != nil
-            if
-                deps.featureFlags.enableAccountEntropyPool,
-                let accountEntropyPool = persistedState.accountEntropyPool
-            {
+            if let accountEntropyPool = persistedState.accountEntropyPool {
                 deps.svr.useDeviceLocalAccountEntropyPool(
                     accountEntropyPool,
                     disablePIN: !userHasPIN,
@@ -1160,8 +1154,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     transaction: tx
                 )
             } else {
-                    // While the AEP feature flag exists, we'll need to fall back to
-                    // generating a master key if one wasn't restored.
+                // While the AEP feature flag exists, we'll need to fall back to
+                // generating a master key if one wasn't restored.
                 let masterKey = persistedState.recoveredSVRMasterKey ?? deps.accountKeyStore.getOrGenerateMasterKey(tx: tx)
                 deps.svr.useDeviceLocalMasterKey(
                     masterKey,
@@ -3025,30 +3019,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
         }
 
-        if deps.featureFlags.enableAccountEntropyPool {
-            if persistedState.accountEntropyPool == nil {
-                if inMemoryState.restoreMethod?.backupType != nil {
-                    // If the user want's to restore from backup, ask for the key
-                    return .value(.enterBackupKey)
-                } else {
-                    // If the AccountEntropyPool doesn't exist yet, create one.
-                    db.write { tx in
-                        updatePersistedState(tx) {
-                            $0.accountEntropyPool = deps.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
-                        }
-                        let newMasterKey = persistedState.accountEntropyPool?.getMasterKey()
-                        updateMasterKeyAndLocalState(masterKey: newMasterKey, tx: tx)
-                    }
-                }
-            }
-        } else {
-            if persistedState.recoveredSVRMasterKey == nil {
-                // attempt to pull from local state
+        if persistedState.accountEntropyPool == nil {
+            if inMemoryState.restoreMethod?.backupType != nil {
+                // If the user want's to restore from backup, ask for the key
+                return .value(.enterBackupKey)
+            } else {
+                // If the AccountEntropyPool doesn't exist yet, create one.
                 db.write { tx in
-                    let newMasterKey = deps.accountKeyStore.getOrGenerateMasterKey(tx: tx)
                     updatePersistedState(tx) {
-                        $0.recoveredSVRMasterKey = newMasterKey
+                        $0.accountEntropyPool = deps.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
                     }
+                    let newMasterKey = persistedState.accountEntropyPool?.getMasterKey()
                     updateMasterKeyAndLocalState(masterKey: newMasterKey, tx: tx)
                 }
             }
@@ -3058,7 +3039,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             shouldRestoreFromStorageServiceBeforeUpdatingSVR(),
             let restoredKey = persistedState.recoveredSVRMasterKey
         {
-            // Need to preserve the key recovered by registartion and use this for storage service restore
+            // Need to preserve the key recovered by registration and use this for storage service restore
             // If already restored due to AEP change, this step will be skipped
             return restoreFromStorageService(
                 accountIdentity: accountIdentity,
@@ -3071,12 +3052,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         // This will restore after backup, _or_ it will rotate to the new AEP derived key
-        let masterKey: MasterKey?
-        if deps.featureFlags.enableAccountEntropyPool {
-            masterKey = persistedState.accountEntropyPool?.getMasterKey()
-        } else {
-            masterKey = persistedState.recoveredSVRMasterKey
-        }
+        let masterKey = persistedState.accountEntropyPool?.getMasterKey()
 
         if
             shouldRestoreFromStorageService(),
@@ -3315,12 +3291,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             authMethod = backupAuthMethod
         }
 
-        let masterKey: MasterKey?
-        if deps.featureFlags.enableAccountEntropyPool {
-            masterKey = persistedState.accountEntropyPool?.getMasterKey()
-        } else {
-            masterKey = persistedState.recoveredSVRMasterKey
-        }
+        let masterKey = persistedState.accountEntropyPool?.getMasterKey()
 
         guard let masterKey else {
             Logger.error("Failed to back up to SVR due to missing root key")
@@ -4440,8 +4411,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func shouldRestoreFromStorageServiceBeforeUpdatingSVR() -> Bool {
         switch mode {
         case .registering, .reRegistering:
-            return deps.featureFlags.enableAccountEntropyPool
-                && !inMemoryState.hasRestoredFromStorageService
+            return !inMemoryState.hasRestoredFromStorageService
                 && !inMemoryState.hasSkippedRestoreFromStorageService
                 && !inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration
                 && inMemoryState.restoreMethod?.backupType == nil

@@ -104,13 +104,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     public func warmCaches() {
-
-        if FeatureFlags.enableAccountEntropyPool {
-            // This is where the AEP migration happen for existing installs
-            generateAccountEntropyPoolIfMissing()
-        } else {
-            setLocalMasterKeyIfMissing()
-        }
+        // This is where the AEP migration happen for existing installs
+        generateAccountEntropyPoolIfMissing()
 
         // Never migrate in the NSE or extensions.
         if self.appContext.isMainApp {
@@ -454,19 +449,16 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         var keyChanged = false
 
-        var newAep: AccountEntropyPool?
-        if FeatureFlags.enableAccountEntropyPool {
-            let oldAep = accountKeyStore.getAccountEntropyPool(tx: tx)
-            do {
-                if let aep = try syncMessage.accountEntropyPool.map({ try AccountEntropyPool(key: $0) }) {
-                    accountKeyStore.setAccountEntropyPool(aep, tx: tx)
-                }
-            } catch {
-                owsFailDebug("Error setting AEP")
+        let oldAep = accountKeyStore.getAccountEntropyPool(tx: tx)
+        do {
+            if let aep = try syncMessage.accountEntropyPool.map({ try AccountEntropyPool(key: $0) }) {
+                accountKeyStore.setAccountEntropyPool(aep, tx: tx)
             }
-            newAep = accountKeyStore.getAccountEntropyPool(tx: tx)
-            keyChanged = (oldAep?.rawData != newAep?.rawData)
+        } catch {
+            owsFailDebug("Error setting AEP")
         }
+        let newAep = accountKeyStore.getAccountEntropyPool(tx: tx)
+        keyChanged = (oldAep?.rawData != newAep?.rawData)
 
         if newAep == nil {
             let oldMasterKey = accountKeyStore.getMasterKey(tx: tx)?.rawData
@@ -1152,41 +1144,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     // MARK: - Migrations
-
-    /// There was a bug with registration that would allow the user to register without having set a master key,
-    /// if they skipped the PIN code entry. What we actually wanted was to not _sync_ that master key with
-    /// SVR server, but we still want one locally.
-    /// Clean up this state by setting a local-only master key if we are a registered primary without one.
-    private func setLocalMasterKeyIfMissing() {
-        let (
-            hasMasterKey,
-            pinCode,
-            isRegisteredPrimary
-        ) = db.read { tx in
-            return (
-                self.hasMasterKey(transaction: tx),
-                self.twoFAManager.pinCode(transaction: tx),
-                self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
-            )
-        }
-        if !hasMasterKey, isRegisteredPrimary {
-            Logger.info("")
-            db.write { tx in
-                let newMasterKey = self.accountKeyStore.getOrGenerateMasterKey(tx: tx)
-                if pinCode != nil {
-                    // We have a pin code but no master key? We know this has happened
-                    // in the wild but have no idea how.
-                    Logger.error("Have PIN but no master key")
-                }
-                self.useDeviceLocalMasterKey(
-                    newMasterKey,
-                    disablePIN: pinCode == nil,
-                    authedAccount: .implicit(),
-                    transaction: tx
-                )
-            }
-        }
-    }
 
     public func generateAccountEntropyPoolIfMissing() {
         let (isRegisteredPrimary, accountEntropyPool, pinCode) = db.read {(
