@@ -280,9 +280,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Cette couleur personnalisée est utilisée dans %1$d conversation. Souhaitez-vous la supprimer ?</string>
+			<string>Cette couleur personnalisée est utilisée dans %1$d conversation. Voulez-vous la supprimer pour toutes les conversations ?</string>
 			<key>other</key>
-			<string>Cette couleur personnalisée est utilisée dans %1$d conversations. Souhaitez-vous la supprimer pour toutes les conversations  ?</string>
+			<string>Cette couleur personnalisée est utilisée dans %1$d conversations. Voulez-vous la supprimer pour toutes les conversations ?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vous ne pouvez pas sélectionner plus de %1$d conversation.</string>
+			<string>Vous ne pouvez pas sélectionner plus d&apos;une conversation.</string>
 			<key>other</key>
 			<string>Vous ne pouvez pas sélectionner plus de %1$d conversations.</string>
 		</dict>
@@ -371,9 +371,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>correspondance</string>
+			<string>résultat</string>
 			<key>other</key>
-			<string>sur %2$d correspondances</string>
+			<string>sur %2$d résultats</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -387,9 +387,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membre</string>
+			<string>%1$d membre</string>
 			<key>other</key>
-			<string>%1$d membres</string>
+			<string>%1$d membres</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -435,9 +435,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Il y a %1$d minute</string>
+			<string>Il y a %1$d minute</string>
 			<key>other</key>
-			<string>Il y a %1$d minutes</string>
+			<string>Il y a %1$d minutes</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -467,9 +467,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>La taille de groupe maximale d&apos;%1$d membre est atteinte.</string>
+			<string>Le groupe a atteint sa taille maximale : %1$d membre.</string>
 			<key>other</key>
-			<string>La taille de groupe maximale de %1$d membres est atteinte.</string>
+			<string>Le groupe a atteint sa taille maximale : %1$d membres.</string>
 		</dict>
 	</dict>
 	<key>EDIT_MESSAGE_SEND_TOO_MANY_EDITS_ERROR</key>
@@ -483,9 +483,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d modification peut-être appliquée à ce message.</string>
+			<string>Vous ne pouvez modifier ce message qu&apos;une seule fois.</string>
 			<key>other</key>
-			<string>%1$d modifications seulement peuvent être appliquées à ce message.</string>
+			<string>Vous ne pouvez modifier ce message que %1$d fois.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -531,9 +531,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Le nombre maximal de %1$d participant a été atteint pour cet appel. Veuillez réessayer plus tard.</string>
+			<string>Cet appel a atteint le nombre maximal de %1$d participant. Veuillez réessayer plus tard.</string>
 			<key>other</key>
-			<string>Le nombre maximal de %1$d participants a été atteint pour cet appel. Veuillez réessayer plus tard.</string>
+			<string>Cet appel a atteint le nombre maximal de %1$d participants. Veuillez réessayer plus tard.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -693,7 +693,7 @@
 			<key>one</key>
 			<string>Invitation envoyée</string>
 			<key>other</key>
-			<string>%1$d invitations envoyées</string>
+			<string>%1$d invitations envoyées</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -787,9 +787,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membre</string>
+			<string>%1$d membre</string>
 			<key>other</key>
-			<string>%1$d membres</string>
+			<string>%1$d membres</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -803,9 +803,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membre</string>
+			<string>%1$d membre</string>
 			<key>other</key>
-			<string>%1$d membres</string>
+			<string>%1$d membres</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -835,9 +835,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ a invité %1$d personne au groupe.</string>
+			<string>%2$@ a invité %1$d personne à rejoindre le groupe.</string>
 			<key>other</key>
-			<string>%2$@ a invité %1$d personnes au groupe.</string>
+			<string>%2$@ a invité %1$d personnes à rejoindre le groupe.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -979,9 +979,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d groupe en commun</string>
+			<string>Un groupe en commun</string>
 			<key>other</key>
-			<string>%1$d groupes en commun</string>
+			<string>%1$d groupes en commun</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MEDIA_TITLE</key>
@@ -1043,9 +1043,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d élément</string>
+			<string>%1$d élément</string>
 			<key>other</key>
-			<string>%1$d éléments</string>
+			<string>%1$d éléments</string>
 		</dict>
 	</dict>
 	<key>MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE_%d</key>
@@ -1059,9 +1059,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Transférer %1$d</string>
+			<string>Transférer %1$d média</string>
 			<key>other</key>
-			<string>Transférer %1$d</string>
+			<string>Transférer %1$d médias</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -1107,9 +1107,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d réaction par %2$@.</string>
+			<string>%1$d réaction %2$@.</string>
 			<key>other</key>
-			<string>%1$d réactions par %2$@.</string>
+			<string>%1$d réactions %2$@.</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1123,9 +1123,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d exclu</string>
+			<string>%1$d contact exclu</string>
 			<key>other</key>
-			<string>%1$d exclus</string>
+			<string>%1$d contacts exclus</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
@@ -1141,7 +1141,7 @@
 			<key>one</key>
 			<string>%1$d spectateur</string>
 			<key>other</key>
-			<string>%1$d spectateurs</string>
+			<string>%1$d spectateurs</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1155,9 +1155,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d spectateur</string>
+			<string>%1$d spectateur</string>
 			<key>other</key>
-			<string>%1$d spectateurs</string>
+			<string>%1$d spectateurs</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -1219,9 +1219,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membre</string>
+			<string>%1$d membre</string>
 			<key>other</key>
-			<string>%1$d membres</string>
+			<string>%1$d membres</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
@@ -1235,9 +1235,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d spectateur</string>
+			<string>%1$d spectateur</string>
 			<key>other</key>
-			<string>%1$d spectateurs</string>
+			<string>%1$d spectateurs</string>
 		</dict>
 	</dict>
 	<key>OVERFLOW_REACTIONS_ACCESSIBILITY_LABEL_%d</key>
@@ -1267,9 +1267,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ a invité %1$d personne</string>
+			<string>%2$@ a invité %1$d personne</string>
 			<key>other</key>
-			<string>%2$@ a invité %1$d personnes</string>
+			<string>%2$@ a invité %1$d personnes</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -1411,9 +1411,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; réponse</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; réaction</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; réponses</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; réactions</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1443,9 +1443,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d exclu</string>
+			<string>%1$d contact exclu</string>
 			<key>other</key>
-			<string>%1$d exclus</string>
+			<string>%1$d contacts exclus</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>
@@ -1459,9 +1459,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Envoi…</string>
+			<string>Envoi de la story…</string>
 			<key>other</key>
-			<string>Envoi de %1$d…</string>
+			<string>Envoi de %1$d stories…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1491,9 +1491,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vue</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vue</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vues</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vues</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld</key>

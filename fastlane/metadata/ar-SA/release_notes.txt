@@ -1,2 +1,2 @@
-• If you've been patiently awaiting a better way to select pictures and videos in Signal, now your expectations aren't just realistic — they're photorealistic. This update includes support for the native iOS photo picker, so you can easily search for images and see a consistent view of available albums.
-• We also added a shortcut to scroll to the associated message when looking at an image or video in the All Media view for a chat.
+• إذا كُنتَ تنتظر طريقة أفضل لاختيار الصور والفيديوهات في سيجنال، الآن لم تعد توقّعاتك واقعية فحسب — بل إنها تحاكي الواقع الفوتوغرافي. يشمل هذا التحديث دعمًا لِمُحدّد الصور الأصلي لنظام iOS، ممّا يُتيح لك البحث عن الصور بسهولة وعرضًا موحدًا للألبومات المتاحة.
+• أضفنا أيضًا اختصارًا للانتقال إلى الرسالة ذات الصلة عند عرض صورة أو مقطع فيديو في عرض "كل الوسائط" الخاصة بدردشة ما.

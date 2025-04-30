@@ -518,7 +518,7 @@
 "BACKUP_KEY_PLACEHOLDER" = "Kod kopii zapasowej";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Zasubskrybuj";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Aktywuj tryb rozszerzony";
 
 /* Text describing the user's free backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "Korzystasz z bezpłatnego trybu tworzenia kopii zapasowej";
@@ -722,7 +722,7 @@
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Osoby z tej grupy znów będą mogły Cię do niej dodać.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Członkowie grupy znów będą mogli Cię do niej dodać.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Osoby z tej grupy znów będą mogły Cię do niej dodać.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Odblokować grupę?";
@@ -1643,7 +1643,7 @@
 "CONVERSATION_SETTINGS" = "Ustawienia czatu";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Dodawanie osób";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Dodaj osoby";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Dodaj do kontaktu";
@@ -2381,7 +2381,7 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Wygasa %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Ponowi się %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Kolejna wpłata %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Zdobądź odznakę %1$@";
@@ -3170,7 +3170,7 @@
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%1$@ i %2$@ opuszczają rozmowę";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%1$@ uczestniczy w rozmowie";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "W rozmowie uczestniczy %1$@";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
 "GROUP_CALL_PRESENTING_FORMAT" = "%1$@ prezentuje";
@@ -3227,7 +3227,7 @@
 "GROUP_CALL_TOO_LARGE_TO_RING" = "Grupa jest zbyt duża, aby zadzwonić do jej uczestników.";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ i %2$@ uczestniczą w rozmowie";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "W rozmowie uczestniczą %1$@ i %2$@";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Twoje połączenie zostało przerwane. Sprawdź połączenie z internetem i spróbuj ponownie.";
@@ -3527,7 +3527,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ cofa Twoje uprawnienia administratora.";
 
 /* Message indicating that the local user was added to the group. */
-"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Członek grupy dodał Cię do niej.";
+"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Dodaje Cię osoba z tej grupy.";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Administrator";
@@ -3698,7 +3698,7 @@
 "GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ zmienia zdjęcie.";
 
 /* Info message indicating that the group was updated by the local user. */
-"GROUP_UPDATED_BY_LOCAL_USER" = "Aktualizujesz grupę.";
+"GROUP_UPDATED_BY_LOCAL_USER" = "Wprowadzasz zmiany w grupie.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ wprowadza zmiany w grupie.";
@@ -4433,7 +4433,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Usuń";
 
 /* Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video. */
-"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "Go to Message";
+"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "Przejdź do wiadomości";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
 "MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Zapisz";
@@ -4790,7 +4790,7 @@
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%1$@ nie jest już zweryfikowanym członkiem. Dotknij, aby wyświetlić opcje.";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Więcej niż jeden członek grupy nie jest już oznaczony jako zweryfikowany. Dotknij, aby wyświetlić opcje.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Więcej niż jedna osoba z grupy nie jest już oznaczona jako zweryfikowana. Dotknij, aby wyświetlić opcje.";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Nowe wiadomości";
@@ -4949,7 +4949,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Inne osoby";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Wybierz członków";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Wybierz osoby";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
 "NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ do grupy %2$@ · relacja";
@@ -5135,28 +5135,28 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Pominąć wpisywanie PIN-u?";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your text messages and media from your paid Signal backup plan";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Przywróć wiadomości i multimedia ze swojej płatnej kopii zapasowej Signal";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Przywróć kopię zapasową Signal";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Choose how you'd like to restore your message history and account data.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Zdecyduj, w jaki sposób chcesz przywrócić historię wiadomości i dane konta.";
 
 /* The body for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Continue without transferring your messages and media";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Kontynuuj bez przenoszenia wiadomości i multimediów";
 
 /* The title for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Register without Transferring";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Zarejestruj bez przenoszenia";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Restore or Transfer Account";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Przywróć lub przenieś konto";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "Transfer your account and messages from your old iOS device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "Przenieś konto i wiadomości ze swojego starego urządzenia z systemem iOS";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "Transfer from Device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "Przenieś z urządzenia";
 
 /* Header text describing what the backup includes. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "Kopia zapasowa obejmuje:";
@@ -5174,7 +5174,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "Przywróć kopię zapasową";
 
 /* Description for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Ostatnia kopia zapasowa została utworzona %1$@ o godz. %2$@. O ile nadal masz dostęp do starego urządzenia, możesz utworzyć nowszą kopię zapasową. [Zobacz jak](https://signal.org)";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Ostatnia kopia zapasowa została utworzona %1$@ o godz. %2$@. Jeśli nadal masz dostęp do starego urządzenia, możesz utworzyć nowszą kopię zapasową. [Dowiedz się jak](https://signal.org)";
 
 /* Text for action button to explore other options. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "Więcej opcji";
@@ -5345,16 +5345,16 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Aby dalej korzystać z płatności, zaktualizuj Signal. Twoje saldo może być nieaktualne.";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Your account will be transferred to a new device. This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Twoje konto zostanie przeniesione na nowe urządzenie, które otrzyma dostęp do Twoich grup, kontaktów i czatów oraz będzie mogło wysyłać wiadomości w Twoim imieniu.";
 
 /* Action button to begin account transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Przenieś konto";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Wiadomości i informacje o czacie są zabezpieczane szyfrowaniem end-to-end na wszystkich urządzeniach";
 
 /* Title text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Przenieś konto";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Nieodebrane połączenie wideo";
@@ -8333,7 +8333,7 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Przetwarzanie darowizny…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Ponowi się %1$@";
+"SUSTAINER_VIEW_RENEWAL" = "Kolejna wpłata %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Twoja darowizna jest jeszcze przetwarzana. W zależności od połączenia z internetem może to potrwać kilka minut.";
