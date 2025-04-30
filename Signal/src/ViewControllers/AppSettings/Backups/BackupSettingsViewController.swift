@@ -695,7 +695,7 @@ private extension BackupSettingsViewModel {
     ) -> BackupSettingsViewModel {
         let backupSettingsStore = BackupSettingsStore()
         let dateProvider = { Date() }
-        let db = InMemoryDB(mode: .xcodePreview)
+        let db = InMemoryDB()
 
         let enabledState = db.write { tx in
             backupSettingsStore.setAreBackupsEnabled(true, tx: tx)
