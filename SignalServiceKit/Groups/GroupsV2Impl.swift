@@ -1662,8 +1662,18 @@ public class GroupsV2Impl: GroupsV2 {
             // Use the current revision when creating a placeholder group.
             revisionForPlaceholderModel = inviteLinkPreview.revision
         } else {
+            let joinMode: GroupLinkJoinMode
+            switch inviteLinkPreview.addFromInviteLinkAccess {
+            case .any:
+                joinMode = .asMember
+            case .administrator:
+                joinMode = .asRequestingMember
+            default:
+                throw OWSAssertionError("Invalid addFromInviteLinkAccess.")
+            }
             let groupChangeProto = try await self.buildChangeActionsProtoToJoinGroupLink(
-                groupInviteLinkPreview: inviteLinkPreview,
+                newRevision: inviteLinkPreview.revision + 1,
+                joinMode: joinMode,
                 secretParams: secretParams,
                 localIdentifiers: localIdentifiers
             )
@@ -1689,26 +1699,23 @@ public class GroupsV2Impl: GroupsV2 {
                 throw OWSAssertionError("Missing groupChange after updating group.")
             }
 
-            // The PATCH request that adds us to the group (as a full or requesting member)
-            // only return the "change actions" proto data, but not a full snapshot
-            // so we need to separately GET the latest group state and update the database.
-            //
-            // Download and update database with the group state.
-            let refreshResult = await Result {
+            switch joinMode {
+            case .asMember:
+                // The PATCH request that adds us to the group (as a full or requesting member)
+                // only return the "change actions" proto data, but not a full snapshot
+                // so we need to separately GET the latest group state and update the database.
+                //
+                // Download and update database with the group state.
                 try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(
                     secretParams: secretParams,
                     options: [.didJustAddSelfViaGroupLink]
                 )
-            }
-            switch refreshResult {
-            case .success:
                 await GroupManager.sendGroupUpdateMessage(
                     groupId: groupId,
                     groupChangeProtoData: try changeProto.serializedData()
                 )
                 return
-            case .failure(_):
-                // Fall through -- we're a requesting member and not a full member.
+            case .asRequestingMember:
                 revisionForPlaceholderModel = groupChangeProto.revision
             }
         }
@@ -1721,7 +1728,7 @@ public class GroupsV2Impl: GroupsV2 {
         // * We successfully request to join a group via group invite link.
         // Afterward we do not have access to group state on the service.
 
-        let groupThread = try await createPlaceholderGroupForJoinRequest(
+        try await createPlaceholderGroupForJoinRequest(
             inviteLinkPassword: inviteLinkPassword,
             secretParams: secretParams,
             localIdentifiers: localIdentifiers,
@@ -1729,18 +1736,6 @@ public class GroupsV2Impl: GroupsV2 {
             downloadedAvatar: downloadedAvatar,
             revisionForPlaceholderModel: revisionForPlaceholderModel
         )
-
-        let isJoinRequestPlaceholder: Bool
-        if let groupModel = groupThread.groupModel as? TSGroupModelV2 {
-            isJoinRequestPlaceholder = groupModel.isJoinRequestPlaceholder
-        } else {
-            isJoinRequestPlaceholder = false
-        }
-        // There's no point in sending a group update for a placeholder
-        // group, since we don't know who to send it to.
-        if !isJoinRequestPlaceholder {
-            await GroupManager.sendGroupUpdateMessage(groupId: groupId, groupChangeProtoData: nil)
-        }
     }
 
     private func createPlaceholderGroupForJoinRequest(
@@ -1750,7 +1745,7 @@ public class GroupsV2Impl: GroupsV2 {
         inviteLinkPreview: GroupInviteLinkPreview,
         downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?,
         revisionForPlaceholderModel revision: UInt32
-    ) async throws -> TSGroupThread {
+    ) async throws {
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
 
         let avatarUrlPath = inviteLinkPreview.avatarUrlPath
@@ -1769,7 +1764,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         // We might be creating a placeholder for a revision that we just
         // created or for one we learned about from a GroupInviteLinkPreview.
-        return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (transaction) throws -> TSGroupThread in
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (transaction) throws -> Void in
             if let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) {
                 // The group already existing in the database; make sure
                 // that we are a requesting member.
@@ -1779,7 +1774,7 @@ public class GroupsV2Impl: GroupsV2 {
                 let oldGroupMembership = oldGroupModel.groupMembership
                 if oldGroupModel.revision >= revision && oldGroupMembership.isRequestingMember(localIdentifiers.aci) {
                     // No need to update database, group state is already acceptable.
-                    return groupThread
+                    return
                 }
                 var builder = oldGroupModel.asBuilder
                 builder.isJoinRequestPlaceholder = true
@@ -1806,8 +1801,6 @@ public class GroupsV2Impl: GroupsV2 {
                     spamReportingMetadata: .createdByLocalAction,
                     transaction: transaction
                 )
-
-                return groupThread
             } else {
                 // Create a placeholder group.
                 var builder = TSGroupModelBuilder()
@@ -1845,14 +1838,18 @@ public class GroupsV2Impl: GroupsV2 {
                     groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
                     transaction: transaction
                 )
-
-                return groupThread
             }
         }
     }
 
+    private enum GroupLinkJoinMode {
+        case asMember
+        case asRequestingMember
+    }
+
     private func buildChangeActionsProtoToJoinGroupLink(
-        groupInviteLinkPreview: GroupInviteLinkPreview,
+        newRevision: UInt32,
+        joinMode: GroupLinkJoinMode,
         secretParams: GroupSecretParams,
         localIdentifiers: LocalIdentifiers
     ) async throws -> GroupsProtoGroupChangeActions {
@@ -1866,12 +1863,10 @@ public class GroupsV2Impl: GroupsV2 {
 
         var actionsBuilder = GroupsProtoGroupChangeActions.builder()
 
-        let oldRevision = groupInviteLinkPreview.revision
-        let newRevision = oldRevision + 1
         actionsBuilder.setRevision(newRevision)
 
-        switch groupInviteLinkPreview.addFromInviteLinkAccess {
-        case .any:
+        switch joinMode {
+        case .asMember:
             let role = TSGroupMemberRole.`normal`
             var actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
             actionBuilder.setAdded(
@@ -1881,7 +1876,7 @@ public class GroupsV2Impl: GroupsV2 {
                     groupV2Params: try GroupV2Params(groupSecretParams: secretParams)
                 ))
             actionsBuilder.addAddMembers(actionBuilder.buildInfallibly())
-        case .administrator:
+        case .asRequestingMember:
             var actionBuilder = GroupsProtoGroupChangeActionsAddRequestingMemberAction.builder()
             actionBuilder.setAdded(
                 try GroupsV2Protos.buildRequestingMemberProto(
@@ -1889,8 +1884,6 @@ public class GroupsV2Impl: GroupsV2 {
                     groupV2Params: try GroupV2Params(groupSecretParams: secretParams)
                 ))
             actionsBuilder.addAddRequestingMembers(actionBuilder.buildInfallibly())
-        default:
-            throw OWSAssertionError("Invalid addFromInviteLinkAccess.")
         }
 
         return actionsBuilder.buildInfallibly()
