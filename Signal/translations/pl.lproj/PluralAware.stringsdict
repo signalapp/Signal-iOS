@@ -843,13 +843,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ i jeszcze %1$d osoba otrzymają połączenie Signal</string>
+			<string>Signal zadzowni do tych osób: %2$@, %3$@ i jeszcze do %1$d osoby</string>
 			<key>few</key>
-			<string>%2$@, %3$@ i jeszcze %1$d osoby otrzymają połączenie Signal</string>
+			<string>Signal zadzowni do tych osób: %2$@, %3$@ i jeszcze do %1$d osób</string>
 			<key>many</key>
-			<string>%2$@, %3$@ i jeszcze %1$d osób otrzymają połączenie Signal</string>
+			<string>Signal zadzowni do tych osób: %2$@, %3$@ i jeszcze do %1$d osób</string>
 			<key>other</key>
-			<string>%2$@, %3$@ i jeszcze %1$d osoby otrzymają połączenie Signal</string>
+			<string>Signal zadzowni do tych osób: %2$@, %3$@ i jeszcze do %1$d osoby</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -943,13 +943,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>W tej grupie jest %1$d konflikt imion i nazwisk. Przejrzyj osoby poniżej i zdecyduj, co chcesz zrobić.</string>
+			<string>W tej grupie jest %1$d konflikt imion i nazwisk. Sprawdź poniżej, o kim mowa, i zdecyduj, co chcesz zrobić.</string>
 			<key>few</key>
-			<string>W tej grupie są %1$d konflikty imion i nazwisk. Przejrzyj osoby poniżej i zdecyduj, co chcesz zrobić.</string>
+			<string>W tej grupie są %1$d konflikty imion i nazwisk. Sprawdź poniżej, o kim mowa, i zdecyduj, co chcesz zrobić.</string>
 			<key>many</key>
-			<string>W tej grupie jest %1$d konfliktów imion i nazwisk. Przejrzyj osoby poniżej i zdecyduj, co chcesz zrobić.</string>
+			<string>W tej grupie jest %1$d konfliktów imion i nazwisk. Sprawdź poniżej, o kim mowa, i zdecyduj, co chcesz zrobić.</string>
 			<key>other</key>
-			<string>W tej grupie jest %1$d konfliktu imion i nazwisk. Przejrzyj osoby poniżej i zdecyduj, co chcesz zrobić.</string>
+			<string>W tej grupie jest %1$d konfliktu imion i nazwisk. Sprawdź poniżej, o kim mowa, i zdecyduj, co chcesz zrobić.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -1883,13 +1883,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>Członek %1$@, %2$@ i 1 dodatkowej grupy</string>
+			<string>Należy do grup %1$@, %2$@ i jeszcze %3$ld innej</string>
 			<key>few</key>
-			<string>Członek %1$@, %2$@ i %3$ld dodatkowych grup</string>
+			<string>Należy do grup %1$@, %2$@ i jeszcze %3$ld innych</string>
 			<key>many</key>
-			<string>Członek %1$@, %2$@ i %3$ld dodatkowych grup</string>
+			<string>Należy do grup %1$@, %2$@ i jeszcze %3$ld innych</string>
 			<key>other</key>
-			<string>Członek %1$@, %2$@ i %3$ld dodatkowych grup</string>
+			<string>Należy do grup %1$@, %2$@ i jeszcze %3$ld innej</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld</key>
@@ -1903,13 +1903,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>jeszcze %1$ld</string>
+			<string>jeszcze %1$ld osoba</string>
 			<key>few</key>
-			<string>jeszcze %1$ld</string>
+			<string>jeszcze %1$ld osoby</string>
 			<key>many</key>
-			<string>jeszcze %1$ld</string>
+			<string>jeszcze %1$ld osób</string>
 			<key>other</key>
-			<string>jeszcze %1$ld</string>
+			<string>jeszcze %1$ld osoby</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

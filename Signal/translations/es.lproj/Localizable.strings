@@ -164,7 +164,7 @@
 "ALL_MEDIA_FILE_TYPE_AUDIO" = "Audio";
 
 /* Generic All Media file type for non-audiovisual files used in file type picker */
-"ALL_MEDIA_FILE_TYPE_FILES" = "Archivos";
+"ALL_MEDIA_FILE_TYPE_FILES" = "Documentos";
 
 /* Media (i.e., graphical) file type in All Meda file type picker. */
 "ALL_MEDIA_FILE_TYPE_MEDIA" = "Multimedia";
@@ -173,7 +173,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "Archivos multimedia";
+"ALL_MEDIA_FILTER_NONE" = "Todos los archivos";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "Fotos";
@@ -626,7 +626,7 @@
 "BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ apoya a Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Tu insignia Apoyo Signal ha caducado y ya no se muestra en tu perfil.\n\nPuedes seguir usando Signal, pero para apoyar una tecnología desarrollada para ti, considera optar por una suscripción mensual.";
+"BADGE_EXPIRED_BOOST_BODY" = "Tu insignia Apoyo Signal ha caducado y ya no se muestra en tu perfil.\n\nPuedes seguir usando Signal, pero si quieres apoyar una tecnología creada para ti, considera optar por una suscripción mensual.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Tu insignia Apoyo Signal ha caducado y ya no se muestra en tu perfil.\n\nPuedes hacer una donación puntual para reactivar tu insignia Apoyo Signal por 30 días más.";
@@ -659,7 +659,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Mostrar en mi perfil";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Seleccionar como insignia para mostrar en mi perfil";
+"BADGE_THANKS_MAKE_FEATURED" = "Mostrar insignia en mi perfil";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
 "BADGE_THANKS_TITLE" = "¡Gracias por tu apoyo!";
@@ -1652,7 +1652,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Añadir a contactos del teléfono";
 
 /* Header title for the section showing all media in conversation settings */
-"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Archivos multimedia";
+"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Todos los archivos";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Elige quién puede modificar el nombre, descripción e imagen del grupo y la duración de los mensajes temporales.";
@@ -4085,7 +4085,7 @@
 "JOINED_WITH_DOT" = "%1$@ · %2$@";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Ir a archivos multimedia";
+"KEY_COMMAND_ALL_MEDIA" = "Ir a todos los archivos";
 
 /* A keyboard command to archive the current conversation. */
 "KEY_COMMAND_ARCHIVE" = "Archivar chat";
@@ -4172,7 +4172,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "No se ha podido vincular el dispositivo";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "En este dispositivo podrás acceder a tus grupos y contactos, leer todos tus mensajes y enviar mensajes desde tu perfil.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "En este dispositivo podrás ver tus grupos y contactos, acceder a tus chats y enviar mensajes desde tu perfil.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "¿Vincular este dispositivo?";
@@ -4358,7 +4358,7 @@
 "MAX_VIDEO_RECORDING_LENGTH_ALERT" = "Se ha alcanzado la duración máxima del vídeo";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Archivos multimedia";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Todos los archivos";
 
 /* Title for the button that discards all edits in media editor. */
 "MEDIA_EDITOR_CLEAR_ALL" = "Borrar todo";
@@ -4406,13 +4406,13 @@
 "MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Los mensajes de voz y los archivos de audio que envíes y recibas aparecerán aquí.";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
-"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No hay audios";
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No hay archivos de audio";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - second line. */
-"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "Los archivos que envíes y recibas aparecerán aquí.";
+"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "Los documentos que envíes y recibas aparecerán aquí.";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - first line. */
-"MEDIA_GALLERY_NO_FILES_TITLE" = "No hay archivos";
+"MEDIA_GALLERY_NO_FILES_TITLE" = "No hay documentos";
 
 /* Displayed in All Media screen when there's no media - first line. */
 "MEDIA_GALLERY_NO_FILTER_RESULTS" = "No hay archivos multimedia";
@@ -4433,7 +4433,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Eliminar";
 
 /* Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video. */
-"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "Go to Message";
+"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "Ir al mensaje";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
 "MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Guardar";
@@ -5135,28 +5135,28 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "¿Omitir PIN?";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your text messages and media from your paid Signal backup plan";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restaura tus mensajes y archivos multimedia desde tu plan de pago de copias de seguridad de Signal";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restaurar copia de seguridad de Signal";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Choose how you'd like to restore your message history and account data.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Elige cómo quieres restaurar tu historial de mensajes y los datos de tu cuenta.";
 
 /* The body for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Continue without transferring your messages and media";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Continúa sin transferir tus mensajes ni archivos multimedia";
 
 /* The title for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Register without Transferring";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Registrar sin transferir";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Restore or Transfer Account";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Restaurar o transferir cuenta";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "Transfer your account and messages from your old iOS device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "Transfiere tu cuenta y tus mensajes desde tu dispositivo iOS anterior";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "Transfer from Device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "Transferir desde dispositivo";
 
 /* Header text describing what the backup includes. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "Tu copia de seguridad incluye:";
@@ -5345,16 +5345,16 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Actualiza Signal para continuar usando pagos. Es posible que tu saldo no esté actualizado.";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Your account will be transferred to a new device. This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Tu cuenta se transferirá a un nuevo dispositivo. En este dispositivo podrás ver tus grupos y contactos, acceder a tus chats y enviar mensajes desde tu perfil.";
 
 /* Action button to begin account transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Transferir cuenta";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Los mensajes y los chats están protegidos con cifrado de extremo a extremo en todos los dispositivos";
 
 /* Title text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Transferir cuenta";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Videollamada no atendida";
@@ -7244,10 +7244,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Desactivar pagos";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Te recomendamos transferir tus fondos a otra cartera antes de desactivar los pagos. Si decides no transferir los fondos ahora, permanecerán en la cartera asociada a tu cuenta de Signal para cuando vuelvas a activar los pagos.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Te recomendamos transferir tus fondos a otra cartera antes de desactivar los pagos. Si decides no transferir los fondos ahora, estarán disponibles en la cartera vinculada a tu cuenta de Signal si vuelves a activar los pagos.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Tu saldo permanecerá en la cartera asociada a tu cuenta de Signal para cuando decidas reactivar los pagos.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Tu saldo seguirá disponible en la cartera vinculada a tu cuenta de Signal si decides reactivar los pagos.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "¿Desactivar sin transferir?";

@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_STICKER_FORMAT" = "%1$@ જેવું સ્ટીકર";
 
 /* Accessibility label for a voice memo. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO" = "વૉઈસ મેસેજ";
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "વોઇસ મેસેજ";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
 "ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "રિપોર્ટ એક્સપોર્ટ કરો";
@@ -77,7 +77,7 @@
 "ACTION_TAP_TO_DOWNLOAD" = "ડાઉનલોડ કરવા માટે ટેપ કરો";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "વિડિયો કૉલ";
+"ACTION_VIDEO_CALL" = "વીડિયો કૉલ";
 
 /* Label for 'voice call' button in contact view. */
 "ACTION_VOICE_CALL" = "Signal કૉલ";
@@ -86,16 +86,16 @@
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "સભ્યો ઉમેરો";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "શું તમે આ ગ્રુપ સાથે તમારી પ્રોફાઇલ શેર કરવા માંગો છો?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "શું તમે આ ગ્રૂપ સાથે તમારી પ્રોફાઇલ શેર કરવા માંગો છો?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "શું તમે આ વપરાશકર્તાને તમારા સંપર્કોમાં ઉમેરવા માંગો છો?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "અન્ય ગ્રુપમાં ઉમેરો";
+"ADD_TO_GROUP" = "અન્ય ગ્રૂપમાં ઉમેરો";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "ગ્રુપમાં ઉમેરો";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "ગ્રૂપમાં ઉમેરો";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
 "ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "શું \"%1$@\"ને \"%2$@\"માં ઉમેરવા છે?";
@@ -104,16 +104,16 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "નવું સભ્ય ઉમેરો";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "પહેલેથી જ મેમ્બર છે";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "પહેલેથી જ સભ્ય છે";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ પહેલાંથી જ %2$@ ના મેમ્બર છે";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ પહેલાંથી જ %2$@ ના સભ્ય છે";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ને %2$@ માં ઉમેર્યા";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "એક ગ્રુપમાં ઉમેરો";
+"ADD_TO_GROUP_TITLE" = "એક ગ્રૂપમાં ઉમેરો";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "શું તમે આ વપરાશકર્તા સાથે તમારી પ્રોફાઇલ શેર કરવા માંગો છો?";
@@ -122,19 +122,19 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "સમજાઈ ગયું";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "આ ચેટમાં %1$@ તરફથી તમને મેસેજ, સ્ટિકર, પ્રતિક્રિયા, વાંચી લીધાનું નિશાન અથવા મીડિયા ડિલિવર થઈ શક્યું નહીં.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "આ ચેટમાં %1$@ તરફથી તમને મેસેજ, સ્ટીકર, પ્રતિક્રિયા, વંચાયાની ખાતરી અથવા મીડિયા ડિલિવર થઈ શક્યું નહીં.";
 
 /* Title for delivery issue sheet */
-"ALERT_DELIVERY_ISSUE_TITLE" = "ડિલિવરી મુદ્દો";
+"ALERT_DELIVERY_ISSUE_TITLE" = "ડિલિવરી સમસ્યા";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "આ ચેટમાં %1$@ તરફથી તમને મેસેજ, સ્ટિકર, પ્રતિક્રિયા, વાંચી લીધાનું નિશાન અથવા મીડિયા મોકલી શકાયું નહીં. તેઓએ તમને સીધા જ, અથવા ગ્રૂપમાં મોકલવાનો પ્રયાસ કર્યો હોઈ શકે છે.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "આ ચેટમાં %1$@ તરફથી તમને મેસેજ, સ્ટીકર, પ્રતિક્રિયા, વંચાયાની ખાતરી અથવા મીડિયા મોકલી શકાયું નહીં. તેઓએ તમને સીધા જ અથવા ગ્રૂપમાં મોકલવાનો પ્રયાસ કર્યો હોઈ શકે છે.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "કાઢી નાખો";
 
 /* The label for the 'don't save' button in action sheets. */
-"ALERT_DONT_SAVE" = "સેવ કરશો નહી";
+"ALERT_DONT_SAVE" = "સેવ કરશો નહીં";
 
 /* Generic error indicator. */
 "ALERT_ERROR_TITLE" = "ભૂલ";
@@ -143,10 +143,10 @@
 "ALERT_SAVE" = "સેવ કરો";
 
 /* Message for UI warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "તમારી પાસે આ વ્યક્તિ સાથે કોમનમાં કોઈ ગ્રુપ નથી. અનિચ્છનીય મેસેજ  ટાળવા માટે સ્વીકારતા પહેલા વિનંતીઓની કાળજીપૂર્વક સમીક્ષા કરો.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "તમારી પાસે આ વ્યક્તિ સાથે કોમનમાં કોઈ ગ્રૂપ નથી. અનિચ્છનીય મેસેજ ટાળવા માટે સ્વીકારતા પહેલા વિનંતીઓની કાળજીપૂર્વક રિવ્યૂ કરો.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "આ ગ્રુપ સાથે કોમનમાં કોઈ સભ્યો નથી. અનિચ્છનીય મેસેજથી બચવા માટે સ્વીકારતા કરતા પહેલાં વિનંતીઓની કાળજીપૂર્વક સમીક્ષા કરો.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "આ ગ્રૂપ સાથે કોમનમાં કોઈ સભ્યો નથી. અનિચ્છનીય મેસેજથી બચવા માટે સ્વીકારતા કરતા પહેલાં વિનંતીઓની કાળજીપૂર્વક સમીક્ષા કરો.";
 
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "મેસેજ વિનંતીઓ વિશે";
@@ -164,7 +164,7 @@
 "ALL_MEDIA_FILE_TYPE_AUDIO" = "ઓડિયો";
 
 /* Generic All Media file type for non-audiovisual files used in file type picker */
-"ALL_MEDIA_FILE_TYPE_FILES" = "ફાઈલો";
+"ALL_MEDIA_FILE_TYPE_FILES" = "ફાઇલો";
 
 /* Media (i.e., graphical) file type in All Meda file type picker. */
 "ALL_MEDIA_FILE_TYPE_MEDIA" = "મીડિયા";
@@ -215,22 +215,22 @@
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Signal ખોલી ન શક્યા";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "ડેટાબેસ લોડ કરી શકાયું નથી";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "ડેટાબેઝ લોડ કરી શકાયું નથી";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "કૃપા કરીને Signal ના નવીનતમ વર્ઝન પર અપગ્રેડ કરો.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "કૃપા કરીને Signalના લેટેસ્ટ વર્ઝન પર અપગ્રેડ કરો.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "અજાણ ડેટાબેઝ વર્ઝન.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal ઓપન કરવાનો પ્રયાસ કરતી વખતે એક સમસ્યા આવી હતી. આ સમસ્યાનું નિવારણ કરવામાં સહાયતા માટે કૃપા કરીને support@signal.orgને એક ડીબગ લૉગ મોકલો.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal ખોલવાનો પ્રયાસ કરતી વખતે એક સમસ્યા આવી હતી. આ સમસ્યાનું નિવારણ કરવામાં સહાયતા માટે કૃપા કરીને support@signal.orgને એક ડીબગ લૉગ મોકલો.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Signal ઓપન ન કરી શક્યા";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Signal ખોલી શક્યા નથી";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal ઓપન ન થઈ શકી કારણ કે તમારા ડિવાઇસ પર સ્ટોરેજ ઓછું છે. Signalનો ઉપયોગ કરવા માટે, સેટિંગ્સમાં તમારા સ્ટોરેજને મેનેજ કરીને સ્પેસ ખાલી કરો.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal ખોલી શકાયું નથી કારણ કે તમારા ડિવાઇસ પર સ્ટોરેજ ઓછું છે. Signalનો ઉપયોગ કરવા માટે, સેટિંગ્સમાં તમારા સ્ટોરેજને મેનેજ કરીને સ્પેસ ખાલી કરો.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "સ્ટોરેજ સ્પેસ ઓછી છે";
@@ -251,7 +251,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "વર્ઝન %1$@ હવે App Store પર ઉપલબ્ધ છે.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Signal નું નવું વર્ઝન ઉપલબ્ધ છે";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Signalનું નવું વર્ઝન ઉપલબ્ધ છે";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "અપડેટ";
@@ -4433,7 +4433,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "ડિલીટ કરો";
 
 /* Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video. */
-"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "Go to Message";
+"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "મેસેજ પર જાઓ";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
 "MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "સેવ કરો";
@@ -5135,28 +5135,28 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "PIN એન્ટ્રી સ્કિપ કરો?";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your text messages and media from your paid Signal backup plan";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "તમારા સશુલ્ક Signal બેકઅપ પ્લાનમાંથી તમારા ટેક્સ્ટ મેસેજ અને મીડિયાને રિસ્ટોર કરો";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Signal બેકઅપ રિસ્ટોર કરો";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Choose how you'd like to restore your message history and account data.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "તમે તમારી મેસેજ હિસ્ટ્રી અને એકાઉન્ટ ડેટાને કેવી રીતે રિસ્ટોર કરવા માંગો છો તે પસંદ કરો.";
 
 /* The body for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Continue without transferring your messages and media";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "તમારા મેસેજ અને મીડિયાને ટ્રાન્સફર કર્યા વિના ચાલુ રાખો";
 
 /* The title for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Register without Transferring";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "ટ્રાન્સફર કર્યા વગર રજીસ્ટર કરો";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Restore or Transfer Account";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "એકાઉન્ટ રિસ્ટોર અથવા ટ્રાન્સફર કરો";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "Transfer your account and messages from your old iOS device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "તમારા જૂના iOS ડિવાઇસ પરથી તમારા એકાઉન્ટ અને મેસેજને ટ્રાન્સફર કરો";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "Transfer from Device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "ડિવાઇસ પરથી ટ્રાન્સફર કરો";
 
 /* Header text describing what the backup includes. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "તમારા બેકઅપમાં શામેલ છે:";
@@ -5345,16 +5345,16 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "ચુકવણીઓનો ઉપયોગ કરતાં રહેવા માટે Signalને અપડેટ કરો. તમારું બેલેન્સ અપ-ટૂ-ડેટ ન પણ હોઈ શકે.";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Your account will be transferred to a new device. This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "તમારું એકાઉન્ટ એક નવા ડિવાઇસ પર ટ્રાન્સફર થશે. આ ડિવાઇસ તમારા ગ્રૂપ અને સંપર્કો જોઈ શકશે, તમારી ચેટને ઍક્સેસ કરી શકશે અને તમારા નામે મેસેજ મોકલી શકશે.";
 
 /* Action button to begin account transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "ટ્રાન્સફર એકાઉન્ટ";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "મેસેજ અને ચેટ માહિતી બધા ડિવાઇસ પર એન્ડ-ટૂ-એન્ડ એન્ક્રિપ્શન દ્વારા સુરક્ષિત છે";
 
 /* Title text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "ટ્રાન્સફર એકાઉન્ટ";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "ન ઉપાડેલો વિડિયો કૉલ";

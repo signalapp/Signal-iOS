@@ -4433,7 +4433,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Xóa";
 
 /* Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video. */
-"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "Go to Message";
+"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "Đến Tin nhắn";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
 "MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Lưu";
@@ -5135,28 +5135,28 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Bỏ qua Nhập mã PIN? ";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your text messages and media from your paid Signal backup plan";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Khôi phục tin nhắn văn bản và tập tin đa phương tiện từ gói Sao lưu Signal trả phí của bạn";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Khôi phục bản sao lưu của Signal";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Choose how you'd like to restore your message history and account data.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Chọn cách bạn muốn khôi phục lịch sử tin nhắn và dữ liệu tài khoản của mình.";
 
 /* The body for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Continue without transferring your messages and media";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Tiếp tục và không chuyển tin nhắn cùng tệp đa phương tiện";
 
 /* The title for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Register without Transferring";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Đăng ký và không chuyển";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Restore or Transfer Account";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Khôi phục hoặc chuyển tài khoản";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "Transfer your account and messages from your old iOS device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "Chuyển tài khoản và tin nhắn từ thiết bị iOS cũ của bạn";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "Transfer from Device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "Chuyển từ thiết bị";
 
 /* Header text describing what the backup includes. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "Bản sao lưu bao gồm:";
@@ -5345,16 +5345,16 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Cập nhật Signal để tiếp tục sử dụng các hình thức thanh toán. Số dư tài khoản của bạn có thể không phải là mới nhất.";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Your account will be transferred to a new device. This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Tài khoản của bạn sẽ dược chuyển đến một thiết bị mới. Thiết bị này sẽ có thể thấy được nhóm và liên hệ của bạn, truy cập các cuộc trò chuyện của bạn, và gửi tin nhắn với danh tính của bạn.";
 
 /* Action button to begin account transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Chuyển Tài khoản";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Thông tin tin nhắn và cuộc trò chuyện được bảo vệ bằng hình thức mã hóa đầu cuối trên tất cả thiết bị";
 
 /* Title text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Chuyển Tài khoản";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Cuộc gọi video không được trả lời";

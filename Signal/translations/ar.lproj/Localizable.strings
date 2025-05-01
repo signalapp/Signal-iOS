@@ -4433,7 +4433,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "حذف";
 
 /* Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video. */
-"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "Go to Message";
+"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "انتقل إلى الرسالة";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
 "MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "حفظ";
@@ -5135,28 +5135,28 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "هل ترغبُ بتخطّي إدخال رقم التعريف الشخصي (PIN)؟";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your text messages and media from your paid Signal backup plan";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "استعِد رسائلك النصية والوسائط من خطة النسخ الاحتياطي المدفوعة لسيجنال الخاصة بك";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "استعادة النسخة الاحتياطية على سيجنال";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Choose how you'd like to restore your message history and account data.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "اختر الطريقة التي تودّ أن تستعيد بها سِجل رسائلك وبيانات حسابك.";
 
 /* The body for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Continue without transferring your messages and media";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "متابعة دون نقل رسائلك والوسائط";
 
 /* The title for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Register without Transferring";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "تسجيل بدون نقل";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Restore or Transfer Account";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "استعادة أو نقل الحساب";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "Transfer your account and messages from your old iOS device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "انقل حسابك ورسائلك من جهاز iOS القديم الخاص بك";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "Transfer from Device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "انقل من الجهاز";
 
 /* Header text describing what the backup includes. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "تتضمن النسخة الاحتياطية:";
@@ -5345,16 +5345,16 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "قُم بتحديث سيجنال للاستمرار في استخدام عمليات الدفع. قد لا يكون رصيدك مُحدَّثًا.";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Your account will be transferred to a new device. This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "سيتمُّ نقل حسابك إلى جهاز جديد. سَيتمكن هذا الجهاز من رؤية مجموعاتك وجهات اتصالك، والوصول إلى دردشاتك، وإرسال رسائل باسمك.";
 
 /* Action button to begin account transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "نقل الحساب";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "معلومات الرسائل والدردشات محمية من خلال التشفير من طرف لِطرف على جميع الأجهزة.";
 
 /* Title text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "نقل الحساب";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "مكالمة فيديو لم يتم الرد عليها";
@@ -6059,7 +6059,7 @@
 "PRIVACY_VERIFY_BUTTON" = "تحديد كتمَّ التحقُّق منه";
 
 /* Button to add a new viewer on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "إضافة مشاهدين";
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "إضافة مُشاهِدين";
 
 /* Button to delete the story on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "إزالة قصة مُخصَّصة";
@@ -7880,7 +7880,7 @@
 "SOUNDS_NONE" = "لا شيء";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "اكتملَ التحقُّق";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "اكتملَ التحقُّق.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "إذا اخترتَ تخطِّي التحقُّق، فقد تفوتك رسائل من أشخاص آخرين وقد يفشل إرسال رسائلك.";
@@ -7892,7 +7892,7 @@
 "SPAM_CAPTCHA_SHEET_BODY" = "للمساعدة على الوقاية من البريد العشوائي في سيجنال، يُرجى إتمام عملية التحقُّق.\n\nبعد التأكُّد من ذلك، يمكنك الاستمرار في التراسُل. أي رسالة متوقِّفة مؤقَّتًا سوف تُرسَل تلقائيًا.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "تَحقَّق لِلاِستِمرار فِي المُراسَلَة";
+"SPAM_CAPTCHA_SHEET_TITLE" = "قُم بالتحقُّق لمواصلة المراسلة";
 
 /* Action to skip verification */
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "تخطِّي التَحَقُّق";
@@ -8060,7 +8060,7 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "تشغيل القِصص";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "عرض الإيصالات";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "عرض إيصالات القراءة";
 
 /* Footer for the 'view receipts' section of the stories settings */
 "STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "مشاهدة ومشاركة متى يمكن مشاهدة القصِص. إذا كانت هذه الخاصية مُعطَّلة، لن ترى من شاهَد قِصصك.";
@@ -8096,7 +8096,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "تمَّ إظهار القصة";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "فعِّل إيصالات القراءة لرؤية من شاهد قِصصك.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "فعِّل \"عرض إيصالات القراءة\" لرؤية من شاهد قِصصك.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "المشاهدات";
@@ -8192,7 +8192,7 @@
 "STORY_SEND_PARTIALLY_FAILED" = "تمَّ الإرسال جزئيًا.";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "تمَّ الإرسال جزئيًا. انقر للتفاصيل";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "تمَّ الإرسال جزئيًا. انقر للمزيد من التفاصيل";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "جارٍ الإرسال…";
@@ -8201,7 +8201,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "البدء بمحادثة معهم";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "قبول طلب التراسل معهم";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "قبول طلب للتراسُل";
 
 /* Third bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "وجودهم في جهات اتصال هاتفك";

@@ -4433,7 +4433,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "删除";
 
 /* Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video. */
-"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "Go to Message";
+"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "前往消息";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
 "MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "保存";
@@ -5135,28 +5135,28 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "跳过 PIN 码设置？";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your text messages and media from your paid Signal backup plan";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "从 Signal 付费备份套餐中恢复您的文本消息和媒体";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "还原 Signal 备份";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Choose how you'd like to restore your message history and account data.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "请选择您想要如何恢复您的消息记录和账户数据。";
 
 /* The body for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Continue without transferring your messages and media";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "继续但不转移您的消息和媒体";
 
 /* The title for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Register without Transferring";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "注册且不迁移账户";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Restore or Transfer Account";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "恢复或转移账户";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "Transfer your account and messages from your old iOS device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "从您原来的 iOS 设备中转移账户和消息";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "Transfer from Device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "从设备中转移";
 
 /* Header text describing what the backup includes. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "您的备份包括：";
@@ -5345,16 +5345,16 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "更新 Signal 以继续使用付款功能。您的余额可能未刷新。";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Your account will be transferred to a new device. This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "您的账户将会转移到新设备上。此设备将能够看到您的群组和联系人，访问您的聊天，并以您的名义发送消息。";
 
 /* Action button to begin account transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "转移帐户";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "消息和聊天信息在所有设备上均受端对端加密保护";
 
 /* Title text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "转移帐户";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "未接视频通话";

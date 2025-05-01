@@ -4433,7 +4433,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Löschen";
 
 /* Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video. */
-"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "Go to Message";
+"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "Zur Nachricht";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
 "MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Speichern";
@@ -5135,43 +5135,43 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "PIN-Eingabe überspringen?";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your text messages and media from your paid Signal backup plan";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Stelle deine Textnachrichten und Medien aus deinem kostenpflichtigen Signal Backup-Abo wieder her";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Signal Backup wiederherstellen";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Choose how you'd like to restore your message history and account data.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Wähle aus, wie du deinen Nachrichtenverlauf und deine Kontodaten wiederherstellen möchtest.";
 
 /* The body for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Continue without transferring your messages and media";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Fortfahren, ohne deine Nachrichten und Medien zu übertragen";
 
 /* The title for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Register without Transferring";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Ohne Übertragung registrieren";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Restore or Transfer Account";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Konto wiederherstellen oder übertragen";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "Transfer your account and messages from your old iOS device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY" = "Übertrage dein Konto und deine Nachrichten von deinem alten iOS-Gerät";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "Transfer from Device";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE" = "Von Gerät übertragen";
 
 /* Header text describing what the backup includes. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "Deine Datensicherung umfasst:";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1" = "Dein Backup umfasst:";
 
 /* Backup content list item describing all messages. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_2" = "Alle deine Nachrichten";
 
 /* Backup content list item describing paid media. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE" = "Die letzten 45 Tage deiner Medien";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE" = "Deine Medien der letzten 45 Tage ";
 
 /* Backup content list item describing free media. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID" = "Alle deine Medien";
 
 /* Text for action button confirming the restore. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "Sicherung wiederherstellen";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "Backup wiederherstellen";
 
 /* Description for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Deine letzte Datensicherung wurde am %1$@ um %2$@ durchgeführt. Du kannst eine neuere Sicherung durchführen, wenn du dein altes Gerät noch hast. [So geht’s](https://signal.org)";
@@ -5180,7 +5180,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "Weitere Optionen";
 
 /* Title for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "Aus Sicherung wiederherstellen";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "Aus Backup wiederherstellen";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad registrieren";
@@ -5345,16 +5345,16 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Aktualisiere Signal, um Zahlungen weiterhin verwenden zu können. Dein Kontostand ist möglicherweise nicht aktuell.";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Your account will be transferred to a new device. This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Dein Konto wird auf ein neues Gerät übertragen. Dieses Gerät kann deine Gruppen und Kontakte sehen, auf deine Chats zugreifen und Nachrichten in deinem Namen versenden.";
 
 /* Action button to begin account transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Konto übertragen";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Nachrichten und Chat-Infos sind auf allen Geräten durch eine Ende-zu-Ende-Verschlüsselung geschützt";
 
 /* Title text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Transfer Account";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Konto übertragen";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Unbeantworteter Videoanruf";
