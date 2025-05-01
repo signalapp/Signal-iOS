@@ -20,6 +20,7 @@ extension SVR2 {
 public protocol _SVR2_AppContextShim {
 
     var isMainApp: Bool { get }
+    var isNSE: Bool { get }
 }
 
 public class _SVR2_AppContextWrapper: _SVR2_AppContextShim {
@@ -28,6 +29,10 @@ public class _SVR2_AppContextWrapper: _SVR2_AppContextShim {
 
     public var isMainApp: Bool {
         return CurrentAppContext().isMainApp
+    }
+
+    public var isNSE: Bool {
+        return CurrentAppContext().isNSE
     }
 }
 
@@ -139,6 +144,8 @@ internal class _SVR2_AppContextMock: _SVR2_AppContextShim {
     init() {}
 
     var isMainApp: Bool { true }
+
+    var isNSE: Bool { false }
 }
 
 internal class MockSVR2ClientWrapper: SVR2ClientWrapper {

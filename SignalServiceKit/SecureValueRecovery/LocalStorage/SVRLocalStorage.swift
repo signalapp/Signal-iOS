@@ -12,6 +12,7 @@ public protocol SVRLocalStorage {
 }
 
 public protocol SVRLocalStorageInternal: SVRLocalStorage {
+    func getNeedsMasterKeyBackup(_ transaction: DBReadTransaction) -> Bool
 
     func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType?
 
@@ -20,6 +21,8 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
     func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String?
 
     // MARK: - Setters
+
+    func setNeedsMasterKeyBackup(_ value: Bool, _ transaction: DBWriteTransaction)
 
     func setIsMasterKeyBackedUp(_ value: Bool, _ transaction: DBWriteTransaction)
 
@@ -50,6 +53,10 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
 
     // MARK: - Getters
 
+    public func getNeedsMasterKeyBackup(_ transaction: DBReadTransaction) -> Bool {
+        return svrKvStore.getBool(Keys.needsMasterKeyBackup, defaultValue: false, transaction: transaction)
+    }
+
     public func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool {
         return svrKvStore.getBool(Keys.isMasterKeyBackedUp, defaultValue: false, transaction: transaction)
     }
@@ -70,6 +77,10 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
     }
 
     // MARK: - Setters
+
+    public func setNeedsMasterKeyBackup(_ value: Bool, _ transaction: DBWriteTransaction) {
+        return svrKvStore.setBool(value, key: Keys.needsMasterKeyBackup, transaction: transaction)
+    }
 
     public func setIsMasterKeyBackedUp(_ value: Bool, _ transaction: DBWriteTransaction) {
         svrKvStore.setBool(value, key: Keys.isMasterKeyBackedUp, transaction: transaction)
@@ -97,7 +108,8 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
                 Keys.isMasterKeyBackedUp,
                 Keys.syncedStorageServiceKey,
                 Keys.legacy_svr1EnclaveName,
-                Keys.svr2MrEnclaveStringValue
+                Keys.svr2MrEnclaveStringValue,
+                Keys.needsMasterKeyBackup
             ],
             transaction: transaction
         )
@@ -125,6 +137,7 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         static let pinType = "pinType"
         static let encodedPINVerificationString = "encodedVerificationString"
         static let isMasterKeyBackedUp = "isMasterKeyBackedUp"
+        static let needsMasterKeyBackup = "needsMasterKeyBackup"
         static let syncedStorageServiceKey = "Storage Service Encryption"
         static let syncedBackupKey = "Backup Key"
         // Kept around because its existence indicates we had an svr1 backup.
