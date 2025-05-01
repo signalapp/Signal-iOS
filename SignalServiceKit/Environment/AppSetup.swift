@@ -953,6 +953,7 @@ public class AppSetup {
         )
         let backupAttachmentDownloadManager = testDependencies.backupAttachmentDownloadManager
             ?? BackupAttachmentDownloadManagerImpl(
+                appContext: appContext,
                 appReadiness: appReadiness,
                 attachmentStore: attachmentStore,
                 attachmentDownloadManager: attachmentDownloadManager,
