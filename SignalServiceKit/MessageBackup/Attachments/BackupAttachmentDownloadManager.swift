@@ -42,6 +42,7 @@ public protocol BackupAttachmentDownloadManager {
 
 public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManager {
 
+    private let appContext: AppContext
     private let appReadiness: AppReadiness
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let dateProvider: DateProvider
@@ -56,6 +57,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     public let progress: BackupAttachmentDownloadProgress
 
     public init(
+        appContext: AppContext,
         appReadiness: AppReadiness,
         attachmentStore: AttachmentStore,
         attachmentDownloadManager: AttachmentDownloadManager,
@@ -72,6 +74,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         svr: SecureValueRecovery,
         tsAccountManager: TSAccountManager
     ) {
+        self.appContext = appContext
         self.appReadiness = appReadiness
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.dateProvider = dateProvider
@@ -82,6 +85,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.tsAccountManager = tsAccountManager
 
         self.progress = BackupAttachmentDownloadProgress(
+            appContext: appContext,
             appReadiness: appReadiness,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             dateProvider: dateProvider,
@@ -186,6 +190,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     }
 
     public func restoreAttachmentsIfNeeded() async throws {
+        guard appContext.isMainApp else { return }
         switch await statusManager.beginObservingIfNeeded() {
         case .running:
             break

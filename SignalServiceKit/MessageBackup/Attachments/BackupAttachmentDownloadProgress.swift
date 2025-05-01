@@ -135,6 +135,7 @@ public actor BackupAttachmentDownloadProgress {
     private nonisolated let remoteConfigProvider: RemoteConfigProvider
 
     init(
+        appContext: AppContext,
         appReadiness: AppReadiness,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         dateProvider: @escaping DateProvider,
@@ -147,15 +148,20 @@ public actor BackupAttachmentDownloadProgress {
         self.remoteConfigProvider = remoteConfigProvider
 
         var selfRef: BackupAttachmentDownloadProgress?
-        self.initializationTask = Task {
-            await withCheckedContinuation { continuation in
-                appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-                    Task {
-                        await selfRef?.initializeProgress()
-                        continuation.resume()
+        if appContext.isMainApp {
+            self.initializationTask = Task {
+                await withCheckedContinuation { continuation in
+                    appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+                        Task {
+                            await selfRef?.initializeProgress()
+                            continuation.resume()
+                        }
                     }
                 }
             }
+        } else {
+            // No need to do anything outside the main app.
+            initializationTask = Task {}
         }
         selfRef = self
     }
