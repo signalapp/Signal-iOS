@@ -16,12 +16,12 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
     private let viewModel: ChooseBackupPlanViewModel
 
     init(
-        paidPlanDisplayPrice: String,
-        initialPlanSelection: PlanSelection
+        initialPlanSelection: PlanSelection,
+        paidPlanDisplayPrice: String
     ) {
         self.viewModel = ChooseBackupPlanViewModel(
-            paidPlanDisplayPrice: paidPlanDisplayPrice,
-            planSelection: initialPlanSelection
+            initialPlanSelection: initialPlanSelection,
+            paidPlanDisplayPrice: paidPlanDisplayPrice
         )
 
         super.init(wrappedView: ChooseBackupPlanView(viewModel: viewModel))
@@ -33,15 +33,17 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
 private class ChooseBackupPlanViewModel: ObservableObject {
     typealias PlanSelection = ChooseBackupPlanViewController.PlanSelection
 
-    let paidPlanDisplayPrice: String
     @Published var planSelection: PlanSelection
+    let initialPlanSelection: PlanSelection?
+    let paidPlanDisplayPrice: String
 
     init(
-        paidPlanDisplayPrice: String,
-        planSelection: PlanSelection
+        initialPlanSelection: PlanSelection?,
+        paidPlanDisplayPrice: String
     ) {
+        self.planSelection = initialPlanSelection ?? .free
+        self.initialPlanSelection = initialPlanSelection
         self.paidPlanDisplayPrice = paidPlanDisplayPrice
-        self.planSelection = planSelection
     }
 }
 
@@ -56,7 +58,7 @@ struct ChooseBackupPlanView: View {
         VStack {
             ScrollView {
                 VStack {
-                    Image("signal-backups-choose-plan")
+                    Image("backups-choose-plan")
                         .frame(width: 80, height: 80)
 
                     Spacer().frame(height: 8)
@@ -100,6 +102,7 @@ struct ChooseBackupPlanView: View {
                                 comment: "Text for a bullet point in a list of Backup features, describing that recent media is included."
                             )),
                         ],
+                        isCurrentPlan: viewModel.initialPlanSelection == .free,
                         isSelected: viewModel.planSelection == .free,
                         onTap: {
                             viewModel.planSelection = .free
@@ -134,6 +137,7 @@ struct ChooseBackupPlanView: View {
                                 comment: "Text for a bullet point in a list of Backup features, describing the amount of included storage."
                             )),
                         ],
+                        isCurrentPlan: viewModel.initialPlanSelection == .paid,
                         isSelected: viewModel.planSelection == .paid,
                         onTap: {
                             viewModel.planSelection = .paid
@@ -164,6 +168,7 @@ struct ChooseBackupPlanView: View {
                     .font(.headline)
                     .padding(.vertical, 14)
             }
+            .disabled(viewModel.planSelection == viewModel.initialPlanSelection)
             .buttonStyle(.plain)
             .frame(maxWidth: .infinity)
             .background(Color.Signal.ultramarine)
@@ -189,6 +194,7 @@ private struct PlanOptionView: View {
     let title: String
     let subtitle: String
     let bullets: [BulletPoint]
+    let isCurrentPlan: Bool
     let isSelected: Bool
     let onTap: () -> Void
 
@@ -196,6 +202,23 @@ private struct PlanOptionView: View {
         Button(action: onTap) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading) {
+                    if isCurrentPlan {
+                        Label(
+                            OWSLocalizedString(
+                                "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL",
+                                comment: "A label indicating that a given Backup plan option is what the user has already enabled."
+                            ),
+                            systemImage: "checkmark"
+                        )
+                        .font(.footnote)
+                        .foregroundStyle(Color.Signal.secondaryLabel)
+                        .padding(.vertical, 4)
+                        .padding(.horizontal, 12)
+                        .background {
+                            Capsule().fill(Color.Signal.secondaryFill)
+                        }
+                    }
+
                     Text(title).font(.headline)
                     Text(subtitle).foregroundStyle(Color.Signal.secondaryLabel)
 
@@ -265,8 +288,8 @@ private struct PlanOptionView: View {
 #Preview {
     NavigationView {
         ChooseBackupPlanView(viewModel: ChooseBackupPlanViewModel(
-            paidPlanDisplayPrice: "$2.99",
-            planSelection: .free
+            initialPlanSelection: .free,
+            paidPlanDisplayPrice: "$2.99"
         ))
     }
 }
