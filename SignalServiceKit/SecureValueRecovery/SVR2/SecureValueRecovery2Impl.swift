@@ -104,12 +104,34 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     public func warmCaches() {
-        // This is where the AEP migration happen for existing installs
-        generateAccountEntropyPoolIfMissing()
-
-        // Never migrate in the NSE or extensions.
         if self.appContext.isMainApp {
+            // This is where the AEP migration happen for existing installs
+            // Run this inside the `isMainApp` section since we want to
+            // avoid migrating the AEP in the NSE.
+            generateAccountEntropyPoolIfMissing()
+
+            // Never migrate in the NSE or extensions.
             _ = performStartupMigrationsIfNecessary()
+                .done {
+                    self.refreshCredentialsAndBackupIfNecessary()
+                }
+        } else if
+            appContext.isNSE,
+            db.read(block: {
+                self.kvStore.getBool(Self.needsInitialAEPBackup, defaultValue: true, transaction: $0)
+            })
+        {
+            // See the comment for `needsInitialAEPBackup` below. If the AEP has been migrated, but
+            // the backup still needs to complete, refresh credentials if necessary and attempt
+            // to complete the backup.
+            refreshCredentialsAndBackupIfNecessary()
+        }
+    }
+
+    private func refreshCredentialsAndBackupIfNecessary() {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
+            guard let self else { return }
+            _ = self.periodicRefreshCredentialIfNecessary()
                 .then {
                     self.backupMasterKeyIfNecessary()
                 }
@@ -140,45 +162,39 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         )
     }
 
-    private func periodicRefreshCredentialIfNecessary() {
-        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
-            guard let self else {
-                return
+    @discardableResult
+    private func periodicRefreshCredentialIfNecessary() -> Guarantee<Void> {
+        let needsRefresh = self.db.read { tx -> Bool in
+            guard self.tsAccountManager.registrationState(tx: tx).isRegistered else {
+                // Only refresh if registered.
+                return false
             }
-            let needsRefresh = self.db.read { tx -> Bool in
-                guard self.tsAccountManager.registrationState(tx: tx).isRegistered else {
-                    // Only refresh if registered.
-                    return false
-                }
-                guard self.hasBackedUpMasterKey(transaction: tx) else {
-                    // If we've never backed up, don't refresh periodically.
-                    return false
-                }
-                return self.getNeedsCredentialRefreshBasedOnVersion(tx: tx)
+            guard self.hasBackedUpMasterKey(transaction: tx) else {
+                // If we've never backed up, don't refresh periodically.
+                return false
             }
-            guard needsRefresh else {
-                return
-            }
-            // Force refresh a credential, even if we have one cached, to ensure we
-            // have a fresh credential to back up.
-            Logger.info("Refreshing auth credential for periodic backup")
-            RemoteAttestation.authForSVR2(chatServiceAuth: .implicit())
-                .observe(on: self.scheduler) { [weak self] result in
-                    switch result {
-                    case .success(let credential):
-                        Logger.info("Storing refreshed credential")
-                        self?.db.write { tx in
-                            self?.credentialStorage.storeAuthCredentialForCurrentUsername(
-                                SVR2AuthCredential(credential: credential),
-                                tx
-                            )
-                            self?.didRefreshCredentialInCurrentVersion(tx: tx)
-                        }
-                    case .failure:
-                        Logger.warn("Unable to fetch auth credential")
-                    }
-                }
+            return self.getNeedsCredentialRefreshBasedOnVersion(tx: tx)
         }
+        guard needsRefresh else {
+            return .value(())
+        }
+        // Force refresh a credential, even if we have one cached, to ensure we
+        // have a fresh credential to back up.
+        Logger.info("Refreshing auth credential for periodic backup")
+        return RemoteAttestation.authForSVR2(chatServiceAuth: .implicit())
+            .map(on: schedulers.main) { [weak self] credential -> Void in
+                Logger.info("Storing refreshed credential")
+                self?.db.write { tx in
+                    self?.credentialStorage.storeAuthCredentialForCurrentUsername(
+                        SVR2AuthCredential(credential: credential),
+                        tx
+                    )
+                    self?.didRefreshCredentialInCurrentVersion(tx: tx)
+                }
+            }
+            .recover { _ in
+                Logger.warn("Unable to fetch auth credential")
+            }
     }
 
     // MARK: - Key Existence
@@ -273,6 +289,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         } else {
             // If the user has a current PIN, update SVR with the new key
             if let currentPIN = twoFAManager.pinCode(transaction: transaction) {
+                // Record that the master key needs to be backed up.
+                localStorage.setNeedsMasterKeyBackup(true, transaction)
                 _ = backupMasterKey(pin: currentPIN, masterKey: masterKey, authMethod: .implicit)
             }
         }
@@ -773,6 +791,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                                 Logger.info("Backup state changed while expose ongoing; throwing away results")
                                 return
                             }
+                            self.localStorage.setNeedsMasterKeyBackup(false, tx)
+                            // It doesn't matter how the backup was done, but as soon as one completes,
+                            // mark this as true to avoid needing to do any backups in the NSE
+                            self.kvStore.setBool(false, key: Self.needsInitialAEPBackup, transaction: tx)
                             self.clearInProgressBackup(tx)
                             self.updateLocalSVRState(
                                 isMasterKeyBackedUp: true,
@@ -1173,26 +1195,36 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         migrateEnclavesIfNecessary()
             .done(on: scheduler) { [weak self] in
                 self?.wipeOldEnclavesIfNeeded(auth: .implicit)
-                self?.periodicRefreshCredentialIfNecessary()
             }
     }
+
+    // If an AEP exists, but the one time backup hasn't happend, track this state and allow
+    // the NSE to do the initial SVR backup. Initial AEP migrations could happen in the NSE,
+    // so we want to allow any migrations that happened in the NSE to complete the backup.
+    // This should only affect legacy installs since any new install or
+    // migration should already have this marked through `useDeviceLocalAccountEntropyPool`.
+    // Eventualy (Nov 2025), this can be removed since all active accounts will either
+    // have migrated or only migrated in the main app.
+    private static let needsInitialAEPBackup = "needsInitialAEPBackup"
 
     private func backupMasterKeyIfNecessary() -> Promise<Void> {
         let (
             currentPIN,
-            isBackedUp,
+            backupRequested,
+            needsInitialAEPBackup,
             masterKey
         ) = db.read { tx in
             (
                 twoFAManager.pinCode(transaction: tx),
-                localStorage.getIsMasterKeyBackedUp(tx),
+                localStorage.getNeedsMasterKeyBackup(tx),
+                kvStore.getBool(Self.needsInitialAEPBackup, defaultValue: true, transaction: tx),
                 accountKeyStore.getMasterKey(tx: tx)
             )
         }
         if
             let currentPIN,
             let masterKey,
-            !isBackedUp
+            (backupRequested || needsInitialAEPBackup)
         {
             return backupMasterKey(pin: currentPIN, masterKey: masterKey, authMethod: .implicit).asVoid()
         } else {
