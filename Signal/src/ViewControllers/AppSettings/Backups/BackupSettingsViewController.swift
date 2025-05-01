@@ -6,10 +6,17 @@
 import Lottie
 import SignalServiceKit
 import SignalUI
+import StoreKit
 import SwiftUI
 import UIKit
 
 class BackupSettingsViewController: HostingController<BackupSettingsView> {
+    private let backupSubscriptionManager: BackupSubscriptionManager
+    private let db: DB
+    private let networkManager: NetworkManager
+
+    private let viewModel: BackupSettingsViewModel
+
     init(
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
@@ -17,14 +24,12 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         db: DB,
         networkManager: NetworkManager
     ) {
-        let viewModel = db.read { tx -> BackupSettingsViewModel in
-            let backupPlanViewModel = BackupPlanViewModel(loadBackupPlanBlock: {
-                return try await Self.loadBackupPlan(
-                    backupSubscriptionManager: backupSubscriptionManager,
-                    db: db,
-                    networkManager: networkManager
-                )
-            })
+        self.backupSubscriptionManager = backupSubscriptionManager
+        self.db = db
+        self.networkManager = networkManager
+
+        self.viewModel = db.read { tx in
+            let backupPlanViewModel = BackupPlanViewModel()
 
             let enabledState = BackupSettingsViewModel.EnabledState.load(
                 backupSettingsStore: backupSettingsStore,
@@ -44,6 +49,29 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
 
         super.init(wrappedView: BackupSettingsView(viewModel: viewModel))
 
+        viewModel.backupPlanViewModel.actionBlocks = BackupPlanViewModel.ActionBlocks(
+            loadBackupPlan: { [weak self] in
+                guard let self else { throw OWSAssertionError("Loading backup plan, but lost self!") }
+                return try await loadBackupPlan()
+            },
+            manageOrCancelPaidPlan: { [weak self] in
+                guard let windowScene = self?.view.window?.windowScene else {
+                    owsFailDebug("Missing window scene!")
+                    return
+                }
+
+                Task {
+                    try await AppStore.showManageSubscriptions(in: windowScene)
+                }
+            },
+            resubscribeToPaidPlan: { [weak self] in
+                self?.showChooseBackupPlan(initialPlanSelection: .free)
+            },
+            upgradeFromFreeToPaidPlan: { [weak self] in
+                self?.showChooseBackupPlan(initialPlanSelection: .free)
+            }
+        )
+
         title = OWSLocalizedString(
             "BACKUPS_SETTINGS_TITLE",
             comment: "Title for the 'Backup' settings menu."
@@ -54,11 +82,9 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
 
     // MARK: -
 
-    private static func loadBackupPlan(
-        backupSubscriptionManager: BackupSubscriptionManager,
-        db: DB,
-        networkManager: NetworkManager,
-    ) async throws -> BackupPlanViewModel.BackupPlan {
+    private func loadBackupPlan() async throws -> BackupPlanViewModel.BackupPlan {
+        try await Task.sleep(nanoseconds: 2.clampedNanoseconds)
+
         let backupSubscriberID: Data? = db.read { tx in
             backupSubscriptionManager.getIAPSubscriberData(tx: tx)?.subscriberId
         }
@@ -99,6 +125,37 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
             // it as free.
             owsFailDebug("Unexpected backup subscription status! \(backupSubscription.status)")
             return .free
+        }
+    }
+
+    private func showChooseBackupPlan(
+        initialPlanSelection: ChooseBackupPlanViewController.PlanSelection
+    ) {
+        guard let navigationController else {
+            owsFailDebug("Missing nav controller!")
+            return
+        }
+
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self
+        ) { modal async -> Void in
+            guard
+                let paidPlanDisplayPrice = try? await self.backupSubscriptionManager
+                    .subscriptionDisplayPrice()
+            else {
+                modal.dismiss()
+                return
+            }
+
+            modal.dismiss {
+                navigationController.pushViewController(
+                    ChooseBackupPlanViewController(
+                        paidPlanDisplayPrice: paidPlanDisplayPrice,
+                        initialPlanSelection: initialPlanSelection
+                    ),
+                    animated: true
+                )
+            }
         }
     }
 }
@@ -278,6 +335,9 @@ struct BackupSettingsView: View {
                 }
             }
         }
+        .onAppear {
+            viewModel.backupPlanViewModel.loadBackupPlan()
+        }
     }
 }
 
@@ -297,26 +357,32 @@ private class BackupPlanViewModel: ObservableObject {
         case genericError
     }
 
+    struct ActionBlocks {
+        let loadBackupPlan: () async throws -> BackupPlan
+        let manageOrCancelPaidPlan: () -> Void
+        let resubscribeToPaidPlan: () -> Void
+        let upgradeFromFreeToPaidPlan: () -> Void
+    }
+
     @Published var loadingState: BackupPlanLoadingState
 
-    private let loadBackupPlanBlock: () async throws -> BackupPlan
+    var actionBlocks: ActionBlocks! { willSet { owsPrecondition(actionBlocks == nil) } }
     private let loadingQueue: SerialTaskQueue
 
-    init(
-        loadBackupPlanBlock: @escaping () async throws -> BackupPlan
-    ) {
+    init() {
         self.loadingState = .loading
-        self.loadBackupPlanBlock = loadBackupPlanBlock
         self.loadingQueue = SerialTaskQueue()
-
-        loadBackupPlan()
     }
 
     func loadBackupPlan() {
         loadingQueue.enqueue { @MainActor [self] in
+            withAnimation {
+                loadingState = .loading
+            }
+
             let newLoadingState: BackupPlanLoadingState
             do {
-                let backupPlan = try await loadBackupPlanBlock()
+                let backupPlan = try await actionBlocks.loadBackupPlan()
                 newLoadingState = .loaded(backupPlan)
             } catch let error where error.isNetworkFailureOrTimeout {
                 newLoadingState = .networkError
@@ -335,7 +401,7 @@ private class BackupPlanViewModel: ObservableObject {
             owsFail("Attempting to upgrade from free plan, but not on free plan!")
         }
 
-        // TODO: Implement
+        actionBlocks.upgradeFromFreeToPaidPlan()
     }
 
     func manageOrCancelPaidPlan() {
@@ -343,7 +409,7 @@ private class BackupPlanViewModel: ObservableObject {
             owsFail("Attempting to manage/cancel paid plan, but not on paid plan!")
         }
 
-        // TODO: Implement
+        actionBlocks.manageOrCancelPaidPlan()
     }
 
     func resubscribeToPaidPlan() {
@@ -351,7 +417,7 @@ private class BackupPlanViewModel: ObservableObject {
             owsFail("Attempting to restart paid plan, but not on paid-but-canceled plan!")
         }
 
-        // TODO: Implement
+        actionBlocks.resubscribeToPaidPlan()
     }
 }
 
@@ -710,10 +776,16 @@ private extension BackupSettingsViewModel {
             )
         }
 
-        let backupPlanViewModel = BackupPlanViewModel(loadBackupPlanBlock: {
-            try! await Task.sleep(nanoseconds: 2.clampedNanoseconds)
-            return try backupPlanLoadResult.get()
-        })
+        let backupPlanViewModel = BackupPlanViewModel()
+        backupPlanViewModel.actionBlocks = BackupPlanViewModel.ActionBlocks(
+            loadBackupPlan: {
+                try! await Task.sleep(nanoseconds: 2.clampedNanoseconds)
+                return try backupPlanLoadResult.get()
+            },
+            manageOrCancelPaidPlan: { print("Managing!") },
+            resubscribeToPaidPlan: { print("Resubscribing!") },
+            upgradeFromFreeToPaidPlan: { print("Upgrading!") }
+        )
 
         return BackupSettingsViewModel(
             backupSettingsStore: backupSettingsStore,

@@ -2587,6 +2587,7 @@
 		D962346D2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */; };
 		D96234702C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */; };
 		D96269D92C58407400152314 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D96269D82C58407400152314 /* README.md */; };
+		D9680CF32DBB0B2D005DD5BE /* ChooseBackupPlanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9680CF22DBB0B28005DD5BE /* ChooseBackupPlanViewController.swift */; };
 		D9683D792D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D6B2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.binproto */; };
 		D9683D7A2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_11.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D742D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_11.txtproto */; };
 		D9683D7B2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D702D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.txtproto */; };
@@ -6502,6 +6503,7 @@
 		D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeMostRecentAddressableMessageCursorTest.swift; sourceTree = "<group>"; };
 		D96269D82C58407400152314 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMessagingJobQueues.swift; sourceTree = "<group>"; };
+		D9680CF22DBB0B28005DD5BE /* ChooseBackupPlanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseBackupPlanViewController.swift; sourceTree = "<group>"; };
 		D9683D5D2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_00.binproto; sourceTree = "<group>"; };
 		D9683D5E2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_00.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_00.txtproto; sourceTree = "<group>"; };
 		D9683D5F2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_01.binproto; sourceTree = "<group>"; };
@@ -12409,6 +12411,7 @@
 			isa = PBXGroup;
 			children = (
 				D951F5302D9B236100C5EBF3 /* BackupSettingsViewController.swift */,
+				D9680CF22DBB0B28005DD5BE /* ChooseBackupPlanViewController.swift */,
 			);
 			path = Backups;
 			sourceTree = "<group>";
@@ -16727,6 +16730,7 @@
 				76BA0DF02A29B27100751107 /* ChatListViewController+Search.swift in Sources */,
 				3406D32625DD5EAF00885B14 /* ChatListViewController.swift in Sources */,
 				887B380825F0355700685845 /* ChatsSettingsViewController.swift in Sources */,
+				D9680CF32DBB0B2D005DD5BE /* ChooseBackupPlanViewController.swift in Sources */,
 				34E95C1B269F4F1B004807EC /* CLVLoader.swift in Sources */,
 				34E95C22269F4F4F004807EC /* CLVRenderState.swift in Sources */,
 				34E95C25269F4F4F004807EC /* CLVTableDataSource.swift in Sources */,

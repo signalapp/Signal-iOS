@@ -512,7 +512,7 @@ public extension Theme {
         case .register:
             return "register-\(UIDevice.current.isIPad ? "ipad" : "phone")-outline-60-\(isDarkThemeEnabled ? "dark" : "light")"
         case .backup:
-            return "backup-display"
+            return "backup"
         case .noDevice:
             return "device-phone-slash"
 

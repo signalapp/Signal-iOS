@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "backup-display.pdf",
+      "filename" : "backup.pdf",
       "idiom" : "universal"
     }
   ],
@@ -10,6 +10,7 @@
     "version" : 1
   },
   "properties" : {
+    "preserves-vector-representation" : true,
     "template-rendering-intent" : "template"
   }
 }

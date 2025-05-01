@@ -1288,6 +1288,39 @@
 /* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No unread chats";
 
+/* Text for a bullet point in a list of Backup features, describing that all media is included. */
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Full media backup";
+
+/* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Full text message backup";
+
+/* Text for a bullet point in a list of Backup features, describing that recent media is included. */
+"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Last 45 days of media";
+
+/* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+
+/* Subtitle for the free plan option, when choosing a Backup plan. */
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Text + 45 days of media";
+
+/* Title for the free plan option, when choosing a Backup plan. */
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Free";
+
+/* Subtitle for the paid plan option, when choosing a Backup plan. */
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Text + All your media";
+
+/* Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/month";
+
+/* Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
+"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Subscribe for %1$@/month";
+
+/* Subtitle for a view allowing users to choose a Backup plan. */
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "All backups are end-to-end encrypted. Signal is a non-profit — paying for backups helps support our mission.";
+
+/* Title for a view allowing users to choose a Backup plan. */
+"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Your Backup Plan";
+
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chat Color & Wallpaper";
 

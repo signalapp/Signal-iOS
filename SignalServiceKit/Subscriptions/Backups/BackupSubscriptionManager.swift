@@ -118,6 +118,19 @@ public final class BackupSubscriptionManager {
         listenForTransactionUpdates()
     }
 
+    /// This should never throw, nor be missing.
+    private func getPaidTierProduct() async throws -> Product {
+        do {
+            let products = try await Product.products(for: [Constants.paidTierBackupsProductId])
+            return products.first!
+        } catch {
+            throw OWSAssertionError(
+                "Failed to get paid-tier product from StoreKit: \(error)",
+                logger: logger
+            )
+        }
+    }
+
     /// Returns the `Transaction` that most recently entitled us to the StoreKit
     /// "paid tier" subscription, or `nil` if we are not entitled to it.
     ///
@@ -212,6 +225,11 @@ public final class BackupSubscriptionManager {
 
     // MARK: - Purchase new subscription
 
+    /// Returns the price for a Backups subscription, formatted for display.
+    public func subscriptionDisplayPrice() async throws -> String {
+        return try await getPaidTierProduct().displayPrice
+    }
+
     /// Attempts to purchase and redeem a Backups subscription for the first
     /// time, via StoreKit IAP.
     ///
@@ -220,14 +238,7 @@ public final class BackupSubscriptionManager {
     /// Backups subscription, StoreKit handles already-subscribed users
     /// gracefully by showing explanatory UI.
     public func purchaseNewSubscription() async throws -> PurchaseResult {
-        guard let paidTierProduct = try await Product.products(for: [Constants.paidTierBackupsProductId]).first else {
-            throw OWSAssertionError(
-                "Failed to get paid tier subscription product from StoreKit!",
-                logger: logger
-            )
-        }
-
-        switch try await paidTierProduct.purchase() {
+        switch try await getPaidTierProduct().purchase() {
         case .success(let purchaseResult):
             switch purchaseResult {
             case .verified:
