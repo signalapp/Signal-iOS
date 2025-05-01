@@ -29,14 +29,10 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             }
             return backupKey
         case .messages:
-            do {
-                guard let backupKey = accountKeyStore.getMessageRootBackupKey(tx: tx) else {
-                    throw MessageBackupKeyMaterialError.missingMessageBackupKey
-                }
-                return backupKey
-            } catch {
-                throw MessageBackupKeyMaterialError.derivationError(error)
+            guard let backupKey = accountKeyStore.getMessageRootBackupKey(tx: tx) else {
+                throw MessageBackupKeyMaterialError.missingMessageBackupKey
             }
+            return backupKey
         }
     }
 
