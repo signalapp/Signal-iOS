@@ -11,6 +11,7 @@ import SwiftUI
 import UIKit
 
 class BackupSettingsViewController: HostingController<BackupSettingsView> {
+    private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
     private let networkManager: NetworkManager
@@ -20,69 +21,52 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
     init(
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
-        dateProvider: @escaping DateProvider,
         db: DB,
         networkManager: NetworkManager
     ) {
+        self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
         self.networkManager = networkManager
 
         self.viewModel = db.read { tx in
-            let backupPlanViewModel = BackupPlanViewModel()
-
-            let enabledState = BackupSettingsViewModel.EnabledState.load(
-                backupSettingsStore: backupSettingsStore,
-                dateProvider: dateProvider,
-                db: db,
-                tx: tx
-            )
-
-            return BackupSettingsViewModel(
-                backupSettingsStore: backupSettingsStore,
-                db: db,
-                dateProvider: dateProvider,
-                backupPlanViewModel: backupPlanViewModel,
-                enabledState: enabledState
+            BackupSettingsViewModel(
+                areBackupsEnabled: backupSettingsStore.areBackupsEnabled(tx: tx) == true,
+                lastBackupDate: backupSettingsStore.lastBackupDate(tx: tx),
+                lastBackupSizeBytes: backupSettingsStore.lastBackupSizeBytes(tx: tx),
+                backupFrequency: backupSettingsStore.backupFrequency(tx: tx),
+                shouldBackUpOnCellular: backupSettingsStore.shouldBackUpOnCellular(tx: tx)
             )
         }
 
         super.init(wrappedView: BackupSettingsView(viewModel: viewModel))
 
-        viewModel.backupPlanViewModel.actionBlocks = BackupPlanViewModel.ActionBlocks(
-            loadBackupPlan: { [weak self] in
-                guard let self else { throw OWSAssertionError("Loading backup plan, but lost self!") }
-                return try await loadBackupPlan()
-            },
-            manageOrCancelPaidPlan: { [weak self] in
-                guard let windowScene = self?.view.window?.windowScene else {
-                    owsFailDebug("Missing window scene!")
-                    return
-                }
-
-                Task {
-                    try await AppStore.showManageSubscriptions(in: windowScene)
-                }
-            },
-            resubscribeToPaidPlan: { [weak self] in
-                self?.showChooseBackupPlan(initialPlanSelection: .free)
-            },
-            upgradeFromFreeToPaidPlan: { [weak self] in
-                self?.showChooseBackupPlan(initialPlanSelection: .free)
-            }
-        )
-
         title = OWSLocalizedString(
             "BACKUPS_SETTINGS_TITLE",
             comment: "Title for the 'Backup' settings menu."
         )
+
+        viewModel.actionsDelegate = self
+        // Run as soon as we've set the actionDelegate.
+        viewModel.loadBackupPlan()
+    }
+}
+
+// MARK: -
+
+extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate {
+    fileprivate func enableBackups() {
+        // TODO: [Backups] Present "enable Backups" flow
     }
 
-    required init?(coder: NSCoder) { owsFail("Not implemented!") }
+    fileprivate func disableBackups() {
+        // TODO: [Backups] Present "disable Backups" flow
+    }
 
     // MARK: -
 
-    private func loadBackupPlan() async throws -> BackupPlanViewModel.BackupPlan {
+    fileprivate func loadBackupPlan() async throws -> BackupSettingsViewModel.BackupPlanLoadingState.LoadedBackupPlan {
+        // TODO: [Backups] Remove when this goes to prod!
         try await Task.sleep(nanoseconds: 2.clampedNanoseconds)
 
         let backupSubscriberID: Data? = db.read { tx in
@@ -130,6 +114,29 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         }
     }
 
+    // MARK: -
+
+    fileprivate func upgradeFromFreeToPaidPlan() {
+        showChooseBackupPlan(initialPlanSelection: .free)
+    }
+
+    fileprivate func manageOrCancelPaidPlan() {
+        guard let windowScene = view.window?.windowScene else {
+            owsFailDebug("Missing window scene!")
+            return
+        }
+
+        Task {
+            try await AppStore.showManageSubscriptions(in: windowScene)
+        }
+
+        // TODO: [Backups] Reload this view
+    }
+
+    fileprivate func resubscribeToPaidPlan() {
+        showChooseBackupPlan(initialPlanSelection: .free)
+    }
+
     private func showChooseBackupPlan(
         initialPlanSelection: ChooseBackupPlanViewController.PlanSelection
     ) {
@@ -160,101 +167,166 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
             }
         }
     }
+
+    // MARK: -
+
+    fileprivate func performManualBackup() {
+        // TODO: [Backups] Implement
+    }
+
+    fileprivate func setBackupFrequency(_ newBackupFrequency: BackupFrequency) {
+        db.write { tx in
+            backupSettingsStore.setBackupFrequency(newBackupFrequency, tx: tx)
+        }
+    }
+
+    fileprivate func setShouldBackUpOnCellular(_ newShouldBackUpOnCellular: Bool) {
+        db.write { tx in
+            backupSettingsStore.setShouldBackUpOnCellular(newShouldBackUpOnCellular, tx: tx)
+        }
+    }
 }
 
 // MARK: -
 
 private class BackupSettingsViewModel: ObservableObject {
-    enum EnabledState {
-        case enabled(BackupEnabledViewModel)
-        case disabled
+    protocol ActionsDelegate: AnyObject {
+        func enableBackups()
+        func disableBackups()
 
-        static func load(
-            backupSettingsStore: BackupSettingsStore,
-            dateProvider: @escaping DateProvider,
-            db: DB,
-            tx: DBReadTransaction
-        ) -> Self {
-            let areBackupsEnabled = backupSettingsStore.areBackupsEnabled(tx: tx)
+        func loadBackupPlan() async throws -> BackupPlanLoadingState.LoadedBackupPlan
+        func upgradeFromFreeToPaidPlan()
+        func manageOrCancelPaidPlan()
+        func resubscribeToPaidPlan()
 
-            if areBackupsEnabled == true {
-                let lastBackupDate = backupSettingsStore.lastBackupDate(tx: tx)
-                let lastBackupSizeBytes: UInt64? = backupSettingsStore.lastBackupSizeBytes(tx: tx)
-                let backupFrequency = backupSettingsStore.backupFrequency(tx: tx)
-                let shouldBackUpOnCellular = backupSettingsStore.shouldBackUpOnCellular(tx: tx)
+        func performManualBackup()
+        func setBackupFrequency(_ newBackupFrequency: BackupFrequency)
+        func setShouldBackUpOnCellular(_ newShouldBackUpOnCellular: Bool)
+    }
 
-                return .enabled(BackupEnabledViewModel(
-                    backupSettingsStore: backupSettingsStore,
-                    dateProvider: dateProvider,
-                    db: db,
-                    lastBackupDate: lastBackupDate,
-                    lastBackupSizeBytes: lastBackupSizeBytes,
-                    backupFrequency: backupFrequency,
-                    shouldBackUpOnCellular: shouldBackUpOnCellular
-                ))
-            } else {
-                return .disabled
+    enum BackupPlanLoadingState {
+        enum LoadedBackupPlan {
+            case free
+            case paid(price: FiatMoney, renewalDate: Date)
+            case paidButCanceled(expirationDate: Date)
+        }
+
+        case loading
+        case loaded(LoadedBackupPlan)
+        case networkError
+        case genericError
+    }
+
+    @Published var backupPlanLoadingState: BackupPlanLoadingState
+    @Published var areBackupsEnabled: Bool
+    let lastBackupDate: Date?
+    let lastBackupSizeBytes: UInt64?
+    @Published var backupFrequency: BackupFrequency
+    @Published var shouldBackUpOnCellular: Bool
+
+    weak var actionsDelegate: ActionsDelegate?
+
+    private let loadBackupPlanQueue: SerialTaskQueue
+
+    init(
+        areBackupsEnabled: Bool,
+        lastBackupDate: Date?,
+        lastBackupSizeBytes: UInt64?,
+        backupFrequency: BackupFrequency,
+        shouldBackUpOnCellular: Bool,
+    ) {
+        self.backupPlanLoadingState = .loading
+        self.areBackupsEnabled = areBackupsEnabled
+        self.lastBackupDate = lastBackupDate
+        self.lastBackupSizeBytes = lastBackupSizeBytes
+        self.backupFrequency = backupFrequency
+        self.shouldBackUpOnCellular = shouldBackUpOnCellular
+
+        self.loadBackupPlanQueue = SerialTaskQueue()
+    }
+
+    // MARK: -
+
+    func enableBackups() {
+        guard !areBackupsEnabled else {
+            owsFail("Attempting to enable backups, but they're already enabled!")
+        }
+
+        actionsDelegate?.enableBackups()
+    }
+
+    func disableBackups() {
+        guard areBackupsEnabled else {
+            owsFail("Attempting to disable backups, but they're already disabled!")
+        }
+
+        actionsDelegate?.disableBackups()
+    }
+
+    // MARK: -
+
+    func loadBackupPlan() {
+        guard let actionsDelegate else { return }
+
+        loadBackupPlanQueue.enqueue { @MainActor [self, actionsDelegate] in
+            withAnimation {
+                backupPlanLoadingState = .loading
+            }
+
+            let newLoadingState: BackupPlanLoadingState
+            do {
+                let backupPlan = try await actionsDelegate.loadBackupPlan()
+                newLoadingState = .loaded(backupPlan)
+            } catch let error where error.isNetworkFailureOrTimeout {
+                newLoadingState = .networkError
+            } catch {
+                newLoadingState = .genericError
+            }
+
+            withAnimation {
+                backupPlanLoadingState = newLoadingState
             }
         }
     }
 
-    private let backupSettingsStore: BackupSettingsStore
-    private let dateProvider: DateProvider
-    private let db: DB
+    func upgradeFromFreeToPaidPlan() {
+        guard case .loaded(.free) = backupPlanLoadingState else {
+            owsFail("Attempting to upgrade from free plan, but not on free plan!")
+        }
 
-    let backupPlanViewModel: BackupPlanViewModel
-    @Published var enabledState: EnabledState
-
-    init(
-        backupSettingsStore: BackupSettingsStore,
-        db: DB,
-        dateProvider: @escaping DateProvider,
-        backupPlanViewModel: BackupPlanViewModel,
-        enabledState: EnabledState
-    ) {
-        self.backupSettingsStore = backupSettingsStore
-        self.dateProvider = dateProvider
-        self.db = db
-        self.backupPlanViewModel = backupPlanViewModel
-        self.enabledState = enabledState
+        actionsDelegate?.upgradeFromFreeToPaidPlan()
     }
 
-    func enableBackups() {
-        guard case .disabled = enabledState else {
-            owsFail("Attempting to enable backups, but they're already enabled!")
+    func manageOrCancelPaidPlan() {
+        guard case .loaded(.paid) = backupPlanLoadingState else {
+            owsFail("Attempting to manage/cancel paid plan, but not on paid plan!")
         }
 
-        // TODO: Present "enable backups" flow
-        db.write { tx in
-            backupSettingsStore.setAreBackupsEnabled(true, tx: tx)
-        }
-
-        reloadState()
+        actionsDelegate?.manageOrCancelPaidPlan()
     }
 
-    func disableBackups() {
-        guard case .enabled = enabledState else {
-            owsFail("Attempting to disabl backups, but they're already disabled!")
+    func resubscribeToPaidPlan() {
+        guard case .loaded(.paidButCanceled) = backupPlanLoadingState else {
+            owsFail("Attempting to restart paid plan, but not on paid-but-canceled plan!")
         }
 
-        // TODO: Present "disable backups" flow
-        db.write { tx in
-            backupSettingsStore.setAreBackupsEnabled(false, tx: tx)
-        }
-
-        reloadState()
+        actionsDelegate?.resubscribeToPaidPlan()
     }
 
-    private func reloadState() {
-        backupPlanViewModel.loadBackupPlan()
-        enabledState = db.read { tx in
-            return .load(
-                backupSettingsStore: backupSettingsStore,
-                dateProvider: dateProvider,
-                db: db,
-                tx: tx
-            )
-        }
+    // MARK: -
+
+    func performManualBackup() {
+        actionsDelegate?.performManualBackup()
+    }
+
+    func setBackupFrequency(_ newBackupFrequency: BackupFrequency) {
+        backupFrequency = newBackupFrequency
+        actionsDelegate?.setBackupFrequency(newBackupFrequency)
+    }
+
+    func setShouldBackUpOnCellular(_ newShouldBackUpOnCellular: Bool) {
+        shouldBackUpOnCellular = newShouldBackUpOnCellular
+        actionsDelegate?.setShouldBackUpOnCellular(newShouldBackUpOnCellular)
     }
 }
 
@@ -268,14 +340,16 @@ struct BackupSettingsView: View {
     var body: some View {
         SignalList {
             SignalSection {
-                BackupPlanView(viewModel: viewModel.backupPlanViewModel)
+                BackupPlanView(
+                    loadingState: viewModel.backupPlanLoadingState,
+                    viewModel: viewModel
+                )
             }
 
-            switch viewModel.enabledState {
-            case .enabled(let backupEnabledViewModel):
+            if viewModel.areBackupsEnabled {
                 SignalSection {
                     Button {
-                        backupEnabledViewModel.performManualBackup()
+                        viewModel.performManualBackup()
                     } label: {
                         Label {
                             Text(OWSLocalizedString(
@@ -297,7 +371,18 @@ struct BackupSettingsView: View {
                 }
 
                 SignalSection {
-                    BackupEnabledView(viewModel: backupEnabledViewModel)
+                    BackupEnabledView(
+                        lastBackupDate: viewModel.lastBackupDate,
+                        lastBackupSizeBytes: viewModel.lastBackupSizeBytes,
+                        backupFrequency: Binding(
+                            get: { viewModel.backupFrequency },
+                            set: { viewModel.setBackupFrequency($0) }
+                        ),
+                        shouldBackUpOnCellular: Binding(
+                            get: { viewModel.shouldBackUpOnCellular },
+                            set: { viewModel.setShouldBackUpOnCellular($0) }
+                        )
+                    )
                 }
 
                 SignalSection {
@@ -317,7 +402,7 @@ struct BackupSettingsView: View {
                     ))
                     .foregroundStyle(Color.Signal.secondaryLabel)
                 }
-            case .disabled:
+            } else {
                 SignalSection {
                     Button {
                         viewModel.enableBackups()
@@ -337,97 +422,17 @@ struct BackupSettingsView: View {
                 }
             }
         }
-        .onAppear {
-            viewModel.backupPlanViewModel.loadBackupPlan()
-        }
     }
 }
 
 // MARK: -
 
-private class BackupPlanViewModel: ObservableObject {
-    enum BackupPlan {
-        case free
-        case paid(price: FiatMoney, renewalDate: Date)
-        case paidButCanceled(expirationDate: Date)
-    }
-
-    enum BackupPlanLoadingState {
-        case loading
-        case loaded(BackupPlan)
-        case networkError
-        case genericError
-    }
-
-    struct ActionBlocks {
-        let loadBackupPlan: () async throws -> BackupPlan
-        let manageOrCancelPaidPlan: () -> Void
-        let resubscribeToPaidPlan: () -> Void
-        let upgradeFromFreeToPaidPlan: () -> Void
-    }
-
-    @Published var loadingState: BackupPlanLoadingState
-
-    var actionBlocks: ActionBlocks! { willSet { owsPrecondition(actionBlocks == nil) } }
-    private let loadingQueue: SerialTaskQueue
-
-    init() {
-        self.loadingState = .loading
-        self.loadingQueue = SerialTaskQueue()
-    }
-
-    func loadBackupPlan() {
-        loadingQueue.enqueue { @MainActor [self] in
-            withAnimation {
-                loadingState = .loading
-            }
-
-            let newLoadingState: BackupPlanLoadingState
-            do {
-                let backupPlan = try await actionBlocks.loadBackupPlan()
-                newLoadingState = .loaded(backupPlan)
-            } catch let error where error.isNetworkFailureOrTimeout {
-                newLoadingState = .networkError
-            } catch {
-                newLoadingState = .genericError
-            }
-
-            withAnimation {
-                loadingState = newLoadingState
-            }
-        }
-    }
-
-    func upgradeFromFreeToPaidPlan() {
-        guard case .loaded(.free) = loadingState else {
-            owsFail("Attempting to upgrade from free plan, but not on free plan!")
-        }
-
-        actionBlocks.upgradeFromFreeToPaidPlan()
-    }
-
-    func manageOrCancelPaidPlan() {
-        guard case .loaded(.paid) = loadingState else {
-            owsFail("Attempting to manage/cancel paid plan, but not on paid plan!")
-        }
-
-        actionBlocks.manageOrCancelPaidPlan()
-    }
-
-    func resubscribeToPaidPlan() {
-        guard case .loaded(.paidButCanceled) = loadingState else {
-            owsFail("Attempting to restart paid plan, but not on paid-but-canceled plan!")
-        }
-
-        actionBlocks.resubscribeToPaidPlan()
-    }
-}
-
 private struct BackupPlanView: View {
-    @ObservedObject var viewModel: BackupPlanViewModel
+    let loadingState: BackupSettingsViewModel.BackupPlanLoadingState
+    let viewModel: BackupSettingsViewModel
 
     var body: some View {
-        switch viewModel.loadingState {
+        switch loadingState {
         case .loading:
             VStack(alignment: .center) {
                 ProgressView()
@@ -440,10 +445,10 @@ private struct BackupPlanView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 140)
-        case .loaded(let backupPlan):
+        case .loaded(let loadedBackupPlan):
             LoadedView(
-                viewModel: viewModel,
-                backupPlan: backupPlan
+                loadedBackupPlan: loadedBackupPlan,
+                viewModel: viewModel
             )
         case .networkError:
             VStack(alignment: .center) {
@@ -501,14 +506,14 @@ private struct BackupPlanView: View {
     }
 
     private struct LoadedView: View {
-        let viewModel: BackupPlanViewModel
-        let backupPlan: BackupPlanViewModel.BackupPlan
+        let loadedBackupPlan: BackupSettingsViewModel.BackupPlanLoadingState.LoadedBackupPlan
+        let viewModel: BackupSettingsViewModel
 
         var body: some View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading) {
                     Group {
-                        switch backupPlan {
+                        switch loadedBackupPlan {
                         case .free:
                             Text(OWSLocalizedString(
                                 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER",
@@ -526,7 +531,7 @@ private struct BackupPlanView: View {
 
                     Spacer().frame(height: 8)
 
-                    switch backupPlan {
+                    switch loadedBackupPlan {
                     case .free:
                         Text(OWSLocalizedString(
                             "BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION",
@@ -570,7 +575,7 @@ private struct BackupPlanView: View {
                     Spacer().frame(height: 16)
 
                     Button {
-                        switch backupPlan {
+                        switch loadedBackupPlan {
                         case .free:
                             viewModel.upgradeFromFreeToPaidPlan()
                         case .paid:
@@ -579,7 +584,7 @@ private struct BackupPlanView: View {
                             viewModel.resubscribeToPaidPlan()
                         }
                     } label: {
-                        switch backupPlan {
+                        switch loadedBackupPlan {
                         case .free:
                             Text(OWSLocalizedString(
                                 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE",
@@ -616,69 +621,16 @@ private struct BackupPlanView: View {
 
 // MARK: -
 
-private class BackupEnabledViewModel: ObservableObject {
-    private let backupSettingsStore: BackupSettingsStore
-    private let dateProvider: DateProvider
-    private let db: DB
-
-    @Published private(set) var lastBackupDate: Date?
-    @Published private(set) var lastBackupSizeBytes: UInt64?
-    @Published private(set) var backupFrequency: BackupFrequency
-    @Published private(set) var shouldBackUpOnCellular: Bool
-
-    init(
-        backupSettingsStore: BackupSettingsStore,
-        dateProvider: @escaping DateProvider,
-        db: DB,
-        lastBackupDate: Date?,
-        lastBackupSizeBytes: UInt64?,
-        backupFrequency: BackupFrequency,
-        shouldBackUpOnCellular: Bool
-    ) {
-        self.backupSettingsStore = backupSettingsStore
-        self.dateProvider = dateProvider
-        self.db = db
-
-        self.lastBackupDate = lastBackupDate
-        self.lastBackupSizeBytes = lastBackupSizeBytes
-        self.backupFrequency = backupFrequency
-        self.shouldBackUpOnCellular = shouldBackUpOnCellular
-    }
-
-    @MainActor
-    func performManualBackup() {
-        let newBackupDate = dateProvider()
-
-        db.write { tx in
-            backupSettingsStore.setLastBackupDate(newBackupDate, tx: tx)
-        }
-        lastBackupDate = newBackupDate
-    }
-
-    @MainActor
-    func updateBackupFrequency(_ newBackupFrequency: BackupFrequency) {
-        db.write { tx in
-            backupSettingsStore.setBackupFrequency(newBackupFrequency, tx: tx)
-        }
-        backupFrequency = newBackupFrequency
-    }
-
-    @MainActor
-    func updateShouldBackUpOnCellular(_ newShouldBackUpOnCellular: Bool) {
-        db.write { tx in
-            backupSettingsStore.setShouldBackUpOnCellular(newShouldBackUpOnCellular, tx: tx)
-        }
-        shouldBackUpOnCellular = newShouldBackUpOnCellular
-    }
-}
-
 private struct BackupEnabledView: View {
-    @ObservedObject var viewModel: BackupEnabledViewModel
+    let lastBackupDate: Date?
+    let lastBackupSizeBytes: UInt64?
+    @Binding var backupFrequency: BackupFrequency
+    @Binding var shouldBackUpOnCellular: Bool
 
     var body: some View {
         HStack {
             let lastBackupMessage: String? = {
-                guard let lastBackupDate = viewModel.lastBackupDate else {
+                guard let lastBackupDate else {
                     return nil
                 }
 
@@ -726,7 +678,7 @@ private struct BackupEnabledView: View {
                 comment: "Label for a menu item explaining the size of the user's backup."
             ))
             Spacer()
-            if let lastBackupSizeBytes = viewModel.lastBackupSizeBytes {
+            if let lastBackupSizeBytes {
                 Text(lastBackupSizeBytes.formatted(.byteCount(style: .decimal)))
                     .foregroundStyle(Color.Signal.secondaryLabel)
             }
@@ -737,10 +689,7 @@ private struct BackupEnabledView: View {
                 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL",
                 comment: "Label for a menu item explaining the frequency of automatic backups."
             ),
-            selection: Binding(
-                get: { viewModel.backupFrequency },
-                set: { viewModel.updateBackupFrequency($0) }
-            )
+            selection: $backupFrequency
         ) {
             ForEach(BackupFrequency.allCases) { frequency in
                 let localizedString: String = switch frequency {
@@ -772,10 +721,7 @@ private struct BackupEnabledView: View {
                     "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL",
                     comment: "Label for a toggleable menu item describing whether to make backups on cellular data."
                 ),
-                isOn: Binding(
-                    get: { viewModel.shouldBackUpOnCellular },
-                    set: { viewModel.updateShouldBackUpOnCellular($0) }
-                )
+                isOn: $shouldBackUpOnCellular
             )
         }
 
@@ -796,89 +742,87 @@ private struct BackupEnabledView: View {
 
 private extension BackupSettingsViewModel {
     static func forPreview(
-        backupPlanLoadResult: Result<BackupPlanViewModel.BackupPlan, Error>
+        areBackupsEnabled: Bool = true,
+        planLoadResult: Result<BackupPlanLoadingState.LoadedBackupPlan, Error>,
     ) -> BackupSettingsViewModel {
-        let backupSettingsStore = BackupSettingsStore()
-        let dateProvider = { Date() }
-        let db = InMemoryDB()
+        class PreviewActionsDelegate: ActionsDelegate {
+            private let planLoadResult: Result<BackupPlanLoadingState.LoadedBackupPlan, Error>
+            init(planLoadResult: Result<BackupPlanLoadingState.LoadedBackupPlan, Error>) {
+                self.planLoadResult = planLoadResult
+            }
 
-        let enabledState = db.write { tx in
-            backupSettingsStore.setAreBackupsEnabled(true, tx: tx)
-            backupSettingsStore.setLastBackupDate(Date().addingTimeInterval(-1 * .day), tx: tx)
-            backupSettingsStore.setLastBackupSizeBytes(2_400_000_000, tx: tx)
+            func enableBackups() { print("Enabling!") }
+            func disableBackups() { print("Disabling!") }
 
-            return BackupSettingsViewModel.EnabledState.load(
-                backupSettingsStore: backupSettingsStore,
-                dateProvider: dateProvider,
-                db: db,
-                tx: tx
-            )
+            func loadBackupPlan() async throws -> BackupSettingsViewModel.BackupPlanLoadingState.LoadedBackupPlan {
+                try! await Task.sleep(nanoseconds: 2.clampedNanoseconds)
+                return try planLoadResult.get()
+            }
+            func upgradeFromFreeToPaidPlan() { print("Upgrading!") }
+            func manageOrCancelPaidPlan() { print("Managing or canceling!") }
+            func resubscribeToPaidPlan() { print("Resubscribing!") }
+
+            func performManualBackup() { print("Manually backing up!") }
+            func setBackupFrequency(_ newBackupFrequency: BackupFrequency) { print("Frequency: \(newBackupFrequency)") }
+            func setShouldBackUpOnCellular(_ newShouldBackUpOnCellular: Bool) { print("Cellular: \(newShouldBackUpOnCellular)") }
         }
 
-        let backupPlanViewModel = BackupPlanViewModel()
-        backupPlanViewModel.actionBlocks = BackupPlanViewModel.ActionBlocks(
-            loadBackupPlan: {
-                try! await Task.sleep(nanoseconds: 2.clampedNanoseconds)
-                return try backupPlanLoadResult.get()
-            },
-            manageOrCancelPaidPlan: { print("Managing!") },
-            resubscribeToPaidPlan: { print("Resubscribing!") },
-            upgradeFromFreeToPaidPlan: { print("Upgrading!") }
+        let viewModel = BackupSettingsViewModel(
+            areBackupsEnabled: areBackupsEnabled,
+            lastBackupDate: Date().addingTimeInterval(-1 * .day),
+            lastBackupSizeBytes: 2_400_000_000,
+            backupFrequency: .daily,
+            shouldBackUpOnCellular: false
         )
+        let actionsDelegate = PreviewActionsDelegate(planLoadResult: planLoadResult)
+        viewModel.actionsDelegate = actionsDelegate
+        ObjectRetainer.retainObject(actionsDelegate, forLifetimeOf: viewModel)
 
-        return BackupSettingsViewModel(
-            backupSettingsStore: backupSettingsStore,
-            db: db,
-            dateProvider: dateProvider,
-            backupPlanViewModel: backupPlanViewModel,
-            enabledState: enabledState
-        )
+        viewModel.loadBackupPlan()
+        return viewModel
     }
 }
 
 #Preview("Paid") {
-    NavigationView {
-        BackupSettingsView(viewModel: .forPreview(
-            backupPlanLoadResult: .success(.paid(
-                price: FiatMoney(currencyCode: "USD", value: 2.99),
-                renewalDate: Date().addingTimeInterval(.week)
-            ))
+    BackupSettingsView(viewModel: .forPreview(
+        planLoadResult: .success(.paid(
+            price: FiatMoney(currencyCode: "USD", value: 2.99),
+            renewalDate: Date().addingTimeInterval(.week)
         ))
-    }
+    ))
 }
 
 #Preview("Free") {
-    NavigationView {
-        BackupSettingsView(viewModel: .forPreview(
-            backupPlanLoadResult: .success(.free)
-        ))
-    }
+    BackupSettingsView(viewModel: .forPreview(
+        planLoadResult: .success(.free)
+    ))
 }
 
 #Preview("Expiring") {
-    NavigationView {
-        BackupSettingsView(viewModel: .forPreview(
-            backupPlanLoadResult: .success(.paidButCanceled(
-                expirationDate: Date().addingTimeInterval(.week)
-            ))
+    BackupSettingsView(viewModel: .forPreview(
+        planLoadResult: .success(.paidButCanceled(
+            expirationDate: Date().addingTimeInterval(.week)
         ))
-    }
+    ))
 }
 
 #Preview("Network Error") {
-    NavigationView {
-        BackupSettingsView(viewModel: .forPreview(
-            backupPlanLoadResult: .failure(OWSHTTPError.networkFailure(.genericTimeout))
-        ))
-    }
+    BackupSettingsView(viewModel: .forPreview(
+        planLoadResult: .failure(OWSHTTPError.networkFailure(.genericTimeout))
+    ))
 }
 
 #Preview("Generic Error") {
-    NavigationView {
-        BackupSettingsView(viewModel: .forPreview(
-            backupPlanLoadResult: .failure(OWSGenericError(""))
-        ))
-    }
+    BackupSettingsView(viewModel: .forPreview(
+        planLoadResult: .failure(OWSGenericError(""))
+    ))
+}
+
+#Preview("Disabled") {
+    BackupSettingsView(viewModel: .forPreview(
+        areBackupsEnabled: false,
+        planLoadResult: .success(.free),
+    ))
 }
 
 #endif

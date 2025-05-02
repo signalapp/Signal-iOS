@@ -25,6 +25,16 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         )
 
         super.init(wrappedView: ChooseBackupPlanView(viewModel: viewModel))
+
+        viewModel.actionsDelegate = self
+    }
+}
+
+// MARK: -
+
+extension ChooseBackupPlanViewController: ChooseBackupPlanViewModel.ActionsDelegate {
+    fileprivate func confirmSelection(_ planSelection: ChooseBackupPlanViewModel.PlanSelection) {
+        // TODO: [Backups] Implement
     }
 }
 
@@ -33,9 +43,15 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
 private class ChooseBackupPlanViewModel: ObservableObject {
     typealias PlanSelection = ChooseBackupPlanViewController.PlanSelection
 
+    protocol ActionsDelegate: AnyObject {
+        func confirmSelection(_ planSelection: PlanSelection)
+    }
+
     @Published var planSelection: PlanSelection
     let initialPlanSelection: PlanSelection?
     let paidPlanDisplayPrice: String
+
+    weak var actionsDelegate: ActionsDelegate?
 
     init(
         initialPlanSelection: PlanSelection?,
@@ -44,6 +60,12 @@ private class ChooseBackupPlanViewModel: ObservableObject {
         self.planSelection = initialPlanSelection ?? .free
         self.initialPlanSelection = initialPlanSelection
         self.paidPlanDisplayPrice = paidPlanDisplayPrice
+    }
+
+    // MARK: Actions
+
+    func confirmSelection() {
+        actionsDelegate?.confirmSelection(planSelection)
     }
 }
 
@@ -284,6 +306,26 @@ private struct PlanOptionView: View {
 // MARK: -
 
 #if DEBUG
+
+private extension ChooseBackupPlanViewModel {
+    static func forPreview() -> ChooseBackupPlanViewModel {
+        class ChoosePlanActionsDelegate: ChooseBackupPlanViewModel.ActionsDelegate {
+            func confirmSelection(_ planSelection: ChooseBackupPlanViewModel.PlanSelection) {
+                print("Confirming \(planSelection)")
+            }
+        }
+
+        let viewModel = ChooseBackupPlanViewModel(
+            initialPlanSelection: .free,
+            paidPlanDisplayPrice: "$2.99"
+        )
+        let actionsDelegate = ChoosePlanActionsDelegate()
+        ObjectRetainer.retainObject(actionsDelegate, forLifetimeOf: viewModel)
+        viewModel.actionsDelegate = actionsDelegate
+
+        return viewModel
+    }
+}
 
 #Preview {
     NavigationView {

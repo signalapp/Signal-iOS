@@ -249,7 +249,6 @@ class AppSettingsViewController: OWSTableViewController2 {
                     let vc = BackupSettingsViewController(
                         backupSettingsStore: backupSettingsStore,
                         backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
-                        dateProvider: { Date() },
                         db: db,
                         networkManager: SSKEnvironment.shared.networkManagerRef
                     )
