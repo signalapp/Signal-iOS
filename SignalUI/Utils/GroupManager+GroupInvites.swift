@@ -22,33 +22,31 @@ public extension GroupManager {
 
         ModalActivityIndicatorViewController.present(
             fromViewController: fromViewController,
-            canCancel: false
-        ) { modalView in
-            firstly(on: DispatchQueue.global()) {
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    self.localLeaveGroupOrDeclineInvite(
-                        groupThread: groupThread,
-                        replacementAdminAci: replacementAdminAci,
-                        waitForMessageProcessing: true,
-                        tx: transaction
-                    )
-                }
-            }.done(on: DispatchQueue.main) {
-                modalView.dismiss {
-                    success?()
-                }
-            }.catch { error in
-                owsFailDebug("Leave group failed: \(error)")
-                modalView.dismiss {
-                    OWSActionSheets.showActionSheet(
-                        title: OWSLocalizedString(
-                            "LEAVE_GROUP_FAILED",
-                            comment: "Error indicating that a group could not be left."
+            canCancel: false,
+            asyncBlock: { modal in
+                do {
+                    try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+                        self.localLeaveGroupOrDeclineInvite(
+                            groupThread: groupThread,
+                            replacementAdminAci: replacementAdminAci,
+                            waitForMessageProcessing: true,
+                            tx: transaction
                         )
-                    )
+                    }.awaitable()
+                    modal.dismiss { success?() }
+                } catch {
+                    owsFailDebug("Leave group failed: \(error)")
+                    modal.dismiss {
+                        OWSActionSheets.showActionSheet(
+                            title: OWSLocalizedString(
+                                "LEAVE_GROUP_FAILED",
+                                comment: "Error indicating that a group could not be left."
+                            )
+                        )
+                    }
                 }
             }
-        }
+        )
     }
 
     @MainActor
