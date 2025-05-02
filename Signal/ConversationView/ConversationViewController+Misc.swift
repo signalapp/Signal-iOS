@@ -202,6 +202,7 @@ extension ConversationViewController {
             ))
         }
 
+        dismissKeyBoard()
         navigationController?.setViewControllers(viewControllers, animated: true)
     }
 
