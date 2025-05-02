@@ -7,16 +7,16 @@ import Foundation
 
 /// Waits until `isSatisfied()` returns true. Checks the initial result and
 /// then re-checks the result each time notificationName fires.
-struct NotificationPrecondition: Precondition {
+public struct NotificationPrecondition: Precondition, Sendable {
     private let notificationName: Notification.Name
-    private let isSatisfied: () -> Bool
+    private let isSatisfied: @Sendable () -> Bool
 
-    init(notificationName: Notification.Name, isSatisfied: @escaping () -> Bool) {
+    public init(notificationName: Notification.Name, isSatisfied: @escaping @Sendable () -> Bool) {
         self.notificationName = notificationName
         self.isSatisfied = isSatisfied
     }
 
-    func waitUntilSatisfied() async -> WaitResult {
+    public func waitUntilSatisfied() async -> WaitResult {
         let result = CancellableContinuation<Void>()
         let observer = NotificationCenter.default.addObserver(forName: notificationName, object: nil, queue: nil, using: { _ in
             if self.isSatisfied() {

@@ -511,7 +511,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             DarwinNotificationCenter.postNotification(name: .mainAppHandledNotification)
 
             appReadiness.runNowOrWhenAppDidBecomeReadySync {
-                _ = SSKEnvironment.shared.messageFetcherJobRef.run()
+                Task {
+                    await SSKEnvironment.shared.messageFetcherJobRef.startFetchingViaWebSocket()
+                }
             }
         }
     }
@@ -717,6 +719,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 Logger.info("localAci: \(localIdentifiers.aci), deviceId: \(deviceId) (\(linkedDeviceMessage))")
             }
             return registrationState
+        }
+
+        // Fetch messages as soon as possible after launching. In particular, when
+        // launching from the background, without this, we end up waiting some extra
+        // seconds before receiving an actionable push notification.
+        if tsRegistrationState.isRegistered {
+            Task {
+                await SSKEnvironment.shared.messageFetcherJobRef.startFetchingViaWebSocket()
+            }
         }
 
         if tsRegistrationState.isRegistered {
@@ -1255,14 +1266,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Every time we become active...
         if tsRegistrationState.isRegistered {
+            // TODO: Should we run this immediately even if we would like to process already decrypted envelopes handed to us by the NSE?
+            Task {
+                await SSKEnvironment.shared.messageFetcherJobRef.startFetchingViaWebSocket()
+            }
+
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             DispatchQueue.main.async {
                 SSKEnvironment.shared.contactManagerImplRef.fetchSystemContactsOnceIfAlreadyAuthorized()
-
-                // TODO: Should we run this immediately even if we would like to process
-                // already decrypted envelopes handed to us by the NSE?
-                _ = SSKEnvironment.shared.messageFetcherJobRef.run()
 
                 if !UIApplication.shared.isRegisteredForRemoteNotifications {
                     Logger.info("Retrying to register for remote notifications since user hasn't registered yet.")
@@ -1375,7 +1387,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     Logger.info("Ignoring remote notification; user is not registered.")
                     return
                 }
-                _ = SSKEnvironment.shared.messageFetcherJobRef.run()
+                Task {
+                    await SSKEnvironment.shared.messageFetcherJobRef.startFetchingViaWebSocket()
+                }
                 // If the main app gets woken to process messages in the background, check
                 // for any pending NSE requests to fulfill.
                 _ = SSKEnvironment.shared.syncManagerRef.syncAllContactsIfFullSyncRequested()

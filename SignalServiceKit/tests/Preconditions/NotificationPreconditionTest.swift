@@ -29,17 +29,17 @@ struct NotificationPreconditionTest {
 
     @Test
     func testRaceCondition() async {
-        var checkCount = 0
-        let isSatisfied: () -> Bool = {
-            checkCount += 1
-            if checkCount == 1 {
+        let checkCount = AtomicValue(0, lock: .init())
+        let isSatisfied: @Sendable () -> Bool = {
+            let checkCountValue = checkCount.update { $0 += 1; return $0 }
+            if checkCountValue == 1 {
                 // Simulate the flag changing & the notification being posted while the
                 // result is still being returned to the caller. The test code is
                 // contrived, but it illustrates a real race condition.
                 NotificationCenter.default.post(name: notificationName, object: nil)
                 return false
             }
-            if checkCount == 2 {
+            if checkCountValue == 2 {
                 return true
             }
             fatalError()

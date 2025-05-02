@@ -34,6 +34,7 @@ private let globalEnvironment = NSEEnvironment()
 class NotificationService: UNNotificationServiceExtension {
     private typealias ContentHandler = (UNNotificationContent) -> Void
     private let contentHandler = AtomicOptional<ContentHandler>(nil, lock: .init())
+    private let fetchQueue = SerialTaskQueue()
 
     // MARK: -
 
@@ -87,8 +88,8 @@ class NotificationService: UNNotificationServiceExtension {
         let logger = NSELogger()
         _ = Self.nseDidStart()
         self.contentHandler.set(contentHandler)
-        Task {
-            let content = await _didReceive(request, logger: logger)
+        self.fetchQueue.enqueueCancellingPrevious {
+            let content = await self._didReceive(request, logger: logger)
             self.completeSilently(content: content, logger: logger)
         }
     }
@@ -154,7 +155,9 @@ class NotificationService: UNNotificationServiceExtension {
 
     // Called just before the extension will be terminated by the system.
     override func serviceExtensionTimeWillExpire() {
-        owsFailDebug("NSE expired before messages could be processed")
+        Logger.warn("Canceling fetchingQueue tasks because we ran out of time.")
+
+        self.fetchQueue.cancelAll()
 
         // We complete silently here so that nothing is presented to the user.
         // By default the OS will present whatever the raw content of the original
@@ -162,17 +165,16 @@ class NotificationService: UNNotificationServiceExtension {
         completeSilently(content: UNMutableNotificationContent(), logger: .uncorrelated)
     }
 
-    @MainActor
-    private func startProxyIfEnabled() async {
-        // Runs on the main thread so that, if isEnabledAndReady is false, the
-        // observe(...) is guaranteed to happen before the notification is posted.
-        while SignalProxy.isEnabled, !SignalProxy.isEnabledAndReady {
-            await withCheckedContinuation { continuation in
-                Logger.info("Waiting for signal proxy to become ready for message fetch.")
-                NotificationCenter.default.observe(once: .isSignalProxyReadyDidChange)
-                    .done { _ in continuation.resume() }
-                SignalProxy.startRelayServer()
-            }
+    private func startProxyIfEnabled() async throws(CancellationError) {
+        if SignalProxy.isEnabled {
+            Logger.info("Waiting for signal proxy to become ready for message fetch.")
+            SignalProxy.startRelayServer()
+            try await Preconditions([
+                NotificationPrecondition(
+                    notificationName: .isSignalProxyReadyDidChange,
+                    isSatisfied: { SignalProxy.isEnabledAndReady }
+                )
+            ]).waitUntilSatisfied()
         }
     }
 
@@ -183,14 +185,14 @@ class NotificationService: UNNotificationServiceExtension {
             return UNMutableNotificationContent()
         }
 
-        await startProxyIfEnabled()
-        defer { SignalProxy.stopRelayServer() }
-
-        globalEnvironment.processingMessageCounter.increment()
-        defer { globalEnvironment.processingMessageCounter.decrement() }
-
         do {
-            try await SSKEnvironment.shared.messageFetcherJobRef.run().awaitable()
+            try await startProxyIfEnabled()
+            defer { SignalProxy.stopRelayServer() }
+
+            globalEnvironment.processingMessageCounter.increment()
+            defer { globalEnvironment.processingMessageCounter.decrement() }
+
+            try await SSKEnvironment.shared.messageFetcherJobRef.fetchViaRest()
 
             try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing(stages: [.messageProcessor, .groupMessageProcessor])
 
@@ -213,6 +215,9 @@ class NotificationService: UNNotificationServiceExtension {
 
             // Finally, wait for any notifications to finish posting
             try await NotificationPresenterImpl.waitForPendingNotifications()
+        } catch is CancellationError {
+            Logger.warn("Message fetching & processing canceled.")
+            return UNMutableNotificationContent()
         } catch {
             Logger.warn("\(error)")
         }
