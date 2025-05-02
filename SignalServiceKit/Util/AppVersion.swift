@@ -128,8 +128,8 @@ public class AppVersionImpl: AppVersion {
             bundle: Bundle.main,
             userDefaults: CurrentAppContext().appUserDefaults()
         )
-        result.save()
         result.dumpToLog()
+        result.updateLaunchedVersionInfo()
         return result
     }()
 
@@ -242,7 +242,7 @@ public class AppVersionImpl: AppVersion {
         self.userDefaults = userDefaults
     }
 
-    private func save() {
+    private func updateLaunchedVersionInfo() {
         if userDefaults.string(forKey: firstVersionKey) == nil {
             userDefaults.set(currentAppVersion, forKey: firstVersionKey)
         }
