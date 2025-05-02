@@ -120,10 +120,7 @@ public class MessageFetcherJob {
     }
 
     private func fetchMessagesViaRest() async throws {
-        let batch = try await Retry.performWithBackoff(maxAttempts: 2) {
-            // If we get a network failure (≈10 seconds) or 5xx error (< 10 seconds),
-            // it's worth retrying just once in the NSE. This helps ensures we stay
-            // within the 30s execution limit.
+        let batch = try await Retry.performWithBackoff(maxAttempts: 6) {
             return try await fetchBatchViaRest()
         }
 
