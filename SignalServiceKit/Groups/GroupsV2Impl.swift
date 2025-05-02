@@ -132,7 +132,6 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: nil,
             behavior400: isRetryingAfterRecoverable400 ? .fail : .reportForRecovery,
             behavior403: .fail,
-            behavior404: .fail
         )
 
         let groupResponseProto = try GroupsProtoGroupResponse(serializedData: response.responseBodyData ?? Data())
@@ -321,7 +320,6 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             behavior400: behavior400,
             behavior403: .fetchGroupUpdates,
-            behavior404: .fail
         )
 
         return (builtGroupChange.groupUpdateMessageBehavior, response)
@@ -558,7 +556,6 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             behavior400: .fail,
             behavior403: .fetchGroupUpdates,
-            behavior404: .fail
         )
 
         guard let protoData = response.responseBodyData else {
@@ -597,7 +594,6 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             behavior400: .fail,
             behavior403: .removeFromGroup,
-            behavior404: .groupDoesNotExistOnService
         )
 
         let groupResponseProto = try GroupsProtoGroupResponse(serializedData: response.responseBodyData ?? Data())
@@ -736,7 +732,6 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             behavior400: .fail,
             behavior403: .ignore, // actually means "throw error"
-            behavior404: .fail
         )
         guard let groupChangesProtoData = response.responseBodyData else {
             throw OWSAssertionError("Invalid responseObject.")
@@ -820,7 +815,6 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             behavior400: .fail,
             behavior403: .ignore,
-            behavior404: .fail
         )
 
         guard let memberData = response.responseBodyData else {
@@ -1030,12 +1024,6 @@ public class GroupsV2Impl: GroupsV2 {
         case localUserIsNotARequestingMember
     }
 
-    /// Represents how we should respond to 404 status codes.
-    private enum Behavior404 {
-        case fail
-        case groupDoesNotExistOnService
-    }
-
     /// Make a request to the GV2 service, produced by the given
     /// `requestBuilder`. Specifies how to respond if the request results in
     /// certain errors.
@@ -1044,7 +1032,6 @@ public class GroupsV2Impl: GroupsV2 {
         groupId: Data?,
         behavior400: Behavior400,
         behavior403: Behavior403,
-        behavior404: Behavior404
     ) async throws -> HTTPResponse {
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             throw OWSAssertionError("Missing localIdentifiers.")
@@ -1064,7 +1051,6 @@ public class GroupsV2Impl: GroupsV2 {
                         groupId: groupId,
                         behavior400: behavior400,
                         behavior403: behavior403,
-                        behavior404: behavior404
                     )
                 }
             }
@@ -1078,7 +1064,6 @@ public class GroupsV2Impl: GroupsV2 {
         groupId: Data?,
         behavior400: Behavior400,
         behavior403: Behavior403,
-        behavior404: Behavior404
     ) async throws -> Never {
         // Fall through to retry if retry-able,
         // otherwise reject immediately.
@@ -1164,17 +1149,6 @@ public class GroupsV2Impl: GroupsV2 {
                 }
 
                 throw GroupsV2Error.localUserNotInGroup
-            case 404:
-                // 404 indicates that the group does not exist on the
-                // service for some (but not all) group v2 service requests.
-
-                switch behavior404 {
-                case .fail:
-                    throw error
-                case .groupDoesNotExistOnService:
-                    Logger.warn("Error: \(error)")
-                    throw GroupsV2Error.groupDoesNotExistOnService
-                }
             case 409:
                 // Group update conflict. The caller may be able to recover by
                 // retrying, using the change set and the most recent state
@@ -1458,7 +1432,6 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: nil,
             behavior400: .fail,
             behavior403: behavior403,
-            behavior404: .fail
         )
         guard let protoData = response.responseBodyData else {
             throw OWSAssertionError("Invalid responseObject.")
@@ -1690,7 +1663,6 @@ public class GroupsV2Impl: GroupsV2 {
                 groupId: groupId.serialize().asData,
                 behavior400: .fail,
                 behavior403: .reportInvalidOrBlockedGroupLink,
-                behavior404: .fail
             )
 
             let changeResponse = try GroupsProtoGroupChangeResponse(serializedData: response.responseBodyData ?? Data())
@@ -2003,7 +1975,6 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             behavior400: .fail,
             behavior403: .fail,
-            behavior404: .fail
         )
 
         return newRevision
@@ -2107,7 +2078,6 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: try secretParams.getPublicParams().getGroupIdentifier().serialize().asData,
             behavior400: .fail,
             behavior403: .fetchGroupUpdates,
-            behavior404: .fail
         )
 
         guard let groupProtoData = response.responseBodyData else {

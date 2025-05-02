@@ -22,7 +22,6 @@ public enum GroupsV2Error: Error {
     case localUserIsNotARequestingMember
     case cantApplyChangesToPlaceholder
     case expiredGroupInviteLink
-    case groupDoesNotExistOnService
     case groupNeedsToBeMigrated
     case groupCannotBeMigrated
     case groupDowngradeNotAllowed
