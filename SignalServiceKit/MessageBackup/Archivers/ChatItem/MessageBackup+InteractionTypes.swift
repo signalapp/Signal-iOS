@@ -269,6 +269,9 @@ extension MessageBackup {
             /// This is a "session switchover" event for which we don't know the
             /// old session's phone number.
             case sessionSwitchoverWithoutPhoneNumber
+            /// This is a "session switchover" event in our own note to self thread,
+            /// caused by some unknown past bug but safe to drop on export.
+            case sessionSwitchoverInNoteToSelf
         }
 
         /// Some group updates are deliberately skipped.
