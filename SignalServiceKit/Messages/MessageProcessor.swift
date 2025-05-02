@@ -185,10 +185,13 @@ public class MessageProcessor {
             return false
         }
 
-        let startTime = CACurrentMediaTime()
+        var startTime: CFTimeInterval = 0
 
         var processedEnvelopesCount = 0
         SSKEnvironment.shared.databaseStorageRef.write { tx in
+            // Start the timer once we acquire a write transaction.
+            startTime = CACurrentMediaTime()
+
             // This is only called via `drainPendingEnvelopes`, and that confirms that
             // we're registered. If we're registered, we must have `LocalIdentifiers`,
             // so this (generally) shouldn't fail.
