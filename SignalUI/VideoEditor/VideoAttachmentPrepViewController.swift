@@ -128,57 +128,58 @@ extension VideoAttachmentPrepViewController: VideoTimelineViewDataSource {
         let model = self.model
         let videoAspectRatio = videoAspectRatio
         let untrimmedDurationSeconds = self.untrimmedDurationSeconds
-
-        firstly {
-            VideoAttachmentPrepViewController.thumbnails(forVideoAtPath: model.srcVideoPath,
-                                                         aspectRatio: videoAspectRatio,
-                                                         thumbnailHeight: VideoTimelineView.preferredHeight,
-                                                         untrimmedDurationSeconds: untrimmedDurationSeconds)
-        }.done(on: DispatchQueue.main) { [weak self] (thumbnails: [UIImage]) -> Void in
-            guard let self = self else {
-                return
-            }
-            self.videoThumbnails = thumbnails
-            self.timelineView.updateThumbnailView()
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    private class func thumbnails(forVideoAtPath videoPath: String,
-                                  aspectRatio: CGSize,
-                                  thumbnailHeight: CGFloat,
-                                  untrimmedDurationSeconds: TimeInterval) -> Promise<[UIImage]> {
-        AssertIsOnMainThread()
-
         let contextSize = CurrentAppContext().frame.size
         let screenScale = UIScreen.main.scale
 
-        return DispatchQueue.global().async(.promise) {
-            // We generate enough thumbnails for the worst case (full-screen landscape)
-            // to avoid the complexity of regeneration.
-            let contextMaxDimension = max(contextSize.width, contextSize.height)
-            let thumbnailWidth = floor(thumbnailHeight * aspectRatio.width / aspectRatio.height)
-            let thumbnailCount = UInt(ceil(contextMaxDimension / thumbnailWidth))
-
-            let maxThumbnailSize = max(thumbnailWidth, thumbnailHeight) * screenScale
-
-            let url = URL(fileURLWithPath: videoPath)
-            let asset = AVURLAsset(url: url, options: nil)
-            let generator = AVAssetImageGenerator(asset: asset)
-            generator.maximumSize = CGSize(square: maxThumbnailSize)
-            generator.appliesPreferredTrackTransform = true
-            var thumbnails = [UIImage]()
-            for index in 0..<thumbnailCount {
-                let thumbnailAlpha = Double(index) / Double(thumbnailCount - 1)
-                let thumbnailTimeSeconds = thumbnailAlpha * untrimmedDurationSeconds
-                let thumbnailCMTime = CMTime(seconds: thumbnailTimeSeconds, preferredTimescale: 1000)
-                let cgImage = try generator.copyCGImage(at: thumbnailCMTime, actualTime: nil)
-                let thumbnail = UIImage(cgImage: cgImage, scale: 1, orientation: .up)
-                thumbnails.append(thumbnail)
+        Task { [weak self] in
+            do {
+                let thumbnails = try await VideoAttachmentPrepViewController.thumbnails(
+                    forVideoAtPath: model.srcVideoPath,
+                    aspectRatio: videoAspectRatio,
+                    thumbnailHeight: VideoTimelineView.preferredHeight,
+                    contextSize: contextSize,
+                    screenScale: screenScale,
+                    untrimmedDurationSeconds: untrimmedDurationSeconds
+                )
+                self?.videoThumbnails = thumbnails
+                self?.timelineView.updateThumbnailView()
+            } catch {
+                owsFailDebug("Error: \(error)")
             }
-            return thumbnails
         }
+    }
+
+    private nonisolated static func thumbnails(
+        forVideoAtPath videoPath: String,
+        aspectRatio: CGSize,
+        thumbnailHeight: CGFloat,
+        contextSize: CGSize,
+        screenScale: CGFloat,
+        untrimmedDurationSeconds: TimeInterval
+    ) async throws -> [UIImage] {
+        // We generate enough thumbnails for the worst case (full-screen landscape)
+        // to avoid the complexity of regeneration.
+        let contextMaxDimension = max(contextSize.width, contextSize.height)
+        let thumbnailWidth = floor(thumbnailHeight * aspectRatio.width / aspectRatio.height)
+        let thumbnailCount = UInt(ceil(contextMaxDimension / thumbnailWidth))
+
+        let maxThumbnailSize = max(thumbnailWidth, thumbnailHeight) * screenScale
+
+        let url = URL(fileURLWithPath: videoPath)
+        let asset = AVURLAsset(url: url, options: nil)
+        let generator = AVAssetImageGenerator(asset: asset)
+        generator.maximumSize = CGSize(square: maxThumbnailSize)
+        generator.appliesPreferredTrackTransform = true
+        var thumbnails = [UIImage]()
+        for index in 0..<thumbnailCount {
+            let thumbnailAlpha = Double(index) / Double(thumbnailCount - 1)
+            let thumbnailTimeSeconds = thumbnailAlpha * untrimmedDurationSeconds
+            let thumbnailCMTime = CMTime(seconds: thumbnailTimeSeconds, preferredTimescale: 1000)
+            let cgImage = try generator.copyCGImage(at: thumbnailCMTime, actualTime: nil)
+            let thumbnail = UIImage(cgImage: cgImage, scale: 1, orientation: .up)
+            thumbnails.append(thumbnail)
+        }
+        return thumbnails
     }
 }
 
