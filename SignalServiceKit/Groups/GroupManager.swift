@@ -948,6 +948,11 @@ public class GroupManager: NSObject {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: DBWriteTransaction
     ) throws -> TSGroupThread {
+        if DebugFlags.internalLogging {
+            let groupId = try? newGroupModel.secretParams().getPublicParams().getGroupIdentifier()
+            Logger.info("Upserting thread for \(groupId as Optional); didAddLocalUser? \(didAddLocalUserToV2Group); groupUpdateSource: \(groupUpdateSource)")
+        }
+
         if let groupThread = TSGroupThread.fetch(groupId: newGroupModel.groupId, transaction: transaction) {
             try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 groupThread: groupThread,
@@ -976,6 +981,11 @@ public class GroupManager: NSObject {
 
                 return false
             }()
+
+            if DebugFlags.internalLogging {
+                let groupId = try? newGroupModel.secretParams().getPublicParams().getGroupIdentifier()
+                Logger.info("Inserting thread for \(groupId as Optional); shouldAttributeAuthor? \(shouldAttributeAuthor)")
+            }
 
             return insertGroupThreadInDatabaseAndCreateInfoMessage(
                 groupModel: newGroupModel,
@@ -1237,6 +1247,11 @@ public class GroupManager: NSObject {
             shouldAddToWhitelist = true
         }
 
+        if DebugFlags.internalLogging {
+            let groupId = try? (newGroupModel as? TSGroupModelV2)?.secretParams().getPublicParams().getGroupIdentifier()
+            Logger.info("Checking if group should be auto whitelisted \(groupId as Optional); groupUpdateSource: \(groupUpdateSource); shouldAddToWhitelist? \(shouldAddToWhitelist)")
+        }
+
         guard shouldAddToWhitelist else {
             return
         }
@@ -1254,15 +1269,13 @@ public class GroupManager: NSObject {
         newGroupModel: TSGroupModel,
         localIdentifiers: LocalIdentifiers
     ) -> Bool {
-        if let oldGroupModel, oldGroupModel.groupMembership.isFullMember(localIdentifiers.aci) {
-            // Local user already was a member.
-            return false
+        let oldFullMember = oldGroupModel?.groupMembership.isFullMember(localIdentifiers.aci) == true
+        let newFullMember = newGroupModel.groupMembership.isFullMember(localIdentifiers.aci)
+        if DebugFlags.internalLogging {
+            let groupId = try? (newGroupModel as? TSGroupModelV2)?.secretParams().getPublicParams().getGroupIdentifier()
+            Logger.info("Checking if local user was added to \(groupId as Optional); oldGroupModel? \(oldGroupModel != nil); oldFullMember? \(oldFullMember); newFullMember: \(newFullMember)")
         }
-        if !newGroupModel.groupMembership.isFullMember(localIdentifiers.aci) {
-            // Local user is not a member.
-            return false
-        }
-        return true
+        return !oldFullMember && newFullMember
     }
 
     // MARK: -
