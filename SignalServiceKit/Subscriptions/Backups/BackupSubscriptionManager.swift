@@ -294,8 +294,18 @@ public final class BackupSubscriptionManager {
         /// restoring subscriber data.
         try? await storageServiceManager.waitForPendingRestores()
 
-        let persistedIAPSubscriberData: IAPSubscriberData? = db.read { tx in
-            return store.getIAPSubscriberData(tx: tx)
+        let (
+            registrationState,
+            persistedIAPSubscriberData,
+        ) = db.read { tx in
+            return (
+                tsAccountManager.registrationState(tx: tx),
+                store.getIAPSubscriberData(tx: tx),
+            )
+        }
+
+        guard registrationState.isRegisteredPrimaryDevice else {
+            return
         }
 
         let localEntitlingTransaction = await latestEntitlingTransaction()
