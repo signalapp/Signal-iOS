@@ -69,11 +69,7 @@ final class BackupReceiptCredentialRedemptionJobRecord: JobRecord, FactoryInitia
         tx: DBWriteTransaction
     ) {
         attemptState = newAttemptState
-        anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    func delete(tx: DBWriteTransaction) {
-        anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+        anyOverwritingUpdate(transaction: tx)
     }
 
     // MARK: -

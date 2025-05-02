@@ -121,6 +121,7 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
     private let networkManager: NetworkManager
 
     private let continuation: CheckedContinuation<Void, Error>?
+    private var transientFailureCount: UInt = 0
 
     init(
         authCredentialStore: AuthCredentialStore,
@@ -134,15 +135,33 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
         self.continuation = continuation
     }
 
+    /// Returns an exponential-backoff retry delay that increases with each
+    /// subsequent call to this method.
+    private func incrementExponentialRetryDelay() -> TimeInterval {
+        transientFailureCount += 1
+
+        return OWSOperation.retryIntervalForExponentialBackoff(
+            failureCount: transientFailureCount,
+            maxAverageBackoff: .day
+        )
+    }
+
     // MARK: -
 
     func runJobAttempt(_ jobRecord: BackupReceiptCredentialRedemptionJobRecord) async -> JobAttemptResult {
-        return await .executeBlockWithDefaultErrorHandler(
-            jobRecord: jobRecord,
-            retryLimit: Constants.maxRetries,
-            db: db
-        ) {
-            try await _redeemBackupReceiptCredential(jobRecord: jobRecord)
+        switch await _redeemBackupReceiptCredential(jobRecord: jobRecord) {
+        case .success:
+            return .finished(.success(()))
+        case .networkError, .needsReattempt, .paymentStillProcessing:
+            return .retryAfter(incrementExponentialRetryDelay())
+        case .redemptionUnsuccessful, .assertion:
+            struct TerminalJobError: Error {}
+
+            logger.warn("Job encountered unexpected terminal error")
+            await db.awaitableWrite { tx in
+                jobRecord.anyRemove(transaction: tx)
+            }
+            return .finished(.failure(TerminalJobError()))
         }
     }
 
@@ -159,24 +178,13 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
 
     // MARK: -
 
-    /// An explicitly `isRetryable` error for receipt credential redemption.
-    ///
-    /// Necessary since the `JobAttemptResult` retry machinery relies on
-    /// `isRetryable`, which defaults to `true` if not explicit, which could
-    /// result in us doing a lot of meaningless retries if we throw an
-    /// unexpected error.
-    private enum RedeemBackupReceiptCredentialError: Error, IsRetryableProvider {
+    private enum RedeemBackupReceiptCredentialResult {
+        case success
         case networkError
+        case needsReattempt
+        case paymentStillProcessing
         case redemptionUnsuccessful
         case assertion
-
-        var isRetryableProvider: Bool {
-            switch self {
-            case .networkError: return true
-            case .redemptionUnsuccessful: return false
-            case .assertion: return false
-            }
-        }
     }
 
     /// Performs the steps required to redeem a Backup subscription for the
@@ -200,7 +208,7 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
     /// way that's only safe to retry with the same inputs.
     private func _redeemBackupReceiptCredential(
         jobRecord: BackupReceiptCredentialRedemptionJobRecord
-    ) async throws(RedeemBackupReceiptCredentialError) {
+    ) async -> RedeemBackupReceiptCredentialResult {
 
         switch jobRecord.attemptState {
         case .unattempted:
@@ -218,7 +226,7 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
             await db.awaitableWrite { tx in
                 jobRecord.updateAttemptState(nextAttemptState, tx: tx)
             }
-            return try await _redeemBackupReceiptCredential(jobRecord: jobRecord)
+            return await _redeemBackupReceiptCredential(jobRecord: jobRecord)
 
         case .receiptCredentialRequesting(
             let receiptCredentialRequest,
@@ -263,22 +271,26 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                     /// subscription period, so there's nothing left to do and
                     /// we can treat this as a success.
                     await db.awaitableWrite { tx in
-                        jobRecord.delete(tx: tx)
+                        jobRecord.anyRemove(transaction: tx)
                     }
-                    return
+                    return .success
+                case .paymentStillProcessing:
+                    return .paymentStillProcessing
                 case
-                        .paymentStillProcessing,
                         .paymentFailed,
                         .localValidationFailed,
                         .serverValidationFailed,
                         .paymentNotFound:
-                    throw .redemptionUnsuccessful
+                    return .redemptionUnsuccessful
                 }
-            } catch let error where error.isNetworkFailureOrTimeout {
-                throw .networkError
+            } catch where error.isNetworkFailureOrTimeout || (error as? OWSHTTPError)?.isRetryable == true {
+                return .networkError
             } catch let error {
-                owsFailDebug("Unexpected error requesting receipt credential: \(error)")
-                throw .assertion
+                owsFailDebug(
+                    "Unexpected error requesting receipt credential: \(error)",
+                    logger: logger
+                )
+                return .assertion
             }
 
             let nextAttemptState: RedemptionAttemptState = .receiptCredentialRedemption(
@@ -287,7 +299,7 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
             await db.awaitableWrite { tx in
                 jobRecord.updateAttemptState(nextAttemptState, tx: tx)
             }
-            return try await _redeemBackupReceiptCredential(jobRecord: jobRecord)
+            return await _redeemBackupReceiptCredential(jobRecord: jobRecord)
 
         case .receiptCredentialRedemption(let receiptCredential):
             logger.info("Redeeming receipt credential.")
@@ -302,22 +314,19 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                     "Failed to generate receipt credential presentation: \(error)",
                     logger: logger
                 )
-                throw .assertion
+                return .assertion
             }
 
             let response: HTTPResponse
             do {
-                response = try await networkManager.makePromise(
-                    request: .backupRedeemReceiptCredential(
+                response = try await networkManager.asyncRequest(
+                    .backupRedeemReceiptCredential(
                         receiptCredentialPresentation: presentation
                     )
-                ).awaitable()
-            } catch {
-                throw .networkError
-            }
-
-            switch response.responseStatusCode {
-            case 400:
+                )
+            } catch where error.isNetworkFailureOrTimeout || (error as? OWSHTTPError)?.isRetryable == true {
+                return .networkError
+            } catch where error.httpStatusCode == 400 {
                 /// This indicates that our receipt credential presentation has
                 /// expired. This is a weird scenario, because it indicates that
                 /// so much time has elapsed since we got the receipt credential
@@ -325,34 +334,43 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                 /// Weird, but not impossible!
                 ///
                 /// We can handle this by throwing away the expired receipt
-                /// credential and starting over.
+                /// credential and retrying the job.
                 logger.warn("Receipt credential was expired!")
 
                 let nextAttemptState: RedemptionAttemptState = .unattempted
                 await db.awaitableWrite { tx in
                     jobRecord.updateAttemptState(nextAttemptState, tx: tx)
                 }
-                return try await _redeemBackupReceiptCredential(jobRecord: jobRecord)
 
+                return .needsReattempt
+            } catch {
+                owsFailDebug(
+                    "Unexpected error: \(error)",
+                    logger: logger
+                )
+                return .assertion
+            }
+
+            switch response.responseStatusCode {
             case 204:
                 logger.info("Receipt credential redeemed successfully.")
 
                 await db.awaitableWrite { tx in
-                    jobRecord.delete(tx: tx)
+                    jobRecord.anyRemove(transaction: tx)
 
                     /// Clear out any cached Backup auth credentials, since we
                     /// may now be able to fetch credentials with a higher level
                     /// of access than we had cached.
                     authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
                 }
-                return
+                return .success
 
             default:
                 owsFailDebug(
                     "Unexpected response status code: \(response.responseStatusCode)",
                     logger: logger
                 )
-                throw .assertion
+                return .assertion
             }
         }
     }
