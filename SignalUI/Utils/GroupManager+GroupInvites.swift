@@ -56,38 +56,24 @@ public extension GroupManager {
         _ groupThread: TSGroupThread,
         fromViewController: UIViewController
     ) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            ModalActivityIndicatorViewController.present(
-                fromViewController: fromViewController,
-                canCancel: false,
-                asyncBlock: { modalActivityIndicator in
-                    do {
-                        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-                            throw OWSAssertionError("Invalid group model")
-                        }
-
-                        try await self.localAcceptInviteToGroupV2(
-                            groupModel: groupModelV2,
-                            waitForMessageProcessing: true
-                        )
-
-                        modalActivityIndicator.dismiss {
-                            continuation.resume()
-                        }
-                    } catch {
-                        modalActivityIndicator.dismiss {
-                            let title = OWSLocalizedString(
-                                "GROUPS_INVITE_ACCEPT_INVITE_FAILED",
-                                comment: "Error indicating that an error occurred while accepting an invite."
-                            )
-
-                            OWSActionSheets.showActionSheet(title: title)
-
-                            continuation.resume(throwing: error)
-                        }
-                    }
+        do {
+            try await ModalActivityIndicatorViewController.presentAndPropagateResult(
+                from: fromViewController
+            ) {
+                guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+                    throw OWSAssertionError("Invalid group model")
                 }
-            )
+
+                try await self.localAcceptInviteToGroupV2(
+                    groupModel: groupModelV2,
+                    waitForMessageProcessing: true
+                )
+            }
+        } catch {
+            OWSActionSheets.showActionSheet(title: OWSLocalizedString(
+                "GROUPS_INVITE_ACCEPT_INVITE_FAILED",
+                comment: "Error indicating that an error occurred while accepting an invite."
+            ))
         }
     }
 }

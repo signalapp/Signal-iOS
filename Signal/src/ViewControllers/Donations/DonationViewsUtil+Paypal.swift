@@ -16,18 +16,13 @@ extension DonationViewsUtil {
             level: OneTimeBadgeLevel,
             fromViewController: UIViewController
         ) async throws -> (URL, String) {
-            return try await withCheckedThrowingContinuation { continuation in
-                ModalActivityIndicatorViewController.present(
-                    fromViewController: fromViewController,
-                    canCancel: false
-                ) { modal in
-                    do {
-                        let approvalUrl = try await SignalServiceKit.Paypal.createBoost(amount: amount, level: level)
-                        modal.dismiss { continuation.resume(returning: approvalUrl) }
-                    } catch {
-                        modal.dismiss { continuation.resume(throwing: error) }
-                    }
-                }
+            return try await ModalActivityIndicatorViewController.presentAndPropagateResult(
+                from: fromViewController
+            ) {
+                return try await SignalServiceKit.Paypal.createBoost(
+                    amount: amount,
+                    level: level
+                )
             }
         }
     }

@@ -13,23 +13,15 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         public static let defaultPresentationDelay: TimeInterval = 0.05
     }
 
-    let canCancel: Bool
-
-    private let isInvisible: Bool
-
     public var wasCancelled: Bool = false
 
-    var activityIndicator: UIActivityIndicatorView?
-
-    var presentTimer: Timer?
-
-    var wasDimissed: Bool = false
-
+    private let canCancel: Bool
+    private let isInvisible: Bool
+    private var wasDimissed: Bool = false
+    private var activityIndicator: UIActivityIndicatorView?
+    private var presentTimer: Timer?
     private let presentationDelay: TimeInterval
-
     private var asyncTask: Task<Void, Never>?
-
-    // MARK: Initializers
 
     public init(canCancel: Bool, presentationDelay: TimeInterval, isInvisible: Bool = false) {
         self.canCancel = canCancel
@@ -37,6 +29,8 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         self.isInvisible = isInvisible
         super.init()
     }
+
+    // MARK: -
 
     public class func present(
         fromViewController: UIViewController,
@@ -93,6 +87,16 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         )
     }
 
+    // MARK: -
+
+    /// Presents a `ModalActivityIndicatorViewController`, behind which the
+    /// given async block runs. Callers are expected to dismiss the modal at the
+    /// completion of the async block.
+    ///
+    /// Use this API if you need fine-grained control over the modal dismissal
+    /// behavior, or if you want a cancellable modal.
+    ///
+    /// - SeeAlso ``presentAndPropagateResult(from:presentationDelay:wrappedAsyncBlock:)``
     public class func present(
         fromViewController: UIViewController,
         canCancel: Bool = false,
@@ -112,6 +116,33 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         )
     }
 
+    /// Presents a `ModalActivityIndicatorViewController` for the duration of
+    /// the given async block, automatically dismissing the modal when the block
+    /// exits and propagating the block's result.
+    ///
+    /// Use this API if you want to simply show a modal during a non-cancellable
+    /// async block.
+    ///
+    /// - SeeAlso ``present(fromViewController:canCancel:presentationDelay:isInvisible:asyncBlock:)``.
+    public class func presentAndPropagateResult<T>(
+        from viewController: UIViewController,
+        presentationDelay: TimeInterval = Constants.defaultPresentationDelay,
+        wrappedAsyncBlock: @escaping () async throws -> T
+    ) async throws -> T {
+        return try await withCheckedThrowingContinuation { continuation in
+            present(
+                fromViewController: viewController,
+                presentationDelay: presentationDelay,
+                asyncBlock: { modal in
+                    let result = await Result(catching: wrappedAsyncBlock)
+                    modal.dismiss {
+                        continuation.resume(with: result)
+                    }
+                }
+            )
+        }
+    }
+
     private func present(from viewController: UIViewController, asyncBlock: @escaping @MainActor (ModalActivityIndicatorViewController) async -> Void) {
         // Present this modal _over_ the current view contents.
         self.modalPresentationStyle = .overFullScreen
@@ -122,6 +153,8 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             }
         }
     }
+
+    // MARK: -
 
     public func dismiss(completion: (() -> Void)? = nil) {
         AssertIsOnMainThread()
@@ -154,6 +187,8 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             self.dismiss(completion: completionIfNotCanceled)
         }
     }
+
+    // MARK: -
 
     public override func loadView() {
         super.loadView()
@@ -233,6 +268,8 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
         clearTimer()
     }
+
+    // MARK: -
 
     private func clearTimer() {
         self.presentTimer?.invalidate()
