@@ -594,8 +594,17 @@ extension ExperienceUpgradeManifest {
     }
 
     public static func checkPreconditionsForContactsPermissionReminder() -> Bool {
-        // FIXME: [Contacts, iOS 18] Do we really want to nag users who've granted limited access?
-        return CNContactStore.authorizationStatus(for: .contacts) != .authorized
+        switch CNContactStore.authorizationStatus(for: .contacts) {
+        case .authorized, .limited:
+            return false
+        case .restricted:
+            // If this isn't allowed by device policy, don't nag.
+            return false
+        case .denied, .notDetermined:
+            return true
+        @unknown default:
+            return false
+        }
     }
 
     // MARK: Remote megaphone preconditions
