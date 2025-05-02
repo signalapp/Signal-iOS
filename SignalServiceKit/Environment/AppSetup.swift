@@ -845,7 +845,6 @@ public class AppSetup {
         let usernameLinkManager = UsernameLinkManagerImpl(
             db: db,
             apiClient: usernameApiClient,
-            schedulers: schedulers
         )
         let localUsernameManager = LocalUsernameManagerImpl(
             db: db,

@@ -93,38 +93,37 @@ public struct UsernameQuerier {
 
         ModalActivityIndicatorViewController.present(
             fromViewController: fromViewController,
-            canCancel: true
-        ) { modal in
-            firstly(on: schedulers.sync) { () -> Promise<String?> in
-                usernameLinkManager.decryptEncryptedLink(link: link)
-            }.done(on: schedulers.main) { username in
-                guard let username else {
-                    modal.dismissIfNotCanceled {
-                        showUsernameLinkOutdatedError(dismissalDelegate: failureSheetDismissalDelegate)
+            canCancel: true,
+            asyncBlock: { modal in
+                do {
+                    let username = try await usernameLinkManager.decryptEncryptedLink(link: link)
+                    guard let username else {
+                        modal.dismissIfNotCanceled {
+                            showUsernameLinkOutdatedError(dismissalDelegate: failureSheetDismissalDelegate)
+                        }
+                        return
                     }
 
-                    return
-                }
-
-                guard let hashedUsername = try? Usernames.HashedUsername(
-                    forUsername: username
-                ) else {
-                    modal.dismissIfNotCanceled {
-                        showInvalidUsernameError(username: username, dismissalDelegate: nil)
+                    guard let hashedUsername = try? Usernames.HashedUsername(
+                        forUsername: username
+                    ) else {
+                        modal.dismissIfNotCanceled {
+                            showInvalidUsernameError(username: username, dismissalDelegate: failureSheetDismissalDelegate)
+                        }
+                        return
                     }
-                    return
-                }
 
-                queryServiceForUsernameBehindSpinner(
-                    presentedModalActivityIndicator: modal,
-                    hashedUsername: hashedUsername,
-                    failureSheetDismissalDelegate: failureSheetDismissalDelegate,
-                    onSuccess: { onSuccess(username, $0) }
-                )
-            }.catch(on: schedulers.main) { _ in
-                showGenericError(presentedModal: modal, dismissalDelegate: nil)
+                    let usernameAci = try await queryServiceForUsername(hashedUsername: hashedUsername)
+                    modal.dismissIfNotCanceled {
+                        onSuccess(hashedUsername.usernameString, usernameAci)
+                    }
+                } catch {
+                    modal.dismissIfNotCanceled {
+                        handleError(error, dismissalDelegate: failureSheetDismissalDelegate)
+                    }
+                }
             }
-        }
+        )
     }
 
     /// Query the service for the given username, invoking a callback if the
@@ -161,15 +160,20 @@ public struct UsernameQuerier {
 
         ModalActivityIndicatorViewController.present(
             fromViewController: fromViewController,
-            canCancel: true
-        ) { modal in
-            queryServiceForUsernameBehindSpinner(
-                presentedModalActivityIndicator: modal,
-                hashedUsername: hashedUsername,
-                failureSheetDismissalDelegate: failureSheetDismissalDelegate,
-                onSuccess: onSuccess
-            )
-        }
+            canCancel: true,
+            asyncBlock: { modal in
+                do {
+                    let aci = try await queryServiceForUsername(hashedUsername: hashedUsername)
+                    modal.dismissIfNotCanceled {
+                        onSuccess(aci)
+                    }
+                } catch {
+                    modal.dismissIfNotCanceled {
+                        handleError(error, dismissalDelegate: failureSheetDismissalDelegate)
+                    }
+                }
+            }
+        )
     }
 
     /// Handle a query that we know will match the local user.
@@ -189,50 +193,24 @@ public struct UsernameQuerier {
         }
     }
 
-    /// Query the service for the ACI of the given username.
-    ///
-    /// - Parameter presentedModalActivityIndicator
-    /// The currently-presented modal activity indicator.
-    /// - Parameter onSuccess
-    /// Called if the username resolves successfully to an ACI. Guaranteed to be
-    /// called on the main thread.
-    private func queryServiceForUsernameBehindSpinner(
-        presentedModalActivityIndicator modal: ModalActivityIndicatorViewController,
-        hashedUsername: Usernames.HashedUsername,
-        failureSheetDismissalDelegate: (any SheetDismissalDelegate)?,
-        onSuccess: @escaping (Aci) -> Void
-    ) {
-        firstly(on: schedulers.sync) { () -> Promise<Aci?> in
-            return self.usernameApiClient.lookupAci(
-                forHashedUsername: hashedUsername
-            )
-        }.done(on: schedulers.main) { maybeAci in
-            modal.dismissIfNotCanceled {
-                if let aci = maybeAci {
-                    self.databaseStorage.write { tx in
-                        self.handleUsernameLookupCompleted(
-                            aci: aci,
-                            username: hashedUsername.usernameString,
-                            tx: tx
-                        )
-                    }
+    private struct UsernameNotFoundError: Error {
+        var usernameString: String
+    }
 
-                    schedulers.main.async {
-                        onSuccess(aci)
-                    }
-                } else {
-                    self.showUsernameNotFoundError(
-                        username: hashedUsername.usernameString,
-                        dismissalDelegate: failureSheetDismissalDelegate
-                    )
-                }
-            }
-        }.catch(on: schedulers.main) { _ in
-            showGenericError(
-                presentedModal: modal,
-                dismissalDelegate: failureSheetDismissalDelegate
+    /// Query the service for the ACI of the given username.
+    private func queryServiceForUsername(hashedUsername: Usernames.HashedUsername) async throws -> Aci {
+        let aci = try await self.usernameApiClient.lookupAci(forHashedUsername: hashedUsername)
+        guard let aci else {
+            throw UsernameNotFoundError(usernameString: hashedUsername.usernameString)
+        }
+        await self.databaseStorage.awaitableWrite { tx in
+            self.handleUsernameLookupCompleted(
+                aci: aci,
+                username: hashedUsername.usernameString,
+                tx: tx
             )
         }
+        return aci
     }
 
     private func handleUsernameLookupCompleted(
@@ -328,20 +306,28 @@ public struct UsernameQuerier {
         )
     }
 
+    private func handleError(
+        _ error: any Error,
+        dismissalDelegate: (any SheetDismissalDelegate)?,
+    ) {
+        if let notFoundError = error as? UsernameNotFoundError {
+            showUsernameNotFoundError(username: notFoundError.usernameString, dismissalDelegate: dismissalDelegate)
+        } else {
+            showGenericError(dismissalDelegate: dismissalDelegate)
+        }
+    }
+
     private func showGenericError(
-        presentedModal modal: ModalActivityIndicatorViewController,
         dismissalDelegate: (any SheetDismissalDelegate)?
     ) {
         Logger.error("Error while querying for username!")
 
-        modal.dismissIfNotCanceled {
-            OWSActionSheets.showErrorAlert(
-                message: OWSLocalizedString(
-                    "USERNAME_LOOKUP_ERROR_MESSAGE",
-                    comment: "A message indicating that username lookup failed."
-                ),
-                dismissalDelegate: dismissalDelegate
-            )
-        }
+        OWSActionSheets.showErrorAlert(
+            message: OWSLocalizedString(
+                "USERNAME_LOOKUP_ERROR_MESSAGE",
+                comment: "A message indicating that username lookup failed."
+            ),
+            dismissalDelegate: dismissalDelegate
+        )
     }
 }

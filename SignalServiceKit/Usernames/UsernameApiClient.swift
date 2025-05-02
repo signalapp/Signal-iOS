@@ -19,7 +19,7 @@ public protocol UsernameApiClient {
     /// potentially-overlapping attempts.
     func reserveUsernameCandidates(
         usernameCandidates: Usernames.HashedUsername.GeneratedCandidates
-    ) -> Promise<Usernames.ApiClientReservationResult>
+    ) async throws -> Usernames.ApiClientReservationResult
 
     /// Confirms the given username, which must have previously been reserved.
     ///
@@ -29,19 +29,19 @@ public protocol UsernameApiClient {
         reservedUsername: Usernames.HashedUsername,
         encryptedUsernameForLink: Data,
         chatServiceAuth: ChatServiceAuth
-    ) -> Promise<Usernames.ApiClientConfirmationResult>
+    ) async throws -> Usernames.ApiClientConfirmationResult
 
     // MARK: Deletion
 
     /// Delete the username and username link for the current user.
-    func deleteCurrentUsername() -> Promise<Void>
+    func deleteCurrentUsername() async throws
 
     // MARK: Lookup
 
     /// Looks up the ACI corresponding to the given username, if one exists.
     func lookupAci(
         forHashedUsername hashedUsername: Usernames.HashedUsername
-    ) -> Promise<Aci?>
+    ) async throws -> Aci?
 
     // MARK: Links
 
@@ -61,13 +61,13 @@ public protocol UsernameApiClient {
     func setUsernameLink(
         encryptedUsername: Data,
         keepLinkHandle: Bool
-    ) -> Promise<UUID>
+    ) async throws -> UUID
 
     /// Gets the encrypted username for the given handle, if any.
     ///
     /// - SeeAlso
     /// ``Usernames.UsernameLink`` and ``UsernameLinkManager``.
-    func getUsernameLink(handle: UUID) -> Promise<Data?>
+    func getUsernameLink(handle: UUID) async throws -> Data?
 }
 
 public extension Usernames {

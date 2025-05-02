@@ -24,6 +24,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerShim
         public typealias StorageServiceManager = _RegistrationCoordinator_StorageServiceManagerShim
         public typealias UDManager = _RegistrationCoordinator_UDManagerShim
+        public typealias UsernameApiClient = _RegistrationCoordinator_UsernameApiClientShim
     }
     public enum Wrappers {
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerWrapper
@@ -39,6 +40,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
         public typealias StorageServiceManager = _RegistrationCoordinator_StorageServiceManagerWrapper
         public typealias UDManager = _RegistrationCoordinator_UDManagerWrapper
+        public typealias UsernameApiClient = _RegistrationCoordinator_UsernameApiClientWrapper
     }
 }
 
@@ -481,5 +483,23 @@ public class _RegistrationCoordinator_UDManagerWrapper: _RegistrationCoordinator
 
     public func shouldAllowUnrestrictedAccessLocal(transaction: DBReadTransaction) -> Bool {
         return manager.shouldAllowUnrestrictedAccessLocal(transaction: SDSDB.shimOnlyBridge(transaction))
+    }
+}
+
+// MARK: - UsernameApiClient
+
+public protocol _RegistrationCoordinator_UsernameApiClientShim {
+    func confirmReservedUsername(reservedUsername: Usernames.HashedUsername, encryptedUsernameForLink: Data, chatServiceAuth: ChatServiceAuth) -> Promise<Usernames.ApiClientConfirmationResult>
+}
+
+public class _RegistrationCoordinator_UsernameApiClientWrapper: _RegistrationCoordinator_UsernameApiClientShim {
+
+    private let usernameApiClient: any UsernameApiClient
+    public init(_ usernameApiClient: any UsernameApiClient) { self.usernameApiClient = usernameApiClient }
+
+    public func confirmReservedUsername(reservedUsername: Usernames.HashedUsername, encryptedUsernameForLink: Data, chatServiceAuth: ChatServiceAuth) -> Promise<Usernames.ApiClientConfirmationResult> {
+        return Promise.wrapAsync {
+            return try await self.usernameApiClient.confirmReservedUsername(reservedUsername: reservedUsername, encryptedUsernameForLink: encryptedUsernameForLink, chatServiceAuth: chatServiceAuth)
+        }
     }
 }

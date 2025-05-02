@@ -201,7 +201,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
         do {
             usernameForLocalLink = try await self.context.usernameLinkManager.decryptEncryptedLink(
                 link: localUsernameLink
-            ).awaitable()
+            )
         } catch {
             switch error {
             case LibSignalClient.SignalError.usernameLinkInvalidEntropyDataLength:

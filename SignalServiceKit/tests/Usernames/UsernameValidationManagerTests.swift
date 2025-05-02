@@ -44,7 +44,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         mockWhoAmIManager.whoamiResponse.ensureUnset()
         owsPrecondition(!mockMessageProcessor.canWait)
         mockStorageServiceManager.pendingRestoreResult.ensureUnset()
-        mockUsernameLinkManager.decryptLinkResult.ensureUnset()
+        owsPrecondition(mockUsernameLinkManager.decryptEncryptedLinkMocks.isEmpty)
     }
 
     func testUnsetValidationSuccessful() async {
@@ -100,7 +100,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
-        mockUsernameLinkManager.decryptLinkResult = .value("boba_fett.42")
+        mockUsernameLinkManager.decryptEncryptedLinkMocks = [{ _ in "boba_fett.42" }]
 
         await validationManager.validateUsernameIfNecessary()
 
@@ -155,7 +155,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
-        mockUsernameLinkManager.decryptLinkResult = .error()
+        mockUsernameLinkManager.decryptEncryptedLinkMocks = [{ _ in throw OWSGenericError("") }]
 
         await validationManager.validateUsernameIfNecessary()
 
@@ -174,7 +174,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
         mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
-        mockUsernameLinkManager.decryptLinkResult = .value("boba_fett.43")
+        mockUsernameLinkManager.decryptEncryptedLinkMocks = [{ _ in "boba_fett.43" }]
 
         await validationManager.validateUsernameIfNecessary()
 

@@ -26,9 +26,9 @@ public class MockUsernameLinkManager: UsernameLinkManager {
         }
     }
 
-    var decryptLinkResult: ConsumableMockPromise<String?> = .unset
-    public func decryptEncryptedLink(link: Usernames.UsernameLink) -> Promise<String?> {
-        return decryptLinkResult.consumeIntoPromise()
+    var decryptEncryptedLinkMocks = [(Usernames.UsernameLink) async throws -> String?]()
+    public func decryptEncryptedLink(link: Usernames.UsernameLink) async throws -> String? {
+        return try await decryptEncryptedLinkMocks.removeFirst()(link)
     }
 }
 

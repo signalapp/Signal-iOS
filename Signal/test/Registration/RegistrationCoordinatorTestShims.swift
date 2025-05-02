@@ -24,6 +24,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerMock
         public typealias StorageServiceManager = _RegistrationCoordinator_StorageServiceManagerMock
         public typealias UDManager = _RegistrationCoordinator_UDManagerMock
+        public typealias UsernameApiClient = _RegistrationCoordinator_UsernameApiClientMock
     }
 }
 
@@ -308,5 +309,16 @@ public class _RegistrationCoordinator_UDManagerMock: _RegistrationCoordinator_UD
 
     public func shouldAllowUnrestrictedAccessLocal(transaction: DBReadTransaction) -> Bool {
         return shouldAllowUnrestrictedAccessLocalMock()
+    }
+}
+
+// MARK: UsernameApiClient
+
+public class _RegistrationCoordinator_UsernameApiClientMock: _RegistrationCoordinator_UsernameApiClientShim {
+    public init() {}
+
+    public var confirmReservedUsernameMocks = [(reservedUsername: Usernames.HashedUsername, encryptedUsernameForLink: Data, chatServiceAuth: ChatServiceAuth) -> Promise<Usernames.ApiClientConfirmationResult>]()
+    public func confirmReservedUsername(reservedUsername: Usernames.HashedUsername, encryptedUsernameForLink: Data, chatServiceAuth: ChatServiceAuth) -> Promise<Usernames.ApiClientConfirmationResult> {
+        return confirmReservedUsernameMocks.removeFirst()(reservedUsername, encryptedUsernameForLink, chatServiceAuth)
     }
 }

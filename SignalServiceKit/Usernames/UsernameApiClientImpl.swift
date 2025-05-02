@@ -14,31 +14,25 @@ public class UsernameApiClientImpl: UsernameApiClient {
         self.schedulers = schedulers
     }
 
-    private func performRequest<T>(
+    private func performRequest(
         request: TSRequest,
         canUseWebSocket: Bool = true,
-        onSuccess: @escaping (HTTPResponse) throws -> T,
-        onFailure: @escaping (Error) throws -> T
-    ) -> Promise<T> {
-        firstly {
-            networkManager.makePromise(request: request, canUseWebSocket: canUseWebSocket)
-        }.map(on: schedulers.sharedUserInitiated) { response throws in
-            try onSuccess(response)
-        }.recover(on: schedulers.sharedUserInitiated) { error throws -> Promise<T> in
-                .value(try onFailure(error))
-        }
+    ) async throws -> any HTTPResponse {
+        try await networkManager.asyncRequest(request, canUseWebSocket: canUseWebSocket)
     }
 
     // MARK: Selection
 
     public func reserveUsernameCandidates(
         usernameCandidates: Usernames.HashedUsername.GeneratedCandidates
-    ) -> Promise<Usernames.ApiClientReservationResult> {
+    ) async throws -> Usernames.ApiClientReservationResult {
         let request = OWSRequestFactory.reserveUsernameRequest(
             usernameHashes: usernameCandidates.candidateHashes
         )
 
-        func onRequestSuccess(response: HTTPResponse) throws -> Usernames.ApiClientReservationResult {
+        do {
+            let response = try await performRequest(request: request)
+
             guard response.responseStatusCode == 200 else {
                 throw OWSAssertionError(
                     "Unexpected status code from successful request: \(response.responseStatusCode)"
@@ -69,9 +63,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
                 username: parsedUsername,
                 hashedUsername: acceptedCandidate
             )
-        }
-
-        func onRequestFailure(error: Error) throws -> Usernames.ApiClientReservationResult {
+        } catch {
             guard let statusCode = error.httpStatusCode else {
                 throw error
             }
@@ -90,19 +82,13 @@ public class UsernameApiClientImpl: UsernameApiClient {
                 throw OWSAssertionError("Unexpected status code: \(statusCode)!")
             }
         }
-
-        return performRequest(
-            request: request,
-            onSuccess: onRequestSuccess,
-            onFailure: onRequestFailure
-        )
     }
 
     public func confirmReservedUsername(
         reservedUsername: Usernames.HashedUsername,
         encryptedUsernameForLink: Data,
         chatServiceAuth: ChatServiceAuth
-    ) -> Promise<Usernames.ApiClientConfirmationResult> {
+    ) async throws -> Usernames.ApiClientConfirmationResult {
         var request = OWSRequestFactory.confirmReservedUsernameRequest(
             reservedUsernameHash: reservedUsername.hashString,
             reservedUsernameZKProof: reservedUsername.proofString,
@@ -110,7 +96,9 @@ public class UsernameApiClientImpl: UsernameApiClient {
         )
         request.auth = .identified(chatServiceAuth)
 
-        func onRequestSuccess(response: HTTPResponse) throws -> Usernames.ApiClientConfirmationResult {
+        do {
+            let response = try await performRequest(request: request, canUseWebSocket: false)
+
             guard response.responseStatusCode == 200 else {
                 throw OWSAssertionError("Unexpected status code from successful request: \(response.responseStatusCode)")
             }
@@ -122,9 +110,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
             let usernameLinkHandle: UUID = try parser.required(key: "usernameLinkHandle")
 
             return .success(usernameLinkHandle: usernameLinkHandle)
-        }
-
-        func onRequestFailure(error: Error) throws -> Usernames.ApiClientConfirmationResult {
+        } catch {
             guard let statusCode = error.httpStatusCode else {
                 owsFailDebug("Unexpectedly missing HTTP status code!")
                 throw error
@@ -148,47 +134,30 @@ public class UsernameApiClientImpl: UsernameApiClient {
                 throw OWSAssertionError("Unexpected status code: \(statusCode)")
             }
         }
-
-        return performRequest(
-            request: request,
-            canUseWebSocket: false,
-            onSuccess: onRequestSuccess,
-            onFailure: onRequestFailure
-        )
     }
 
     // MARK: Deletion
 
-    public func deleteCurrentUsername() -> Promise<Void> {
+    public func deleteCurrentUsername() async throws {
         let request = OWSRequestFactory.deleteExistingUsernameRequest()
-
-        func onRequestSuccess(response: HTTPResponse) throws {
-            guard response.responseStatusCode == 204 else {
-                throw OWSAssertionError("Unexpected status code from successful request: \(response.responseStatusCode)")
-            }
+        let response = try await performRequest(request: request)
+        guard response.responseStatusCode == 204 else {
+            throw OWSAssertionError("Unexpected status code from successful request: \(response.responseStatusCode)")
         }
-
-        func onRequestFailure(error: Error) throws {
-            throw error
-        }
-
-        return performRequest(
-            request: request,
-            onSuccess: onRequestSuccess,
-            onFailure: onRequestFailure
-        )
     }
 
     // MARK: Lookup
 
     public func lookupAci(
         forHashedUsername hashedUsername: Usernames.HashedUsername
-    ) -> Promise<Aci?> {
+    ) async throws -> Aci? {
         let request = OWSRequestFactory.lookupAciUsernameRequest(
             usernameHashToLookup: hashedUsername.hashString
         )
 
-        func onRequestSuccess(response: HTTPResponse) throws -> Aci {
+        do {
+            let response = try await performRequest(request: request)
+
             guard response.responseStatusCode == 200 else {
                 throw OWSAssertionError("Unexpected response code: \(response.responseStatusCode)")
             }
@@ -200,9 +169,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
             let aciUuid: UUID = try parser.required(key: "uuid")
 
             return Aci(fromUUID: aciUuid)
-        }
-
-        func onRequestFailure(error: Error) throws -> Aci? {
+        } catch {
             guard let statusCode = error.httpStatusCode else {
                 owsFailDebug("Unexpectedly missing HTTP status code!")
                 throw error
@@ -210,19 +177,13 @@ public class UsernameApiClientImpl: UsernameApiClient {
 
             switch statusCode {
             case 404:
-                // If the requested username does not belong to any accounts,
+                // If the requested username does not belong to any account,
                 // we get a 404.
                 return nil
             default:
                 throw error
             }
         }
-
-        return performRequest(
-            request: request,
-            onSuccess: onRequestSuccess,
-            onFailure: onRequestFailure
-        )
     }
 
     // MARK: Links
@@ -230,39 +191,31 @@ public class UsernameApiClientImpl: UsernameApiClient {
     public func setUsernameLink(
         encryptedUsername: Data,
         keepLinkHandle: Bool
-    ) -> Promise<UUID> {
+    ) async throws -> UUID {
         let request = OWSRequestFactory.setUsernameLinkRequest(
             encryptedUsername: encryptedUsername,
             keepLinkHandle: keepLinkHandle
         )
 
-        func onRequestSuccess(response: HTTPResponse) throws -> UUID {
-            guard response.responseStatusCode == 200 else {
-                throw OWSAssertionError("Unexpected response code: \(response.responseStatusCode)")
-            }
+        let response = try await performRequest(request: request)
 
-            guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
-                throw OWSAssertionError("Unexpectedly missing JSON response body!")
-            }
-
-            return try parser.required(key: "usernameLinkHandle")
+        guard response.responseStatusCode == 200 else {
+            throw OWSAssertionError("Unexpected response code: \(response.responseStatusCode)")
         }
 
-        func onRequestFailure(error: Error) throws -> UUID {
-            throw error
+        guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
+            throw OWSAssertionError("Unexpectedly missing JSON response body!")
         }
 
-        return performRequest(
-            request: request,
-            onSuccess: onRequestSuccess,
-            onFailure: onRequestFailure
-        )
+        return try parser.required(key: "usernameLinkHandle")
     }
 
-    public func getUsernameLink(handle: UUID) -> Promise<Data?> {
+    public func getUsernameLink(handle: UUID) async throws -> Data? {
         let request = OWSRequestFactory.lookupUsernameLinkRequest(handle: handle)
 
-        func onRequestSuccess(response: HTTPResponse) throws -> Data {
+        do {
+            let response = try await performRequest(request: request)
+
             guard response.responseStatusCode == 200 else {
                 throw OWSAssertionError("Unexpected response code: \(response.responseStatusCode)")
             }
@@ -276,9 +229,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
             )
 
             return try Data.data(fromBase64Url: encryptedUsernameString)
-        }
-
-        func onRequestFailure(error: Error) throws -> Data? {
+        } catch {
             guard let statusCode = error.httpStatusCode else {
                 owsFailDebug("Unexpectedly missing HTTP status code!")
                 throw error
@@ -293,12 +244,6 @@ public class UsernameApiClientImpl: UsernameApiClient {
                 throw error
             }
         }
-
-        return performRequest(
-            request: request,
-            onSuccess: onRequestSuccess,
-            onFailure: onRequestFailure
-        )
     }
 }
 
@@ -315,7 +260,7 @@ extension UsernameApiClientImpl {
 }
 
 protocol _UsernameApiClientImpl_NetworkManager_Shim {
-    func makePromise(request: TSRequest, canUseWebSocket: Bool) -> Promise<HTTPResponse>
+    func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool) async throws -> HTTPResponse
 }
 
 class _UsernameApiClientImpl_NetworkManager_Wrapper: _UsernameApiClientImpl_NetworkManager_Shim {
@@ -325,7 +270,7 @@ class _UsernameApiClientImpl_NetworkManager_Wrapper: _UsernameApiClientImpl_Netw
         self.networkManager = networkManager
     }
 
-    func makePromise(request: TSRequest, canUseWebSocket: Bool) -> Promise<HTTPResponse> {
-        return networkManager.makePromise(request: request, canUseWebSocket: canUseWebSocket)
+    func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool) async throws -> HTTPResponse {
+        return try await networkManager.asyncRequest(request, canUseWebSocket: canUseWebSocket)
     }
 }

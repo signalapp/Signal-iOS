@@ -11,53 +11,43 @@ class MockUsernameApiClient: UsernameApiClient {
 
     // MARK: Confirm
 
-    var confirmationResult: ConsumableMockPromise<Usernames.ApiClientConfirmationResult> = .unset
-    var confirmReservedUsernameMock: ((
-        _ reservedUsername: Usernames.HashedUsername,
-        _ encryptedUsernameForLink: Data,
-        _ chatServiceAuth: ChatServiceAuth
-    ) -> Promise<Usernames.ApiClientConfirmationResult>)?
+    var confirmReservedUsernameMocks = [(
+        reservedUsername: Usernames.HashedUsername,
+        encryptedUsernameForLink: Data,
+        chatServiceAuth: ChatServiceAuth,
+    ) async throws -> Usernames.ApiClientConfirmationResult]()
 
     func confirmReservedUsername(
         reservedUsername: Usernames.HashedUsername,
         encryptedUsernameForLink: Data,
         chatServiceAuth: ChatServiceAuth
-    ) -> Promise<Usernames.ApiClientConfirmationResult> {
-        if let methodMock = confirmReservedUsernameMock {
-            return methodMock(reservedUsername, encryptedUsernameForLink, chatServiceAuth)
-        }
-
-        return confirmationResult.consumeIntoPromise()
+    ) async throws -> Usernames.ApiClientConfirmationResult {
+        return try await confirmReservedUsernameMocks.removeFirst()(reservedUsername, encryptedUsernameForLink, chatServiceAuth)
     }
 
     // MARK: Delete
 
-    var deletionResult: ConsumableMockPromise<Void> = .unset
-    func deleteCurrentUsername() -> Promise<Void> {
-        return deletionResult.consumeIntoPromise()
+    var deleteCurrentUsernameMocks = [() async throws -> Void]()
+    func deleteCurrentUsername() async throws {
+        try await deleteCurrentUsernameMocks.removeFirst()()
     }
 
     // MARK: Set link
 
-    var setLinkResult: ConsumableMockPromise<UUID> = .unset
-    var setLinkMock: ((
-        _ encryptedUsername: Data,
-        _ keepLinkHandle: Bool
-    ) -> Promise<UUID>)?
+    var setUsernameLinkMocks = [(
+        encryptedUsername: Data,
+        keepLinkHandle: Bool,
+    ) async throws -> UUID]()
 
-    func setUsernameLink(encryptedUsername: Data, keepLinkHandle: Bool) -> Promise<UUID> {
-        if let methodMock = setLinkMock {
-            return methodMock(encryptedUsername, keepLinkHandle)
-        }
-
-        return setLinkResult.consumeIntoPromise()
+    func setUsernameLink(encryptedUsername: Data, keepLinkHandle: Bool) async throws -> UUID {
+        return try await setUsernameLinkMocks.removeFirst()(encryptedUsername, keepLinkHandle)
     }
 
     // MARK: Unimplemented
 
-    func reserveUsernameCandidates(usernameCandidates: Usernames.HashedUsername.GeneratedCandidates) -> Promise<Usernames.ApiClientReservationResult> { owsFail("Not implemented!") }
-    func lookupAci(forHashedUsername hashedUsername: Usernames.HashedUsername) -> Promise<Aci?> { owsFail("Not implemented!") }
-    func getUsernameLink(handle: UUID) -> Promise<Data?> { owsFail("Not implemented!") }
+    func reserveUsernameCandidates(usernameCandidates: Usernames.HashedUsername.GeneratedCandidates) async throws -> Usernames.ApiClientReservationResult { owsFail("Not implemented!") }
+    func lookupAci(forHashedUsername hashedUsername: Usernames.HashedUsername) async throws -> Aci? { owsFail("Not implemented!") }
+    func getUsernameLink(handle: UUID) async throws -> Data? { owsFail("Not implemented!") }
 }
 
 #endif

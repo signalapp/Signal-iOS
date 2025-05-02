@@ -42,7 +42,7 @@ public class RegistrationCoordinatorTest {
     private var svrLocalStorageMock: SVRLocalStorageMock!
     private var svrAuthCredentialStore: SVRAuthCredentialStorageMock!
     private var tsAccountManagerMock: MockTSAccountManager!
-    private var usernameApiClientMock: MockUsernameApiClient!
+    private var usernameApiClientMock: RegistrationCoordinatorImpl.TestMocks.UsernameApiClient!
     private var usernameLinkManagerMock: MockUsernameLinkManager!
     private var missingKeyGenerator: MissingKeyGenerator!
 
@@ -90,7 +90,7 @@ public class RegistrationCoordinatorTest {
         svrLocalStorageMock = SVRLocalStorageMock()
         storageServiceManagerMock = RegistrationCoordinatorImpl.TestMocks.StorageServiceManager()
         tsAccountManagerMock = MockTSAccountManager()
-        usernameApiClientMock = MockUsernameApiClient()
+        usernameApiClientMock = RegistrationCoordinatorImpl.TestMocks.UsernameApiClient()
         usernameLinkManagerMock = MockUsernameLinkManager()
 
         let mockURLSession = TSRequestOWSURLSessionMock()
@@ -433,14 +433,14 @@ public class RegistrationCoordinatorTest {
         // our username.
         let mockUsernameLink: Usernames.UsernameLink = .mocked
         localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
-        usernameApiClientMock.confirmReservedUsernameMock = { _, _, chatServiceAuth in
+        usernameApiClientMock.confirmReservedUsernameMocks = [{ _, _, chatServiceAuth in
             #expect(chatServiceAuth == .explicit(
                 aci: identityResponse.aci,
                 deviceId: .primary,
                 password: authPassword
             ))
             return .value(.success(usernameLinkHandle: mockUsernameLink.handle))
-        }
+        }]
 
         // Once we do the username reclamation,
         // we will sync account attributes and then we are finished!
@@ -1101,7 +1101,7 @@ public class RegistrationCoordinatorTest {
         // reclaim our username. Succeed at t=9.
         let mockUsernameLink: Usernames.UsernameLink = .mocked
         localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
-        usernameApiClientMock.confirmReservedUsernameMock = { _, _, chatServiceAuth in
+        usernameApiClientMock.confirmReservedUsernameMocks = [{ _, _, chatServiceAuth in
             actualSteps.append(.confirmReservedUsername)
             #expect(chatServiceAuth == .explicit(
                 aci: identityResponse.aci,
@@ -1112,7 +1112,7 @@ public class RegistrationCoordinatorTest {
                 resolvingWith: .success(usernameLinkHandle: mockUsernameLink.handle),
                 atTime: 10
             )
-        }
+        }]
 
         // Once we do the storage service restore at t=9,
         // we will sync account attributes and then we are finished!
@@ -1383,7 +1383,7 @@ public class RegistrationCoordinatorTest {
         // reclaim our username. Succeed at t=7.
         let mockUsernameLink: Usernames.UsernameLink = .mocked
         localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
-        usernameApiClientMock.confirmReservedUsernameMock = { _, _, chatServiceAuth in
+        usernameApiClientMock.confirmReservedUsernameMocks = [{ _, _, chatServiceAuth in
             actualSteps.append("confirmReservedUsername")
             #expect(chatServiceAuth == .explicit(
                 aci: accountIdentityResponse.aci,
@@ -1394,7 +1394,7 @@ public class RegistrationCoordinatorTest {
                 resolvingWith: .success(usernameLinkHandle: mockUsernameLink.handle),
                 atTime: 8
             )
-        }
+        }]
 
         // And at t=7 once we do the storage service restore,
         // we will sync account attributes and then we are finished!
@@ -1818,7 +1818,7 @@ public class RegistrationCoordinatorTest {
         // no different impact on the rest of registration.
         let mockUsernameLink: Usernames.UsernameLink = .mocked
         localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
-        usernameApiClientMock.confirmReservedUsernameMock = { _, _, chatServiceAuth in
+        usernameApiClientMock.confirmReservedUsernameMocks = [{ _, _, chatServiceAuth in
             #expect(self.scheduler.currentTime == 2)
             #expect(chatServiceAuth == .explicit(
                 aci: accountIdentityResponse.aci,
@@ -1829,7 +1829,7 @@ public class RegistrationCoordinatorTest {
                 rejectedWith: OWSGenericError("Something went wrong :("),
                 atTime: 3
             )
-        }
+        }]
 
         // And at t=3 once we do the storage service restore,
         // we will sync account attributes and then we are finished!

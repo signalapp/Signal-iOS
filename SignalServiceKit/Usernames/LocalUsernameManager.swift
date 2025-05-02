@@ -421,7 +421,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
 
         do {
             let reservationResult = try await makeRequestWithNetworkRetries {
-                return try await usernameApiClient.reserveUsernameCandidates(usernameCandidates: usernameCandidates).awaitable()
+                return try await usernameApiClient.reserveUsernameCandidates(usernameCandidates: usernameCandidates)
             }
             return .success(reservationResult)
         } catch {
@@ -471,7 +471,8 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 return try await usernameApiClient.confirmReservedUsername(
                     reservedUsername: reservedUsername,
                     encryptedUsernameForLink: linkEncryptedUsername,
-                    chatServiceAuth: .implicit()).awaitable()
+                    chatServiceAuth: .implicit()
+                )
             }
             let confirmationResult = await self.db.awaitableWrite { tx -> Usernames.ConfirmationResult in
                 switch apiClientConfirmationResult {
@@ -536,7 +537,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
 
         do {
             try await makeRequestWithNetworkRetries {
-                try await usernameApiClient.deleteCurrentUsername().awaitable()
+                try await usernameApiClient.deleteCurrentUsername()
             }
             await self.db.awaitableWrite { tx in
                 self.clearLocalUsername(tx: tx)
@@ -600,7 +601,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
 
         do {
             let newHandle = try await makeRequestWithNetworkRetries {
-                try await usernameApiClient.setUsernameLink(encryptedUsername: newEncryptedUsername, keepLinkHandle: false).awaitable()
+                try await usernameApiClient.setUsernameLink(encryptedUsername: newEncryptedUsername, keepLinkHandle: false)
             }
 
             guard let newUsernameLink = Usernames.UsernameLink(
@@ -689,7 +690,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 /// rotate the username link handle. That's key to keeping the
                 /// existing link unaffected while updating the case of the
                 /// visible username the link points to.
-                return try await usernameApiClient.setUsernameLink(encryptedUsername: newEncryptedUsername, keepLinkHandle: true).awaitable()
+                return try await usernameApiClient.setUsernameLink(encryptedUsername: newEncryptedUsername, keepLinkHandle: true)
             }
             guard currentUsernameLink.handle == newHandle else {
                 UsernameLogger.shared.error("Handle received while changing username case did not match existing! Is this a server bug?")

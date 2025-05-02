@@ -41,22 +41,19 @@ public protocol UsernameLinkManager {
 
     /// Uses the given link to fetch an encrypted username and decrypt it into a
     /// plaintext username.
-    func decryptEncryptedLink(link: Usernames.UsernameLink) -> Promise<String?>
+    func decryptEncryptedLink(link: Usernames.UsernameLink) async throws -> String?
 }
 
 public final class UsernameLinkManagerImpl: UsernameLinkManager {
     private let db: any DB
     private let apiClient: UsernameApiClient
-    private let schedulers: Schedulers
 
     init(
         db: any DB,
         apiClient: UsernameApiClient,
-        schedulers: Schedulers
     ) {
         self.db = db
         self.apiClient = apiClient
-        self.schedulers = schedulers
     }
 
     public func generateEncryptedUsername(
@@ -76,19 +73,12 @@ public final class UsernameLinkManagerImpl: UsernameLinkManager {
 
     public func decryptEncryptedLink(
         link: Usernames.UsernameLink
-    ) -> Promise<String?> {
-        return firstly(on: schedulers.sync) { () -> Promise<Data?> in
-            return self.apiClient.getUsernameLink(handle: link.handle)
-        }.map(on: schedulers.sync) { encryptedUsername throws -> String? in
-            guard let encryptedUsername else {
-                return nil
-            }
-
+    ) async throws -> String? {
+        return try await self.apiClient.getUsernameLink(handle: link.handle).map {
             let lscUsername = try LibSignalClient.Username(
-                fromLink: encryptedUsername,
+                fromLink: $0,
                 withRandomness: link.entropy
             )
-
             return lscUsername.value
         }
     }
