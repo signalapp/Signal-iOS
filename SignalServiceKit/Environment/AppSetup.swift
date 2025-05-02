@@ -810,6 +810,7 @@ public class AppSetup {
             messageProcessor: messageProcessor,
             preKeyTaskAPIClient: preKeyTaskAPIClient,
             protocolStoreManager: signalProtocolStoreManager,
+            remoteConfigProvider: remoteConfigManager,
             chatConnectionManager: chatConnectionManager,
             tsAccountManager: tsAccountManager
         )

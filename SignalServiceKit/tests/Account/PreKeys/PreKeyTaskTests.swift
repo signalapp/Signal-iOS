@@ -51,6 +51,7 @@ final class PreKeyTaskTests: SSKBaseTest {
             linkedDevicePniKeyManager: mockLinkedDevicePniKeyManager,
             messageProcessor: SSKEnvironment.shared.messageProcessorRef,
             protocolStoreManager: mockProtocolStoreManager,
+            remoteConfigProvider: MockRemoteConfigProvider(),
             tsAccountManager: mockTSAccountManager
         )
     }

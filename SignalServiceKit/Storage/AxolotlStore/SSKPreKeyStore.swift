@@ -34,7 +34,7 @@ class SSKPreKeyStore: NSObject {
             Logger.info("building \(batchSize) new preKeys starting from preKeyId: \(preKeyId)")
             for _ in 0..<batchSize {
                 let keyPair = ECKeyPair.generateKeyPair()
-                let record = SignalServiceKit.PreKeyRecord(id: preKeyId, keyPair: keyPair, createdAt: Date())
+                let record = SignalServiceKit.PreKeyRecord(id: preKeyId, keyPair: keyPair, createdAt: Date(), replacedAt: nil)
                 preKeyRecords.append(record)
                 preKeyId += 1
             }
@@ -67,36 +67,40 @@ class SSKPreKeyStore: NSObject {
         return NSNumber(value: int).stringValue
     }
 
-    func cullPreKeyRecords(transaction: DBWriteTransaction) {
-        var keys = keyStore.allKeys(transaction: transaction)
-        var keysToRemove = Set<String>()
+    func setReplacedAtToNowIfNil(exceptFor exceptForPreKeyRecords: [SignalServiceKit.PreKeyRecord], transaction tx: DBWriteTransaction) {
+        let exceptForKeys = Set(exceptForPreKeyRecords.map { keyValueStoreKey(int: Int($0.id)) })
+        keyStore.allKeys(transaction: tx).forEach { key in autoreleasepool {
+            if exceptForKeys.contains(key) {
+                return
+            }
+            let record = keyStore.getObject(key, ofClass: SignalServiceKit.PreKeyRecord.self, transaction: tx)
+            guard let record, record.replacedAt == nil else {
+                return
+            }
+            record.setReplacedAtToNow()
+            storePreKey(record.id, preKeyRecord: record, transaction: tx)
+        }}
+    }
 
-        Batching.loop(batchSize: Batching.kDefaultBatchSize) { stop in
-            let key = keys.popLast()
-            guard let key else {
-                stop.pointee = true
-                return
-            }
-            guard let record = keyStore.getObject(key, ofClass: SignalServiceKit.PreKeyRecord.self, transaction: transaction) else {
-                // TODO: Why this is not being removed is unclear, but the objc code was not removing it so keeping present behavior for now.
-                return
-            }
-            guard let recordCreatedAt = record.createdAt else {
-                owsFailDebug("Missing createdAt.")
-                keysToRemove.insert(key)
-                return
-            }
-            let shouldRemove = fabs(recordCreatedAt.timeIntervalSinceNow) > RemoteConfig.current.messageQueueTime
+    func cullPreKeyRecords(gracePeriod: TimeInterval, transaction tx: DBWriteTransaction) {
+        keyStore.allKeys(transaction: tx).forEach { key in autoreleasepool {
+            let record = keyStore.getObject(key, ofClass: SignalServiceKit.PreKeyRecord.self, transaction: tx)
+            let shouldRemove = { () -> Bool in
+                guard let record else {
+                    // Whatever's in the db is garbage, so remove it.
+                    return true
+                }
+                guard let replacedAt = record.replacedAt else {
+                    // It hasn't been replaced yet, so we can't remove it.
+                    return false
+                }
+                return fabs(replacedAt.timeIntervalSinceNow) > (PreKeyManagerImpl.Constants.maxUnacknowledgedSessionAge + gracePeriod)
+            }()
             if shouldRemove {
-                Logger.info("Removing prekey id: \(record.id)., createdAt: \(recordCreatedAt)")
-                keysToRemove.insert(key)
+                Logger.info("Removing pre key \(record?.id as Optional), createdAt \(record?.createdAt as Optional), replacedAt \(record?.replacedAt as Optional)")
+                keyStore.removeValue(forKey: key, transaction: tx)
             }
-        }
-        guard !keysToRemove.isEmpty else { return }
-        Logger.info("Culling prekeys: \(keysToRemove.count)")
-        for key in keysToRemove {
-            keyStore.removeValue(forKey: key, transaction: transaction)
-        }
+        }}
     }
 
     func removeAll(_ transaction: DBWriteTransaction) {
@@ -132,15 +136,25 @@ extension SSKPreKeyStore: LibSignalClient.PreKeyStore {
     }
 
     public func storePreKey(_ record: LibSignalClient.PreKeyRecord, id: UInt32, context: StoreContext) throws {
+        // This isn't used today. If it's used in the future, `replacedAt` will
+        // need to be handled (though it seems likely that nil would be an
+        // acceptable default).
+        owsAssertDebug(CurrentAppContext().isRunningTests, "This can't be used for updating existing records.")
+
         let keyPair = IdentityKeyPair(
             publicKey: try record.publicKey(),
             privateKey: try record.privateKey()
         )
-        self.storePreKey(Int32(bitPattern: id),
-                         preKeyRecord: SignalServiceKit.PreKeyRecord(id: Int32(bitPattern: id),
-                                                                     keyPair: ECKeyPair(keyPair),
-                                                                     createdAt: Date()),
-                         transaction: context.asTransaction)
+        self.storePreKey(
+            Int32(bitPattern: id),
+            preKeyRecord: SignalServiceKit.PreKeyRecord(
+                id: Int32(bitPattern: id),
+                keyPair: ECKeyPair(keyPair),
+                createdAt: Date(),
+                replacedAt: nil
+            ),
+            transaction: context.asTransaction
+        )
     }
 
     public func removePreKey(id: UInt32, context: StoreContext) throws {

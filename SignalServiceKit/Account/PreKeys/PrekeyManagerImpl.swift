@@ -21,6 +21,12 @@ public class PreKeyManagerImpl: PreKeyManager {
             FeatureFlags.shouldUseTestIntervals ? (4 * .day) : (14 * .day)
         )
 
+        /// Maximum amount of time a pre key can be used before a new one will be
+        /// fetched. This should be equivalent to the largest
+        /// `MAX_UNACKNOWLEDGED_SESSION_AGE` (from LibSignalClient) value currently
+        /// in use by any client.
+        static let maxUnacknowledgedSessionAge: TimeInterval = 30 * .day
+
         fileprivate static let preKeyRotationVersion = 1
         fileprivate static let aciPreKeyRotationVersionKey = "ACIPreKeyRotationVersion"
         fileprivate static let pniPreKeyRotationVersionKey = "PNIPreKeyRotationVersion"
@@ -49,6 +55,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         messageProcessor: MessageProcessor,
         preKeyTaskAPIClient: PreKeyTaskAPIClient,
         protocolStoreManager: SignalProtocolStoreManager,
+        remoteConfigProvider: any RemoteConfigProvider,
         chatConnectionManager: any ChatConnectionManager,
         tsAccountManager: TSAccountManager
     ) {
@@ -67,6 +74,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             linkedDevicePniKeyManager: linkedDevicePniKeyManager,
             messageProcessor: messageProcessor,
             protocolStoreManager: protocolStoreManager,
+            remoteConfigProvider: remoteConfigProvider,
             tsAccountManager: tsAccountManager
         )
     }

@@ -17,10 +17,12 @@ public protocol SignalSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
         tx: DBWriteTransaction
     )
 
-    func cullSignedPreKeyRecords(
-        justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
+    func setReplacedAtToNowIfNil(
+        exceptFor justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
         tx: DBWriteTransaction
     )
+
+    func cullSignedPreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction)
 
     func removeSignedPreKey(
         _ signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
@@ -47,30 +49,34 @@ extension SSKSignedPreKeyStore: SignalSignedPreKeyStore {
         storeSignedPreKey(
             signedPreKeyId,
             signedPreKeyRecord: signedPreKeyRecord,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
-    public func cullSignedPreKeyRecords(justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord, tx: DBWriteTransaction) {
-        cullSignedPreKeyRecords(justUploadedSignedPreKey: justUploadedSignedPreKey, transaction: SDSDB.shimOnlyBridge(tx))
+    public func setReplacedAtToNowIfNil(exceptFor justUploadedSignedPreKey: SignedPreKeyRecord, tx: DBWriteTransaction) {
+        setReplacedAtToNowIfNil(exceptFor: justUploadedSignedPreKey, transaction: tx)
+    }
+
+    public func cullSignedPreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction) {
+        cullSignedPreKeyRecords(gracePeriod: gracePeriod, transaction: tx)
     }
 
     public func removeSignedPreKey(
         _ signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
         tx: DBWriteTransaction
     ) {
-        self.removeSignedPreKey(signedPreKeyRecord.id, transaction: SDSDB.shimOnlyBridge(tx))
+        self.removeSignedPreKey(signedPreKeyRecord.id, transaction: tx)
     }
 
     public func setLastSuccessfulRotationDate(_ date: Date, tx: DBWriteTransaction) {
-        setLastSuccessfulRotationDate(date, transaction: SDSDB.shimOnlyBridge(tx))
+        setLastSuccessfulRotationDate(date, transaction: tx)
     }
 
     public func getLastSuccessfulRotationDate(tx: DBReadTransaction) -> Date? {
-        getLastSuccessfulRotationDate(transaction: SDSDB.shimOnlyBridge(tx))
+        getLastSuccessfulRotationDate(transaction: tx)
     }
 
     public func removeAll(tx: DBWriteTransaction) {
-        removeAll(transaction: SDSDB.shimOnlyBridge(tx))
+        removeAll(transaction: tx)
     }
 }

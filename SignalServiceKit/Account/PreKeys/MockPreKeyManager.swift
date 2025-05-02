@@ -84,6 +84,7 @@ internal class MockPreKeyManager: PreKeyManager {
             keyPair: keyPair,
             signature: signature,
             generatedAt: Date(),
+            replacedAt: nil,
             isLastResort: true
         )
         return record

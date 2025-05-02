@@ -4263,6 +4263,7 @@ public class RegistrationCoordinatorTest {
                         keyPair: keyPair,
                         signature: signature,
                         generatedAt: Date(),
+                        replacedAt: nil,
                         isLastResort: true
                     )
                     return record

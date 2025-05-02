@@ -46,47 +46,39 @@ public class SSKSignedPreKeyStore: NSObject {
         return NSNumber(value: int).stringValue
     }
 
-    public func cullSignedPreKeyRecords(justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord, transaction: DBWriteTransaction) {
-        var oldSignedPrekeys = keyStore.allKeys(transaction: transaction).map {
-            let signedPreKeyRecord = keyStore.getObject($0, ofClass: SignalServiceKit.SignedPreKeyRecord.self, transaction: transaction)
-            guard let signedPreKeyRecord else {
-                owsFail("Couldn't decode SignedPreKeyRecord.")
+    func setReplacedAtToNowIfNil(exceptFor justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord, transaction tx: DBWriteTransaction) {
+        let exceptForKey = keyValueStoreKey(int: Int(justUploadedSignedPreKey.id))
+        keyStore.allKeys(transaction: tx).forEach { key in autoreleasepool {
+            if key == exceptForKey {
+                return
             }
-            return signedPreKeyRecord
-        }
-
-        // Remove the current record from the list.
-        for i in 0..<oldSignedPrekeys.count {
-            if oldSignedPrekeys[i].id == justUploadedSignedPreKey.id {
-                oldSignedPrekeys.remove(at: i)
-                break
+            let record = keyStore.getObject(key, ofClass: SignalServiceKit.SignedPreKeyRecord.self, transaction: tx)
+            guard let record, record.replacedAt == nil else {
+                return
             }
-        }
+            record.setReplacedAtToNow()
+            storeSignedPreKey(record.id, signedPreKeyRecord: record, transaction: tx)
+        }}
+    }
 
-        // Sort the signed prekeys in ascending order of generation time.
-        oldSignedPrekeys.sort(by: { $0.generatedAt < $1.generatedAt })
-        var oldSignedPreKeyCount = oldSignedPrekeys.count
-        Logger.info("oldSignedPreKeyCount: \(oldSignedPreKeyCount)")
-
-        // Iterate the signed prekeys in ascending order so that we try to delete older keys first.
-        for signedPrekey in oldSignedPrekeys {
-            Logger.info("Considering signed prekey id: \(signedPrekey.id), generatedAt: \(signedPrekey.generatedAt), createdAt: \(signedPrekey.createdAt.map({ String(describing: $0) }) ?? "nil")")
-
-            // Always keep at least 3 keys, accepted or otherwise.
-            if oldSignedPreKeyCount <= 3 {
-                break
+    public func cullSignedPreKeyRecords(gracePeriod: TimeInterval, transaction tx: DBWriteTransaction) {
+        keyStore.allKeys(transaction: tx).forEach { key in autoreleasepool {
+            let record = keyStore.getObject(key, ofClass: SignalServiceKit.SignedPreKeyRecord.self, transaction: tx)
+            guard let record else {
+                owsFailDebug("Couldn't decode SignedPreKeyRecord.")
+                keyStore.removeValue(forKey: key, transaction: tx)
+                return
             }
-
-            // Never delete signed prekeys until they are N days old.
-            if fabs(signedPrekey.generatedAt.timeIntervalSinceNow) < RemoteConfig.current.messageQueueTime {
-                break
+            guard
+                let replacedAt = record.replacedAt,
+                fabs(replacedAt.timeIntervalSinceNow) > (PreKeyManagerImpl.Constants.maxUnacknowledgedSessionAge + gracePeriod)
+            else {
+                // Never delete signed prekeys until they're obsolete for N days.
+                return
             }
-
-            // TODO: (PreKey Cleanup)
-
-            oldSignedPreKeyCount -= 1
-            removeSignedPreKey(signedPrekey.id, transaction: transaction)
-        }
+            Logger.info("Deleting signed prekey id: \(record.id), generatedAt: \(record.generatedAt), replacedAt: \(replacedAt)")
+            keyStore.removeValue(forKey: key, transaction: tx)
+        }}
     }
 
     // MARK: -
@@ -132,7 +124,8 @@ extension SSKSignedPreKeyStore {
             signature: Data(identityKeyPair.keyPair.privateKey.generateSignature(
                 message: Data(keyPair.keyPair.publicKey.serialize())
             )),
-            generatedAt: Date()
+            generatedAt: Date(),
+            replacedAt: nil
         )
     }
 }
@@ -151,6 +144,11 @@ extension SSKSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
     }
 
     public func storeSignedPreKey(_ record: LibSignalClient.SignedPreKeyRecord, id: UInt32, context: StoreContext) throws {
+        // This isn't used today. If it's used in the future, `replacedAt` will
+        // need to be handled (though it seems likely that nil would be an
+        // acceptable default).
+        owsAssertDebug(CurrentAppContext().isRunningTests, "This can't be used for updating existing records.")
+
         let sskRecord = try record.asSSKRecord()
 
         self.storeSignedPreKey(Int32(bitPattern: id),
@@ -170,7 +168,8 @@ extension LibSignalClient.SignedPreKeyRecord {
             id: Int32(bitPattern: self.id),
             keyPair: ECKeyPair(keyPair),
             signature: Data(self.signature),
-            generatedAt: Date(millisecondsSince1970: self.timestamp)
+            generatedAt: Date(millisecondsSince1970: self.timestamp),
+            replacedAt: nil
         )
     }
 }

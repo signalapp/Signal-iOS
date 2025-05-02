@@ -22,6 +22,7 @@ internal struct PreKeyTaskManager {
     private let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
     private let messageProcessor: MessageProcessor
     private let protocolStoreManager: SignalProtocolStoreManager
+    private let remoteConfigProvider: any RemoteConfigProvider
     private let tsAccountManager: TSAccountManager
 
     init(
@@ -32,6 +33,7 @@ internal struct PreKeyTaskManager {
         linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
         messageProcessor: MessageProcessor,
         protocolStoreManager: SignalProtocolStoreManager,
+        remoteConfigProvider: any RemoteConfigProvider,
         tsAccountManager: TSAccountManager
     ) {
         self.apiClient = apiClient
@@ -41,6 +43,7 @@ internal struct PreKeyTaskManager {
         self.linkedDevicePniKeyManager = linkedDevicePniKeyManager
         self.messageProcessor = messageProcessor
         self.protocolStoreManager = protocolStoreManager
+        self.remoteConfigProvider = remoteConfigProvider
         self.tsAccountManager = tsAccountManager
     }
 
@@ -434,32 +437,48 @@ internal struct PreKeyTaskManager {
 
         if let signedPreKeyRecord = bundle.getSignedPreKey() {
             protocolStore.signedPreKeyStore.setLastSuccessfulRotationDate(self.dateProvider(), tx: tx)
-
-            protocolStore.signedPreKeyStore.cullSignedPreKeyRecords(
-                justUploadedSignedPreKey: signedPreKeyRecord,
-                tx: tx
-            )
+            protocolStore.signedPreKeyStore.setReplacedAtToNowIfNil(exceptFor: signedPreKeyRecord, tx: tx)
+            protocolStore.signedPreKeyStore.cullSignedPreKeyRecords(gracePeriod: gracePeriodBeforeMessageProcessing(), tx: tx)
         }
 
-        // save last-resort PQ key here as well (if created)
         if let lastResortPreKey = bundle.getLastResortPreKey() {
             // Register a successful key rotation
             protocolStore.kyberPreKeyStore.setLastSuccessfulRotationDate(self.dateProvider(), tx: tx)
-
-            // Cleanup any old keys
-            try protocolStore.kyberPreKeyStore.cullLastResortPreKeyRecords(
-                justUploadedLastResortPreKey: lastResortPreKey,
-                tx: tx
-            )
+            try protocolStore.kyberPreKeyStore.setLastResortPreKeysReplacedAtToNowIfNil(exceptFor: lastResortPreKey, tx: tx)
+            protocolStore.kyberPreKeyStore.cullLastResortPreKeyRecords(gracePeriod: gracePeriodBeforeMessageProcessing(), tx: tx)
         }
 
-        if bundle.getPreKeyRecords() != nil {
-            protocolStore.preKeyStore.cullPreKeyRecords(tx: tx)
+        if let preKeyRecords = bundle.getPreKeyRecords() {
+            protocolStore.preKeyStore.setReplacedAtToNowIfNil(exceptFor: preKeyRecords, tx: tx)
+            protocolStore.preKeyStore.cullPreKeyRecords(gracePeriod: gracePeriodBeforeMessageProcessing(), tx: tx)
         }
 
-        if bundle.getPqPreKeyRecords() != nil {
-            try protocolStore.kyberPreKeyStore.cullOneTimePreKeyRecords(tx: tx)
+        if let oneTimePreKeys = bundle.getPqPreKeyRecords() {
+            try protocolStore.kyberPreKeyStore.setOneTimePreKeysReplacedAtToNowIfNil(exceptFor: oneTimePreKeys, tx: tx)
+            protocolStore.kyberPreKeyStore.cullOneTimePreKeyRecords(gracePeriod: gracePeriodBeforeMessageProcessing(), tx: tx)
         }
+    }
+
+    /// The "grace period" to use when culling pre keys before we've finished
+    /// processing messages. After we rotate pre keys, there might still be
+    /// not-yet-received messages that we're about to receive that reference
+    /// obsolete pre keys. We defer culling pre keys in this "grace period"
+    /// until `cullStateAfterMessageProcessing` (which is typically called in
+    /// quick succession but may take longer in pathological cases).
+    private func gracePeriodBeforeMessageProcessing() -> TimeInterval {
+        let messageQueueTime = remoteConfigProvider.currentConfig().messageQueueTime
+        owsAssertDebug(.day <= messageQueueTime && messageQueueTime <= 90 * .day)
+        return messageQueueTime.clamp(.day, 90 * .day)
+    }
+
+    /// Called after we've finished processing messages to cull any pre keys in
+    /// the "grace period".
+    private func cullStateAfterMessageProcessing(identity: OWSIdentity, tx: DBWriteTransaction) {
+        let protocolStore = protocolStoreManager.signalProtocolStore(for: identity)
+        protocolStore.preKeyStore.cullPreKeyRecords(gracePeriod: 0, tx: tx)
+        protocolStore.signedPreKeyStore.cullSignedPreKeyRecords(gracePeriod: 0, tx: tx)
+        protocolStore.kyberPreKeyStore.cullOneTimePreKeyRecords(gracePeriod: 0, tx: tx)
+        protocolStore.kyberPreKeyStore.cullLastResortPreKeyRecords(gracePeriod: 0, tx: tx)
     }
 
     private func wipeKeysAfterFailedRegistration(
@@ -487,6 +506,11 @@ internal struct PreKeyTaskManager {
             PreKey.logger.info("[\(identity)] Successfully uploaded prekeys")
             try await db.awaitableWrite { tx in
                 try self.persistStateAfterUpload(bundle: bundle, tx: tx)
+            }
+            let identity = bundle.identity
+            Task {
+                try await self.messageProcessor.waitForFetchingAndProcessing()
+                await self.db.awaitableWrite { tx in self.cullStateAfterMessageProcessing(identity: identity, tx: tx) }
             }
         case let .failure(error) where error.httpStatusCode == 422 && identity == .pni && tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == false:
             // We think we have an incorrect PNI identity key, which

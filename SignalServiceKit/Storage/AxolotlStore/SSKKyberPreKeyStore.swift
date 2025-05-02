@@ -38,17 +38,24 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         tx: DBWriteTransaction
     ) throws
 
-    func cullLastResortPreKeyRecords(
-        justUploadedLastResortPreKey: KyberPreKeyRecord,
+    func setLastResortPreKeysReplacedAtToNowIfNil(
+        exceptFor justUploadedLastResortPreKey: KyberPreKeyRecord,
         tx: DBWriteTransaction
     ) throws
+
+    func cullLastResortPreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction)
 
     func removeLastResortPreKey(
         record: SignalServiceKit.KyberPreKeyRecord,
         tx: DBWriteTransaction
     )
 
-    func cullOneTimePreKeyRecords(tx: DBWriteTransaction) throws
+    func setOneTimePreKeysReplacedAtToNowIfNil(
+        exceptFor justUploadedOneTimePreKey: [KyberPreKeyRecord],
+        tx: DBWriteTransaction
+    ) throws
+
+    func cullOneTimePreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction)
 
     func setLastSuccessfulRotationDate(
         _ date: Date,
@@ -67,10 +74,12 @@ public struct KyberPreKeyRecord: Codable {
     enum CodingKeys: String, CodingKey {
         case keyData
         case isLastResort
+        case replacedAt
     }
 
     public let signature: Data
     public let generatedAt: Date
+    public var replacedAt: Date?
     public let id: UInt32
     public let keyPair: KEMKeyPair
     public let isLastResort: Bool
@@ -80,12 +89,14 @@ public struct KyberPreKeyRecord: Codable {
         keyPair: KEMKeyPair,
         signature: Data,
         generatedAt: Date,
+        replacedAt: Date?,
         isLastResort: Bool
     ) {
         self.id = id
         self.keyPair = keyPair
         self.signature = signature
         self.generatedAt = generatedAt
+        self.replacedAt = replacedAt
         self.isLastResort = isLastResort
     }
 
@@ -94,6 +105,7 @@ public struct KyberPreKeyRecord: Codable {
 
         try container.encode(isLastResort, forKey: .isLastResort)
         try container.encode(Data(asLSCRecord().serialize()), forKey: .keyData)
+        try container.encodeIfPresent(replacedAt, forKey: .replacedAt)
     }
 
     public init(from decoder: Decoder) throws {
@@ -101,12 +113,14 @@ public struct KyberPreKeyRecord: Codable {
 
         let isLastResort = try container.decode(Bool.self, forKey: .isLastResort)
         let keyData = try container.decode(Data.self, forKey: .keyData)
+        let replacedAt = try container.decodeIfPresent(Date.self, forKey: .replacedAt)
 
         let record = try LibSignalClient.KyberPreKeyRecord(bytes: keyData)
         self.id = record.id
         self.keyPair = try record.keyPair()
         self.signature = Data(record.signature)
         self.generatedAt = Date(millisecondsSince1970: record.timestamp)
+        self.replacedAt = replacedAt
         self.isLastResort = isLastResort
     }
 }
@@ -127,8 +141,6 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         static let lastKeyId = "lastKeyId"
 
         static let lastKeyRotationDate = "lastKeyRotationDate"
-
-        static let oneTimeKeyExpirationInterval: TimeInterval = .day * 90
     }
 
     let identity: OWSIdentity
@@ -181,6 +193,7 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
             keyPair: keyPair,
             signature: signature,
             generatedAt: dateProvider(),
+            replacedAt: nil,
             isLastResort: isLastResort
         )
 
@@ -303,18 +316,20 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         )
     }
 
-    // This method isn't used in practice, so it doesn't matter
-    // if this is a one time or last resort Kyber key
+    // This method isn't used in practice, so it doesn't matter if this is a
+    // one time or last resort Kyber key. It also doesn't set replacedAt.
     public func storeKyberPreKey(
         _ record: LibSignalClient.KyberPreKeyRecord,
         id: UInt32,
         context: LibSignalClient.StoreContext
     ) throws {
+        owsFailDebug("This method doesn't behave correctly.")
         let record = SignalServiceKit.KyberPreKeyRecord(
             id,
             keyPair: try record.keyPair(),
             signature: Data(record.signature),
             generatedAt: Date(millisecondsSince1970: record.timestamp),
+            replacedAt: nil,
             isLastResort: false
         )
         try self.storeKyberPreKey(record: record, tx: context.asTransaction)
@@ -332,43 +347,67 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         self.metadataStore.getDate(Constants.lastKeyRotationDate, transaction: tx)
     }
 
-    public func cullOneTimePreKeyRecords(tx: DBWriteTransaction) throws {
-
-        // get all keys
-        // filter by isLastResort = false
-        // remove all keys older than 90 days
-
-        let recordsToRemove: [KyberPreKeyRecord] = try self.keyStore
-            .allCodableValues(transaction: tx)
-            .filter { record in
-                guard !record.isLastResort else { return false }
-                let keyAge = dateProvider().timeIntervalSince(record.generatedAt)
-                return keyAge >= Constants.oneTimeKeyExpirationInterval
-            }
-
-        let keysToRemove = recordsToRemove.map { key(for: $0.id) }
-        self.keyStore.removeValues(forKeys: keysToRemove, transaction: tx)
-    }
-
-    public func cullLastResortPreKeyRecords(
-        justUploadedLastResortPreKey: KyberPreKeyRecord,
+    public func setOneTimePreKeysReplacedAtToNowIfNil(
+        exceptFor justUploadedOneTimePreKey: [KyberPreKeyRecord],
         tx: DBWriteTransaction
     ) throws {
-        // get a list of keys
-        // don't touch what we just uploaded
-        // remove all others older than N days
+        try setReplacedAtToNowIfNil(exceptFor: justUploadedOneTimePreKey, isLastResort: false, tx: tx)
+    }
 
-        let recordsToRemove: [KyberPreKeyRecord] = try self.keyStore
-            .allCodableValues(transaction: tx)
-            .filter { record in
-                guard record.isLastResort else { return false }
-                guard record.id != justUploadedLastResortPreKey.id else { return false }
-                let keyAge = dateProvider().timeIntervalSince(record.generatedAt)
-                return keyAge >= remoteConfigProvider.currentConfig().messageQueueTime
+    public func cullOneTimePreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction) {
+        cullPreKeys(isLastResort: false, gracePeriod: gracePeriod, tx: tx)
+    }
+
+    public func setLastResortPreKeysReplacedAtToNowIfNil(
+        exceptFor justUploadedLastResortPreKey: KyberPreKeyRecord,
+        tx: DBWriteTransaction
+    ) throws {
+        try setReplacedAtToNowIfNil(exceptFor: [justUploadedLastResortPreKey], isLastResort: true, tx: tx)
+    }
+
+    public func cullLastResortPreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction) {
+        cullPreKeys(isLastResort: true, gracePeriod: gracePeriod, tx: tx)
+    }
+
+    private func setReplacedAtToNowIfNil(exceptFor preKeys: [KyberPreKeyRecord], isLastResort: Bool, tx: DBWriteTransaction) throws {
+        let exceptForIds = Set(preKeys.map(\.id))
+        for key in self.keyStore.allKeys(transaction: tx) {
+            let record: KyberPreKeyRecord? = try self.keyStore.getCodableValue(forKey: key, transaction: tx)
+            guard
+                var record,
+                record.isLastResort == isLastResort,
+                !exceptForIds.contains(record.id),
+                record.replacedAt == nil
+            else {
+                continue
             }
+            record.replacedAt = dateProvider()
+            try self.keyStore.setCodable(record, key: key, transaction: tx)
+        }
+    }
 
-        let keysToRemove = recordsToRemove.map { key(for: $0.id) }
-        self.keyStore.removeValues(forKeys: keysToRemove, transaction: tx)
+    private func cullPreKeys(isLastResort: Bool, gracePeriod: TimeInterval, tx: DBWriteTransaction) {
+        for key in self.keyStore.allKeys(transaction: tx) {
+            let record: KyberPreKeyRecord?
+            do {
+                record = try self.keyStore.getCodableValue(forKey: key, transaction: tx)
+            } catch {
+                owsFailDebug("Couldn't decode KyberPreKeyRecord: \(error)")
+                record = nil
+            }
+            guard let record else {
+                self.keyStore.removeValue(forKey: key, transaction: tx)
+                continue
+            }
+            guard
+                record.isLastResort == isLastResort,
+                let replacedAt = record.replacedAt,
+                dateProvider().timeIntervalSince(replacedAt) > (PreKeyManagerImpl.Constants.maxUnacknowledgedSessionAge + gracePeriod)
+            else {
+                continue
+            }
+            self.keyStore.removeValue(forKey: key, transaction: tx)
+        }
     }
 
     public func removeLastResortPreKey(
@@ -386,6 +425,7 @@ extension LibSignalClient.KyberPreKeyRecord {
             keyPair: try self.keyPair(),
             signature: Data(self.signature),
             generatedAt: Date(millisecondsSince1970: self.timestamp),
+            replacedAt: nil,
             isLastResort: true
         )
     }

@@ -11,25 +11,31 @@ public protocol SignalPreKeyStore: LibSignalClient.PreKeyStore {
 
     func storePreKeyRecords(_ records: [SignalServiceKit.PreKeyRecord], tx: DBWriteTransaction)
 
-    func cullPreKeyRecords(tx: DBWriteTransaction)
+    func setReplacedAtToNowIfNil(exceptFor preKeyRecords: [SignalServiceKit.PreKeyRecord], tx: DBWriteTransaction)
+
+    func cullPreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction)
 
     func removeAll(tx: DBWriteTransaction)
 }
 
 extension SSKPreKeyStore: SignalPreKeyStore {
     public func storePreKeyRecords(_ records: [SignalServiceKit.PreKeyRecord], tx: DBWriteTransaction) {
-        storePreKeyRecords(records, transaction: SDSDB.shimOnlyBridge(tx))
+        storePreKeyRecords(records, transaction: tx)
     }
 
-    public func cullPreKeyRecords(tx: DBWriteTransaction) {
-        cullPreKeyRecords(transaction: SDSDB.shimOnlyBridge(tx))
+    public func setReplacedAtToNowIfNil(exceptFor preKeyRecords: [PreKeyRecord], tx: DBWriteTransaction) {
+        setReplacedAtToNowIfNil(exceptFor: preKeyRecords, transaction: tx)
+    }
+
+    public func cullPreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction) {
+        cullPreKeyRecords(gracePeriod: gracePeriod, transaction: tx)
     }
 
     public func generatePreKeyRecords(tx: DBWriteTransaction) -> [SignalServiceKit.PreKeyRecord] {
-        generatePreKeyRecords(transaction: SDSDB.shimOnlyBridge(tx))
+        generatePreKeyRecords(transaction: tx)
     }
 
     public func removeAll(tx: DBWriteTransaction) {
-        removeAll(SDSDB.shimOnlyBridge(tx))
+        removeAll(tx)
     }
 }

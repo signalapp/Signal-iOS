@@ -6,6 +6,7 @@
 private let kCoderPreKeyId = "kCoderPreKeyId"
 private let kCoderPreKeyPair = "kCoderPreKeyPair"
 private let kCoderCreatedAt = "kCoderCreatedAt"
+private let kCoderReplacedAt = "kCoderReplacedAt"
 
 @objc(PreKeyRecord)
 public class PreKeyRecord: NSObject, NSSecureCoding {
@@ -14,11 +15,13 @@ public class PreKeyRecord: NSObject, NSSecureCoding {
     public let id: Int32
     public let keyPair: ECKeyPair
     public private(set) var createdAt: Date?
+    public private(set) var replacedAt: Date?
 
-    public init(id: Int32, keyPair: ECKeyPair, createdAt: Date?) {
+    public init(id: Int32, keyPair: ECKeyPair, createdAt: Date?, replacedAt: Date?) {
         self.id = id
         self.keyPair = keyPair
         self.createdAt = createdAt
+        self.replacedAt = replacedAt
     }
 
     public required convenience init?(coder: NSCoder) {
@@ -27,7 +30,8 @@ public class PreKeyRecord: NSObject, NSSecureCoding {
             return nil
         }
         let createdAt = coder.decodeObject(of: NSDate.self, forKey: kCoderCreatedAt) as Date?
-        self.init(id: id, keyPair: keyPair, createdAt: createdAt)
+        let replacedAt = coder.decodeObject(of: NSDate.self, forKey: kCoderReplacedAt) as Date?
+        self.init(id: id, keyPair: keyPair, createdAt: createdAt, replacedAt: replacedAt)
     }
 
     public func encode(with coder: NSCoder) {
@@ -36,9 +40,16 @@ public class PreKeyRecord: NSObject, NSSecureCoding {
         if let createdAt {
             coder.encode(createdAt, forKey: kCoderCreatedAt)
         }
+        if let replacedAt {
+            coder.encode(replacedAt, forKey: kCoderReplacedAt)
+        }
     }
 
     public func setCreatedAtToNow() {
         createdAt = Date()
+    }
+
+    public func setReplacedAtToNow() {
+        replacedAt = Date()
     }
 }

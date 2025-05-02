@@ -373,9 +373,7 @@ class KyberPreKeyStoreTest: XCTestCase {
     }
 
     func testCullOneTimeKeys() {
-        currentDate = Date(
-            timeIntervalSinceNow: -(SSKKyberPreKeyStore.Constants.oneTimeKeyExpirationInterval + 1)
-        )
+        currentDate = Date(timeIntervalSinceReferenceDate: 0)
         try! self.db.write { tx in
             let records = self.kyberPreKeyStore.generateKyberPreKeyRecords(
                 count: 5,
@@ -385,7 +383,7 @@ class KyberPreKeyStoreTest: XCTestCase {
             try self.kyberPreKeyStore.storeKyberPreKeyRecords(records: records, tx: tx)
         }
 
-        currentDate = Date()
+        currentDate = Date(timeIntervalSinceReferenceDate: 2 * .day)
 
         let currentRecords = try! self.db.write { tx in
             let records = self.kyberPreKeyStore.generateKyberPreKeyRecords(
@@ -395,6 +393,7 @@ class KyberPreKeyStoreTest: XCTestCase {
             )
 
             try self.kyberPreKeyStore.storeKyberPreKeyRecords(records: records, tx: tx)
+            try self.kyberPreKeyStore.setOneTimePreKeysReplacedAtToNowIfNil(exceptFor: records, tx: tx)
             return records
         }
 
@@ -407,30 +406,21 @@ class KyberPreKeyStoreTest: XCTestCase {
         }
         XCTAssertEqual(numRecords, 10)
 
+        currentDate = Date.distantFuture
+
         self.db.write { tx in
-            try! self.kyberPreKeyStore.cullOneTimePreKeyRecords(tx: tx)
+            self.kyberPreKeyStore.cullOneTimePreKeyRecords(gracePeriod: 0, tx: tx)
         }
 
         let recordsAfterCull: [KyberPreKeyRecord] = self.db.read { tx in
             try! keyStore.allCodableValues(transaction: tx).filter { !$0.isLastResort }
         }
 
-        let sortedExpectedRecords = currentRecords.sorted { $0.id < $1.id }
-        let sortedFoundRecords = recordsAfterCull.sorted { $0.id < $1.id }
-        XCTAssertEqual(sortedExpectedRecords.count, sortedFoundRecords.count)
-        zip(sortedFoundRecords, sortedExpectedRecords).forEach {
-            XCTAssertEqual($0.id, $1.id)
-        }
-
-        XCTAssertEqual(recordsAfterCull.count, 5)
+        XCTAssertEqual(Set(currentRecords.map(\.id)), Set(recordsAfterCull.map(\.id)))
     }
 
     func testCullLastResortKeys() {
-        let lastResortKeyExpirationInterval = MockRemoteConfigProvider().currentConfig().messageQueueTime
-
-        currentDate = Date(
-            timeIntervalSinceNow: -(lastResortKeyExpirationInterval + 1)
-        )
+        currentDate = Date(timeIntervalSinceReferenceDate: 0)
 
         _ = try! self.db.write { tx in
             let record = self.kyberPreKeyStore.generateLastResortKyberPreKey(signedBy: self.identityKey, tx: tx)
@@ -438,23 +428,30 @@ class KyberPreKeyStoreTest: XCTestCase {
             return record
         }
 
-        currentDate = Date(
-            timeIntervalSinceNow: -(lastResortKeyExpirationInterval - 1)
-        )
+        currentDate = Date(timeIntervalSinceReferenceDate: 2 * .day)
+
+        let oldGracePeriodLastResort = try! self.db.write { tx in
+            let record = self.kyberPreKeyStore.generateLastResortKyberPreKey(signedBy: self.identityKey, tx: tx)
+            try self.kyberPreKeyStore.storeLastResortPreKey(record: record, tx: tx)
+            try self.kyberPreKeyStore.setLastResortPreKeysReplacedAtToNowIfNil(exceptFor: record, tx: tx)
+            return record
+        }
+
+        currentDate = Date(timeIntervalSinceReferenceDate: 4 * .day)
 
         let oldUnexpiredLastResort = try! self.db.write { tx in
             let record = self.kyberPreKeyStore.generateLastResortKyberPreKey(signedBy: self.identityKey, tx: tx)
             try self.kyberPreKeyStore.storeLastResortPreKey(record: record, tx: tx)
+            try self.kyberPreKeyStore.setLastResortPreKeysReplacedAtToNowIfNil(exceptFor: record, tx: tx)
             return record
         }
 
-        currentDate = Date(
-            timeIntervalSinceNow: -(lastResortKeyExpirationInterval + 1)
-        )
+        currentDate = Date(timeIntervalSinceReferenceDate: 6 * .day)
 
         let currentLastResort = try! self.db.write { tx in
             let record = self.kyberPreKeyStore.generateLastResortKyberPreKey(signedBy: self.identityKey, tx: tx)
             try self.kyberPreKeyStore.storeLastResortPreKey(record: record, tx: tx)
+            try self.kyberPreKeyStore.setLastResortPreKeysReplacedAtToNowIfNil(exceptFor: record, tx: tx)
             return record
         }
 
@@ -462,21 +459,16 @@ class KyberPreKeyStoreTest: XCTestCase {
             collection: SSKKyberPreKeyStore.Constants.ACI.keyStoreCollection
         )
 
-        currentDate = Date()
+        currentDate = Date(timeIntervalSinceReferenceDate: 5 * .day + PreKeyManagerImpl.Constants.maxUnacknowledgedSessionAge)
 
         self.db.write { tx in
-            try! self.kyberPreKeyStore.cullLastResortPreKeyRecords(
-                justUploadedLastResortPreKey: currentLastResort,
-                tx: tx
-            )
+            self.kyberPreKeyStore.cullLastResortPreKeyRecords(gracePeriod: 2 * . day, tx: tx)
         }
 
         let recordsAfterCull: [KyberPreKeyRecord] = self.db.read { tx in
             try! keyStore.allCodableValues(transaction: tx).filter { $0.isLastResort }
         }
 
-        XCTAssertEqual(recordsAfterCull.count, 2)
-        XCTAssertNotNil(recordsAfterCull.firstIndex(where: { $0.id == oldUnexpiredLastResort.id }))
-        XCTAssertNotNil(recordsAfterCull.firstIndex(where: { $0.id == currentLastResort.id }))
+        XCTAssertEqual(Set(recordsAfterCull.map(\.id)), [oldGracePeriodLastResort.id, oldUnexpiredLastResort.id, currentLastResort.id])
     }
 }

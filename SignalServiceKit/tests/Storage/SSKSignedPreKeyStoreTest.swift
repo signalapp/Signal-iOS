@@ -27,10 +27,13 @@ class SSKSignedPreKeyStoreTest: SSKBaseTest {
             let secondsAgo = TimeInterval(i - days) * .day
             assert(secondsAgo <= 0, "Time in past must be negative")
             let generatedAt = Date(timeIntervalSinceNow: secondsAgo)
-            let record = SignedPreKeyRecord(id: i,
-                                            keyPair: ECKeyPair.generateKeyPair(),
-                                            signature: Data(),
-                                            generatedAt: generatedAt)
+            let record = SignedPreKeyRecord(
+                id: i,
+                keyPair: ECKeyPair.generateKeyPair(),
+                signature: Data(),
+                generatedAt: generatedAt,
+                replacedAt: nil
+            )
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 aciStore.storeSignedPreKey(i, signedPreKeyRecord: record, transaction: transaction)
             }
@@ -42,10 +45,13 @@ class SSKSignedPreKeyStoreTest: SSKBaseTest {
             let secondsAgo = TimeInterval(i - days) * .day
             assert(secondsAgo <= 0, "Time in past must be negative")
             let generatedAt = Date(timeIntervalSinceNow: secondsAgo)
-            let record = SignedPreKeyRecord(id: i,
-                                            keyPair: ECKeyPair.generateKeyPair(),
-                                            signature: Data(),
-                                            generatedAt: generatedAt)
+            let record = SignedPreKeyRecord(
+                id: i,
+                keyPair: ECKeyPair.generateKeyPair(),
+                signature: Data(),
+                generatedAt: generatedAt,
+                replacedAt: nil
+            )
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 pniStore.storeSignedPreKey(i, signedPreKeyRecord: record, transaction: transaction)
             }

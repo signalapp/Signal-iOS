@@ -12,10 +12,42 @@ final class SignedPreKeyDeletionTests: SSKBaseTest {
         return SSKSignedPreKeyStore(for: .aci)
     }()
 
+    func testReplacedAt() {
+        var currentRecord: SignedPreKeyRecord?
+        for recordId in 1...3 {
+            let record = SignedPreKeyRecord(
+                id: Int32(recordId),
+                keyPair: .generateKeyPair(),
+                signature: Data(),
+                generatedAt: Date(),
+                replacedAt: nil
+            )
+            currentRecord = record
+
+            write { tx in
+                signedPreKeyStore.storeSignedPreKey(
+                    Int32(recordId),
+                    signedPreKeyRecord: record,
+                    tx: tx
+                )
+            }
+        }
+        write { tx in
+            signedPreKeyStore.setReplacedAtToNowIfNil(exceptFor: currentRecord!, transaction: tx)
+        }
+        for recordId in 1...2 {
+            let record = signedPreKeyStore.loadSignedPreKey(id: Int32(recordId))!
+            XCTAssertNotNil(record.replacedAt)
+        }
+        for recordId in 3...3 {
+            let record = signedPreKeyStore.loadSignedPreKey(id: Int32(recordId))!
+            XCTAssertNil(record.replacedAt)
+        }
+    }
+
     func testSignedPreKeyDeletion() {
         let maxDaysAgo: Int = 55
 
-        var justUploadedRecord: SignedPreKeyRecord!
         for daysAgo in stride(from: 0, through: maxDaysAgo, by: 5) {
             let secondsAgo: TimeInterval = Double(daysAgo - maxDaysAgo) * .day
             owsPrecondition(secondsAgo <= 0, "Time in past must be negative!")
@@ -24,7 +56,8 @@ final class SignedPreKeyDeletionTests: SSKBaseTest {
                 id: Int32(daysAgo),
                 keyPair: .generateKeyPair(),
                 signature: Data(),
-                generatedAt: Date(timeIntervalSinceNow: secondsAgo)
+                generatedAt: Date(timeIntervalSinceNow: secondsAgo),
+                replacedAt: daysAgo == maxDaysAgo ? nil : Date(timeIntervalSinceNow: Double(daysAgo - maxDaysAgo + 5) * .day)
             )
 
             write { tx in
@@ -34,21 +67,16 @@ final class SignedPreKeyDeletionTests: SSKBaseTest {
                     tx: tx
                 )
             }
-
-            justUploadedRecord = record
         }
 
         write { tx in
-            signedPreKeyStore.cullSignedPreKeyRecords(
-                justUploadedSignedPreKey: justUploadedRecord,
-                tx: tx
-            )
+            signedPreKeyStore.cullSignedPreKeyRecords(gracePeriod: 5 * .day, tx: tx)
         }
 
         XCTAssertNil(signedPreKeyStore.loadSignedPreKey(id: 0))
         XCTAssertNil(signedPreKeyStore.loadSignedPreKey(id: 5))
         XCTAssertNil(signedPreKeyStore.loadSignedPreKey(id: 10))
-        XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 15))
+        XCTAssertNil(signedPreKeyStore.loadSignedPreKey(id: 15))
         XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 20))
         XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 25))
         XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 30))
@@ -57,47 +85,6 @@ final class SignedPreKeyDeletionTests: SSKBaseTest {
         XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 45))
         XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 50))
         XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 55))
-    }
-
-    func testSignedPreKeyDeletionKeepsSomeOldKeys() {
-        var justUploadedRecord: SignedPreKeyRecord!
-        for idx in (1...5) {
-            // All these keys will be considered "old", since they were created
-            // more than N days ago.
-            let secondsAgo: TimeInterval = Double(idx - 60) * .day
-            owsPrecondition(secondsAgo <= 0, "Time in past must be negative!")
-
-            let record = SignedPreKeyRecord(
-                id: Int32(idx),
-                keyPair: .generateKeyPair(),
-                signature: Data(),
-                generatedAt: Date(timeIntervalSinceNow: secondsAgo)
-            )
-
-            write { tx in
-                signedPreKeyStore.storeSignedPreKey(
-                    Int32(idx),
-                    signedPreKeyRecord: record,
-                    tx: tx
-                )
-            }
-
-            justUploadedRecord = record
-        }
-
-        write { tx in
-            signedPreKeyStore.cullSignedPreKeyRecords(
-                justUploadedSignedPreKey: justUploadedRecord,
-                tx: tx
-            )
-        }
-
-        // We need to keep 3 "old" keys, plus the "current" key.
-        XCTAssertNil(signedPreKeyStore.loadSignedPreKey(id: 1))
-        XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 2))
-        XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 3))
-        XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 4))
-        XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 5))
     }
 }
 

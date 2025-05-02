@@ -65,7 +65,8 @@ public class MockPreKeyStore: SignalPreKeyStore {
         let record = SignalServiceKit.PreKeyRecord(
             id: preKeyId,
             keyPair: keyPair,
-            createdAt: Date()
+            createdAt: Date(),
+            replacedAt: nil
         )
         preKeyId += 1
         return record
@@ -78,7 +79,10 @@ public class MockPreKeyStore: SignalPreKeyStore {
     public func removeAll(tx: DBWriteTransaction) {
     }
 
-    public func cullPreKeyRecords(tx: DBWriteTransaction) {
+    public func setReplacedAtToNowIfNil(exceptFor preKeyRecords: [SignalServiceKit.PreKeyRecord], tx: DBWriteTransaction) {
+    }
+
+    public func cullPreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction) {
     }
 
     public func loadPreKey(id: UInt32, context: LibSignalClient.StoreContext) throws -> LibSignalClient.PreKeyRecord {
@@ -136,10 +140,11 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
         self.storedSignedPreKeyRecord = signedPreKeyRecord
     }
 
-    func cullSignedPreKeyRecords(
-        justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
-        tx: DBWriteTransaction
-    ) {}
+    func setReplacedAtToNowIfNil(exceptFor justUploadedSignedPreKey: SignedPreKeyRecord, tx: DBWriteTransaction) {
+    }
+
+    func cullSignedPreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction) {
+    }
 
     func removeSignedPreKey(
         _ signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
@@ -219,6 +224,7 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
             keyPair: keyPair,
             signature: signature,
             generatedAt: dateProvider(),
+            replacedAt: nil,
             isLastResort: isLastResort
         )
         return record
@@ -252,9 +258,14 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
         usedOneTimeRecords.append(record)
     }
 
-    func cullOneTimePreKeyRecords(tx: DBWriteTransaction) { }
+    func setOneTimePreKeysReplacedAtToNowIfNil(exceptFor justUploadedOneTimePreKey: [KyberPreKeyRecord], tx: DBWriteTransaction) throws {
+    }
+    func cullOneTimePreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction) { }
 
-    func cullLastResortPreKeyRecords(justUploadedLastResortPreKey: KyberPreKeyRecord, tx: DBWriteTransaction) {}
+    func setLastResortPreKeysReplacedAtToNowIfNil(exceptFor justUploadedLastResortPreKey: KyberPreKeyRecord, tx: DBWriteTransaction) throws {
+    }
+    func cullLastResortPreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction) {
+    }
 
     func removeLastResortPreKey(
         record: SignalServiceKit.KyberPreKeyRecord,
