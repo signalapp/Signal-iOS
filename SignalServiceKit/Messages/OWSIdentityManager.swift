@@ -29,7 +29,7 @@ public protocol OWSIdentityManager {
     func identityKey(for serviceId: ServiceId, tx: DBReadTransaction) throws -> IdentityKey?
 
     @discardableResult
-    func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<Bool, RecipientIdError>
+    func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<IdentityChange, RecipientIdError>
 
     func insertIdentityChangeInfoMessage(for serviceId: ServiceId, wasIdentityVerified: Bool, tx: DBWriteTransaction)
     func insertSessionSwitchoverEvent(for recipient: SignalRecipient, phoneNumber: String?, tx: DBWriteTransaction)
@@ -64,7 +64,7 @@ public protocol OWSIdentityManager {
 
 extension OWSIdentityManager {
     @discardableResult
-    public func saveIdentityKey(_ identityKey: IdentityKey, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<Bool, RecipientIdError> {
+    public func saveIdentityKey(_ identityKey: IdentityKey, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<IdentityChange, RecipientIdError> {
         return saveIdentityKey(identityKey.publicKey.keyBytes.asData, for: serviceId, tx: tx)
     }
 }
@@ -129,7 +129,7 @@ public class IdentityStore: IdentityKeyStore {
         _ identityKey: IdentityKey,
         for address: ProtocolAddress,
         context: StoreContext
-    ) throws -> Bool {
+    ) throws -> IdentityChange {
         try identityManager.saveIdentityKey(
             identityKey,
             for: address.serviceId,
@@ -344,12 +344,12 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     }
 
     @discardableResult
-    public func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<Bool, RecipientIdError> {
+    public func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<IdentityChange, RecipientIdError> {
         let recipientIdResult = recipientIdFinder.ensureRecipientUniqueId(for: serviceId, tx: tx)
         return recipientIdResult.map({ _saveIdentityKey(identityKey, for: serviceId, recipientUniqueId: $0, tx: tx) })
     }
 
-    private func _saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, recipientUniqueId: RecipientUniqueId, tx: DBWriteTransaction) -> Bool {
+    private func _saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, recipientUniqueId: RecipientUniqueId, tx: DBWriteTransaction) -> IdentityChange {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
 
         let existingIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: tx)
@@ -366,11 +366,11 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             clearSyncMessage(for: recipientUniqueId, tx: tx)
             fireIdentityStateChangeNotification(after: tx)
             storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipientUniqueId])
-            return false
+            return .newOrUnchanged
         }
 
         guard existingIdentity.identityKey != identityKey else {
-            return false
+            return .newOrUnchanged
         }
 
         let verificationState: VerificationState
@@ -393,7 +393,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         // Cancel any pending verification state sync messages for this recipient.
         clearSyncMessage(for: recipientUniqueId, tx: tx)
         storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipientUniqueId])
-        return true
+        return .replacedExisting
     }
 
     public func insertIdentityChangeInfoMessage(
