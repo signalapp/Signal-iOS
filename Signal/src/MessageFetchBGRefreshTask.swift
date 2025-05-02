@@ -105,24 +105,25 @@ public class MessageFetchBGRefreshTask {
 
     private func performTask(_ task: BGTask, appReadiness: AppReadiness) {
         Logger.info("performing background fetch")
-        appReadiness.runNowOrWhenAppDidBecomeReadySync {
-            Task {
-                let result = await Result {
-                    try await withCooperativeTimeout(seconds: 10) {
-                        await self.messageFetcherJob.startFetchingViaWebSocket()
-                        try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
-                    }
+        Task {
+            let result = await Result {
+                try await withCooperativeTimeout(seconds: 27) {
+                    try await appReadiness.waitForAppReady()
+                    await self.messageFetcherJob.startFetchingViaWebSocket()
+                    try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
                 }
+            }
+            if appReadiness.isAppReady {
                 // Schedule the next run now.
                 self.scheduleTask()
-                do {
-                    try result.get()
-                    Logger.info("success")
-                    task.setTaskCompleted(success: true)
-                } catch {
-                    Logger.error("Failing task; failed to fetch messages")
-                    task.setTaskCompleted(success: false)
-                }
+            }
+            do {
+                try result.get()
+                Logger.info("success")
+                task.setTaskCompleted(success: true)
+            } catch {
+                Logger.error("Failing task; failed to fetch messages")
+                task.setTaskCompleted(success: false)
             }
         }
     }

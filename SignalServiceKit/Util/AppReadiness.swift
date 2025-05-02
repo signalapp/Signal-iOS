@@ -125,6 +125,28 @@ extension AppReadiness {
         )
     }
 
+    @MainActor
+    public func waitForAppReady(
+        _file: String = #file,
+        _function: String = #function,
+        _line: Int = #line
+    ) async throws(CancellationError) {
+        let continuation = CancellableContinuation<Void>()
+        self.runNowOrWhenAppDidBecomeReadySync(
+            { continuation.resume(with: .success(())) },
+            file: _file,
+            function: _function,
+            line: _line
+        )
+        do {
+            try await continuation.wait()
+        } catch let error as CancellationError {
+            throw error
+        } catch {
+            owsFail("This continuation can't throw other errors.")
+        }
+    }
+
     public func runNowOrWhenAppDidBecomeReadyAsync(
         _ block: @escaping @MainActor () -> Void,
         _file: String = #file,
