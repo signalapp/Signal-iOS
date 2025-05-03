@@ -1197,6 +1197,8 @@
 		66F98DDE2DB7073F009F1A86 /* BackupAttachmentDownloadQueueStatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManager.swift */; };
 		66F98DE02DB710F8009F1A86 /* DeviceBatteryLevelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DDF2DB710EA009F1A86 /* DeviceBatteryLevelManager.swift */; };
 		66F98DE22DB71220009F1A86 /* DeviceBatteryLevelManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE12DB71219009F1A86 /* DeviceBatteryLevelManagerImpl.swift */; };
+		66F98DE62DBBED6C009F1A86 /* LineWrappingStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE52DBBED68009F1A86 /* LineWrappingStackView.swift */; };
+		66F98DE82DBBF25A009F1A86 /* LineWrappingStackViewTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE72DBBF24F009F1A86 /* LineWrappingStackViewTestController.swift */; };
 		66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */; };
 		66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */; };
 		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
@@ -5109,6 +5111,8 @@
 		66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadQueueStatusManager.swift; sourceTree = "<group>"; };
 		66F98DDF2DB710EA009F1A86 /* DeviceBatteryLevelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceBatteryLevelManager.swift; sourceTree = "<group>"; };
 		66F98DE12DB71219009F1A86 /* DeviceBatteryLevelManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceBatteryLevelManagerImpl.swift; sourceTree = "<group>"; };
+		66F98DE52DBBED68009F1A86 /* LineWrappingStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWrappingStackView.swift; sourceTree = "<group>"; };
+		66F98DE72DBBF24F009F1A86 /* LineWrappingStackViewTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWrappingStackViewTestController.swift; sourceTree = "<group>"; };
 		66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsBiometryLockPromptViewController.swift; sourceTree = "<group>"; };
 		66FA2B1E28CBA4A5006845CD /* DeviceOwnerAuthenticationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceOwnerAuthenticationType.swift; sourceTree = "<group>"; };
 		66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
@@ -8305,6 +8309,7 @@
 				34A95548271B510400B05242 /* GalleryRailView.swift */,
 				34A95546271B510400B05242 /* GradientView.swift */,
 				34A9554F271B510400B05242 /* InputAccessoryViewPlaceholder.swift */,
+				66F98DE52DBBED68009F1A86 /* LineWrappingStackView.swift */,
 				34A95529271B510400B05242 /* LinkingTextView.swift */,
 				34A9552F271B510400B05242 /* LoopingVideoView.swift */,
 				34A9551D271B510400B05242 /* ManualLayoutView.swift */,
@@ -8686,6 +8691,7 @@
 				344DAEDE248A7526000AD4FA /* DebugUIStress.swift */,
 				76F958642A09A65B00B43E63 /* DebugUISyncMessages.swift */,
 				76E7A2102A01B6A500A8F538 /* DebugUITableViewController.swift */,
+				66F98DE72DBBF24F009F1A86 /* LineWrappingStackViewTestController.swift */,
 				4CBBFE492306F5D300B37450 /* LogViewController.swift */,
 				662AC92A2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift */,
 			);
@@ -16406,6 +16412,7 @@
 				8868A08A287F4551000E74A5 /* InteractiveSheetViewController.swift in Sources */,
 				88B986FB28807F1D00F8C74D /* InviteFlow.swift in Sources */,
 				3402AA54271D9DCD0084CBAE /* LinearHorizontalLayout.swift in Sources */,
+				66F98DE62DBBED6C009F1A86 /* LineWrappingStackView.swift in Sources */,
 				3402AA7F271D9E180084CBAE /* LinkingTextView.swift in Sources */,
 				E1B32F842CA6162A002141F4 /* LinkPreviewCallLink.swift in Sources */,
 				509085BC2C498D3600409B85 /* LinkPreviewFetcher.swift in Sources */,
@@ -17010,6 +17017,7 @@
 				502F187F2D5530AA00A1BD62 /* LazyDatabaseMigratorRunner.swift in Sources */,
 				D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */,
 				B9E02DF02D974F2B00C9DDF8 /* LimitedPhotoPermissionsView.swift in Sources */,
+				66F98DE82DBBF25A009F1A86 /* LineWrappingStackViewTestController.swift in Sources */,
 				B9A53B912CF507FB0000578B /* LinkAndSyncProgressModal.swift in Sources */,
 				660FA9112CE58CD7006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift in Sources */,
 				505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */,

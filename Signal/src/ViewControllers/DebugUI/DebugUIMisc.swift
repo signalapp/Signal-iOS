@@ -177,6 +177,10 @@ class DebugUIMisc: NSObject, DebugUIPage {
             OWSTableItem(title: "Test spoiler animations", actionBlock: {
                 DebugUIMisc.showSpoilerAnimationTestController()
             }),
+            OWSTableItem(title: "Test line wrapping stack view", actionBlock: {
+                let viewController = LineWrappingStackViewTestController()
+                UIApplication.shared.frontmostViewController!.present(viewController, animated: true)
+            }),
 
             OWSTableItem(title: "Mark flip cam button tooltip as unread", actionBlock: {
                 let flipCamTooltipManager = FlipCameraTooltipManager(db: DependenciesBridge.shared.db)
