@@ -72,12 +72,10 @@ public class RegistrationNavigationController: OWSNavigationController {
 
     private func _pushNextController(_ step: Guarantee<RegistrationStep>) {
         isLoading = true
-        step.done(on: DispatchQueue.main) { [weak self] step in
+        Task { @MainActor [self] in
+            let step = await step.awaitable()
             Logger.info("Pushing registration step: \(step.logSafeString)")
 
-            guard let self else {
-                return
-            }
             self.isLoading = false
             guard let controller = self.controller(for: step) else {
                 Logger.info("No controller for \(step.logSafeString)")
@@ -98,18 +96,46 @@ public class RegistrationNavigationController: OWSNavigationController {
                     }
                 }
             }
-            Logger.info("Pushing controller for \(step.logSafeString)")
+
             // If we got here, there were no matches and we should push.
             let vc = controllerToPush ?? controller.makeViewController(self)
+
+            if
+                controller.canCancel,
+                !self.viewControllers.contains(where: { $0 is RegistrationSplashViewController })
+            {
+                // Cancellable controllers need to have a splash view behind
+                Logger.info("Pushing splash view and controller for \(step.logSafeString)")
+                let splashController = self.registrationSplashController()
+                let newViewControllers = [splashController.makeViewController(self), vc]
+                self.setViewControllers(self.viewControllers + newViewControllers, animated: true)
+                return
+            }
+
+            Logger.info("Pushing controller for \(step.logSafeString)")
             self.pushViewController(vc, animated: true, completion: nil)
         }
     }
 
     private struct Controller<T: UIViewController>: AnyController {
-        let type: T.Type
+        private let type: T.Type
+        // If a controller can cancel, then it needs to have a splash screen behind it to go back to
+        let canCancel: Bool
         let make: (RegistrationNavigationController) -> UIViewController
         // Return a new controller to push, or nil if it should reuse the same controller.
         let update: ((T) -> T?)?
+
+        init(
+            type: T.Type,
+            canCancel: Bool = false,
+            make: @escaping (RegistrationNavigationController) -> UIViewController,
+            update: ((T) -> T?)?
+        ) {
+            self.type = type
+            self.canCancel = canCancel
+            self.make = make
+            self.update = update
+        }
 
         var viewType: UIViewController.Type { T.self }
 
@@ -129,17 +155,21 @@ public class RegistrationNavigationController: OWSNavigationController {
         }
     }
 
+    private func registrationSplashController() -> Controller<RegistrationSplashViewController> {
+        Controller(
+            type: RegistrationSplashViewController.self,
+            make: { presenter in
+                return RegistrationSplashViewController(presenter: presenter)
+            },
+            // No state to update.
+            update: nil
+        )
+    }
+
     private func controller(for step: RegistrationStep) -> AnyController? {
         switch step {
         case .registrationSplash:
-            return Controller(
-                type: RegistrationSplashViewController.self,
-                make: { presenter in
-                    return RegistrationSplashViewController(presenter: presenter)
-                },
-                // No state to update.
-                update: nil
-            )
+            return self.registrationSplashController()
         case .changeNumberSplash:
             return Controller(
                 type: RegistrationChangeNumberSplashViewController.self,
@@ -163,6 +193,7 @@ public class RegistrationNavigationController: OWSNavigationController {
         case .scanQuickRegistrationQrCode:
             return Controller(
                 type: RegistrationQuickRestoreQRCodeViewController.self,
+                canCancel: true,
                 make: { presenter in
                     return RegistrationQuickRestoreQRCodeViewController(
                         presenter: presenter
@@ -625,13 +656,15 @@ extension RegistrationNavigationController: RegistrationQuickRestoreQRCodePresen
         pushNextController(guarantee)
     }
 
-    func cancel() {
+    func cancelQuickRestore() {
         let guarantee = coordinator.resetRestoreMethodChoice()
         pushNextController(guarantee)
     }
 }
 
 private protocol AnyController {
+
+    var canCancel: Bool { get }
 
     var viewType: UIViewController.Type { get }
 

@@ -12,7 +12,7 @@ protocol RegistrationQuickRestoreQRCodePresenter: AnyObject {
     func didReceiveRegistrationMessage(_ message: RegistrationProvisioningMessage)
 
     // Cancel out to the splash screen
-    func cancel()
+    func cancelQuickRestore()
 }
 
 class RegistrationQuickRestoreQRCodeViewController:
@@ -47,7 +47,8 @@ class RegistrationQuickRestoreQRCodeViewController:
     private lazy var hostingController = UIHostingController(rootView: ContentStack(
         model: model,
         cancelAction: { [weak self] in
-            self?.presenter?.cancel()
+            self?.provisioningSocketManager.stop()
+            self?.presenter?.cancelQuickRestore()
         }
     ))
 

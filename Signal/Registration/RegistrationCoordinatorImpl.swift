@@ -41,7 +41,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         switch mode {
         case .registering:
             if persistedState.hasShownSplash {
-                // Once we are past the splash, no going back.
                 return false
             } else {
                 self.db.write { tx in
@@ -98,6 +97,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         db.write { tx in
             self.updatePersistedState(tx) {
                 $0.hasShownSplash = true
+            }
+        }
+        return nextStep()
+    }
+
+    func returnToSplash() -> Guarantee<RegistrationStep> {
+        Logger.info("")
+
+        db.write { tx in
+            self.updatePersistedState(tx) {
+                $0.hasShownSplash = false
+                $0.hasOldDevice = false
             }
         }
         return nextStep()
@@ -529,7 +540,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     public func resetRestoreMethodChoice() -> Guarantee<RegistrationStep> {
         inMemoryState.restoreMethod = nil
         inMemoryState.restoreMethodToken = nil
-        return nextStep()
+        return returnToSplash()
     }
 
     private func restoreFromMessageBackup(
@@ -797,7 +808,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     /// Note: `mode` is kept separate; it has a different lifecycle than the rest
     /// of PersistedState even though it is also persisted to disk.
     internal struct PersistedState: Codable {
-        /// We only ever want to show the splash once.
         var hasShownSplash = false
         var shouldSkipRegistrationSplash = false
 
