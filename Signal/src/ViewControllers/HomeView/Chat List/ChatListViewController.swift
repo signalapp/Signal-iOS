@@ -42,7 +42,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         super.viewDidLoad()
 
         keyboardObservationBehavior = .never
-        extendedLayoutIncludesOpaqueBars = true
 
         switch viewState.chatListMode {
         case .inbox:
@@ -111,6 +110,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         let shouldHideTabBar = viewState.chatListMode == .archive
         if shouldHideTabBar {
             tabBarController?.tabBar.isHidden = true
+            extendedLayoutIncludesOpaqueBars = true
         }
 
         if isSearching {
