@@ -125,7 +125,10 @@ class NotificationService: UNNotificationServiceExtension {
         // Re-warm the caches each time to pick up changes made by the main app.
         finalContinuation.runLaunchTasksIfNeededAndReloadCaches()
         // Re-set up the local identifiers to ensure they're propagated throughout the system.
-        switch finalContinuation.setUpLocalIdentifiers(willResumeInProgressRegistration: false) {
+        switch finalContinuation.setUpLocalIdentifiers(
+            willResumeInProgressRegistration: false,
+            canInitiateRegistration: false
+        ) {
         case .corruptRegistrationState:
             Logger.warn("Ignoring request to process notifications when the user isn't registered.")
             return UNNotificationContent()

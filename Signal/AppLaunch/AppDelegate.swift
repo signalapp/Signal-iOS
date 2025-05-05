@@ -549,7 +549,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             hasInProgressRegistration = false
         }
 
-        switch finalContinuation.setUpLocalIdentifiers(willResumeInProgressRegistration: hasInProgressRegistration) {
+        switch finalContinuation.setUpLocalIdentifiers(
+            willResumeInProgressRegistration: hasInProgressRegistration,
+            canInitiateRegistration: true
+        ) {
         case .corruptRegistrationState:
             let viewController = terminalErrorViewController()
             window.rootViewController = viewController
