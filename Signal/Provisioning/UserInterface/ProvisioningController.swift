@@ -325,6 +325,12 @@ class ProvisioningController: NSObject {
     }
 
     func provisioningDidComplete(from viewController: UIViewController) {
+        if viewController.presentedViewController != nil {
+            viewController.dismiss(animated: true) {
+                self.provisioningDidComplete(from: viewController)
+            }
+            return
+        }
         SignalApp.shared.showConversationSplitView(appReadiness: appReadiness)
     }
 
@@ -341,6 +347,12 @@ class ProvisioningController: NSObject {
         func popAndThenAwaitProvisioning() {
             if navigationController.presentedViewController != nil {
                 navigationController.dismiss(animated: true, completion: {
+                    popAndThenAwaitProvisioning()
+                })
+                return
+            }
+            if viewController.presentedViewController != nil {
+                viewController.dismiss(animated: true, completion: {
                     popAndThenAwaitProvisioning()
                 })
                 return
@@ -431,7 +443,9 @@ class ProvisioningController: NSObject {
                         navigationController: navigationController,
                         progressViewModel: progressViewModel
                     )
-                    progressViewController.presentActionSheet(errorActionSheet)
+                    if progressViewController.presentedViewController == nil {
+                        progressViewController.presentActionSheet(errorActionSheet)
+                    }
                 }
             }
         } else {
