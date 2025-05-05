@@ -36,8 +36,8 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockDateProvider = .init()
         mockDb = InMemoryDB()
 
-        mockAciProtocolStore = .init()
-        mockPniProtocolStore = .init()
+        mockAciProtocolStore = .init(identity: .aci)
+        mockPniProtocolStore = .init(identity: .pni)
         mockProtocolStoreManager = SignalProtocolStoreManagerImpl(
             aciProtocolStore: mockAciProtocolStore,
             pniProtocolStore: mockPniProtocolStore
@@ -61,6 +61,30 @@ final class PreKeyTaskTests: SSKBaseTest {
         super.tearDown()
     }
 
+    private func aciPreKeyCount() -> Int {
+        return mockDb.read { tx in
+            return mockAciProtocolStore.mockPreKeyStore.count(tx: tx)
+        }
+    }
+
+    private func aciSignedPreKeyCount() -> Int {
+        return mockDb.read { tx in
+            return mockAciProtocolStore.mockSignedPreKeyStore.count(tx: tx)
+        }
+    }
+
+    private func aciKyberOneTimePreKeyCount() -> Int {
+        return mockDb.read { tx in
+            return mockAciProtocolStore.mockKyberPreKeyStore.count(isLastResort: false, tx: tx)
+        }
+    }
+
+    private func aciKyberLastResortPreKeyCount() -> Int {
+        return mockDb.read { tx in
+            return mockAciProtocolStore.mockKyberPreKeyStore.count(isLastResort: true, tx: tx)
+        }
+    }
+
     //
     //
     // MARK: - Create PreKey Tests
@@ -70,9 +94,6 @@ final class PreKeyTaskTests: SSKBaseTest {
     func testCreateAll() async throws {
         mockAPIClient.setPreKeysResult = .value(())
         mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
-
-        // Pre-validate
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
 
         _ = try await taskManager.refresh(identity: .aci, targets: .all, force: true, auth: .implicit())
 
@@ -89,15 +110,14 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
 
         // Pre-validate
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
-        XCTAssertEqual(mockAciProtocolStore.mockSignedPreKeyStore.generatedSignedPreKeys.count, 0)
-        XCTAssertNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
+        XCTAssertEqual(aciPreKeyCount(), 0)
+        XCTAssertEqual(aciSignedPreKeyCount(), 0)
 
         _ = try await taskManager.refresh(identity: .aci, targets: .signedPreKey, force: true, auth: .implicit())
 
         // Validate
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
-        XCTAssertNotNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
+        XCTAssertEqual(aciPreKeyCount(), 0)
+        XCTAssertEqual(aciSignedPreKeyCount(), 1)
 
         XCTAssertNotNil(mockAPIClient.signedPreKeyRecord)
         XCTAssertNil(mockAPIClient.preKeyRecords)
@@ -110,15 +130,14 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
 
         // Pre-validate
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
-        XCTAssertEqual(mockAciProtocolStore.mockSignedPreKeyStore.generatedSignedPreKeys.count, 0)
-        XCTAssertNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
+        XCTAssertEqual(aciPreKeyCount(), 0)
+        XCTAssertEqual(aciSignedPreKeyCount(), 0)
 
         _ = try await taskManager.refresh(identity: .aci, targets: .oneTimePreKey, force: true, auth: .implicit())
 
         // Validate
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 100)
-        XCTAssertNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
+        XCTAssertEqual(aciPreKeyCount(), 100)
+        XCTAssertEqual(aciSignedPreKeyCount(), 0)
 
         XCTAssertEqual(mockAPIClient.preKeyRecords?.count, 100)
         XCTAssertNil(mockAPIClient.signedPreKeyRecord)
@@ -133,7 +152,7 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockAPIClient.setPreKeysResult = .value(())
 
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
+        XCTAssertEqual(aciPreKeyCount(), 0)
 
         _ = try await taskManager.refresh(identity: .aci, targets: .all, force: true, auth: .implicit())
 
@@ -149,12 +168,12 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockAPIClient.setPreKeysResult = .value(())
 
         mockAPIClient.currentPreKeyCount = 100
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
+        XCTAssertEqual(aciPreKeyCount(), 0)
 
         _ = try await taskManager.refresh(identity: .aci, targets: .oneTimePreKey, force: true, auth: .implicit())
 
         XCTAssertEqual(mockAPIClient.preKeyRecords?.count, 100)
-        XCTAssertNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
+        XCTAssertEqual(aciSignedPreKeyCount(), 0)
         XCTAssertNil(mockAPIClient.signedPreKeyRecord)
         XCTAssertNil(mockAPIClient.pqPreKeyRecords)
         XCTAssertNil(mockAPIClient.pqLastResortPreKeyRecord)
@@ -165,8 +184,8 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
 
         // Pre-validate
-        XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.oneTimeRecords.count, 0)
-        XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.lastResortRecords.count, 0)
+        XCTAssertEqual(aciKyberOneTimePreKeyCount(), 0)
+        XCTAssertEqual(aciKyberLastResortPreKeyCount(), 0)
 
         _ = try await taskManager.refresh(
             identity: .aci,
@@ -176,8 +195,8 @@ final class PreKeyTaskTests: SSKBaseTest {
         )
 
         // Validate
-        XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.oneTimeRecords.count, 100)
-        XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.lastResortRecords.count, 1)
+        XCTAssertEqual(aciKyberOneTimePreKeyCount(), 100)
+        XCTAssertEqual(aciKyberLastResortPreKeyCount(), 1)
 
         XCTAssertNil(mockAPIClient.signedPreKeyRecord)
         XCTAssertNil(mockAPIClient.preKeyRecords)
@@ -195,7 +214,7 @@ final class PreKeyTaskTests: SSKBaseTest {
         let aciKeyPair = ECKeyPair.generateKeyPair()
         mockIdentityManager.aciKeyPair = aciKeyPair
 
-        let originalSignedPreKey = mockAciProtocolStore.mockSignedPreKeyStore.generateRandomSignedRecord()
+        let originalSignedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: aciKeyPair)
         mockDb.write { tx in
             mockAciProtocolStore.mockSignedPreKeyStore.storeSignedPreKey(
                 originalSignedPreKey.id,
@@ -212,32 +231,37 @@ final class PreKeyTaskTests: SSKBaseTest {
 
         _ = try await taskManager.refresh(identity: .aci, targets: .all, auth: .implicit())
 
-        let sentSignedPreKeyRecord = mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord
         XCTAssertNotNil(mockAPIClient.signedPreKeyRecord)
-        XCTAssertNotNil(sentSignedPreKeyRecord)
-        XCTAssertNotEqual(sentSignedPreKeyRecord!.id, originalSignedPreKey.id)
+        XCTAssertEqual(aciSignedPreKeyCount(), 2)
     }
 
     func testMockPreKeyTaskNoUpdate() async throws {
         mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockAPIClient.setPreKeysResult = .value(())
 
-        _ = mockAciProtocolStore.mockPreKeyStore.generatePreKeyRecords()
+        let records = mockDb.write { tx in
+            let records = mockAciProtocolStore.mockPreKeyStore.generatePreKeyRecords(tx: tx)
+            mockAciProtocolStore.mockPreKeyStore.storePreKeyRecords(records, tx: tx)
+            return records
+        }
 
         mockAPIClient.currentPreKeyCount = 50
         mockAPIClient.currentPqPreKeyCount = 0
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 100)
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.preKeyId, 100)
+        XCTAssertEqual(aciPreKeyCount(), 100)
 
         _ = try await taskManager.refresh(identity: .aci, targets: .all, auth: .implicit())
 
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 100)
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.preKeyId, 100)
+        XCTAssertEqual(aciPreKeyCount(), 100)
+        mockDb.read { tx in
+            for record in records {
+                XCTAssertNotNil(mockAciProtocolStore.mockPreKeyStore.loadPreKey(record.id, transaction: tx))
+            }
+        }
         XCTAssertNil(mockAPIClient.preKeyRecords)
     }
 
     func testMockUpdateFailNoIdentity() async throws {
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
+        XCTAssertEqual(aciPreKeyCount(), 0)
         mockAPIClient.currentPreKeyCount = 0
         mockAPIClient.currentPqPreKeyCount = 0
 
@@ -253,8 +277,7 @@ final class PreKeyTaskTests: SSKBaseTest {
             }
         }
 
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.preKeyId, 0)
+        XCTAssertEqual(aciPreKeyCount(), 0)
         XCTAssertNil(mockAPIClient.preKeyRecords)
     }
 
@@ -264,12 +287,11 @@ final class PreKeyTaskTests: SSKBaseTest {
 
         mockAPIClient.currentPreKeyCount = 50
         mockAPIClient.currentPqPreKeyCount = 0
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
+        XCTAssertEqual(aciPreKeyCount(), 0)
 
         _ = try await taskManager.refresh(identity: .aci, targets: .all, auth: .implicit())
 
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.preKeyId, 0)
+        XCTAssertEqual(aciPreKeyCount(), 0)
         XCTAssertNil(mockAPIClient.preKeyRecords)
     }
 
@@ -292,14 +314,12 @@ final class PreKeyTaskTests: SSKBaseTest {
             )
         }
 
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
+        XCTAssertEqual(aciPreKeyCount(), 0)
 
         _ = try await taskManager.refresh(identity: .aci, targets: .all, auth: .implicit())
 
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.preKeyId, 0)
-
-        XCTAssertNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
+        XCTAssertEqual(aciPreKeyCount(), 0)
+        XCTAssertEqual(aciSignedPreKeyCount(), 0)
 
         XCTAssertNil(mockAPIClient.preKeyRecords)
         XCTAssertNil(mockAPIClient.signedPreKeyRecord)
@@ -317,14 +337,12 @@ final class PreKeyTaskTests: SSKBaseTest {
             )
         }
 
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
+        XCTAssertEqual(aciPreKeyCount(), 0)
 
         _ = try await taskManager.refresh(identity: .aci, targets: .all, force: true, auth: .implicit())
 
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 100)
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.preKeyId, 100)
-
-        XCTAssertNotNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
+        XCTAssertEqual(aciPreKeyCount(), 100)
+        XCTAssertEqual(aciSignedPreKeyCount(), 1)
 
         XCTAssertNotNil(mockAPIClient.preKeyRecords)
         XCTAssertNotNil(mockAPIClient.signedPreKeyRecord)
@@ -335,14 +353,12 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockAPIClient.setPreKeysResult = .value(())
 
         mockAPIClient.currentPreKeyCount = 100
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
+        XCTAssertEqual(aciPreKeyCount(), 0)
 
         _ = try await taskManager.refresh(identity: .aci, targets: .oneTimePreKey, force: true, auth: .implicit())
 
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 100)
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.preKeyId, 100)
-
-        XCTAssertNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
+        XCTAssertEqual(aciPreKeyCount(), 100)
+        XCTAssertEqual(aciSignedPreKeyCount(), 0)
 
         XCTAssertNotNil(mockAPIClient.preKeyRecords)
         XCTAssertNil(mockAPIClient.signedPreKeyRecord)
@@ -381,7 +397,7 @@ final class PreKeyTaskTests: SSKBaseTest {
 
         _ = try await taskManager.refresh(identity: .aci, targets: .signedPreKey, auth: .implicit())
 
-        XCTAssertNotNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
+        XCTAssertEqual(aciSignedPreKeyCount(), 1)
         XCTAssertNotNil(mockAPIClient.signedPreKeyRecord)
     }
 
@@ -391,14 +407,12 @@ final class PreKeyTaskTests: SSKBaseTest {
 
         mockAPIClient.currentPreKeyCount = 9
         mockAPIClient.currentPqPreKeyCount = 0
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
+        XCTAssertEqual(aciPreKeyCount(), 0)
 
         _ = try await taskManager.refresh(identity: .aci, targets: .oneTimePreKey, auth: .implicit())
 
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 100)
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.preKeyId, 100)
-
-        XCTAssertNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
+        XCTAssertEqual(aciPreKeyCount(), 100)
+        XCTAssertEqual(aciSignedPreKeyCount(), 0)
 
         XCTAssertNotNil(mockAPIClient.preKeyRecords)
         XCTAssertNil(mockAPIClient.signedPreKeyRecord)

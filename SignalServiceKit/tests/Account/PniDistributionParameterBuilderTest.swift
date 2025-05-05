@@ -10,8 +10,7 @@ import XCTest
 
 class PniDistributionParameterBuilderTest: XCTestCase {
     private var messageSenderMock: MessageSenderMock!
-    private var pniSignedPreKeyStoreMock: MockSignalSignedPreKeyStore!
-    private var pniKyberPreKeyStoreMock: MockKyberPreKeyStore!
+    private var pniKyberPreKeyStoreMock: KyberPreKeyStoreImpl!
     private var registrationIdGeneratorMock: MockRegistrationIdGenerator!
 
     private var dateProvider: DateProvider!
@@ -22,15 +21,13 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     override func setUp() {
         dateProvider = { Date() }
         messageSenderMock = .init()
-        pniSignedPreKeyStoreMock = MockSignalSignedPreKeyStore()
-        pniKyberPreKeyStoreMock = MockKyberPreKeyStore(dateProvider: dateProvider)
+        pniKyberPreKeyStoreMock = KyberPreKeyStoreImpl(for: .pni, dateProvider: dateProvider)
         registrationIdGeneratorMock = .init()
         db = InMemoryDB()
 
         pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
             db: db,
             messageSender: messageSenderMock,
-            pniSignedPreKeyStore: pniSignedPreKeyStoreMock,
             pniKyberPreKeyStore: pniKyberPreKeyStoreMock,
             registrationIdGenerator: registrationIdGeneratorMock
         )
@@ -38,7 +35,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
     func testBuildParametersHappyPath() async throws {
         let pniKeyPair = ECKeyPair.generateKeyPair()
-        let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
+        let localSignedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: pniKeyPair)
         let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = db.write { tx in
             self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
@@ -59,15 +56,9 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
         XCTAssertEqual(parameters.pniIdentityKey, pniKeyPair.keyPair.identityKey)
 
-        XCTAssertEqual(
-            Set(parameters.devicePniSignedPreKeys.values.map(\.id)),
-            Set(pniSignedPreKeyStoreMock.generatedSignedPreKeys.map(\.id))
-        )
+        XCTAssertEqual(Set(parameters.devicePniSignedPreKeys.values.map { $0.keyPair.publicKey }).count, 2)
 
-        XCTAssertEqual(
-            Set(parameters.devicePniPqLastResortPreKeys.values.map(\.id)),
-            Set(pniKyberPreKeyStoreMock.lastResortRecords.map(\.id))
-        )
+        XCTAssertEqual(Set(parameters.devicePniPqLastResortPreKeys.values.map { $0.keyPair.publicKey.serialize().asData }).count, 2)
 
         XCTAssertEqual(
             Set(parameters.pniRegistrationIds.values),
@@ -83,7 +74,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
     func testBuildParametersFailsBeforeMessageBuildingIfDeviceIdsMismatched() async {
         let pniKeyPair = ECKeyPair.generateKeyPair()
-        let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
+        let localSignedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: pniKeyPair)
         let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = db.write { tx in
             self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
@@ -111,7 +102,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     /// should skip it and generate identity without parameters for it.
     func testBuildParametersWithInvalidDevice() async throws {
         let pniKeyPair = ECKeyPair.generateKeyPair()
-        let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
+        let localSignedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: pniKeyPair)
         let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = db.write { tx in
             self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
@@ -133,10 +124,6 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
         XCTAssertEqual(parameters.pniIdentityKey, pniKeyPair.keyPair.identityKey)
 
-        // We should have generated a pre-key we threw away, for the invalid
-        // device.
-        XCTAssertLessThan(parameters.devicePniSignedPreKeys.count, pniSignedPreKeyStoreMock.generatedSignedPreKeys.count)
-
         // We should have generated a registration ID we threw away, for the
         // invalid device.
         XCTAssertLessThan(parameters.pniRegistrationIds.count, registrationIdGeneratorMock.generatedRegistrationIds.count)
@@ -150,7 +137,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
     func testBuildParametersWithError() async {
         let pniKeyPair = ECKeyPair.generateKeyPair()
-        let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
+        let localSignedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: pniKeyPair)
         let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = db.write { tx in
             self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
@@ -172,7 +159,6 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         }
 
         XCTAssertThrowsError(try result.get())
-        XCTAssertEqual(pniSignedPreKeyStoreMock.generatedSignedPreKeys.count, 2)
         XCTAssertEqual(registrationIdGeneratorMock.generatedRegistrationIds.count, 2)
         XCTAssert(messageSenderMock.deviceMessageMocks.get().isEmpty)
     }

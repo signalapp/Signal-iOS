@@ -10,21 +10,20 @@ import XCTest
 // LastResort
 //
 
-class KyberPreKeyStoreTest: XCTestCase {
+class KyberPreKeyStoreImplTest: XCTestCase {
     var dateProvider: DateProvider!
     var currentDate = Date()
     var db = InMemoryDB()
 
     var identityKey: ECKeyPair!
-    var kyberPreKeyStore: SSKKyberPreKeyStore!
+    var kyberPreKeyStore: KyberPreKeyStoreImpl!
 
     override func setUp() {
         dateProvider = { return self.currentDate }
         identityKey = ECKeyPair.generateKeyPair()
-        kyberPreKeyStore = SSKKyberPreKeyStore(
+        kyberPreKeyStore = KyberPreKeyStoreImpl(
             for: .aci,
             dateProvider: dateProvider,
-            remoteConfigProvider: MockRemoteConfigProvider()
         )
     }
 
@@ -69,11 +68,11 @@ class KyberPreKeyStoreTest: XCTestCase {
 
     func testGenerateIncrementsNextId() {
         let metadataStore = KeyValueStore(
-            collection: SSKKyberPreKeyStore.Constants.ACI.metadataStoreCollection
+            collection: KyberPreKeyStoreImpl.Constants.ACI.metadataStoreCollection
         )
 
         db.write { tx in
-            metadataStore.setInt32(500, key: SSKKyberPreKeyStore.Constants.lastKeyId, transaction: tx)
+            metadataStore.setInt32(500, key: KyberPreKeyStoreImpl.Constants.lastKeyId, transaction: tx)
         }
 
         let records = self.db.write { tx in
@@ -88,20 +87,20 @@ class KyberPreKeyStoreTest: XCTestCase {
         XCTAssertEqual(records.last!.id, 525)
 
         let nextId = db.read { tx in
-            metadataStore.getInt32(SSKKyberPreKeyStore.Constants.lastKeyId, transaction: tx)
+            metadataStore.getInt32(KyberPreKeyStoreImpl.Constants.lastKeyId, transaction: tx)
         }
         XCTAssertEqual(nextId!, 525)
     }
 
     func testLastResortId() {
         let metadataStore = KeyValueStore(
-            collection: SSKKyberPreKeyStore.Constants.ACI.metadataStoreCollection
+            collection: KyberPreKeyStoreImpl.Constants.ACI.metadataStoreCollection
         )
 
         db.write { tx in
             metadataStore.setInt32(
                 0xFFFFFE,
-                key: SSKKyberPreKeyStore.Constants.lastKeyId,
+                key: KyberPreKeyStoreImpl.Constants.lastKeyId,
                 transaction: tx
             )
         }
@@ -122,13 +121,13 @@ class KyberPreKeyStoreTest: XCTestCase {
     // check that prekeyIds overflow in batches
     func testPreKeyIdOverFlow() {
         let metadataStore = KeyValueStore(
-            collection: SSKKyberPreKeyStore.Constants.ACI.metadataStoreCollection
+            collection: KyberPreKeyStoreImpl.Constants.ACI.metadataStoreCollection
         )
 
         let batchCount: Int32 = 50
         db.write { tx in
             let lastKeyId: Int32 = 0x1000000 - batchCount
-            metadataStore.setInt32(lastKeyId, key: SSKKyberPreKeyStore.Constants.lastKeyId, transaction: tx)
+            metadataStore.setInt32(lastKeyId, key: KyberPreKeyStoreImpl.Constants.lastKeyId, transaction: tx)
         }
 
         let records = self.db.write { tx in
@@ -143,7 +142,7 @@ class KyberPreKeyStoreTest: XCTestCase {
         XCTAssertEqual(records.last!.id, 50)
 
         let nextId = db.read { tx in
-            metadataStore.getInt32(SSKKyberPreKeyStore.Constants.lastKeyId, transaction: tx)
+            metadataStore.getInt32(KyberPreKeyStoreImpl.Constants.lastKeyId, transaction: tx)
         }
         XCTAssertEqual(nextId!, 50)
     }
@@ -309,13 +308,12 @@ class KyberPreKeyStoreTest: XCTestCase {
     func testPniStoreIsSeparate() {
 
         let pniIdentityKey = ECKeyPair.generateKeyPair()
-        let pniKyberPreKeyStore = SSKKyberPreKeyStore(
+        let pniKyberPreKeyStore = KyberPreKeyStoreImpl(
             for: .pni,
             dateProvider: dateProvider,
-            remoteConfigProvider: MockRemoteConfigProvider()
         )
 
-        func generateKeys(keyStore: SSKKyberPreKeyStore, identityKey: ECKeyPair) -> ([KyberPreKeyRecord], KyberPreKeyRecord) {
+        func generateKeys(keyStore: KyberPreKeyStoreImpl, identityKey: ECKeyPair) -> ([KyberPreKeyRecord], KyberPreKeyRecord) {
             return self.db.write { tx in
                 let records = keyStore.generateKyberPreKeyRecords(
                     count: 10,
@@ -398,7 +396,7 @@ class KyberPreKeyStoreTest: XCTestCase {
         }
 
         let keyStore = KeyValueStore(
-            collection: SSKKyberPreKeyStore.Constants.ACI.keyStoreCollection
+            collection: KyberPreKeyStoreImpl.Constants.ACI.keyStoreCollection
         )
 
         let numRecords = self.db.read { tx in
@@ -456,7 +454,7 @@ class KyberPreKeyStoreTest: XCTestCase {
         }
 
         let keyStore = KeyValueStore(
-            collection: SSKKyberPreKeyStore.Constants.ACI.keyStoreCollection
+            collection: KyberPreKeyStoreImpl.Constants.ACI.keyStoreCollection
         )
 
         currentDate = Date(timeIntervalSinceReferenceDate: 5 * .day + PreKeyManagerImpl.Constants.maxUnacknowledgedSessionAge)

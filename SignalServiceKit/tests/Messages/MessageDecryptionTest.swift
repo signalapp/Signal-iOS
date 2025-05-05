@@ -221,7 +221,7 @@ class MessageDecryptionTest: SSKBaseTest {
                                 destinationServiceId: localClient.serviceId) { error in
             if let error = error as? OWSError {
                 let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]
-                if case SSKSignedPreKeyStore.Error.noPreKeyWithId(_)? = underlyingError {
+                if case SignedPreKeyStoreImpl.Error.noPreKeyWithId(_)? = underlyingError {
                     return true
                 }
             }
@@ -290,7 +290,7 @@ class MessageDecryptionTest: SSKBaseTest {
         }) { error in
             if let error = error as? OWSError {
                 let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]
-                if case SSKSignedPreKeyStore.Error.noPreKeyWithId(_)? = underlyingError {
+                if case SignedPreKeyStoreImpl.Error.noPreKeyWithId(_)? = underlyingError {
                     return true
                 }
             }
@@ -308,7 +308,7 @@ class MessageDecryptionTest: SSKBaseTest {
         }) { error in
             if let error = error as? OWSError {
                 let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]
-                if case SSKSignedPreKeyStore.Error.noPreKeyWithId(_)? = underlyingError {
+                if case SignedPreKeyStoreImpl.Error.noPreKeyWithId(_)? = underlyingError {
                     return true
                 }
             }
@@ -330,7 +330,7 @@ class MessageDecryptionTest: SSKBaseTest {
         }) { error in
             if let error = error as? OWSError {
                 let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]
-                if case SSKPreKeyStore.Error.noPreKeyWithId(_)? = underlyingError {
+                if case PreKeyStoreImpl.Error.noPreKeyWithId(_)? = underlyingError {
                     return true
                 }
             }
@@ -348,7 +348,7 @@ class MessageDecryptionTest: SSKBaseTest {
         }) { error in
             if let error = error as? OWSError {
                 let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]
-                if case SSKPreKeyStore.Error.noPreKeyWithId(_)? = underlyingError {
+                if case PreKeyStoreImpl.Error.noPreKeyWithId(_)? = underlyingError {
                     return true
                 }
             }

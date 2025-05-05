@@ -638,9 +638,9 @@ public class OWSMessageDecrypter {
             // Self-sent messages can be safely discarded. Return as-is.
             return error
         case is SignalError,
-            SSKPreKeyStore.Error.noPreKeyWithId(_),
-            SSKSignedPreKeyStore.Error.noPreKeyWithId(_),
-            SSKKyberPreKeyStore.Error.noKyberPreKeyWithId(_):
+            PreKeyStoreImpl.Error.noPreKeyWithId(_),
+            SignedPreKeyStoreImpl.Error.noPreKeyWithId(_),
+            KyberPreKeyStoreImpl.Error.noKyberPreKeyWithId(_):
             return processError(
                 error,
                 validatedEnvelope: validatedEnvelope,

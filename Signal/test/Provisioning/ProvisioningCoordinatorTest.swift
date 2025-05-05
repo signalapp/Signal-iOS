@@ -243,11 +243,16 @@ private class MockOWSDeviceService: OWSDeviceService {
 }
 
 private class MockSignalProtocolStoreManager: SignalProtocolStoreManager {
+    private let aciProtocolStore = MockSignalProtocolStore(identity: .aci)
+    private let pniProtocolStore = MockSignalProtocolStore(identity: .pni)
 
     init() {}
 
     func signalProtocolStore(for identity: SignalServiceKit.OWSIdentity) -> any SignalServiceKit.SignalProtocolStore {
-        return MockSignalProtocolStore()
+        switch identity {
+        case .aci: aciProtocolStore
+        case .pni: pniProtocolStore
+        }
     }
 
     func removeAllKeys(tx: DBWriteTransaction) {}

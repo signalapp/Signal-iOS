@@ -177,7 +177,6 @@ public class AppSetup {
         let aciSignalProtocolStore = SignalProtocolStoreImpl(
             for: .aci,
             recipientIdFinder: recipientIdFinder,
-            remoteConfigProvider: remoteConfigManager
         )
         let blockedRecipientStore = BlockedRecipientStore()
         let blockingManager = BlockingManager(
@@ -203,7 +202,6 @@ public class AppSetup {
         let pniSignalProtocolStore = SignalProtocolStoreImpl(
             for: .pni,
             recipientIdFinder: recipientIdFinder,
-            remoteConfigProvider: remoteConfigManager
         )
         let profileManager = testDependencies.profileManager ?? OWSProfileManager(
             appReadiness: appReadiness,
@@ -448,7 +446,6 @@ public class AppSetup {
         let pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
             db: db,
             messageSender: PniDistributionParameterBuilderImpl.Wrappers.MessageSender(messageSender),
-            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
             pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
             registrationIdGenerator: RegistrationIdGenerator()
         )

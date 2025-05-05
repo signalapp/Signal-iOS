@@ -59,7 +59,7 @@ public class RegistrationCoordinatorTest {
 
         appExpiryMock = MockAppExpiry()
         changeNumberPniManager = ChangePhoneNumberPniManagerMock(
-            mockKyberStore: MockKyberPreKeyStore(dateProvider: Date.provider)
+            mockKyberStore: KyberPreKeyStoreImpl(for: .pni, dateProvider: dateProvider)
         )
         contactsStore = RegistrationCoordinatorImpl.TestMocks.ContactsStore()
         experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
@@ -4253,7 +4253,7 @@ public class RegistrationCoordinatorTest {
             return RegistrationPreKeyUploadBundle(
                 identity: identity,
                 identityKeyPair: identityKeyPair,
-                signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+                signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: identityKeyPair),
                 lastResortPreKey: {
                     let keyPair = KEMKeyPair.generate()
                     let signature = Data(identityKeyPair.keyPair.privateKey.generateSignature(message: Data(keyPair.publicKey.serialize())))

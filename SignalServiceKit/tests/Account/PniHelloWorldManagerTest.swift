@@ -30,8 +30,8 @@ class PniHelloWorldManagerTest: XCTestCase {
     private var identityManagerMock: MockIdentityManager!
     private var networkManagerMock: NetworkManagerMock!
     private var pniDistributionParameterBuilderMock: PniDistributionParamaterBuilderMock!
-    private var pniSignedPreKeyStoreMock: MockSignalSignedPreKeyStore!
-    private var pniKyberPreKeyStoreMock: MockKyberPreKeyStore!
+    private var pniSignedPreKeyStoreMock: SignedPreKeyStoreImpl!
+    private var pniKyberPreKeyStoreMock: KyberPreKeyStoreImpl!
     private var recipientDatabaseTableMock: MockRecipientDatabaseTable!
     private var tsAccountManagerMock: MockTSAccountManager!
 
@@ -49,8 +49,8 @@ class PniHelloWorldManagerTest: XCTestCase {
         ))
         networkManagerMock = .init()
         pniDistributionParameterBuilderMock = .init()
-        pniSignedPreKeyStoreMock = .init()
-        pniKyberPreKeyStoreMock = .init(dateProvider: Date.provider)
+        pniSignedPreKeyStoreMock = .init(for: .pni)
+        pniKyberPreKeyStoreMock = .init(for: .pni, dateProvider: Date.provider)
         recipientDatabaseTableMock = .init()
         tsAccountManagerMock = .init()
 

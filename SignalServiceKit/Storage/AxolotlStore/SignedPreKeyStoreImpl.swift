@@ -8,7 +8,7 @@ public import LibSignalClient
 
 private let lastPreKeyRotationDate = "lastKeyRotationDate"
 
-public class SSKSignedPreKeyStore: NSObject {
+public class SignedPreKeyStoreImpl: LibSignalClient.SignedPreKeyStore {
 
     private let identity: OWSIdentity
     private let keyStore: KeyValueStore
@@ -33,20 +33,20 @@ public class SSKSignedPreKeyStore: NSObject {
         keyStore.signedPreKeyRecord(key: keyValueStoreKey(int: Int(signedPreKeyId)), transaction: transaction)
     }
 
-    public func storeSignedPreKey(_ signedPreKeyId: Int32, signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord, transaction: DBWriteTransaction) {
-        keyStore.setSignedPreKeyRecord(signedPreKeyRecord, key: keyValueStoreKey(int: Int(signedPreKeyId)), transaction: transaction)
+    func storeSignedPreKey(_ signedPreKeyId: Int32, signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord, tx: DBWriteTransaction) {
+        keyStore.setSignedPreKeyRecord(signedPreKeyRecord, key: keyValueStoreKey(int: Int(signedPreKeyId)), transaction: tx)
     }
 
-    public func removeSignedPreKey(_ signedPreKeyId: Int32, transaction: DBWriteTransaction) {
+    func removeSignedPreKey(signedPreKeyId: Int32, tx: DBWriteTransaction) {
         Logger.info("Removing signed prekey id: \(signedPreKeyId).")
-        keyStore.removeValue(forKey: keyValueStoreKey(int: Int(signedPreKeyId)), transaction: transaction)
+        keyStore.removeValue(forKey: keyValueStoreKey(int: Int(signedPreKeyId)), transaction: tx)
     }
 
     private func keyValueStoreKey(int: Int) -> String {
         return NSNumber(value: int).stringValue
     }
 
-    func setReplacedAtToNowIfNil(exceptFor justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord, transaction tx: DBWriteTransaction) {
+    func setReplacedAtToNowIfNil(exceptFor justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord, tx: DBWriteTransaction) {
         let exceptForKey = keyValueStoreKey(int: Int(justUploadedSignedPreKey.id))
         keyStore.allKeys(transaction: tx).forEach { key in autoreleasepool {
             if key == exceptForKey {
@@ -57,11 +57,11 @@ public class SSKSignedPreKeyStore: NSObject {
                 return
             }
             record.setReplacedAtToNow()
-            storeSignedPreKey(record.id, signedPreKeyRecord: record, transaction: tx)
+            storeSignedPreKey(record.id, signedPreKeyRecord: record, tx: tx)
         }}
     }
 
-    public func cullSignedPreKeyRecords(gracePeriod: TimeInterval, transaction tx: DBWriteTransaction) {
+    func cullSignedPreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction) {
         keyStore.allKeys(transaction: tx).forEach { key in autoreleasepool {
             let record = keyStore.getObject(key, ofClass: SignalServiceKit.SignedPreKeyRecord.self, transaction: tx)
             guard let record else {
@@ -83,34 +83,31 @@ public class SSKSignedPreKeyStore: NSObject {
 
     // MARK: -
 
-    public func generateRandomSignedRecord() -> SignalServiceKit.SignedPreKeyRecord {
-        let identityKeyPair = SSKEnvironment.shared.databaseStorageRef.read { DependenciesBridge.shared.identityManager.identityKeyPair(for: identity, tx: $0) }
-        guard let identityKeyPair else {
-            owsFail("identity key unexpectedly unavailable")
-        }
-        return generateSignedPreKey(signedBy: identityKeyPair)
+    #if TESTABLE_BUILD
+
+    func count(tx: DBReadTransaction) -> Int {
+        return keyStore.allKeys(transaction: tx).count
     }
+
+    #endif
 
     // MARK: - Prekey rotation tracking
 
-    public func setLastSuccessfulRotationDate(_ date: Date, transaction: DBWriteTransaction) {
-        metadataStore.setDate(date, key: lastPreKeyRotationDate, transaction: transaction)
+    func setLastSuccessfulRotationDate(_ date: Date, tx: DBWriteTransaction) {
+        metadataStore.setDate(date, key: lastPreKeyRotationDate, transaction: tx)
     }
 
-    public func getLastSuccessfulRotationDate(transaction: DBReadTransaction) -> Date? {
-        metadataStore.getDate(lastPreKeyRotationDate, transaction: transaction)
+    func getLastSuccessfulRotationDate(tx: DBReadTransaction) -> Date? {
+        metadataStore.getDate(lastPreKeyRotationDate, transaction: tx)
     }
 
-    public func removeAll(transaction: DBWriteTransaction) {
+    public func removeAll(tx: DBWriteTransaction) {
         Logger.warn("")
-        keyStore.removeAll(transaction: transaction)
-        metadataStore.removeAll(transaction: transaction)
+        keyStore.removeAll(transaction: tx)
+        metadataStore.removeAll(transaction: tx)
     }
-}
 
-extension SSKSignedPreKeyStore {
-    @objc
-    public class func generateSignedPreKey(
+    public static func generateSignedPreKey(
         signedBy identityKeyPair: ECKeyPair
     ) -> SignalServiceKit.SignedPreKeyRecord {
         let keyPair = ECKeyPair.generateKeyPair()
@@ -128,9 +125,7 @@ extension SSKSignedPreKeyStore {
             replacedAt: nil
         )
     }
-}
 
-extension SSKSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
     enum Error: Swift.Error {
         case noPreKeyWithId(UInt32)
     }
@@ -153,7 +148,7 @@ extension SSKSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
 
         self.storeSignedPreKey(Int32(bitPattern: id),
                                signedPreKeyRecord: sskRecord,
-                               transaction: context.asTransaction)
+                               tx: context.asTransaction)
     }
 }
 

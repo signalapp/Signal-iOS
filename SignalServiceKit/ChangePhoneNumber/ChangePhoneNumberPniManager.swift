@@ -101,8 +101,8 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
     private let db: any DB
     private let identityManager: Shims.IdentityManager
     private let pniDistributionParameterBuilder: PniDistributionParamaterBuilder
-    private let pniSignedPreKeyStore: SignalSignedPreKeyStore
-    private let pniKyberPreKeyStore: SignalKyberPreKeyStore
+    private let pniSignedPreKeyStore: SignedPreKeyStoreImpl
+    private let pniKyberPreKeyStore: KyberPreKeyStoreImpl
     private let preKeyManager: Shims.PreKeyManager
     private let registrationIdGenerator: RegistrationIdGenerator
     private let tsAccountManager: TSAccountManager
@@ -111,8 +111,8 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         db: any DB,
         identityManager: Shims.IdentityManager,
         pniDistributionParameterBuilder: PniDistributionParamaterBuilder,
-        pniSignedPreKeyStore: SignalSignedPreKeyStore,
-        pniKyberPreKeyStore: SignalKyberPreKeyStore,
+        pniSignedPreKeyStore: SignedPreKeyStoreImpl,
+        pniKyberPreKeyStore: KyberPreKeyStoreImpl,
         preKeyManager: Shims.PreKeyManager,
         registrationIdGenerator: RegistrationIdGenerator,
         tsAccountManager: TSAccountManager
@@ -147,7 +147,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         let pendingState = ChangePhoneNumberPni.PendingState(
             newE164: newE164,
             pniIdentityKeyPair: pniIdentityKeyPair,
-            localDevicePniSignedPreKeyRecord: pniSignedPreKeyStore.generateSignedPreKey(signedBy: pniIdentityKeyPair),
+            localDevicePniSignedPreKeyRecord: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: pniIdentityKeyPair),
             localDevicePniPqLastResortPreKeyRecord: localDevicePniPqLastResortPreKeyRecord,
             localDevicePniRegistrationId: registrationIdGenerator.generate()
         )

@@ -9,9 +9,9 @@ public import LibSignalClient
 
 public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
 
-    private let mockKyberStore: SignalKyberPreKeyStore
+    private let mockKyberStore: KyberPreKeyStoreImpl
 
-    public init(mockKyberStore: SignalKyberPreKeyStore) {
+    public init(mockKyberStore: KyberPreKeyStoreImpl) {
         self.mockKyberStore = mockKyberStore
     }
 
@@ -32,14 +32,14 @@ public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
             parameters: PniDistribution.Parameters.mock(
                 pniIdentityKeyPair: keyPair,
                 localDeviceId: localDeviceId,
-                localDevicePniSignedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: keyPair),
+                localDevicePniSignedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: keyPair),
                 localDevicePniPqLastResortPreKey: localPqKey1,
                 localDevicePniRegistrationId: registrationId
             ),
             pendingState: ChangePhoneNumberPni.PendingState(
                 newE164: newE164,
                 pniIdentityKeyPair: keyPair,
-                localDevicePniSignedPreKeyRecord: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: keyPair),
+                localDevicePniSignedPreKeyRecord: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: keyPair),
                 localDevicePniPqLastResortPreKeyRecord: localPqKey2,
                 localDevicePniRegistrationId: registrationId
             )

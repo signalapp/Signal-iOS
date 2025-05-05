@@ -105,20 +105,17 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
 
     private let db: any DB
     private let messageSender: Shims.MessageSender
-    private let pniSignedPreKeyStore: SignalSignedPreKeyStore
-    private let pniKyberPreKeyStore: SignalKyberPreKeyStore
+    private let pniKyberPreKeyStore: KyberPreKeyStoreImpl
     private let registrationIdGenerator: RegistrationIdGenerator
 
     init(
         db: any DB,
         messageSender: Shims.MessageSender,
-        pniSignedPreKeyStore: SignalSignedPreKeyStore,
-        pniKyberPreKeyStore: SignalKyberPreKeyStore,
+        pniKyberPreKeyStore: KyberPreKeyStoreImpl,
         registrationIdGenerator: RegistrationIdGenerator
     ) {
         self.db = db
         self.messageSender = messageSender
-        self.pniSignedPreKeyStore = pniSignedPreKeyStore
         self.pniKyberPreKeyStore = pniKyberPreKeyStore
         self.registrationIdGenerator = registrationIdGenerator
     }
@@ -210,7 +207,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
 
         return try await withThrowingTaskGroup(of: LinkedDevicePniGenerationParams?.self) { taskGroup in
             for linkedDeviceId in localUserLinkedDeviceIds {
-                let signedPreKey = pniSignedPreKeyStore.generateSignedPreKey(signedBy: pniIdentityKeyPair)
+                let signedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: pniIdentityKeyPair)
                 let pqLastResortPreKey = pniKyberPreKeyStore.generateLastResortKyberPreKeyForLinkedDevice(signedBy: pniIdentityKeyPair)
                 let registrationId = registrationIdGenerator.generate()
 

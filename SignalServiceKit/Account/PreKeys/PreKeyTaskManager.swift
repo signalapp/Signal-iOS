@@ -223,7 +223,7 @@ internal struct PreKeyTaskManager {
         return RegistrationPreKeyUploadBundle(
             identity: identity,
             identityKeyPair: identityKeyPair,
-            signedPreKey: protocolStore.signedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+            signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: identityKeyPair),
             lastResortPreKey: protocolStore.kyberPreKeyStore.generateLastResortKyberPreKey(
                 signedBy: identityKeyPair,
                 tx: tx
@@ -240,7 +240,7 @@ internal struct PreKeyTaskManager {
         return RegistrationPreKeyUploadBundle(
             identity: identity,
             identityKeyPair: identityKeyPair,
-            signedPreKey: protocolStore.signedPreKeyStore.generateSignedPreKey(
+            signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(
                 signedBy: identityKeyPair
             ),
             lastResortPreKey: protocolStore.kyberPreKeyStore.generateLastResortKyberPreKey(
@@ -303,7 +303,7 @@ internal struct PreKeyTaskManager {
             case .oneTimePreKey:
                 preKeyRecords = protocolStore.preKeyStore.generatePreKeyRecords(tx: tx)
             case .signedPreKey:
-                signedPreKey = protocolStore.signedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair)
+                signedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: identityKeyPair)
             case .oneTimePqPreKey:
                 pqPreKeyRecords = protocolStore.kyberPreKeyStore.generateKyberPreKeyRecords(
                     count: 100,
@@ -486,7 +486,7 @@ internal struct PreKeyTaskManager {
         tx: DBWriteTransaction
     ) {
         let protocolStore = protocolStoreManager.signalProtocolStore(for: bundle.identity)
-        protocolStore.signedPreKeyStore.removeSignedPreKey(bundle.signedPreKey, tx: tx)
+        protocolStore.signedPreKeyStore.removeSignedPreKey(signedPreKeyId: bundle.signedPreKey.id, tx: tx)
         protocolStore.kyberPreKeyStore.removeLastResortPreKey(record: bundle.lastResortPreKey, tx: tx)
     }
 

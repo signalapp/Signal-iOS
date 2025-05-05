@@ -4,14 +4,13 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 private let batchSize: Int = 100
 private let tsNextPrekeyIdKey = "TSStorageInternalSettingsNextPreKeyId"
 
-class SSKPreKeyStore: NSObject {
+public class PreKeyStoreImpl {
 
-    private let lock: NSRecursiveLock = .init()
     private let keyStore: KeyValueStore
     private let metadataStore: KeyValueStore
 
@@ -26,27 +25,25 @@ class SSKPreKeyStore: NSObject {
         }
     }
 
-    func generatePreKeyRecords(transaction: DBWriteTransaction) -> [SignalServiceKit.PreKeyRecord] {
-        lock.withLock {
-            var preKeyRecords: [SignalServiceKit.PreKeyRecord] = []
-            var preKeyId = nextPreKeyId(transaction: transaction)
+    func generatePreKeyRecords(tx: DBWriteTransaction) -> [SignalServiceKit.PreKeyRecord] {
+        var preKeyRecords: [SignalServiceKit.PreKeyRecord] = []
+        var preKeyId = nextPreKeyId(transaction: tx)
 
-            Logger.info("building \(batchSize) new preKeys starting from preKeyId: \(preKeyId)")
-            for _ in 0..<batchSize {
-                let keyPair = ECKeyPair.generateKeyPair()
-                let record = SignalServiceKit.PreKeyRecord(id: preKeyId, keyPair: keyPair, createdAt: Date(), replacedAt: nil)
-                preKeyRecords.append(record)
-                preKeyId += 1
-            }
-
-            metadataStore.setInt(Int(preKeyId), key: tsNextPrekeyIdKey, transaction: transaction)
-            return preKeyRecords
+        Logger.info("building \(batchSize) new preKeys starting from preKeyId: \(preKeyId)")
+        for _ in 0..<batchSize {
+            let keyPair = ECKeyPair.generateKeyPair()
+            let record = SignalServiceKit.PreKeyRecord(id: preKeyId, keyPair: keyPair, createdAt: Date(), replacedAt: nil)
+            preKeyRecords.append(record)
+            preKeyId += 1
         }
+
+        metadataStore.setInt(Int(preKeyId), key: tsNextPrekeyIdKey, transaction: tx)
+        return preKeyRecords
     }
 
-    func storePreKeyRecords(_ preKeyRecords: [SignalServiceKit.PreKeyRecord], transaction: DBWriteTransaction) {
+    func storePreKeyRecords(_ preKeyRecords: [SignalServiceKit.PreKeyRecord], tx: DBWriteTransaction) {
         for record in preKeyRecords {
-            keyStore.setPreKeyRecord(record, key: keyValueStoreKey(int: Int(record.id)), transaction: transaction)
+            keyStore.setPreKeyRecord(record, key: keyValueStoreKey(int: Int(record.id)), transaction: tx)
         }
     }
 
@@ -67,7 +64,7 @@ class SSKPreKeyStore: NSObject {
         return NSNumber(value: int).stringValue
     }
 
-    func setReplacedAtToNowIfNil(exceptFor exceptForPreKeyRecords: [SignalServiceKit.PreKeyRecord], transaction tx: DBWriteTransaction) {
+    func setReplacedAtToNowIfNil(exceptFor exceptForPreKeyRecords: [SignalServiceKit.PreKeyRecord], tx: DBWriteTransaction) {
         let exceptForKeys = Set(exceptForPreKeyRecords.map { keyValueStoreKey(int: Int($0.id)) })
         keyStore.allKeys(transaction: tx).forEach { key in autoreleasepool {
             if exceptForKeys.contains(key) {
@@ -82,7 +79,7 @@ class SSKPreKeyStore: NSObject {
         }}
     }
 
-    func cullPreKeyRecords(gracePeriod: TimeInterval, transaction tx: DBWriteTransaction) {
+    func cullPreKeyRecords(gracePeriod: TimeInterval, tx: DBWriteTransaction) {
         keyStore.allKeys(transaction: tx).forEach { key in autoreleasepool {
             let record = keyStore.getObject(key, ofClass: SignalServiceKit.PreKeyRecord.self, transaction: tx)
             let shouldRemove = { () -> Bool in
@@ -103,11 +100,11 @@ class SSKPreKeyStore: NSObject {
         }}
     }
 
-    func removeAll(_ transaction: DBWriteTransaction) {
+    public func removeAll(tx: DBWriteTransaction) {
         Logger.warn("")
 
-        keyStore.removeAll(transaction: transaction)
-        metadataStore.removeAll(transaction: transaction)
+        keyStore.removeAll(transaction: tx)
+        metadataStore.removeAll(transaction: tx)
     }
 
     private func nextPreKeyId(transaction: DBReadTransaction) -> Int32 {
@@ -118,9 +115,17 @@ class SSKPreKeyStore: NSObject {
         // FIXME: Why are the integer types just all over the board here for the pre key ids?
         return Int32(PreKeyId.nextPreKeyId(lastPreKeyId: UInt32(lastPreKeyId), minimumCapacity: UInt32(batchSize)))
     }
+
+    #if TESTABLE_BUILD
+
+    func count(tx: DBReadTransaction) -> Int {
+        return keyStore.allKeys(transaction: tx).count
+    }
+
+    #endif
 }
 
-extension SSKPreKeyStore: LibSignalClient.PreKeyStore {
+extension PreKeyStoreImpl: LibSignalClient.PreKeyStore {
     enum Error: Swift.Error {
         case noPreKeyWithId(UInt32)
     }

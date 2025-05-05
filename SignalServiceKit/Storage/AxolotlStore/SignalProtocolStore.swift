@@ -7,32 +7,30 @@
 
 public protocol SignalProtocolStore {
     var sessionStore: SignalSessionStore { get }
-    var preKeyStore: SignalPreKeyStore { get }
-    var signedPreKeyStore: SignalSignedPreKeyStore { get }
-    var kyberPreKeyStore: SignalKyberPreKeyStore { get }
+    var preKeyStore: PreKeyStoreImpl { get }
+    var signedPreKeyStore: SignedPreKeyStoreImpl { get }
+    var kyberPreKeyStore: KyberPreKeyStoreImpl { get }
 }
 
 public class SignalProtocolStoreImpl: SignalProtocolStore {
     public let sessionStore: SignalSessionStore
-    public let preKeyStore: SignalPreKeyStore
-    public let signedPreKeyStore: SignalSignedPreKeyStore
-    public let kyberPreKeyStore: SignalKyberPreKeyStore
+    public let preKeyStore: PreKeyStoreImpl
+    public let signedPreKeyStore: SignedPreKeyStoreImpl
+    public let kyberPreKeyStore: KyberPreKeyStoreImpl
 
     public init(
         for identity: OWSIdentity,
         recipientIdFinder: RecipientIdFinder,
-        remoteConfigProvider: any RemoteConfigProvider
     ) {
         sessionStore = SSKSessionStore(
             for: identity,
             recipientIdFinder: recipientIdFinder
         )
-        preKeyStore = SSKPreKeyStore(for: identity)
-        signedPreKeyStore = SSKSignedPreKeyStore(for: identity)
-        kyberPreKeyStore = SSKKyberPreKeyStore(
+        preKeyStore = PreKeyStoreImpl(for: identity)
+        signedPreKeyStore = SignedPreKeyStoreImpl(for: identity)
+        kyberPreKeyStore = KyberPreKeyStoreImpl(
             for: identity,
             dateProvider: Date.provider,
-            remoteConfigProvider: remoteConfigProvider
         )
     }
 }

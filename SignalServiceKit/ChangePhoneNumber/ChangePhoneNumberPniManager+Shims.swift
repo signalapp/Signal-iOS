@@ -7,13 +7,11 @@ extension ChangePhoneNumberPniManagerImpl {
     enum Shims {
         typealias IdentityManager = _ChangePhoneNumberPniManager_IdentityManagerShim
         typealias PreKeyManager = _ChangePhoneNumberPniManager_PreKeyManagerShim
-        typealias SignedPreKeyStore = _ChangePhoneNumberPniManager_SignedPreKeyStoreShim
     }
 
     enum Wrappers {
         typealias IdentityManager = _ChangePhoneNumberPniManager_IdentityManagerWrapper
         typealias PreKeyManager = _ChangePhoneNumberPniManager_PreKeyManagerWrapper
-        typealias SignedPreKeyStore = _ChangePhoneNumberPniManager_SignedPreKeyStoreWrapper
     }
 }
 
@@ -33,16 +31,6 @@ protocol _ChangePhoneNumberPniManager_PreKeyManagerShim {
     func refreshOneTimePreKeys(
         forIdentity identity: OWSIdentity,
         alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
-    )
-}
-
-protocol _ChangePhoneNumberPniManager_SignedPreKeyStoreShim {
-    func generateSignedPreKey(signedBy: ECKeyPair) -> SignedPreKeyRecord
-
-    func storeSignedPreKey(
-        signedPreKeyId: Int32,
-        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
-        transaction: DBWriteTransaction
     )
 }
 
@@ -76,30 +64,6 @@ class _ChangePhoneNumberPniManager_PreKeyManagerWrapper: _ChangePhoneNumberPniMa
         DependenciesBridge.shared.preKeyManager.refreshOneTimePreKeys(
             forIdentity: identity,
             alsoRefreshSignedPreKey: shouldRefreshSignedPreKey
-        )
-    }
-}
-
-class _ChangePhoneNumberPniManager_SignedPreKeyStoreWrapper: _ChangePhoneNumberPniManager_SignedPreKeyStoreShim {
-    private let signedPreKeyStore: SSKSignedPreKeyStore
-
-    init(_ signedPreKeyStore: SSKSignedPreKeyStore) {
-        self.signedPreKeyStore = signedPreKeyStore
-    }
-
-    func generateSignedPreKey(signedBy: ECKeyPair) -> SignedPreKeyRecord {
-        return signedPreKeyStore.generateSignedPreKey(signedBy: signedBy)
-    }
-
-    func storeSignedPreKey(
-        signedPreKeyId: Int32,
-        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
-        transaction: DBWriteTransaction
-    ) {
-        signedPreKeyStore.storeSignedPreKey(
-            signedPreKeyId,
-            signedPreKeyRecord: signedPreKeyRecord,
-            transaction: SDSDB.shimOnlyBridge(transaction)
         )
     }
 }

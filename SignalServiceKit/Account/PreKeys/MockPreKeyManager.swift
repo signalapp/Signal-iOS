@@ -21,13 +21,13 @@ internal class MockPreKeyManager: PreKeyManager {
                 aci: .init(
                     identity: .aci,
                     identityKeyPair: identityKeyPair,
-                    signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: identityKeyPair),
                     lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
                 ),
                 pni: .init(
                     identity: .pni,
                     identityKeyPair: identityKeyPair,
-                    signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: identityKeyPair),
                     lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
                 )
             )
@@ -44,13 +44,13 @@ internal class MockPreKeyManager: PreKeyManager {
                 aci: .init(
                     identity: .aci,
                     identityKeyPair: identityKeyPair,
-                    signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: identityKeyPair),
                     lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
                 ),
                 pni: .init(
                     identity: .pni,
                     identityKeyPair: identityKeyPair,
-                    signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: identityKeyPair),
                     lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
                 )
             )
