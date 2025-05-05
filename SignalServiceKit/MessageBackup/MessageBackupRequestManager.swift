@@ -90,10 +90,6 @@ public protocol MessageBackupRequestManager {
         auth: ChatServiceAuth
     ) async throws -> MessageBackupServiceAuth
 
-    func reserveBackupId(localAci: Aci, auth: ChatServiceAuth) async throws
-
-    func registerBackupKeys(localAci: Aci, auth: ChatServiceAuth) async throws
-
     func fetchBackupUploadForm(auth: MessageBackupServiceAuth) async throws -> Upload.Form
 
     func fetchBackupMediaAttachmentUploadForm(auth: MessageBackupServiceAuth) async throws -> Upload.Form
@@ -187,33 +183,6 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
         self.networkManager = networkManager
     }
 
-    // MARK: - Reserve Backup
-
-    /// Onetime request to reserve this backup ID.
-    public func reserveBackupId(localAci: Aci, auth: ChatServiceAuth) async throws {
-        let messageBackupRequestContext = try db.read { tx in
-            BackupAuthCredentialRequestContext.create(
-                backupKey: try messageBackupKeyMaterial.backupKey(type: .messages, tx: tx).serialize(),
-                aci: localAci.rawUUID
-            )
-        }
-        let mediaBackupRequestContext = try db.read { tx in
-            return BackupAuthCredentialRequestContext.create(
-                backupKey: try messageBackupKeyMaterial.backupKey(type: .media, tx: tx).serialize(),
-                aci: localAci.rawUUID
-            )
-        }
-        let base64MessageRequestContext = messageBackupRequestContext.getRequest().serialize().asData.base64EncodedString()
-        let base64MediaRequestContext = mediaBackupRequestContext.getRequest().serialize().asData.base64EncodedString()
-        let request = try OWSRequestFactory.reserveBackupId(
-            backupId: base64MessageRequestContext,
-            mediaBackupId: base64MediaRequestContext,
-            auth: auth
-        )
-        // TODO: Switch this back to true when reg supports websockets
-        _ = try await networkManager.asyncRequest(request, canUseWebSocket: false)
-    }
-
     // MARK: - Backup Auth
 
     public func fetchBackupServiceAuth(
@@ -239,31 +208,6 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
             privateKey: privateKey,
             authCredential: authCredential,
             type: credentialType
-        )
-    }
-
-    // MARK: - Register Backup
-
-    /// Onetime request to register the backup public key.
-    public func registerBackupKeys(localAci: Aci, auth: ChatServiceAuth) async throws {
-        let backupAuth = try await fetchBackupServiceAuth(
-            for: .messages,
-            localAci: localAci,
-            auth: auth
-        )
-        _ = try await executeBackupServiceRequest(
-            auth: backupAuth,
-            requestFactory: OWSRequestFactory.backupSetPublicKeyRequest(auth:)
-        )
-
-        let mediaBackupAuth = try await fetchBackupServiceAuth(
-            for: .media,
-            localAci: localAci,
-            auth: auth
-        )
-        _ = try await executeBackupServiceRequest(
-            auth: mediaBackupAuth,
-            requestFactory: OWSRequestFactory.backupSetPublicKeyRequest(auth:)
         )
     }
 
@@ -348,15 +292,6 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
         _ = try await executeBackupServiceRequest(
             auth: auth,
             requestFactory: OWSRequestFactory.backupRefreshInfoRequest(auth:)
-        )
-    }
-
-    /// Delete the current backup
-    public func deleteBackup(auth: MessageBackupServiceAuth) async throws {
-        owsAssertDebug(auth.type == .messages)
-        _ = try await executeBackupServiceRequest(
-            auth: auth,
-            requestFactory: OWSRequestFactory.deleteBackupRequest(auth:)
         )
     }
 

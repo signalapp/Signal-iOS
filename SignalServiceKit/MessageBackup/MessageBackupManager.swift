@@ -11,12 +11,16 @@ public protocol MessageBackupManager {
     // MARK: - Interact with remotes
 
     /// Download the encrypted backup for the current user to a local file.
-    func downloadEncryptedBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL
+    func downloadEncryptedBackup(
+        localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth
+    ) async throws -> URL
 
     /// Upload the local encrypted backup identified by the given metadata for
     /// the current user.
     func uploadEncryptedBackup(
         metadata: Upload.EncryptedBackupUploadMetadata,
+        registeredBackupIDToken: BackupIdManager.RegisteredBackupIDToken,
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata>
@@ -24,7 +28,7 @@ public protocol MessageBackupManager {
     // MARK: - Export
 
     /// Export an encrypted backup binary to a local file.
-    /// - SeeAlso ``uploadEncryptedBackup(metadata:localIdentifiers:auth:)``
+    /// - SeeAlso `uploadEncryptedBackup`
     func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
         backupKey: BackupKey,

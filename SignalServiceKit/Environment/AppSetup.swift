@@ -978,6 +978,13 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let backupIdManager = BackupIdManager(
+            api: BackupIdManager.NetworkAPI(networkManager: networkManager),
+            backupRequestManager: messageBackupRequestManager,
+            backupKeyMaterial: messageBackupKeyMaterial,
+            db: db
+        )
+
         let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(
             authCredentialStore: authCredentialStore,
             db: db,
@@ -1282,6 +1289,7 @@ public class AppSetup {
             backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
+            backupIdManager: backupIdManager,
             backupSubscriptionManager: backupSubscriptionManager,
             badgeCountFetcher: badgeCountFetcher,
             callLinkStore: callLinkStore,
@@ -1338,6 +1346,7 @@ public class AppSetup {
             messageBackupErrorPresenter: messageBackupErrorPresenter,
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             messageBackupManager: messageBackupManager,
+            messageBackupRequestManager: messageBackupRequestManager,
             messageStickerManager: messageStickerManager,
             nicknameManager: nicknameManager,
             orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,

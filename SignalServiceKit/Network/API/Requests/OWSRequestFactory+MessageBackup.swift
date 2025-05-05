@@ -8,23 +8,6 @@ import Foundation
 // MARK: - Message Backup
 
 extension OWSRequestFactory {
-    public static func reserveBackupId(
-        backupId: String,
-        mediaBackupId: String,
-        auth: ChatServiceAuth = .implicit()
-    ) throws -> TSRequest {
-        var request = TSRequest(
-            url: URL(string: "v1/archives/backupid")!,
-            method: "PUT",
-            parameters: [
-                "messagesBackupAuthCredentialRequest": backupId,
-                "mediaBackupAuthCredentialRequest": mediaBackupId
-            ]
-        )
-        request.auth = .identified(auth)
-        return request
-    }
-
     public static func backupAuthenticationCredentialRequest(
         from fromRedemptionSeconds: UInt64,
         to toRedemptionSeconds: UInt64,
@@ -34,16 +17,6 @@ extension OWSRequestFactory {
         owsAssertDebug(toRedemptionSeconds > 0)
         var request = TSRequest(url: URL(string: "v1/archives/auth?redemptionStartSeconds=\(fromRedemptionSeconds)&redemptionEndSeconds=\(toRedemptionSeconds)")!, method: "GET", parameters: nil)
         request.auth = .identified(auth)
-        return request
-    }
-
-    public static func backupSetPublicKeyRequest(auth: MessageBackupServiceAuth) -> TSRequest {
-        var request = TSRequest(
-            url: URL(string: "v1/archives/keys")!,
-            method: "PUT",
-            parameters: ["backupIdPublicKey": Data(auth.publicKey.serialize()).base64EncodedString()]
-        )
-        request.auth = .messageBackup(auth)
         return request
     }
 
@@ -81,16 +54,6 @@ extension OWSRequestFactory {
         var request = TSRequest(
             url: URL(string: "v1/archives")!,
             method: "PUT",
-            parameters: nil
-        )
-        request.auth = .messageBackup(auth)
-        return request
-    }
-
-    public static func deleteBackupRequest(auth: MessageBackupServiceAuth) -> TSRequest {
-        var request = TSRequest(
-            url: URL(string: "v1/archives")!,
-            method: "DELETE",
             parameters: nil
         )
         request.auth = .messageBackup(auth)

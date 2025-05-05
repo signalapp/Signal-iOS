@@ -145,34 +145,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     // MARK: - Remote backups
 
-    /// Initialize Message Backups by reserving a backup ID and registering a public key used to sign backup auth credentials.
-    /// These registration calls are safe to call multiple times, but to avoid unecessary network calls, the app will remember if
-    /// backups have been successfully registered on this device and will no-op in this case.
-    private func reserveAndRegister(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws {
-        let (hasReservedBackupKey, hasReservedMediaBackupKey) = db.read { tx in
-            return (
-                kvStore.getBool(Constants.keyValueStoreHasReservedBackupKey, transaction: tx) ?? false,
-                kvStore.getBool(Constants.keyValueStoreHasReservedMediaBackupKey, transaction: tx) ?? false
-            )
-        }
-
-        if hasReservedBackupKey && hasReservedMediaBackupKey {
-            return
-        }
-
-        // Both reserveBackupId and registerBackupKeys can be called multiple times, so if
-        // we think the backupId needs to be registered, register the public key at the same time.
-        let localAci = localIdentifiers.aci
-        try await backupRequestManager.reserveBackupId(localAci: localAci, auth: auth)
-        try await backupRequestManager.registerBackupKeys(localAci: localAci, auth: auth)
-
-        // Remember this device has registered for backups
-        await db.awaitableWrite { [weak self] tx in
-            self?.kvStore.setBool(true, key: Constants.keyValueStoreHasReservedBackupKey, transaction: tx)
-            self?.kvStore.setBool(true, key: Constants.keyValueStoreHasReservedMediaBackupKey, transaction: tx)
-        }
-    }
-
     public func downloadEncryptedBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL {
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
             for: .messages,
@@ -190,11 +162,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     public func uploadEncryptedBackup(
         metadata: Upload.EncryptedBackupUploadMetadata,
+        registeredBackupIDToken: BackupIdManager.RegisteredBackupIDToken,
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {
-        // This will return early if this device has already registered the backup ID.
-        try await reserveAndRegister(localIdentifiers: localIdentifiers, auth: auth)
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
             for: .messages,
             localAci: localIdentifiers.aci,

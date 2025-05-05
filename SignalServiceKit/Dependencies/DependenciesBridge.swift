@@ -65,6 +65,7 @@ public class DependenciesBridge {
     public let backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager
     public let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     public let backupAttachmentUploadManager: BackupAttachmentUploadManager
+    public let backupIdManager: BackupIdManager
     public let backupSubscriptionManager: BackupSubscriptionManager
     public let badgeCountFetcher: BadgeCountFetcher
     public let callLinkStore: any CallLinkRecordStore
@@ -121,6 +122,7 @@ public class DependenciesBridge {
     public let messageBackupErrorPresenter: MessageBackupErrorPresenter
     public let messageBackupKeyMaterial: MessageBackupKeyMaterial
     public let messageBackupManager: MessageBackupManager
+    public let messageBackupRequestManager: MessageBackupRequestManager
     public let messageStickerManager: MessageStickerManager
     public let nicknameManager: any NicknameManager
     public let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
@@ -188,6 +190,7 @@ public class DependenciesBridge {
         backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupAttachmentUploadManager: BackupAttachmentUploadManager,
+        backupIdManager: BackupIdManager,
         backupSubscriptionManager: BackupSubscriptionManager,
         badgeCountFetcher: BadgeCountFetcher,
         callLinkStore: any CallLinkRecordStore,
@@ -244,6 +247,7 @@ public class DependenciesBridge {
         messageBackupErrorPresenter: MessageBackupErrorPresenter,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         messageBackupManager: MessageBackupManager,
+        messageBackupRequestManager: MessageBackupRequestManager,
         messageStickerManager: MessageStickerManager,
         nicknameManager: any NicknameManager,
         orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
@@ -310,6 +314,7 @@ public class DependenciesBridge {
         self.backupAttachmentDownloadQueueStatusManager = backupAttachmentDownloadQueueStatusManager
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.backupAttachmentUploadManager = backupAttachmentUploadManager
+        self.backupIdManager = backupIdManager
         self.backupSubscriptionManager = backupSubscriptionManager
         self.badgeCountFetcher = badgeCountFetcher
         self.callLinkStore = callLinkStore
@@ -366,6 +371,7 @@ public class DependenciesBridge {
         self.messageBackupErrorPresenter = messageBackupErrorPresenter
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
         self.messageBackupManager = messageBackupManager
+        self.messageBackupRequestManager = messageBackupRequestManager
         self.messageStickerManager = messageStickerManager
         self.nicknameManager = nicknameManager
         self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager

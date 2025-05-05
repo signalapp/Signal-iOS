@@ -397,6 +397,7 @@ private extension InternalSettingsViewController {
     }
 
     func exportMessageBackupProtoRemotely() async throws {
+        let backupIdManager = DependenciesBridge.shared.backupIdManager
         let messageBackupKeyMaterial = DependenciesBridge.shared.messageBackupKeyMaterial
         let messageBackupManager = DependenciesBridge.shared.messageBackupManager
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
@@ -418,8 +419,15 @@ private extension InternalSettingsViewController {
             backupPurpose: .remoteBackup,
             progress: nil
         )
+
+        let registeredBackupIDToken = try await backupIdManager.registerBackupId(
+            localIdentifiers: localIdentifiers,
+            auth: .implicit()
+        )
+
         _ = try await messageBackupManager.uploadEncryptedBackup(
             metadata: metadata,
+            registeredBackupIDToken: registeredBackupIDToken,
             localIdentifiers: localIdentifiers,
             auth: .implicit()
         )

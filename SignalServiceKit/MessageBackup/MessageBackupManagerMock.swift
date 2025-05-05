@@ -18,6 +18,7 @@ open class MessageBackupManagerMock: MessageBackupManager {
 
     public func uploadEncryptedBackup(
         metadata: Upload.EncryptedBackupUploadMetadata,
+        registeredBackupIDToken: BackupIdManager.RegisteredBackupIDToken,
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {
