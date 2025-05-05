@@ -207,6 +207,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             case .registration(let registrationMode):
                 return Controller(
                     type: RegistrationPhoneNumberViewController.self,
+                    canCancel: true,
                     make: { presenter in
                         return RegistrationPhoneNumberViewController(state: registrationMode, presenter: presenter)
                     },
@@ -656,7 +657,7 @@ extension RegistrationNavigationController: RegistrationQuickRestoreQRCodePresen
         pushNextController(guarantee)
     }
 
-    func cancelQuickRestore() {
+    func cancelChosenRestoreMethod() {
         let guarantee = coordinator.resetRestoreMethodChoice()
         pushNextController(guarantee)
     }

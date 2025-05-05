@@ -8,9 +8,11 @@ import SignalUI
 
 // MARK: - RegistrationPhoneNumberPresenter
 
-protocol RegistrationPhoneNumberPresenter: AnyObject {
+protocol RegistrationPhoneNumberPresenter: RegistrationMethodPresenter {
     func goToNextStep(withE164: E164)
 
+    /// Completely exit registration. Not to be confused with  `cancelChosenRestoreMethod`
+    /// which returns to the splash screen.
     func exitRegistration()
 }
 
@@ -167,6 +169,17 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         return result
     }()
 
+    private lazy var cancelButton: UIButton = {
+        var config = UIButton.Configuration.plain()
+        config.contentInsets = .init(margin: 14)
+        config.title = CommonStrings.cancelButton
+        config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadline.semibold())
+        return UIButton(configuration: config, primaryAction: UIAction { [weak self] _ in
+            self?.phoneNumberInput.resignFirstResponder()
+            self?.presenter?.cancelChosenRestoreMethod()
+        })
+    }()
+
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -230,6 +243,10 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
         stackView.addArrangedSubview(UIView.vStretchingSpacer())
 
+        self.view.addSubview(cancelButton)
+        cancelButton.autoHCenterInSuperview()
+        cancelButton.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea, withOffset: -24)
+
         render()
     }
 
@@ -247,13 +264,22 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                 }
             )
         ]
+        let canCancelChosenRegistrationMethod: Bool
         let canExitRegistration: Bool
         switch state {
         case .initialRegistration(let subState):
+            canCancelChosenRegistrationMethod = true
             canExitRegistration = subState.canExitRegistration
+            Logger.debug("initialRegistration")
         case .reregistration(let subState):
+            canCancelChosenRegistrationMethod = false
             canExitRegistration = subState.canExitRegistration
+            Logger.debug("reregistration")
         }
+
+        cancelButton.isHidden = !canCancelChosenRegistrationMethod
+        cancelButton.isEnabled = canCancelChosenRegistrationMethod
+
         if canExitRegistration {
             actions.append(UIAction(
                 title: OWSLocalizedString(

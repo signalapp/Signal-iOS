@@ -7,12 +7,12 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-protocol RegistrationQuickRestoreQRCodePresenter: AnyObject {
+protocol RegistrationMethodPresenter: AnyObject {
+    func cancelChosenRestoreMethod()
+}
 
+protocol RegistrationQuickRestoreQRCodePresenter: RegistrationMethodPresenter {
     func didReceiveRegistrationMessage(_ message: RegistrationProvisioningMessage)
-
-    // Cancel out to the splash screen
-    func cancelQuickRestore()
 }
 
 class RegistrationQuickRestoreQRCodeViewController:
@@ -48,7 +48,7 @@ class RegistrationQuickRestoreQRCodeViewController:
         model: model,
         cancelAction: { [weak self] in
             self?.provisioningSocketManager.stop()
-            self?.presenter?.cancelQuickRestore()
+            self?.presenter?.cancelChosenRestoreMethod()
         }
     ))
 
