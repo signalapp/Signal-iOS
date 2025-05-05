@@ -121,51 +121,50 @@ enum AttachmentSaving {
         assetCreationRequests: [PHAssetCreationRequestType],
         fromViewController: UIViewController
     ) {
-        fromViewController.ows_askForMediaLibraryPermissions { isGranted in
+        Task { @MainActor in
+            let isGranted = await fromViewController.ows_askForMediaLibraryPermissions(for: .addOnly)
             guard isGranted else {
                 return
             }
 
-            PHPhotoLibrary.shared().performChanges({
-                for assetCreationRequest in assetCreationRequests {
-                    switch assetCreationRequest {
-                    case .image(let image):
-                        PHAssetCreationRequest.creationRequestForAsset(from: image)
-                    case .imageTempFile(let fileUrl):
-                        PHAssetCreationRequest.creationRequestForAssetFromImage(atFileURL: fileUrl)
-                    case .videoTempFile(let fileUrl):
-                        PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: fileUrl)
+            do {
+                try await PHPhotoLibrary.shared().performChanges {
+                    for assetCreationRequest in assetCreationRequests {
+                        switch assetCreationRequest {
+                        case .image(let image):
+                            PHAssetCreationRequest.creationRequestForAsset(from: image)
+                        case .imageTempFile(let fileUrl):
+                            PHAssetCreationRequest.creationRequestForAssetFromImage(atFileURL: fileUrl)
+                        case .videoTempFile(let fileUrl):
+                            PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: fileUrl)
+                        }
                     }
                 }
-            }, completionHandler: { didSucceed, error in
-                // Best-effort attempt to delete any temp files, now that we're
-                // done with them. They'll be cleared eventually regardless.
-                for tmpFileUrl in assetCreationRequests.compactMap(\.tmpFileUrl) {
-                    try? OWSFileSystem.deleteFile(url: tmpFileUrl)
-                }
 
-                DispatchQueue.main.async {
-                    if didSucceed {
-                        Logger.info("Saved attachments to photo library.")
+                Logger.info("Saved attachments to photo library.")
 
-                        ToastController(text: OWSLocalizedString(
-                            "ATTACHMENT_SAVING_SUCCESS_MESSAGE",
-                            comment: "Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name."
-                        )).presentToastView(
-                            from: .bottom,
-                            of: fromViewController.view,
-                            inset: 40
-                        )
-                    } else {
-                        owsFailDebug("Failed to save attachments to photo library: \(error as Any)")
+                ToastController(text: OWSLocalizedString(
+                    "ATTACHMENT_SAVING_SUCCESS_MESSAGE",
+                    comment: "Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name."
+                )).presentToastView(
+                    from: .bottom,
+                    of: fromViewController.view,
+                    inset: 40
+                )
+            } catch {
+                Logger.error("Failed to save attachments to photo library: \(error)")
 
-                        OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
-                            "ATTACHMENT_SAVING_FAILURE_MESSAGE",
-                            comment: "Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name."
-                        ))
-                    }
-                }
-            })
+                OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
+                    "ATTACHMENT_SAVING_FAILURE_MESSAGE",
+                    comment: "Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name."
+                ))
+            }
+
+            // Best-effort attempt to delete any temp files, now that we're
+            // done with them. They'll be cleared eventually regardless.
+            for tmpFileUrl in assetCreationRequests.compactMap(\.tmpFileUrl) {
+                try? OWSFileSystem.deleteFile(url: tmpFileUrl)
+            }
         }
     }
 

@@ -802,18 +802,16 @@ extension AttachmentApprovalViewController {
     @objc
     private func didTapSave() {
         guard let currentItem = currentItem else { return }
+        Task { @MainActor in
+            do {
+                let saveableAsset: SaveableAsset = try SaveableAsset(attachmentApprovalItem: currentItem)
 
-        let errorText = OWSLocalizedString("ATTACHMENT_APPROVAL_FAILED_TO_SAVE",
-                                           comment: "alert text when Signal was unable to save a copy of the attachment to the system photo library")
-        do {
-            let saveableAsset: SaveableAsset = try SaveableAsset(attachmentApprovalItem: currentItem)
-
-            self.ows_askForMediaLibraryPermissions { isGranted in
+                let isGranted = await self.ows_askForMediaLibraryPermissions(for: .addOnly)
                 guard isGranted else {
                     return
                 }
 
-                PHPhotoLibrary.shared().performChanges({
+                try await PHPhotoLibrary.shared().performChanges{
                     switch saveableAsset {
                     case .image(let image):
                         PHAssetCreationRequest.creationRequestForAsset(from: image)
@@ -822,23 +820,24 @@ extension AttachmentApprovalViewController {
                     case .videoUrl(let videoUrl):
                         PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
                     }
-                }, completionHandler: { didSucceed, error in
-                    DispatchQueue.main.async {
-                        if didSucceed {
-                            let toastController = ToastController(text: OWSLocalizedString("ATTACHMENT_APPROVAL_MEDIA_DID_SAVE",
-                                                                                           comment: "toast alert shown after user taps the 'save' button"))
-                            let inset = self.bottomToolView.height + 16
-                            toastController.presentToastView(from: .bottom, of: self.view, inset: inset)
-                        } else {
-                            owsFailDebug("error: \(String(describing: error))")
-                            OWSActionSheets.showErrorAlert(message: errorText)
-                        }
-                    }
-                })
+                }
+
+                let toastController = ToastController(text: OWSLocalizedString(
+                    "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE",
+                    comment: "toast alert shown after user taps the 'save' button"
+                ))
+                toastController.presentToastView(
+                    from: .bottom,
+                    of: self.view,
+                    inset: self.bottomToolView.height + 16
+                )
+            } catch {
+                Logger.error("Failed to save attachment to photo library: \(error)")
+                OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
+                    "ATTACHMENT_APPROVAL_FAILED_TO_SAVE",
+                    comment: "alert text when Signal was unable to save a copy of the attachment to the system photo library"
+                ))
             }
-        } catch {
-            owsFailDebug("error: \(error)")
-            OWSActionSheets.showErrorAlert(message: errorText)
         }
     }
 
@@ -1455,7 +1454,7 @@ private extension SaveableAsset {
         }
     }
 
-    init(imageEditorModel: ImageEditorModel) throws {
+    private init(imageEditorModel: ImageEditorModel) throws {
         guard let image = imageEditorModel.renderOutput() else {
             throw OWSAssertionError("failed to render image")
         }
@@ -1463,7 +1462,7 @@ private extension SaveableAsset {
         self = .image(image)
     }
 
-    init(attachment: SignalAttachment) throws {
+    private init(attachment: SignalAttachment) throws {
         if attachment.isValidImage {
             guard let imageUrl = attachment.dataUrl else {
                 throw OWSAssertionError("imageUrl was unexpectedly nil")

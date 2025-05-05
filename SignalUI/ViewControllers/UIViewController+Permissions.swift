@@ -4,7 +4,7 @@
 //
 
 import AVFoundation
-import Photos
+public import Photos
 import SignalServiceKit
 
 extension UIViewController {
@@ -77,71 +77,74 @@ extension UIViewController {
     }
 
     public func ows_askForMediaLibraryPermissions(callback: @escaping (Bool) -> Void) {
-        // Ensure callback is invoked on main thread.
-        let threadSafeCallback: (Bool) -> Void = { granted in
-            DispatchMainThreadSafe {
-                callback(granted)
-            }
+        Task {
+            callback(await self.ows_askForMediaLibraryPermissions(for: .readWrite))
         }
+    }
 
+    @MainActor
+    public func ows_askForMediaLibraryPermissions(for accessLevel: PHAccessLevel) async -> Bool {
         guard CurrentAppContext().reportedApplicationState != .background else {
             Logger.error("Skipping media library permissions request when app is in background.")
-            threadSafeCallback(false)
-            return
+            return false
         }
 
         guard UIImagePickerController.isSourceTypeAvailable(.photoLibrary) else {
             Logger.error("PhotoLibrary ImagePicker source not available")
-            threadSafeCallback(false)
-            return
+            return false
         }
 
-        let presentSettingsDialog = {
-            AssertIsOnMainThread()
+        let authorizationStatus = PHPhotoLibrary.authorizationStatus(for: accessLevel)
+        switch authorizationStatus {
+        case .notDetermined:
+            let status = await PHPhotoLibrary.requestAuthorization(for: accessLevel)
+            switch status {
+            case .authorized, .limited:
+                return true
+            default:
+                await self.presentMediaLibraryAccessDeniedSheet()
+                return false
+            }
+        case .denied, .restricted:
+            await self.presentMediaLibraryAccessDeniedSheet()
+            return false
 
-            let actionSheet = ActionSheetController(
-                title: OWSLocalizedString(
-                    "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE",
-                    comment: "Alert title when user has previously denied media library access"
-                ),
-                message: OWSLocalizedString(
-                    "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE",
-                    comment: "Alert body when user has previously denied media library access"
-                )
+        case .authorized, .limited:
+            return true
+
+        @unknown default:
+            owsFailDebug("Unknown authorization status \(authorizationStatus)")
+            return false
+        }
+    }
+
+    @MainActor
+    private func presentMediaLibraryAccessDeniedSheet() async {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE",
+                comment: "Alert title when user has previously denied media library access"
+            ),
+            message: OWSLocalizedString(
+                "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE",
+                comment: "Alert body when user has previously denied media library access"
             )
+        )
 
-            if let openSettingsAction = AppContextUtils.openSystemSettingsAction(completion: { threadSafeCallback(false) }) {
+        return await withCheckedContinuation { continuation in
+            if let openSettingsAction = AppContextUtils.openSystemSettingsAction(completion: {
+                continuation.resume()
+            }) {
                 actionSheet.addAction(openSettingsAction)
             }
             actionSheet.addAction(ActionSheetAction(
                 title: CommonStrings.dismissButton,
                 style: .cancel,
                 handler: { _ in
-                    threadSafeCallback(false)
+                    continuation.resume()
                 }
             ))
             self.presentActionSheet(actionSheet)
-        }
-
-        let authorizationStatus = PHPhotoLibrary.authorizationStatus()
-        switch authorizationStatus {
-        case .notDetermined:
-            PHPhotoLibrary.requestAuthorization { status in
-                switch status {
-                case .authorized, .limited:
-                    threadSafeCallback(true)
-                default:
-                    DispatchMainThreadSafe { presentSettingsDialog() }
-                }
-            }
-        case .denied, .restricted:
-            DispatchMainThreadSafe { presentSettingsDialog() }
-
-        case .authorized, .limited:
-            threadSafeCallback(true)
-
-        @unknown default:
-            owsFail("Unknown authorization status \(authorizationStatus)")
         }
     }
 

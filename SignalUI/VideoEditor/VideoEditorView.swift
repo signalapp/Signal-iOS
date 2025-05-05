@@ -203,67 +203,6 @@ class VideoEditorView: UIView {
             }
         }
     }
-
-    // MARK: - Actions
-
-    @objc
-    private func didTapSave(sender: UIButton) {
-        playerView.pause()
-
-        guard let viewControllerProvider = viewControllerProvider else {
-            owsFailDebug("Missing viewControllerProvider.")
-            return
-        }
-        let viewController = viewControllerProvider.viewController(forVideoEditorView: self)
-        viewController.ows_askForMediaLibraryPermissions { isGranted in
-            AssertIsOnMainThread()
-
-            guard isGranted else { return }
-
-            ModalActivityIndicatorViewController.present(fromViewController: viewController, canCancel: false) { modalVC in
-                Task {
-                    do {
-                        try await self.saveVideo(self.model)
-                        modalVC.dismiss()
-                    } catch {
-                        Logger.error("Failed to save video: \(error)")
-                        modalVC.dismiss {
-                            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    nonisolated private func saveVideo(_ model: VideoEditorModel) async throws {
-        // Creates a copy of a file in a new temporary path
-        // The file path returned in a Result is guaranteed valid for the Result's lifetime
-        // Making a copy protects us from any modifications to a file we don't own
-        func createCopyOfFile(_ path: String) throws -> String {
-            guard let fileExtension = path.fileExtension else {
-                throw OWSAssertionError("Missing fileExtension.")
-            }
-            let dstPath = OWSFileSystem.temporaryFilePath(fileExtension: fileExtension)
-            try FileManager.default.copyItem(atPath: path, toPath: dstPath)
-            return dstPath
-        }
-
-        let renderedVideoPath = if model.needsRender {
-            try await model.ensureCurrentRender().render().getResultPath()
-        } else {
-            // Nothing to render, just use the original file
-            model.srcVideoPath
-        }
-
-        let copy = try createCopyOfFile(renderedVideoPath)
-        defer { OWSFileSystem.deleteFileIfExists(copy) }
-
-        try await PHPhotoLibrary.shared().performChanges {
-            let url = URL(fileURLWithPath: copy)
-            PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: url)
-        }
-    }
 }
 
 extension VideoEditorView: VideoPlaybackState {

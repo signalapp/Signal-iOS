@@ -363,15 +363,12 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                 ),
                 action: { [weak self] in
                     guard let self = self else { return }
-                    self.ows_askForCameraPermissions { granted in
-                        guard granted else { return }
-                        let picker = OWSImagePickerController()
-                        picker.delegate = self
-                        picker.allowsEditing = false
-                        picker.sourceType = .camera
-                        picker.mediaTypes = [UTType.image.identifier]
-                        self.present(picker, animated: true)
-                    }
+                    let picker = OWSImagePickerController()
+                    picker.delegate = self
+                    picker.allowsEditing = false
+                    picker.sourceType = .camera
+                    picker.mediaTypes = [UTType.image.identifier]
+                    self.present(picker, animated: true)
                 }
             ),
             buildHeaderButton(
@@ -382,14 +379,11 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                 ),
                 action: { [weak self] in
                     guard let self = self else { return }
-                    self.ows_askForMediaLibraryPermissions { granted in
-                        guard granted else { return }
-                        let picker = OWSImagePickerController()
-                        picker.delegate = self
-                        picker.sourceType = .photoLibrary
-                        picker.mediaTypes = [UTType.image.identifier]
-                        self.present(picker, animated: true)
-                    }
+                    let picker = OWSImagePickerController()
+                    picker.delegate = self
+                    picker.sourceType = .photoLibrary
+                    picker.mediaTypes = [UTType.image.identifier]
+                    self.present(picker, animated: true)
                 }
             ),
             buildHeaderButton(
