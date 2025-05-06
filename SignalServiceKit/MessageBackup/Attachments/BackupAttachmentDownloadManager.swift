@@ -191,6 +191,11 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
     public func restoreAttachmentsIfNeeded() async throws {
         guard appContext.isMainApp else { return }
+
+        if FeatureFlags.MessageBackup.remoteExportAlpha {
+            try await listMediaManager.queryListMediaIfNeeded()
+        }
+
         switch await statusManager.beginObservingIfNeeded(type: .download) {
         case .running:
             break
@@ -212,9 +217,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             Logger.info("Skipping backup attachment downloads while low on disk space")
             try await taskQueue.stop()
             return
-        }
-        if FeatureFlags.MessageBackup.remoteExportAlpha {
-            try await listMediaManager.queryListMediaIfNeeded()
         }
         do {
             try await progress.beginObserving()
