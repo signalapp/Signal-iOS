@@ -184,7 +184,7 @@ extension ConversationViewController: UIScrollViewDelegate {
             return
         }
 
-        _ = autoLoadMoreIfNecessary()
+        autoLoadMoreIfNecessary()
 
         if !isUserScrolling, !isWaitingForDeceleration {
             saveLastVisibleSortIdAndOnScreenPercentage()

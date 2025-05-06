@@ -239,7 +239,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         DispatchQueue.main.async {
             self.reloadReactionsDetailSheetWithSneakyTransaction()
             if hasViewDidAppearEverCompleted {
-                _ = self.autoLoadMoreIfNecessary()
+                self.autoLoadMoreIfNecessary()
             }
         }
     }
@@ -791,6 +791,7 @@ extension ConversationViewController: CVViewStateDelegate {
 // MARK: - Load More
 
 extension ConversationViewController {
+    @discardableResult
     public func autoLoadMoreIfNecessary() -> Bool {
         AssertIsOnMainThread()
 
@@ -815,7 +816,7 @@ extension ConversationViewController {
         if showLoadOlderHeader, isCloseToTop {
             if loadCoordinator.didLoadOlderRecently {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                    _ = self?.autoLoadMoreIfNecessary()
+                    self?.autoLoadMoreIfNecessary()
                 }
                 return false
             }
@@ -830,7 +831,7 @@ extension ConversationViewController {
         if showLoadNewerHeader, isCloseToBottom {
             if loadCoordinator.didLoadNewerRecently {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                    _ = self?.autoLoadMoreIfNecessary()
+                    self?.autoLoadMoreIfNecessary()
                 }
                 return false
             }

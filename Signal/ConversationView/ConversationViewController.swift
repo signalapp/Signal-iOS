@@ -385,7 +385,7 @@ public final class ConversationViewController: OWSViewController {
         self.markVisibleMessagesAsRead()
         self.startReadTimer()
         self.updateNavigationBarSubtitleLabel()
-        _ = self.autoLoadMoreIfNecessary()
+        self.autoLoadMoreIfNecessary()
 
         let serviceIds = thread.recipientAddressesWithSneakyTransaction.compactMap(\.serviceId)
 

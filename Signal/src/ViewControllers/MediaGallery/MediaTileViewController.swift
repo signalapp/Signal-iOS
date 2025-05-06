@@ -385,7 +385,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     private var scrollFlagShouldBeVisible = false
 
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        self.autoLoadMoreIfNecessary()
+        autoLoadMoreIfNecessary()
         showOrHideScrollFlag()
         if scrollFlag.superview != nil {
             updateScrollFlag()

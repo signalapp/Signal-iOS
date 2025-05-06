@@ -458,7 +458,7 @@ extension ConversationViewController {
         scrollingAnimationCompletionTimer?.invalidate()
         scrollingAnimationCompletionTimer = nil
 
-        _ = autoLoadMoreIfNecessary()
+        autoLoadMoreIfNecessary()
     }
 
     func resetForSizeOrOrientationChange() {
