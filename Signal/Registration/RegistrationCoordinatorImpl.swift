@@ -693,6 +693,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // be valid, or may not correspond with the current e164.
         var svr2AuthCredentialCandidates: [SVR2AuthCredential]?
         var svrAuthCredential: SVRAuthCredential?
+
         // If we had SVR backups before registration even began.
         var didHaveSVRBackupsPriorToReg = false
 
@@ -859,6 +860,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// PIN guesses or decide to give up before exhausting them.
         var hasGivenUpTryingToRestoreWithSVR = false
 
+        /// Have we restored the pin form SVR already?  This serves as a hint to the registration
+        /// flow that it doesn't need to fetch from SVR in the case of an error and can move on
+        /// to alternate registration paths (e.g. falling back to session based registration)
+        var hasRestoredFromSVR = false
+
         /// Root key entered or generated during registration.  This value should be persisted at
         /// the end of registration
         var accountEntropyPool: SignalServiceKit.AccountEntropyPool?
@@ -996,6 +1002,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case hasSkippedPinEntry
             // Legacy naming
             case hasGivenUpTryingToRestoreWithSVR = "hasGivenUpTryingToRestoreWithKBS"
+            case hasRestoredFromSVR
             case sessionState
             case accountIdentity
             case didRefreshOneTimePreKeys
@@ -1654,13 +1661,29 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // (If we wiped it and our SVR server guesses were consumed by the reglock-challenger,
             // we'd be outta luck and have no way to recover).
             //
-            // However, because the master key can be much more fluid in an AEP world, there is a
+            // Because the master key can be much more fluid in an AEP world, there is a
             // much more common case that the SVR master key is wrong, but we can still fetch a
             // valid master key from SVR. To that point, don't clear out the SVR auth credentials here.
             // Instead, clear out just the piece of information we now know to be invalid to inform
             // the state machine to bypass any RRP attempts and fall back to fetching from SVR (or
             // restoring to starting a session from scratch)
-            inMemoryState.regRecoveryPw = nil
+            //
+            // However, we should only attempt to restore from SVR once. If we successfully restore
+            // from SVR, and still encounter this error, we
+            // (a) have already restored so don't need the svrCredentials any longer, and
+            // (b) should revert back to session based registration.
+            if persistedState.hasRestoredFromSVR {
+                db.write { tx in
+                    // We do want to clear out any credentials permanently; we know we
+                    // have to use the session path so credentials aren't helpful.
+                    if let svr2Credential = inMemoryState.svrAuthCredential {
+                        deps.svrAuthCredentialStore.deleteInvalidCredentials([svr2Credential], tx)
+                    }
+                }
+                wipeInMemoryStateToPreventSVRPathAttempts()
+            } else {
+                inMemoryState.regRecoveryPw = nil
+            }
 
             // Instead of moving directly to starting a session, like we do in the .reglockFailed case above,
             // let the state machine determine next steps.  It may be the user had a bad
@@ -1769,6 +1792,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.db.write {
                         self.updatePersistedState($0) { state in
                             state.recoveredSVRMasterKey = masterKey
+                            state.hasRestoredFromSVR = true
                         }
                         self.updateMasterKeyAndLocalState(masterKey: masterKey, tx: $0)
                     }
@@ -2928,6 +2952,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         self.updateMasterKeyAndLocalState(masterKey: masterKey, tx: tx)
                         self.updatePersistedState(tx) {
                             $0.recoveredSVRMasterKey = masterKey
+                            $0.hasRestoredFromSVR = true
                         }
                         self.updatePersistedSessionState(session: session, tx) {
                             // Now we have the state we need to get past reglock.
