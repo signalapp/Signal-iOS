@@ -1207,6 +1207,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             deps.tsAccountManager.setIsManualMessageFetchEnabled(inMemoryState.isManualMessageFetchEnabled, tx: tx)
         }
 
+        func finalizeRegistration(tx: DBWriteTransaction) {
+            /// Disable PNI Hello World operations – these aren't necessary
+            /// since we are the only device and know that our
+            /// just-generated our PNI identity key is correct.
+            deps.pniHelloWorldManager.markHelloWorldAsUnnecessary(tx: tx)
+
+            writeState(tx)
+            persistLocalIdentifiers(tx: tx)
+        }
+
         func setupContactsAndFinish() -> Guarantee<RegistrationStep> {
             // Start syncing system contacts now that we have set up tsAccountManager.
             deps.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
@@ -1236,22 +1246,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         /// Enable the onboarding banner cards.
                         self.deps.experienceManager.enableAllGetStartedCards(tx)
                     }
-
-                    /// Disable PNI Hello World operations – these aren't necessary
-                    /// since we are the only device and know that our
-                    /// just-generated our PNI identity key is correct.
-                    self.deps.pniHelloWorldManager.markHelloWorldAsUnnecessary(tx: tx)
-
-                    writeState(tx)
-                    persistLocalIdentifiers(tx: tx)
+                    finalizeRegistration(tx: tx)
                 }
                 return setupContactsAndFinish()
             }
 
         case .reRegistering:
             db.write { tx in
-                writeState(tx)
-                persistLocalIdentifiers(tx: tx)
+                finalizeRegistration(tx: tx)
             }
             return setupContactsAndFinish()
 
