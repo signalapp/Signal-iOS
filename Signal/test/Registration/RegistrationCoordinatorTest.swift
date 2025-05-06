@@ -169,9 +169,17 @@ public class RegistrationCoordinatorTest {
 
     typealias TestCase = (mode: RegistrationMode, oldKey: KeyType, newKey: KeyType)
 
+    static func onlyReRegisteringTestCases() -> [TestCase] {
+        return buildTestCases(for: [RegistrationMode.reRegistering(.init(e164: Stubs.e164, aci: Stubs.aci))])
+    }
+
     static func testCases() -> [TestCase] {
+        return buildTestCases(for: testModes)
+    }
+
+    static func buildTestCases(for modes: [RegistrationMode]) -> [TestCase] {
         var results = [(mode: RegistrationMode, oldKey: KeyType, newKey: KeyType)]()
-        for mode in Self.testModes {
+        for mode in modes {
             for keys in KeyType.testCases {
                 results.append((mode, keys.old, keys.new))
             }
@@ -1167,6 +1175,669 @@ public class RegistrationCoordinatorTest {
 
         // Since we set profile info, we should have scheduled a reupload.
         #expect(profileManagerMock.didScheduleReuploadLocalProfile)
+    }
+
+    // Test the reglock path when a user has a local password
+    // Tests a similar path to testRegRecoveryPwPath_failedReglock above,
+    // but returns a `regRecoveryPasswordRejected` error in the first
+    // createAccount attempt, since this is the path that happens in the app.
+    // Keeping 'testRegRecoveryPwPath_failedReglock' around since it's still
+    // technically a possible path and should still be validated.
+    @MainActor
+    @Test(arguments: Self.testCases())
+    func testRegRecoveryPwPath_failedReglock2(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
+        // Set profile info so we skip those steps.
+        setupDefaultAccountAttributes()
+
+        // Set a PIN on disk.
+        ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
+        ows2FAManagerMock.isReglockEnabledMock = { true }
+
+        // Make SVR give us back a reg recovery password.
+        let masterKey = AccountEntropyPool().getMasterKey()
+        db.write { accountKeyStore.setMasterKey(masterKey, tx: $0) }
+        svr.hasMasterKey = true
+
+        // Run the scheduler for a bit; we don't care about timing these bits.
+        scheduler.start()
+
+        // NOTE: We expect to skip opening path steps because
+        // if we have a SVR master key locally, this _must_ be
+        // a previously registered device, and we can skip intros.
+
+        // We haven't set a phone number so it should ask for that.
+        #expect(coordinator.nextStep().value == .phoneNumberEntry(self.stubs.phoneNumberEntryState(mode: mode)))
+
+        // Give it a phone number, which should show the PIN entry step.
+        var nextStep = coordinator.submitE164(Stubs.e164)
+        // Now it should ask for the PIN to confirm the user knows it.
+        #expect(nextStep.value == .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)))
+
+        // Now we want to control timing so we can verify things happened in the right order.
+        scheduler.stop()
+        scheduler.adjustTime(to: 0)
+
+        // Give it the pin code, which should make it try and register.
+        nextStep = coordinator.submitPINCode(Stubs.pinCode)
+
+        // First we try and create an account with reg recovery
+        // password; we will fail with reglock error.
+        // First we get apns tokens, then prekeys, then register
+        // then finalize prekeys (with failure) after.
+        let firstPushTokenTime = 0
+        let firstPreKeyCreateTime = 1
+        let firstRegistrationTime = 2
+        let firstPreKeyFinalizeTime = 3
+
+        // Once we fail, we try again immediately with the reglock
+        // token we fetch.
+        // Same sequence as the first request.
+        let secondPushTokenTime = 4
+
+        let sessionStartTime = 6
+        let requestVerificationCodeTime = 7
+        let submitCodeTime = 8
+        let thirdPushTokenTime = 9
+        let secondPreKeyCreateTime = 10
+
+        // When that fails, we try and create a session.
+        // No prekey stuff this time, just apns token and session requests.
+
+        let secondRegistrationTime = 11
+        let secondPreKeyFinalizeTime = 12
+
+        pushRegistrationManagerMock.requestPushTokenMock = {
+            switch self.scheduler.currentTime {
+            case firstPushTokenTime, secondPushTokenTime, thirdPushTokenTime:
+                return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: self.scheduler.currentTime + 1)
+            default:
+                Issue.record("Got unexpected push tokens request")
+                return .value(.timeout)
+            }
+        }
+        preKeyManagerMock.createPreKeysMock = {
+            switch self.scheduler.currentTime {
+            case firstPreKeyCreateTime, secondPreKeyCreateTime:
+                return self.scheduler.promise(resolvingWith: Stubs.prekeyBundles(), atTime: self.scheduler.currentTime + 1)
+            default:
+                Issue.record("Got unexpected prekeys request")
+                return .init(error: PreKeyError())
+            }
+        }
+        preKeyManagerMock.finalizePreKeysMock = { didSucceed in
+            switch self.scheduler.currentTime {
+            case firstPreKeyFinalizeTime, secondPreKeyFinalizeTime:
+                #expect(didSucceed.negated)
+                return self.scheduler.promise(resolvingWith: (), atTime: self.scheduler.currentTime + 1)
+            default:
+                Issue.record("Got unexpected prekeys request")
+                return .init(error: PreKeyError())
+            }
+        }
+
+        let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
+            verificationMethod: .recoveryPassword(masterKey.regRecoveryPw),
+            e164: Stubs.e164,
+            authPassword: "", // Doesn't matter for request generation.
+            accountAttributes: Stubs.accountAttributes(masterKey),
+            skipDeviceTransfer: true,
+            apnRegistrationId: Stubs.apnsRegistrationId,
+            prekeyBundles: Stubs.prekeyBundles()
+        )
+
+        // Fail the first request;
+        let failResponse = TSRequestOWSURLSessionMock.Response(
+            urlSuffix: expectedRecoveryPwRequest.url.absoluteString,
+            statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.regRecoveryPasswordRejected.rawValue,
+            bodyJson: EncodableRegistrationLockFailureResponse(
+                timeRemainingMs: 10,
+                svr2AuthCredential: Stubs.svr2AuthCredential
+            )
+        )
+        mockURLSession.addResponse(failResponse, atTime: firstRegistrationTime + 1, on: scheduler)
+
+        // Once the first request fails, it should try an start a session.
+        // We'll ask for a push challenge, though we don't need to resolve it in this test.
+        self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+            return Guarantee<String>.pending().0
+        }
+
+        // Resolve with a session.
+        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+            resolvingWith: .success(self.stubs.session(hasSentVerificationCode: false)),
+            atTime: sessionStartTime + 1
+        )
+
+        // Then when it gets back the session, it should immediately ask for
+        // a verification code to be sent.
+        // Resolve with an updated session.
+        self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+            resolvingWith: .success(self.stubs.session(hasSentVerificationCode: true)),
+            atTime: requestVerificationCodeTime + 1
+        )
+
+        // Give back an valid session.
+        self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
+            resolvingWith: .success(RegistrationSession(
+                id: Stubs.sessionId,
+                e164: Stubs.e164,
+                receivedDate: self.date,
+                nextSMS: 0,
+                nextCall: 0,
+                nextVerificationAttempt: nil,
+                allowedToRequestCode: true,
+                requestedInformation: [],
+                hasUnknownChallengeRequiringAppUpdate: false,
+                verified: true
+            )),
+            atTime: submitCodeTime + 1
+        )
+
+        scheduler.run(atTime: submitCodeTime + 1) {
+            nextStep = coordinator.submitVerificationCode(Stubs.pinCode)
+        }
+
+        let expectedRecoveryPwRequest2 = RegistrationRequestFactory.createAccountRequest(
+            verificationMethod: .sessionId(Stubs.sessionId),
+            e164: Stubs.e164,
+            authPassword: "", // Doesn't matter for request generation.
+            accountAttributes: Stubs.accountAttributes(masterKey),
+            skipDeviceTransfer: true,
+            apnRegistrationId: Stubs.apnsRegistrationId,
+            prekeyBundles: Stubs.prekeyBundles()
+        )
+
+        // Once the request fails, we should try again with the reglock
+        // token, this time.
+        let failResponse2 = TSRequestOWSURLSessionMock.Response(
+            urlSuffix: expectedRecoveryPwRequest2.url.absoluteString,
+            statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
+            bodyJson: EncodableRegistrationLockFailureResponse(
+                timeRemainingMs: 10000,
+                svr2AuthCredential: Stubs.svr2AuthCredential
+            )
+        )
+        mockURLSession.addResponse(failResponse2, atTime: secondRegistrationTime + 1, on: scheduler)
+
+        #expect(svr.hasMasterKey)
+
+        scheduler.runUntilIdle()
+
+        let acknowledgeAction: RegistrationReglockTimeoutAcknowledgeAction = switch testCase.mode {
+        case .registering: .resetPhoneNumber
+        case .changingNumber, .reRegistering: .none
+        }
+        #expect(nextStep.value == .reglockTimeout(RegistrationReglockTimeoutState(
+            reglockExpirationDate: dateProvider().addingTimeInterval(TimeInterval(10)),
+            acknowledgeAction: acknowledgeAction
+        )))
+
+        // We want to have wiped our master key; we failed reglock, which means the key itself is wrong.
+        #expect(svr.hasMasterKey)
+    }
+
+    // Test the path where a the local masterkey is no longer in sync with the one storedin SVR
+    // This can happen a lot more often in an AEP enabled world, which means that during registration
+    // we may need to go fetch the current key from SVR after failing the first registration attempt
+    @MainActor
+    @Test(arguments: Self.onlyReRegisteringTestCases())
+    func testRegRecoveryPwPath_reglock_failedLocalCredentials(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
+        // Set profile info so we skip those steps.
+        setupDefaultAccountAttributes()
+
+        // Set a PIN on disk.
+        ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
+        ows2FAManagerMock.isReglockEnabledMock = { true }
+
+        // Make SVR give us back a reg recovery password.
+        let (masterKey, newMasterKey) = buildKeyDataMocks(testCase)
+        let remoteMasterKey = MasterKey()
+        // For non-AEP, we will replace the local key with the remote key.
+        // For AEP, we'll rotate to a new AEP (or use the existing local AEP if it's present)
+        let finalMasterKey = testCase.newKey == .masterKey ? remoteMasterKey : newMasterKey
+        svr.hasMasterKey = true
+
+        // Put some auth credentials in storage.
+        let svr2CredentialCandidates: [SVR2AuthCredential] = [
+            Stubs.svr2AuthCredential,
+        ]
+        svrAuthCredentialStore.svr2Dict = Dictionary(grouping: svr2CredentialCandidates, by: \.credential.username).mapValues { $0.first! }
+
+        // Give it a phone number, which should cause it to check the auth credentials.
+        // Match the main auth credential.
+        let expectedSVR2CheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
+            e164: Stubs.e164,
+            credentials: svr2CredentialCandidates
+        )
+        mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
+            urlSuffix: expectedSVR2CheckRequest.url.absoluteString,
+            statusCode: 200,
+            bodyJson: RegistrationServiceResponses.SVR2AuthCheckResponse(matches: [
+                "\(Stubs.svr2AuthCredential.credential.username):\(Stubs.svr2AuthCredential.credential.password)": .match,
+            ])
+        ))
+
+        // Run the scheduler for a bit; we don't care about timing these bits.
+        scheduler.start()
+
+        // NOTE: We expect to skip opening path steps because
+        // if we have a SVR master key locally, this _must_ be
+        // a previously registered device, and we can skip intros.
+
+        // We haven't set a phone number so it should ask for that.
+        #expect(coordinator.nextStep().value == .phoneNumberEntry(self.stubs.phoneNumberEntryState(mode: mode)))
+
+        // Give it a phone number, which should show the PIN entry step.
+        var nextStep = coordinator.submitE164(Stubs.e164)
+        // Now it should ask for the PIN to confirm the user knows it.
+        #expect(nextStep.value == .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)))
+
+        // Now we want to control timing so we can verify things happened in the right order.
+        scheduler.stop()
+        scheduler.adjustTime(to: 0)
+
+        #expect(svrAuthCredentialStore.svr2Dict[Stubs.svr2AuthCredential.credential.username] != nil)
+
+        svr.restoreKeysMock = { pin, authMethod in
+            #expect(pin == Stubs.pinCode)
+            #expect(authMethod == .svrAuth(Stubs.svr2AuthCredential, backup: nil))
+            self.svr.hasMasterKey = true
+            return self.scheduler.guarantee(resolvingWith: .success(remoteMasterKey), atTime: self.scheduler.currentTime + 1)
+        }
+
+        // Give it the pin code, which should make it try and register.
+        nextStep = coordinator.submitPINCode(Stubs.pinCode)
+
+        // First we try and create an account with reg recovery
+        // password; we will fail with reglock error.
+        // First we get apns tokens, then prekeys, then register
+        // then finalize prekeys (with failure) after.
+        let firstPushTokenTime = 0
+        let firstPreKeyCreateTime = 1
+        let firstRegistrationTime = 2
+        let firstPreKeyFinalizeTime = 3
+
+        // Once we fail, attempt to fetch the remote SVR credential and attempt RRP again
+        // Same sequence as the first request.
+        let secondPushTokenTime = 5
+        let secondPreKeyCreateTime = 6
+        let secondRegistrationTime = 7
+        let secondPreKeyFinalizeTime = 8
+
+        pushRegistrationManagerMock.requestPushTokenMock = {
+            switch self.scheduler.currentTime {
+            case firstPushTokenTime, secondPushTokenTime:
+                return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: self.scheduler.currentTime + 1)
+            default:
+                Issue.record("Got unexpected push tokens request")
+                return .value(.timeout)
+            }
+        }
+        preKeyManagerMock.createPreKeysMock = {
+            switch self.scheduler.currentTime {
+            case firstPreKeyCreateTime, secondPreKeyCreateTime:
+                return self.scheduler.promise(resolvingWith: Stubs.prekeyBundles(), atTime: self.scheduler.currentTime + 1)
+            default:
+                Issue.record("Got unexpected prekeys request")
+                return .init(error: PreKeyError())
+            }
+        }
+        preKeyManagerMock.finalizePreKeysMock = { didSucceed in
+            switch self.scheduler.currentTime {
+            case firstPreKeyFinalizeTime:
+                #expect(didSucceed.negated)
+                return self.scheduler.promise(resolvingWith: (), atTime: self.scheduler.currentTime + 1)
+            case secondPreKeyFinalizeTime:
+                #expect(didSucceed)
+                return self.scheduler.promise(resolvingWith: (), atTime: self.scheduler.currentTime + 1)
+            default:
+                Issue.record("Got unexpected prekeys request")
+                return .init(error: PreKeyError())
+            }
+        }
+
+        let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
+            verificationMethod: .recoveryPassword(masterKey.regRecoveryPw),
+            e164: Stubs.e164,
+            authPassword: "", // Doesn't matter for request generation.
+            accountAttributes: Stubs.accountAttributes(masterKey),
+            skipDeviceTransfer: true,
+            apnRegistrationId: Stubs.apnsRegistrationId,
+            prekeyBundles: Stubs.prekeyBundles()
+        )
+
+        // Fail the first request; the reglock is invalid.
+        let failResponse = TSRequestOWSURLSessionMock.Response(
+            urlSuffix: expectedRecoveryPwRequest.url.absoluteString,
+            statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.regRecoveryPasswordRejected.rawValue,
+            bodyJson: EncodableRegistrationLockFailureResponse(
+                timeRemainingMs: 10,
+                svr2AuthCredential: Stubs.svr2AuthCredential
+            )
+        )
+        mockURLSession.addResponse(failResponse, atTime: firstRegistrationTime + 1, on: scheduler)
+
+        let expectedRecoveryPwRequest2 = RegistrationRequestFactory.createAccountRequest(
+            verificationMethod: .recoveryPassword(remoteMasterKey.regRecoveryPw),
+            e164: Stubs.e164,
+            authPassword: "", // Doesn't matter for request generation.
+            accountAttributes: Stubs.accountAttributes(remoteMasterKey),
+            skipDeviceTransfer: true,
+            apnRegistrationId: Stubs.apnsRegistrationId,
+            prekeyBundles: Stubs.prekeyBundles()
+        )
+
+        // Once the request fails, we should try again with the reglock
+        // token, this time.
+        let accountIdentityResponse = Stubs.accountIdentityResponse()
+        var authPassword: String!
+        self.mockURLSession.addResponse(
+            TSRequestOWSURLSessionMock.Response(
+                matcher: { request in
+                    authPassword = request.authPassword
+                    let requestAttributes = Self.attributesFromCreateAccountRequest(request)
+                    #expect((request.parameters["recoveryPassword"] as? String) == remoteMasterKey.regRecoveryPw)
+                    #expect(remoteMasterKey.reglockToken == requestAttributes.registrationLockToken)
+                    return request.url == expectedRecoveryPwRequest2.url
+                },
+                statusCode: 200,
+                bodyJson: accountIdentityResponse
+            ),
+            atTime: secondRegistrationTime + 1,
+            on: self.scheduler
+        )
+
+        func expectedAuthedAccount() -> AuthedAccount {
+            return .explicit(
+                aci: accountIdentityResponse.aci,
+                pni: accountIdentityResponse.pni,
+                e164: Stubs.e164,
+                deviceId: .primary,
+                authPassword: authPassword
+            )
+        }
+
+        // When registered, we should create pre-keys.
+        preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
+            #expect(auth == expectedAuthedAccount().chatServiceAuth)
+            return .value(())
+        }
+
+        // If we had reglock before registration, it should be re-enabled.
+        let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(token: finalMasterKey.reglockToken)
+        mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
+            matcher: { request in
+                #expect(finalMasterKey.reglockToken == request.parameters["registrationLock"] as! String)
+                return request.url == expectedReglockRequest.url
+            },
+            statusCode: 200,
+            bodyData: nil
+        ))
+
+        // We haven't done a SVR backup; that should happen now.
+        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
+            #expect(pin == Stubs.pinCode)
+            // We don't have a SVR auth credential, it should use chat server creds.
+            #expect(masterKey.rawData == finalMasterKey.rawData)
+            #expect(authMethod == .svrAuth(
+                Stubs.svr2AuthCredential,
+                backup: .chatServerAuth(expectedAuthedAccount())
+            ))
+            self.svr.hasMasterKey = true
+            return .value(masterKey)
+        }
+
+        // Once we sync push tokens, we should restore from storage service.
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
+            #expect(auth.authedAccount == expectedAuthedAccount())
+            switch masterKeySource {
+            case .explicit(let explicitMasterKey):
+                #expect(remoteMasterKey.rawData == explicitMasterKey.rawData)
+            default:
+                Issue.record("Unexpected master key used in storage service operation.")
+            }
+            return .value(())
+        }
+
+        // Once we restore from storage service, we should attempt to reclaim
+        // our username.
+        let mockUsernameLink: Usernames.UsernameLink = .mocked
+        localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
+        usernameApiClientMock.confirmReservedUsernameMocks = [{ _, _, chatServiceAuth in
+            #expect(chatServiceAuth == .explicit(
+                aci: accountIdentityResponse.aci,
+                deviceId: .primary,
+                password: authPassword
+            ))
+            return self.scheduler.promise(
+                resolvingWith: .success(usernameLinkHandle: mockUsernameLink.handle),
+                atTime: secondRegistrationTime + 2
+            )
+        }]
+
+        // Once we do the username reclamation,
+        // we will sync account attributes and then we are finished!
+        let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
+            Stubs.accountAttributes(finalMasterKey),
+            auth: .implicit() // doesn't matter for url matching
+        )
+        self.mockURLSession.addResponse(
+            matcher: { request in
+                return request.url == expectedAttributesRequest.url
+            },
+            statusCode: 200
+        )
+
+        #expect(svr.hasMasterKey)
+
+        scheduler.runUntilIdle()
+
+        #expect(nextStep.value == .done)
+        #expect(svr.hasMasterKey)
+    }
+
+    /// Test the path where both local and remote RRP are rejected due to a reglock challenge
+    /// This should result in the following high level flow:
+    /// 1. Fail with local master key RRP.  This can be from th remote key being rotated, or a reglock challenge
+    /// 2. Fetch the remote master key from SVR
+    /// 3. Fail with the remote master key RRP.  This is usually from a reglock challenge
+    /// 4. Clear SVR state and attempt to register via session
+    /// 5. Fail due to reglock
+    /// This should result in the app being in a reglock timeout
+    @MainActor
+    @Test(arguments: Self.onlyReRegisteringTestCases())
+    func testRegRecoveryPwPath_reglock_localAndRemoteKeysRejected(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
+        // Set profile info so we skip those steps.
+        setupDefaultAccountAttributes()
+
+        // Set a PIN on disk.
+        ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
+        ows2FAManagerMock.isReglockEnabledMock = { true }
+
+        // Make SVR give us back a reg recovery password.
+        let (masterKey, _) = buildKeyDataMocks(testCase)
+        let remoteMasterKey = MasterKey()
+        // For non-AEP, we will replace the local key with the remote key.
+        // For AEP, we'll rotate to a new AEP (or use the existing local AEP if it's present)
+        svr.hasMasterKey = true
+
+        // Put some auth credentials in storage.
+        let svr2CredentialCandidates: [SVR2AuthCredential] = [
+            Stubs.svr2AuthCredential,
+        ]
+        svrAuthCredentialStore.svr2Dict = Dictionary(grouping: svr2CredentialCandidates, by: \.credential.username).mapValues { $0.first! }
+
+        // Give it a phone number, which should cause it to check the auth credentials.
+        // Match the main auth credential.
+        let expectedSVR2CheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
+            e164: Stubs.e164,
+            credentials: svr2CredentialCandidates
+        )
+        mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
+            urlSuffix: expectedSVR2CheckRequest.url.absoluteString,
+            statusCode: 200,
+            bodyJson: RegistrationServiceResponses.SVR2AuthCheckResponse(matches: [
+                "\(Stubs.svr2AuthCredential.credential.username):\(Stubs.svr2AuthCredential.credential.password)": .match,
+            ])
+        ))
+
+        // Run the scheduler for a bit; we don't care about timing these bits.
+        scheduler.start()
+
+        // NOTE: We expect to skip opening path steps because
+        // if we have a SVR master key locally, this _must_ be
+        // a previously registered device, and we can skip intros.
+
+        // We haven't set a phone number so it should ask for that.
+        #expect(coordinator.nextStep().value == .phoneNumberEntry(self.stubs.phoneNumberEntryState(mode: mode)))
+
+        // Give it a phone number, which should show the PIN entry step.
+        var nextStep = coordinator.submitE164(Stubs.e164)
+        // Now it should ask for the PIN to confirm the user knows it.
+        #expect(nextStep.value == .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)))
+
+        // Now we want to control timing so we can verify things happened in the right order.
+        scheduler.stop()
+        scheduler.adjustTime(to: 0)
+
+        svr.restoreKeysMock = { pin, authMethod in
+            #expect(pin == Stubs.pinCode)
+            #expect(authMethod == .svrAuth(Stubs.svr2AuthCredential, backup: nil))
+            self.svr.hasMasterKey = true
+            return self.scheduler.guarantee(resolvingWith: .success(remoteMasterKey), atTime: self.scheduler.currentTime + 1)
+        }
+
+        // Give it the pin code, which should make it try and register.
+        nextStep = coordinator.submitPINCode(Stubs.pinCode)
+
+        // First we try and create an account with reg recovery
+        // password; we will fail with reglock error.
+        // First we get apns tokens, then prekeys, then register
+        // then finalize prekeys (with failure) after.
+        let firstRegistrationTime = 2
+        let secondRegistrationTime = 3
+
+        pushRegistrationManagerMock.requestPushTokenMock = {
+            return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: self.scheduler.currentTime + 1)
+        }
+        preKeyManagerMock.createPreKeysMock = {
+            return self.scheduler.promise(resolvingWith: Stubs.prekeyBundles(), atTime: self.scheduler.currentTime + 1)
+        }
+        preKeyManagerMock.finalizePreKeysMock = { didSucceed in
+            return self.scheduler.promise(resolvingWith: (), atTime: self.scheduler.currentTime + 1)
+        }
+
+        let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
+            verificationMethod: .recoveryPassword(masterKey.regRecoveryPw),
+            e164: Stubs.e164,
+            authPassword: "", // Doesn't matter for request generation.
+            accountAttributes: Stubs.accountAttributes(masterKey),
+            skipDeviceTransfer: true,
+            apnRegistrationId: Stubs.apnsRegistrationId,
+            prekeyBundles: Stubs.prekeyBundles()
+        )
+        // Fail the first request; the local key is invalid.
+        let failResponse = TSRequestOWSURLSessionMock.Response(
+            urlSuffix: expectedRecoveryPwRequest.url.absoluteString,
+            statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.regRecoveryPasswordRejected.rawValue,
+            bodyJson: EncodableRegistrationLockFailureResponse(
+                timeRemainingMs: 10000,
+                svr2AuthCredential: Stubs.svr2AuthCredential
+            )
+        )
+        mockURLSession.addResponse(failResponse, atTime: firstRegistrationTime + 1, on: scheduler)
+        mockURLSession.addResponse(failResponse, atTime: secondRegistrationTime + 1, on: scheduler)
+
+        self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+            return Guarantee<String>.pending().0
+        }
+
+        // Resolve with an updated session at time 4.
+        self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+            resolvingWith: .success(self.stubs.session(hasSentVerificationCode: true)),
+            atTime: secondRegistrationTime + 1
+        )
+
+        // Resolve with a session at time 3.
+        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+            resolvingWith: .success(self.stubs.session(hasSentVerificationCode: false)),
+            atTime: secondRegistrationTime + 2
+        )
+
+        // The third attempt should fall back to session using the remote key(?)
+        let expectedRecoveryPwRequest3 = RegistrationRequestFactory.createAccountRequest(
+            verificationMethod: .sessionId(Stubs.sessionId),
+            e164: Stubs.e164,
+            authPassword: "", // Doesn't matter for request generation.
+            accountAttributes: Stubs.accountAttributes(remoteMasterKey),
+            skipDeviceTransfer: true,
+            apnRegistrationId: Stubs.apnsRegistrationId,
+            prekeyBundles: Stubs.prekeyBundles()
+        )
+
+        // Once the request fails, we should try again with the reglock
+        // token, this time.
+        let failResponse3 = TSRequestOWSURLSessionMock.Response(
+            urlSuffix: expectedRecoveryPwRequest3.url.absoluteString,
+            statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
+            bodyJson: EncodableRegistrationLockFailureResponse(
+                timeRemainingMs: 10000,
+                svr2AuthCredential: Stubs.svr2AuthCredential
+            )
+        )
+        mockURLSession.addResponse(failResponse3, atTime: secondRegistrationTime + 3, on: scheduler)
+
+        #expect(svr.hasMasterKey)
+
+        scheduler.runUntilIdle()
+
+//        #expect(nextStep.value == .verificationCodeEntry(self.stubs.verificationCodeEntryState(mode: mode)))
+
+        // Submit verification code
+
+        // At t=7, give back a verified session.
+        self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
+            resolvingWith: .success(RegistrationSession(
+                id: Stubs.sessionId,
+                e164: Stubs.e164,
+                receivedDate: self.date,
+                nextSMS: 0,
+                nextCall: 0,
+                nextVerificationAttempt: nil,
+                allowedToRequestCode: true,
+                requestedInformation: [],
+                hasUnknownChallengeRequiringAppUpdate: false,
+                verified: true
+            )),
+            atTime: scheduler.currentTime + 1
+        )
+
+        scheduler.run(atTime: scheduler.currentTime + 2) {
+            nextStep = coordinator.submitVerificationCode(Stubs.verificationCode)
+        }
+
+        scheduler.runUntilIdle()
+
+        let acknowledgeAction: RegistrationReglockTimeoutAcknowledgeAction = switch testCase.mode {
+        case .registering: .resetPhoneNumber
+        case .changingNumber, .reRegistering: .none
+        }
+        #expect(nextStep.value == .reglockTimeout(RegistrationReglockTimeoutState(
+            reglockExpirationDate: dateProvider().addingTimeInterval(TimeInterval(10)),
+            acknowledgeAction: acknowledgeAction
+        )))
+
+        // We want to have wiped our master key; we failed reglock, which means the key itself is wrong.
+        #expect(svr.hasMasterKey)
     }
 
     // MARK: - SVR Auth Credential Path
