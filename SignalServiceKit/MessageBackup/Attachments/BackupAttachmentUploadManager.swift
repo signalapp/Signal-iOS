@@ -42,19 +42,23 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
 
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
     private let db: any DB
+    private let statusManager: BackupAttachmentQueueStatusUpdates
     private let taskQueue: TaskQueueLoader<TaskRunner>
 
     public init(
+        appReadiness: AppReadiness,
         attachmentStore: AttachmentStore,
         attachmentUploadManager: AttachmentUploadManager,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
         messageBackupRequestManager: MessageBackupRequestManager,
+        statusManager: BackupAttachmentQueueStatusUpdates,
         tsAccountManager: TSAccountManager
     ) {
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
         self.db = db
+        self.statusManager = statusManager
         let taskRunner = TaskRunner(
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
@@ -62,6 +66,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             dateProvider: dateProvider,
             db: db,
             messageBackupRequestManager: messageBackupRequestManager,
+            statusManager: statusManager,
             tsAccountManager: tsAccountManager
         )
         self.taskQueue = TaskQueueLoader(
@@ -70,6 +75,10 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             db: db,
             runner: taskRunner
         )
+
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
+            self?.startObservingQueueStatus()
+        }
     }
 
     public func enqueueIfNeeded(
@@ -105,6 +114,26 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
             return
         }
+        switch await statusManager.beginObservingIfNeeded(type: .upload) {
+        case .running:
+            break
+        case .empty:
+            // The queue will stop on its own if empty.
+            return
+        case .notRegisteredAndReady:
+            try await taskQueue.stop()
+            return
+        case .noWifiReachability:
+            Logger.info("Skipping backup attachment uploads while not reachable by wifi")
+            try await taskQueue.stop()
+            return
+        case .lowBattery:
+            Logger.info("Skipping backup attachment uploads while low battery")
+            try await taskQueue.stop()
+            return
+        case .lowDiskSpace:
+            owsFailDebug("Disk space should not affect uploads")
+        }
         try await taskQueue.loadAndRunTasks()
     }
 
@@ -112,6 +141,28 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         try await taskQueue.stop()
         try await self.db.awaitableWrite { tx in
             try self.backupAttachmentUploadStore.removeAll(tx: tx)
+        }
+        // Kill status observation
+        await statusManager.didEmptyQueue(type: .upload)
+    }
+
+    // MARK: - Observation
+
+    private func startObservingQueueStatus() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(queueStatusDidChange(_:)),
+            name: BackupAttachmentQueueStatus.didChangeNotification,
+            object: nil
+        )
+    }
+
+    @objc
+    private func queueStatusDidChange(_ notification: Notification) {
+        let type = notification.userInfo?[BackupAttachmentQueueStatus.notificationQueueTypeKey]
+        guard type as? BackupAttachmentQueueType == .upload else { return }
+        Task {
+            try await self.backUpAllAttachments()
         }
     }
 
@@ -125,6 +176,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         private let dateProvider: DateProvider
         private let db: any DB
         private let messageBackupRequestManager: MessageBackupRequestManager
+        private let statusManager: BackupAttachmentQueueStatusUpdates
         private let tsAccountManager: TSAccountManager
 
         let store: TaskStore
@@ -136,6 +188,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             dateProvider: @escaping DateProvider,
             db: any DB,
             messageBackupRequestManager: MessageBackupRequestManager,
+            statusManager: BackupAttachmentQueueStatusUpdates,
             tsAccountManager: TSAccountManager
         ) {
             self.attachmentStore = attachmentStore
@@ -144,6 +197,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             self.dateProvider = dateProvider
             self.db = db
             self.messageBackupRequestManager = messageBackupRequestManager
+            self.statusManager = statusManager
             self.tsAccountManager = tsAccountManager
 
             self.store = TaskStore(backupAttachmentUploadStore: backupAttachmentUploadStore)
@@ -254,6 +308,20 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                         auth: messageBackupAuth
                     )
                 } catch let error {
+                    switch await statusManager.jobDidExperienceError(type: .upload, error) {
+                    case nil:
+                        // No state change, keep going.
+                        break
+                    case .running:
+                        break
+                    case .empty:
+                        // The queue will stop on its own, finish this task.
+                        break
+                    case .lowDiskSpace, .lowBattery, .noWifiReachability, .notRegisteredAndReady:
+                        // Stop the queue now proactively.
+                        try? await loader.stop()
+                    }
+
                     switch error as? MessageBackup.Response.CopyToMediaTierError {
                     case .sourceObjectNotFound:
                         // Any time we find this error, retry. It means the upload
@@ -286,6 +354,10 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
 
         func didCancel(record: Store.Record, tx: DBWriteTransaction) throws {
             Logger.warn("Cancelled backing up attachment \(record.id)")
+        }
+
+        func didDrainQueue() async {
+            await statusManager.didEmptyQueue(type: .upload)
         }
     }
 

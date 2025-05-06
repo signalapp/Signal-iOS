@@ -50,7 +50,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private let listMediaManager: ListMediaManager
     private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
     private let remoteConfigProvider: RemoteConfigProvider
-    private let statusManager: BackupAttachmentDownloadQueueStatusUpdates
+    private let statusManager: BackupAttachmentQueueStatusUpdates
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
 
@@ -70,7 +70,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         messageBackupRequestManager: MessageBackupRequestManager,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
         remoteConfigProvider: RemoteConfigProvider,
-        statusManager: BackupAttachmentDownloadQueueStatusUpdates,
+        statusManager: BackupAttachmentQueueStatusUpdates,
         svr: SecureValueRecovery,
         tsAccountManager: TSAccountManager
     ) {
@@ -191,7 +191,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
     public func restoreAttachmentsIfNeeded() async throws {
         guard appContext.isMainApp else { return }
-        switch await statusManager.beginObservingIfNeeded() {
+        switch await statusManager.beginObservingIfNeeded(type: .download) {
         case .running:
             break
         case .empty:
@@ -234,7 +234,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         // Reset progress calculation
         try? await progress.beginObserving()
         // Kill status observation
-        await statusManager.didEmptyQueue()
+        await statusManager.didEmptyQueue(type: .download)
     }
 
     // MARK: - Queue status observation
@@ -242,14 +242,16 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private func startObservingQueueStatus() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(queueStatusDidChange),
-            name: BackupAttachmentDownloadQueueStatus.didChangeNotification,
+            selector: #selector(queueStatusDidChange(_:)),
+            name: BackupAttachmentQueueStatus.didChangeNotification,
             object: nil
         )
     }
 
     @objc
-    private func queueStatusDidChange() {
+    private func queueStatusDidChange(_ notification: Notification) {
+        let type = notification.userInfo?[BackupAttachmentQueueStatus.notificationQueueTypeKey]
+        guard type as? BackupAttachmentQueueType == .download else { return }
         Task {
             try await self.restoreAttachmentsIfNeeded()
         }
@@ -658,7 +660,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         private let messageBackupRequestManager: MessageBackupRequestManager
         private let progress: BackupAttachmentDownloadProgress
         private let remoteConfigProvider: RemoteConfigProvider
-        private let statusManager: BackupAttachmentDownloadQueueStatusUpdates
+        private let statusManager: BackupAttachmentQueueStatusUpdates
         private let tsAccountManager: TSAccountManager
 
         let store: TaskStore
@@ -675,7 +677,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             messageBackupRequestManager: MessageBackupRequestManager,
             progress: BackupAttachmentDownloadProgress,
             remoteConfigProvider: RemoteConfigProvider,
-            statusManager: BackupAttachmentDownloadQueueStatusUpdates,
+            statusManager: BackupAttachmentQueueStatusUpdates,
             tsAccountManager: TSAccountManager
         ) {
             self.attachmentStore = attachmentStore
@@ -699,7 +701,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             struct NeedsWifiError: Error {}
             struct NeedsToBeRegisteredError: Error {}
 
-            switch await statusManager.quickCheckDiskSpace() {
+            switch await statusManager.quickCheckDiskSpaceForDownloads() {
             case nil:
                 // No state change, keep going.
                 break
@@ -825,7 +827,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             }
 
             if let downloadError {
-                switch await statusManager.downloadDidExperienceError(downloadError) {
+                switch await statusManager.jobDidExperienceError(type: .download, downloadError) {
                 case nil:
                     // No state change, keep going.
                     break
@@ -858,7 +860,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         func didDrainQueue() async {
             await progress.didEmptyDownloadQueue()
-            await statusManager.didEmptyQueue()
+            await statusManager.didEmptyQueue(type: .download)
         }
     }
 

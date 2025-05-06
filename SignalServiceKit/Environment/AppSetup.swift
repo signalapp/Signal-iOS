@@ -943,10 +943,12 @@ public class AppSetup {
         )
 
         let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
-        let backupAttachmentDownloadQueueStatusManager = BackupAttachmentDownloadQueueStatusManagerImpl(
+        let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
+        let backupAttachmentQueueStatusManager = BackupAttachmentQueueStatusManagerImpl(
             appContext: appContext,
             appReadiness: appReadiness,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentUploadStore: backupAttachmentUploadStore,
             db: db,
             deviceBatteryLevelManager: deviceBatteryLevelManager,
             reachabilityManager: reachabilityManager,
@@ -968,18 +970,19 @@ public class AppSetup {
                 messageBackupRequestManager: messageBackupRequestManager,
                 orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
                 remoteConfigProvider: remoteConfigManager,
-                statusManager: backupAttachmentDownloadQueueStatusManager,
+                statusManager: backupAttachmentQueueStatusManager,
                 svr: svr,
                 tsAccountManager: tsAccountManager
             )
-        let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
         let backupAttachmentUploadManager = BackupAttachmentUploadManagerImpl(
+            appReadiness: appReadiness,
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             dateProvider: dateProvider,
             db: db,
             messageBackupRequestManager: messageBackupRequestManager,
+            statusManager: backupAttachmentQueueStatusManager,
             tsAccountManager: tsAccountManager
         )
 
@@ -1291,8 +1294,8 @@ public class AppSetup {
             authorMergeHelper: authorMergeHelper,
             avatarDefaultColorManager: avatarDefaultColorManager,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
-            backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentQueueStatusManager: backupAttachmentQueueStatusManager,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             backupIdManager: backupIdManager,
             backupSubscriptionManager: backupSubscriptionManager,

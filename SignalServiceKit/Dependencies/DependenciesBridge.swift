@@ -62,8 +62,8 @@ public class DependenciesBridge {
     public let authorMergeHelper: AuthorMergeHelper
     public let avatarDefaultColorManager: AvatarDefaultColorManager
     public let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
-    public let backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager
     public let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    public let backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager
     public let backupAttachmentUploadManager: BackupAttachmentUploadManager
     public let backupIdManager: BackupIdManager
     public let backupSubscriptionManager: BackupSubscriptionManager
@@ -187,8 +187,8 @@ public class DependenciesBridge {
         authorMergeHelper: AuthorMergeHelper,
         avatarDefaultColorManager: AvatarDefaultColorManager,
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
-        backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager,
         backupAttachmentUploadManager: BackupAttachmentUploadManager,
         backupIdManager: BackupIdManager,
         backupSubscriptionManager: BackupSubscriptionManager,
@@ -311,8 +311,8 @@ public class DependenciesBridge {
         self.authorMergeHelper = authorMergeHelper
         self.avatarDefaultColorManager = avatarDefaultColorManager
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
-        self.backupAttachmentDownloadQueueStatusManager = backupAttachmentDownloadQueueStatusManager
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupAttachmentQueueStatusManager = backupAttachmentQueueStatusManager
         self.backupAttachmentUploadManager = backupAttachmentUploadManager
         self.backupIdManager = backupIdManager
         self.backupSubscriptionManager = backupSubscriptionManager
