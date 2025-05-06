@@ -144,7 +144,7 @@ public final class DebugLogger {
 
         // Keep last 3 days of logs - or last 3 logs (if logs rollover due to max
         // file size). Keep extra log files in internal builds.
-        logFileManager.maximumNumberOfLogFiles = DebugFlags.extraDebugLogs ? 32 : 3
+        logFileManager.maximumNumberOfLogFiles = DebugFlags.extraDebugLogs ? 8 : 3
 
         // Don't limit the total size on disk explicitly. Rely on "max file size" *
         // "max number of files" to limit the space we consume.
