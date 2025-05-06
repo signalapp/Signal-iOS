@@ -176,14 +176,14 @@ public extension DeleteForMeOutgoingSyncMessageManager {
 // MARK: -
 
 final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMessageManager {
-    private let recipientDatabaseTable: any RecipientDatabaseTable
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let syncMessageSender: any Shims.SyncMessageSender
     private let threadStore: any ThreadStore
 
     private let logger = PrefixedLogger(prefix: "[DeleteForMe]")
 
     init(
-        recipientDatabaseTable: any RecipientDatabaseTable,
+        recipientDatabaseTable: RecipientDatabaseTable,
         syncMessageSender: any Shims.SyncMessageSender,
         threadStore: any ThreadStore
     ) {

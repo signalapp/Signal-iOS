@@ -48,7 +48,7 @@ class MessageReceiptSet: NSObject, Codable {
 
 @objc
 public class ReceiptSender: NSObject {
-    private let recipientDatabaseTable: any RecipientDatabaseTable
+    private let recipientDatabaseTable: RecipientDatabaseTable
 
     private let appReadiness: AppReadiness
     private let deliveryReceiptStore: KeyValueStore
@@ -59,7 +59,7 @@ public class ReceiptSender: NSObject {
     private let pendingTasks = PendingTasks()
     private let sendingState: AtomicValue<SendingState>
 
-    public init(appReadiness: AppReadiness, recipientDatabaseTable: any RecipientDatabaseTable) {
+    public init(appReadiness: AppReadiness, recipientDatabaseTable: RecipientDatabaseTable) {
         self.appReadiness = appReadiness
         self.recipientDatabaseTable = recipientDatabaseTable
         self.deliveryReceiptStore = KeyValueStore(collection: "kOutgoingDeliveryReceiptManagerCollection")

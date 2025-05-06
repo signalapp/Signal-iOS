@@ -40,7 +40,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
     private let pniDistributionParameterBuilder: PniDistributionParamaterBuilder
     private let pniSignedPreKeyStore: SignedPreKeyStoreImpl
     private let pniKyberPreKeyStore: KyberPreKeyStoreImpl
-    private let recipientDatabaseTable: any RecipientDatabaseTable
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let tsAccountManager: TSAccountManager
 
     init(
@@ -50,7 +50,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         pniDistributionParameterBuilder: PniDistributionParamaterBuilder,
         pniSignedPreKeyStore: SignedPreKeyStoreImpl,
         pniKyberPreKeyStore: KyberPreKeyStoreImpl,
-        recipientDatabaseTable: any RecipientDatabaseTable,
+        recipientDatabaseTable: RecipientDatabaseTable,
         tsAccountManager: TSAccountManager
     ) {
         self.db = db

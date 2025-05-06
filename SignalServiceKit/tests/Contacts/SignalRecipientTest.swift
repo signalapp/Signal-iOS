@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import GRDB
 import LibSignalClient
 import XCTest
 
@@ -115,6 +116,8 @@ class SignalRecipientTest: SSKBaseTest {
     }
 
     func testHighTrustMergeWithInvestedPhoneNumber() {
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+
         // If there is a UUID-only contact and a phone number-only contact, and if
         // we later find out they are the same user, we must merge them.
         let aci = Aci.randomForTesting()
@@ -127,7 +130,7 @@ class SignalRecipientTest: SSKBaseTest {
             let mergedRecipient = mergeHighTrust(aci: aci, phoneNumber: phoneNumber, transaction: tx)
 
             XCTAssertEqual(mergedRecipient.uniqueId, uuidRecipient.uniqueId)
-            XCTAssertNil(SignalRecipient.anyFetch(uniqueId: phoneNumberRecipient.uniqueId, transaction: tx))
+            XCTAssertNil(recipientDatabaseTable.fetchRecipient(uniqueId: phoneNumberRecipient.uniqueId, tx: tx))
         }
     }
 
@@ -611,6 +614,66 @@ class SignalRecipientTest: SSKBaseTest {
         ])
     }
 
+    func testDeDupe() throws {
+        let databaseQueue = DatabaseQueue()
+        let deviceIdsObjC = NSOrderedSet(array: [NSNumber]())
+        let encodedDevices = SDSCodableModelLegacySerializer().serializeAsLegacySDSData(property: deviceIdsObjC)
+        try databaseQueue.write { db in
+            try db.execute(
+                sql: """
+                CREATE
+                    TABLE
+                        IF NOT EXISTS "model_SignalRecipient" (
+                            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+                            ,"recordType" INTEGER NOT NULL
+                            ,"uniqueId" TEXT NOT NULL UNIQUE
+                                ON CONFLICT FAIL
+                            ,"devices" BLOB NOT NULL
+                            ,"recipientPhoneNumber" TEXT
+                            ,"recipientUUID" TEXT
+                        )
+                ;
+                """
+            )
+            let aci1 = Aci.randomForTesting()
+            let aci2 = Aci.randomForTesting()
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (recordType, uniqueId, recipientUUID, devices) VALUES (?, ?, ?, ?)",
+                arguments: [
+                    SDSRecordType.signalRecipient.rawValue,
+                    UUID().uuidString,
+                    aci1.serviceIdUppercaseString,
+                    encodedDevices,
+                ],
+            )
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (recordType, uniqueId, recipientUUID, devices) VALUES (?, ?, ?, ?)",
+                arguments: [
+                    SDSRecordType.signalRecipient.rawValue,
+                    UUID().uuidString,
+                    aci1.serviceIdUppercaseString,
+                    encodedDevices,
+                ],
+            )
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (recordType, uniqueId, recipientUUID, devices) VALUES (?, ?, ?, ?)",
+                arguments: [
+                    SDSRecordType.signalRecipient.rawValue,
+                    UUID().uuidString,
+                    aci2.serviceIdUppercaseString,
+                    encodedDevices,
+                ],
+            )
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                dedupeSignalRecipients(transaction: tx)
+            }
+            let recipientCount = try Int64.fetchOne(db, sql: "SELECT COUNT(*) FROM model_SignalRecipient")
+            XCTAssertEqual(recipientCount, 2)
+        }
+    }
+
     // MARK: - Helpers
 
     @discardableResult
@@ -736,8 +799,11 @@ final class SignalRecipient2Test: XCTestCase {
     func testUnregisteredTimestamps() {
         let aci = Aci.randomForTesting()
         let mockDb = InMemoryDB()
-        let recipientTable = MockRecipientDatabaseTable()
-        let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientTable)
+        let recipientTable = RecipientDatabaseTable()
+        let recipientFetcher = RecipientFetcherImpl(
+            recipientDatabaseTable: recipientTable,
+            searchableNameIndexer: MockSearchableNameIndexer(),
+        )
         let recipientManager = SignalRecipientManagerImpl(
             phoneNumberVisibilityFetcher: MockPhoneNumberVisibilityFetcher(),
             recipientDatabaseTable: recipientTable,
@@ -779,8 +845,11 @@ final class SignalRecipient2Test: XCTestCase {
             TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 2, expectedDeviceIds: [1, 2, 3])
         ]
         let mockDb = InMemoryDB()
-        let recipientTable = MockRecipientDatabaseTable()
-        let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientTable)
+        let recipientTable = RecipientDatabaseTable()
+        let recipientFetcher = RecipientFetcherImpl(
+            recipientDatabaseTable: recipientTable,
+            searchableNameIndexer: MockSearchableNameIndexer(),
+        )
         let recipientManager = SignalRecipientManagerImpl(
             phoneNumberVisibilityFetcher: MockPhoneNumberVisibilityFetcher(),
             recipientDatabaseTable: recipientTable,

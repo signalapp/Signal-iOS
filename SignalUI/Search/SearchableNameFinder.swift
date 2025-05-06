@@ -11,13 +11,13 @@ public class SearchableNameFinder {
     private let contactManager: any ContactManager
     private let searchableNameIndexer: any SearchableNameIndexer
     private let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
-    private let recipientDatabaseTable: any RecipientDatabaseTable
+    private let recipientDatabaseTable: RecipientDatabaseTable
 
     public init(
         contactManager: any ContactManager,
         searchableNameIndexer: any SearchableNameIndexer,
         phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher,
-        recipientDatabaseTable: any RecipientDatabaseTable
+        recipientDatabaseTable: RecipientDatabaseTable
     ) {
         self.contactManager = contactManager
         self.searchableNameIndexer = searchableNameIndexer
@@ -98,7 +98,7 @@ private struct ContactMatches {
 
     mutating func addResult(
         for nickname: NicknameRecord,
-        recipientDatabaseTable: any RecipientDatabaseTable,
+        recipientDatabaseTable: RecipientDatabaseTable,
         tx: DBReadTransaction
     ) {
         guard let recipient = recipientDatabaseTable.fetchRecipient(rowId: nickname.recipientRowID, tx: tx) else { return }

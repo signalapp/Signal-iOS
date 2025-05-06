@@ -10,7 +10,9 @@ import XCTest
 
 final class RecipientDatabaseTableTest: XCTestCase {
     func testFetchServiceIdForContactThread() {
-        let s = MockRecipientDatabaseTable()
+        let mockDB = InMemoryDB()
+
+        let s = RecipientDatabaseTable()
         let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let aci2 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a2")
         let phoneNumber1 = E164("+16505550101")!
@@ -18,12 +20,12 @@ final class RecipientDatabaseTableTest: XCTestCase {
         let pni1 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
         let pni2 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b2")
 
-        InMemoryDB().write { tx in
+        mockDB.write { tx in
             s.insertRecipient(SignalRecipient(aci: aci1, pni: pni1, phoneNumber: phoneNumber1), transaction: tx)
         }
 
         func fetchServiceId(_ serviceId: ServiceId?, _ phoneNumber: E164?) -> ServiceId? {
-            return InMemoryDB().read { tx in s.fetchServiceId(contactThread: makeThread(serviceId, phoneNumber), tx: tx) }
+            return mockDB.read { tx in s.fetchServiceId(contactThread: makeThread(serviceId, phoneNumber), tx: tx) }
         }
 
         XCTAssertEqual(fetchServiceId(aci2, phoneNumber1), aci2)

@@ -15,7 +15,7 @@ final class AuthorMergeHelperBuilderTest: XCTestCase {
         let appContext = TestAppContext()
         let authorMergeHelper = AuthorMergeHelper()
         let inMemoryDb = InMemoryDB()
-        let recipientDatabaseTable = MockRecipientDatabaseTable()
+        let recipientDatabaseTable = RecipientDatabaseTable()
 
         let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let aci2 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a2")

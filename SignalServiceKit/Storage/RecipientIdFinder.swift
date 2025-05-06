@@ -81,7 +81,8 @@ public final class OWSAccountIdFinder {
             // update all callers to ensure they pass valid addresses.
             owsFailDebug("Fetching accountId for invalid address.")
             recipient = SignalRecipient(aci: nil, pni: nil, phoneNumber: nil)
-            recipient.anyInsert(transaction: transaction)
+            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+            recipientDatabaseTable.insertRecipient(recipient, transaction: transaction)
         }
         return recipient
     }

@@ -11,7 +11,7 @@ import XCTest
 final class RecipientStateMergerTest: XCTestCase {
     private var mockDB: InMemoryDB!
     private var _signalServiceAddressCache: SignalServiceAddressCache!
-    private var recipientDatabaseTable: MockRecipientDatabaseTable!
+    private var recipientDatabaseTable: RecipientDatabaseTable!
     private var recipientStateMerger: RecipientStateMerger!
 
     override func setUp() {
@@ -19,7 +19,7 @@ final class RecipientStateMergerTest: XCTestCase {
 
         mockDB = InMemoryDB()
         _signalServiceAddressCache = SignalServiceAddressCache()
-        recipientDatabaseTable = MockRecipientDatabaseTable()
+        recipientDatabaseTable = RecipientDatabaseTable()
         recipientStateMerger = RecipientStateMerger(
             recipientDatabaseTable: recipientDatabaseTable,
             signalServiceAddressCache: _signalServiceAddressCache

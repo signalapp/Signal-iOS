@@ -98,7 +98,7 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         paymentsHelper: any PaymentsHelper,
         profileManager: any ProfileManager,
         reachabilityManager: any SSKReachabilityManager,
-        recipientDatabaseTable: any RecipientDatabaseTable,
+        recipientDatabaseTable: RecipientDatabaseTable,
         recipientManager: any SignalRecipientManager,
         recipientMerger: any RecipientMerger,
         storageServiceRecordIkmCapabilityStore: any StorageServiceRecordIkmCapabilityStore,

@@ -9,14 +9,14 @@ import XCTest
 
 final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
     private var mockSyncMessageSender: MockSyncMessageSender!
-    private var mockRecipientDatabaseTable: MockRecipientDatabaseTable!
+    private var mockRecipientDatabaseTable: RecipientDatabaseTable!
     private var mockThreadStore: MockThreadStore!
 
     private var outgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManagerImpl!
 
     override func setUp() {
         mockSyncMessageSender = MockSyncMessageSender()
-        mockRecipientDatabaseTable = MockRecipientDatabaseTable()
+        mockRecipientDatabaseTable = RecipientDatabaseTable()
         mockThreadStore = MockThreadStore()
 
         outgoingSyncMessageManager = DeleteForMeOutgoingSyncMessageManagerImpl(

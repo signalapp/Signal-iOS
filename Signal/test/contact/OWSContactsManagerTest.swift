@@ -14,7 +14,7 @@ class OWSContactsManagerTest: SignalBaseTest {
 
     private let mockUsernameLookupMananger: MockUsernameLookupManager = .init()
     private let mockNicknameManager = MockNicknameManager()
-    private let mockRecipientDatabaseTable = MockRecipientDatabaseTable()
+    private let mockRecipientDatabaseTable = RecipientDatabaseTable()
 
     override func setUp() {
         super.setUp()
@@ -60,7 +60,7 @@ class OWSContactsManagerTest: SignalBaseTest {
     private func createRecipients(_ serviceIds: [ServiceId]) {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         let recipientManager = DependenciesBridge.shared.recipientManager
-        write { tx in
+        self.dbV2.write { tx in
             for serviceId in serviceIds {
                 recipientManager.markAsRegisteredAndSave(
                     recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx),
@@ -72,7 +72,7 @@ class OWSContactsManagerTest: SignalBaseTest {
     }
 
     private func createAccounts(_ accounts: [SignalAccount]) {
-        write { transaction in
+        self.dbV2.write { transaction in
             for account in accounts {
                 account.anyInsert(transaction: transaction)
             }
@@ -148,7 +148,7 @@ class OWSContactsManagerTest: SignalBaseTest {
             mockNicknameManager.insert(bobNickname, tx: tx)
         }
 
-        self.read { tx in
+        self.dbV2.read { tx in
             let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(
                 for: [aliceAddress, bobAddress],
@@ -169,7 +169,7 @@ class OWSContactsManagerTest: SignalBaseTest {
             makeAccount(serviceId: address.serviceId!, phoneNumber: address.e164!, fullName: name)
         })
 
-        read { transaction in
+        self.dbV2.read { transaction in
             let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Alice Aliceson (home)", "Bob Bobson (home)"]
@@ -183,7 +183,7 @@ class OWSContactsManagerTest: SignalBaseTest {
             addresses[0]: makeUserProfile(givenName: "Alice", familyName: "Aliceson"),
             addresses[1]: makeUserProfile(givenName: "Bob", familyName: "Bobson"),
         ]
-        read { transaction in
+        self.dbV2.read { transaction in
             let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Alice Aliceson", "Bob Bobson"]
@@ -198,7 +198,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         ]
         // Prevent default fake name from being used.
         (SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager).fakeUserProfiles = [:]
-        read { transaction in
+        self.dbV2.read { transaction in
             let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["+1 703-555-9900", "+1 703-555-9901"]
@@ -222,7 +222,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         // Prevent default fake names from being used.
         (SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager).fakeUserProfiles = [:]
 
-        read { transaction in
+        dbV2.read { transaction in
             let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["alice", "bob"]
@@ -237,7 +237,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         // default fake names from being used.
         (SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager).fakeUserProfiles = [:]
 
-        read { transaction in
+        dbV2.read { transaction in
             let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Unknown", "Unknown"]
@@ -285,7 +285,7 @@ class OWSContactsManagerTest: SignalBaseTest {
             mockNicknameManager.insert(feliciaNickname, tx: tx)
         }
 
-        read { transaction in
+        dbV2.read { transaction in
             let addresses = [aliceAddress, bobAddress, carolAddress, daveAddress, eveAddress, feliciaAddress]
             let actual = SSKEnvironment.shared.contactManagerRef.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Alice Aliceson (home)", "Bob Bobson", "+1 703-555-9900", "dave", "Unknown", "Felicia Felicity"]
@@ -303,7 +303,7 @@ class OWSContactsManagerTest: SignalBaseTest {
             makeAccount(serviceId: address.serviceId!, phoneNumber: address.e164!, fullName: name)
         })
 
-        read { transaction in
+        dbV2.read { transaction in
             let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Alice (home)", "Bob (home)"]
@@ -323,7 +323,7 @@ class OWSContactsManagerTest: SignalBaseTest {
             makeAccount(serviceId: address.serviceId!, phoneNumber: address.e164!, fullName: name)
         })
         let contactsManager = makeContactsManager()
-        read { transaction in
+        dbV2.read { transaction in
             let actual = contactsManager.systemContactNames(for: addresses.map { $0.phoneNumber! }, tx: transaction).map { $0?.resolvedValue() }
             let expected = ["Alice Aliceson (home)", "Bob Bobson (home)"]
             XCTAssertEqual(actual, expected)
@@ -343,7 +343,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         let chuckAddress = SignalServiceAddress(serviceId: chuckAci, phoneNumber: "+16505550101")
 
         let contactsManager = makeContactsManager()
-        read { transaction in
+        dbV2.read { transaction in
             let addresses = [aliceAddress, chuckAddress]
             let actual = contactsManager.systemContactNames(for: addresses.map { $0.phoneNumber! }, tx: transaction).map { $0?.resolvedValue() }
             let expected = ["Alice Aliceson (home)", nil]

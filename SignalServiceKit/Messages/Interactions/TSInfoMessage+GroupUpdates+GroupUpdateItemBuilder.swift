@@ -110,11 +110,11 @@ extension GroupUpdateItemBuilder {
 
 public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
     private let contactsManager: Shims.ContactsManager
-    private let recipientDatabaseTable: any RecipientDatabaseTable
+    private let recipientDatabaseTable: RecipientDatabaseTable
 
     init(
         contactsManager: Shims.ContactsManager,
-        recipientDatabaseTable: any RecipientDatabaseTable
+        recipientDatabaseTable: RecipientDatabaseTable
     ) {
         self.contactsManager = contactsManager
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -227,7 +227,7 @@ public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
 
 public extension GroupUpdateSource {
 
-    func sanitize(recipientDatabaseTable: any RecipientDatabaseTable, tx: DBReadTransaction) -> Self {
+    func sanitize(recipientDatabaseTable: RecipientDatabaseTable, tx: DBReadTransaction) -> Self {
         switch self {
         case .legacyE164(let e164):
             // If we can map an e164 to an aci, do that. If we can't,

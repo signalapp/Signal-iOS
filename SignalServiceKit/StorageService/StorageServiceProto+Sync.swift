@@ -133,11 +133,7 @@ struct StorageServiceContact {
         )
     }
 
-    static func fetch(for recipientUniqueId: RecipientUniqueId, tx: DBReadTransaction) -> Self? {
-        SignalRecipient.anyFetch(uniqueId: recipientUniqueId, transaction: tx).flatMap { Self($0) }
-    }
-
-    fileprivate init?(_ signalRecipient: SignalRecipient) {
+    init?(_ signalRecipient: SignalRecipient) {
         let unregisteredAtTimestamp: UInt64?
         if signalRecipient.isRegistered {
             unregisteredAtTimestamp = nil
@@ -183,6 +179,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let nicknameManager: NicknameManager
     private let profileFetcher: any ProfileFetcher
     private let profileManager: OWSProfileManager
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: RecipientMerger
     private let recipientHidingManager: RecipientHidingManager
@@ -202,6 +199,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         nicknameManager: NicknameManager,
         profileFetcher: ProfileFetcher,
         profileManager: OWSProfileManager,
+        recipientDatabaseTable: RecipientDatabaseTable,
         recipientManager: any SignalRecipientManager,
         recipientMerger: RecipientMerger,
         recipientHidingManager: RecipientHidingManager,
@@ -221,6 +219,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         self.nicknameManager = nicknameManager
         self.profileFetcher = profileFetcher
         self.profileManager = profileManager
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientManager = recipientManager
         self.recipientMerger = recipientMerger
         self.recipientHidingManager = recipientHidingManager
@@ -237,7 +236,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         unknownFields: UnknownStorage?,
         transaction tx: DBReadTransaction
     ) -> StorageServiceProtoContactRecord? {
-        guard let recipient = SignalRecipient.anyFetch(uniqueId: recipientUniqueId, transaction: tx) else {
+        guard let recipient = recipientDatabaseTable.fetchRecipient(uniqueId: recipientUniqueId, tx: tx) else {
             return nil
         }
 
@@ -1889,7 +1888,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
     typealias RecordType = StorageServiceProtoStoryDistributionListRecord
 
     private let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
-    private let recipientDatabaseTable: any RecipientDatabaseTable
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: any RecipientFetcher
     private let storyRecipientManager: StoryRecipientManager
     private let storyRecipientStore: StoryRecipientStore
@@ -1897,7 +1896,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
 
     init(
         privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
-        recipientDatabaseTable: any RecipientDatabaseTable,
+        recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: any RecipientFetcher,
         storyRecipientManager: StoryRecipientManager,
         storyRecipientStore: StoryRecipientStore,

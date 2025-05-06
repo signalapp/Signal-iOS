@@ -131,8 +131,26 @@ public class AppSetup {
             userAgent: HttpHeaders.userAgentHeaderValueSignalIos
         )
 
-        let recipientDatabaseTable = RecipientDatabaseTableImpl()
-        let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientDatabaseTable)
+        let recipientDatabaseTable = RecipientDatabaseTable()
+        let signalAccountStore = SignalAccountStoreImpl()
+        let threadStore = ThreadStoreImpl()
+        let userProfileStore = UserProfileStoreImpl()
+        let usernameLookupRecordStore = UsernameLookupRecordStoreImpl()
+        let nicknameRecordStore = NicknameRecordStoreImpl()
+        let searchableNameIndexer = SearchableNameIndexerImpl(
+            threadStore: threadStore,
+            signalAccountStore: signalAccountStore,
+            userProfileStore: userProfileStore,
+            signalRecipientStore: recipientDatabaseTable,
+            usernameLookupRecordStore: usernameLookupRecordStore,
+            nicknameRecordStore: nicknameRecordStore,
+            dbForReadTx: { SDSDB.shimOnlyBridge($0).database },
+            dbForWriteTx: { SDSDB.shimOnlyBridge($0).database }
+        )
+        let recipientFetcher = RecipientFetcherImpl(
+            recipientDatabaseTable: recipientDatabaseTable,
+            searchableNameIndexer: searchableNameIndexer,
+        )
         let recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
 
         let dateProvider = testDependencies.dateProvider ?? Date.provider
@@ -226,22 +244,7 @@ public class AppSetup {
         let udManager = OWSUDManagerImpl(appReadiness: appReadiness)
         let versionedProfiles = testDependencies.versionedProfiles ?? VersionedProfilesImpl(appReadiness: appReadiness)
 
-        let signalAccountStore = SignalAccountStoreImpl()
-        let threadStore = ThreadStoreImpl()
         let lastVisibleInteractionStore = LastVisibleInteractionStore()
-        let userProfileStore = UserProfileStoreImpl()
-        let usernameLookupRecordStore = UsernameLookupRecordStoreImpl()
-        let nicknameRecordStore = NicknameRecordStoreImpl()
-        let searchableNameIndexer = SearchableNameIndexerImpl(
-            threadStore: threadStore,
-            signalAccountStore: signalAccountStore,
-            userProfileStore: userProfileStore,
-            signalRecipientStore: recipientDatabaseTable,
-            usernameLookupRecordStore: usernameLookupRecordStore,
-            nicknameRecordStore: nicknameRecordStore,
-            dbForReadTx: { SDSDB.shimOnlyBridge($0).database },
-            dbForWriteTx: { SDSDB.shimOnlyBridge($0).database }
-        )
         let usernameLookupManager = UsernameLookupManagerImpl(
             searchableNameIndexer: searchableNameIndexer,
             usernameLookupRecordStore: usernameLookupRecordStore
@@ -460,6 +463,7 @@ public class AppSetup {
             networkManager: networkManager,
             notificationPresenter: notificationPresenter,
             pniProtocolStore: pniProtocolStore,
+            recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientIdFinder: recipientIdFinder,
             schedulers: schedulers,
@@ -740,6 +744,7 @@ public class AppSetup {
             ),
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
+            searchableNameIndexer: searchableNameIndexer,
             storageServiceManager: storageServiceManager,
             storyRecipientStore: storyRecipientStore
         )

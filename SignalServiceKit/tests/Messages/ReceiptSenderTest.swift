@@ -11,13 +11,13 @@ import XCTest
 class ReceiptSenderTest: XCTestCase {
     private var mockDb: InMemoryDB!
     private var receiptSender: ReceiptSender!
-    private var recipientDatabaseTable: MockRecipientDatabaseTable!
+    private var recipientDatabaseTable: RecipientDatabaseTable!
 
     override func setUp() {
         super.setUp()
 
         mockDb = InMemoryDB()
-        recipientDatabaseTable = MockRecipientDatabaseTable()
+        recipientDatabaseTable = RecipientDatabaseTable()
         receiptSender = ReceiptSender(
             appReadiness: AppReadinessMock(),
             recipientDatabaseTable: recipientDatabaseTable

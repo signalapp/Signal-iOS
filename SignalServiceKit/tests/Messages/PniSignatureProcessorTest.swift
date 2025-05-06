@@ -44,7 +44,7 @@ final class PniSignatureProcessorTest: XCTestCase {
     private var mockDB: InMemoryDB!
     private var pniSignatureProcessor: PniSignatureProcessor!
     private var recipientMerger: MockRecipientMerger!
-    private var recipientDatabaseTable: MockRecipientDatabaseTable!
+    private var recipientDatabaseTable: RecipientDatabaseTable!
 
     private var aci: Aci!
     private var aciRecipient: SignalRecipient!
@@ -58,8 +58,11 @@ final class PniSignatureProcessorTest: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        recipientDatabaseTable = MockRecipientDatabaseTable()
-        let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientDatabaseTable)
+        recipientDatabaseTable = RecipientDatabaseTable()
+        let recipientFetcher = RecipientFetcherImpl(
+            recipientDatabaseTable: recipientDatabaseTable,
+            searchableNameIndexer: MockSearchableNameIndexer(),
+        )
         let recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
         identityManager = MockIdentityManager(recipientIdFinder: recipientIdFinder)
         mockDB = InMemoryDB()

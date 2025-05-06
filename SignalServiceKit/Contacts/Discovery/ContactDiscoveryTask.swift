@@ -129,6 +129,6 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             return
         }
         recipient.phoneNumber?.isDiscoverable = isPhoneNumberDiscoverable
-        recipient.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
+        recipientDatabaseTable.updateRecipient(recipient, transaction: tx)
     }
 }

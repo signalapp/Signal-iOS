@@ -17,9 +17,8 @@ public import LibSignalClient
 /// We also store the set of device IDs for each account on this record. If
 /// an account has at least one device, it's registered. If an account
 /// doesn't have any devices, then that user isn't registered.
-public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decodable {
+public final class SignalRecipient: NSObject, NSCopying, FetchableRecord, PersistableRecord, Codable {
     public static let databaseTableName = "model_SignalRecipient"
-    public static var recordType: UInt { SDSRecordType.signalRecipient.rawValue }
 
     public enum Constants {
         public static let distantPastUnregisteredTimestamp: UInt64 = 1
@@ -35,8 +34,8 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         public var isDiscoverable: Bool
     }
 
-    /// The SQLite row ID for this `SignalRecipient`.
-    public var id: RowId?
+    public typealias RowId = Int64
+    public private(set) var id: RowId?
 
     public let uniqueId: String
     /// Represents the ACI for this SignalRecipient.
@@ -215,7 +214,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         let decodedRecordType = try container.decode(UInt.self, forKey: .recordType)
-        guard decodedRecordType == Self.recordType else {
+        guard decodedRecordType == SDSRecordType.signalRecipient.rawValue else {
             owsFailDebug("Unexpected record type: \(decodedRecordType)")
             throw SDSError.invalidValue()
         }
@@ -233,7 +232,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             phoneNumber = nil
         }
         let encodedDeviceIds = try container.decode(Data.self, forKey: .deviceIds)
-        let deviceSetObjC: NSOrderedSet = try LegacySDSSerializer().deserializeLegacySDSData(encodedDeviceIds, propertyName: "devices")
+        let deviceSetObjC: NSOrderedSet = try SDSCodableModelLegacySerializer().deserializeLegacySDSData(encodedDeviceIds, propertyName: "devices")
         let deviceArray = (deviceSetObjC.array as? [NSNumber])?.map { $0.uint32Value }
         // If we can't parse the values in the NSOrderedSet, assume the user isn't
         // registered. If they are registered, we'll correct the data store the
@@ -245,30 +244,19 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(id, forKey: .id)
-        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(SDSRecordType.signalRecipient.rawValue, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encodeIfPresent(aciString, forKey: .aciString)
         try container.encodeIfPresent(pni?.serviceIdUppercaseString, forKey: .pni)
         try container.encodeIfPresent(phoneNumber?.stringValue, forKey: .phoneNumber)
         try container.encodeIfPresent(phoneNumber?.isDiscoverable, forKey: .isPhoneNumberDiscoverable)
         let deviceSetObjC = NSOrderedSet(array: deviceIds.map { NSNumber(value: $0.uint32Value) })
-        let encodedDevices = LegacySDSSerializer().serializeAsLegacySDSData(property: deviceSetObjC)
+        let encodedDevices = SDSCodableModelLegacySerializer().serializeAsLegacySDSData(property: deviceSetObjC)
         try container.encode(encodedDevices, forKey: .deviceIds)
         try container.encodeIfPresent(unregisteredAtTimestamp, forKey: .unregisteredAtTimestamp)
     }
 
     // MARK: - Fetching
-
-    public static func fetchAllPhoneNumbers(tx: DBReadTransaction) -> [String: Bool] {
-        var result = [String: Bool]()
-        Self.anyEnumerate(transaction: tx) { signalRecipient, _ in
-            guard let phoneNumber = signalRecipient.phoneNumber?.stringValue else {
-                return
-            }
-            result[phoneNumber] = signalRecipient.isRegistered
-        }
-        return result
-    }
 
     public var isRegistered: Bool { !deviceIds.isEmpty }
 
@@ -295,16 +283,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
     public func didInsert(with rowID: Int64, for column: String?) {
         self.id = rowID
-    }
-
-    public func anyDidInsert(transaction: DBWriteTransaction) {
-        let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
-        searchableNameIndexer.insert(self, tx: transaction)
-    }
-
-    public func anyDidUpdate(transaction: DBWriteTransaction) {
-        let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
-        searchableNameIndexer.update(self, tx: transaction)
     }
 }
 
@@ -346,9 +324,9 @@ extension SignalRecipientManagerImpl {
 
 public extension String.StringInterpolation {
     mutating func appendInterpolation(signalRecipientColumn column: SignalRecipient.CodingKeys) {
-        appendLiteral(SignalRecipient.columnName(column))
+        appendLiteral(column.rawValue)
     }
     mutating func appendInterpolation(signalRecipientColumnFullyQualified column: SignalRecipient.CodingKeys) {
-        appendLiteral(SignalRecipient.columnName(column, fullyQualified: true))
+        appendLiteral("\(SignalRecipient.databaseTableName).\(column.rawValue)")
     }
 }

@@ -138,10 +138,10 @@ class GRDBFinderTest: SignalBaseTest {
         let address6 = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+16505550106")
         let address7 = SignalServiceAddress.randomForTesting()
 
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
         self.write { transaction in
             [address1, address2, address3, address4].forEach {
-                SignalRecipient(aci: $0.aci, pni: nil, phoneNumber: $0.e164)
-                    .anyInsert(transaction: transaction)
+                recipientDatabaseTable.insertRecipient(SignalRecipient(aci: $0.aci, pni: nil, phoneNumber: $0.e164), transaction: transaction)
             }
         }
 

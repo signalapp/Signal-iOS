@@ -99,6 +99,7 @@ class RecipientMergerImpl: RecipientMerger {
     private let observers: Observers
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
+    private let searchableNameIndexer: any SearchableNameIndexer
     private let storageServiceManager: StorageServiceManager
     private let storyRecipientStore: StoryRecipientStore
 
@@ -115,6 +116,7 @@ class RecipientMergerImpl: RecipientMerger {
         observers: Observers,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
+        searchableNameIndexer: any SearchableNameIndexer,
         storageServiceManager: StorageServiceManager,
         storyRecipientStore: StoryRecipientStore
     ) {
@@ -124,6 +126,7 @@ class RecipientMergerImpl: RecipientMerger {
         self.observers = observers
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
+        self.searchableNameIndexer = searchableNameIndexer
         self.storageServiceManager = storageServiceManager
         self.storyRecipientStore = storyRecipientStore
     }
@@ -758,8 +761,10 @@ class RecipientMergerImpl: RecipientMerger {
                 recipientDatabaseTable.removeRecipient(affectedRecipient, transaction: tx)
             } else if existingRecipients.contains(where: { $0.uniqueId == affectedRecipient.uniqueId }) {
                 recipientDatabaseTable.updateRecipient(affectedRecipient, transaction: tx)
+                searchableNameIndexer.update(affectedRecipient, tx: tx)
             } else {
                 recipientDatabaseTable.insertRecipient(affectedRecipient, transaction: tx)
+                searchableNameIndexer.insert(affectedRecipient, tx: tx)
             }
         }
 

@@ -52,12 +52,12 @@ extension SignalRecipientManager {
 
 public class SignalRecipientManagerImpl: SignalRecipientManager {
     private let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
-    private let recipientDatabaseTable: any RecipientDatabaseTable
+    private let recipientDatabaseTable: RecipientDatabaseTable
     let storageServiceManager: any StorageServiceManager
 
     public init(
         phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher,
-        recipientDatabaseTable: any RecipientDatabaseTable,
+        recipientDatabaseTable: RecipientDatabaseTable,
         storageServiceManager: any StorageServiceManager
     ) {
         self.phoneNumberVisibilityFetcher = phoneNumberVisibilityFetcher

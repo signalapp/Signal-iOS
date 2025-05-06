@@ -16,7 +16,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
     private var mockInteractionDeleteManager: MockInteractionDeleteManager!
     private var mockInteractionStore: MockInteractionStore!
     private var mockMarkAsReadShims: MockMarkAsReadShims!
-    private var mockRecipientDatabaseTable: MockRecipientDatabaseTable!
+    private var mockRecipientDatabaseTable: RecipientDatabaseTable!
     private var mockThreadStore: MockThreadStore!
 
     private var mockDB = InMemoryDB()
@@ -30,7 +30,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockInteractionDeleteManager = MockInteractionDeleteManager()
         mockInteractionStore = MockInteractionStore()
         mockMarkAsReadShims = MockMarkAsReadShims()
-        mockRecipientDatabaseTable = MockRecipientDatabaseTable()
+        mockRecipientDatabaseTable = RecipientDatabaseTable()
         mockThreadStore = MockThreadStore()
 
         mockCallRecordDeleteManager.markCallAsDeletedMock = { _, _ in

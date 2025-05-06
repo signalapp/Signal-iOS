@@ -26,7 +26,7 @@ public class ProfileFetcherJob {
     private let identityManager: any OWSIdentityManager
     private let paymentsHelper: any PaymentsHelper
     private let profileManager: any ProfileManager
-    private let recipientDatabaseTable: any RecipientDatabaseTable
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: any RecipientMerger
     private let storageServiceRecordIkmCapabilityStore: any StorageServiceRecordIkmCapabilityStore
@@ -46,7 +46,7 @@ public class ProfileFetcherJob {
         identityManager: any OWSIdentityManager,
         paymentsHelper: any PaymentsHelper,
         profileManager: any ProfileManager,
-        recipientDatabaseTable: any RecipientDatabaseTable,
+        recipientDatabaseTable: RecipientDatabaseTable,
         recipientManager: any SignalRecipientManager,
         recipientMerger: any RecipientMerger,
         storageServiceRecordIkmCapabilityStore: any StorageServiceRecordIkmCapabilityStore,

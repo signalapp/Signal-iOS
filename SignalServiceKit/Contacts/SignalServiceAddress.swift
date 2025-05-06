@@ -503,7 +503,8 @@ public class SignalServiceAddressCache: NSObject {
                 Logger.warn("Couldn't fetch visible phone numbers. Hiding all of them…")
                 bulkFetcher = nil
             }
-            SignalRecipient.anyEnumerate(transaction: tx) { recipient, _ in
+            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+            recipientDatabaseTable.enumerateAll(tx: tx) { recipient in
                 updateRecipient(
                     recipient,
                     isPhoneNumberVisible: (

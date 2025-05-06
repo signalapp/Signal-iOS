@@ -13,9 +13,14 @@ public protocol RecipientFetcher {
 
 public class RecipientFetcherImpl: RecipientFetcher {
     private let recipientDatabaseTable: RecipientDatabaseTable
+    private let searchableNameIndexer: any SearchableNameIndexer
 
-    public init(recipientDatabaseTable: RecipientDatabaseTable) {
+    public init(
+        recipientDatabaseTable: RecipientDatabaseTable,
+        searchableNameIndexer: any SearchableNameIndexer,
+    ) {
         self.recipientDatabaseTable = recipientDatabaseTable
+        self.searchableNameIndexer = searchableNameIndexer
     }
 
     public func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient {
@@ -33,6 +38,7 @@ public class RecipientFetcherImpl: RecipientFetcher {
         }
         let result = SignalRecipient(aci: nil, pni: nil, phoneNumber: phoneNumber)
         recipientDatabaseTable.insertRecipient(result, transaction: tx)
+        searchableNameIndexer.insert(result, tx: tx)
         return result
     }
 }

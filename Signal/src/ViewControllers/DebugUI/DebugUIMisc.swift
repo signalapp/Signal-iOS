@@ -142,14 +142,6 @@ class DebugUIMisc: NSObject, DebugUIPage {
                 DebugUIMisc.logStickerSuggestions()
             }),
 
-            OWSTableItem(title: "Log Local Account", actionBlock: {
-                DebugUIMisc.logLocalAccount()
-            }),
-
-            OWSTableItem(title: "Log SignalRecipients", actionBlock: {
-                DebugUIMisc.logSignalRecipients()
-            }),
-
             OWSTableItem(title: "Clear Profile Key Credentials", actionBlock: {
                 DebugUIMisc.clearProfileKeyCredentials()
             }),
@@ -405,27 +397,6 @@ class DebugUIMisc: NSObject, DebugUIPage {
         }
         let combinedEmojiString = emojiSet.sorted().joined(separator: " ")
         Logger.verbose("emoji: \(combinedEmojiString)")
-    }
-
-    private static func logLocalAccount() {
-        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
-            owsFailDebug("Missing localAddress.")
-            return
-        }
-        if let serviceId = localAddress.serviceId {
-            Logger.verbose("localAddress serviceId: \(serviceId)")
-        }
-        if let phoneNumber = localAddress.phoneNumber {
-            Logger.verbose("localAddress phoneNumber: \(phoneNumber)")
-        }
-    }
-
-    private static func logSignalRecipients() {
-        SSKEnvironment.shared.databaseStorageRef.read { tx in
-            SignalRecipient.anyEnumerate(transaction: tx, batchingPreference: .batched(32)) { signalRecipient, _ in
-                Logger.verbose("SignalRecipient: \(signalRecipient.addressComponentsDescription)")
-            }
-        }
     }
 
     private static func clearProfileKeyCredentials() {

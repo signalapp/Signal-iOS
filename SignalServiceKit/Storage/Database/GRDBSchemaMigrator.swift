@@ -628,8 +628,8 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.dedupeSignalRecipients) { transaction in
-            try autoreleasepool {
-                try dedupeSignalRecipients(transaction: transaction)
+            autoreleasepool {
+                dedupeSignalRecipients(transaction: transaction)
             }
 
             try transaction.database.drop(index: "index_signal_recipients_on_recipientPhoneNumber")
@@ -5823,49 +5823,37 @@ public func createInitialGalleryRecords(transaction: DBWriteTransaction) throws 
     /// will just be removed by a later migration before they're ever used.
 }
 
-private func dedupeSignalRecipients(transaction: DBWriteTransaction) throws {
-    var recipients: [SignalServiceAddress: [String]] = [:]
+func dedupeSignalRecipients(transaction: DBWriteTransaction) {
+    let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
 
-    SignalRecipient.anyEnumerate(transaction: transaction) { (recipient, _) in
-        if let existing = recipients[recipient.address] {
-            recipients[recipient.address] = existing + [recipient.uniqueId]
-        } else {
-            recipients[recipient.address] = [recipient.uniqueId]
+    var recipients: [SignalServiceAddress: [SignalRecipient.RowId]] = [:]
+
+    recipientDatabaseTable.enumerateAll(tx: transaction) { recipient in
+        recipients[recipient.address, default: []].append(recipient.id!)
+    }
+
+    for (address, recipientIds) in recipients {
+        guard recipientIds.count > 1 else {
+            continue
         }
-    }
-
-    var duplicatedRecipients: [SignalServiceAddress: [String]] = [:]
-    for (address, recipients) in recipients {
-        if recipients.count > 1 {
-            duplicatedRecipients[address] = recipients
-        }
-    }
-
-    guard duplicatedRecipients.count > 0 else {
-        Logger.info("No duplicated recipients")
-        return
-    }
-
-    for (address, recipientUniqueIds) in duplicatedRecipients {
         // Since we have duplicate recipients for an address, we want to keep the one returned by the
         // finder, since that is the one whose uniqueId is used as the `accountId` for the
         // accountId finder.
         guard
-            let primaryRecipient = DependenciesBridge.shared.recipientDatabaseTable
-                .fetchRecipient(address: address, tx: transaction)
+            let primaryRecipient = recipientDatabaseTable.fetchRecipient(address: address, tx: transaction)
         else {
             owsFailDebug("primaryRecipient was unexpectedly nil")
             continue
         }
 
-        let redundantRecipientUniqueIds = recipientUniqueIds.filter { $0 != primaryRecipient.uniqueId }
-        for redundantId in redundantRecipientUniqueIds {
-            guard let redundantRecipient = SignalRecipient.anyFetch(uniqueId: redundantId, transaction: transaction) else {
+        let redundantRecipientIds = recipientIds.filter { $0 != primaryRecipient.id }
+        for redundantId in redundantRecipientIds {
+            guard let redundantRecipient = recipientDatabaseTable.fetchRecipient(rowId: redundantId, tx: transaction) else {
                 owsFailDebug("redundantRecipient was unexpectedly nil")
                 continue
             }
             Logger.info("removing redundant recipient: \(redundantRecipient)")
-            redundantRecipient.anyRemove(transaction: transaction)
+            recipientDatabaseTable.removeRecipient(redundantRecipient, transaction: transaction)
         }
     }
 }

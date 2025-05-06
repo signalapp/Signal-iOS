@@ -9,7 +9,7 @@ import SignalServiceKit
 class ContactNoteSheet: OWSTableSheetViewController {
     struct Context {
         let db: any DB
-        let recipientDatabaseTable: any RecipientDatabaseTable
+        let recipientDatabaseTable: RecipientDatabaseTable
         let nicknameManager: any NicknameManager
     }
 

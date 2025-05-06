@@ -38,11 +38,24 @@ public protocol SearchableNameIndexer {
     func indexThreads(tx: DBWriteTransaction)
 }
 
+#if TESTABLE_BUILD
+
+struct MockSearchableNameIndexer: SearchableNameIndexer {
+    func search(for searchText: String, maxResults: Int, tx: DBReadTransaction, block: (any IndexableName) throws -> Void) rethrows { owsFail("") }
+    func insert(_ indexableName: any IndexableName, tx: DBWriteTransaction) {}
+    func update(_ indexableName: any IndexableName, tx: DBWriteTransaction) {}
+    func delete(_ indexableName: any IndexableName, tx: DBWriteTransaction) {}
+    func indexThreads(tx: DBWriteTransaction) { owsFail("") }
+    func indexEverything(tx: DBWriteTransaction) { owsFail("") }
+}
+
+#endif
+
 public class SearchableNameIndexerImpl: SearchableNameIndexer {
     private let threadStore: any ThreadStore
     private let signalAccountStore: any SignalAccountStore
     private let userProfileStore: any UserProfileStore
-    private let signalRecipientStore: any RecipientDatabaseTable
+    private let signalRecipientStore: RecipientDatabaseTable
     private let usernameLookupRecordStore: any UsernameLookupRecordStore
     private let nicknameRecordStore: any NicknameRecordStore
 
@@ -58,7 +71,7 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         threadStore: any ThreadStore,
         signalAccountStore: any SignalAccountStore,
         userProfileStore: any UserProfileStore,
-        signalRecipientStore: any RecipientDatabaseTable,
+        signalRecipientStore: RecipientDatabaseTable,
         usernameLookupRecordStore: any UsernameLookupRecordStore,
         nicknameRecordStore: any NicknameRecordStore,
         dbForReadTx: @escaping (DBReadTransaction) -> Database,
@@ -209,7 +222,7 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         OWSUserProfile.anyEnumerate(transaction: SDSDB.shimOnlyBridge(tx)) { userProfile, _ in
             insert(userProfile, tx: tx)
         }
-        SignalRecipient.anyEnumerate(transaction: SDSDB.shimOnlyBridge(tx)) { signalRecipient, _ in
+        signalRecipientStore.enumerateAll(tx: tx) { signalRecipient in
             insert(signalRecipient, tx: tx)
         }
         usernameLookupRecordStore.enumerateAll(tx: tx) { usernameLookupRecord in
@@ -334,7 +347,7 @@ extension OWSUserProfile: IndexableName {
 
 extension SignalRecipient: IndexableName {
     public func indexableNameIdentifier() -> IndexableNameIdentifier {
-        return .signalRecipient(grdbId!.int64Value)
+        return .signalRecipient(id!)
     }
 
     public func indexableNameContent() -> String? {

@@ -13,7 +13,7 @@ class ContactAboutSheet: StackSheetViewController {
     struct Context {
         let contactManager: any ContactManager
         let identityManager: any OWSIdentityManager
-        let recipientDatabaseTable: any RecipientDatabaseTable
+        let recipientDatabaseTable: RecipientDatabaseTable
         let nicknameManager: any NicknameManager
 
         static let `default` = Context(

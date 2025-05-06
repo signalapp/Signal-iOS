@@ -203,6 +203,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     private let ownIdentityKeyValueStore: KeyValueStore
     private let pniProtocolStore: SignalProtocolStore
     private let queuedVerificationStateSyncMessagesKeyValueStore: KeyValueStore
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
     private let recipientIdFinder: RecipientIdFinder
     private let schedulers: Schedulers
@@ -218,6 +219,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         networkManager: NetworkManager,
         notificationPresenter: any NotificationPresenter,
         pniProtocolStore: SignalProtocolStore,
+        recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientIdFinder: RecipientIdFinder,
         schedulers: Schedulers,
@@ -237,6 +239,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         self.queuedVerificationStateSyncMessagesKeyValueStore = KeyValueStore(
             collection: "OWSIdentityManager_QueuedVerificationStateSyncMessages"
         )
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.recipientIdFinder = recipientIdFinder
         self.schedulers = schedulers
@@ -674,7 +677,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             return nil
         }
 
-        guard let recipient = SignalRecipient.anyFetch(uniqueId: recipientUniqueId, transaction: tx) else {
+        guard let recipient = recipientDatabaseTable.fetchRecipient(uniqueId: recipientUniqueId, tx: tx) else {
             return nil
         }
 

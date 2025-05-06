@@ -6,13 +6,13 @@
 import Foundation
 
 public class StoryRecipientManager {
-    private let recipientDatabaseTable: any RecipientDatabaseTable
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let storyRecipientStore: StoryRecipientStore
     private let storageServiceManager: any StorageServiceManager
     private let threadStore: any ThreadStore
 
     init(
-        recipientDatabaseTable: any RecipientDatabaseTable,
+        recipientDatabaseTable: RecipientDatabaseTable,
         storyRecipientStore: StoryRecipientStore,
         storageServiceManager: any StorageServiceManager,
         threadStore: any ThreadStore

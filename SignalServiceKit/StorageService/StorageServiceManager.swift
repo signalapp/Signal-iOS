@@ -1231,7 +1231,8 @@ class StorageServiceOperation {
 
             let accountUpdater = buildAccountUpdater()
             let contactUpdater = buildContactUpdater()
-            SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
+            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+            recipientDatabaseTable.enumerateAll(tx: transaction) { recipient in
                 // There's only one recipient that can match our ACI (the column has a
                 // UNIQUE constraint). If, for some reason, our PNI or phone number shows
                 // up elsewhere, we'll try to create a contact record for that identifier,
@@ -1615,11 +1616,13 @@ class StorageServiceOperation {
 
                 var orphanedAccountCount = 0
                 let currentDate = Date()
+                let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
                 for (recipientUniqueId, identifier) in state.accountIdToIdentifierMap where !allManifestItems.contains(identifier) {
                     // Only consider registered recipients as orphaned. If another client
                     // removes an unregistered recipient, allow it.
                     guard
-                        let storageServiceContact = StorageServiceContact.fetch(for: recipientUniqueId, tx: transaction),
+                        let recipient = recipientDatabaseTable.fetchRecipient(uniqueId: recipientUniqueId, tx: transaction),
+                        let storageServiceContact = StorageServiceContact(recipient),
                         storageServiceContact.shouldBeInStorageService(currentDate: currentDate, remoteConfig: .current),
                         storageServiceContact.registrationStatus(currentDate: currentDate, remoteConfig: .current) == .registered
                     else {
@@ -1988,8 +1991,13 @@ class StorageServiceOperation {
         caller: String = #function,
         shouldUpdate: (StorageServiceContact?) -> Bool
     ) async {
-        let recipientUniqueIds = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            state.accountIdToIdentifierMap.keys.filter { shouldUpdate(StorageServiceContact.fetch(for: $0, tx: tx)) }
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+
+        let recipientUniqueIds = databaseStorage.read { tx in
+            state.accountIdToIdentifierMap.keys.filter {
+                return shouldUpdate(recipientDatabaseTable.fetchRecipient(uniqueId: $0, tx: tx).flatMap(StorageServiceContact.init(_:)))
+            }
         }
 
         if recipientUniqueIds.isEmpty {
@@ -2097,6 +2105,7 @@ class StorageServiceOperation {
                 nicknameManager: DependenciesBridge.shared.nicknameManager,
                 profileFetcher: SSKEnvironment.shared.profileFetcherRef,
                 profileManager: SSKEnvironment.shared.profileManagerImplRef,
+                recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
                 recipientManager: DependenciesBridge.shared.recipientManager,
                 recipientMerger: DependenciesBridge.shared.recipientMerger,
                 recipientHidingManager: DependenciesBridge.shared.recipientHidingManager,
