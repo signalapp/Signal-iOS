@@ -24,6 +24,7 @@ class CLVViewState {
 
     let containerView: ChatListContainerView
     let reminderViews: CLVReminderViews
+    let backupProgressView: CLVBackupProgressView
     let settingsButtonCreator: ChatListSettingsButtonState
     let proxyButtonCreator: ChatListProxyButtonCreator
 
@@ -52,6 +53,8 @@ class CLVViewState {
     var firstUnreadPaymentModel: TSPaymentModel?
     var lastKnownTableViewContentOffset: CGPoint?
 
+    let backupProgressViewState = CLVBackupProgressView.State()
+
     // MARK: - Initializer
 
     init(chatListMode: ChatListMode, inboxFilter: InboxFilter?) {
@@ -69,6 +72,7 @@ class CLVViewState {
 
         self.containerView = ChatListContainerView(tableView: tableDataSource.tableView, searchBar: searchController.searchBar)
         self.reminderViews = CLVReminderViews()
+        self.backupProgressView = CLVBackupProgressView()
         self.settingsButtonCreator = ChatListSettingsButtonState()
         self.proxyButtonCreator = ChatListProxyButtonCreator(chatConnectionManager: DependenciesBridge.shared.chatConnectionManager)
     }

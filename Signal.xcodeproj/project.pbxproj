@@ -1199,6 +1199,7 @@
 		66F98DE22DB71220009F1A86 /* DeviceBatteryLevelManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE12DB71219009F1A86 /* DeviceBatteryLevelManagerImpl.swift */; };
 		66F98DE62DBBED6C009F1A86 /* LineWrappingStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE52DBBED68009F1A86 /* LineWrappingStackView.swift */; };
 		66F98DE82DBBF25A009F1A86 /* LineWrappingStackViewTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE72DBBF24F009F1A86 /* LineWrappingStackViewTestController.swift */; };
+		66F98DEA2DC53155009F1A86 /* ChatListViewController+BackupProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE92DC5314E009F1A86 /* ChatListViewController+BackupProgressView.swift */; };
 		66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */; };
 		66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */; };
 		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
@@ -5112,6 +5113,7 @@
 		66F98DE12DB71219009F1A86 /* DeviceBatteryLevelManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceBatteryLevelManagerImpl.swift; sourceTree = "<group>"; };
 		66F98DE52DBBED68009F1A86 /* LineWrappingStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWrappingStackView.swift; sourceTree = "<group>"; };
 		66F98DE72DBBF24F009F1A86 /* LineWrappingStackViewTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWrappingStackViewTestController.swift; sourceTree = "<group>"; };
+		66F98DE92DC5314E009F1A86 /* ChatListViewController+BackupProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+BackupProgressView.swift"; sourceTree = "<group>"; };
 		66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsBiometryLockPromptViewController.swift; sourceTree = "<group>"; };
 		66FA2B1E28CBA4A5006845CD /* DeviceOwnerAuthenticationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceOwnerAuthenticationType.swift; sourceTree = "<group>"; };
 		66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
@@ -10604,6 +10606,7 @@
 				50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */,
 				50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */,
 				34E95C26269F6095004807EC /* ChatListViewController+Actions.swift */,
+				66F98DE92DC5314E009F1A86 /* ChatListViewController+BackupProgressView.swift */,
 				76847C932A13416A008E2EAB /* ChatListViewController+Camera.swift */,
 				34E95C28269F6109004807EC /* ChatListViewController+Helpers.swift */,
 				34E95C2C26A0673F004807EC /* ChatListViewController+Loading.swift */,
@@ -16725,6 +16728,7 @@
 				50101FB42B08447000C648E4 /* ChatListProxyButtonCreator.swift in Sources */,
 				50101FB22B083C8100C648E4 /* ChatListSettingsButtonState.swift in Sources */,
 				34E95C27269F6096004807EC /* ChatListViewController+Actions.swift in Sources */,
+				66F98DEA2DC53155009F1A86 /* ChatListViewController+BackupProgressView.swift in Sources */,
 				76847C942A13416A008E2EAB /* ChatListViewController+Camera.swift in Sources */,
 				34E95C29269F6109004807EC /* ChatListViewController+Helpers.swift in Sources */,
 				34E95C2D26A06740004807EC /* ChatListViewController+Loading.swift in Sources */,

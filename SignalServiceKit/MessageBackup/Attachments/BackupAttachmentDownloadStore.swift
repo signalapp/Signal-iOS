@@ -67,6 +67,12 @@ public protocol BackupAttachmentDownloadStore {
 
     /// See documentation for `setCachedRemainingPendingDownloadByteCount`.
     func getCachedRemainingPendingDownloadByteCount(tx: DBReadTransaction) -> UInt64?
+
+    /// Whether the banner for downloads being complete was dismissed. Reset when new downloads
+    /// are scheduled (when `setTotalPendingDownloadByteCount` is set.)
+    func getDidDismissDownloadCompleteBanner(tx: DBReadTransaction) -> Bool
+
+    func setDidDismissDownloadCompleteBanner(tx: DBWriteTransaction)
 }
 
 public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
@@ -172,6 +178,7 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
 
     private let totalPendingDownloadByteCountKey = "totalPendingDownloadByteCountKey"
     private let cachedRemainingPendingDownloadByteCountKey = "cachedRemainingPendingDownloadByteCountKey"
+    private let didDismissDownloadCompleteBannerKey = "didDismissDownloadCompleteBannerKey"
 
     public func setTotalPendingDownloadByteCount(_ byteCount: UInt64?, tx: DBWriteTransaction) {
         if let byteCount {
@@ -179,6 +186,7 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
         } else {
             kvStore.removeValue(forKey: totalPendingDownloadByteCountKey, transaction: tx)
         }
+        kvStore.setBool(false, key: didDismissDownloadCompleteBannerKey, transaction: tx)
     }
 
     public func getTotalPendingDownloadByteCount(tx: DBReadTransaction) -> UInt64? {
@@ -195,5 +203,13 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
 
     public func getCachedRemainingPendingDownloadByteCount(tx: DBReadTransaction) -> UInt64? {
         return kvStore.getUInt64(cachedRemainingPendingDownloadByteCountKey, transaction: tx)
+    }
+
+    public func getDidDismissDownloadCompleteBanner(tx: DBReadTransaction) -> Bool {
+        return kvStore.getBool(didDismissDownloadCompleteBannerKey, defaultValue: false, transaction: tx)
+    }
+
+    public func setDidDismissDownloadCompleteBanner(tx: DBWriteTransaction) {
+        kvStore.setBool(true, key: didDismissDownloadCompleteBannerKey, transaction: tx)
     }
 }

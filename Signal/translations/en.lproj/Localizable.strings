@@ -6604,6 +6604,48 @@
 /* Configure reactions reset button text */
 "RESET" = "Reset";
 
+/* Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps. */
+"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Details";
+
+/* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up to %@ of space on this device to restore your media.";
+
+/* Title shown on chat list banner for restoring media from a backupis finished */
+"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Restore Complete";
+
+/* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
+"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Device has low battery";
+
+/* Title shown on chat list banner for restoring media from a backup when paused for some reason */
+"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Restore Paused";
+
+/* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no wifi connection */
+"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Waiting for Wi-Fi…";
+
+/* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
+"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ of %2$@";
+
+/* Title shown on chat list banner for restoring media from a backup */
+"RESTORING_MEDIA_BANNER_TITLE" = "Restoring Media";
+
+/* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Skip Restore";
+
+/* Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "To finish restoring your media your device needs %@ of storage space.\n\nTo free up space go to Settings > General > iPhone Storage. You can choose to offload or delete unused apps or content.";
+
+/* Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
+"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Free up %@ on this device";
+
+/* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "If you skip restore the remaining media and attachments in your backup can be downloaded at a later time when storage space becomes available.";
+
+/* Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Skip Restore";
+
+/* Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Skip Restore?";
+
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Retry";
 

@@ -75,6 +75,25 @@ extension ChatListViewController {
             name: Usernames.localUsernameStateChangedNotification,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(backupAttachmentDownloadQueueStatusDidChange),
+            name: BackupAttachmentDownloadQueueStatus.didChangeNotification,
+            object: nil
+        )
+        viewState.backupProgressViewState.downloadQueueStatus =
+            DependenciesBridge.shared.backupAttachmentDownloadQueueStatusManager.currentStatus()
+        Task { @MainActor in
+            self.viewState.backupProgressViewState.downloadProgressObserver = await DependenciesBridge.shared
+                .backupAttachmentDownloadManager.progress
+                .addObserver { [weak self] progress in
+                    DispatchQueue.main.asyncIfNecessary {
+                        guard let self else { return }
+                        self.viewState.backupProgressViewState.downloadProgress = progress
+                        self.viewState.backupProgressView.update(viewState: self.viewState.backupProgressViewState)
+                    }
+                }
+        }
 
         NotificationCenter.default.addObserver(
             self,
@@ -234,6 +253,13 @@ extension ChatListViewController {
     private func localUsernameStateDidChange() {
         updateUsernameReminderView()
         loadCoordinator.loadIfNecessary()
+    }
+
+    @objc
+    private func backupAttachmentDownloadQueueStatusDidChange() {
+        self.viewState.backupProgressViewState.downloadQueueStatus =
+            DependenciesBridge.shared.backupAttachmentDownloadQueueStatusManager.currentStatus()
+        self.viewState.backupProgressView.update(viewState: self.viewState.backupProgressViewState)
     }
 }
 

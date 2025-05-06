@@ -23,6 +23,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         tableDataSource.viewController = self
         loadCoordinator.viewController = self
         reminderViews.chatListViewController = self
+        viewState.backupProgressView.chatListViewController = self
         viewState.settingsButtonCreator.delegate = self
         viewState.proxyButtonCreator.delegate = self
         viewState.configure()
@@ -95,6 +96,10 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         updateUsernameReminderView()
         applyTheme()
         observeNotifications()
+        DependenciesBridge.shared.db.read { tx in
+            self.viewState.backupProgressViewState.refetchDBState(tx: tx)
+        }
+        self.viewState.backupProgressView.update(viewState: self.viewState.backupProgressViewState)
     }
 
     public override func viewWillAppear(_ animated: Bool) {

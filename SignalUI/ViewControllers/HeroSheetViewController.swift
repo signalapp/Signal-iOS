@@ -29,7 +29,7 @@ public class HeroSheetViewController: StackSheetViewController {
     public struct Button {
         public enum Action {
             case dismiss
-            case custom(() -> Void)
+            case custom((HeroSheetViewController) -> Void)
         }
 
         public enum Style {
@@ -41,13 +41,13 @@ public class HeroSheetViewController: StackSheetViewController {
         fileprivate let action: Action
         fileprivate let style: Style
 
-        private init(title: String, style: Style = .primary, action: Action) {
+        public init(title: String, style: Style = .primary, action: Action) {
             self.title = title
             self.style = style
             self.action = action
         }
 
-        public init(title: String, action: @escaping () -> Void) {
+        public init(title: String, action: @escaping (_: HeroSheetViewController) -> Void) {
             self.init(title: title, action: .custom(action))
         }
 
@@ -220,11 +220,12 @@ public class HeroSheetViewController: StackSheetViewController {
         UIButton(
             type: .system,
             primaryAction: UIAction { [weak self] _ in
+                guard let self else { return }
                 switch button.action {
                 case .dismiss:
-                    self?.dismiss(animated: true)
+                    self.dismiss(animated: true)
                 case .custom(let closure):
-                    closure()
+                    closure(self)
                 }
             }
         )

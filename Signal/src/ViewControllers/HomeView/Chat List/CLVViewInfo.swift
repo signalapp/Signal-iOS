@@ -13,6 +13,7 @@ struct CLVViewInfo: Equatable {
     let inboxFilter: InboxFilter
     let isMultiselectActive: Bool
     let hasVisibleReminders: Bool
+    let shouldBackupProgressViewBeVisible: Bool
     let lastSelectedThreadId: String?
     let requiredVisibleThreadIds: Set<String>
 
@@ -28,6 +29,7 @@ struct CLVViewInfo: Equatable {
             inboxFilter: .none,
             isMultiselectActive: false,
             hasVisibleReminders: false,
+            shouldBackupProgressViewBeVisible: false,
             lastSelectedThreadId: nil,
             requiredVisibleThreadIds: []
         )
@@ -39,6 +41,7 @@ struct CLVViewInfo: Equatable {
         isMultiselectActive: Bool,
         lastSelectedThreadId: String?,
         hasVisibleReminders: Bool,
+        shouldBackupProgressViewBeVisible: Bool,
         transaction: DBReadTransaction
     ) -> CLVViewInfo {
         do {
@@ -57,6 +60,7 @@ struct CLVViewInfo: Equatable {
                 inboxFilter: inboxFilter,
                 isMultiselectActive: isMultiselectActive,
                 hasVisibleReminders: hasVisibleReminders,
+                shouldBackupProgressViewBeVisible: shouldBackupProgressViewBeVisible,
                 lastSelectedThreadId: lastSelectedThreadId,
                 requiredVisibleThreadIds: requiredThreadIds
             )

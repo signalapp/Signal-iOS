@@ -46,14 +46,14 @@ public extension OWSFormat {
         return formatter
     }()
 
-    private static let fileSizeFormatter: NumberFormatter = {
+    private static func fileSizeFormatter(_ maximumFractionalDigits: Int) -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 1
+        formatter.maximumFractionDigits = maximumFractionalDigits
         return formatter
-    }()
+    }
 
-    static func formatFileSize(_ fileSize: UInt) -> String {
+    static func formatFileSize(_ fileSize: UInt, maximumFractionalDigits: Int = 1) -> String {
         let kOneKilobyte: UInt = 1024
         let kOneMegabyte = kOneKilobyte * kOneKilobyte
         let kOneGigabyte = kOneMegabyte * kOneKilobyte
@@ -61,11 +61,11 @@ public extension OWSFormat {
         // NOTE: These values are not localized.
         if fileSize > kOneGigabyte * 1 {
             let gbSize = max(Double(1), Double(fileSize) / Double(kOneGigabyte))
-            let value = fileSizeFormatter.string(from: NSNumber(value: gbSize)) ?? "0"
+            let value = fileSizeFormatter(maximumFractionalDigits).string(from: NSNumber(value: gbSize)) ?? "0"
             return "\(value) GB"
         } else if fileSize > kOneMegabyte * 1 {
             let mbSize = max(Double(1), Double(fileSize) / Double(kOneMegabyte))
-            let value = fileSizeFormatter.string(from: NSNumber(value: mbSize)) ?? "0"
+            let value = fileSizeFormatter(maximumFractionalDigits).string(from: NSNumber(value: mbSize)) ?? "0"
             return "\(value) MB"
         } else {
             let kbSize = max(Double(1), Double(fileSize) / Double(kOneKilobyte))

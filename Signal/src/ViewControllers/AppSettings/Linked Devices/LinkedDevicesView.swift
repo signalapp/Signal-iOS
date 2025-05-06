@@ -598,7 +598,7 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
             ),
             primaryButton: .init(
                 title: CommonStrings.continueButton
-            ) { [weak self, context] in
+            ) { [weak self, context] _ in
                 self?.dismiss(animated: true)
                 Task {
                     await self?.authenticateThenShowLinkNewDeviceView(context: context)

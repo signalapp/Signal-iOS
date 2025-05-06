@@ -30,7 +30,12 @@ public actor BackupAttachmentDownloadProgress {
     /// The observer will immediately be provided the current progress if any, and then updated with future progress state.
     public func addObserver(_ block: @escaping (OWSProgress) -> Void) -> Observer {
         let observer = Observer(block: block)
-        latestProgress.map(block)
+        if let latestProgress {
+            block(latestProgress)
+        } else {
+            initializeProgress()
+            latestProgress.map(block)
+        }
         observers.append(observer)
         return observer
     }
@@ -120,7 +125,7 @@ public actor BackupAttachmentDownloadProgress {
         }
         activeDownloadByteCounts = [:]
         if let source {
-            if source.totalUnitCount > 0 {
+            if source.totalUnitCount > 0, source.totalUnitCount > source.completedUnitCount {
                 source.incrementCompletedUnitCount(by: source.totalUnitCount - source.completedUnitCount)
             }
             await self.updateCache()
@@ -169,6 +174,7 @@ public actor BackupAttachmentDownloadProgress {
     private let initializationTask: Task<Void, Never>
 
     private func initializeProgress() {
+        if latestProgress != nil { return }
         // Initialize the `latestProgress` value using the on-disk cached values.
         // Later we will (expensively) recompute the remaining byte count.
         let (totalByteCount, remainingByteCount) = db.read { tx in
@@ -219,7 +225,7 @@ public actor BackupAttachmentDownloadProgress {
         }
         let prevByteCount = activeDownloadByteCounts[id] ?? 0
         if let source {
-            let diff = min(completedByteCount - prevByteCount, source.totalUnitCount - source.completedUnitCount)
+            let diff = min(max(completedByteCount, prevByteCount) - prevByteCount, source.totalUnitCount - source.completedUnitCount)
             owsAssertDebug(self.source != nil, "Updating progress before setting up observation!")
             if diff > 0 {
                 self.source?.incrementCompletedUnitCount(by: diff)
@@ -301,7 +307,9 @@ public actor BackupAttachmentDownloadProgress {
         else {
             return
         }
-        let pendingByteCount = latestProgress.totalUnitCount - latestProgress.completedUnitCount
+        let pendingByteCount = max(
+            latestProgress.totalUnitCount, latestProgress.completedUnitCount
+        ) - latestProgress.completedUnitCount
         await db.awaitableWrite { tx in
             backupAttachmentDownloadStore.setCachedRemainingPendingDownloadByteCount(
                 pendingByteCount,

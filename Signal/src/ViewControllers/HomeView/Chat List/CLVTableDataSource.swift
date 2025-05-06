@@ -164,7 +164,7 @@ class CLVTableDataSource: NSObject {
         }
         let conversationIndexPaths = visibleIndexPaths.compactMap { indexPath -> IndexPath? in
             switch renderState.sections[indexPath.section].type {
-            case .reminders, .archiveButton, .inboxFilterFooter:
+            case .reminders, .backupProgressView, .archiveButton, .inboxFilterFooter:
                 return nil
             case .pinned, .unpinned:
                 return indexPath
@@ -231,6 +231,7 @@ public enum ChatListMode: Int, CaseIterable {
 
 public enum ChatListSectionType: String, CaseIterable {
     case reminders
+    case backupProgressView
     case pinned
     case unpinned
     case archiveButton
@@ -314,7 +315,7 @@ extension CLVTableDataSource: UITableViewDelegate {
 
     public func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         switch renderState.sections[indexPath.section].type {
-        case .reminders, .inboxFilterFooter:
+        case .reminders, .backupProgressView, .inboxFilterFooter:
             return nil
 
         case .archiveButton:
@@ -358,7 +359,7 @@ extension CLVTableDataSource: UITableViewDelegate {
         let sectionType = renderState.sections[indexPath.section].type
 
         switch sectionType {
-        case .reminders, .inboxFilterFooter:
+        case .reminders, .backupProgressView, .inboxFilterFooter:
             owsFailDebug("Unexpected selection in section \(sectionType)")
             tableView.deselectRow(at: indexPath, animated: false)
 
@@ -527,6 +528,14 @@ extension CLVTableDataSource: UITableViewDataSource {
         switch renderState.sections[indexPath.section].type {
         case .reminders, .archiveButton, .inboxFilterFooter:
             return UITableView.automaticDimension
+        case .backupProgressView:
+            guard let viewState = viewController?.viewState else {
+                return 0
+            }
+            return CLVBackupProgressView.measureHeight(
+                viewState: viewState.backupProgressViewState,
+                width: tableView.bounds.width
+            )
         case .pinned, .unpinned:
             return measureConversationCell(tableView: tableView, indexPath: indexPath)
         }
@@ -544,6 +553,8 @@ extension CLVTableDataSource: UITableViewDataSource {
         switch section.type {
         case .reminders:
             cell = viewController.reminderViewCell
+        case .backupProgressView:
+            cell = viewController.viewState.backupProgressView.backupProgressViewCell
         case .pinned, .unpinned:
             cell = buildConversationCell(tableView: tableView, indexPath: indexPath)
         case .archiveButton:
@@ -631,7 +642,7 @@ extension CLVTableDataSource: UITableViewDataSource {
 
     public func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         switch renderState.sections[indexPath.section].type {
-        case .reminders, .archiveButton, .inboxFilterFooter:
+        case .reminders, .backupProgressView, .archiveButton, .inboxFilterFooter:
             return nil
 
         case .pinned, .unpinned:
@@ -656,7 +667,7 @@ extension CLVTableDataSource: UITableViewDataSource {
 
     public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         switch renderState.sections[indexPath.section].type {
-        case .reminders, .archiveButton, .inboxFilterFooter:
+        case .reminders, .backupProgressView, .archiveButton, .inboxFilterFooter:
             return false
         case .pinned, .unpinned:
             return true
@@ -665,7 +676,7 @@ extension CLVTableDataSource: UITableViewDataSource {
 
     public func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         switch renderState.sections[indexPath.section].type {
-        case .reminders, .archiveButton, .inboxFilterFooter:
+        case .reminders, .backupProgressView, .archiveButton, .inboxFilterFooter:
             return nil
 
         case .pinned, .unpinned:

@@ -34,6 +34,8 @@ public enum BackupAttachmentDownloadQueueStatus: Equatable {
 public protocol BackupAttachmentDownloadQueueStatusManager {
     func currentStatus() -> BackupAttachmentDownloadQueueStatus
 
+    nonisolated func minimumRequiredDiskSpaceToCompleteDownloads() -> UInt64
+
     /// Re-triggers disk space checks and clears any in-memory state for past disk space errors,
     /// in order to attempt download resumption.
     func reattemptDiskSpaceChecks()
@@ -67,6 +69,10 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
     public func currentStatus() -> BackupAttachmentDownloadQueueStatus {
         return state.status
+    }
+
+    public nonisolated func minimumRequiredDiskSpaceToCompleteDownloads() -> UInt64 {
+        return getRequiredDiskSpace()
     }
 
     public func reattemptDiskSpaceChecks() {

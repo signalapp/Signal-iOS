@@ -278,6 +278,7 @@ public class CLVLoadCoordinator {
             isMultiselectActive: Bool,
             lastSelectedThreadId: String?,
             hasVisibleReminders: Bool,
+            shouldBackupProgressViewBeVisible: Bool,
             lastViewInfo: CLVViewInfo,
             transaction: DBReadTransaction
         ) -> CLVLoadInfo {
@@ -289,6 +290,7 @@ public class CLVLoadCoordinator {
                 isMultiselectActive: isMultiselectActive,
                 lastSelectedThreadId: lastSelectedThreadId,
                 hasVisibleReminders: hasVisibleReminders,
+                shouldBackupProgressViewBeVisible: shouldBackupProgressViewBeVisible,
                 transaction: transaction
             )
 
@@ -379,6 +381,7 @@ public class CLVLoadCoordinator {
 
         let reminderViews = viewController.viewState.reminderViews
         let hasVisibleReminders = reminderViews.hasVisibleReminders
+        let shouldBackupProgressViewBeVisible = viewController.viewState.backupProgressView.shouldBeVisible
 
         let loadResult: CLVLoadResult = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             // Decide what kind of load we prefer.
@@ -389,6 +392,7 @@ public class CLVLoadCoordinator {
                 isMultiselectActive: viewController.viewState.multiSelectState.isActive,
                 lastSelectedThreadId: viewController.viewState.lastSelectedThreadId,
                 hasVisibleReminders: hasVisibleReminders,
+                shouldBackupProgressViewBeVisible: shouldBackupProgressViewBeVisible,
                 lastViewInfo: viewController.renderState.viewInfo,
                 transaction: transaction
             )
