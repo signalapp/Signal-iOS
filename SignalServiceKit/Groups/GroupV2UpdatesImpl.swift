@@ -335,16 +335,12 @@ private extension GroupV2UpdatesImpl {
 
         do {
             // Try to use individual changes.
-            try await Promise.wrapAsync {
-                try await self.fetchAndApplyChangeActionsFromService(
-                    secretParams: secretParams,
-                    spamReportingMetadata: spamReportingMetadata,
-                    source: source,
-                    options: options
-                )
-            }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: "Update via changes") {
-                return GroupsV2Error.timeout
-            }.awaitable()
+            try await self.fetchAndApplyChangeActionsFromService(
+                secretParams: secretParams,
+                spamReportingMetadata: spamReportingMetadata,
+                source: source,
+                options: options
+            )
         } catch {
             let shouldTrySnapshot = { () -> Bool in
                 // This should not fail over in the case of networking problems.
@@ -379,15 +375,11 @@ private extension GroupV2UpdatesImpl {
             }
 
             // Failover to applying latest snapshot.
-            try await Promise.wrapAsync {
-                try await self.fetchAndApplyCurrentGroupV2SnapshotFromService(
-                    secretParams: secretParams,
-                    spamReportingMetadata: spamReportingMetadata,
-                    options: options
-                )
-            }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: "Update via snapshot") {
-                return GroupsV2Error.timeout
-            }.awaitable()
+            try await self.fetchAndApplyCurrentGroupV2SnapshotFromService(
+                secretParams: secretParams,
+                spamReportingMetadata: spamReportingMetadata,
+                options: options
+            )
         }
     }
 
