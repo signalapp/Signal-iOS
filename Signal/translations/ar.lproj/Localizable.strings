@@ -4997,7 +4997,7 @@
 "NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "قصة مُخصَّصة جديدة";
 
 /* Subtitle for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "مشاركة مع مجموعة موجودة";
+"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "المشاركة مع مجموعة موجودة";
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "قصة جديدة للمجموعة";
@@ -6128,7 +6128,7 @@
 "PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>أسماء الحسابات الشخصية</bold> في سيجنال يقوم أصحاب الحسابات باختيارها.";
 
 /* Title for the profile name view. */
-"PROFILE_NAME_VIEW_TITLE" = "اِسمُك";
+"PROFILE_NAME_VIEW_TITLE" = "اسمُك";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "حول";
@@ -7784,7 +7784,7 @@
 "SETTINGS_SECURITY_TITLE" = "أمان التطبيق";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "إن إرسال وسائط بجودة عالية سوف يستخدم كمية أكبر من البيانات.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "لاحظ أنَّ إرسال وسائط بجودة عالية سوف يستخدم كمية أكبر من البيانات.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "الصور والفيديوهات";
@@ -8018,7 +8018,7 @@
 "STORIES_NO_REPLIES_YET" = "لا ردود حاليًا";
 
 /* Indicates that this story has no views yet */
-"STORIES_NO_VIEWS_YET" = "لا يوجد مشاهدات حاليًا";
+"STORIES_NO_VIEWS_YET" = "لا مشاهدات حاليًا";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "السماح للأفراد الذين يُمكنهم مشاهدة قصتك من التفاعل معها والرد عليها.";
@@ -8366,13 +8366,13 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "سيتمُّ ضبط وقت اختفاء الرسائل على %1$@ عندما تقوم بمراسلتهم.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "مراجعة بحذر";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "انقر لاستبدال الرمز التعبيري (الإيموجي)";
 
 /* Option in selected text edit menu to make text bold */
-"TEXT_MENU_BOLD" = "عريض";
+"TEXT_MENU_BOLD" = "خط عريض";
 
 /* Option in selected text edit menu to clear all text formatting in the selected text range */
 "TEXT_MENU_CLEAR_FORMATTING" = "إزالة التنسيق";

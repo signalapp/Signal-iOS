@@ -1022,7 +1022,7 @@
 "CALL_VIEW_UNMUTE_LABEL" = "Réactiver le micro";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
-"CALL_WAITING_TO_BE_LET_IN" = "En attente d’admission…";
+"CALL_WAITING_TO_BE_LET_IN" = "En attente d'admission…";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Rappeler";
@@ -1355,7 +1355,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Associer un nouvel appareil";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ est bloqué";
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "Vous avez bloqué %1$@";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ se trouve dans les contacts de votre téléphone";
@@ -2804,7 +2804,7 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Échec de l’importation des journaux.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Impossible d'envoyer le message, car vous avez bloqué cet utilisateur.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Impossible d'envoyer le message, car vous avez bloqué ce contact.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Impossible d'envoyer le message : destinataires incorrects.";
@@ -3083,7 +3083,7 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Vous ne recevez ni l’audio, ni la vidéo de cet utilisateur et il ne reçoit pas les vôtres.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ est bloqué";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "Contact bloqué : %1$@";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Seuls les admins de ce groupe peuvent démarrer un appel.";
@@ -3092,7 +3092,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Vous ne pouvez pas démarrer cet appel de groupe";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ est bloqué";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "Contact bloqué : %1$@";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Poursuivre l'appel";
@@ -3986,7 +3986,7 @@
 "INFO_MESSAGE_BLOCKED_GROUP" = "Vous avez bloqué ce groupe.";
 
 /* An info message inserted into a 1:1 chat when you block another user. */
-"INFO_MESSAGE_BLOCKED_OTHER_USER" = "Vous avez bloqué cet utilisateur.";
+"INFO_MESSAGE_BLOCKED_OTHER_USER" = "Vous avez bloqué ce contact.";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "Cette personne est de nouveau dans votre liste de contacts Signal.";
@@ -6341,13 +6341,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Besoin d'aide ?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Votre code PIN est un code numérique ou alphanumérique que vous avez créé et qui comporte quatre caractères ou plus. En cas d’oubli, vous ne pouvez pas réinscrire votre compte pendant sept jours.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Votre code PIN est un code numérique ou alphanumérique d'au moins quatre caractères, que vous avez créé. En cas d'oubli, vous devez attendre un délai de sept jours avant de réinscrire votre compte.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Votre PIN est un code numérique ou alphanumérique d'au moins 4 caractères, que vous avez créé. Si vous avez oublié votre PIN, vous pouvez vous réinscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés, tels que les informations de profil.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Votre PIN est un code numérique ou alphanumérique d'au moins 4 caractères, que vous avez créé. Si vous avez oublié votre PIN, vous pouvez en créer un nouveau. Vous pourrez vous réinscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés, tels que les informations de profil.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Votre PIN est un code numérique ou alphanumérique d'au moins 4 caractères, que vous avez créé. Si vous avez oublié votre PIN, vous pouvez en créer un autre. Vous pourrez vous réinscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés, tels que les informations de profil.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Code PIN incorrect.";

@@ -1,1 +1,1 @@
-• This update improves the layout of media messages with quoted replies, and also fixes a visual gap that appeared between the search bar and your chat list when the "Reduce Transparency" iOS Accessibility setting was enabled.
+• Cette mise à jour améliore l'affichage des messages multimédias cités dans des réponses. Et vous vous rappelez de l'espace vide entre la barre de recherche et la liste des conversations ? Il apparaissait lorsque le réglage d'accessibilité iOS "Réduire la transparence" était activé. Eh bien, hop, on l'a fait disparaître !

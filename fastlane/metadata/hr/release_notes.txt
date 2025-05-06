@@ -1,1 +1,1 @@
-• This update improves the layout of media messages with quoted replies, and also fixes a visual gap that appeared between the search bar and your chat list when the "Reduce Transparency" iOS Accessibility setting was enabled.
+• Ovo ažuriranje poboljšava izgled poruka s medijskim zapisima u citiranim odgovorima te ispravlja razmak koji se pojavljivao između trake za pretraživanje i popisa razgovora.

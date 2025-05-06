@@ -1,1 +1,1 @@
-• This update improves the layout of media messages with quoted replies, and also fixes a visual gap that appeared between the search bar and your chat list when the "Reduce Transparency" iOS Accessibility setting was enabled.
+• Ez a frissítés javítja az idézett válaszokat tartalmazó médiaüzenetek elrendezését, és kijavítja a keresősáv és a csevegőlista között előforduló vizuális rést.
