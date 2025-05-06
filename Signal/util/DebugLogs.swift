@@ -194,18 +194,7 @@ enum DebugLogs {
     }
 
     static func uploadLogs() async throws(UploadDebugLogError) -> URL {
-        // Phase 0. Log local info and flush any pending logs to disk.
-        AppVersionImpl.shared.dumpToLog()
-        DependenciesBridge.shared.db.read { tx in
-            let accountManager = DependenciesBridge.shared.tsAccountManager
-            if let localIdentifiers = accountManager.localIdentifiers(tx: tx) {
-                let deviceId = accountManager.storedDeviceId(tx: tx)
-                Logger.info("local ACI: \(localIdentifiers.aci), device ID: \(deviceId)")
-            } else {
-                let state = accountManager.registrationState(tx: tx)
-                Logger.info("no local ACI! registration state: \(state.logString)")
-            }
-        }
+        // Phase 0. Flush any pending logs to disk.
         if DebugFlags.internalLogging {
             KeyValueStore.logCollectionStatistics()
         }
