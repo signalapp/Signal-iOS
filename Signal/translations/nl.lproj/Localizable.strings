@@ -526,11 +526,17 @@
 /* Header describing what the free backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "Tekstberichten + 45 dagen media";
 
-/* Text shown when we fail to load someone's backup plan due to a generic error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR" = "Je backup-abonnement kon niet worden opgehaald. Neem contact op met ondersteuning.";
+/* Message for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
 
-/* Text shown when we fail to load someone's backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR" = "Je backup-abonnement kon niet worden opgehaald. Controleer je internetverbinding en probeer het opnieuw.";
+/* Title for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Failed to Fetch Backup Plan";
+
+/* Message for a view indicating we failed to fetch someone's Backup plan due to a network error. */
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Title for a view indicating we failed to fetch someone's Backup plan due to a network error. */
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Network Error";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Beheren of annuleren";
@@ -543,9 +549,6 @@
 
 /* Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "Verloopt op %1$@";
-
-/* Text explaining that a user's paid plan, which has been canceled, has expired. Embeds {{ the formatted expiration date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Verlopen op %1$@";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Tekstberichten + alle media";
@@ -1287,6 +1290,42 @@
 
 /* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "Geen ongelezen chats";
+
+/* Text for a bullet point in a list of Backup features, describing that all media is included. */
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Full media backup";
+
+/* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Full text message backup";
+
+/* Text for a bullet point in a list of Backup features, describing that recent media is included. */
+"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Last 45 days of media";
+
+/* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+
+/* A label indicating that a given Backup plan option is what the user has already enabled. */
+"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Current plan";
+
+/* Subtitle for the free plan option, when choosing a Backup plan. */
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Text + 45 days of media";
+
+/* Title for the free plan option, when choosing a Backup plan. */
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Free";
+
+/* Subtitle for the paid plan option, when choosing a Backup plan. */
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Text + All your media";
+
+/* Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/month";
+
+/* Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
+"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Subscribe for %1$@/month";
+
+/* Subtitle for a view allowing users to choose a Backup plan. */
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "All backups are end-to-end encrypted. Signal is a non-profit — paying for backups helps support our mission.";
+
+/* Title for a view allowing users to choose a Backup plan. */
+"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Your Backup Plan";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chatkleur & -achtergrond";
@@ -2787,9 +2826,6 @@
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Kon berichten niet doorsturen";
-
-/* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Kan video niet opslaan.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Het verzenden van het bericht is mislukt.";
@@ -6567,6 +6603,48 @@
 
 /* Configure reactions reset button text */
 "RESET" = "Standaardinstelling herstellen";
+
+/* Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps. */
+"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Details";
+
+/* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up to %1$@ of space on this device to restore your media.";
+
+/* Title shown on chat list banner for restoring media from a backupis finished */
+"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Restore Complete";
+
+/* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
+"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Device has low battery";
+
+/* Title shown on chat list banner for restoring media from a backup when paused for some reason */
+"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Restore Paused";
+
+/* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no wifi connection */
+"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Waiting for Wi-Fi…";
+
+/* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
+"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ of %2$@";
+
+/* Title shown on chat list banner for restoring media from a backup */
+"RESTORING_MEDIA_BANNER_TITLE" = "Restoring Media";
+
+/* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Skip Restore";
+
+/* Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "To finish restoring your media your device needs %1$@ of storage space.\n\nTo free up space go to Settings > General > iPhone Storage. You can choose to offload or delete unused apps or content.";
+
+/* Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
+"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Free up %1$@ on this device";
+
+/* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "If you skip restore the remaining media and attachments in your backup can be downloaded at a later time when storage space becomes available.";
+
+/* Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Skip Restore";
+
+/* Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Skip Restore?";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Opnieuw proberen";

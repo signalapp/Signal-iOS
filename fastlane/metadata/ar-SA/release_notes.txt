@@ -1,1 +1,1 @@
-• This update improves the layout of media messages with quoted replies, and also fixes a visual gap that appeared between the search bar and your chat list when the "Reduce Transparency" iOS Accessibility setting was enabled.
+• يُحسِّن هذا التحديث تخطيط رسائل الوسائط التي تتضمّن ردودًا مُقتبسة، كما يُصلِح فجوة مرئية كانت تظهر بين شريط البحث وقائمة محادثاتك عند تفعيل خيار "تخفيض الشفافية" في إعدادات تسهيلات الاستخدام على نظام iOS.

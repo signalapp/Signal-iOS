@@ -1,1 +1,1 @@
-• This update improves the layout of media messages with quoted replies, and also fixes a visual gap that appeared between the search bar and your chat list when the "Reduce Transparency" iOS Accessibility setting was enabled.
+• W ramach tej aktualizacji poprawiliśmy układ wiadomości multimedialnych z cytatem w odpowiedzi. Usunęliśmy też przerwę, która pojawiała się między paskiem wyszukiwania a listą czatów przy włączonej opcji „Zmniejsz przezroczystość” w ustawieniach dostępności systemu iOS.

@@ -526,11 +526,17 @@
 /* Header describing what the free backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "النسخ الاحتياطي للنص و45 يوم من الوسائط";
 
-/* Text shown when we fail to load someone's backup plan due to a generic error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR" = "تعذَّر تحميل خطة النسخ الاحتياطي الخاصة بك. يُرجى التواصل مع فريق الدعم.";
+/* Message for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
 
-/* Text shown when we fail to load someone's backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR" = "تعذَّر تحميل خطة النسخ الاحتياطي الخاصة بك. تحقَّق من اتصالك بالإنترنت وحاوِل مُجدَّدًا.";
+/* Title for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Failed to Fetch Backup Plan";
+
+/* Message for a view indicating we failed to fetch someone's Backup plan due to a network error. */
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Title for a view indicating we failed to fetch someone's Backup plan due to a network error. */
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Network Error";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "إدارة أو إلغاء";
@@ -543,9 +549,6 @@
 
 /* Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "ستنتهي الصلاحية في %1$@";
-
-/* Text explaining that a user's paid plan, which has been canceled, has expired. Embeds {{ the formatted expiration date }}. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "انتهت الصلاحية في %1$@";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "النسخ الاحتياطي للنص وكل الوسائط";
@@ -1288,6 +1291,42 @@
 /* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "لا توجد دردشات غير مقروءة.";
 
+/* Text for a bullet point in a list of Backup features, describing that all media is included. */
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Full media backup";
+
+/* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Full text message backup";
+
+/* Text for a bullet point in a list of Backup features, describing that recent media is included. */
+"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Last 45 days of media";
+
+/* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+
+/* A label indicating that a given Backup plan option is what the user has already enabled. */
+"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Current plan";
+
+/* Subtitle for the free plan option, when choosing a Backup plan. */
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Text + 45 days of media";
+
+/* Title for the free plan option, when choosing a Backup plan. */
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Free";
+
+/* Subtitle for the paid plan option, when choosing a Backup plan. */
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Text + All your media";
+
+/* Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/month";
+
+/* Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
+"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Subscribe for %1$@/month";
+
+/* Subtitle for a view allowing users to choose a Backup plan. */
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "All backups are end-to-end encrypted. Signal is a non-profit — paying for backups helps support our mission.";
+
+/* Title for a view allowing users to choose a Backup plan. */
+"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Your Backup Plan";
+
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "الخلفية ولون الدردشة";
 
@@ -1787,7 +1826,7 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "هل ترغب بإزالة %1$@ من المجموعة؟";
 
 /* Label for 'report spam' action in conversation settings view. */
-"CONVERSATION_SETTINGS_REPORT_SPAM" = "الإبلاغ عن رسائل غير مرغوب فيها";
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "الإبلاغ";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "إزالة ميزة الإشراف";
@@ -2787,9 +2826,6 @@
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "تعذَّرت إعادة توجيه الرسائل";
-
-/* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "تعذَّر حفظ الفيديو.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "فشل إرسال الرسالة.";
@@ -4676,7 +4712,7 @@
 "MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "هل ترغبُ بالإبلاغ؟";
 
 /* Action sheet action to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "الإبلاغ عن رسائل غير مرغوب فيها";
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "الإبلاغ";
 
 /* String indicating that spam has been reported. */
 "MESSAGE_REQUEST_SPAM_REPORTED" = "تمَّ الإبلاغ عنها كرسالة غير مرغوب فيها.";
@@ -4997,7 +5033,7 @@
 "NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "قصة مُخصَّصة جديدة";
 
 /* Subtitle for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "مشاركة مع مجموعة موجودة";
+"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "المشاركة مع مجموعة موجودة";
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "قصة جديدة للمجموعة";
@@ -6128,7 +6164,7 @@
 "PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>أسماء الحسابات الشخصية</bold> في سيجنال يقوم أصحاب الحسابات باختيارها.";
 
 /* Title for the profile name view. */
-"PROFILE_NAME_VIEW_TITLE" = "اِسمُك";
+"PROFILE_NAME_VIEW_TITLE" = "اسمُك";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "حول";
@@ -6568,6 +6604,48 @@
 /* Configure reactions reset button text */
 "RESET" = "إعادة التعيين";
 
+/* Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps. */
+"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Details";
+
+/* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up to %1$@ of space on this device to restore your media.";
+
+/* Title shown on chat list banner for restoring media from a backupis finished */
+"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Restore Complete";
+
+/* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
+"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Device has low battery";
+
+/* Title shown on chat list banner for restoring media from a backup when paused for some reason */
+"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Restore Paused";
+
+/* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no wifi connection */
+"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Waiting for Wi-Fi…";
+
+/* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
+"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ of %2$@";
+
+/* Title shown on chat list banner for restoring media from a backup */
+"RESTORING_MEDIA_BANNER_TITLE" = "Restoring Media";
+
+/* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Skip Restore";
+
+/* Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "To finish restoring your media your device needs %1$@ of storage space.\n\nTo free up space go to Settings > General > iPhone Storage. You can choose to offload or delete unused apps or content.";
+
+/* Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
+"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Free up %1$@ on this device";
+
+/* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "If you skip restore the remaining media and attachments in your backup can be downloaded at a later time when storage space becomes available.";
+
+/* Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Skip Restore";
+
+/* Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Skip Restore?";
+
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "إعادة المُحاولة";
 
@@ -6626,7 +6704,7 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "الشركات والمُؤسَّسات الوهمية";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "لن يَطلب سيجنال منك أبدًا كود التسجيل أو رقم التعريف الشخصي (PIN). كُن حذِرًا من الطلبات التي تنتحل شخصية الآخرين. يقوم أصحاب الحسابات بتحديد أسماء حساباتهم الشخصية، وهي غير خاضعة لعملية التحقُّق.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "لن يَطلب سيجنال منك أبدًا كود التسجيل أو رقم التعريف الشخصي (PIN). كُن حذِرًا من الطلبات التي تنتحل شخصية الآخرين. يتم تعيين أسماء الحسابات الشخصية من قبل أصحابها، وهي غير خاضعة لعملية التحقُّق.";
 
 /* Message title describing the fake names safety tip. */
 "SAFETY_TIPS_FAKE_NAMES_TITLE" = "الأسماء والحسابات المُزَيَّفة";
@@ -7784,7 +7862,7 @@
 "SETTINGS_SECURITY_TITLE" = "أمان التطبيق";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "إن إرسال وسائط بجودة عالية سوف يستخدم كمية أكبر من البيانات.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "لاحظ أنَّ إرسال وسائط بجودة عالية سوف يستخدم كمية أكبر من البيانات.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "الصور والفيديوهات";
@@ -8018,7 +8096,7 @@
 "STORIES_NO_REPLIES_YET" = "لا ردود حاليًا";
 
 /* Indicates that this story has no views yet */
-"STORIES_NO_VIEWS_YET" = "لا يوجد مشاهدات حاليًا";
+"STORIES_NO_VIEWS_YET" = "لا مشاهدات حاليًا";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "السماح للأفراد الذين يُمكنهم مشاهدة قصتك من التفاعل معها والرد عليها.";
@@ -8366,13 +8444,13 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "سيتمُّ ضبط وقت اختفاء الرسائل على %1$@ عندما تقوم بمراسلتهم.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "مراجعة بحذر";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "انقر لاستبدال الرمز التعبيري (الإيموجي)";
 
 /* Option in selected text edit menu to make text bold */
-"TEXT_MENU_BOLD" = "عريض";
+"TEXT_MENU_BOLD" = "خط عريض";
 
 /* Option in selected text edit menu to clear all text formatting in the selected text range */
 "TEXT_MENU_CLEAR_FORMATTING" = "إزالة التنسيق";
