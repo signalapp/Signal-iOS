@@ -443,16 +443,16 @@
 "ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Зберегти й більше не показувати";
 
 /* Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "Медіафайл буде збережено в програму телефона «Фотографії». Відповідно до наданих дозволів інші програми зможуть мати до нього доступ.";
+"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "Медіафайл буде збережено у «Фотографіях» телефона. Відповідно до наданих дозволів інші програми зможуть мати до нього доступ.";
 
 /* Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Зберегти до «Фотографій»?";
+"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Зберегти у «Фотографіях»?";
 
 /* Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Не вдалося зберегти до «Фотографій»";
+"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Не вдалося зберегти у «Фотографіях»";
 
 /* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Збережено до «Фотографій»";
+"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Збережено у «Фотографіях»";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "Анімація";
@@ -2345,7 +2345,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Опрацювання банківських переказів може займати від 1 до 14 робочих днів. Просимо вас дочекатися проведення платежу, перш ніж робити новий донат.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Опрацювання банківських переказів може займати від 1 до 14 робочих днів. Просимо вас дочекатися списання донату, перш ніж оновлювати підписку.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Опрацювання банківських переказів може займати від 1 до 14 робочих днів. Просимо вас дочекатися проведення платежу, перш ніж оновлювати підписку.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Ми приймаємо банківські перекази на суму до %1$@. Спробуйте іншу суму або інший платіжний засіб.";
@@ -4568,7 +4568,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Кому доставлено:";
 
 /* Status label for messages which are failed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Не вдалося";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Помилка";
 
 /* Status label for messages which are paused. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Надсилання припинено";
@@ -4751,7 +4751,7 @@
 "MESSAGE_STATUS_FAILED" = "Не вдалося надіслати.";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Не вдалося";
+"MESSAGE_STATUS_FAILED_SHORT" = "Помилка";
 
 /* Label indicating that a message was only sent to some recipients. */
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Надіслано не всім, торкніться для інформації";
@@ -5765,7 +5765,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Усі";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Будь-яка людина, що має ваш номер телефону, бачитиме вас у Signal і зможе розпочати з вами розмову.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Будь-яка людина, що має ваш номер телефону, бачитиме вас у Signal і зможе почати з вами чат.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Ніхто";
@@ -5780,13 +5780,13 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Усі";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Ваш номер телефону буде видно людям і групам, яким ви відправляєте повідомлення.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Ваш номер телефону буде видно людям і групам, яким ви надсилаєте повідомлення.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Ніхто";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Ваш номер телефону не зможе бачити ніхто, окрім людей, які вже зберегли його у своїх контактах.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Ваш номер телефону не зможе бачити ніхто, крім людей, які вже зберегли його в адресній книзі свого телефона.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Ніхто не зможе бачити ваш номер телефону.";
@@ -5885,7 +5885,7 @@
 "PIN_CREATION_LEARN_MORE" = "Детальніше про PIN-коди";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
-"PIN_CREATION_LEARN_MORE_TEXT" = "Завдяки PIN-коду ваші дані зберігаються в Signal зашифрованими, щоб тільки ви мали до них доступ. Якщо ви перевстановите Signal, ваш профіль, налаштування і контакти буде відновлено.";
+"PIN_CREATION_LEARN_MORE_TEXT" = "PIN-коди забезпечують шифрування інформації, що зберігається в Signal, щоб отримати до неї доступ могли тільки ви. PIN-код дасть вам змогу відновити акаунт, налаштування й контакти в разі перевстановлення Signal.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
 "PIN_CREATION_LEARN_MORE_TITLE" = "Про PIN-коди Signal";
@@ -5936,7 +5936,7 @@
 "PIN_CREATION_WEAK_ERROR" = "Придумайте надійніший PIN-код";
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
-"PIN_CREATION_WEAK_ERROR_MESSAGE" = "Завдяки PIN-коду ваші дані зберігаються в Signal зашифрованими, щоб тільки ви мали до них доступ. Для максимального захисту створіть надійний PIN-код.";
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "PIN-коди забезпечують шифрування інформації, що зберігається в Signal, щоб отримати до неї доступ могли тільки ви. Створіть надійніший PIN-код для захисту свого акаунту.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "Не вдалося вимкнути PIN-код.";
@@ -6146,7 +6146,7 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Виправити";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Ім'я користувача буде вилучено, а QR-код і посилання — вимкнено. Інші користувачі зможуть вибрати ім'я «%1$@». Продовжити?";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Ваше користувача буде видалено, а QR-код і посилання — деактивовано. Ім'я «%1$@» зможуть узяти собі інші користувачі. Ви впевнені?";
 
 /* The title of an action sheet button that will delete a user's username. */
 "PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Видалити ім'я користувача";
@@ -6197,13 +6197,13 @@
 "PROXY_CONNECTED_SUCCESSFULLY" = "Ви з'єднані з проксі-сервером. Проксі-сервер можна завжди вимкнути в налаштуваннях.";
 
 /* The provided proxy couldn't connect */
-"PROXY_FAILED_TO_CONNECT" = "Не вдалося підключитися до проксі-сервера. Перевірте адресу і спробуйте ще раз.";
+"PROXY_FAILED_TO_CONNECT" = "Помилка з'єднання з проксі-сервером. Перевірте адресу й спробуйте ще раз.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Введіть адресу проксі";
+"PROXY_PLACEHOLDER" = "Введіть адресу проксі-сервера";
 
 /* Title for the signal proxy settings */
-"PROXY_SETTINGS_TITLE" = "Проксі";
+"PROXY_SETTINGS_TITLE" = "Проксі-сервер";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Прочитати";
@@ -6299,13 +6299,13 @@
 "REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Реакція на ваш стікер: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Реакція %1$@ на «%2$@»";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Реакція на «%2$@»: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Реакція на ваше відео: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Реакція на ваше одноразове медіа: %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Реакція на ваш одноразовий медіафайл: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Реакція на ваше голосове повідомлення: %1$@";
@@ -6323,16 +6323,16 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Користувача неможливо обрати.";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ не користується Signal. Спробуйте ще раз із дійсним номером телефону.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ не користується Signal. Введіть правильний номер телефону й спробуйте ще раз.";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Невірний номер телефону";
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Такого номера не існує";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
 "RECIPIENT_PICKER_INVITE_ACTION" = "Запросити";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ не користується Signal. Ви хочете запросити абонента з цим номером?";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ не користується Signal. Запросити абонента з цим номером?";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_TITLE" = "Запросити в Signal";
@@ -6383,7 +6383,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Код країни";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
-"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Продовжуючи, ви відключите Signal для інших пристроїв, де він зареєстрований на цей же номер телефону.";
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Якщо продовжити, то Signal буде деактивовано на інших пристроях, де він зареєстрований на цей номер телефону.";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Перенесення акаунту й повідомлень";
@@ -6530,7 +6530,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Змінити";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Перевірка %1$@…";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Триває перевірка %1$@…";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Надіслати SMS";
@@ -6875,7 +6875,7 @@
 "SEPA_DONATION_NAME_PLACEHOLDER" = "Ім'я на банківському рахунку";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal використовує наскрізне шифровання, що подекуди призводить до оновлення сесій чатів. Це не впливає на безпеку чату, хоча надіслане контактом повідомлення може не дійти і вам потрібно буде попросити надіслати його знов.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal використовує наскрізне шифрування, через що час від часу може оновлювати сесію чату. Це не впливає на безпеку чату, але ви могли пропустити повідомлення від цього контакту, тому попросіть надіслати його знов.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Сесію чату оновлено";

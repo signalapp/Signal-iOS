@@ -1787,7 +1787,7 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "هل ترغب بإزالة %1$@ من المجموعة؟";
 
 /* Label for 'report spam' action in conversation settings view. */
-"CONVERSATION_SETTINGS_REPORT_SPAM" = "الإبلاغ عن رسائل غير مرغوب فيها";
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "الإبلاغ";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "إزالة ميزة الإشراف";
@@ -4676,7 +4676,7 @@
 "MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "هل ترغبُ بالإبلاغ؟";
 
 /* Action sheet action to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "الإبلاغ عن رسائل غير مرغوب فيها";
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "الإبلاغ";
 
 /* String indicating that spam has been reported. */
 "MESSAGE_REQUEST_SPAM_REPORTED" = "تمَّ الإبلاغ عنها كرسالة غير مرغوب فيها.";
@@ -6626,7 +6626,7 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "الشركات والمُؤسَّسات الوهمية";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "لن يَطلب سيجنال منك أبدًا كود التسجيل أو رقم التعريف الشخصي (PIN). كُن حذِرًا من الطلبات التي تنتحل شخصية الآخرين. يقوم أصحاب الحسابات بتحديد أسماء حساباتهم الشخصية، وهي غير خاضعة لعملية التحقُّق.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "لن يَطلب سيجنال منك أبدًا كود التسجيل أو رقم التعريف الشخصي (PIN). كُن حذِرًا من الطلبات التي تنتحل شخصية الآخرين. يتم تعيين أسماء الحسابات الشخصية من قبل أصحابها، وهي غير خاضعة لعملية التحقُّق.";
 
 /* Message title describing the fake names safety tip. */
 "SAFETY_TIPS_FAKE_NAMES_TITLE" = "الأسماء والحسابات المُزَيَّفة";
