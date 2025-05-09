@@ -3015,8 +3015,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             break
         case .changingNumber:
             // Change number is different; we do a limited number of operations and then finalize.
-            if let stepGuarantee = performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
-                return stepGuarantee
+            if let restoreStepGuarantee = performSVRRestoreStepsIfNeeded(accountIdentity: accountIdentity) {
+                return restoreStepGuarantee
+            }
+            if let backupStepGuarantee = performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
+                return backupStepGuarantee
             }
 
             return exportAndWipeState(accountIdentity: accountIdentity)
@@ -3056,6 +3059,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
         }
 
+        if
+            shouldRestoreFromStorageServiceBeforeUpdatingSVR(),
+            let restoredKey = persistedState.recoveredSVRMasterKey
+        {
+            // Need to preserve the key recovered by registration and use this for storage service restore
+            // If already restored due to AEP change, this step will be skipped
+            return restoreFromStorageService(
+                accountIdentity: accountIdentity,
+                masterKeySource: .explicit(restoredKey)
+            )
+        }
+
+        if let stepGuarantee = performSVRRestoreStepsIfNeeded(accountIdentity: accountIdentity) {
+            return stepGuarantee
+        }
+
         if persistedState.accountEntropyPool == nil {
             if inMemoryState.restoreMethod?.backupType != nil {
                 // If the user want's to restore from backup, ask for the key
@@ -3070,18 +3089,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     updateMasterKeyAndLocalState(masterKey: newMasterKey, tx: tx)
                 }
             }
-        }
-
-        if
-            shouldRestoreFromStorageServiceBeforeUpdatingSVR(),
-            let restoredKey = persistedState.recoveredSVRMasterKey
-        {
-            // Need to preserve the key recovered by registration and use this for storage service restore
-            // If already restored due to AEP change, this step will be skipped
-            return restoreFromStorageService(
-                accountIdentity: accountIdentity,
-                masterKeySource: .explicit(restoredKey)
-            )
         }
 
         if let stepGuarantee = performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
@@ -3166,7 +3173,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     // returns nil if no steps needed.
-    private func performSVRBackupStepsIfNeeded(
+    private func showPinEntryIfNeeded(
         accountIdentity: AccountIdentity
     ) -> Guarantee<RegistrationStep>? {
         Logger.info("")
@@ -3177,41 +3184,70 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         )
 
         if !persistedState.hasSkippedPinEntry {
-            guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
-                if isRestoringPinBackup {
-                    return .value(.pinEntry(RegistrationPinState(
-                        operation: .enteringExistingPin(
-                            skippability: .canSkipAndCreateNew,
-                            remainingAttempts: nil
-                        ),
-                        error: nil,
-                        contactSupportMode: self.contactSupportRegistrationPINMode(),
-                        exitConfiguration: pinCodeEntryExitConfiguration()
-                    )))
-                } else if let blob = inMemoryState.unconfirmedPinBlob {
-                    return .value(.pinEntry(RegistrationPinState(
-                        operation: .confirmingNewPin(blob),
-                        error: nil,
-                        contactSupportMode: self.contactSupportRegistrationPINMode(),
-                        exitConfiguration: pinCodeEntryExitConfiguration()
-                    )))
-                } else {
-                    return .value(.pinEntry(RegistrationPinState(
-                        operation: .creatingNewPin,
-                        error: nil,
-                        contactSupportMode: self.contactSupportRegistrationPINMode(),
-                        exitConfiguration: pinCodeEntryExitConfiguration()
-                    )))
-                }
+            if isRestoringPinBackup {
+                return .value(.pinEntry(RegistrationPinState(
+                    operation: .enteringExistingPin(
+                        skippability: .canSkipAndCreateNew,
+                        remainingAttempts: nil
+                    ),
+                    error: nil,
+                    contactSupportMode: self.contactSupportRegistrationPINMode(),
+                    exitConfiguration: pinCodeEntryExitConfiguration()
+                )))
+            } else if let blob = inMemoryState.unconfirmedPinBlob {
+                return .value(.pinEntry(RegistrationPinState(
+                    operation: .confirmingNewPin(blob),
+                    error: nil,
+                    contactSupportMode: self.contactSupportRegistrationPINMode(),
+                    exitConfiguration: pinCodeEntryExitConfiguration()
+                )))
+            } else {
+                return .value(.pinEntry(RegistrationPinState(
+                    operation: .creatingNewPin,
+                    error: nil,
+                    contactSupportMode: self.contactSupportRegistrationPINMode(),
+                    exitConfiguration: pinCodeEntryExitConfiguration()
+                )))
             }
+        }
+        return nil
+    }
+
+    // returns nil if no steps needed.
+    private func performSVRRestoreStepsIfNeeded(
+        accountIdentity: AccountIdentity
+    ) -> Guarantee<RegistrationStep>? {
+        Logger.info("")
+        guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
+            return showPinEntryIfNeeded(accountIdentity: accountIdentity)
+        }
+
+        if
+            !persistedState.hasSkippedPinEntry,
+            accountIdentity.hasPreviouslyUsedSVR,
+            !persistedState.hasGivenUpTryingToRestoreWithSVR,
+            inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration
+        {
+            // If we have no SVR data, fetch it.
+            return restoreSVRBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
+        }
+        return nil
+    }
+
+    // returns nil if no steps needed.
+    private func performSVRBackupStepsIfNeeded(
+        accountIdentity: AccountIdentity
+    ) -> Guarantee<RegistrationStep>? {
+        Logger.info("")
+
+        guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
+            return showPinEntryIfNeeded(accountIdentity: accountIdentity)
+        }
+
+        if !persistedState.hasSkippedPinEntry {
             if inMemoryState.shouldBackUpToSVR {
-                // If we have no SVR data, fetch it.
-                if isRestoringPinBackup, inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration {
-                    return restoreSVRBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
-                } else {
-                    // If we haven't backed up, do so now.
-                    return backupToSVR(pin: pin, accountIdentity: accountIdentity)
-                }
+                // If we haven't backed up, do so now.
+                return backupToSVR(pin: pin, accountIdentity: accountIdentity)
             }
 
             switch attributes2FAMode(e164: accountIdentity.e164) {
@@ -3242,7 +3278,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             authMethod = backupAuthMethod
         }
         return deps.svr
-            .restoreKeysAndBackup(
+            .restoreKeys(
                 pin: pin,
                 authMethod: authMethod
             )
@@ -3253,7 +3289,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 switch result {
                 case .success(let masterKey):
                     self.inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
-                    self.inMemoryState.hasBackedUpToSVR = true
                     self.db.write { tx in
                         self.updatePersistedState(tx) { $0.recoveredSVRMasterKey = masterKey }
                     }
