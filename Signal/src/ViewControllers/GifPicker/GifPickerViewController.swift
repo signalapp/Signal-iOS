@@ -99,12 +99,15 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: Properties
 
     enum ViewMode {
-        case idle, searching, results, noResults, error
+        case idle, searching, results, noResults, error, trending
     }
 
     private var viewMode = ViewMode.idle {
         didSet {
             updateContents()
+            if viewMode == .trending {
+                Task { await loadTrending() }
+            }
         }
     }
 
@@ -198,7 +201,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                                object: nil)
 
         // TODO: This really ought to be cancellable but it was not with promisekit so the refactor carries this for now.
-        Task { await loadTrending() }
+        viewMode = .trending
     }
 
     var hasEverAppeared = false
@@ -384,6 +387,12 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             self.collectionView.isHidden = true
             noResultsView.isHidden = true
             searchErrorView.isHidden = false
+            activityIndicator.isHidden = true
+            activityIndicator.stopAnimating()
+        case .trending:
+            self.collectionView.isHidden = true
+            noResultsView.isHidden = true
+            searchErrorView.isHidden = true
             activityIndicator.isHidden = true
             activityIndicator.stopAnimating()
         }
@@ -603,7 +612,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     private func search(query: String) async {
         imageInfos = []
         viewMode = .searching
-        lastQuery = query
+        lastQuery = query.isEmpty ? nil : query
         self.collectionView.contentOffset = CGPoint.zero
 
         do {
@@ -611,8 +620,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             Logger.info("search complete")
             if imageInfos.count > 0 {
                 viewMode = .results
-            } else {
+            } else if lastQuery != nil {
                 viewMode = .noResults
+            } else {
+                viewMode = .trending
             }
         } catch {
             owsFailDebugUnlessNetworkFailure(error)
