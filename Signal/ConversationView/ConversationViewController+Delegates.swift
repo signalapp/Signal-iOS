@@ -249,6 +249,7 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
         if attachment.isBorderless {
             tryToSendAttachments([ attachment ], messageBody: nil)
         } else {
+            dismissKeyBoard()
             showApprovalDialog(forAttachment: attachment)
         }
     }

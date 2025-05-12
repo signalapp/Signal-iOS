@@ -578,7 +578,9 @@ public extension ConversationViewController {
             approvalDataSource: self,
             stickerSheetDelegate: self
         )
-        presentFullScreen(modal, animated: true)
+        modal.modalPresentationStyle = .overCurrentContext
+        let presenter = self.splitViewController ?? self
+        presenter.present(modal, animated: true)
     }
 }
 
