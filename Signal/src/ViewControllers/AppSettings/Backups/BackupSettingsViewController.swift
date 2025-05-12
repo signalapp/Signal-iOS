@@ -3,35 +3,50 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Lottie
 import SignalServiceKit
 import SignalUI
 import StoreKit
 import SwiftUI
-import UIKit
 
 class BackupSettingsViewController: HostingController<BackupSettingsView> {
+    private let backupIdManager: BackupIdManager
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
     private let networkManager: NetworkManager
+    private let tsAccountManager: TSAccountManager
 
     private let viewModel: BackupSettingsViewModel
 
+    convenience init() {
+        self.init(
+            backupIdManager: DependenciesBridge.shared.backupIdManager,
+            backupSettingsStore: BackupSettingsStore(),
+            backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
+            db: DependenciesBridge.shared.db,
+            networkManager: SSKEnvironment.shared.networkManagerRef,
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager
+        )
+    }
+
     init(
+        backupIdManager: BackupIdManager,
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
-        networkManager: NetworkManager
+        networkManager: NetworkManager,
+        tsAccountManager: TSAccountManager
     ) {
+        self.backupIdManager = backupIdManager
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
         self.networkManager = networkManager
+        self.tsAccountManager = tsAccountManager
 
         self.viewModel = db.read { tx in
             BackupSettingsViewModel(
-                areBackupsEnabled: backupSettingsStore.areBackupsEnabled(tx: tx) == true,
+                areBackupsEnabled: backupSettingsStore.backupPlan(tx: tx) != nil,
                 lastBackupDate: backupSettingsStore.lastBackupDate(tx: tx),
                 lastBackupSizeBytes: backupSettingsStore.lastBackupSizeBytes(tx: tx),
                 backupFrequency: backupSettingsStore.backupFrequency(tx: tx),
@@ -56,11 +71,63 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
 
 extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate {
     fileprivate func enableBackups() {
-        // TODO: [Backups] Present "enable Backups" flow
+        // TODO: [Backups] Show the rest of the onboarding flow
+        showChooseBackupPlan(initialPlanSelection: nil)
     }
 
     fileprivate func disableBackups() {
-        // TODO: [Backups] Present "disable Backups" flow
+        Task { await _disableBackups() }
+    }
+
+    @MainActor
+    private func _disableBackups() async {
+        func errorActionSheet(_ message: String) {
+            OWSActionSheets.showActionSheet(
+                message: message,
+                fromViewController: self
+            )
+        }
+
+        do {
+            guard let localIdentifiers = db.read(block: { tx in
+                tsAccountManager.localIdentifiers(tx: tx)
+            }) else {
+                errorActionSheet(OWSLocalizedString(
+                    "BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED",
+                    comment: "Message shown in an action sheet when the user tries to disable Backups, but is not registered."
+                ))
+                return
+            }
+
+            try await ModalActivityIndicatorViewController.presentAndPropagateResult(
+                from: self
+            ) {
+                try await self.backupIdManager.deleteBackupId(
+                    localIdentifiers: localIdentifiers,
+                    auth: .implicit()
+                )
+            }
+
+            await db.awaitableWrite { tx in
+                backupSettingsStore.setBackupPlan(nil, tx: tx)
+
+                viewModel.reloadViewState(
+                    backupSettingsStore: backupSettingsStore,
+                    tx: tx
+                )
+            }
+        } catch where error.isNetworkFailureOrTimeout {
+            errorActionSheet(OWSLocalizedString(
+                "BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR",
+                comment: "Message shown in an action sheet when the user tries to disable Backups, but encountered a network error."
+            ))
+        } catch {
+            owsFailDebug("Unexpectedly failed to disable Backups! \(error)")
+            errorActionSheet(OWSLocalizedString(
+                "BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR",
+                comment: "Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error."
+            ))
+        }
     }
 
     // MARK: -
@@ -127,10 +194,19 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
         }
 
         Task {
-            try await AppStore.showManageSubscriptions(in: windowScene)
-        }
+            do {
+                try await AppStore.showManageSubscriptions(in: windowScene)
+            } catch {
+                owsFailDebug("Failed to show manage-subscriptions view! \(error)")
+            }
 
-        // TODO: [Backups] Reload this view
+            db.read { tx in
+                viewModel.reloadViewState(
+                    backupSettingsStore: backupSettingsStore,
+                    tx: tx
+                )
+            }
+        }
     }
 
     fileprivate func resubscribeToPaidPlan() {
@@ -138,7 +214,7 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
     }
 
     private func showChooseBackupPlan(
-        initialPlanSelection: ChooseBackupPlanViewController.PlanSelection
+        initialPlanSelection: ChooseBackupPlanViewController.PlanSelection?
     ) {
         guard let navigationController else {
             owsFailDebug("Missing nav controller!")
@@ -157,11 +233,14 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
             }
 
             modal.dismiss {
+                let chooseBackupPlanViewController = ChooseBackupPlanViewController(
+                    initialPlanSelection: initialPlanSelection,
+                    paidPlanDisplayPrice: paidPlanDisplayPrice
+                )
+                chooseBackupPlanViewController.delegate = self
+
                 navigationController.pushViewController(
-                    ChooseBackupPlanViewController(
-                        initialPlanSelection: initialPlanSelection,
-                        paidPlanDisplayPrice: paidPlanDisplayPrice
-                    ),
+                    chooseBackupPlanViewController,
                     animated: true
                 )
             }
@@ -183,6 +262,58 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
     fileprivate func setShouldBackUpOnCellular(_ newShouldBackUpOnCellular: Bool) {
         db.write { tx in
             backupSettingsStore.setShouldBackUpOnCellular(newShouldBackUpOnCellular, tx: tx)
+        }
+    }
+}
+
+// MARK: -
+
+extension BackupSettingsViewController: ChooseBackupPlanViewController.Delegate {
+    func chooseBackupPlanViewController(
+        _ chooseBackupPlanViewController: ChooseBackupPlanViewController,
+        didEnablePlan planSelection: ChooseBackupPlanViewController.PlanSelection
+    ) {
+        guard let navigationController else {
+            owsFailDebug("Missing nav controller!")
+            return
+        }
+
+        navigationController.popToViewController(self, animated: true) {
+            self.db.read { tx in
+                self.viewModel.reloadViewState(
+                    backupSettingsStore: self.backupSettingsStore,
+                    tx: tx
+                )
+            }
+
+            let welcomeToBackupsSheet = HeroSheetViewController(
+                hero: .image(.backupsSubscribed),
+                title: OWSLocalizedString(
+                    "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE",
+                    comment: "Title for a sheet shown after the user enables backups."
+                ),
+                body: OWSLocalizedString(
+                    "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE",
+                    comment: "Message for a sheet shown after the user enables backups."
+                ),
+                primary: .button(HeroSheetViewController.Button(
+                    title: OWSLocalizedString(
+                        "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON",
+                        comment: "Title for the primary button for a sheet shown after the user enables backups."
+                    ),
+                    action: { _ in
+                        self.viewModel.performManualBackup()
+                    }
+                )),
+                secondary: .button(.dismissing(
+                    title: OWSLocalizedString(
+                        "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON",
+                        comment: "Title for the secondary button for a sheet shown after the user enables backups."
+                    ),
+                    style: .secondary
+                ))
+            )
+            self.present(welcomeToBackupsSheet, animated: true)
         }
     }
 }
@@ -219,8 +350,8 @@ private class BackupSettingsViewModel: ObservableObject {
 
     @Published var backupPlanLoadingState: BackupPlanLoadingState
     @Published var areBackupsEnabled: Bool
-    let lastBackupDate: Date?
-    let lastBackupSizeBytes: UInt64?
+    @Published var lastBackupDate: Date?
+    @Published var lastBackupSizeBytes: UInt64?
     @Published var backupFrequency: BackupFrequency
     @Published var shouldBackUpOnCellular: Bool
 
@@ -243,6 +374,19 @@ private class BackupSettingsViewModel: ObservableObject {
         self.shouldBackUpOnCellular = shouldBackUpOnCellular
 
         self.loadBackupPlanQueue = SerialTaskQueue()
+    }
+
+    func reloadViewState(
+        backupSettingsStore: BackupSettingsStore,
+        tx: DBReadTransaction
+    ) {
+        areBackupsEnabled = backupSettingsStore.backupPlan(tx: tx) != nil
+        lastBackupDate = backupSettingsStore.lastBackupDate(tx: tx)
+        lastBackupSizeBytes = backupSettingsStore.lastBackupSizeBytes(tx: tx)
+        backupFrequency = backupSettingsStore.backupFrequency(tx: tx)
+        shouldBackUpOnCellular = backupSettingsStore.shouldBackUpOnCellular(tx: tx)
+
+        loadBackupPlan()
     }
 
     // MARK: -
@@ -412,6 +556,7 @@ struct BackupSettingsView: View {
                             comment: "Title for a button allowing users to re-enable Backups, after it had been previously disabled."
                         ))
                     }
+                    .buttonStyle(.plain)
                 } header: {
                     Text(OWSLocalizedString(
                         "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER",

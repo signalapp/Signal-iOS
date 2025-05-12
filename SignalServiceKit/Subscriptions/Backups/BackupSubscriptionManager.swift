@@ -120,12 +120,33 @@ public final class BackupSubscriptionManager {
 
     /// This should never throw, nor be missing.
     private func getPaidTierProduct() async throws -> Product {
+        struct MissingProductError: Error {}
+
         do {
-            let products = try await Product.products(for: [Constants.paidTierBackupsProductId])
-            return products.first!
+            /// For reasons unknown, the `Product.products(for:)` API sometimes
+            /// returns an empty list. (In sandbox testing, it'd happen ~50% of
+            /// the time.)
+            return try await Retry.performWithBackoff(
+                maxAttempts: 5,
+                isRetryable: { $0 is MissingProductError },
+                block: {
+                    guard let product = try await Product.products(
+                        for: [Constants.paidTierBackupsProductId]
+                    ).first else {
+                        throw MissingProductError()
+                    }
+
+                    return product
+                }
+            )
+        } catch is MissingProductError {
+            throw OWSAssertionError(
+                "Paid-tier product repeatedly missing from StoreKit!",
+                logger: logger
+            )
         } catch {
             throw OWSAssertionError(
-                "Failed to get paid-tier product from StoreKit: \(error)",
+                "Failed to get paid-tier product from StoreKit! \(error)",
                 logger: logger
             )
         }
@@ -230,8 +251,13 @@ public final class BackupSubscriptionManager {
         return try await getPaidTierProduct().displayPrice
     }
 
-    /// Attempts to purchase and redeem a Backups subscription for the first
-    /// time, via StoreKit IAP.
+    /// Attempts to purchase a Backups subscription for the first time, via
+    /// StoreKit IAP.
+    ///
+    /// - Important
+    /// If this method returns successfully, callers must subsequently call
+    /// ``redeemSubscriptionIfNecessary()`` to redeem the newly-purchased IAP
+    /// subscription.
     ///
     /// - Note
     /// While this should be called only for users who do not currently have a
@@ -242,7 +268,6 @@ public final class BackupSubscriptionManager {
         case .success(let purchaseResult):
             switch purchaseResult {
             case .verified:
-                try await redeemSubscriptionIfNecessary()
                 return .success
             case .unverified:
                 throw OWSAssertionError(
@@ -317,6 +342,7 @@ public final class BackupSubscriptionManager {
             if persistedIAPSubscriberData.matches(storeKitTransaction: localEntitlingTransaction) {
                 /// We have an active local subscription that matches our persisted
                 /// identifiers. That's the simplest happy-path! Great.
+                logger.debug("Local transaction matches persisted: \(localEntitlingTransaction.originalID)")///
             } else {
                 /// We have an active local subscription, but it doesn't match our
                 /// persisted identifers. That must mean we initiated a subscription

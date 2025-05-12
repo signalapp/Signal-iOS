@@ -30,20 +30,20 @@ public class BackupIdManager {
     /// registered in order to succeed.
     public struct RegisteredBackupIDToken {}
 
+    private let accountKeyStore: AccountKeyStore
     private let api: API
     private let backupRequestManager: MessageBackupRequestManager
-    private let backupKeyMaterial: MessageBackupKeyMaterial
     private let db: DB
 
     public init(
+        accountKeyStore: AccountKeyStore,
         api: API,
         backupRequestManager: MessageBackupRequestManager,
-        backupKeyMaterial: MessageBackupKeyMaterial,
         db: DB
     ) {
+        self.accountKeyStore = accountKeyStore
         self.api = api
         self.backupRequestManager = backupRequestManager
-        self.backupKeyMaterial = backupKeyMaterial
         self.db = db
     }
 
@@ -60,11 +60,23 @@ public class BackupIdManager {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
     ) async throws -> RegisteredBackupIDToken {
-        let (messageBackupKey, mediaBackupKey) = try db.read { tx in
-            return (
-                try backupKeyMaterial.backupKey(type: .messages, tx: tx),
-                try backupKeyMaterial.backupKey(type: .media, tx: tx),
-            )
+        let (
+            messageBackupKey,
+            mediaBackupKey
+        ): (
+            BackupKey,
+            BackupKey
+        ) = try await db.awaitableWrite { tx in
+
+            guard let messageRootBackupKey = accountKeyStore.getMessageRootBackupKey(tx: tx) else {
+                throw OWSAssertionError("Missing message root backup key! Do we not have an AEP?")
+            }
+
+            // If we don't yet have an MRBK, this is an appropriate point to
+            // agenerate one.
+            let mediaRootBackupKey = accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx)
+
+            return (messageRootBackupKey, mediaRootBackupKey)
         }
 
         try await api.reserveBackupId(
@@ -100,7 +112,18 @@ public class BackupIdManager {
             auth: auth
         )
 
-        try await api.deleteBackupId(backupAuth: backupAuth)
+        do {
+            try await api.deleteBackupId(backupAuth: backupAuth)
+        } catch where error.httpStatusCode == 401 {
+            // This will happen if, for whatever reason, the user doesn't have
+            // a Backup to delete. (It's a 401 because this really means the
+            // server has deleted the key we use to authenticate Backup
+            // requests, which happens in response to an earlier success in
+            // calling this API.)
+            //
+            // Treat this like a success: maybe we deleted earlier, but
+            // never got the response back.
+        }
     }
 
     // MARK: -
@@ -115,9 +138,9 @@ public class BackupIdManager {
         public func registerBackupKey(
             backupAuth: MessageBackupServiceAuth
         ) async throws {
-            _ = try await networkManager.asyncRequest(.backupSetPublicKeyRequest(
-                backupAuth: backupAuth
-            ))
+            try await asyncRequestWithNetworkRetries(
+                .backupSetPublicKeyRequest(backupAuth: backupAuth)
+            )
         }
 
         public func reserveBackupId(
@@ -138,7 +161,7 @@ public class BackupIdManager {
             let base64MessageRequestContext = messageBackupRequestContext.getRequest().serialize().asData.base64EncodedString()
             let base64MediaRequestContext = mediaBackupRequestContext.getRequest().serialize().asData.base64EncodedString()
 
-            _ = try await networkManager.asyncRequest(
+            try await asyncRequestWithNetworkRetries(
                 .reserveBackupId(
                     backupId: base64MessageRequestContext,
                     mediaBackupId: base64MediaRequestContext,
@@ -148,8 +171,18 @@ public class BackupIdManager {
         }
 
         public func deleteBackupId(backupAuth: MessageBackupServiceAuth) async throws {
-            _ = try await networkManager.asyncRequest(
+            try await asyncRequestWithNetworkRetries(
                 .deleteBackupRequest(backupAuth: backupAuth)
+            )
+        }
+
+        private func asyncRequestWithNetworkRetries(_ request: TSRequest) async throws {
+            try await Retry.performWithBackoff(
+                maxAttempts: 3,
+                isRetryable: { $0.isNetworkFailureOrTimeout || ($0 as? OWSHTTPError)?.isRetryable == true },
+                block: {
+                    _ = try await networkManager.asyncRequest(request)
+                }
             )
         }
     }

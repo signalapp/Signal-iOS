@@ -235,50 +235,37 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-#if TESTABLE_BUILD
-        section2.add(.disclosureItem(
-            icon: .backup,
-            withText: OWSLocalizedString("SETTINGS_BACKUPS", comment: "Label for the 'backups' section of app settings."),
-            actionBlock: { [weak self] in
-                guard let self else { return }
+        if FeatureFlags.MessageBackup.settings {
+            section2.add(.disclosureItem(
+                icon: .backup,
+                withText: OWSLocalizedString(
+                    "SETTINGS_BACKUPS",
+                    comment: "Label for the 'backups' section of app settings."
+                ),
+                actionBlock: { [weak self] in
+                    guard let self else { return }
 
-                let backupSettingsStore = BackupSettingsStore()
-                let db = InMemoryDB()
+                    let backupSettingsStore = BackupSettingsStore()
+                    let db = DependenciesBridge.shared.db
 
-                func pushBackupsSettings() {
-                    let vc = BackupSettingsViewController(
-                        backupSettingsStore: backupSettingsStore,
-                        backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
-                        db: db,
-                        networkManager: SSKEnvironment.shared.networkManagerRef
-                    )
-                    navigationController?.pushViewController(vc, animated: true)
+                    func pushBackupsSettings() {
+                        let vc = BackupSettingsViewController()
+                        navigationController?.pushViewController(vc, animated: true)
+                    }
+
+                    let haveBackupsEverBeenEnabled = db.read { tx in
+                        backupSettingsStore.haveBackupsEverBeenEnabled(tx: tx)
+                    }
+
+                    if haveBackupsEverBeenEnabled {
+                        pushBackupsSettings()
+                    } else {
+                        // TODO: [Backups] Show the onboarding flow.
+                        pushBackupsSettings()
+                    }
                 }
-
-                let hasUserEnabledOrDisabledBackups = db.read { tx in
-                    return backupSettingsStore.areBackupsEnabled(tx: tx) != nil
-                }
-
-                if hasUserEnabledOrDisabledBackups {
-                    pushBackupsSettings()
-                } else {
-                    // TODO: Replace with Backups onboarding flow.
-                    OWSActionSheets.showConfirmationAlert(
-                        title: "Signal Backups",
-                        message: "Enable Signal Backups? (This message is dev-only, and nothing beyond here is currently persisted or affects the rest of the app.)",
-                        proceedTitle: "Enable",
-                        proceedAction: { _ in
-                            db.write { tx in
-                                backupSettingsStore.setAreBackupsEnabled(true, tx: tx)
-                            }
-
-                            pushBackupsSettings()
-                        }
-                    )
-                }
-            }
-        ))
-#endif
+            ))
+        }
         section2.add(.disclosureItem(
             icon: .settingsDataUsage,
             withText: OWSLocalizedString("SETTINGS_DATA", comment: "Label for the 'data' section of the app settings."),

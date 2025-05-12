@@ -51,8 +51,8 @@ public class HeroSheetViewController: StackSheetViewController {
             self.init(title: title, action: .custom(action))
         }
 
-        public static func dismissing(title: String) -> Button {
-            Button(title: title, action: .dismiss)
+        public static func dismissing(title: String, style: Style = .primary) -> Button {
+            Button(title: title, style: style, action: .dismiss)
         }
 
         public var configuration: UIButton.Configuration {

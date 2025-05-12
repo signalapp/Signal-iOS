@@ -12,11 +12,17 @@ public enum BackupFrequency: Int, CaseIterable, Identifiable {
     public var id: Int { rawValue }
 }
 
+public enum BackupPlan: Int, CaseIterable {
+    case free = 1
+    case paid = 2
+}
+
 // MARK: -
 
 public struct BackupSettingsStore {
     private enum Keys {
-        static let enabled = "enabled"
+        static let haveEverBeenEnabled = "haveEverBeenEnabled"
+        static let plan = "plan"
         static let lastBackupDate = "lastBackupDate"
         static let lastBackupSizeBytes = "lastBackupSizeBytes"
         static let backupFrequency = "backupFrequency"
@@ -31,17 +37,32 @@ public struct BackupSettingsStore {
 
     // MARK: -
 
-    /// Whether the user has affirmatively enabled or disabled Backups.
-    ///
-    /// A return value of `nil` indicates that the user has never made a
-    /// decision about enabling Backups. Callers should generally treat this as
-    /// "not enabled", but may take additional educational steps.
-    public func areBackupsEnabled(tx: DBReadTransaction) -> Bool? {
-        return kvStore.getBool(Keys.enabled, transaction: tx)
+    /// Whether Backups have ever been enabled, regardless of whether they are
+    /// enabled currently.
+    public func haveBackupsEverBeenEnabled(tx: DBReadTransaction) -> Bool {
+        return kvStore.getBool(Keys.haveEverBeenEnabled, defaultValue: false, transaction: tx)
     }
 
-    public func setAreBackupsEnabled(_ areBackupsEnabled: Bool, tx: DBWriteTransaction) {
-        kvStore.setBool(areBackupsEnabled, key: Keys.enabled, transaction: tx)
+    /// This device's view of the user's current Backup plan. A return value of
+    /// `nil` indicates that the user has Backups disabled.
+    ///
+    /// - Important
+    /// This value represents the user's plan *as this client is aware of it*.
+    /// It's possible that this method may return `.paid` even though the user's
+    /// paid subscription has expired, in which case they have been de facto
+    /// downgraded (as far as the server is concerned) to the `.free` plan.
+    public func backupPlan(tx: DBReadTransaction) -> BackupPlan? {
+        return kvStore.getInt(Keys.plan, transaction: tx)
+            .flatMap { BackupPlan(rawValue: $0) }
+    }
+
+    public func setBackupPlan(_ backupPlan: BackupPlan?, tx: DBWriteTransaction) {
+        kvStore.setBool(true, key: Keys.haveEverBeenEnabled, transaction: tx)
+        if let backupPlan {
+            kvStore.setInt(backupPlan.rawValue, key: Keys.plan, transaction: tx)
+        } else {
+            kvStore.removeValue(forKey: Keys.plan, transaction: tx)
+        }
     }
 
     // MARK: -
@@ -84,7 +105,7 @@ public struct BackupSettingsStore {
     // MARK: -
 
     public func shouldBackUpOnCellular(tx: DBReadTransaction) -> Bool {
-        return kvStore.getBool(Keys.shouldBackUpOnCellular, transaction: tx) ?? false
+        return kvStore.getBool(Keys.shouldBackUpOnCellular, defaultValue: false, transaction: tx)
     }
 
     public func setShouldBackUpOnCellular(_ shouldBackUpOnCellular: Bool, tx: DBWriteTransaction) {

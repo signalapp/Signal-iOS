@@ -987,9 +987,9 @@ public class AppSetup {
         )
 
         let backupIdManager = BackupIdManager(
+            accountKeyStore: accountKeyStore,
             api: BackupIdManager.NetworkAPI(networkManager: networkManager),
             backupRequestManager: messageBackupRequestManager,
-            backupKeyMaterial: messageBackupKeyMaterial,
             db: db
         )
 
