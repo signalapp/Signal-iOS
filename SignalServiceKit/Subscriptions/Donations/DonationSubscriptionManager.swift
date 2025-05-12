@@ -662,6 +662,16 @@ public enum DonationSubscriptionManager {
         )
 
         try await subscriptionRedemptionNecessaryChecker.redeemSubscriptionIfNecessary(
+            fetchSubscriptionBlock: { db, subscriptionFetcher -> (subscriberID: Data, subscription: Subscription)? in
+                if
+                    let subscriberID = db.read(block: { getSubscriberID(transaction: $0) }),
+                    let subscription = try await subscriptionFetcher.fetch(subscriberID: subscriberID)
+                {
+                    return (subscriberID, subscription)
+                }
+
+                return nil
+            },
             parseEntitlementExpirationBlock: { accountEntitlements, subscription -> TimeInterval? in
                 // TODO: If the entitlement contains something we can correlate
                 // with the subscription, like the "subscription level" int

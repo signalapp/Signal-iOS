@@ -334,6 +334,7 @@ public final class BackupSubscriptionManager {
         }
 
         let localEntitlingTransaction = await latestEntitlingTransaction()
+        var registerNewSubscriberIdIfSubscriptionMissing = false
 
         if
             let localEntitlingTransaction,
@@ -341,25 +342,44 @@ public final class BackupSubscriptionManager {
         {
             if persistedIAPSubscriberData.matches(storeKitTransaction: localEntitlingTransaction) {
                 /// We have an active local subscription that matches our persisted
-                /// identifiers. That's the simplest happy-path! Great.
+                /// identifiers. That's the simplest happy-path! Probably...
                 logger.debug("Local transaction matches persisted: \(localEntitlingTransaction.originalID)")///
-            } else {
-                /// We have an active local subscription, but it doesn't match our
-                /// persisted identifers. That must mean we initiated a subscription
-                /// on another device (either with a different App Store account, or
-                /// even on  an Android) and restored it here, and also have
-                /// subscribed with our local App Store account.
+
+                /// ...because we may need to register a new subscriber ID.
                 ///
-                /// As a rule we prefer to rely on the local subscription, so we'll
-                /// "claim" it by generating and registering identifiers for the
-                /// local subscription!
+                /// If you start a subscription with StoreKit, cancel it (and
+                /// let it expire), then resubscribe, StoreKit uses the same
+                /// `originalTransactionId` for the previous and current
+                /// iterations of the subscription.
+                ///
+                /// That's an issue because Signal's servers wipe the
+                /// `subscriberID -> originalTransactionId` mapping when the
+                /// StoreKit subscription expires, thereby rendering that
+                /// `subscriberID` useless; we'll fail to find a `Subscription`
+                /// for that `subscriberID` even though our subscription is
+                /// active again.
+                ///
+                /// So, if we later find the `Subscription` is missing for this
+                /// `subscriberId`, register a new one.
+                registerNewSubscriberIdIfSubscriptionMissing = true
+            } else {
+                /// We have an active local subscription, but it doesn't match
+                /// our persisted identifers. That must mean we initiated a
+                /// subscription on another device (either with a different App
+                /// Store account, or even on an Android) and restored it here,
+                /// and also have subscribed with our local App Store account.
+                ///
+                /// As a rule we prefer to rely on the local subscription, so
+                /// we'll "claim" it by generating and registering identifiers
+                /// for the local subscription!
                 try await registerNewSubscriberId(
                     originalTransactionId: localEntitlingTransaction.originalID
                 )
             }
         } else if let localEntitlingTransaction {
             /// We have a local subscription, but don't yet have any persisted
-            /// identifiers. Generate and register them now!
+            /// identifiers. (This might be the first time we're subscribing!)
+            /// Generate and register them now!
             try await registerNewSubscriberId(
                 originalTransactionId: localEntitlingTransaction.originalID
             )
@@ -389,6 +409,36 @@ public final class BackupSubscriptionManager {
         )
 
         try await subscriptionRedemptionNecessaryChecker.redeemSubscriptionIfNecessary(
+            fetchSubscriptionBlock: { db, subscriptionFetcher -> (subscriberID: Data, subscription: Subscription)? in
+                if
+                    let subscriberID = db.read(block: { store.getIAPSubscriberData(tx: $0)?.subscriberId }),
+                    let subscription = try await subscriptionFetcher.fetch(subscriberID: subscriberID)
+                {
+                    return (subscriberID, subscription)
+                }
+
+                if
+                    let localEntitlingTransaction,
+                    registerNewSubscriberIdIfSubscriptionMissing
+                {
+                    // See comments above on registerNewSubscriberIdIfSubscriptionMissing.
+                    logger.info("Registering new subscriber ID for active local IAP, remote subscription was missing!")
+
+                    let newSubscriberId = try await registerNewSubscriberId(
+                        originalTransactionId: localEntitlingTransaction.originalID
+                    )
+
+                    if let subscription = try await subscriptionFetcher.fetch(
+                        subscriberID: newSubscriberId
+                    ) {
+                        return (newSubscriberId, subscription)
+                    } else {
+                        owsFailDebug("Subscription missing, but we just registered a new subscriber ID!")
+                    }
+                }
+
+                return nil
+            },
             parseEntitlementExpirationBlock: { accountEntitlements, _ in
                 return accountEntitlements.backup?.expirationSeconds
             },
@@ -407,9 +457,10 @@ public final class BackupSubscriptionManager {
     /// Generate a new subscriber ID, and register it with the server to be
     /// associated with the given StoreKit "original transaction ID" for a
     /// subscription. Persists and returns the new subscriber ID.
+    @discardableResult
     private func registerNewSubscriberId(
         originalTransactionId: UInt64
-    ) async throws {
+    ) async throws -> Data {
         logger.info("Generating and registering new Backups subscriber ID!")
 
         let newSubscriberId: Data = Randomness.generateRandomBytes(32)
@@ -460,6 +511,8 @@ public final class BackupSubscriptionManager {
         /// We store the subscriber data in Storage Service, so let's kick off
         /// that backup now.
         storageServiceManager.recordPendingLocalAccountUpdates()
+
+        return newSubscriberId
     }
 
     // MARK: - Persistence
@@ -524,10 +577,6 @@ public final class BackupSubscriptionManager {
         }
 
         // MARK: - SubscriptionRedemptionNecessityCheckerStore
-
-        func subscriberId(tx: DBReadTransaction) -> Data? {
-            return getIAPSubscriberData(tx: tx)?.subscriberId
-        }
 
         func getLastRedemptionNecessaryCheck(tx: DBReadTransaction) -> Date? {
             return kvStore.getDate(Keys.lastRedemptionNecessaryCheck, transaction: tx)
