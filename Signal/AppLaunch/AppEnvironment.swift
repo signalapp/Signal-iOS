@@ -48,8 +48,6 @@ public class AppEnvironment: NSObject {
     }
 
     func setUp(appReadiness: AppReadiness, callService: CallService) {
-        let bridge = DependenciesBridge.shared
-
         let badgeManager = BadgeManager(
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             mainScheduler: DispatchQueue.main,
@@ -58,7 +56,7 @@ public class AppEnvironment: NSObject {
 
         let deviceProvisioningService = DeviceProvisioningServiceImpl(
             networkManager: SSKEnvironment.shared.networkManagerRef,
-            schedulers: bridge.schedulers
+            schedulers: DependenciesBridge.shared.schedulers
         )
 
         self.appIconBadgeUpdater = AppIconBadgeUpdater(badgeManager: badgeManager)
@@ -74,29 +72,29 @@ public class AppEnvironment: NSObject {
         )
 
         self.provisioningManager = ProvisioningManager(
-            accountKeyStore: bridge.accountKeyStore,
-            db: bridge.db,
-            deviceManager: bridge.deviceManager,
+            accountKeyStore: DependenciesBridge.shared.accountKeyStore,
+            db: DependenciesBridge.shared.db,
+            deviceManager: DependenciesBridge.shared.deviceManager,
             deviceProvisioningService: deviceProvisioningService,
-            identityManager: bridge.identityManager,
-            linkAndSyncManager: bridge.linkAndSyncManager,
+            identityManager: DependenciesBridge.shared.identityManager,
+            linkAndSyncManager: DependenciesBridge.shared.linkAndSyncManager,
             profileManager: ProvisioningManager.Wrappers.ProfileManager(SSKEnvironment.shared.profileManagerRef),
             receiptManager: ProvisioningManager.Wrappers.ReceiptManager(SSKEnvironment.shared.receiptManagerRef),
-            tsAccountManager: bridge.tsAccountManager
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
 
         self.quickRestoreManager = QuickRestoreManager(
-            accountKeyStore: bridge.accountKeyStore,
-            db: bridge.db,
+            accountKeyStore: DependenciesBridge.shared.accountKeyStore,
+            db: DependenciesBridge.shared.db,
             deviceProvisioningService: deviceProvisioningService,
             networkManager: SSKEnvironment.shared.networkManagerRef,
-            tsAccountManager: bridge.tsAccountManager
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
 
         self.usernameValidationObserverRef = UsernameValidationObserver(
             appReadiness: appReadiness,
-            manager: bridge.usernameValidationManager,
-            database: bridge.db
+            manager: DependenciesBridge.shared.usernameValidationManager,
+            database: DependenciesBridge.shared.db
         )
 
         appReadiness.runNowOrWhenAppWillBecomeReady {
