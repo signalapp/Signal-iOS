@@ -2513,7 +2513,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ a fait un don à Signal pour vous";
 
 /* You have a made a donation on a friend's behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ Vous avez fait un don pour %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ Vous avez fait un don à Signal pour %1$@";
 
 /* You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ a fait un don à Signal pour vous";

@@ -2474,7 +2474,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "مُستخدَم";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "ادعم سيجنال عن طريق تقديم تبرُّع إلى صديق أو فرد من العائلة يستخدم سيجنال. سَيتمُّ منحهُم خيار إظهار دعمهم على حسابهم الشخصي.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "ادعم سيجنال عن طريق تقديم تبرُّع نيابةً عن صديق أو فرد من العائلة يستخدم سيجنال. سَيتمُّ منحهُم خيار إظهار دعمهم على حسابهم الشخصي.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "تبرَّع نيابةً عن صديق";
