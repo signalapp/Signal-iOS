@@ -5,6 +5,12 @@
 
 public import GRDB
 
+/// Tracks and reports progress for backup (media tier) attachment downloads.
+///
+/// When we restore a backup (or disable backups or other state changes that trigger bulk rescheduling
+/// of media tier downloads) we compute and store the total bytes to download. This class counts
+/// up to that number until all downloads finish; this ensures we show a stable total even as we make
+/// partial progress.
 public actor BackupAttachmentDownloadProgress {
 
     // MARK: - Public API
@@ -285,12 +291,12 @@ public actor BackupAttachmentDownloadProgress {
                     eligibility.canDownloadMediaTierFullsize,
                     let byteCount = attachment.mediaTierInfo?.unencryptedByteCount
                 {
-                    totalByteCount += UInt64(byteCount)
+                    totalByteCount += UInt64(Cryptography.paddedSize(unpaddedSize: UInt(byteCount)))
                 } else if
                     eligibility.canDownloadTransitTierFullsize,
                     let byteCount = attachment.transitTierInfo?.unencryptedByteCount
                 {
-                    totalByteCount += UInt64(byteCount)
+                    totalByteCount += UInt64(Cryptography.paddedSize(unpaddedSize: UInt(byteCount)))
                 }
                 // We don't count thumbnail downloads towards the total
                 // download count we track the progress of.

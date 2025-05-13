@@ -433,6 +433,11 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let backupAttachmentUploadProgress = BackupAttachmentUploadProgress(
+            backupSubscriptionManager: backupSubscriptionManager,
+            db: db
+        )
+
         let backupAttachmentUploadManager = BackupAttachmentUploadManagerImpl(
             appReadiness: appReadiness,
             attachmentStore: attachmentStore,
@@ -443,6 +448,7 @@ public class AppSetup {
             dateProvider: dateProvider,
             db: db,
             messageBackupRequestManager: messageBackupRequestManager,
+            progress: backupAttachmentUploadProgress,
             statusManager: backupAttachmentQueueStatusManager,
             tsAccountManager: tsAccountManager
         )
@@ -1311,6 +1317,7 @@ public class AppSetup {
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentQueueStatusManager: backupAttachmentQueueStatusManager,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
+            backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupIdManager: backupIdManager,
             backupSubscriptionManager: backupSubscriptionManager,
             badgeCountFetcher: badgeCountFetcher,

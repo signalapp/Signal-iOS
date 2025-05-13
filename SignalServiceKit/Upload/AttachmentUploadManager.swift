@@ -398,7 +398,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             attachmentId: attachmentId,
             type: .mediaTier(auth: auth, isThumbnail: false),
             logger: logger,
-            progress: nil
+            progress: progress
         )
 
         // Read the attachment fresh from the DB
@@ -483,7 +483,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             attachmentId: attachmentId,
             type: .mediaTier(auth: auth, isThumbnail: true),
             logger: logger,
-            progress: nil
+            progress: progress
         )
 
         // Read the attachment fresh from the DB

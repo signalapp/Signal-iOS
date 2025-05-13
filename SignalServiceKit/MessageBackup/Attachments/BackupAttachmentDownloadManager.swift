@@ -787,8 +787,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             /// Media and transit tier byte counts should be interchangeable.
             /// Still, we shouldn't rely on this for anything other that progress tracking,
             /// where its just a UI glitch if it turns out they are not.
-            let fullsizeByteCountForProgress = UInt64(
-                attachment.anyPointerFullsizeUnencryptedByteCount ?? 0
+            var fullsizeByteCountForProgress = UInt64(
+                Cryptography.paddedSize(
+                    unpaddedSize: UInt(attachment.anyPointerFullsizeUnencryptedByteCount ?? 0)
+                )
             )
 
             // Separately from "eligibility" on a per-download basis, we check

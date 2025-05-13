@@ -974,6 +974,7 @@
 		667EDE6428F8D6B7001FB487 /* YYAnimatedImage+Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */; };
 		667EDE6628FA0372001FB487 /* StoryBadgeCountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */; };
 		6681AB652B7AE53B0099D187 /* PreloadedTextAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6681AB642B7AE53B0099D187 /* PreloadedTextAttachment.swift */; };
+		668345502DCA9BEE00566AB3 /* BackupAttachmentUploadProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6683454F2DCA9BE700566AB3 /* BackupAttachmentUploadProgress.swift */; };
 		668444802A3289C700DBED7C /* MessageBodyStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6684447F2A3289C700DBED7C /* MessageBodyStyle.swift */; };
 		668444822A3292AB00DBED7C /* MessageBodyStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668444812A3292AB00DBED7C /* MessageBodyStyleTests.swift */; };
 		668478F72CAB66DC00430D68 /* OrphanedBackupAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668478F62CAB66D600430D68 /* OrphanedBackupAttachment.swift */; };
@@ -4884,6 +4885,7 @@
 		667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YYAnimatedImage+Duration.swift"; sourceTree = "<group>"; };
 		667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryBadgeCountManager.swift; sourceTree = "<group>"; };
 		6681AB642B7AE53B0099D187 /* PreloadedTextAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreloadedTextAttachment.swift; sourceTree = "<group>"; };
+		6683454F2DCA9BE700566AB3 /* BackupAttachmentUploadProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadProgress.swift; sourceTree = "<group>"; };
 		6684447F2A3289C700DBED7C /* MessageBodyStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyStyle.swift; sourceTree = "<group>"; };
 		668444812A3292AB00DBED7C /* MessageBodyStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyStyleTests.swift; sourceTree = "<group>"; };
 		668478F62CAB66D600430D68 /* OrphanedBackupAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedBackupAttachment.swift; sourceTree = "<group>"; };
@@ -9639,6 +9641,7 @@
 				66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */,
 				66F98DDD2DB70739009F1A86 /* BackupAttachmentQueueStatusManager.swift */,
 				66734F002CA1ED3A00558494 /* BackupAttachmentUploadManager.swift */,
+				6683454F2DCA9BE700566AB3 /* BackupAttachmentUploadProgress.swift */,
 				66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */,
 				66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */,
 				668478F62CAB66D600430D68 /* OrphanedBackupAttachment.swift */,
@@ -17501,6 +17504,7 @@
 				667BB2082C580C1400E79B57 /* BackupAttachmentDownloadStore.swift in Sources */,
 				66F98DDE2DB7073F009F1A86 /* BackupAttachmentQueueStatusManager.swift in Sources */,
 				66734F012CA1ED3F00558494 /* BackupAttachmentUploadManager.swift in Sources */,
+				668345502DCA9BEE00566AB3 /* BackupAttachmentUploadProgress.swift in Sources */,
 				66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */,
 				D923DF9C2DC135D200CDAFC3 /* BackupIdManager.swift in Sources */,
 				D970541F2CFE4D0200AC7954 /* BackupPaymentMethod.swift in Sources */,

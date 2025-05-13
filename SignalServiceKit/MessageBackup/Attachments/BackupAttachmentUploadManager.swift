@@ -61,6 +61,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: any DB
     private let messageBackupRequestManager: MessageBackupRequestManager
+    private let progress: BackupAttachmentUploadProgress
     private let statusManager: BackupAttachmentQueueStatusUpdates
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
@@ -75,6 +76,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         dateProvider: @escaping DateProvider,
         db: any DB,
         messageBackupRequestManager: MessageBackupRequestManager,
+        progress: BackupAttachmentUploadProgress,
         statusManager: BackupAttachmentQueueStatusUpdates,
         tsAccountManager: TSAccountManager
     ) {
@@ -84,6 +86,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
         self.messageBackupRequestManager = messageBackupRequestManager
+        self.progress = progress
         self.statusManager = statusManager
         self.tsAccountManager = tsAccountManager
         let taskRunner = TaskRunner(
@@ -95,6 +98,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             dateProvider: dateProvider,
             db: db,
             messageBackupRequestManager: messageBackupRequestManager,
+            progress: progress,
             statusManager: statusManager,
             tsAccountManager: tsAccountManager
         )
@@ -299,6 +303,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         private let dateProvider: DateProvider
         private let db: any DB
         private let messageBackupRequestManager: MessageBackupRequestManager
+        private let progress: BackupAttachmentUploadProgress
         private let statusManager: BackupAttachmentQueueStatusUpdates
         private let tsAccountManager: TSAccountManager
 
@@ -313,6 +318,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             dateProvider: @escaping DateProvider,
             db: any DB,
             messageBackupRequestManager: MessageBackupRequestManager,
+            progress: BackupAttachmentUploadProgress,
             statusManager: BackupAttachmentQueueStatusUpdates,
             tsAccountManager: TSAccountManager
         ) {
@@ -324,6 +330,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             self.dateProvider = dateProvider
             self.db = db
             self.messageBackupRequestManager = messageBackupRequestManager
+            self.progress = progress
             self.statusManager = statusManager
             self.tsAccountManager = tsAccountManager
 
@@ -500,12 +507,26 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             // Upload fullsize next
             if needsMediaTierUpload {
                 do {
+                    let progressSink = await progress.willBeginUploadingAttachment(
+                        attachmentId: attachment.id,
+                        queuedUploadRowId: record.record.id!
+                    )
                     try await attachmentUploadManager.uploadMediaTierAttachment(
                         attachmentId: attachment.id,
                         uploadEra: currentUploadEra,
                         localAci: localAci,
-                        auth: messageBackupAuth
+                        auth: messageBackupAuth,
+                        progress: progressSink
                     )
+                    if let byteCount = attachment.streamInfo?.encryptedByteCount {
+                        await progress.didFinishUploadOfAttachment(
+                            attachmentId: attachment.id,
+                            queuedUploadRowId: record.record.id!,
+                            byteCount: UInt64(Cryptography.paddedSize(unpaddedSize: UInt(byteCount)))
+                        )
+                    } else {
+                        owsFailDebug("Uploaded a non stream?")
+                    }
                 } catch let error {
                     return await handleUploadError(error: error, isThumbnailUpload: false)
                 }
@@ -527,6 +548,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         }
 
         func didDrainQueue() async {
+            await progress.didEmptyUploadQueue()
             await statusManager.didEmptyQueue(type: .upload)
         }
     }
@@ -565,7 +587,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     }
 }
 
-fileprivate extension AttachmentStream {
+extension AttachmentStream {
 
     func needsMediaTierUpload(currentUploadEra: String) -> Bool {
         if let mediaTierInfo = attachment.mediaTierInfo {

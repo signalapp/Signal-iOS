@@ -65,6 +65,7 @@ public class DependenciesBridge {
     public let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     public let backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager
     public let backupAttachmentUploadManager: BackupAttachmentUploadManager
+    public let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     public let backupIdManager: BackupIdManager
     public let backupSubscriptionManager: BackupSubscriptionManager
     public let badgeCountFetcher: BadgeCountFetcher
@@ -190,6 +191,7 @@ public class DependenciesBridge {
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager,
         backupAttachmentUploadManager: BackupAttachmentUploadManager,
+        backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
         backupIdManager: BackupIdManager,
         backupSubscriptionManager: BackupSubscriptionManager,
         badgeCountFetcher: BadgeCountFetcher,
@@ -314,6 +316,7 @@ public class DependenciesBridge {
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.backupAttachmentQueueStatusManager = backupAttachmentQueueStatusManager
         self.backupAttachmentUploadManager = backupAttachmentUploadManager
+        self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.backupIdManager = backupIdManager
         self.backupSubscriptionManager = backupSubscriptionManager
         self.badgeCountFetcher = badgeCountFetcher
