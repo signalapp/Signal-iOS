@@ -60,8 +60,10 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: any DB
+    private let messageBackupRequestManager: MessageBackupRequestManager
     private let statusManager: BackupAttachmentQueueStatusUpdates
     private let taskQueue: TaskQueueLoader<TaskRunner>
+    private let tsAccountManager: TSAccountManager
 
     public init(
         appReadiness: AppReadiness,
@@ -81,7 +83,9 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
+        self.messageBackupRequestManager = messageBackupRequestManager
         self.statusManager = statusManager
+        self.tsAccountManager = tsAccountManager
         let taskRunner = TaskRunner(
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
@@ -196,35 +200,61 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         guard FeatureFlags.MessageBackup.remoteExportAlpha else {
             return
         }
-        let backupPlan = db.read { tx in
-            backupSettingsStore.backupPlan(tx: tx)
+        let (localAci, backupPlan) = db.read { tx in
+            (
+                self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
+                backupSettingsStore.backupPlan(tx: tx)
+            )
         }
+
+        guard let localAci else {
+            return
+        }
+
         switch backupPlan {
         case nil, .free:
             return
         case .paid:
             break
         }
-        switch await statusManager.beginObservingIfNeeded(type: .upload) {
-        case .running:
-            break
-        case .empty:
-            // The queue will stop on its own if empty.
-            return
-        case .notRegisteredAndReady:
-            try await taskQueue.stop()
-            return
-        case .noWifiReachability:
-            Logger.info("Skipping backup attachment uploads while not reachable by wifi")
-            try await taskQueue.stop()
-            return
-        case .lowBattery:
-            Logger.info("Skipping backup attachment uploads while low battery")
-            try await taskQueue.stop()
-            return
-        case .lowDiskSpace:
-            owsFailDebug("Disk space should not affect uploads")
+
+        let messageBackupAuth: MessageBackupServiceAuth
+        do {
+            // If we have no credentials, or a free credential, we want to fetch new
+            // credentials, as we think we're paid tier according to local state.
+            // We'll need the paid credential to upload in each task; we load and cache
+            // it now so its available (and so we can bail early if its somehow free tier).
+            messageBackupAuth = try await messageBackupRequestManager.fetchBackupServiceAuth(
+                for: .media,
+                localAci: localAci,
+                auth: .implicit(),
+                forceRefreshUnlessCachedPaidCredential: true
+            )
+        } catch let error as MessageBackupAuthCredentialFetchError {
+            switch error {
+            case .noExistingBackupId:
+                // If we have no backup, we sure won't be uploading.
+                Logger.info("Bailing on attachment backups when backup id not registered")
+                return
+            }
+        } catch let error {
+            throw error
         }
+
+        switch messageBackupAuth.backupLevel {
+        case .free:
+            owsFailDebug("Local backupPlan is paid but credential is free")
+            // If our force refreshed credential is free tier, we definitely
+            // aren't uploading anything, so may as well wipe the queue.
+            await db.awaitableWrite { tx in
+                try? backupAttachmentUploadStore.removeAll(tx: tx)
+            }
+            try? await taskQueue.stop()
+            return
+        case .paid:
+            break
+        }
+
         try await taskQueue.loadAndRunTasks()
     }
 
@@ -362,11 +392,95 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                 messageBackupAuth = try await messageBackupRequestManager.fetchBackupServiceAuth(
                     for: .media,
                     localAci: localAci,
-                    auth: .implicit()
+                    auth: .implicit(),
+                    // No need to force it here; when we start up the queue we force
+                    // a fetch, and should've bailed and never gotten this far if it
+                    // was a free tier credential. (Though the paid state and credential
+                    // can change _after_ this queue has already started running, so we
+                    // do need to handle that case).
+                    forceRefreshUnlessCachedPaidCredential: false
                 )
             } catch let error {
                 try? await loader.stop(reason: error)
                 return .unretryableError(error)
+            }
+
+            switch messageBackupAuth.backupLevel {
+            case .paid:
+                break
+            case .free:
+                // If we find ourselves with a free tier credential,
+                // all uploads will fail. Dequeue them all and quit.
+                try? await loader.stop()
+                await db.awaitableWrite { tx in
+                    try? backupAttachmentUploadStore.removeAll(tx: tx)
+                }
+                return .cancelled
+            }
+
+            func handleUploadError(
+                error: Error,
+                isThumbnailUpload: Bool
+            ) async -> TaskRecordResult {
+                switch await statusManager.jobDidExperienceError(type: .upload, error) {
+                case nil:
+                    // No state change, keep going.
+                    break
+                case .running:
+                    break
+                case .empty:
+                    // The queue will stop on its own, finish this task.
+                    break
+                case .lowDiskSpace, .lowBattery, .noWifiReachability, .notRegisteredAndReady:
+                    // Stop the queue now proactively.
+                    try? await loader.stop()
+                }
+
+                switch error as? MessageBackup.Response.CopyToMediaTierError {
+                case .sourceObjectNotFound:
+                    // Any time we find this error, retry. It means the upload
+                    // expired, and so the copy failed. This is always transient
+                    // and can always be fixed by reuploading, don't even increment
+                    // the retry count.
+                    return .retryableError(error)
+                case .forbidden:
+                    // This only happens if we've lost write access to the media tier.
+                    // As a final check, force refresh our crednetial and check if its
+                    // paid. If its not (we just got a 403 so that's what we expect),
+                    // all uploads will fail so dequeue them and quit.
+                    let credential = try? await messageBackupRequestManager.fetchBackupServiceAuth(
+                        for: .media,
+                        localAci: localAci,
+                        auth: .implicit(),
+                        forceRefreshUnlessCachedPaidCredential: true
+                    )
+                    switch credential?.backupLevel {
+                    case .free, nil:
+                        try? await loader.stop()
+                        await db.awaitableWrite { tx in
+                            try? backupAttachmentUploadStore.removeAll(tx: tx)
+                        }
+                        return .cancelled
+                    case .paid:
+                        break
+                    }
+                    fallthrough
+                default:
+                    // All other errors should be treated as per normal.
+                    if !isThumbnailUpload || error.isNetworkFailureOrTimeout {
+                        let errorCount = await errorCounts.updateCount(record.id)
+                        if error.isRetryable, errorCount < Constants.maxRetryableErrorCount {
+                            return .retryableError(error)
+                        } else {
+                            return .unretryableError(error)
+                        }
+                    } else {
+                        // Ignore the error if we e.g. fail to generate a thumbnail;
+                        // just upload the fullsize.
+                        Logger.error("Failed to upload thumbnail; proceeding")
+                        return .success
+                    }
+                }
             }
 
             // Upload thumbnail first
@@ -379,18 +493,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                         auth: messageBackupAuth
                     )
                 } catch let error {
-                    if error.isNetworkFailureOrTimeout {
-                        let errorCount = await errorCounts.updateCount(record.id)
-                        if error.isRetryable, errorCount < Constants.maxRetryableErrorCount {
-                            return .retryableError(error)
-                        } else {
-                            return .unretryableError(error)
-                        }
-                    } else {
-                        // Ignore the error if we e.g. fail to generate a thumbnail;
-                        // just upload the fullsize.
-                        Logger.error("Failed to upload thumbnail; proceeding")
-                    }
+                    return await handleUploadError(error: error, isThumbnailUpload: true)
                 }
             }
 
@@ -404,36 +507,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                         auth: messageBackupAuth
                     )
                 } catch let error {
-                    switch await statusManager.jobDidExperienceError(type: .upload, error) {
-                    case nil:
-                        // No state change, keep going.
-                        break
-                    case .running:
-                        break
-                    case .empty:
-                        // The queue will stop on its own, finish this task.
-                        break
-                    case .lowDiskSpace, .lowBattery, .noWifiReachability, .notRegisteredAndReady:
-                        // Stop the queue now proactively.
-                        try? await loader.stop()
-                    }
-
-                    switch error as? MessageBackup.Response.CopyToMediaTierError {
-                    case .sourceObjectNotFound:
-                        // Any time we find this error, retry. It means the upload
-                        // expired, and so the copy failed. This is always transient
-                        // and can always be fixed by reuploading, don't even increment
-                        // the retry count.
-                        return .retryableError(error)
-                    default:
-                        // All other errors should be treated as per normal.
-                        let errorCount = await errorCounts.updateCount(record.id)
-                        if error.isRetryable, errorCount < Constants.maxRetryableErrorCount {
-                            return .retryableError(error)
-                        } else {
-                            return .unretryableError(error)
-                        }
-                    }
+                    return await handleUploadError(error: error, isThumbnailUpload: false)
                 }
             }
 
