@@ -84,10 +84,15 @@ public protocol MessageBackupRequestManager {
     /// Creates a ``MessageBackupServiceAuth``, which wraps a ``MessageBackupAuthCredential``.
     /// Created from local ACI and the current valid backup credential. This
     /// `MessageBackupServiceAuth` is used to authenticate all further `/v1/archive` operations.
+    ///
+    /// - parameter forceRefreshUnlessCachedPaidCredential: Forces a refresh if we have a cached
+    /// credential that isn't ``BackupLevel.paid``. Default false. Set this to true if intending to check whether a
+    /// paid credential is available.
     func fetchBackupServiceAuth(
         for credentialType: MessageBackupAuthCredentialType,
         localAci: Aci,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
+        forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> MessageBackupServiceAuth
 
     func fetchBackupUploadForm(auth: MessageBackupServiceAuth) async throws -> Upload.Form
@@ -126,6 +131,21 @@ public protocol MessageBackupRequestManager {
     func redeemReceipt(
         receiptCredentialPresentation: Data
     ) async throws
+}
+
+extension MessageBackupRequestManager {
+    func fetchBackupServiceAuth(
+        for credentialType: MessageBackupAuthCredentialType,
+        localAci: Aci,
+        auth: ChatServiceAuth,
+    ) async throws -> MessageBackupServiceAuth {
+        return try await self.fetchBackupServiceAuth(
+            for: credentialType,
+            localAci: localAci,
+            auth: auth,
+            forceRefreshUnlessCachedPaidCredential: false
+        )
+    }
 }
 
 public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
@@ -188,7 +208,8 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
     public func fetchBackupServiceAuth(
         for credentialType: MessageBackupAuthCredentialType,
         localAci: Aci,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
+        forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> MessageBackupServiceAuth {
         let (backupKey, privateKey) = try db.read { tx in
             let key = try messageBackupKeyMaterial.backupKey(type: credentialType, tx: tx)
@@ -200,7 +221,8 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
         let authCredential = try await messageBackupAuthCredentialManager.fetchBackupCredential(
             for: credentialType,
             localAci: localAci,
-            chatServiceAuth: auth
+            chatServiceAuth: auth,
+            forceRefreshUnlessCachedPaidCredential: forceRefreshUnlessCachedPaidCredential
         )
 
         return try MessageBackupServiceAuth(

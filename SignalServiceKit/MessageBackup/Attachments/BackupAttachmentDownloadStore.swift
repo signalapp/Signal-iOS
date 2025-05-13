@@ -36,7 +36,7 @@ public protocol BackupAttachmentDownloadStore {
 
     /// Remove the download from the queue. Should be called once downloaded (or permanently failed).
     func removeQueuedDownload(
-        _ record: QueuedBackupAttachmentDownload,
+        attachmentId: Attachment.IDType,
         tx: DBWriteTransaction
     ) throws
 
@@ -163,12 +163,12 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
     }
 
     public func removeQueuedDownload(
-        _ record: QueuedBackupAttachmentDownload,
+        attachmentId: Attachment.IDType,
         tx: DBWriteTransaction
     ) throws {
         let db = tx.database
         try QueuedBackupAttachmentDownload
-            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.id) == record.id)
+            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.id) == attachmentId)
             .deleteAll(db)
     }
 

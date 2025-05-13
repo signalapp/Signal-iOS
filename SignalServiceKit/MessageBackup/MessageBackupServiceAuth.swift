@@ -13,12 +13,17 @@ public struct MessageBackupServiceAuth {
     // Remember the type of auth this credential represents (message vs media).
     // This makes it easier to cache requested information correctly based on the type
     public let type: MessageBackupAuthCredentialType
+    // Remember the level this credential represents (free vs paid).
+    // This makes it easier for callers to tell what permissions are available,
+    // as long as the credential remains valid.
+    public let backupLevel: BackupLevel
 
     public init(backupKey: Data, privateKey: PrivateKey, authCredential: BackupAuthCredential, type: MessageBackupAuthCredentialType) throws {
         let backupServerPublicParams = try GenericServerPublicParams(contents: [UInt8](TSConstants.backupServerPublicParams))
         let presentation = authCredential.present(serverParams: backupServerPublicParams).serialize()
         let signedPresentation = privateKey.generateSignature(message: presentation)
         self.type = type
+        self.backupLevel = authCredential.backupLevel
 
         self.publicKey = privateKey.publicKey
         self.authHeaders = [

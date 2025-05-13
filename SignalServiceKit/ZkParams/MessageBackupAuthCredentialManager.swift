@@ -17,10 +17,15 @@ public enum MessageBackupAuthCredentialFetchError: Error {
 }
 
 public protocol MessageBackupAuthCredentialManager {
+
+    /// - parameter forceRefreshUnlessCachedPaidCredential: Forces a refresh if we have a cached
+    /// credential that isn't ``BackupLevel.paid``. Default false. Set this to true if intending to check whether a
+    /// paid credential is available.
     func fetchBackupCredential(
         for credentialType: MessageBackupAuthCredentialType,
         localAci: Aci,
-        chatServiceAuth auth: ChatServiceAuth
+        chatServiceAuth auth: ChatServiceAuth,
+        forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> BackupAuthCredential
 }
 
@@ -57,7 +62,8 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
     public func fetchBackupCredential(
         for credentialType: MessageBackupAuthCredentialType,
         localAci: Aci,
-        chatServiceAuth auth: ChatServiceAuth
+        chatServiceAuth auth: ChatServiceAuth,
+        forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> BackupAuthCredential {
         let redemptionTime = self.dateProvider().startOfTodayUTCTimestamp()
         let futureRedemptionTime = redemptionTime + UInt64(Constants.numberOfDaysRemainingFutureCredentialsInSeconds)
@@ -78,7 +84,14 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
                 redemptionTime: redemptionTime,
                 tx: tx
             ) {
-                return backupAuthCredential
+                switch backupAuthCredential.backupLevel {
+                case .free where forceRefreshUnlessCachedPaidCredential:
+                    // Force a refresh if the cached credential is free
+                    // and we deliberately want to check for paid credentials.
+                    return nil
+                case .free, .paid:
+                    return backupAuthCredential
+                }
             } else {
                 owsFailDebug("Error retrieving cached auth credential")
             }

@@ -116,7 +116,8 @@ class _AttachmentUploadManager_MessageBackupRequestManagerMock: MessageBackupReq
     func fetchBackupServiceAuth(
         for type: MessageBackupAuthCredentialType,
         localAci: Aci,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
+        forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> MessageBackupServiceAuth {
         fatalError("Unimplemented for tests")
     }

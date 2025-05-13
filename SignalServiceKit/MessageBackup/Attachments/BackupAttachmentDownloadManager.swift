@@ -97,6 +97,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.listMediaManager = ListMediaManager(
             attachmentStore: attachmentStore,
             attachmentUploadStore: attachmentUploadStore,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupSubscriptionManager: backupSubscriptionManager,
             db: db,
             messageBackupRequestManager: messageBackupRequestManager,
@@ -267,6 +268,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         private let attachmentStore: AttachmentStore
         private let attachmentUploadStore: AttachmentUploadStore
+        private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
         private let backupSubscriptionManager: BackupSubscriptionManager
         private let db: any DB
         private let messageBackupRequestManager: MessageBackupRequestManager
@@ -279,6 +281,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         init(
             attachmentStore: AttachmentStore,
             attachmentUploadStore: AttachmentUploadStore,
+            backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
             backupSubscriptionManager: BackupSubscriptionManager,
             db: any DB,
             messageBackupRequestManager: MessageBackupRequestManager,
@@ -288,6 +291,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         ) {
             self.attachmentStore = attachmentStore
             self.attachmentUploadStore = attachmentUploadStore
+            self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
             self.backupSubscriptionManager = backupSubscriptionManager
             self.db = db
             self.kvStore = KeyValueStore(collection: "ListBackupMediaManager")
@@ -311,6 +315,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 return
             }
             let (
+                isPrimaryDevice,
                 localAci,
                 currentUploadEra,
                 needsToQuery,
@@ -318,6 +323,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             ) = try db.read { tx in
                 let currentUploadEra = self.backupSubscriptionManager.getUploadEra(tx: tx)
                 return (
+                    self.tsAccountManager.registrationState(tx: tx).isPrimaryDevice,
                     self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
                     currentUploadEra,
                     try self.needsToQueryListMedia(currentUploadEra: currentUploadEra, tx: tx),
@@ -328,7 +334,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 return
             }
 
-            guard let localAci else {
+            guard let localAci, let isPrimaryDevice else {
                 throw OWSAssertionError("Not registered")
             }
 
@@ -337,7 +343,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 messageBackupAuth = try await messageBackupRequestManager.fetchBackupServiceAuth(
                     for: .media,
                     localAci: localAci,
-                    auth: .implicit()
+                    auth: .implicit(),
+                    // We want to affirmatively check for paid tier status
+                    forceRefreshUnlessCachedPaidCredential: true
                 )
             } catch let error as MessageBackupAuthCredentialFetchError {
                 switch error {
@@ -369,6 +377,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                                 storedMediaObject,
                                 mediaIdMap: &mediaIdMap,
                                 uploadEra: currentUploadEra,
+                                isPrimaryDevice: isPrimaryDevice,
                                 tx: tx
                             )
                         }
@@ -382,8 +391,26 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             }
 
             // Any remaining attachments in the dictionary weren't listed by the server;
-            // if we think its uploaded (has a non-nil cdn number) mark it as non-uploaded.
-            let remainingLocalAttachments = mediaIdMap.values.filter { $0.cdnNumber != nil }
+            // Potentially mark it as non-uploaded.
+            let remainingLocalAttachments = mediaIdMap.values.filter { localAttachment in
+                if localAttachment.cdnNumber != nil {
+                    // Any where we had a cdn number means the exporting primary client _thought_
+                    // the attachment was uploaded, and won't be attempting reupload.
+                    // So we can go ahead and mark these non-uploaded.
+                    return true
+                } else if isPrimaryDevice {
+                    // If we are the primary, by definition the old primary is unregistered
+                    // and cannot be uploading stuff. If its not uploaded by now, it won't be.
+                    return true
+                } else if messageBackupAuth.backupLevel == .free {
+                    // Even if we're a secondary device, if we're free tier according to
+                    // the current latest auth credential, then the primary can't be
+                    // uploading stuff, so if its not listed its not gonna be in the future.
+                    return true
+                } else {
+                    return false
+                }
+            }
             if remainingLocalAttachments.isEmpty.negated {
                 try await remainingLocalAttachments.forEachChunk(chunkSize: 100) { chunk in
                     try await db.awaitableWrite { tx in
@@ -406,12 +433,18 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             _ listedMedia: MessageBackup.Response.StoredMedia,
             mediaIdMap: inout [Data: LocalAttachment],
             uploadEra: String,
+            isPrimaryDevice: Bool,
             tx: DBWriteTransaction
         ) throws {
             let mediaId = try Data.data(fromBase64Url: listedMedia.mediaId)
             guard let localAttachment = mediaIdMap.removeValue(forKey: mediaId) else {
-                // If we don't have the media locally, schedule it for deletion.
-                try enqueueListedMediaForDeletion(listedMedia, mediaId: mediaId, tx: tx)
+                if isPrimaryDevice {
+                    // If we don't have the media locally, schedule it for deletion.
+                    // (Linked devices don't do uploads and so shouldn't delete uploads
+                    // either; the primary may have uploaded an attachment from a message
+                    // we haven't received yet).
+                    try enqueueListedMediaForDeletion(listedMedia, mediaId: mediaId, tx: tx)
+                }
                 return
             }
 
@@ -436,7 +469,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 mediaIdMap[mediaId] = localAttachment
                 return
             } else if localCdnNumber < listedMedia.cdn {
-                // The cdn has a newer upload! Set out local cdn and schedule the old
+                // The cdn has a newer upload! Set our local cdn and schedule the old
                 // one for deletion.
                 try updateWithListedCdn(
                     localAttachment: localAttachment,
@@ -541,25 +574,26 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             _ localAttachment: LocalAttachment,
             tx: DBWriteTransaction
         ) throws {
-            guard
+            if
                 let attachment = self.attachmentStore.fetch(
                     id: localAttachment.id,
                     tx: tx
                 )
-            else {
-                return
+            {
+                if localAttachment.isThumbnail {
+                    try self.attachmentUploadStore.markThumbnailMediaTierUploadExpired(
+                        attachment: attachment,
+                        tx: tx
+                    )
+                } else {
+                    try self.attachmentUploadStore.markMediaTierUploadExpired(
+                        attachment: attachment,
+                        tx: tx
+                    )
+                }
             }
-            if localAttachment.isThumbnail {
-                try self.attachmentUploadStore.markThumbnailMediaTierUploadExpired(
-                    attachment: attachment,
-                    tx: tx
-                )
-            } else {
-                try self.attachmentUploadStore.markMediaTierUploadExpired(
-                    attachment: attachment,
-                    tx: tx
-                )
-            }
+            // Remove any enqueued download as well.
+            try backupAttachmentDownloadStore.removeQueuedDownload(attachmentId: localAttachment.id, tx: tx)
         }
 
         // MARK: Local attachment mapping
@@ -893,7 +927,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
 
         func removeRecord(_ record: Record, tx: DBWriteTransaction) throws {
-            try backupAttachmentDownloadStore.removeQueuedDownload(record.record, tx: tx)
+            try backupAttachmentDownloadStore.removeQueuedDownload(attachmentId: record.id, tx: tx)
         }
     }
 
