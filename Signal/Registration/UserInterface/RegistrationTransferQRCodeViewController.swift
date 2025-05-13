@@ -370,6 +370,7 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
 
         ContactSupportActionSheet.present(
             emailFilter: .deviceTransfer,
+            logDumper: .fromGlobals(),
             fromViewController: self
         )
     }

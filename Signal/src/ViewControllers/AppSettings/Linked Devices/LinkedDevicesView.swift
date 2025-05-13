@@ -670,6 +670,7 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
 
                 ContactSupportActionSheet.present(
                     emailFilter: contactSupportEmailFilter,
+                    logDumper: .fromGlobals(),
                     fromViewController: self
                 )
             })

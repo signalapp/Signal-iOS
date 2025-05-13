@@ -342,7 +342,7 @@ public class NotificationActionHandler {
 
     private class func submitDebugLogs() async {
         await withCheckedContinuation { continuation in
-            DebugLogs.submitLogsWithSupportTag(nil) {
+            DebugLogs.submitLogs(dumper: .fromGlobals()) {
                 continuation.resume()
             }
         }

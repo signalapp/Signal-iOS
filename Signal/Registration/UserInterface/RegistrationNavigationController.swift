@@ -446,7 +446,7 @@ public class RegistrationNavigationController: OWSNavigationController {
 
     @objc
     private func didRequestToSubmitDebugLogs() {
-        DebugLogs.submitLogsWithSupportTag("Registration")
+        DebugLogs.submitLogs(supportTag: "Registration", dumper: .fromGlobals())
     }
 }
 

@@ -716,7 +716,11 @@ class RegistrationPinViewController: OWSViewController {
 
         actionSheet.addAction(.init(title: CommonStrings.contactSupport) { [weak self] _ in
             guard let self else { return }
-            ContactSupportActionSheet.present(emailFilter: .registrationPINMode(state.contactSupportMode), fromViewController: self)
+            ContactSupportActionSheet.present(
+                emailFilter: .registrationPINMode(state.contactSupportMode),
+                logDumper: .fromGlobals(),
+                fromViewController: self,
+            )
         })
 
         actionSheet.addAction(OWSActionSheets.cancelAction)

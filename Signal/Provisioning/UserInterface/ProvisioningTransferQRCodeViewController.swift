@@ -135,6 +135,7 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
 
         ContactSupportActionSheet.present(
             emailFilter: .deviceTransfer,
+            logDumper: .fromGlobals(),
             fromViewController: self
         )
     }

@@ -254,7 +254,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
         var emailRequest = SupportEmailModel()
         emailRequest.userDescription = descriptionField.text
         emailRequest.emojiMood = emojiPicker.selectedMood
-        emailRequest.debugLogPolicy = debugSwitch.isOn ? .attemptUpload : .none
+        emailRequest.debugLogPolicy = debugSwitch.isOn ? .attemptUpload(.fromGlobals()) : .none
         if let selectedFilter = selectedFilter {
             emailRequest.supportFilter = "iOS \(selectedFilter.emailFilterString)"
         }

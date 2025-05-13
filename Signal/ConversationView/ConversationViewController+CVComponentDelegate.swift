@@ -796,6 +796,7 @@ extension ConversationViewController: CVComponentDelegate {
         sessionRefreshedActionSheet.addAction(ActionSheetAction(title: CommonStrings.contactSupport) { _ in
             ContactSupportActionSheet.present(
                 emailFilter: .custom("Signal iOS Session Refresh"),
+                logDumper: .fromGlobals(),
                 fromViewController: self
             )
         })

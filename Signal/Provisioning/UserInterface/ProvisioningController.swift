@@ -120,7 +120,7 @@ class ProvisioningController: NSObject {
 
     @objc
     private func submitLogs() {
-        DebugLogs.submitLogsWithSupportTag("Onboarding")
+        DebugLogs.submitLogs(supportTag: "Onboarding", dumper: .fromGlobals())
     }
 
     // MARK: - Transitions
@@ -672,6 +672,7 @@ class ProvisioningController: NSObject {
                     // view controller.
                     ContactSupportActionSheet.present(
                         emailFilter: .backupImportFailed,
+                        logDumper: .fromGlobals(),
                         fromViewController: viewController
                     )
                 }

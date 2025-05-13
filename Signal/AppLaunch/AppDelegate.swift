@@ -561,6 +561,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             presentLaunchFailureActionSheet(
                 from: viewController,
                 supportTag: "CorruptRegistrationState",
+                logDumper: .fromGlobals(),
                 title: OWSLocalizedString(
                     "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE",
                     comment: "Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status."
@@ -1052,6 +1053,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         presentLaunchFailureActionSheet(
             from: viewController,
             supportTag: preflightError.supportTag,
+            logDumper: .preLaunch(),
             title: title,
             message: message,
             actions: actions
@@ -1107,6 +1109,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         presentLaunchFailureActionSheet(
             from: viewController,
             supportTag: LaunchPreflightError.databaseUnrecoverablyCorrupted.supportTag,
+            logDumper: .preLaunch(),
             title: OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
                 comment: "Error indicating that the app could not launch because the database could not be loaded."
@@ -1129,6 +1132,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private func presentLaunchFailureActionSheet(
         from viewController: UIViewController,
         supportTag: String,
+        logDumper: DebugLogDumper,
         title: String,
         message: String,
         actions: [LaunchFailureActionSheetAction]
@@ -1141,6 +1145,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     self.presentLaunchFailureActionSheet(
                         from: viewController,
                         supportTag: supportTag,
+                        logDumper: logDumper,
                         title: title,
                         message: message,
                         actions: actions
@@ -1173,20 +1178,20 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             switch action {
             case .submitDebugLogsAndCrash:
                 addSubmitDebugLogsAction {
-                    DebugLogs.submitLogsWithSupportTag(supportTag) {
+                    DebugLogs.submitLogs(supportTag: supportTag, dumper: logDumper) {
                         owsFail("Exiting after submitting debug logs")
                     }
                 }
             case .submitDebugLogsAndLaunchApp(let window, let launchContext):
                 addSubmitDebugLogsAction { [unowned window] in
-                    DebugLogs.submitLogsWithSupportTag(supportTag) {
+                    DebugLogs.submitLogs(supportTag: supportTag, dumper: logDumper) {
                         ignoreErrorAndLaunchApp(in: window, launchContext: launchContext)
                     }
                 }
             case .submitDebugLogsWithDatabaseIntegrityCheckAndCrash(let databaseStorage):
                 addSubmitDebugLogsAction { [unowned viewController] in
                     SignalApp.showDatabaseIntegrityCheckUI(from: viewController, databaseStorage: databaseStorage) {
-                        DebugLogs.submitLogsWithSupportTag(supportTag) {
+                        DebugLogs.submitLogs(supportTag: supportTag, dumper: logDumper) {
                             owsFail("Exiting after submitting debug logs")
                         }
                     }

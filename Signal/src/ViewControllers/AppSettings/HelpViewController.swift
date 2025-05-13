@@ -60,7 +60,7 @@ final class HelpViewController: OWSTableViewController2 {
             name: OWSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: ""),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "submit_debug_log"),
             actionBlock: {
-                DebugLogs.submitLogs()
+                DebugLogs.submitLogs(dumper: .fromGlobals())
             }
         ))
         contents.add(loggingSection)

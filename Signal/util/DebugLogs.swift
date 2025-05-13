@@ -8,13 +8,47 @@ import zlib
 import SignalServiceKit
 import SignalUI
 
-enum DebugLogs {
+public struct DebugLogDumper {
+    fileprivate var accountManager: (any TSAccountManager)?
+    fileprivate var appVersion: any AppVersion
+    fileprivate var db: (any DB)?
 
-    static func submitLogs() {
-        submitLogsWithSupportTag(nil)
+    static func preLaunch() -> Self {
+        return Self(appVersion: AppVersionImpl.shared)
     }
 
-    static func submitLogsWithSupportTag(_ tag: String?, completion: (() -> Void)? = nil) {
+    static func fromGlobals() -> Self {
+        return Self(
+            accountManager: DependenciesBridge.shared.tsAccountManager,
+            appVersion: AppVersionImpl.shared,
+            db: DependenciesBridge.shared.db,
+        )
+    }
+
+    fileprivate func dump() {
+        appVersion.dumpToLog()
+        if let db {
+            db.read { tx in
+                if let accountManager {
+                    if let localIdentifiers = accountManager.localIdentifiers(tx: tx) {
+                        let deviceId = accountManager.storedDeviceId(tx: tx)
+                        Logger.info("local ACI: \(localIdentifiers.aci), device ID: \(deviceId)")
+                    } else {
+                        let state = accountManager.registrationState(tx: tx)
+                        Logger.info("no local ACI! registration state: \(state.logString)")
+                    }
+                }
+                if DebugFlags.internalLogging {
+                    KeyValueStore.logCollectionStatistics(tx: tx)
+                }
+            }
+        }
+    }
+}
+
+enum DebugLogs {
+
+    static func submitLogs(supportTag: String? = nil, dumper: DebugLogDumper, completion: (() -> Void)? = nil) {
         let submitLogsCompletion = {
             if let completion {
                 // Wait a moment. If the user opens a URL, it needs a moment to complete.
@@ -25,15 +59,15 @@ enum DebugLogs {
         }
 
         var supportFilter = "Signal - iOS Debug Log"
-        if let tag {
-            supportFilter += " - \(tag)"
+        if let supportTag {
+            supportFilter += " - \(supportTag)"
         }
 
         guard let frontmostViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts else {
             submitLogsCompletion()
             return
         }
-        uploadLogsUsingViewController(frontmostViewController) { url in
+        uploadLogsUsingViewController(frontmostViewController, dumper: dumper) { url in
             guard let presentingViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts else {
                 submitLogsCompletion()
                 return
@@ -98,20 +132,20 @@ enum DebugLogs {
         }
     }
 
-    private static func uploadLogsUsingViewController(_ viewController: UIViewController, completion: @escaping (URL) -> Void) {
+    private static func uploadLogsUsingViewController(_ viewController: UIViewController, dumper: DebugLogDumper, completion: @escaping (URL) -> Void) {
         AssertIsOnMainThread()
 
         ModalActivityIndicatorViewController.present(
             fromViewController: viewController,
             canCancel: true,
-            asyncBlock: { await _uploadLogs(modalActivityIndicator: $0, completion: completion) }
+            asyncBlock: { await _uploadLogs(dumper: dumper, modalActivityIndicator: $0, completion: completion) }
         )
     }
 
     @MainActor
-    private static func _uploadLogs(modalActivityIndicator: ModalActivityIndicatorViewController, completion: @escaping (URL) -> Void) async {
+    private static func _uploadLogs(dumper: DebugLogDumper, modalActivityIndicator: ModalActivityIndicatorViewController, completion: @escaping (URL) -> Void) async {
         do {
-            let url = try await uploadLogs()
+            let url = try await uploadLogs(dumper: dumper)
             guard !modalActivityIndicator.wasCancelled else { return }
             modalActivityIndicator.dismiss {
                 completion(url)
@@ -193,15 +227,18 @@ enum DebugLogs {
         var logArchiveOrDirectoryPath: String?
     }
 
-    static func uploadLogs() async throws(UploadDebugLogError) -> URL {
-        // Phase 0. Flush any pending logs to disk.
-        if DebugFlags.internalLogging {
-            KeyValueStore.logCollectionStatistics()
-        }
+    /// - Note: Various dependencies might not be initialized yet when this
+    /// method is called from the database recovery flow. Notably, the database
+    /// isn't available in that flow.
+    static func uploadLogs(dumper: DebugLogDumper) async throws(UploadDebugLogError) -> URL {
+        // Phase 1: Dump any additional details that are relevant.
+        dumper.dump()
         Logger.info("About to zip debug logs")
+
+        // Phase 2: Flush pending logs to disk.
         Logger.flush()
 
-        // Phase 1. Make a local copy of all of the log files.
+        // Phase 3: Make a local copy of all of the log files.
         let zipDirPath: String
         switch collectLogs() {
         case let .success(logsDirPath):
@@ -210,7 +247,7 @@ enum DebugLogs {
             throw UploadDebugLogError(localizedErrorMessage: error.errorString)
         }
 
-        // Phase 2. Zip up the log files.
+        // Phase 4: Zip up the log files.
         let zipDirUrl = URL(fileURLWithPath: zipDirPath)
         let zipFileUrl = URL(fileURLWithPath: zipDirPath.appendingFileExtension("zip"))
         let fileCoordinator = NSFileCoordinator()
@@ -233,7 +270,7 @@ enum DebugLogs {
         OWSFileSystem.protectFileOrFolder(atPath: zipFileUrl.path)
         OWSFileSystem.deleteFile(zipDirPath)
 
-        // Phase 3. Upload the log files.
+        // Phase 5: Upload the log files.
         do {
             let url = try await DebugLogUploader.uploadFile(fileUrl: zipFileUrl, mimeType: MimeType.applicationZip.rawValue)
             try OWSFileSystem.deleteFile(url: zipFileUrl)
