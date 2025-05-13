@@ -144,6 +144,7 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
     private let appReadiness: AppReadiness
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
+    private let backupSettingsStore: BackupSettingsStore
     private let db: DB
     private let deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?
     private let reachabilityManager: SSKReachabilityManager
@@ -155,6 +156,7 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
         appReadiness: AppReadiness,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
+        backupSettingsStore: BackupSettingsStore,
         db: DB,
         deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?,
         reachabilityManager: SSKReachabilityManager,
@@ -165,6 +167,7 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
         self.appReadiness = appReadiness
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
+        self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.deviceBatteryLevelManager = deviceBatteryLevelManager
         self.reachabilityManager = reachabilityManager
@@ -186,6 +189,7 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
         var isMainApp: Bool
         var isAppReady = false
         var isRegistered: Bool?
+        var shouldBackUpOnCellular: Bool?
         var isWifiReachable: Bool?
         // Value from 0 to 1
         var batteryLevel: Float?
@@ -228,7 +232,14 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
                 return .lowDiskSpace
             }
 
-            guard isWifiReachable == true else {
+            let needsWifi: Bool
+            switch type {
+            case .upload:
+                needsWifi = shouldBackUpOnCellular != true
+            case .download:
+                needsWifi = true
+            }
+            guard !needsWifi || isWifiReachable == true else {
                 return .noWifiReachability
             }
 
@@ -281,8 +292,13 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
     }
 
     private func observeDeviceAndLocalStates() {
+        let shouldBackUpOnCellular = db.read { tx in
+            backupSettingsStore.shouldBackUpOnCellular(tx: tx)
+        }
+
         let notificationsToObserve: [(NSNotification.Name, Selector)] = [
             (.registrationStateDidChange, #selector(registrationStateDidChange)),
+            (BackupSettingsStore.shouldBackUpOnCellularChangedNotification, #selector(shouldBackUpOnCellularDidChange)),
             (.reachabilityChanged, #selector(reachabilityDidChange)),
             (UIDevice.batteryLevelDidChangeNotification, #selector(batteryLevelDidChange)),
             (Notification.Name.NSProcessInfoPowerStateDidChange, #selector(lowPowerModeDidChange)),
@@ -307,6 +323,7 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
             isMainApp: appContext.isMainApp,
             isAppReady: appReadiness.isAppReady,
             isRegistered: tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered,
+            shouldBackUpOnCellular: shouldBackUpOnCellular,
             isWifiReachable: reachabilityManager.isReachable(via: .wifi),
             batteryLevel: batteryLevelMonitor?.batteryLevel,
             isLowPowerMode: deviceBatteryLevelManager?.isLowPowerModeEnabled,
@@ -338,6 +355,13 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
     @objc
     private func registrationStateDidChange() {
         self.state.isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+    }
+
+    @objc
+    private func shouldBackUpOnCellularDidChange() {
+        state.shouldBackUpOnCellular = db.read { tx in
+            backupSettingsStore.shouldBackUpOnCellular(tx: tx)
+        }
     }
 
     @objc

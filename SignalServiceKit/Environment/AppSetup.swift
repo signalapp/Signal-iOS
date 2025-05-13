@@ -949,6 +949,7 @@ public class AppSetup {
             appReadiness: appReadiness,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
+            backupSettingsStore: BackupSettingsStore(),
             db: db,
             deviceBatteryLevelManager: deviceBatteryLevelManager,
             reachabilityManager: reachabilityManager,

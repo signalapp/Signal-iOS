@@ -20,6 +20,9 @@ public enum BackupPlan: Int, CaseIterable {
 // MARK: -
 
 public struct BackupSettingsStore {
+
+    public static let shouldBackUpOnCellularChangedNotification = Notification.Name("BackupSettingsStore.shouldBackUpOnCellularChangedNotification")
+
     private enum Keys {
         static let haveEverBeenEnabled = "haveEverBeenEnabled"
         static let plan = "plan"
@@ -110,5 +113,8 @@ public struct BackupSettingsStore {
 
     public func setShouldBackUpOnCellular(_ shouldBackUpOnCellular: Bool, tx: DBWriteTransaction) {
         kvStore.setBool(shouldBackUpOnCellular, key: Keys.shouldBackUpOnCellular, transaction: tx)
+        tx.addSyncCompletion {
+            NotificationCenter.default.post(name: Self.shouldBackUpOnCellularChangedNotification, object: nil)
+        }
     }
 }
