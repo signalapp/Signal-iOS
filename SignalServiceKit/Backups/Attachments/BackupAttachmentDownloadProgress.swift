@@ -34,12 +34,12 @@ public actor BackupAttachmentDownloadProgress {
 
     /// Begin observing progress of all backup attachment downloads.
     /// The observer will immediately be provided the current progress if any, and then updated with future progress state.
-    public func addObserver(_ block: @escaping (OWSProgress) -> Void) -> Observer {
+    public func addObserver(_ block: @escaping (OWSProgress) -> Void) async -> Observer {
         let observer = Observer(block: block)
         if let latestProgress {
             block(latestProgress)
         } else {
-            initializeProgress()
+            await initializeProgress()
             latestProgress.map(block)
         }
         observers.append(observer)
@@ -54,7 +54,7 @@ public actor BackupAttachmentDownloadProgress {
 
     /// Compute total pending bytes to download, and set up observation for attachments to be downloaded.
     internal func beginObserving() async throws {
-        await initializationTask.value
+        await initializeProgress()
 
         let pendingByteCount: UInt64 = try computeRemainingUndownloadedByteCount()
 
@@ -140,6 +140,7 @@ public actor BackupAttachmentDownloadProgress {
 
     // MARK: - Private
 
+    private nonisolated let appContext: AppContext
     private nonisolated let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private nonisolated let dateProvider: DateProvider
     private nonisolated let db: DB
@@ -153,33 +154,33 @@ public actor BackupAttachmentDownloadProgress {
         db: DB,
         remoteConfigProvider: RemoteConfigProvider
     ) {
+        self.appContext = appContext
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.dateProvider = dateProvider
         self.db = db
         self.remoteConfigProvider = remoteConfigProvider
 
-        var selfRef: BackupAttachmentDownloadProgress?
-        if appContext.isMainApp {
-            self.initializationTask = Task {
-                await withCheckedContinuation { continuation in
-                    appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-                        Task {
-                            await selfRef?.initializeProgress()
-                            continuation.resume()
-                        }
-                    }
-                }
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
+            Task {
+                await self?.initializeProgress()
             }
-        } else {
-            // No need to do anything outside the main app.
-            initializationTask = Task {}
         }
-        selfRef = self
     }
 
-    private let initializationTask: Task<Void, Never>
+    private var initializationTask: Task<Void, Never>?
 
-    private func initializeProgress() {
+    private func initializeProgress() async {
+        guard appContext.isMainApp else { return }
+        if let initializationTask {
+            await initializationTask.value
+            return
+        }
+        initializationTask = Task { [weak self] in
+            await self?._initializeProgress()
+        }
+    }
+
+    private func _initializeProgress() {
         if latestProgress != nil { return }
         // Initialize the `latestProgress` value using the on-disk cached values.
         // Later we will (expensively) recompute the remaining byte count.
