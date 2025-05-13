@@ -173,7 +173,7 @@ class SignalRecipientTest: SSKBaseTest {
             )
             newPhoneNumberProfile.anyInsert(transaction: transaction)
 
-            let oldAccount = SignalAccount(address: oldAddress)
+            let oldAccount = SignalAccount(phoneNumber: oldAddress.phoneNumber!)
             oldAccount.anyInsert(transaction: transaction)
 
             mergeHighTrust(aci: aci, phoneNumber: oldPhoneNumber, transaction: transaction)
@@ -252,7 +252,7 @@ class SignalRecipientTest: SSKBaseTest {
                 transaction: transaction
             )
 
-            let oldAccount = SignalAccount(address: oldAddress)
+            let oldAccount = SignalAccount(phoneNumber: oldAddress.phoneNumber!)
             oldAccount.anyInsert(transaction: transaction)
 
             mergeHighTrust(aci: oldAci, phoneNumber: phoneNumber, transaction: transaction)

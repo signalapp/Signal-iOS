@@ -6,28 +6,8 @@
 import GRDB
 import LibSignalClient
 
-public class SignalAccountFinder: NSObject {
-    func signalAccount(
-        for address: SignalServiceAddress,
-        tx: DBReadTransaction
-    ) -> SignalAccount? {
-        if
-            let serviceId = address.serviceId,
-            let serviceIdMatch = signalAccountWhere(
-                column: SignalAccount.columnName(.recipientServiceId),
-                matches: serviceId.serviceIdUppercaseString,
-                tx: tx
-            )
-        {
-            return serviceIdMatch
-        }
-        if
-            let phoneNumber = address.phoneNumber,
-            let phoneNumberMatch = signalAccount(for: phoneNumber, tx: tx)
-        {
-            return phoneNumberMatch
-        }
-        return nil
+public struct SignalAccountFinder {
+    public init() {
     }
 
     public func signalAccount(
@@ -49,51 +29,10 @@ public class SignalAccountFinder: NSObject {
     }
 
     func signalAccounts(
-        for addresses: [SignalServiceAddress],
-        tx: DBReadTransaction
-    ) -> [SignalAccount?] {
-        return Refinery<SignalServiceAddress, SignalAccount>(addresses).refine { addresses in
-            return signalAccountsForServiceIds(
-                addresses.map { $0.serviceId },
-                tx: tx
-            )
-        }.refine { addresses in
-            return signalAccountsForPhoneNumbers(
-                addresses.map { $0.phoneNumber },
-                tx: tx
-            )
-        }.values
-    }
-
-    func signalAccounts(
         for phoneNumbers: [String],
         tx: DBReadTransaction
     ) -> [SignalAccount?] {
         return signalAccountsForPhoneNumbers(phoneNumbers, tx: tx)
-    }
-
-    private func signalAccountsForServiceIds(
-        _ serviceIds: [ServiceId?],
-        tx: DBReadTransaction
-    ) -> [SignalAccount?] {
-        let accounts = signalAccountsWhere(
-            column: SignalAccount.columnName(.recipientServiceId),
-            anyValueIn: serviceIds.compactMap { $0?.serviceIdUppercaseString },
-            tx: tx
-        )
-
-        let index: [ServiceId?: [SignalAccount?]] = Dictionary(grouping: accounts) { $0?.recipientServiceId }
-        return serviceIds.map { maybeServiceId -> SignalAccount? in
-            guard
-                let serviceId = maybeServiceId,
-                let accountsForServiceId = index[serviceId],
-                let firstAccountForServiceId = accountsForServiceId.first
-            else {
-                return nil
-            }
-
-            return firstAccountForServiceId
-        }
     }
 
     private func signalAccountsForPhoneNumbers(
@@ -131,10 +70,6 @@ public class SignalAccountFinder: NSObject {
         let qms = Array(repeating: "?", count: values.count).joined(separator: ", ")
         let sql = "SELECT * FROM \(SignalAccount.databaseTableName) WHERE \(column) in (\(qms))"
 
-        /// Why did we use `allSignalAccounts` instead of `SignalAccount.anyFetchAll`?
-        /// The reason is that the `SignalAccountReadCache` needs to have
-        /// `didReadSignalAccount` called on it for each record we enumerate, and
-        /// `SignalAccount.anyEnumerate` has this built in.
         return allSignalAccounts(
             tx: tx,
             sql: sql,
@@ -149,10 +84,6 @@ public class SignalAccountFinder: NSObject {
     ) -> SignalAccount? {
         let sql = "SELECT * FROM \(SignalAccount.databaseTableName) WHERE \(column) = ? LIMIT 1"
 
-        /// Why did we use `allSignalAccounts` instead of `SignalAccount.anyFetchAll`?
-        /// The reason is that the `SignalAccountReadCache` needs to have
-        /// `didReadSignalAccount` called on it for each record we enumerate, and
-        /// `SignalAccount.anyEnumerate` has this built in.
         return allSignalAccounts(
             tx: tx,
             sql: sql,

@@ -80,49 +80,19 @@ class GRDBFinderTest: SignalBaseTest {
     func testSignalAccountFinder() {
 
         // We'll create SignalAccount for these...
-        let address1 = SignalServiceAddress(phoneNumber: "+16505550101")
-        let address2 = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+16505550102")
-        let address3 = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+16505550103")
-        let address4 = SignalServiceAddress.randomForTesting()
+        let phoneNumber1 = "+16505550101"
         // ...but not these.
-        let address5 = SignalServiceAddress(phoneNumber: "+16505550105")
-        let address6 = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+16505550106")
-        let address7 = SignalServiceAddress.randomForTesting()
+        let phoneNumber5 = "+16505550105"
 
         self.write { transaction in
-            SignalAccount(address: address1).anyInsert(transaction: transaction)
-            SignalAccount(address: address2).anyInsert(transaction: transaction)
-            SignalAccount(address: address3).anyInsert(transaction: transaction)
-            SignalAccount(address: address4).anyInsert(transaction: transaction)
+            SignalAccount(phoneNumber: phoneNumber1).anyInsert(transaction: transaction)
         }
 
         self.read { tx in
             // These should exist...
-            XCTAssertNotNil(SignalAccountFinder().signalAccount(for: address1, tx: tx))
-            // If we save a SignalAccount with just a phone number,
-            // we should later be able to look it up using a UUID & phone number,
-            XCTAssertNotNil(SignalAccountFinder().signalAccount(for: SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: address1.phoneNumber!), tx: tx))
-            XCTAssertNotNil(SignalAccountFinder().signalAccount(for: address2, tx: tx))
-            // If we save a SignalAccount with just a phone number and UUID,
-            // we should later be able to look it up using just a UUID.
-            XCTAssertNotNil(SignalAccountFinder().signalAccount(for: SignalServiceAddress(address2.serviceId!), tx: tx))
-            // If we save a SignalAccount with just a phone number and UUID,
-            // we should later be able to look it up using just a phone number.
-            XCTAssertNotNil(SignalAccountFinder().signalAccount(for: SignalServiceAddress(phoneNumber: address2.phoneNumber!), tx: tx))
-            XCTAssertNotNil(SignalAccountFinder().signalAccount(for: address3, tx: tx))
-            XCTAssertNotNil(SignalAccountFinder().signalAccount(for: SignalServiceAddress(address3.serviceId!), tx: tx))
-            XCTAssertNotNil(SignalAccountFinder().signalAccount(for: SignalServiceAddress(phoneNumber: address3.phoneNumber!), tx: tx))
-            XCTAssertNotNil(SignalAccountFinder().signalAccount(for: address4, tx: tx))
-            // If we save a SignalAccount with just a UUID,
-            // we should later be able to look it up using a UUID & phone number,
-            XCTAssertNotNil(SignalAccountFinder().signalAccount(for: SignalServiceAddress(serviceId: address4.serviceId!, phoneNumber: "+16505550198"), tx: tx))
-
+            XCTAssertNotNil(SignalAccountFinder().signalAccount(for: phoneNumber1, tx: tx))
             // ...these don't.
-            XCTAssertNil(SignalAccountFinder().signalAccount(for: address5, tx: tx))
-            XCTAssertNil(SignalAccountFinder().signalAccount(for: address6, tx: tx))
-            XCTAssertNil(SignalAccountFinder().signalAccount(for: SignalServiceAddress(address6.serviceId!), tx: tx))
-            XCTAssertNil(SignalAccountFinder().signalAccount(for: SignalServiceAddress(phoneNumber: address6.phoneNumber!), tx: tx))
-            XCTAssertNil(SignalAccountFinder().signalAccount(for: address7, tx: tx))
+            XCTAssertNil(SignalAccountFinder().signalAccount(for: phoneNumber5, tx: tx))
         }
     }
 

@@ -176,11 +176,10 @@ extension SignalAccount {
 // MARK: - Convenience Inits
 
 extension SignalAccount {
-    @objc
-    public convenience init(address: SignalServiceAddress) {
+    public convenience init(phoneNumber: String) {
         self.init(
-            recipientPhoneNumber: address.phoneNumber,
-            recipientServiceId: address.serviceId,
+            recipientPhoneNumber: phoneNumber,
+            recipientServiceId: nil,
             multipleAccountLabelText: nil,
             cnContactId: nil,
             givenName: "",
