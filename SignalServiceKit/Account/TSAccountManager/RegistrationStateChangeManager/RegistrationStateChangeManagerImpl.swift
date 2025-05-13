@@ -12,6 +12,9 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
     private let appContext: AppContext
     private let authCredentialStore: AuthCredentialStore
+    private let backupIdManager: BackupIdManager
+    private let backupSettingsStore: BackupSettingsStore
+    private let db: DB
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
     private let identityManager: OWSIdentityManager
@@ -31,6 +34,9 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     init(
         appContext: AppContext,
         authCredentialStore: AuthCredentialStore,
+        backupIdManager: BackupIdManager,
+        backupSettingsStore: BackupSettingsStore,
+        db: DB,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         groupsV2: GroupsV2,
         identityManager: OWSIdentityManager,
@@ -49,6 +55,9 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     ) {
         self.appContext = appContext
         self.authCredentialStore = authCredentialStore
+        self.backupIdManager = backupIdManager
+        self.backupSettingsStore = backupSettingsStore
+        self.db = db
         self.dmConfigurationStore = dmConfigurationStore
         self.groupsV2 = groupsV2
         self.identityManager = identityManager
@@ -241,13 +250,25 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
                 .promiseForTSRequest(request)
                 .asVoid(on: schedulers.sync)
                 .awaitable()
-
-            // No need to set any state, as we wipe the whole app anyway.
-            await appContext.resetAppDataAndExit()
         } catch {
             owsFailDebugUnlessNetworkFailure(error)
             throw error
         }
+
+        let (localIdentifiers, backupPlan) = db.read { tx in
+            (
+                tsAccountManager.localIdentifiers(tx: tx),
+                backupSettingsStore.backupPlan(tx: tx)
+            )
+        }
+
+        // Make best effort to delete backup objects on server.
+        if backupPlan != nil, let localIdentifiers {
+            try await backupIdManager.deleteBackupId(localIdentifiers: localIdentifiers, auth: auth)
+        }
+
+        // No need to set any state, as we wipe the whole app anyway.
+        await appContext.resetAppDataAndExit()
     }
 
     // MARK: - Helpers

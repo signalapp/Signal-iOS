@@ -106,23 +106,25 @@ public class BackupIdManager {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
     ) async throws {
-        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-            for: .messages,
-            localAci: localIdentifiers.aci,
-            auth: auth
-        )
+        for credentialType in MessageBackupAuthCredentialType.allCases {
+            let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
+                for: credentialType,
+                localAci: localIdentifiers.aci,
+                auth: auth
+            )
 
-        do {
-            try await api.deleteBackupId(backupAuth: backupAuth)
-        } catch where error.httpStatusCode == 401 {
-            // This will happen if, for whatever reason, the user doesn't have
-            // a Backup to delete. (It's a 401 because this really means the
-            // server has deleted the key we use to authenticate Backup
-            // requests, which happens in response to an earlier success in
-            // calling this API.)
-            //
-            // Treat this like a success: maybe we deleted earlier, but
-            // never got the response back.
+            do {
+                try await api.deleteBackupId(backupAuth: backupAuth)
+            } catch where error.httpStatusCode == 401 {
+                // This will happen if, for whatever reason, the user doesn't have
+                // a Backup to delete. (It's a 401 because this really means the
+                // server has deleted the key we use to authenticate Backup
+                // requests, which happens in response to an earlier success in
+                // calling this API.)
+                //
+                // Treat this like a success: maybe we deleted earlier, but
+                // never got the response back.
+            }
         }
     }
 

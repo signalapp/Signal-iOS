@@ -814,9 +814,19 @@ public class AppSetup {
             storyRecipientStore: storyRecipientStore
         )
 
+        let backupIdManager = BackupIdManager(
+            accountKeyStore: accountKeyStore,
+            api: BackupIdManager.NetworkAPI(networkManager: networkManager),
+            backupRequestManager: messageBackupRequestManager,
+            db: db
+        )
+
         let registrationStateChangeManager = RegistrationStateChangeManagerImpl(
             appContext: appContext,
             authCredentialStore: authCredentialStore,
+            backupIdManager: backupIdManager,
+            backupSettingsStore: backupSettingsStore,
+            db: db,
             dmConfigurationStore: disappearingMessagesConfigurationStore,
             groupsV2: groupsV2,
             identityManager: identityManager,
@@ -1008,13 +1018,6 @@ public class AppSetup {
                 svr: svr,
                 tsAccountManager: tsAccountManager
             )
-
-        let backupIdManager = BackupIdManager(
-            accountKeyStore: accountKeyStore,
-            api: BackupIdManager.NetworkAPI(networkManager: networkManager),
-            backupRequestManager: messageBackupRequestManager,
-            db: db
-        )
 
         let reactionStore: any ReactionStore = ReactionStoreImpl()
         let disappearingMessagesJob = OWSDisappearingMessagesJob(appReadiness: appReadiness, databaseStorage: databaseStorage)
