@@ -120,14 +120,14 @@ public class _RegistrationCoordinator_ExperienceManagerWrapper: _RegistrationCoo
 
 public protocol _RegistrationCoordinator_FeatureFlagsShim {
 
-    var messageBackupFileAlphaRegistrationFlow: Bool { get }
+    var backupFileAlphaRegistrationFlow: Bool { get }
 }
 
 public class _RegistrationCoordinator_FeatureFlagsWrapper: _RegistrationCoordinator_FeatureFlagsShim {
 
     public init() {}
 
-    public var messageBackupFileAlphaRegistrationFlow: Bool { FeatureFlags.MessageBackup.fileAlphaRegistrationFlow }
+    public var backupFileAlphaRegistrationFlow: Bool { FeatureFlags.Backups.fileAlphaRegistrationFlow }
 }
 
 // MARK: - MessagePipelineSupervisor

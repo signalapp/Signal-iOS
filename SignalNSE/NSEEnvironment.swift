@@ -143,6 +143,7 @@ class NSEEnvironment {
         let finalContinuation = await AppSetup().start(
             appContext: CurrentAppContext(),
             appReadiness: appReadiness,
+            backupArchiveErrorPresenterFactory: NoOpBackupArchiveErrorPresenterFactory(),
             databaseStorage: databaseStorage,
             deviceBatteryLevelManager: nil,
             deviceSleepManager: nil,
@@ -152,7 +153,6 @@ class NSEEnvironment {
             currentCallProvider: CurrentCallNoOpProvider(),
             notificationPresenter: NotificationPresenterImpl(),
             incrementalMessageTSAttachmentMigratorFactory: NoOpIncrementalMessageTSAttachmentMigratorFactory(),
-            messageBackupErrorPresenterFactory: NoOpMessageBackupErrorPresenterFactory()
         ).prepareDatabase()
         self.finalContinuation = finalContinuation
 

@@ -61,7 +61,7 @@ class RegistrationQuickRestoreQRCodeViewController:
                 let message: RegistrationProvisioningMessage = try await provisioningSocketManager.waitForMessage()
                 presenter?.didReceiveRegistrationMessage(message)
             } catch {
-                // TODO: [Backup]: Prompt the user with the error
+                // TODO: [Backups]: Prompt the user with the error
                 Logger.error("Encountered error waiting for qick restore message")
             }
         }

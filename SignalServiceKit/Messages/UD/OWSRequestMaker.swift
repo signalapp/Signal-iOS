@@ -149,7 +149,7 @@ final class RequestMaker {
                 switch request.auth {
                 case .identified, .registration:
                     isUDRequest = false
-                case .anonymous, .sealedSender, .messageBackup:
+                case .anonymous, .sealedSender, .backup:
                     isUDRequest = true
                 }
                 owsPrecondition(isUDRequest == (sealedSenderAuth != nil))

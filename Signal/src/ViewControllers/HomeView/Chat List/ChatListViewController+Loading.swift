@@ -188,7 +188,7 @@ extension ChatListViewController {
                     // This optimization is particularly important when there are
                     // many rapid-fire chat-list-cell updates needed, such as when
                     // fetching avatars after a Backup restore. (See:
-                    // `MessageBackupAvatarFetcher`.)
+                    // `BackupArchiveAvatarFetcher`.)
                     tableDataSource.updateCellContent(at: oldIndexPath, for: tableView)
                 } else {
                     owsFailDebug("Failed to apply row update: unexpectedly missing table data source!")

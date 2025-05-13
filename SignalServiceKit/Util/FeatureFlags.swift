@@ -42,7 +42,7 @@ public enum FeatureFlags {
     /// future, we can re-enable this.
     public static let periodicallyCheckDatabaseIntegrity: Bool = false
 
-    public enum MessageBackup {
+    public enum Backups {
         public static let fileAlpha = build.includes(.internal)
         public static let remoteExportAlpha = build.includes(.dev)
 

@@ -244,8 +244,8 @@ private extension InternalSettingsViewController {
     }
 
     func validateMessageBackupProto() {
-        let messageBackupKeyMaterial = DependenciesBridge.shared.messageBackupKeyMaterial
-        let messageBackupManager = DependenciesBridge.shared.messageBackupManager
+        let backupArchiveManager = DependenciesBridge.shared.backupArchiveManager
+        let backupKeyMaterial = DependenciesBridge.shared.backupKeyMaterial
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         guard let localIdentifiers = SSKEnvironment.shared.databaseStorageRef.read(block: {tx in
@@ -256,15 +256,15 @@ private extension InternalSettingsViewController {
         Task {
             do {
                 let backupKey = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-                    try messageBackupKeyMaterial.backupKey(type: .messages, tx: tx)
+                    try backupKeyMaterial.backupKey(type: .messages, tx: tx)
                 }
-                let metadata = try await messageBackupManager.exportEncryptedBackup(
+                let metadata = try await backupArchiveManager.exportEncryptedBackup(
                     localIdentifiers: localIdentifiers,
                     backupKey: backupKey,
                     backupPurpose: .remoteBackup,
                     progress: nil
                 )
-                try await messageBackupManager.validateEncryptedBackup(
+                try await backupArchiveManager.validateEncryptedBackup(
                     fileUrl: metadata.fileUrl,
                     localIdentifiers: localIdentifiers,
                     backupKey: backupKey,
@@ -276,7 +276,7 @@ private extension InternalSettingsViewController {
                 }
             } catch {
                 await MainActor.run {
-                    DependenciesBridge.shared.messageBackupErrorPresenter.presentOverTopmostViewController(completion: {
+                    DependenciesBridge.shared.backupArchiveErrorPresenter.presentOverTopmostViewController(completion: {
                         self.presentToast(text: "Failed validation")
                     })
                 }
@@ -290,7 +290,7 @@ private extension InternalSettingsViewController {
             canCancel: false
         ) { modal in
             func dismissModalAndToast(_ message: String) {
-                DependenciesBridge.shared.messageBackupErrorPresenter.presentOverTopmostViewController(completion: {
+                DependenciesBridge.shared.backupArchiveErrorPresenter.presentOverTopmostViewController(completion: {
                     modal.dismiss {
                         self.presentToast(text: message)
                     }
@@ -313,7 +313,7 @@ private extension InternalSettingsViewController {
                 }
             }
 
-            guard FeatureFlags.MessageBackup.remoteExportAlpha else {
+            guard FeatureFlags.Backups.remoteExportAlpha else {
                 exportMessageBackupProtoFile()
                 return
             }
@@ -354,13 +354,13 @@ private extension InternalSettingsViewController {
     func exportMessageBackupProtoFile(
         presentingFrom vc: UIViewController
     ) async throws {
-        let messageBackupKeyMaterial = DependenciesBridge.shared.messageBackupKeyMaterial
-        let messageBackupManager = DependenciesBridge.shared.messageBackupManager
+        let backupArchiveManager = DependenciesBridge.shared.backupArchiveManager
+        let backupKeyMaterial = DependenciesBridge.shared.backupKeyMaterial
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         let (backupKey, localIdentifiers) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
             (
-                try messageBackupKeyMaterial.backupKey(type: .messages, tx: tx),
+                try backupKeyMaterial.backupKey(type: .messages, tx: tx),
                 tsAccountManager.localIdentifiers(tx: tx)
             )
         }
@@ -369,7 +369,7 @@ private extension InternalSettingsViewController {
             return
         }
 
-        let metadata = try await messageBackupManager.exportEncryptedBackup(
+        let metadata = try await backupArchiveManager.exportEncryptedBackup(
             localIdentifiers: localIdentifiers,
             backupKey: backupKey,
             backupPurpose: .remoteBackup,
@@ -397,14 +397,14 @@ private extension InternalSettingsViewController {
     }
 
     func exportMessageBackupProtoRemotely() async throws {
+        let backupArchiveManager = DependenciesBridge.shared.backupArchiveManager
         let backupIdManager = DependenciesBridge.shared.backupIdManager
-        let messageBackupKeyMaterial = DependenciesBridge.shared.messageBackupKeyMaterial
-        let messageBackupManager = DependenciesBridge.shared.messageBackupManager
+        let backupKeyMaterial = DependenciesBridge.shared.backupKeyMaterial
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         let (backupKey, localIdentifiers) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
             (
-                try messageBackupKeyMaterial.backupKey(type: .messages, tx: tx),
+                try backupKeyMaterial.backupKey(type: .messages, tx: tx),
                 tsAccountManager.localIdentifiers(tx: tx)
             )
         }
@@ -413,7 +413,7 @@ private extension InternalSettingsViewController {
             return
         }
 
-        let metadata = try await messageBackupManager.exportEncryptedBackup(
+        let metadata = try await backupArchiveManager.exportEncryptedBackup(
             localIdentifiers: localIdentifiers,
             backupKey: backupKey,
             backupPurpose: .remoteBackup,
@@ -425,7 +425,7 @@ private extension InternalSettingsViewController {
             auth: .implicit()
         )
 
-        _ = try await messageBackupManager.uploadEncryptedBackup(
+        _ = try await backupArchiveManager.uploadEncryptedBackup(
             metadata: metadata,
             registeredBackupIDToken: registeredBackupIDToken,
             localIdentifiers: localIdentifiers,

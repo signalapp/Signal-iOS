@@ -16,8 +16,8 @@ extension AttachmentUploadManagerImpl {
         typealias AttachmentEncrypter = _Upload_AttachmentEncrypterMock
         typealias FileSystem = _Upload_FileSystemMock
 
-        typealias MessageBackupKeyMaterial = _AttachmentUploadManager_MessageBackupKeyMaterialMock
-        typealias MessageBackupRequestManager = _AttachmentUploadManager_MessageBackupRequestManagerMock
+        typealias BackupKeyMaterial = _AttachmentUploadManager_BackupKeyMaterialMock
+        typealias BackupRequestManager = _AttachmentUploadManager_BackupRequestManagerMock
 
         typealias SleepTimer = _Upload_SleepTimerMock
     }
@@ -95,11 +95,11 @@ class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager 
     func didReceivePush() { }
 }
 
-class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMaterial {
+class _AttachmentUploadManager_BackupKeyMaterialMock: BackupKeyMaterial {
     func backupKey(
-        type: MessageBackupAuthCredentialType,
+        type: BackupAuthCredentialType,
         tx: DBReadTransaction
-    ) throws(MessageBackupKeyMaterialError) -> BackupKey {
+    ) throws(BackupKeyMaterialError) -> BackupKey {
         fatalError("Unimplemented for tests")
     }
 
@@ -107,18 +107,18 @@ class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMat
         mediaName: String,
         type: MediaTierEncryptionType,
         tx: DBReadTransaction
-    ) throws(MessageBackupKeyMaterialError) -> MediaTierEncryptionMetadata {
+    ) throws(BackupKeyMaterialError) -> MediaTierEncryptionMetadata {
         return .init(type: type, mediaId: Data(), hmacKey: Data(), aesKey: Data())
     }
 }
 
-class _AttachmentUploadManager_MessageBackupRequestManagerMock: MessageBackupRequestManager {
+class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
     func fetchBackupServiceAuth(
-        for type: MessageBackupAuthCredentialType,
+        for type: BackupAuthCredentialType,
         localAci: Aci,
         auth: ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool
-    ) async throws -> MessageBackupServiceAuth {
+    ) async throws -> BackupServiceAuth {
         fatalError("Unimplemented for tests")
     }
 
@@ -126,53 +126,47 @@ class _AttachmentUploadManager_MessageBackupRequestManagerMock: MessageBackupReq
 
     func registerBackupKeys(localAci: Aci, auth: ChatServiceAuth) async throws {}
 
-    func fetchBackupUploadForm(auth: MessageBackupServiceAuth) async throws -> Upload.Form {
+    func fetchBackupUploadForm(auth: BackupServiceAuth) async throws -> Upload.Form {
         fatalError("Unimplemented for tests")
     }
 
-    func fetchBackupMediaAttachmentUploadForm(auth: MessageBackupServiceAuth) async throws -> Upload.Form {
+    func fetchBackupMediaAttachmentUploadForm(auth: BackupServiceAuth) async throws -> Upload.Form {
         fatalError("Unimplemented for tests")
     }
 
-    func fetchBackupInfo(auth: MessageBackupServiceAuth) async throws -> MessageBackupRemoteInfo {
+    func fetchMediaTierCdnRequestMetadata(cdn: Int32, auth: BackupServiceAuth) async throws -> MediaTierReadCredential {
         fatalError("Unimplemented for tests")
     }
 
-    func refreshBackupInfo(auth: MessageBackupServiceAuth) async throws { }
-
-    func fetchMediaTierCdnRequestMetadata(cdn: Int32, auth: MessageBackupServiceAuth) async throws -> MediaTierReadCredential {
-        fatalError("Unimplemented for tests")
-    }
-
-    func fetchBackupRequestMetadata(auth: MessageBackupServiceAuth) async throws -> BackupReadCredential {
+    func fetchBackupRequestMetadata(auth: BackupServiceAuth) async throws -> BackupReadCredential {
         fatalError("Unimplemented for tests")
     }
 
     func copyToMediaTier(
-        item: MessageBackup.Request.MediaItem,
-        auth: MessageBackupServiceAuth
+        item: BackupArchive.Request.MediaItem,
+        auth: BackupServiceAuth
     ) async throws -> UInt32 {
         return 3
     }
 
     func copyToMediaTier(
-        items: [MessageBackup.Request.MediaItem],
-        auth: MessageBackupServiceAuth
-    ) async throws -> [MessageBackup.Response.BatchedBackupMediaResult] {
+        items: [BackupArchive.Request.MediaItem],
+        auth: BackupServiceAuth
+    ) async throws -> [BackupArchive.Response.BatchedBackupMediaResult] {
         return []
     }
 
     func listMediaObjects(
         cursor: String?,
         limit: UInt32?,
-        auth: MessageBackupServiceAuth
-    ) async throws -> MessageBackup.Response.ListMediaResult {
+        auth: BackupServiceAuth
+    ) async throws -> BackupArchive.Response.ListMediaResult {
         fatalError("Unimplemented for tests")
     }
 
     func deleteMediaObjects(
-        objects: [MessageBackup.Request.DeleteMediaTarget],
-        auth: MessageBackupServiceAuth
+        objects: [BackupArchive.Request.DeleteMediaTarget],
+        auth: BackupServiceAuth
     ) async throws {
     }
 

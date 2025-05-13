@@ -59,7 +59,7 @@ public struct MasterKey: Codable {
                 )
             }
         case .backupKey:
-            guard FeatureFlags.MessageBackup.fileAlpha else {
+            guard FeatureFlags.Backups.fileAlpha else {
                 owsFail("Internal only")
             }
 

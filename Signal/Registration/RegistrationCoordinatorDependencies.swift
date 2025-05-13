@@ -8,6 +8,9 @@ public import SignalServiceKit
 
 public struct RegistrationCoordinatorDependencies {
     public let appExpiry: AppExpiry
+    public let backupArchiveErrorPresenter: BackupArchiveErrorPresenter
+    public let backupArchiveManager: BackupArchiveManager
+    public let backupKeyMaterial: BackupKeyMaterial
     public let changeNumberPniManager: ChangePhoneNumberPniManager
     public let contactsManager: RegistrationCoordinatorImpl.Shims.ContactsManager
     public let contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore
@@ -17,9 +20,6 @@ public struct RegistrationCoordinatorDependencies {
     public let featureFlags: RegistrationCoordinatorImpl.Shims.FeatureFlags
     public let accountKeyStore: AccountKeyStore
     public let localUsernameManager: LocalUsernameManager
-    public let messageBackupKeyMaterial: MessageBackupKeyMaterial
-    public let messageBackupErrorPresenter: MessageBackupErrorPresenter
-    public let messageBackupManager: MessageBackupManager
     public let messagePipelineSupervisor: RegistrationCoordinatorImpl.Shims.MessagePipelineSupervisor
     public let messageProcessor: RegistrationCoordinatorImpl.Shims.MessageProcessor
     public let ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager
@@ -45,6 +45,9 @@ public struct RegistrationCoordinatorDependencies {
     public static func from(_ object: NSObject) -> RegistrationCoordinatorDependencies {
         return RegistrationCoordinatorDependencies(
             appExpiry: DependenciesBridge.shared.appExpiry,
+            backupArchiveErrorPresenter: DependenciesBridge.shared.backupArchiveErrorPresenter,
+            backupArchiveManager: DependenciesBridge.shared.backupArchiveManager,
+            backupKeyMaterial: DependenciesBridge.shared.backupKeyMaterial,
             changeNumberPniManager: DependenciesBridge.shared.changePhoneNumberPniManager,
             contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(SSKEnvironment.shared.contactManagerImplRef),
             contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
@@ -54,9 +57,6 @@ public struct RegistrationCoordinatorDependencies {
             featureFlags: RegistrationCoordinatorImpl.Wrappers.FeatureFlags(),
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             localUsernameManager: DependenciesBridge.shared.localUsernameManager,
-            messageBackupKeyMaterial: DependenciesBridge.shared.messageBackupKeyMaterial,
-            messageBackupErrorPresenter: DependenciesBridge.shared.messageBackupErrorPresenter,
-            messageBackupManager: DependenciesBridge.shared.messageBackupManager,
             messagePipelineSupervisor: RegistrationCoordinatorImpl.Wrappers.MessagePipelineSupervisor(SSKEnvironment.shared.messagePipelineSupervisorRef),
             messageProcessor: RegistrationCoordinatorImpl.Wrappers.MessageProcessor(SSKEnvironment.shared.messageProcessorRef),
             ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(SSKEnvironment.shared.ows2FAManagerRef),

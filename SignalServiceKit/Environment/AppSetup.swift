@@ -91,6 +91,7 @@ public class AppSetup {
     public func start(
         appContext: AppContext,
         appReadiness: AppReadiness,
+        backupArchiveErrorPresenterFactory: BackupArchiveErrorPresenterFactory,
         databaseStorage: SDSDatabaseStorage,
         deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?,
         deviceSleepManager: (any DeviceSleepManager)?,
@@ -100,7 +101,6 @@ public class AppSetup {
         currentCallProvider: any CurrentCallProvider,
         notificationPresenter: any NotificationPresenter,
         incrementalMessageTSAttachmentMigratorFactory: IncrementalMessageTSAttachmentMigratorFactory,
-        messageBackupErrorPresenterFactory: MessageBackupErrorPresenterFactory,
         testDependencies: TestDependencies = TestDependencies()
     ) -> AppSetup.DatabaseContinuation {
         configureUnsatisfiableConstraintLogging()
@@ -348,20 +348,20 @@ public class AppSetup {
             twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager)
         )
 
-        let messageBackupKeyMaterial = MessageBackupKeyMaterialImpl(
+        let backupKeyMaterial = BackupKeyMaterialImpl(
             accountKeyStore: accountKeyStore
         )
-        let messageBackupRequestManager = MessageBackupRequestManagerImpl(
-            dateProvider: dateProvider,
-            db: db,
-            messageBackupAuthCredentialManager: MessageBackupAuthCredentialManagerImpl(
+        let backupRequestManager = BackupRequestManagerImpl(
+            backupAuthCredentialManager: BackupAuthCredentialManagerImpl(
                 authCredentialStore: authCredentialStore,
+                backupKeyMaterial: backupKeyMaterial,
                 dateProvider: dateProvider,
                 db: db,
-                messageBackupKeyMaterial: messageBackupKeyMaterial,
                 networkManager: networkManager
             ),
-            messageBackupKeyMaterial: messageBackupKeyMaterial,
+            backupKeyMaterial: backupKeyMaterial,
+            dateProvider: dateProvider,
+            db: db,
             networkManager: networkManager
         )
 
@@ -374,10 +374,10 @@ public class AppSetup {
         let orphanedBackupAttachmentManager = OrphanedBackupAttachmentManagerImpl(
             appReadiness: appReadiness,
             attachmentStore: attachmentStore,
+            backupKeyMaterial: backupKeyMaterial,
+            backupRequestManager: backupRequestManager,
             dateProvider: dateProvider,
             db: db,
-            messageBackupKeyMaterial: messageBackupKeyMaterial,
-            messageBackupRequestManager: messageBackupRequestManager,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
             tsAccountManager: tsAccountManager
         )
@@ -388,12 +388,12 @@ public class AppSetup {
             attachmentStore: attachmentStore,
             attachmentUploadStore: attachmentUploadStore,
             attachmentThumbnailService: attachmentThumbnailService,
+            backupKeyMaterial: backupKeyMaterial,
+            backupRequestManager: backupRequestManager,
             dateProvider: dateProvider,
             db: db,
             fileSystem: Upload.Wrappers.FileSystem(),
             interactionStore: interactionStore,
-            messageBackupKeyMaterial: messageBackupKeyMaterial,
-            messageBackupRequestManager: messageBackupRequestManager,
             networkManager: networkManager,
             remoteConfigProvider: remoteConfigManager,
             signalService: signalService,
@@ -443,11 +443,11 @@ public class AppSetup {
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
+            backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             backupSubscriptionManager: backupSubscriptionManager,
             dateProvider: dateProvider,
             db: db,
-            messageBackupRequestManager: messageBackupRequestManager,
             progress: backupAttachmentUploadProgress,
             statusManager: backupAttachmentQueueStatusManager,
             tsAccountManager: tsAccountManager
@@ -459,13 +459,13 @@ public class AppSetup {
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
+            backupKeyMaterial: backupKeyMaterial,
+            backupRequestManager: backupRequestManager,
             currentCallProvider: currentCallProvider,
             dateProvider: dateProvider,
             db: db,
             interactionStore: interactionStore,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
-            messageBackupKeyMaterial: messageBackupKeyMaterial,
-            messageBackupRequestManager: messageBackupRequestManager,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
             orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
@@ -823,7 +823,7 @@ public class AppSetup {
         let backupIdManager = BackupIdManager(
             accountKeyStore: accountKeyStore,
             api: BackupIdManager.NetworkAPI(networkManager: networkManager),
-            backupRequestManager: messageBackupRequestManager,
+            backupRequestManager: backupRequestManager,
             db: db
         )
 
@@ -1021,12 +1021,12 @@ public class AppSetup {
                 attachmentDownloadManager: attachmentDownloadManager,
                 attachmentUploadStore: attachmentUploadStore,
                 backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+                backupKeyMaterial: backupKeyMaterial,
                 backupSubscriptionManager: backupSubscriptionManager,
                 dateProvider: dateProvider,
                 db: db,
                 mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
-                messageBackupKeyMaterial: messageBackupKeyMaterial,
-                messageBackupRequestManager: messageBackupRequestManager,
+                backupRequestManager: backupRequestManager,
                 orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
                 progress: backupAttachmentDownloadProgress,
                 remoteConfigProvider: remoteConfigManager,
@@ -1065,7 +1065,7 @@ public class AppSetup {
 
         let messagePipelineSupervisor = MessagePipelineSupervisor()
 
-        let messageBackupChatStyleArchiver = MessageBackupChatStyleArchiver(
+        let backupChatStyleArchiver = BackupArchiveChatStyleArchiver(
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
@@ -1073,23 +1073,23 @@ public class AppSetup {
             wallpaperStore: wallpaperStore
         )
 
-        let backupInteractionStore = MessageBackupInteractionStore(interactionStore: interactionStore)
-        let backupRecipientStore = MessageBackupRecipientStore(
+        let backupInteractionStore = BackupArchiveInteractionStore(interactionStore: interactionStore)
+        let backupRecipientStore = BackupArchiveRecipientStore(
             recipientTable: recipientDatabaseTable,
             searchableNameIndexer: searchableNameIndexer
         )
         let backupStickerPackDownloadStore = BackupStickerPackDownloadStoreImpl()
-        let backupStoryStore = MessageBackupStoryStore(
+        let backupStoryStore = BackupArchiveStoryStore(
             storyStore: storyStore,
             storyRecipientStore: storyRecipientStore
         )
-        let backupThreadStore = MessageBackupThreadStore(threadStore: threadStore)
+        let backupThreadStore = BackupArchiveThreadStore(threadStore: threadStore)
 
-        let messageBackupErrorPresenter = messageBackupErrorPresenterFactory.build(
+        let backupArchiveErrorPresenter = backupArchiveErrorPresenterFactory.build(
             db: db,
             tsAccountManager: tsAccountManager
         )
-        let messageBackupAvatarFetcher = MessageBackupAvatarFetcher(
+        let backupArchiveAvatarFetcher = BackupArchiveAvatarFetcher(
             appReadiness: appReadiness,
             dateProvider: dateProvider,
             db: db,
@@ -1100,13 +1100,13 @@ public class AppSetup {
             threadStore: threadStore,
             tsAccountManager: tsAccountManager
         )
-        let messageBackupContactRecipientArchiver = MessageBackupContactRecipientArchiver(
+        let backupContactRecipientArchiver = BackupArchiveContactRecipientArchiver(
             avatarDefaultColorManager: avatarDefaultColorManager,
-            avatarFetcher: messageBackupAvatarFetcher,
-            blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
-            contactManager: MessageBackup.Wrappers.ContactManager(contactManager),
+            avatarFetcher: backupArchiveAvatarFetcher,
+            blockingManager: BackupArchive.Wrappers.BlockingManager(blockingManager),
+            contactManager: BackupArchive.Wrappers.ContactManager(contactManager),
             nicknameManager: nicknameManager,
-            profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
+            profileManager: BackupArchive.Wrappers.ProfileManager(profileManager),
             recipientHidingManager: recipientHidingManager,
             recipientManager: recipientManager,
             recipientStore: backupRecipientStore,
@@ -1125,28 +1125,28 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let messageBackupManager = MessageBackupManagerImpl(
-            accountDataArchiver: MessageBackupAccountDataArchiver(
+        let backupArchiveManager = BackupArchiveManagerImpl(
+            accountDataArchiver: BackupArchiveAccountDataArchiver(
                 backupSubscriptionManager: backupSubscriptionManager,
-                chatStyleArchiver: messageBackupChatStyleArchiver,
+                chatStyleArchiver: backupChatStyleArchiver,
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
-                donationSubscriptionManager: MessageBackup.Wrappers.DonationSubscriptionManager(),
+                donationSubscriptionManager: BackupArchive.Wrappers.DonationSubscriptionManager(),
                 linkPreviewSettingStore: linkPreviewSettingStore,
                 localUsernameManager: localUsernameManager,
-                ows2FAManager: MessageBackup.Wrappers.OWS2FAManager(ows2FAManager),
+                ows2FAManager: BackupArchive.Wrappers.OWS2FAManager(ows2FAManager),
                 phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
-                preferences: MessageBackup.Wrappers.Preferences(preferences: preferences),
-                profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
-                receiptManager: MessageBackup.Wrappers.ReceiptManager(receiptManager: receiptManager),
-                reactionManager: MessageBackup.Wrappers.ReactionManager(),
-                sskPreferences: MessageBackup.Wrappers.SSKPreferences(),
-                storyManager: MessageBackup.Wrappers.StoryManager(),
-                systemStoryManager: MessageBackup.Wrappers.SystemStoryManager(systemStoryManager: systemStoryManager),
-                typingIndicators: MessageBackup.Wrappers.TypingIndicators(typingIndicators: typingIndicators),
-                udManager: MessageBackup.Wrappers.UDManager(udManager: udManager),
+                preferences: BackupArchive.Wrappers.Preferences(preferences: preferences),
+                profileManager: BackupArchive.Wrappers.ProfileManager(profileManager),
+                receiptManager: BackupArchive.Wrappers.ReceiptManager(receiptManager: receiptManager),
+                reactionManager: BackupArchive.Wrappers.ReactionManager(),
+                sskPreferences: BackupArchive.Wrappers.SSKPreferences(),
+                storyManager: BackupArchive.Wrappers.StoryManager(),
+                systemStoryManager: BackupArchive.Wrappers.SystemStoryManager(systemStoryManager: systemStoryManager),
+                typingIndicators: BackupArchive.Wrappers.TypingIndicators(typingIndicators: typingIndicators),
+                udManager: BackupArchive.Wrappers.UDManager(udManager: udManager),
                 usernameEducationManager: usernameEducationManager
             ),
-            adHocCallArchiver: MessageBackupAdHocCallArchiver(
+            adHocCallArchiver: BackupArchiveAdHocCallArchiver(
                 callRecordStore: callRecordStore,
                 callLinkRecordStore: callLinkStore,
                 adHocCallRecordManager: adHocCallRecordManager
@@ -1154,29 +1154,30 @@ public class AppSetup {
             appVersion: appVersion,
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
-            avatarFetcher: messageBackupAvatarFetcher,
+            avatarFetcher: backupArchiveAvatarFetcher,
+            backupArchiveErrorPresenter: backupArchiveErrorPresenter,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
-            backupRequestManager: messageBackupRequestManager,
+            backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
-            backupStickerPackDownloadStore: backupStickerPackDownloadStore,
             backupSubscriptionManager: backupSubscriptionManager,
-            callLinkRecipientArchiver: MessageBackupCallLinkRecipientArchiver(
+            backupStickerPackDownloadStore: backupStickerPackDownloadStore,
+            callLinkRecipientArchiver: BackupArchiveCallLinkRecipientArchiver(
                 callLinkStore: callLinkStore
             ),
-            chatArchiver: MessageBackupChatArchiver(
-                chatStyleArchiver: messageBackupChatStyleArchiver,
-                contactRecipientArchiver: messageBackupContactRecipientArchiver,
+            chatArchiver: BackupArchiveChatArchiver(
+                chatStyleArchiver: backupChatStyleArchiver,
+                contactRecipientArchiver: backupContactRecipientArchiver,
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
                 pinnedThreadStore: pinnedThreadStore,
                 threadStore: backupThreadStore
             ),
-            chatItemArchiver: MessageBackupChatItemArchiver(
+            chatItemArchiver: BackupArchiveChatItemArchiver(
                 attachmentManager: attachmentManager,
                 attachmentStore: attachmentStore,
                 backupAttachmentDownloadManager: backupAttachmentDownloadManager,
                 callRecordStore: callRecordStore,
-                contactManager: MessageBackup.Wrappers.ContactManager(contactManager),
+                contactManager: BackupArchive.Wrappers.ContactManager(contactManager),
                 editMessageStore: editMessageStore,
                 groupCallRecordManager: groupCallRecordManager,
                 groupUpdateItemBuilder: groupUpdateItemBuilder,
@@ -1186,62 +1187,60 @@ public class AppSetup {
                 reactionStore: reactionStore,
                 threadStore: backupThreadStore
             ),
-            contactRecipientArchiver: messageBackupContactRecipientArchiver,
+            contactRecipientArchiver: backupContactRecipientArchiver,
             databaseChangeObserver: databaseStorage.databaseChangeObserver,
             dateProvider: dateProvider,
             dateProviderMonotonic: dateProviderMonotonic,
             db: db,
             dbFileSizeProvider: dbFileSizeProvider,
             disappearingMessagesJob: disappearingMessagesJob,
-            distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver(
+            distributionListRecipientArchiver: BackupArchiveDistributionListRecipientArchiver(
                 privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
                 storyStore: backupStoryStore,
                 threadStore: backupThreadStore
             ),
-            encryptedStreamProvider: MessageBackupEncryptedProtoStreamProvider(
-                backupKeyMaterial: messageBackupKeyMaterial
+            encryptedStreamProvider: BackupArchiveEncryptedProtoStreamProvider(
+                backupKeyMaterial: backupKeyMaterial
             ),
-            errorPresenter: messageBackupErrorPresenter,
-            fullTextSearchIndexer: MessageBackupFullTextSearchIndexerImpl(
+            fullTextSearchIndexer: BackupArchiveFullTextSearchIndexerImpl(
                 appReadiness: appReadiness,
                 dateProvider: dateProviderMonotonic,
                 db: db,
-                fullTextSearchIndexer: MessageBackupFullTextSearchIndexerImpl.Wrappers.FullTextSearchIndexer(),
+                fullTextSearchIndexer: BackupArchiveFullTextSearchIndexerImpl.Wrappers.FullTextSearchIndexer(),
                 interactionStore: interactionStore,
                 searchableNameIndexer: searchableNameIndexer
             ),
-            groupRecipientArchiver: MessageBackupGroupRecipientArchiver(
+            groupRecipientArchiver: BackupArchiveGroupRecipientArchiver(
                 avatarDefaultColorManager: avatarDefaultColorManager,
-                avatarFetcher: messageBackupAvatarFetcher,
-                blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
+                avatarFetcher: backupArchiveAvatarFetcher,
+                blockingManager: BackupArchive.Wrappers.BlockingManager(blockingManager),
                 disappearingMessageConfigStore: disappearingMessagesConfigurationStore,
                 groupsV2: groupsV2,
-                profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
+                profileManager: BackupArchive.Wrappers.ProfileManager(profileManager),
                 storyStore: backupStoryStore,
                 threadStore: backupThreadStore
             ),
             incrementalTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator,
             localStorage: accountKeyStore,
-            localRecipientArchiver: MessageBackupLocalRecipientArchiver(
+            localRecipientArchiver: BackupArchiveLocalRecipientArchiver(
                 avatarDefaultColorManager: avatarDefaultColorManager,
-                profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
+                profileManager: BackupArchive.Wrappers.ProfileManager(profileManager),
                 recipientStore: backupRecipientStore
             ),
-            messageBackupKeyMaterial: messageBackupKeyMaterial,
             messagePipelineSupervisor: messagePipelineSupervisor,
-            plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider(),
-            postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager(
-                avatarFetcher: messageBackupAvatarFetcher,
+            plaintextStreamProvider: BackupArchivePlaintextProtoStreamProvider(),
+            postFrameRestoreActionManager: BackupArchivePostFrameRestoreActionManager(
+                avatarFetcher: backupArchiveAvatarFetcher,
                 dateProvider: dateProvider,
                 interactionStore: backupInteractionStore,
                 lastVisibleInteractionStore: lastVisibleInteractionStore,
-                preferences: MessageBackup.Wrappers.Preferences(preferences: preferences),
+                preferences: BackupArchive.Wrappers.Preferences(preferences: preferences),
                 recipientDatabaseTable: recipientDatabaseTable,
-                sskPreferences: MessageBackup.Wrappers.SSKPreferences(),
+                sskPreferences: BackupArchive.Wrappers.SSKPreferences(),
                 threadStore: backupThreadStore
             ),
-            releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver(),
-            stickerPackArchiver: MessageBackupStickerPackArchiver(
+            releaseNotesRecipientArchiver: BackupArchiveReleaseNotesRecipientArchiver(),
+            stickerPackArchiver: BackupArchiveStickerPackArchiver(
                 backupStickerPackDownloadStore: backupStickerPackDownloadStore
             )
         )
@@ -1297,10 +1296,10 @@ public class AppSetup {
             appContext: appContext,
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
+            backupArchiveManager: backupArchiveManager,
             dateProvider: dateProvider,
             db: db,
             deviceSleepManager: deviceSleepManager,
-            messageBackupManager: messageBackupManager,
             messagePipelineSupervisor: messagePipelineSupervisor,
             networkManager: networkManager,
             tsAccountManager: tsAccountManager
@@ -1323,6 +1322,8 @@ public class AppSetup {
             audioWaveformManager: audioWaveformManager,
             authorMergeHelper: authorMergeHelper,
             avatarDefaultColorManager: avatarDefaultColorManager,
+            backupArchiveErrorPresenter: backupArchiveErrorPresenter,
+            backupArchiveManager: backupArchiveManager,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentDownloadProgress: backupAttachmentDownloadProgress,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
@@ -1330,6 +1331,8 @@ public class AppSetup {
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupIdManager: backupIdManager,
+            backupKeyMaterial: backupKeyMaterial,
+            backupRequestManager: backupRequestManager,
             backupSubscriptionManager: backupSubscriptionManager,
             badgeCountFetcher: badgeCountFetcher,
             callLinkStore: callLinkStore,
@@ -1383,10 +1386,6 @@ public class AppSetup {
             localUsernameManager: localUsernameManager,
             masterKeySyncManager: masterKeySyncManager,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
-            messageBackupErrorPresenter: messageBackupErrorPresenter,
-            messageBackupKeyMaterial: messageBackupKeyMaterial,
-            messageBackupManager: messageBackupManager,
-            messageBackupRequestManager: messageBackupRequestManager,
             messageStickerManager: messageStickerManager,
             nicknameManager: nicknameManager,
             orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,

@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-private let logger = PrefixedLogger(prefix: "[MessageBackup][Sub]")
+private let logger = PrefixedLogger(prefix: "[Backups][Sub]")
 
 /// Responsible for durably redeeming a receipt credential for a Backups
 /// subscription.

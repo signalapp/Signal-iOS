@@ -104,6 +104,9 @@ public class RegistrationCoordinatorTest {
 
         let dependencies = RegistrationCoordinatorDependencies(
             appExpiry: appExpiryMock,
+            backupArchiveErrorPresenter: NoOpBackupArchiveErrorPresenter(),
+            backupArchiveManager: BackupArchiveManagerMock(),
+            backupKeyMaterial: BackupKeyMaterialMock(),
             changeNumberPniManager: changeNumberPniManager,
             contactsManager: RegistrationCoordinatorImpl.TestMocks.ContactsManager(),
             contactsStore: contactsStore,
@@ -113,9 +116,6 @@ public class RegistrationCoordinatorTest {
             featureFlags: featureFlags,
             accountKeyStore: accountKeyStore,
             localUsernameManager: localUsernameManagerMock,
-            messageBackupKeyMaterial: MessageBackupKeyMaterialMock(),
-            messageBackupErrorPresenter: NoOpMessageBackupErrorPresenter(),
-            messageBackupManager: MessageBackupManagerMock(),
             messagePipelineSupervisor: mockMessagePipelineSupervisor,
             messageProcessor: mockMessageProcessor,
             ows2FAManager: ows2FAManagerMock,

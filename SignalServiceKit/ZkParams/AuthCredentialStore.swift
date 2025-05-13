@@ -94,7 +94,7 @@ class AuthCredentialStore {
     // MARK: -
 
     func backupAuthCredential(
-        for credentialType: MessageBackupAuthCredentialType,
+        for credentialType: BackupAuthCredentialType,
         redemptionTime: UInt64,
         tx: DBReadTransaction
     ) -> BackupAuthCredential? {
@@ -114,7 +114,7 @@ class AuthCredentialStore {
 
     func setBackupAuthCredential(
         _ credential: BackupAuthCredential,
-        for credentialType: MessageBackupAuthCredentialType,
+        for credentialType: BackupAuthCredentialType,
         redemptionTime: UInt64,
         tx: DBWriteTransaction
     ) {
@@ -126,13 +126,13 @@ class AuthCredentialStore {
         )
     }
 
-    func removeAllBackupAuthCredentials(ofType credentialType: MessageBackupAuthCredentialType, tx: DBWriteTransaction) {
+    func removeAllBackupAuthCredentials(ofType credentialType: BackupAuthCredentialType, tx: DBWriteTransaction) {
         let store = credentialType == .messages ? backupAuthCredentialStore : mediaAuthCredentialStore
         store.removeAll(transaction: tx)
     }
 
     func removeAllBackupAuthCredentials(tx: DBWriteTransaction) {
-        for credentialType in MessageBackupAuthCredentialType.allCases {
+        for credentialType in BackupAuthCredentialType.allCases {
             removeAllBackupAuthCredentials(ofType: credentialType, tx: tx)
         }
     }

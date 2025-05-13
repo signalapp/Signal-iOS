@@ -210,7 +210,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         if !hasPresentedBackupErrors {
             hasPresentedBackupErrors = true
-            DependenciesBridge.shared.messageBackupErrorPresenter.presentOverTopmostViewController(completion: {})
+            DependenciesBridge.shared.backupArchiveErrorPresenter.presentOverTopmostViewController(completion: {})
         }
 
         // Whether or not the theme has changed, always ensure

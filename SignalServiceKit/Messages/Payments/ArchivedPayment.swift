@@ -164,7 +164,7 @@ extension ArchivedPayment {
             }
             transaction.mobileCoinIdentification = identification
 
-            MessageBackup.Timestamps.setTimestampIfValid(
+            BackupArchive.Timestamps.setTimestampIfValid(
                 from: self,
                 \.timestamp,
                 on: &transaction,
@@ -172,7 +172,7 @@ extension ArchivedPayment {
                 allowZero: true
             )
             if let blockIndex { transaction.blockIndex = blockIndex }
-            MessageBackup.Timestamps.setTimestampIfValid(
+            BackupArchive.Timestamps.setTimestampIfValid(
                 from: self,
                 \.blockTimestamp,
                 on: &transaction,

@@ -101,7 +101,7 @@ public final class SignalRecipient: NSObject, NSCopying, FetchableRecord, Persis
     }
 
     public static func fromBackup(
-        _ backupContact: MessageBackup.ContactAddress,
+        _ backupContact: BackupArchive.ContactAddress,
         isRegistered: Bool,
         unregisteredAtTimestamp: UInt64?
     ) -> Self {

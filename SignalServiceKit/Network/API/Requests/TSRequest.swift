@@ -59,7 +59,7 @@ public struct TSRequest: CustomDebugStringConvertible {
         case sealedSender(SealedSenderAuth)
 
         /// An anonymous request authenticated with a BackupAuthCredential.
-        case messageBackup(MessageBackupServiceAuth)
+        case backup(BackupServiceAuth)
 
         var connectionType: OWSChatConnectionType {
             get throws {
@@ -69,7 +69,7 @@ public struct TSRequest: CustomDebugStringConvertible {
                 case .registration:
                     // TODO: Add support for this when deprecating REST.
                     throw OWSAssertionError("Can't send registration requests via either web socket.")
-                case .anonymous, .sealedSender, .messageBackup:
+                case .anonymous, .sealedSender, .backup:
                     return .unidentified
                 }
             }
@@ -79,7 +79,7 @@ public struct TSRequest: CustomDebugStringConvertible {
             switch self {
             case .identified, .registration:
                 return "ID"
-            case .anonymous, .sealedSender, .messageBackup:
+            case .anonymous, .sealedSender, .backup:
                 return "UD"
             }
         }
@@ -111,7 +111,7 @@ public struct TSRequest: CustomDebugStringConvertible {
             break
         case .sealedSender(let auth):
             self.setAuth(sealedSender: auth, for: &httpHeaders)
-        case .messageBackup(let auth):
+        case .backup(let auth):
             auth.apply(to: &httpHeaders)
         }
     }

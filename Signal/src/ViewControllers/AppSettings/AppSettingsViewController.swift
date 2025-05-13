@@ -235,7 +235,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        if FeatureFlags.MessageBackup.settings {
+        if FeatureFlags.Backups.settings {
             section2.add(.disclosureItem(
                 icon: .backup,
                 withText: OWSLocalizedString(

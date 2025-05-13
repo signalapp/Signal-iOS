@@ -40,7 +40,7 @@ public class MessagePipelineSupervisor: NSObject {
     public enum Suspension: Hashable {
         case nseWakingUpApp(suspensionId: UUID, payloadString: String)
         case pendingChangeNumber
-        case messageBackup
+        case backup
         case linkNsync
 
         fileprivate var reasonString: String {
@@ -49,8 +49,8 @@ public class MessagePipelineSupervisor: NSObject {
                 return "Waking main app for \(payloadString)"
             case .pendingChangeNumber:
                 return "Pending change number"
-            case .messageBackup:
-                return "Message Backup"
+            case .backup:
+                return "Backup"
             case .linkNsync:
                 return "Link'N'Sync"
             }

@@ -100,7 +100,7 @@ public final class BackupSubscriptionManager {
         static let paidTierBackupsProductId = "backups.mediatier"
     }
 
-    private let logger = PrefixedLogger(prefix: "[MessageBackup][Sub]")
+    private let logger = PrefixedLogger(prefix: "[Backups][Sub]")
 
     private let dateProvider: DateProvider
     private let db: any DB

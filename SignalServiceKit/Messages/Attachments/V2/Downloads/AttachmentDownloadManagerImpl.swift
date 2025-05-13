@@ -30,13 +30,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
         backupAttachmentUploadManager: BackupAttachmentUploadManager,
+        backupKeyMaterial: BackupKeyMaterial,
+        backupRequestManager: BackupRequestManager,
         currentCallProvider: CurrentCallProvider,
         dateProvider: @escaping DateProvider,
         db: any DB,
         interactionStore: InteractionStore,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
-        messageBackupKeyMaterial: MessageBackupKeyMaterial,
-        messageBackupRequestManager: MessageBackupRequestManager,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
         orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
@@ -85,13 +85,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             attachmentDownloadStore: attachmentDownloadStore,
             attachmentStore: attachmentStore,
             attachmentUpdater: attachmentUpdater,
+            backupKeyMaterial: backupKeyMaterial,
+            backupRequestManager: backupRequestManager,
             dateProvider: dateProvider,
             db: db,
             decrypter: decrypter,
             downloadQueue: downloadQueue,
             downloadabilityChecker: downloadabilityChecker,
-            messageBackupKeyMaterial: messageBackupKeyMaterial,
-            messageBackupRequestManager: messageBackupRequestManager,
             remoteConfigManager: remoteConfigManager,
             stickerManager: stickerManager,
             tsAccountManager: tsAccountManager
@@ -132,7 +132,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         let uuid = UUID()
         let downloadState = DownloadState(type: .backup(metadata: metadata, uuid: uuid))
         return Promise.wrapAsync {
-            let maxDownloadSize = MessageBackup.Constants.maxDownloadSizeBytes
+            let maxDownloadSize = BackupArchive.Constants.maxDownloadSizeBytes
             return try await self.downloadQueue.enqueueDownload(
                 downloadState: downloadState,
                 maxDownloadSizeBytes: maxDownloadSize,
@@ -408,13 +408,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private let attachmentDownloadStore: AttachmentDownloadStore
         private let attachmentStore: AttachmentStore
         private let attachmentUpdater: AttachmentUpdater
+        private let backupKeyMaterial: BackupKeyMaterial
+        private let backupRequestManager: BackupRequestManager
         private let dateProvider: DateProvider
         private let db: any DB
         private let decrypter: Decrypter
         private let downloadabilityChecker: DownloadabilityChecker
         private let downloadQueue: DownloadQueue
-        private let messageBackupKeyMaterial: MessageBackupKeyMaterial
-        private let messageBackupRequestManager: MessageBackupRequestManager
         private let remoteConfigManager: RemoteConfigManager
         private let stickerManager: Shims.StickerManager
         let store: Store
@@ -424,13 +424,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             attachmentDownloadStore: AttachmentDownloadStore,
             attachmentStore: AttachmentStore,
             attachmentUpdater: AttachmentUpdater,
+            backupKeyMaterial: BackupKeyMaterial,
+            backupRequestManager: BackupRequestManager,
             dateProvider: @escaping DateProvider,
             db: any DB,
             decrypter: Decrypter,
             downloadQueue: DownloadQueue,
             downloadabilityChecker: DownloadabilityChecker,
-            messageBackupKeyMaterial: MessageBackupKeyMaterial,
-            messageBackupRequestManager: MessageBackupRequestManager,
             remoteConfigManager: RemoteConfigManager,
             stickerManager: Shims.StickerManager,
             tsAccountManager: TSAccountManager
@@ -438,13 +438,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.attachmentDownloadStore = attachmentDownloadStore
             self.attachmentStore = attachmentStore
             self.attachmentUpdater = attachmentUpdater
+            self.backupKeyMaterial = backupKeyMaterial
+            self.backupRequestManager = backupRequestManager
             self.dateProvider = dateProvider
             self.db = db
             self.decrypter = decrypter
             self.downloadQueue = downloadQueue
             self.downloadabilityChecker = downloadabilityChecker
-            self.messageBackupKeyMaterial = messageBackupKeyMaterial
-            self.messageBackupRequestManager = messageBackupRequestManager
             self.remoteConfigManager = remoteConfigManager
             self.stickerManager = stickerManager
             self.store = DownloadTaskRecordStore(store: attachmentDownloadStore)
@@ -914,7 +914,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             type: MediaTierEncryptionType
         ) -> MediaTierEncryptionMetadata? {
             guard let mediaEncryptionMetadata = try? db.read(block: { tx in
-                try messageBackupKeyMaterial.mediaEncryptionMetadata(
+                try backupKeyMaterial.mediaEncryptionMetadata(
                     mediaName: mediaName,
                     type: type,
                     tx: tx
@@ -934,7 +934,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return nil
             }
 
-            guard let auth = try? await messageBackupRequestManager.fetchBackupServiceAuth(
+            guard let auth = try? await backupRequestManager.fetchBackupServiceAuth(
                 for: .media,
                 localAci: localAci,
                 auth: .implicit()
@@ -943,7 +943,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return nil
             }
 
-            guard let metadata = try? await messageBackupRequestManager.fetchMediaTierCdnRequestMetadata(
+            guard let metadata = try? await backupRequestManager.fetchMediaTierCdnRequestMetadata(
                 cdn: Int32(cdn),
                 auth: auth
             ) else {

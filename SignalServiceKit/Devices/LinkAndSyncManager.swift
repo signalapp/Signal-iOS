@@ -127,11 +127,11 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private let appContext: AppContext
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentUploadManager: AttachmentUploadManager
+    private let backupArchiveManager: BackupArchiveManager
     private let dateProvider: DateProvider
     private let db: any DB
     private let deviceSleepManager: (any DeviceSleepManager)?
     private let kvStore: KeyValueStore
-    private let messageBackupManager: MessageBackupManager
     private let messagePipelineSupervisor: MessagePipelineSupervisor
     private let networkManager: NetworkManager
     private let tsAccountManager: TSAccountManager
@@ -140,10 +140,10 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         appContext: AppContext,
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadManager: AttachmentUploadManager,
+        backupArchiveManager: BackupArchiveManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
         deviceSleepManager: (any DeviceSleepManager)?,
-        messageBackupManager: MessageBackupManager,
         messagePipelineSupervisor: MessagePipelineSupervisor,
         networkManager: NetworkManager,
         tsAccountManager: TSAccountManager
@@ -151,11 +151,11 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         self.appContext = appContext
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentUploadManager = attachmentUploadManager
+        self.backupArchiveManager = backupArchiveManager
         self.dateProvider = dateProvider
         self.db = db
         self.deviceSleepManager = deviceSleepManager
         self.kvStore = KeyValueStore(collection: "LinkAndSyncManagerImpl")
-        self.messageBackupManager = messageBackupManager
         self.messagePipelineSupervisor = messagePipelineSupervisor
         self.networkManager = networkManager
         self.tsAccountManager = tsAccountManager
@@ -310,7 +310,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     ) async throws(SecondaryLinkNSyncError) {
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice != true)
 
-        let hasPreviouslyRestored = db.read { messageBackupManager.hasRestoredFromBackup(tx: $0) }
+        let hasPreviouslyRestored = db.read { backupArchiveManager.hasRestoredFromBackup(tx: $0) }
         if hasPreviouslyRestored {
             // Assume this was from a link'n'sync that was subsequently interrupted
             Logger.info("Skipping link'n'sync; already restored from backup")
@@ -477,13 +477,13 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         progress: OWSProgressSink
     ) async throws(PrimaryLinkNSyncError) -> Upload.EncryptedBackupUploadMetadata {
         do {
-            let metadata = try await messageBackupManager.exportEncryptedBackup(
+            let metadata = try await backupArchiveManager.exportEncryptedBackup(
                 localIdentifiers: localIdentifiers,
                 backupKey: ephemeralBackupKey,
                 backupPurpose: .deviceTransfer,
                 progress: progress
             )
-            try await messageBackupManager.validateEncryptedBackup(
+            try await backupArchiveManager.validateEncryptedBackup(
                 fileUrl: metadata.fileUrl,
                 localIdentifiers: localIdentifiers,
                 backupKey: ephemeralBackupKey,
@@ -740,7 +740,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         progress: OWSProgressSink
     ) async throws(SecondaryLinkNSyncError) {
         do {
-            try await messageBackupManager.importEncryptedBackup(
+            try await backupArchiveManager.importEncryptedBackup(
                 fileUrl: fileUrl,
                 localIdentifiers: localIdentifiers,
                 backupKey: ephemeralBackupKey,

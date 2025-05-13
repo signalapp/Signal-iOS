@@ -554,16 +554,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .local(let localFileUrl):
                 fileUrl = localFileUrl
             case .remote:
-                fileUrl = try await self.deps.messageBackupManager.downloadEncryptedBackup(
+                fileUrl = try await self.deps.backupArchiveManager.downloadEncryptedBackup(
                     localIdentifiers: identity.localIdentifiers,
                     auth: identity.chatServiceAuth
                 )
             }
             // Get Backup Key
             let backupKey = try self.deps.db.read { tx in
-                return try self.deps.messageBackupKeyMaterial.backupKey(type: .messages, tx: tx)
+                return try self.deps.backupKeyMaterial.backupKey(type: .messages, tx: tx)
             }
-            try await self.deps.messageBackupManager.importEncryptedBackup(
+            try await self.deps.backupArchiveManager.importEncryptedBackup(
                 fileUrl: fileUrl,
                 localIdentifiers: identity.localIdentifiers,
                 backupKey: backupKey,
@@ -573,7 +573,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             Logger.info("Finished restore")
         }.recover(on: schedulers.main) { error in
             let (guarantee, future) = Guarantee<Void>.pending()
-            self.deps.messageBackupErrorPresenter.presentOverTopmostViewController {
+            self.deps.backupArchiveErrorPresenter.presentOverTopmostViewController {
                 future.resolve()
             }
             return guarantee
@@ -1537,7 +1537,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
-            if deps.featureFlags.messageBackupFileAlphaRegistrationFlow {
+            if deps.featureFlags.backupFileAlphaRegistrationFlow {
                 return .value(.chooseRestoreMethod)
             } else {
                 return .value(.transferSelection)
@@ -2011,7 +2011,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
-            if deps.featureFlags.messageBackupFileAlphaRegistrationFlow {
+            if deps.featureFlags.backupFileAlphaRegistrationFlow {
                 return .value(.chooseRestoreMethod)
             } else {
                 return .value(.transferSelection)
@@ -2336,7 +2336,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return nextStep()
         case .deviceTransferPossible:
             inMemoryState.needsToAskForDeviceTransfer = true
-            if deps.featureFlags.messageBackupFileAlphaRegistrationFlow {
+            if deps.featureFlags.backupFileAlphaRegistrationFlow {
                 return .value(.chooseRestoreMethod)
             } else {
                 return .value(.transferSelection)
@@ -4470,7 +4470,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         switch mode {
         case .registering:
             return
-                deps.featureFlags.messageBackupFileAlphaRegistrationFlow
+                deps.featureFlags.backupFileAlphaRegistrationFlow
                 && persistedState.accountEntropyPool != nil
                 && inMemoryState.hasBackedUpToSVR
                 && !inMemoryState.hasRestoredFromLocalMessageBackup

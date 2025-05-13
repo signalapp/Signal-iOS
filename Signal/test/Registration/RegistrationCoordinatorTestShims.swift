@@ -86,7 +86,7 @@ public class _RegistrationCoordinator_FeatureFlagsMock: _RegistrationCoordinator
 
     public init() {}
 
-    public var messageBackupFileAlphaRegistrationFlow: Bool { false }
+    public var backupFileAlphaRegistrationFlow: Bool { false }
 }
 
 // MARK: - MessagePipelineSupervisor

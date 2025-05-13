@@ -18,7 +18,7 @@ class RESTNetworkManager {
         switch request.auth {
         case .identified, .registration:
             isAnonymousRequest = false
-        case .messageBackup, .sealedSender, .anonymous:
+        case .backup, .sealedSender, .anonymous:
             isAnonymousRequest = true
         }
 

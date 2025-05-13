@@ -414,6 +414,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let databaseContinuation = AppSetup().start(
             appContext: launchContext.appContext,
             appReadiness: appReadiness,
+            backupArchiveErrorPresenterFactory: BackupArchiveErrorPresenterFactoryInternal(),
             databaseStorage: launchContext.databaseStorage,
             deviceBatteryLevelManager: launchContext.deviceBatteryLevelManager,
             deviceSleepManager: launchContext.deviceSleepManager,
@@ -422,8 +423,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             callMessageHandler: WebRTCCallMessageHandler(),
             currentCallProvider: currentCall,
             notificationPresenter: NotificationPresenterImpl(),
-            incrementalMessageTSAttachmentMigratorFactory: launchContext.incrementalMessageTSAttachmentMigratorFactory,
-            messageBackupErrorPresenterFactory: MessageBackupErrorPresenterFactoryInternal()
+            incrementalMessageTSAttachmentMigratorFactory: launchContext.incrementalMessageTSAttachmentMigratorFactory
         )
         setupNSEInteroperation()
         SUIEnvironment.shared.setUp(

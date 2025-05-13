@@ -80,8 +80,8 @@ class AttachmentUploadManagerMockHelper {
     lazy var mockAttachmentUploadStore = AttachmentUploadStoreMock(attachmentStore: mockAttachmentStore)
     var mockAttachmentThumbnailService = MockAttachmentThumbnailService()
     var mockAttachmentEncrypter = AttachmentUploadManagerImpl.Mocks.AttachmentEncrypter()
-    var messageBackupKeyMaterial = AttachmentUploadManagerImpl.Mocks.MessageBackupKeyMaterial()
-    var messageBackupRequestManager = AttachmentUploadManagerImpl.Mocks.MessageBackupRequestManager()
+    var mockBackupKeyMaterial = AttachmentUploadManagerImpl.Mocks.BackupKeyMaterial()
+    var mockBackupRequestManager = AttachmentUploadManagerImpl.Mocks.BackupRequestManager()
     var mockRemoteConfigProvider = MockRemoteConfigProvider()
     var mockSleepTimer = AttachmentUploadManagerImpl.Mocks.SleepTimer()
 

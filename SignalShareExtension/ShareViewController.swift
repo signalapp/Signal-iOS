@@ -58,6 +58,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         let databaseContinuation = AppSetup().start(
             appContext: appContext,
             appReadiness: appReadiness,
+            backupArchiveErrorPresenterFactory: NoOpBackupArchiveErrorPresenterFactory(),
             databaseStorage: databaseStorage,
             deviceBatteryLevelManager: nil,
             deviceSleepManager: nil,
@@ -67,7 +68,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             currentCallProvider: CurrentCallNoOpProvider(),
             notificationPresenter: NoopNotificationPresenterImpl(),
             incrementalMessageTSAttachmentMigratorFactory: NoOpIncrementalMessageTSAttachmentMigratorFactory(),
-            messageBackupErrorPresenterFactory: NoOpMessageBackupErrorPresenterFactory()
         )
 
         // Configure the rest of the globals before preparing the database.
