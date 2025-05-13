@@ -1004,6 +1004,15 @@ public class AppSetup {
             threadStore: threadStore
         )
 
+        let backupAttachmentDownloadProgress = BackupAttachmentDownloadProgress(
+            appContext: appContext,
+            appReadiness: appReadiness,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            dateProvider: dateProvider,
+            db: db,
+            remoteConfigProvider: remoteConfigManager
+        )
+
         let backupAttachmentDownloadManager = testDependencies.backupAttachmentDownloadManager
             ?? BackupAttachmentDownloadManagerImpl(
                 appContext: appContext,
@@ -1019,6 +1028,7 @@ public class AppSetup {
                 messageBackupKeyMaterial: messageBackupKeyMaterial,
                 messageBackupRequestManager: messageBackupRequestManager,
                 orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
+                progress: backupAttachmentDownloadProgress,
                 remoteConfigProvider: remoteConfigManager,
                 statusManager: backupAttachmentQueueStatusManager,
                 svr: svr,
@@ -1314,6 +1324,7 @@ public class AppSetup {
             authorMergeHelper: authorMergeHelper,
             avatarDefaultColorManager: avatarDefaultColorManager,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
+            backupAttachmentDownloadProgress: backupAttachmentDownloadProgress,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentQueueStatusManager: backupAttachmentQueueStatusManager,
             backupAttachmentUploadManager: backupAttachmentUploadManager,

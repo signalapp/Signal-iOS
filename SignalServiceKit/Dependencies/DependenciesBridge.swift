@@ -62,6 +62,7 @@ public class DependenciesBridge {
     public let authorMergeHelper: AuthorMergeHelper
     public let avatarDefaultColorManager: AvatarDefaultColorManager
     public let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
+    public let backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress
     public let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     public let backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager
     public let backupAttachmentUploadManager: BackupAttachmentUploadManager
@@ -188,6 +189,7 @@ public class DependenciesBridge {
         authorMergeHelper: AuthorMergeHelper,
         avatarDefaultColorManager: AvatarDefaultColorManager,
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
+        backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager,
         backupAttachmentUploadManager: BackupAttachmentUploadManager,
@@ -313,6 +315,7 @@ public class DependenciesBridge {
         self.authorMergeHelper = authorMergeHelper
         self.avatarDefaultColorManager = avatarDefaultColorManager
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
+        self.backupAttachmentDownloadProgress = backupAttachmentDownloadProgress
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.backupAttachmentQueueStatusManager = backupAttachmentQueueStatusManager
         self.backupAttachmentUploadManager = backupAttachmentUploadManager

@@ -36,8 +36,6 @@ public protocol BackupAttachmentDownloadManager {
     /// Cancel any pending attachment downloads, e.g. when backups are disabled.
     /// Removes all enqueued downloads and attempts to cancel in progress ones.
     func cancelPendingDownloads() async throws
-
-    var progress: BackupAttachmentDownloadProgress { get }
 }
 
 public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManager {
@@ -49,12 +47,12 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private let db: any DB
     private let listMediaManager: ListMediaManager
     private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
+    private let progress: BackupAttachmentDownloadProgress
     private let remoteConfigProvider: RemoteConfigProvider
     private let statusManager: BackupAttachmentQueueStatusUpdates
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
 
-    public let progress: BackupAttachmentDownloadProgress
 
     public init(
         appContext: AppContext,
@@ -70,6 +68,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         messageBackupRequestManager: MessageBackupRequestManager,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
+        progress: BackupAttachmentDownloadProgress,
         remoteConfigProvider: RemoteConfigProvider,
         statusManager: BackupAttachmentQueueStatusUpdates,
         svr: SecureValueRecovery,
@@ -81,18 +80,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.dateProvider = dateProvider
         self.db = db
         self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
+        self.progress = progress
         self.remoteConfigProvider = remoteConfigProvider
         self.statusManager = statusManager
         self.tsAccountManager = tsAccountManager
-
-        self.progress = BackupAttachmentDownloadProgress(
-            appContext: appContext,
-            appReadiness: appReadiness,
-            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-            dateProvider: dateProvider,
-            db: db,
-            remoteConfigProvider: remoteConfigProvider
-        )
 
         self.listMediaManager = ListMediaManager(
             attachmentStore: attachmentStore,
