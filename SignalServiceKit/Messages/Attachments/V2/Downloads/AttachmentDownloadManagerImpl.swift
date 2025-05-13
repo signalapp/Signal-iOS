@@ -712,9 +712,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
                 )
             case .mediaTierFullsize:
+                let cdnNumber = attachment.mediaTierInfo?.cdnNumber ?? remoteConfigManager.currentConfig().mediaTierFallbackCdnNumber
                 guard
                     let mediaTierInfo = attachment.mediaTierInfo,
-                    let cdnNumber = attachment.mediaTierInfo?.cdnNumber,
                     let mediaName = attachment.mediaName,
                     let encryptionMetadata = buildCdnEncryptionMetadata(mediaName: mediaName, type: .attachment),
                     let cdnCredential = await fetchBackupCdnReadCredential(for: cdnNumber)
@@ -734,9 +734,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
                 )
             case .mediaTierThumbnail:
+                let cdnNumber = attachment.thumbnailMediaTierInfo?.cdnNumber ?? remoteConfigManager.currentConfig().mediaTierFallbackCdnNumber
                 guard
                     attachment.thumbnailMediaTierInfo != nil,
-                    let cdnNumber = attachment.thumbnailMediaTierInfo?.cdnNumber,
                     let mediaName = attachment.mediaName,
                     // This is the outer encryption
                     let outerEncryptionMetadata = buildCdnEncryptionMetadata(

@@ -211,6 +211,10 @@ public class RemoteConfig {
         getUInt64Value(forFlag: .tsAttachmentMigrationBatchDelayMs, defaultValue: 50)
     }
 
+    public var mediaTierFallbackCdnNumber: UInt32 {
+        getUInt32Value(forFlag: .mediaTierFallbackCdnNumber, defaultValue: 3)
+    }
+
     // Hardcoded value (but lives alongside `maxAttachmentDownloadSizeBytes`).
     public var maxMediaTierThumbnailDownloadSizeBytes: UInt = 1024 * 8
 
@@ -521,6 +525,7 @@ private enum ValueFlag: String, FlagType {
     case sepaEnabledRegions = "global.donations.sepaEnabledRegions"
     case standardMediaQualityLevel = "ios.standardMediaQualityLevel"
     case tsAttachmentMigrationBatchDelayMs = "ios.tsAttachmentMigrationBatchDelayMs"
+    case mediaTierFallbackCdnNumber = "global.backups.mediaTierFallbackCdnNumber"
 
     var isSticky: Bool {
         switch self {
@@ -547,6 +552,7 @@ private enum ValueFlag: String, FlagType {
         case .sepaEnabledRegions: false
         case .standardMediaQualityLevel: false
         case .tsAttachmentMigrationBatchDelayMs: false
+        case .mediaTierFallbackCdnNumber: false
         }
     }
 
@@ -575,6 +581,7 @@ private enum ValueFlag: String, FlagType {
         case .sepaEnabledRegions: true
         case .standardMediaQualityLevel: false
         case .tsAttachmentMigrationBatchDelayMs: true
+        case .mediaTierFallbackCdnNumber: true
         }
     }
 }
