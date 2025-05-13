@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import StoreKit
 import LibSignalClient
 
@@ -40,6 +41,16 @@ public enum BackupSubscription {
             case .purchaseToken:
                 return false
             }
+        }
+
+        public var uploadEra: String {
+            // We just hash and base64 encode the subscriptionId as the "upload era".
+            // All the "era" means is if it changes, all existing uploads to the backup
+            // tier should be considered invalid and needing reupload.
+            // Hash so as to avoid putting the unsafe-to-log subscription id in more places.
+            var hasher = SHA256()
+            hasher.update(data: subscriberId)
+            return Data(hasher.finalize()).base64EncodedString()
         }
     }
 
@@ -515,6 +526,39 @@ public final class BackupSubscriptionManager {
         return newSubscriberId
     }
 
+    public func setRestoredIAPSubscriberData(
+        _ subscriberDataProto: BackupProto_AccountData.IAPSubscriberData,
+        tx: DBWriteTransaction
+    ) {
+        let iapSubscriptionId: IAPSubscriberData.IAPSubscriptionId
+        switch subscriberDataProto.iapSubscriptionID {
+        case .purchaseToken(let string):
+            iapSubscriptionId = .purchaseToken(string)
+        case .originalTransactionID(let uInt64):
+            iapSubscriptionId = .originalTransactionId(uInt64)
+        case .none:
+            return
+        }
+        let subscriberData = IAPSubscriberData(
+            subscriberId: subscriberDataProto.subscriberID,
+            iapSubscriptionId: iapSubscriptionId
+        )
+        store.setIAPSubscriberData(subscriberData, tx: tx)
+    }
+
+    // MARK: - UploadEra
+
+    // UploadEra is set when we set subscriberId and doesn't change until we affirmatively
+    // set a new subscriberId. The only situation where it is unset is if we have never
+    // subscribed on this device. In this case, we choose an arbitrary string as the era;
+    // it doesn't matter what it is except that if we subscribe in the future it will
+    // change to a different value.
+    private static let initialUploadEra = "initialUploadEra"
+
+    public func getUploadEra(tx: DBReadTransaction) -> String {
+        return store.getIAPSubscriberData(tx: tx)?.uploadEra ?? Self.initialUploadEra
+    }
+
     // MARK: - Persistence
 
     private struct Store: SubscriptionRedemptionNecessityCheckerStore {
@@ -574,6 +618,15 @@ public final class BackupSubscriptionManager {
                 kvStore.removeValue(forKey: Keys.originalTransactionId, transaction: tx)
                 kvStore.setString(purchaseToken, key: Keys.purchaseToken, transaction: tx)
             }
+
+            // UploadEra, which is derived from the stored IAPSubscriberData, should ONLY
+            // change when and if we begin a new subscription, and must not be wiped when
+            // a subscription ends. If the semantics of stored IAPSubscriberData ever change
+            // such that we actively delete existing data based on subscription state changes,
+            // we need to start storing uploadEra independently so that we can ensure it
+            // isn't deleted and only changes at the start of a new subscription.
+            let iapSubscriberDataCanary: IAPSubscriberData? = iapSubscriberData
+            owsAssertDebug(iapSubscriberDataCanary != nil, "Canary: we should never wipe IAPSubscriberData")
         }
 
         // MARK: - SubscriptionRedemptionNecessityCheckerStore

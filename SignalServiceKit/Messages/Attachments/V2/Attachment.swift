@@ -277,16 +277,6 @@ public class Attachment {
         return digestSHA256Ciphertext.hexadecimalString
     }
 
-    public static func uploadEra(backupSubscriptionId: Data) throws -> String {
-        // We just hash and base64 encode the subscription id as the "upload era".
-        // All the "era" means is if it changes, all existing uploads to the backup
-        // tier should be considered invalid and needing reupload.
-        // Hash so as to avoid putting the unsafe-to-log subscription id in more places.
-        var hasher = SHA256()
-        hasher.update(data: backupSubscriptionId)
-        return Data(hasher.finalize()).base64EncodedString()
-    }
-
     /// Unencrypted byte count on CDN of the fullsize attachment _before_ encryption and padding,
     /// as obtained either from the sender or ourselves.
     /// Media and transit tier byte counts should be interchangeable.

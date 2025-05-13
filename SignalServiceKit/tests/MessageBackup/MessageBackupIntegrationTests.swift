@@ -332,6 +332,9 @@ class MessageBackupIntegrationTests: XCTestCase {
         /// backup file.
         let localIdentifiers: LocalIdentifiers = .forUnitTests
 
+        // Default is nil (backups disabled) which triggers an assert
+        // on export, so set to free. In the future, some test case
+        // might require paid state and we'd need to change this.
         await deps.db.awaitableWrite { tx in
             BackupSettingsStore().setBackupPlan(.free, tx: tx)
         }

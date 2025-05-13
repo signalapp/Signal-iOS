@@ -134,7 +134,7 @@ extension MessageBackup {
         init(
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: MessageBackup.ArchiveBencher,
-            currentBackupAttachmentUploadEra: String?,
+            currentBackupAttachmentUploadEra: String,
             currentBackupPlan: BackupPlan,
             includedContentFilter: IncludedContentFilter,
             localIdentifiers: LocalIdentifiers,

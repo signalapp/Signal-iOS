@@ -58,6 +58,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     private let attachmentStore: AttachmentStore
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
     private let backupSettingsStore: BackupSettingsStore
+    private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: any DB
     private let statusManager: BackupAttachmentQueueStatusUpdates
     private let taskQueue: TaskQueueLoader<TaskRunner>
@@ -68,6 +69,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         attachmentUploadManager: AttachmentUploadManager,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
         backupSettingsStore: BackupSettingsStore,
+        backupSubscriptionManager: BackupSubscriptionManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
         messageBackupRequestManager: MessageBackupRequestManager,
@@ -77,12 +79,15 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         self.attachmentStore = attachmentStore
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
         self.backupSettingsStore = backupSettingsStore
+        self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
         self.statusManager = statusManager
         let taskRunner = TaskRunner(
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
+            backupSettingsStore: backupSettingsStore,
+            backupSubscriptionManager: backupSubscriptionManager,
             dateProvider: dateProvider,
             db: db,
             messageBackupRequestManager: messageBackupRequestManager,
@@ -131,8 +136,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         _ referencedAttachment: ReferencedAttachment,
         tx: DBWriteTransaction
     ) throws {
-        // TODO: get the upload era from the right place once the API design is settled
-        let currentUploadEra = try MessageBackupMessageAttachmentArchiver.currentUploadEra()
+        let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
 
         // Its okay if our local subscription state is outdated.
         // If we think we're free but we're paid, we'll recover by scheduling any unuploaded
@@ -189,8 +193,17 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     }
 
     public func backUpAllAttachments() async throws {
-        if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
+        guard FeatureFlags.MessageBackup.remoteExportAlpha else {
             return
+        }
+        let backupPlan = db.read { tx in
+            backupSettingsStore.backupPlan(tx: tx)
+        }
+        switch backupPlan {
+        case nil, .free:
+            return
+        case .paid:
+            break
         }
         switch await statusManager.beginObservingIfNeeded(type: .upload) {
         case .running:
@@ -251,6 +264,8 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         private let attachmentStore: AttachmentStore
         private let attachmentUploadManager: AttachmentUploadManager
         private let backupAttachmentUploadStore: BackupAttachmentUploadStore
+        private let backupSettingsStore: BackupSettingsStore
+        private let backupSubscriptionManager: BackupSubscriptionManager
         private let dateProvider: DateProvider
         private let db: any DB
         private let messageBackupRequestManager: MessageBackupRequestManager
@@ -263,6 +278,8 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             attachmentStore: AttachmentStore,
             attachmentUploadManager: AttachmentUploadManager,
             backupAttachmentUploadStore: BackupAttachmentUploadStore,
+            backupSettingsStore: BackupSettingsStore,
+            backupSubscriptionManager: BackupSubscriptionManager,
             dateProvider: @escaping DateProvider,
             db: any DB,
             messageBackupRequestManager: MessageBackupRequestManager,
@@ -272,6 +289,8 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             self.attachmentStore = attachmentStore
             self.attachmentUploadManager = attachmentUploadManager
             self.backupAttachmentUploadStore = backupAttachmentUploadStore
+            self.backupSettingsStore = backupSettingsStore
+            self.backupSubscriptionManager = backupSubscriptionManager
             self.dateProvider = dateProvider
             self.db = db
             self.messageBackupRequestManager = messageBackupRequestManager
@@ -297,8 +316,12 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             guard FeatureFlags.MessageBackup.fileAlpha else {
                 return .cancelled
             }
-            let attachment = db.read { tx in
-                return self.attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx)
+            let (attachment, backupPlan, currentUploadEra) = db.read { tx in
+                return (
+                    self.attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx),
+                    self.backupSettingsStore.backupPlan(tx: tx),
+                    self.backupSubscriptionManager.getUploadEra(tx: tx)
+                )
             }
             guard let attachment else {
                 // Attachment got deleted; early exit.
@@ -310,17 +333,12 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                 return .cancelled
             }
 
-            if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
+            switch backupPlan {
+            case nil, .free:
+                try? await loader.stop()
                 return .cancelled
-            }
-
-            // TODO: [Backups] get the real upload era
-            let currentUploadEra: String
-            do {
-                currentUploadEra = try MessageBackupMessageAttachmentArchiver.currentUploadEra()
-            } catch let error {
-                try? await loader.stop(reason: error)
-                return .unretryableError(OWSAssertionError("Unable to get current upload era: \(error)"))
+            case .paid:
+                break
             }
 
             let needsMediaTierUpload = stream.needsMediaTierUpload(currentUploadEra: currentUploadEra)

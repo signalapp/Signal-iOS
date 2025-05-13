@@ -106,7 +106,7 @@ extension MessageBackup {
         init(
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: MessageBackup.ArchiveBencher,
-            currentBackupAttachmentUploadEra: String?,
+            currentBackupAttachmentUploadEra: String,
             currentBackupPlan: BackupPlan,
             customChatColorContext: CustomChatColorArchivingContext,
             includedContentFilter: IncludedContentFilter,
@@ -336,7 +336,7 @@ extension MessageBackup {
         override init(
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: MessageBackup.ArchiveBencher,
-            currentBackupAttachmentUploadEra: String?,
+            currentBackupAttachmentUploadEra: String,
             currentBackupPlan: BackupPlan,
             includedContentFilter: IncludedContentFilter,
             startTimestampMs: UInt64,
@@ -373,7 +373,7 @@ extension MessageBackup {
 
         /// Will only be nil if there was no earier AccountData frame to set it, which
         /// should be treated as an error at read time when processing all subsequent frames.
-        var uploadEra: RestoredAttachmentUploadEra?
+        var uploadEra: String?
 
         override init(
             startTimestampMs: UInt64,

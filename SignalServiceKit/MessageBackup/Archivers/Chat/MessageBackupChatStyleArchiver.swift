@@ -454,25 +454,23 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
             return .success(nil)
         }
 
-        let isFreeTierBackup = MessageBackupMessageAttachmentArchiver.isFreeTierBackup()
-
-        if !isFreeTierBackup {
-            do {
-                try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
-            } catch {
-                // Just log these errors, but count as success and proceed.
-                // The wallpaper just won't upload.
-                MessageBackup.collapse([.init(
-                    error: MessageBackup.ArchiveFrameError<IDType>.archiveFrameError(
-                        .failedToEnqueueAttachmentForUpload,
-                        errorId
-                    ),
-                    wasFrameDropped: false
-                )]).forEach { $0.log() }
-            }
+        do {
+            try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
+        } catch {
+            // Just log these errors, but count as success and proceed.
+            // The wallpaper just won't upload.
+            MessageBackup.collapse([.init(
+                error: MessageBackup.ArchiveFrameError<IDType>.archiveFrameError(
+                    .failedToEnqueueAttachmentForUpload,
+                    errorId
+                ),
+                wasFrameDropped: false
+            )]).forEach { $0.log() }
         }
 
-        return .success(referencedAttachment.asBackupFilePointer(isFreeTierBackup: isFreeTierBackup))
+        return .success(referencedAttachment.asBackupFilePointer(
+            currentBackupAttachmentUploadEra: context.currentBackupAttachmentUploadEra
+        ))
     }
 
     private func restoreWallpaperAttachment<IDType>(
@@ -481,11 +479,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
         errorId: IDType,
         context: MessageBackup.CustomChatColorRestoringContext
     ) -> MessageBackup.RestoreFrameResult<IDType> {
-        let uploadEra: String
-        switch context.uploadEra {
-        case .fromProtoSubscriberId(let value), .random(let value):
-            uploadEra = value
-        case nil:
+        guard let uploadEra = context.uploadEra else {
             return .failure([.restoreFrameError(
                 .invalidProtoData(.accountDataNotFound),
                 errorId

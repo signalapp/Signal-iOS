@@ -48,6 +48,7 @@ extension MessageBackup {
 
 /// Archives the ``BackupProto_AccountData`` frame.
 public class MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
+    private let backupSubscriptionManager: BackupSubscriptionManager
     private let chatStyleArchiver: MessageBackupChatStyleArchiver
     private let disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore
     private let donationSubscriptionManager: MessageBackup.Shims.DonationSubscriptionManager
@@ -67,6 +68,7 @@ public class MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
     private let usernameEducationManager: UsernameEducationManager
 
     public init(
+        backupSubscriptionManager: BackupSubscriptionManager,
         chatStyleArchiver: MessageBackupChatStyleArchiver,
         disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore,
         donationSubscriptionManager: MessageBackup.Shims.DonationSubscriptionManager,
@@ -85,6 +87,7 @@ public class MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
         udManager: MessageBackup.Shims.UDManager,
         usernameEducationManager: UsernameEducationManager
     ) {
+        self.backupSubscriptionManager = backupSubscriptionManager
         self.chatStyleArchiver = chatStyleArchiver
         self.disappearingMessageConfigurationStore = disappearingMessageConfigurationStore
         self.donationSubscriptionManager = donationSubscriptionManager
@@ -298,21 +301,24 @@ public class MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
             donationSubscriptionManager.setUserManuallyCancelledSubscription(value: donationSubscriberData.manuallyCancelled, tx: context.tx)
         }
 
-        let uploadEra: MessageBackup.RestoredAttachmentUploadEra
-        if accountData.hasBackupsSubscriberData {
-            let backupsSubscriberData = accountData.backupsSubscriberData
-            do {
-                uploadEra = .fromProtoSubscriberId(try Attachment.uploadEra(
-                    backupSubscriptionId: backupsSubscriberData.subscriberID
-                ))
-            } catch {
-                return .failure([.restoreFrameError(
-                    .uploadEraDerivationFailed(error),
-                    .localUser
-                )])
-            }
+        let uploadEra: String
+        if accountData.hasBackupsSubscriberData, accountData.backupsSubscriberData.subscriberID.isEmpty.negated {
+            backupSubscriptionManager.setRestoredIAPSubscriberData(
+                accountData.backupsSubscriberData,
+                tx: context.tx
+            )
+            uploadEra = backupSubscriptionManager.getUploadEra(tx: context.tx)
         } else {
-            uploadEra = .random(UUID().uuidString)
+            // The exporting client was not subscribed at export time.
+            // It may have subscribed after, or not. We don't know, and we don't
+            // know if it was previously subscribed and if so what its subscriberId was.
+            // So we use the local era (which is probably the initial era), and assume
+            // we're in the same one now as we were at export time.
+            // If we subscribe (or learn about a subscription) the era will rotate,
+            // invalidating our belief in any attachment uploads.
+            // Querying the list endpoint will bring us up to date on the upload status
+            // within this "era" otherwise.
+            uploadEra = backupSubscriptionManager.getUploadEra(tx: context.tx)
         }
         // This MUST get set before we restore custom chat colors/wallpapers.
         context.uploadEra = uploadEra

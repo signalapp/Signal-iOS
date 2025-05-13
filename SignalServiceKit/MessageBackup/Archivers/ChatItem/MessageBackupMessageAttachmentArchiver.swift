@@ -78,10 +78,11 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             return .success([])
         }
 
-        let isFreeTierBackup = Self.isFreeTierBackup()
         var pointers = [BackupProto_MessageAttachment]()
         for referencedAttachment in referencedAttachments {
-            let pointerProto = referencedAttachment.asBackupFilePointer(isFreeTierBackup: isFreeTierBackup)
+            let pointerProto = referencedAttachment.asBackupFilePointer(
+                currentBackupAttachmentUploadEra: context.currentBackupAttachmentUploadEra
+            )
 
             var attachmentProto = BackupProto_MessageAttachment()
             attachmentProto.pointer = pointerProto
@@ -100,18 +101,17 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         }
 
         var attachmentFailures: [MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>] = []
-        if !isFreeTierBackup {
-            for referencedAttachment in referencedAttachments {
-                do {
-                    try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
-                } catch {
-                    // If some attachment fails, thats ~mostly~ fine. Everything else
-                    // can still go through, the one attachment just won't upload.
-                    attachmentFailures.append(.archiveFrameError(
-                        .failedToEnqueueAttachmentForUpload,
-                        messageId
-                    ))
-                }
+
+        for referencedAttachment in referencedAttachments {
+            do {
+                try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
+            } catch {
+                // If some attachment fails, thats ~mostly~ fine. Everything else
+                // can still go through, the one attachment just won't upload.
+                attachmentFailures.append(.archiveFrameError(
+                    .failedToEnqueueAttachmentForUpload,
+                    messageId
+                ))
             }
         }
 
@@ -162,8 +162,9 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             return .success(nil)
         }
 
-        let isFreeTierBackup = Self.isFreeTierBackup()
-        let pointerProto = referencedAttachment.asBackupFilePointer(isFreeTierBackup: isFreeTierBackup)
+        let pointerProto = referencedAttachment.asBackupFilePointer(
+            currentBackupAttachmentUploadEra: context.currentBackupAttachmentUploadEra
+        )
 
         var attachmentProto = BackupProto_MessageAttachment()
         attachmentProto.pointer = pointerProto
@@ -171,17 +172,15 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         attachmentProto.wasDownloaded = referencedAttachment.attachment.asStream() != nil
         // NOTE: clientUuid is unecessary for quoted reply attachments.
 
-        if !isFreeTierBackup {
-            do {
-                try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
-            } catch {
-                // If some attachment fails, thats ~mostly~ fine. Everything else
-                // can still go through, the one attachment just won't upload.
-                return .partialFailure(attachmentProto, [.archiveFrameError(
-                    .failedToEnqueueAttachmentForUpload,
-                    messageId
-                )])
-            }
+        do {
+            try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
+        } catch {
+            // If some attachment fails, thats ~mostly~ fine. Everything else
+            // can still go through, the one attachment just won't upload.
+            return .partialFailure(attachmentProto, [.archiveFrameError(
+                .failedToEnqueueAttachmentForUpload,
+                messageId
+            )])
         }
 
         return .success(attachmentProto)
@@ -426,19 +425,6 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
 
     // MARK: - Private
 
-    internal static func currentUploadEra() throws -> String {
-        // TODO: [Backups] use actual subscription id. For now use a fixed,
-        // arbitrary id, so that it never changes.
-        let backupSubscriptionId = Data(repeating: 4, count: 32)
-        return try Attachment.uploadEra(backupSubscriptionId: backupSubscriptionId)
-    }
-
-    internal static func isFreeTierBackup() -> Bool {
-        // TODO: [Backups] need a way to check if we are a free tier user;
-        // if so we only use the AttachmentLocator instead of BackupLocator.
-        return !FeatureFlags.MessageBackup.remoteExportAlpha
-    }
-
     // MARK: Archiving
 
     private func archiveSingleAttachment(
@@ -456,22 +442,21 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             return .success(nil)
         }
 
-        let isFreeTierBackup = Self.isFreeTierBackup()
-        let result = referencedAttachment.asBackupFilePointer(isFreeTierBackup: isFreeTierBackup)
+        let result = referencedAttachment.asBackupFilePointer(
+            currentBackupAttachmentUploadEra: context.currentBackupAttachmentUploadEra
+        )
 
-        if !isFreeTierBackup {
-            do {
-                try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
-            } catch {
-                // If some attachment fails, thats ~mostly~ fine. Everything else
-                // can still go through, the one attachment just won't upload.
-                return .partialFailure(
-                    result, [.archiveFrameError(
-                        .failedToEnqueueAttachmentForUpload,
-                        messageId
-                    )]
-                )
-            }
+        do {
+            try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
+        } catch {
+            // If some attachment fails, thats ~mostly~ fine. Everything else
+            // can still go through, the one attachment just won't upload.
+            return .partialFailure(
+                result, [.archiveFrameError(
+                    .failedToEnqueueAttachmentForUpload,
+                    messageId
+                )]
+            )
         }
 
         return .success(result)
@@ -484,12 +469,9 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         chatItemId: MessageBackup.ChatItemId,
         context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
-        let uploadEra: String
-        switch context.uploadEra {
-        case nil:
+        // Whether we're free or paid this should be set when we restored the account data frame.
+        guard let uploadEra = context.uploadEra else {
             return .messageFailure([.restoreFrameError(.invalidProtoData(.accountDataNotFound), chatItemId)])
-        case .fromProtoSubscriberId(let value), .random(let value):
-            uploadEra = value
         }
 
         let errors = attachmentManager.createAttachmentPointers(
@@ -602,7 +584,7 @@ extension MessageBackup.RestoreFrameError.ErrorType {
 extension ReferencedAttachment {
 
     internal func asBackupFilePointer(
-        isFreeTierBackup: Bool
+        currentBackupAttachmentUploadEra: String?
     ) -> BackupProto_FilePointer {
         var proto = BackupProto_FilePointer()
         proto.contentType = attachment.mimeType
@@ -635,8 +617,6 @@ extension ReferencedAttachment {
         let locator: BackupProto_FilePointer.OneOf_Locator
         let incrementalMacInfo: Attachment.IncrementalMacInfo?
         if
-            // We only create the backup locator for non-free tier backups.
-            !isFreeTierBackup,
             let mediaName = attachment.mediaName,
             let mediaTierDigest =
                 attachment.mediaTierInfo?.digestSHA256Ciphertext
@@ -654,7 +634,15 @@ extension ReferencedAttachment {
 
             // We may not have uploaded yet, so we may not know the cdn number.
             // Set it if we have it; its ok if we don't.
-            if let cdnNumber = attachment.mediaTierInfo?.cdnNumber {
+            if
+                let mediaTierInfo = attachment.mediaTierInfo,
+                let cdnNumber = mediaTierInfo.cdnNumber,
+                // If the upload era has changed, that means our subscription
+                // lapsed and was restarted. Assume the old upload, and therefore
+                // old cdn number, is invalid, and let restoring clients discover
+                // the new cdn number themselves if its still uploaded.
+                mediaTierInfo.uploadEra == currentBackupAttachmentUploadEra
+            {
                 backupLocator.cdnNumber = cdnNumber
             }
 

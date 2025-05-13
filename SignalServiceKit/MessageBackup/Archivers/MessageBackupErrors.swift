@@ -769,10 +769,6 @@ extension MessageBackup {
 
             case databaseInsertionFailed(RawError)
 
-            /// We failed to derive the "upload era" identifier for attachments from the
-            /// backup subscription id. See ``Attachment/uploadEra(backupSubscriptionId:)``.
-            case uploadEraDerivationFailed(RawError)
-
             case failedToEnqueueAttachmentDownload(RawError)
 
             /// We failed to properly create the attachment in the DB after restoring
@@ -915,7 +911,6 @@ extension MessageBackup {
                 return "\(modelClass)"
             case
                 .databaseInsertionFailed(let rawError),
-                .uploadEraDerivationFailed(let rawError),
                 .failedToEnqueueAttachmentDownload(let rawError):
                 // We don't want to re-log every instance of this we see if they repeat.
                 // Collapse them by the raw error itself.
@@ -1025,7 +1020,6 @@ extension MessageBackup {
                     .referencedCustomChatColorNotFound,
                     .databaseModelMissingRowId,
                     .databaseInsertionFailed,
-                    .uploadEraDerivationFailed,
                     .failedToEnqueueAttachmentDownload,
                     .developerError:
                 return .error

@@ -63,6 +63,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadStore: AttachmentUploadStore,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupSubscriptionManager: BackupSubscriptionManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
@@ -96,6 +97,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.listMediaManager = ListMediaManager(
             attachmentStore: attachmentStore,
             attachmentUploadStore: attachmentUploadStore,
+            backupSubscriptionManager: backupSubscriptionManager,
             db: db,
             messageBackupRequestManager: messageBackupRequestManager,
             messageBackupKeyMaterial: messageBackupKeyMaterial,
@@ -265,6 +267,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         private let attachmentStore: AttachmentStore
         private let attachmentUploadStore: AttachmentUploadStore
+        private let backupSubscriptionManager: BackupSubscriptionManager
         private let db: any DB
         private let messageBackupRequestManager: MessageBackupRequestManager
         private let messageBackupKeyMaterial: MessageBackupKeyMaterial
@@ -276,6 +279,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         init(
             attachmentStore: AttachmentStore,
             attachmentUploadStore: AttachmentUploadStore,
+            backupSubscriptionManager: BackupSubscriptionManager,
             db: any DB,
             messageBackupRequestManager: MessageBackupRequestManager,
             messageBackupKeyMaterial: MessageBackupKeyMaterial,
@@ -284,6 +288,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         ) {
             self.attachmentStore = attachmentStore
             self.attachmentUploadStore = attachmentUploadStore
+            self.backupSubscriptionManager = backupSubscriptionManager
             self.db = db
             self.kvStore = KeyValueStore(collection: "ListBackupMediaManager")
             self.messageBackupRequestManager = messageBackupRequestManager
@@ -311,7 +316,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 needsToQuery,
                 backupKey
             ) = try db.read { tx in
-                let currentUploadEra = try MessageBackupMessageAttachmentArchiver.currentUploadEra()
+                let currentUploadEra = self.backupSubscriptionManager.getUploadEra(tx: tx)
                 return (
                     self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
                     currentUploadEra,

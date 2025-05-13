@@ -418,12 +418,28 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(
+            authCredentialStore: authCredentialStore,
+            db: db,
+            networkManager: networkManager,
+            reachabilityManager: reachabilityManager
+        )
+        let backupSubscriptionManager = BackupSubscriptionManager(
+            dateProvider: dateProvider,
+            db: db,
+            networkManager: networkManager,
+            receiptCredentialRedemptionJobQueue: backupReceiptCredentialRedemptionJobQueue,
+            storageServiceManager: storageServiceManager,
+            tsAccountManager: tsAccountManager
+        )
+
         let backupAttachmentUploadManager = BackupAttachmentUploadManagerImpl(
             appReadiness: appReadiness,
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupSettingsStore: backupSettingsStore,
+            backupSubscriptionManager: backupSubscriptionManager,
             dateProvider: dateProvider,
             db: db,
             messageBackupRequestManager: messageBackupRequestManager,
@@ -980,6 +996,7 @@ public class AppSetup {
                 attachmentDownloadManager: attachmentDownloadManager,
                 attachmentUploadStore: attachmentUploadStore,
                 backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+                backupSubscriptionManager: backupSubscriptionManager,
                 dateProvider: dateProvider,
                 db: db,
                 mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
@@ -997,21 +1014,6 @@ public class AppSetup {
             api: BackupIdManager.NetworkAPI(networkManager: networkManager),
             backupRequestManager: messageBackupRequestManager,
             db: db
-        )
-
-        let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(
-            authCredentialStore: authCredentialStore,
-            db: db,
-            networkManager: networkManager,
-            reachabilityManager: reachabilityManager
-        )
-        let backupSubscriptionManager = BackupSubscriptionManager(
-            dateProvider: dateProvider,
-            db: db,
-            networkManager: networkManager,
-            receiptCredentialRedemptionJobQueue: backupReceiptCredentialRedemptionJobQueue,
-            storageServiceManager: storageServiceManager,
-            tsAccountManager: tsAccountManager
         )
 
         let reactionStore: any ReactionStore = ReactionStoreImpl()
@@ -1106,6 +1108,7 @@ public class AppSetup {
 
         let messageBackupManager = MessageBackupManagerImpl(
             accountDataArchiver: MessageBackupAccountDataArchiver(
+                backupSubscriptionManager: backupSubscriptionManager,
                 chatStyleArchiver: messageBackupChatStyleArchiver,
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
                 donationSubscriptionManager: MessageBackup.Wrappers.DonationSubscriptionManager(),
@@ -1138,6 +1141,7 @@ public class AppSetup {
             backupRequestManager: messageBackupRequestManager,
             backupSettingsStore: backupSettingsStore,
             backupStickerPackDownloadStore: backupStickerPackDownloadStore,
+            backupSubscriptionManager: backupSubscriptionManager,
             callLinkRecipientArchiver: MessageBackupCallLinkRecipientArchiver(
                 callLinkStore: callLinkStore
             ),

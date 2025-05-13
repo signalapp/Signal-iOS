@@ -50,15 +50,15 @@ extension MessageBackup {
         private let _tx: DBWriteTransaction
         var tx: DBReadTransaction { _tx }
 
-        /// Nil if not a paid backups account.
-        private let currentBackupAttachmentUploadEra: String?
+        /// Always set even if BackupPlan is free
+        let currentBackupAttachmentUploadEra: String
         private let currentBackupPlan: BackupPlan
         private let backupAttachmentUploadManager: BackupAttachmentUploadManager
 
         init(
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: MessageBackup.ArchiveBencher,
-            currentBackupAttachmentUploadEra: String?,
+            currentBackupAttachmentUploadEra: String,
             currentBackupPlan: BackupPlan,
             includedContentFilter: IncludedContentFilter,
             startTimestampMs: UInt64,
@@ -74,8 +74,11 @@ extension MessageBackup {
         }
 
         func enqueueAttachmentForUploadIfNeeded(_ referencedAttachment: ReferencedAttachment) throws {
-            guard let currentBackupAttachmentUploadEra else {
+            switch currentBackupPlan {
+            case .free:
                 return
+            case .paid:
+                break
             }
             try backupAttachmentUploadManager.enqueueIfNeeded(
                 referencedAttachment,

@@ -45,6 +45,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let backupRequestManager: MessageBackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
     private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
+    private let backupSubscriptionManager: BackupSubscriptionManager
     private let callLinkRecipientArchiver: MessageBackupCallLinkRecipientArchiver
     private let chatArchiver: MessageBackupChatArchiver
     private let chatItemArchiver: MessageBackupChatItemArchiver
@@ -83,6 +84,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         backupRequestManager: MessageBackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
         backupStickerPackDownloadStore: BackupStickerPackDownloadStore,
+        backupSubscriptionManager: BackupSubscriptionManager,
         callLinkRecipientArchiver: MessageBackupCallLinkRecipientArchiver,
         chatArchiver: MessageBackupChatArchiver,
         chatItemArchiver: MessageBackupChatItemArchiver,
@@ -118,6 +120,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
+        self.backupSubscriptionManager = backupSubscriptionManager
         self.callLinkRecipientArchiver = callLinkRecipientArchiver
         self.chatArchiver = chatArchiver
         self.chatItemArchiver = chatItemArchiver
@@ -392,13 +395,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
                     ?? .free
             }
-            let currentBackupAttachmentUploadEra: String?
-            switch currentBackupPlan {
-            case .free:
-                currentBackupAttachmentUploadEra = nil
-            case .paid:
-                currentBackupAttachmentUploadEra = try MessageBackupMessageAttachmentArchiver.currentUploadEra()
-            }
+            let currentBackupAttachmentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
 
             let customChatColorContext = MessageBackup.CustomChatColorArchivingContext(
                 backupAttachmentUploadManager: backupAttachmentUploadManager,
