@@ -6,18 +6,17 @@
 import Foundation
 import SignalServiceKit
 
-class AppActivePrecondition: Precondition {
-    private let appContext: AppContext
+struct AppActivePrecondition: Precondition {
+    private let _precondition: NotificationPrecondition
+
     init(appContext: AppContext) {
-        self.appContext = appContext
+        self._precondition = NotificationPrecondition(
+            notificationName: UIApplication.didBecomeActiveNotification,
+            isSatisfied: { appContext.isAppForegroundAndActive() },
+        )
     }
 
-    @MainActor
     func waitUntilSatisfied() async -> WaitResult {
-        if appContext.isAppForegroundAndActive() {
-            return .satisfiedImmediately
-        }
-        await NotificationCenter.default.observeOnce(UIApplication.didBecomeActiveNotification)
-        return .wasNotSatisfiedButIsNow
+        return await self._precondition.waitUntilSatisfied()
     }
 }
