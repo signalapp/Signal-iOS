@@ -131,7 +131,6 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     private let attachmentStore: AttachmentStore
     private let attachmentUploadStore: AttachmentUploadStore
     private let attachmentThumbnailService: AttachmentThumbnailService
-    private let chatConnectionManager: ChatConnectionManager
     private let dateProvider: DateProvider
     private let db: any DB
     private let fileSystem: Upload.Shims.FileSystem
@@ -167,7 +166,6 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         attachmentStore: AttachmentStore,
         attachmentUploadStore: AttachmentUploadStore,
         attachmentThumbnailService: AttachmentThumbnailService,
-        chatConnectionManager: ChatConnectionManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
         fileSystem: Upload.Shims.FileSystem,
@@ -184,7 +182,6 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         self.attachmentStore = attachmentStore
         self.attachmentUploadStore = attachmentUploadStore
         self.attachmentThumbnailService = attachmentThumbnailService
-        self.chatConnectionManager = chatConnectionManager
         self.dateProvider = dateProvider
         self.db = db
         self.fileSystem = fileSystem
@@ -248,8 +245,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         let metadata = try attachmentEncrypter.encryptAttachment(at: sourceURL, output: temporaryFile)
         let localMetadata = try Upload.LocalUploadMetadata.validateAndBuild(fileUrl: temporaryFile, metadata: metadata)
         let form = try await Upload.FormRequest(
-            networkManager: networkManager,
-            chatConnectionManager: chatConnectionManager
+            networkManager: networkManager
         ).start()
 
         do {
@@ -300,8 +296,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         }
         let metadata = Upload.LinkNSyncUploadMetadata(fileUrl: sourceURL, encryptedDataLength: dataLength)
         let form = try await Upload.FormRequest(
-            networkManager: networkManager,
-            chatConnectionManager: chatConnectionManager
+            networkManager: networkManager
         ).start()
 
         do {
@@ -661,8 +656,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             switch type {
             case .transitTier:
                 uploadForm = try await Upload.FormRequest(
-                    networkManager: self.networkManager,
-                    chatConnectionManager: self.chatConnectionManager
+                    networkManager: self.networkManager
                 ).start()
             case .mediaTier(let auth, _):
                 uploadForm = try await self.messageBackupRequestManager

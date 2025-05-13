@@ -15,6 +15,21 @@ public protocol BackupAttachmentUploadManager {
     func enqueueIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         currentUploadEra: String,
+        currentBackupPlan: BackupPlan?,
+        tx: DBWriteTransaction
+    ) throws
+
+    /// Same as full `enqueueIfNeeded` variant but fetches any necessary state from the database
+    /// instead of having it passed in.
+    func enqueueIfNeeded(
+        _ referencedAttachment: ReferencedAttachment,
+        tx: DBWriteTransaction
+    ) throws
+
+    /// Same as `enqueueIfNeeded` variant but fetches all owners of the attachment and enqueues using
+    /// the owner that would result in the highest priority upload (if any, and if eligible).
+    func enqueueUsingHighestPriorityOwnerIfNeeded(
+        _ attachment: Attachment,
         tx: DBWriteTransaction
     ) throws
 
@@ -40,7 +55,9 @@ public protocol BackupAttachmentUploadManager {
 
 public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
 
+    private let attachmentStore: AttachmentStore
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
+    private let backupSettingsStore: BackupSettingsStore
     private let db: any DB
     private let statusManager: BackupAttachmentQueueStatusUpdates
     private let taskQueue: TaskQueueLoader<TaskRunner>
@@ -50,13 +67,16 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         attachmentStore: AttachmentStore,
         attachmentUploadManager: AttachmentUploadManager,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
+        backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
         messageBackupRequestManager: MessageBackupRequestManager,
         statusManager: BackupAttachmentQueueStatusUpdates,
         tsAccountManager: TSAccountManager
     ) {
+        self.attachmentStore = attachmentStore
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
+        self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.statusManager = statusManager
         let taskRunner = TaskRunner(
@@ -81,21 +101,79 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         }
     }
 
+    public func enqueueUsingHighestPriorityOwnerIfNeeded(
+        _ attachment: Attachment,
+        tx: DBWriteTransaction
+    ) throws {
+        // Backup uploads are prioritized by attachment owner. Find the highest
+        // priority owner to use.
+        var referenceToUse: AttachmentReference?
+        try attachmentStore.enumerateAllReferences(
+            toAttachmentId: attachment.id,
+            tx: tx
+        ) { reference in
+            guard let sourceType = reference.owner.asUploadSourceType() else {
+                return
+            }
+            if referenceToUse?.owner.asUploadSourceType()?.isHigherPriority(than: sourceType) != true {
+                referenceToUse = reference
+            }
+        }
+        if let referenceToUse {
+            try self.enqueueIfNeeded(
+                ReferencedAttachment(reference: referenceToUse, attachment: attachment),
+                tx: tx
+            )
+        }
+    }
+
+    public func enqueueIfNeeded(
+        _ referencedAttachment: ReferencedAttachment,
+        tx: DBWriteTransaction
+    ) throws {
+        // TODO: get the upload era from the right place once the API design is settled
+        let currentUploadEra = try MessageBackupMessageAttachmentArchiver.currentUploadEra()
+
+        // Its okay if our local subscription state is outdated.
+        // If we think we're free but we're paid, we'll recover by scheduling any unuploaded
+        // attachments when we next back up.
+        // If we think we're paid but we're free, the upload will fail gracefully.
+        let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
+
+        try enqueueIfNeeded(
+            referencedAttachment,
+            currentUploadEra: currentUploadEra,
+            currentBackupPlan: currentBackupPlan,
+            tx: tx
+        )
+    }
+
     public func enqueueIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         currentUploadEra: String,
+        currentBackupPlan: BackupPlan?,
         tx: DBWriteTransaction
     ) throws {
         guard FeatureFlags.MessageBackup.fileAlpha else {
             return
         }
-        if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
+        guard currentBackupPlan == .paid else {
             return
         }
         guard let referencedStream = referencedAttachment.asReferencedStream else {
             // We only upload streams
             return
         }
+
+        switch referencedAttachment.reference.owner {
+        case .message, .thread:
+            // We back these up (if other conditions are met)
+            break
+        case .storyMessage:
+            // Story messages are not backed up
+            return
+        }
+
         let stream = referencedStream.attachmentStream
         guard
             stream.needsMediaTierUpload(currentUploadEra: currentUploadEra)
@@ -423,6 +501,21 @@ open class BackupAttachmentUploadManagerMock: BackupAttachmentUploadManager {
     public func enqueueIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         currentUploadEra: String,
+        currentBackupPlan: BackupPlan?,
+        tx: DBWriteTransaction
+    ) throws {
+        // Do nothing
+    }
+
+    public func enqueueIfNeeded(
+        _ referencedAttachment: ReferencedAttachment,
+        tx: DBWriteTransaction
+    ) throws {
+        // Do nothing
+    }
+
+    public func enqueueUsingHighestPriorityOwnerIfNeeded(
+        _ attachment: Attachment,
         tx: DBWriteTransaction
     ) throws {
         // Do nothing

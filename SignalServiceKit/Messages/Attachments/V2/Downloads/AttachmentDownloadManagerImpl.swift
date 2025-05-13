@@ -29,6 +29,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         attachmentDownloadStore: AttachmentDownloadStore,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
+        backupAttachmentUploadManager: BackupAttachmentUploadManager,
         currentCallProvider: CurrentCallProvider,
         dateProvider: @escaping DateProvider,
         db: any DB,
@@ -62,6 +63,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         )
         self.attachmentUpdater = AttachmentUpdater(
             attachmentStore: attachmentStore,
+            backupAttachmentUploadManager: backupAttachmentUploadManager,
             db: db,
             decrypter: decrypter,
             interactionStore: interactionStore,
@@ -1820,6 +1822,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private class AttachmentUpdater {
 
         private let attachmentStore: AttachmentStore
+        private let backupAttachmentUploadManager: BackupAttachmentUploadManager
         private let db: any DB
         private let decrypter: Decrypter
         private let interactionStore: InteractionStore
@@ -1831,6 +1834,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         public init(
             attachmentStore: AttachmentStore,
+            backupAttachmentUploadManager: BackupAttachmentUploadManager,
             db: any DB,
             decrypter: Decrypter,
             interactionStore: InteractionStore,
@@ -1841,6 +1845,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             threadStore: ThreadStore
         ) {
             self.attachmentStore = attachmentStore
+            self.backupAttachmentUploadManager = backupAttachmentUploadManager
             self.db = db
             self.decrypter = decrypter
             self.interactionStore = interactionStore
@@ -1897,6 +1902,29 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
 
                     let attachment = self.attachmentStore.fetch(id: attachmentId, tx: tx)
+
+                    if let attachment {
+                        switch source {
+                        case .transitTier:
+                            // After we download an attachment and verify its digest, we can
+                            // schedule it for "upload" to the media (backup) tier. "Upload"
+                            // really means "copy from transit tier" and since we just downloaded
+                            // we shouldn't need to reupload to do that; we just needed to verify
+                            // the digest before copying.
+                            try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+                                attachment,
+                                tx: tx
+                            )
+                            tx.addSyncCompletion { [backupAttachmentUploadManager] in
+                                Task {
+                                    try await backupAttachmentUploadManager.backUpAllAttachments()
+                                }
+                            }
+                        case .mediaTierFullsize, .mediaTierThumbnail:
+                            break
+                        }
+                    }
+
                     let result: DownloadResult
                     switch source {
                     case .transitTier, .mediaTierFullsize:

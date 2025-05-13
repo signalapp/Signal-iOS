@@ -332,6 +332,10 @@ class MessageBackupIntegrationTests: XCTestCase {
         /// backup file.
         let localIdentifiers: LocalIdentifiers = .forUnitTests
 
+        await deps.db.awaitableWrite { tx in
+            BackupSettingsStore().setBackupPlan(.free, tx: tx)
+        }
+
         try await deps.messageBackupManager.importPlaintextBackup(
             fileUrl: testCaseFileUrl,
             localIdentifiers: localIdentifiers,

@@ -52,12 +52,14 @@ extension MessageBackup {
 
         /// Nil if not a paid backups account.
         private let currentBackupAttachmentUploadEra: String?
+        private let currentBackupPlan: BackupPlan
         private let backupAttachmentUploadManager: BackupAttachmentUploadManager
 
         init(
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: MessageBackup.ArchiveBencher,
             currentBackupAttachmentUploadEra: String?,
+            currentBackupPlan: BackupPlan,
             includedContentFilter: IncludedContentFilter,
             startTimestampMs: UInt64,
             tx: DBWriteTransaction
@@ -65,6 +67,7 @@ extension MessageBackup {
             self.bencher = bencher
             self.backupAttachmentUploadManager = backupAttachmentUploadManager
             self.currentBackupAttachmentUploadEra = currentBackupAttachmentUploadEra
+            self.currentBackupPlan = currentBackupPlan
             self.includedContentFilter = includedContentFilter
             self.startTimestampMs = startTimestampMs
             self._tx = tx
@@ -77,6 +80,7 @@ extension MessageBackup {
             try backupAttachmentUploadManager.enqueueIfNeeded(
                 referencedAttachment,
                 currentUploadEra: currentBackupAttachmentUploadEra,
+                currentBackupPlan: currentBackupPlan,
                 tx: _tx
             )
         }

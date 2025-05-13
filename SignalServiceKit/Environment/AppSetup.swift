@@ -382,11 +382,61 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let attachmentThumbnailService = AttachmentThumbnailServiceImpl()
+        let attachmentUploadManager = AttachmentUploadManagerImpl(
+            attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
+            attachmentStore: attachmentStore,
+            attachmentUploadStore: attachmentUploadStore,
+            attachmentThumbnailService: attachmentThumbnailService,
+            dateProvider: dateProvider,
+            db: db,
+            fileSystem: Upload.Wrappers.FileSystem(),
+            interactionStore: interactionStore,
+            messageBackupKeyMaterial: messageBackupKeyMaterial,
+            messageBackupRequestManager: messageBackupRequestManager,
+            networkManager: networkManager,
+            remoteConfigProvider: remoteConfigManager,
+            signalService: signalService,
+            sleepTimer: Upload.Wrappers.SleepTimer(),
+            storyStore: storyStore
+        )
+
+        let backupSettingsStore = BackupSettingsStore()
+        let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
+        let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
+
+        let backupAttachmentQueueStatusManager = BackupAttachmentQueueStatusManagerImpl(
+            appContext: appContext,
+            appReadiness: appReadiness,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentUploadStore: backupAttachmentUploadStore,
+            backupSettingsStore: backupSettingsStore,
+            db: db,
+            deviceBatteryLevelManager: deviceBatteryLevelManager,
+            reachabilityManager: reachabilityManager,
+            remoteConfigManager: remoteConfigManager,
+            tsAccountManager: tsAccountManager
+        )
+
+        let backupAttachmentUploadManager = BackupAttachmentUploadManagerImpl(
+            appReadiness: appReadiness,
+            attachmentStore: attachmentStore,
+            attachmentUploadManager: attachmentUploadManager,
+            backupAttachmentUploadStore: backupAttachmentUploadStore,
+            backupSettingsStore: backupSettingsStore,
+            dateProvider: dateProvider,
+            db: db,
+            messageBackupRequestManager: messageBackupRequestManager,
+            statusManager: backupAttachmentQueueStatusManager,
+            tsAccountManager: tsAccountManager
+        )
+
         let attachmentDownloadManager = AttachmentDownloadManagerImpl(
             appReadiness: appReadiness,
             attachmentDownloadStore: attachmentDownloadStore,
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
+            backupAttachmentUploadManager: backupAttachmentUploadManager,
             currentCallProvider: currentCallProvider,
             dateProvider: dateProvider,
             db: db,
@@ -408,6 +458,7 @@ public class AppSetup {
         let attachmentManager = AttachmentManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentStore: attachmentStore,
+            backupAttachmentUploadManager: backupAttachmentUploadManager,
             dateProvider: dateProvider,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
@@ -423,8 +474,6 @@ public class AppSetup {
             orphanedAttachmentStore: orphanedAttachmentStore,
             validator: attachmentContentValidator
         )
-
-        let attachmentThumbnailService = AttachmentThumbnailServiceImpl()
 
         let quotedReplyManager = QuotedReplyManagerImpl(
             attachmentManager: attachmentManager,
@@ -915,25 +964,6 @@ public class AppSetup {
         )
         let typingIndicators = TypingIndicatorsImpl()
 
-        let attachmentUploadManager = AttachmentUploadManagerImpl(
-            attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
-            attachmentStore: attachmentStore,
-            attachmentUploadStore: attachmentUploadStore,
-            attachmentThumbnailService: attachmentThumbnailService,
-            chatConnectionManager: chatConnectionManager,
-            dateProvider: dateProvider,
-            db: db,
-            fileSystem: Upload.Wrappers.FileSystem(),
-            interactionStore: interactionStore,
-            messageBackupKeyMaterial: messageBackupKeyMaterial,
-            messageBackupRequestManager: messageBackupRequestManager,
-            networkManager: networkManager,
-            remoteConfigProvider: remoteConfigManager,
-            signalService: signalService,
-            sleepTimer: Upload.Wrappers.SleepTimer(),
-            storyStore: storyStore
-        )
-
         let privateStoryThreadDeletionManager = PrivateStoryThreadDeletionManagerImpl(
             dateProvider: dateProvider,
             remoteConfigProvider: remoteConfigManager,
@@ -942,20 +972,6 @@ public class AppSetup {
             threadStore: threadStore
         )
 
-        let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
-        let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
-        let backupAttachmentQueueStatusManager = BackupAttachmentQueueStatusManagerImpl(
-            appContext: appContext,
-            appReadiness: appReadiness,
-            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-            backupAttachmentUploadStore: backupAttachmentUploadStore,
-            backupSettingsStore: BackupSettingsStore(),
-            db: db,
-            deviceBatteryLevelManager: deviceBatteryLevelManager,
-            reachabilityManager: reachabilityManager,
-            remoteConfigManager: remoteConfigManager,
-            tsAccountManager: tsAccountManager
-        )
         let backupAttachmentDownloadManager = testDependencies.backupAttachmentDownloadManager
             ?? BackupAttachmentDownloadManagerImpl(
                 appContext: appContext,
@@ -975,17 +991,6 @@ public class AppSetup {
                 svr: svr,
                 tsAccountManager: tsAccountManager
             )
-        let backupAttachmentUploadManager = BackupAttachmentUploadManagerImpl(
-            appReadiness: appReadiness,
-            attachmentStore: attachmentStore,
-            attachmentUploadManager: attachmentUploadManager,
-            backupAttachmentUploadStore: backupAttachmentUploadStore,
-            dateProvider: dateProvider,
-            db: db,
-            messageBackupRequestManager: messageBackupRequestManager,
-            statusManager: backupAttachmentQueueStatusManager,
-            tsAccountManager: tsAccountManager
-        )
 
         let backupIdManager = BackupIdManager(
             accountKeyStore: accountKeyStore,
@@ -1131,6 +1136,7 @@ public class AppSetup {
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             backupRequestManager: messageBackupRequestManager,
+            backupSettingsStore: backupSettingsStore,
             backupStickerPackDownloadStore: backupStickerPackDownloadStore,
             callLinkRecipientArchiver: MessageBackupCallLinkRecipientArchiver(
                 callLinkStore: callLinkStore

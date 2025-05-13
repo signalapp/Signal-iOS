@@ -107,6 +107,7 @@ extension MessageBackup {
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: MessageBackup.ArchiveBencher,
             currentBackupAttachmentUploadEra: String?,
+            currentBackupPlan: BackupPlan,
             customChatColorContext: CustomChatColorArchivingContext,
             includedContentFilter: IncludedContentFilter,
             recipientContext: RecipientArchivingContext,
@@ -119,6 +120,7 @@ extension MessageBackup {
                 backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+                currentBackupPlan: currentBackupPlan,
                 includedContentFilter: includedContentFilter,
                 startTimestampMs: startTimestampMs,
                 tx: tx
@@ -335,6 +337,7 @@ extension MessageBackup {
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: MessageBackup.ArchiveBencher,
             currentBackupAttachmentUploadEra: String?,
+            currentBackupPlan: BackupPlan,
             includedContentFilter: IncludedContentFilter,
             startTimestampMs: UInt64,
             tx: DBWriteTransaction
@@ -343,6 +346,7 @@ extension MessageBackup {
                 backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+                currentBackupPlan: currentBackupPlan,
                 includedContentFilter: includedContentFilter,
                 startTimestampMs: startTimestampMs,
                 tx: tx

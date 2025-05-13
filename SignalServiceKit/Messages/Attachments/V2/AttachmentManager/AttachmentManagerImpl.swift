@@ -7,6 +7,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentStore: AttachmentStore
+    private let backupAttachmentUploadManager: BackupAttachmentUploadManager
     private let dateProvider: DateProvider
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private let orphanedAttachmentStore: OrphanedAttachmentStore
@@ -17,6 +18,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     public init(
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentStore: AttachmentStore,
+        backupAttachmentUploadManager: BackupAttachmentUploadManager,
         dateProvider: @escaping DateProvider,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
@@ -26,6 +28,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     ) {
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentStore = attachmentStore
+        self.backupAttachmentUploadManager = backupAttachmentUploadManager
         self.dateProvider = dateProvider
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.orphanedAttachmentStore = orphanedAttachmentStore
@@ -115,6 +118,13 @@ public class AttachmentManagerImpl: AttachmentManager {
             },
             tx: tx
         )
+        // When we create the attachment streams we schedule a backup of the
+        // new attachments. Kick the tires so that upload starts happening now.
+        tx.addSyncCompletion { [backupAttachmentUploadManager] in
+            Task {
+                try await backupAttachmentUploadManager.backUpAllAttachments()
+            }
+        }
     }
 
     // MARK: Quoted Replies
@@ -798,6 +808,18 @@ public class AttachmentManagerImpl: AttachmentManager {
                         withMediaName: mediaName,
                         tx: tx
                     )
+
+                    if
+                        let attachment = attachmentStore.fetchAttachment(
+                            mediaName: mediaName,
+                            tx: tx
+                        )
+                    {
+                        try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+                            attachment,
+                            tx: tx
+                        )
+                    }
                 }
             } catch let error {
                 let existingAttachmentId: Attachment.IDType
@@ -941,6 +963,13 @@ public class AttachmentManagerImpl: AttachmentManager {
                 sourceOrder: nil,
                 tx: tx
             )
+            // When we create the attachment stream we schedule a backup of the
+            // new attachment. Kick the tires so that upload starts happening now.
+            tx.addSyncCompletion { [backupAttachmentUploadManager] in
+                Task {
+                    try await backupAttachmentUploadManager.backUpAllAttachments()
+                }
+            }
         case .originalAttachment(let originalAttachmentSource):
             guard let originalAttachment = attachmentStore.fetch(id: originalAttachmentSource.id, tx: tx) else {
                 // The original has been deleted.

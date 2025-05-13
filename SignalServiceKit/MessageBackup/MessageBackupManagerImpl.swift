@@ -43,6 +43,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let backupAttachmentUploadManager: BackupAttachmentUploadManager
     private let backupRequestManager: MessageBackupRequestManager
+    private let backupSettingsStore: BackupSettingsStore
     private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
     private let callLinkRecipientArchiver: MessageBackupCallLinkRecipientArchiver
     private let chatArchiver: MessageBackupChatArchiver
@@ -80,6 +81,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         backupAttachmentUploadManager: BackupAttachmentUploadManager,
         backupRequestManager: MessageBackupRequestManager,
+        backupSettingsStore: BackupSettingsStore,
         backupStickerPackDownloadStore: BackupStickerPackDownloadStore,
         callLinkRecipientArchiver: MessageBackupCallLinkRecipientArchiver,
         chatArchiver: MessageBackupChatArchiver,
@@ -114,6 +116,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.backupAttachmentUploadManager = backupAttachmentUploadManager
         self.backupRequestManager = backupRequestManager
+        self.backupSettingsStore = backupSettingsStore
         self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
         self.callLinkRecipientArchiver = callLinkRecipientArchiver
         self.chatArchiver = chatArchiver
@@ -377,10 +380,23 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             }
             try Task.checkCancellation()
 
+            let currentBackupPlan: BackupPlan
+            switch backupPurpose {
+            case .remoteBackup:
+                guard let backupPlan = backupSettingsStore.backupPlan(tx: tx) else {
+                    throw OWSAssertionError("Generating remote backup while backups disabled!")
+                }
+                currentBackupPlan = backupPlan
+            case .deviceTransfer:
+                // You don't need backups enabled to do a link'n'sync; default free.
+                currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
+                    ?? .free
+            }
             let currentBackupAttachmentUploadEra: String?
-            if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
+            switch currentBackupPlan {
+            case .free:
                 currentBackupAttachmentUploadEra = nil
-            } else {
+            case .paid:
                 currentBackupAttachmentUploadEra = try MessageBackupMessageAttachmentArchiver.currentUploadEra()
             }
 
@@ -388,6 +404,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+                currentBackupPlan: currentBackupPlan,
                 includedContentFilter: includedContentFilter,
                 startTimestampMs: startTimestampMs,
                 tx: tx
@@ -429,6 +446,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+                currentBackupPlan: currentBackupPlan,
                 includedContentFilter: includedContentFilter,
                 localIdentifiers: localIdentifiers,
                 localRecipientId: localRecipientId,
@@ -506,6 +524,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+                currentBackupPlan: currentBackupPlan,
                 customChatColorContext: customChatColorContext,
                 includedContentFilter: includedContentFilter,
                 recipientContext: recipientArchivingContext,
@@ -544,6 +563,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+                currentBackupPlan: currentBackupPlan,
                 includedContentFilter: includedContentFilter,
                 startTimestampMs: startTimestampMs,
                 tx: tx

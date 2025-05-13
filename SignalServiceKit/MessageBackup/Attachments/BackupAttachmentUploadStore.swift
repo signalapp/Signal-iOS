@@ -47,9 +47,14 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
         tx: DBWriteTransaction
     ) throws {
         let db = tx.database
+
+        guard let sourceType = referencedAttachment.reference.owner.asUploadSourceType() else {
+            throw OWSAssertionError("Enqueuing attachment that shouldn't be uploaded")
+        }
+
         var newRecord = QueuedBackupAttachmentUpload(
             attachmentRowId: referencedAttachment.attachment.id,
-            sourceType: try referencedAttachment.reference.owner.asUploadSourceType()
+            sourceType: sourceType
         )
 
         let existingRecord = try QueuedBackupAttachmentUpload
@@ -62,20 +67,7 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
             return
         }
 
-        let needsUpdate: Bool = {
-            switch (existingRecord.sourceType, newRecord.sourceType) {
-
-            // Thread wallpapers are higher priority, they always win.
-            case (.threadWallpaper, _):
-                return false
-            case (.message(_), .threadWallpaper):
-                return true
-
-            case (.message(let oldTimestamp), .message(let newTimestamp)):
-                // Replace if more recent.
-                return newTimestamp > oldTimestamp
-            }
-        }()
+        let needsUpdate = newRecord.sourceType.isHigherPriority(than: existingRecord.sourceType)
 
         guard needsUpdate else {
             return
@@ -116,7 +108,7 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
 
 extension AttachmentReference.Owner {
 
-    fileprivate func asUploadSourceType() throws -> QueuedBackupAttachmentUpload.SourceType {
+    public func asUploadSourceType() -> QueuedBackupAttachmentUpload.SourceType? {
         switch self {
         case .message(let messageSource):
             return .message(timestamp: {
@@ -141,7 +133,25 @@ extension AttachmentReference.Owner {
                 return .threadWallpaper
             }
         case .storyMessage:
-            throw OWSAssertionError("Story message attachments shouldn't be uploaded")
+            return nil
+        }
+    }
+}
+
+extension QueuedBackupAttachmentUpload.SourceType {
+
+    public func isHigherPriority(than other: QueuedBackupAttachmentUpload.SourceType) -> Bool {
+        switch (self, other) {
+
+        // Thread wallpapers are higher priority, they always win.
+        case (.threadWallpaper, _):
+            return true
+        case (.message(_), .threadWallpaper):
+            return false
+
+        case (.message(let selfTimestamp), .message(let otherTimestamp)):
+            // Higher priority if more recent.
+            return selfTimestamp > otherTimestamp
         }
     }
 }

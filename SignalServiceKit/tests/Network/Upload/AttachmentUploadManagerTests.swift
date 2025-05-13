@@ -17,7 +17,6 @@ class AttachmentUploadManagerTests {
             attachmentStore: helper.mockAttachmentStore,
             attachmentUploadStore: helper.mockAttachmentUploadStore,
             attachmentThumbnailService: helper.mockAttachmentThumbnailService,
-            chatConnectionManager: helper.mockChatConnectionManager,
             dateProvider: helper.mockDateProvider,
             db: helper.mockDB,
             fileSystem: helper.mockFileSystem,
