@@ -53,7 +53,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
 
-
     public init(
         appContext: AppContext,
         appReadiness: AppReadiness,
