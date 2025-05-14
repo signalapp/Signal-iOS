@@ -33,7 +33,7 @@ struct PreKeyBundle: Decodable {
         let registrationId: UInt32
         let signedPreKey: SignedPreKey
         let preKey: OneTimePreKey?
-        let pqPreKey: PQPreKey?
+        let pqPreKey: PQPreKey
 
         struct OneTimePreKey: Decodable {
             let keyId: UInt32

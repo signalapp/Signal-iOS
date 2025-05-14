@@ -84,6 +84,20 @@ class MockClient {
         return signedPreKey
     }
 
+    func generateMockKyberPreKey() -> LibSignalClient.KyberPreKeyRecord {
+        let kyberPreKeyId = UInt32(Int32.random(in: 0...Int32.max))
+        let keyPair = KEMKeyPair.generate()
+        let generatedAt = Date()
+        let identityKeyPair = try! self.identityStore.identityKeyPair(context: NullContext())
+        let signature = identityKeyPair.privateKey.generateSignature(message: keyPair.publicKey.serialize())
+        let kyberPreKey = try! KyberPreKeyRecord(id: kyberPreKeyId,
+                                                  timestamp: UInt64(generatedAt.timeIntervalSince1970),
+                                                  keyPair: keyPair,
+                                                  signature: signature)
+        try! self.kyberPreKeyStore.storeKyberPreKey(kyberPreKey, id: kyberPreKeyId, context: NullContext())
+        return kyberPreKey
+    }
+
     // Moved from SMKSecretSessionCipherTest.
     // private void initializeSessions(TestInMemorySignalProtocolStore aliceStore, TestInMemorySignalProtocolStore bobStore)
     //     throws InvalidKeyException, UntrustedIdentityException
@@ -97,6 +111,8 @@ class MockClient {
         // SignedPreKeyRecord bobSignedPreKey = KeyHelper.generateSignedPreKey(bobIdentityKey, 2);
         let bobSignedPreKey = bobMockClient.generateMockSignedPreKey()
 
+        let bobKyberPreKey = bobMockClient.generateMockKyberPreKey()
+
         // PreKeyBundle bobBundle             = new PreKeyBundle(1, 1, 1, bobPreKey.getPublicKey(), 2, bobSignedPreKey.getKeyPair().getPublicKey(), bobSignedPreKey.getSignature(), bobIdentityKey.getPublicKey());
         let bobBundle = try! PreKeyBundle(
             registrationId: UInt32(bitPattern: bobMockClient.registrationId),
@@ -106,7 +122,10 @@ class MockClient {
             signedPrekeyId: bobSignedPreKey.id,
             signedPrekey: try! bobSignedPreKey.publicKey(),
             signedPrekeySignature: bobSignedPreKey.signature,
-            identity: bobIdentityKey.identityKey
+            identity: bobIdentityKey.identityKey,
+            kyberPrekeyId: bobKyberPreKey.id,
+            kyberPrekey: try! bobKyberPreKey.publicKey(),
+            kyberPrekeySignature: bobKyberPreKey.signature,
         )
 
         // SessionBuilder aliceSessionBuilder = new SessionBuilder(aliceStore, new SignalProtocolAddress("+14152222222", 1));

@@ -25,15 +25,19 @@ public struct TestProtocolRunner {
 
         let bobPreKey = PrivateKey.generate()
         let bobSignedPreKey = PrivateKey.generate()
+        let bobKyberPreKey = KEMKeyPair.generate()
 
         let bobSignedPreKeyPublic = bobSignedPreKey.publicKey.serialize()
+        let bobKyberPreKeyPublic = bobKyberPreKey.publicKey.serialize()
 
         let bobIdentityKey = recipientClient.identityKeyPair.identityKeyPair
         let bobSignedPreKeySignature = bobIdentityKey.privateKey.generateSignature(message: bobSignedPreKeyPublic)
+        let bobKyberPreKeySignature = bobIdentityKey.privateKey.generateSignature(message: bobKyberPreKeyPublic)
         let bobRegistrationId = try recipientClient.identityKeyStore.localRegistrationId(context: transaction)
 
         let prekeyId: UInt32 = 4570
         let signedPrekeyId: UInt32 = 3006
+        let kyberPrekeyId: UInt32 = 7777
 
         let bobBundle = try LibSignalClient.PreKeyBundle(
             registrationId: bobRegistrationId,
@@ -43,7 +47,10 @@ public struct TestProtocolRunner {
             signedPrekeyId: signedPrekeyId,
             signedPrekey: bobSignedPreKey.publicKey,
             signedPrekeySignature: bobSignedPreKeySignature,
-            identity: bobIdentityKey.identityKey
+            identity: bobIdentityKey.identityKey,
+            kyberPrekeyId: kyberPrekeyId,
+            kyberPrekey: bobKyberPreKey.publicKey,
+            kyberPrekeySignature: bobKyberPreKeySignature,
         )
 
         // Alice processes the bundle:
@@ -67,6 +74,29 @@ public struct TestProtocolRunner {
             ),
             id: signedPrekeyId,
             context: transaction)
+
+        if let kyberPreKeyStore = recipientClient.kyberPreKeyStore as? KyberPreKeyStoreImpl {
+            // libsignal's storeKyberPreKey(...) is incomplete, use KyberPreKeyStoreImpl's version instead.
+            try kyberPreKeyStore.storeKyberPreKeyRecords(
+                records: [SignalServiceKit.KyberPreKeyRecord(
+                    kyberPrekeyId,
+                    keyPair: bobKyberPreKey,
+                    signature: Data(bobKyberPreKeySignature),
+                    generatedAt: Date(millisecondsSince1970: 42000),
+                    replacedAt: nil,
+                    isLastResort: false)],
+                tx: transaction)
+        } else {
+            try recipientClient.kyberPreKeyStore.storeKyberPreKey(
+                LibSignalClient.KyberPreKeyRecord(
+                    id: kyberPrekeyId,
+                    timestamp: 42000,
+                    keyPair: bobKyberPreKey,
+                    signature: bobKyberPreKeySignature
+                ),
+                id: kyberPrekeyId,
+                context: transaction)
+        }
     }
 
     /// Sets up a session between `senderClient` and `recipientClient`, so that either can talk to the other.

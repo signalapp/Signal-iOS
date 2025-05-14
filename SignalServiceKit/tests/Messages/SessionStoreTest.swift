@@ -70,11 +70,15 @@ class SessionStoreTest2: XCTestCase {
         let bob_pre_key = PrivateKey.generate()
         let bob_signed_pre_key = PrivateKey.generate()
         let bob_signed_pre_key_public = bob_signed_pre_key.publicKey.serialize()
+        let bob_kyber_pre_key = KEMKeyPair.generate()
+        let bob_kyber_pre_key_public = bob_kyber_pre_key.publicKey.serialize()
         let bob_identity_key = try! bob_store.identityKeyPair(context: NullContext())
         let bob_signed_pre_key_signature = bob_identity_key.privateKey.generateSignature(message: bob_signed_pre_key_public)
+        let bob_kyber_pre_key_signature = bob_identity_key.privateKey.generateSignature(message: bob_kyber_pre_key_public)
 
         let prekey_id: UInt32 = 4570
         let signed_prekey_id: UInt32 = 3006
+        let kyber_prekey_id: UInt32 = 7777
 
         let bob_bundle = try PreKeyBundle(
             registrationId: bob_store.localRegistrationId(context: NullContext()),
@@ -84,7 +88,10 @@ class SessionStoreTest2: XCTestCase {
             signedPrekeyId: signed_prekey_id,
             signedPrekey: bob_signed_pre_key.publicKey,
             signedPrekeySignature: bob_signed_pre_key_signature,
-            identity: bob_identity_key.identityKey
+            identity: bob_identity_key.identityKey,
+            kyberPrekeyId: kyber_prekey_id,
+            kyberPrekey: bob_kyber_pre_key.publicKey,
+            kyberPrekeySignature: bob_kyber_pre_key_signature,
         )
 
         // Alice processes the bundle:

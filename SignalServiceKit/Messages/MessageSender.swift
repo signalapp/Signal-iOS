@@ -192,59 +192,35 @@ public class MessageSender {
             throw OWSAssertionError("Server didn't provide a bundle for the requested device.")
         }
 
-        Logger.info("Creating session for \(serviceId), deviceId: \(deviceId); signed \(deviceBundle.signedPreKey.keyId), one-time \(deviceBundle.preKey?.keyId as Optional), kyber \(deviceBundle.pqPreKey?.keyId as Optional)")
+        Logger.info("Creating session for \(serviceId), deviceId: \(deviceId); signed \(deviceBundle.signedPreKey.keyId), one-time \(deviceBundle.preKey?.keyId as Optional), kyber \(deviceBundle.pqPreKey.keyId as Optional)")
 
         let bundle: LibSignalClient.PreKeyBundle
         if let preKey = deviceBundle.preKey {
-            if let pqPreKey = deviceBundle.pqPreKey {
-                bundle = try LibSignalClient.PreKeyBundle(
-                    registrationId: deviceBundle.registrationId,
-                    deviceId: deviceId.uint32Value,
-                    prekeyId: preKey.keyId,
-                    prekey: preKey.publicKey,
-                    signedPrekeyId: deviceBundle.signedPreKey.keyId,
-                    signedPrekey: deviceBundle.signedPreKey.publicKey,
-                    signedPrekeySignature: deviceBundle.signedPreKey.signature,
-                    identity: preKeyBundle.identityKey,
-                    kyberPrekeyId: pqPreKey.keyId,
-                    kyberPrekey: pqPreKey.publicKey,
-                    kyberPrekeySignature: pqPreKey.signature
-                )
-            } else {
-                bundle = try LibSignalClient.PreKeyBundle(
-                    registrationId: deviceBundle.registrationId,
-                    deviceId: deviceId.uint32Value,
-                    prekeyId: preKey.keyId,
-                    prekey: preKey.publicKey,
-                    signedPrekeyId: deviceBundle.signedPreKey.keyId,
-                    signedPrekey: deviceBundle.signedPreKey.publicKey,
-                    signedPrekeySignature: deviceBundle.signedPreKey.signature,
-                    identity: preKeyBundle.identityKey
-                )
-            }
+            bundle = try LibSignalClient.PreKeyBundle(
+                registrationId: deviceBundle.registrationId,
+                deviceId: deviceId.uint32Value,
+                prekeyId: preKey.keyId,
+                prekey: preKey.publicKey,
+                signedPrekeyId: deviceBundle.signedPreKey.keyId,
+                signedPrekey: deviceBundle.signedPreKey.publicKey,
+                signedPrekeySignature: deviceBundle.signedPreKey.signature,
+                identity: preKeyBundle.identityKey,
+                kyberPrekeyId: deviceBundle.pqPreKey.keyId,
+                kyberPrekey: deviceBundle.pqPreKey.publicKey,
+                kyberPrekeySignature: deviceBundle.pqPreKey.signature
+            )
         } else {
-            if let pqPreKey = deviceBundle.pqPreKey {
-                bundle = try LibSignalClient.PreKeyBundle(
-                    registrationId: deviceBundle.registrationId,
-                    deviceId: deviceId.uint32Value,
-                    signedPrekeyId: deviceBundle.signedPreKey.keyId,
-                    signedPrekey: deviceBundle.signedPreKey.publicKey,
-                    signedPrekeySignature: deviceBundle.signedPreKey.signature,
-                    identity: preKeyBundle.identityKey,
-                    kyberPrekeyId: pqPreKey.keyId,
-                    kyberPrekey: pqPreKey.publicKey,
-                    kyberPrekeySignature: pqPreKey.signature
-                )
-            } else {
-                bundle = try LibSignalClient.PreKeyBundle(
-                    registrationId: deviceBundle.registrationId,
-                    deviceId: deviceId.uint32Value,
-                    signedPrekeyId: deviceBundle.signedPreKey.keyId,
-                    signedPrekey: deviceBundle.signedPreKey.publicKey,
-                    signedPrekeySignature: deviceBundle.signedPreKey.signature,
-                    identity: preKeyBundle.identityKey
-                )
-            }
+            bundle = try LibSignalClient.PreKeyBundle(
+                registrationId: deviceBundle.registrationId,
+                deviceId: deviceId.uint32Value,
+                signedPrekeyId: deviceBundle.signedPreKey.keyId,
+                signedPrekey: deviceBundle.signedPreKey.publicKey,
+                signedPrekeySignature: deviceBundle.signedPreKey.signature,
+                identity: preKeyBundle.identityKey,
+                kyberPrekeyId: deviceBundle.pqPreKey.keyId,
+                kyberPrekey: deviceBundle.pqPreKey.publicKey,
+                kyberPrekeySignature: deviceBundle.pqPreKey.signature
+            )
         }
 
         do {
