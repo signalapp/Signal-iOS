@@ -42,9 +42,7 @@ class AvatarHistoryManager {
         )
     }
 
-    func cleanupOrphanedImages() {
-        owsAssertDebug(!Thread.isMainThread)
-
+    func cleanupOrphanedImages() async {
         guard OWSFileSystem.fileOrFolderExists(url: imageHistoryDirectory) else { return }
 
         let allRecords: [[AvatarRecord]] = db.read { tx in

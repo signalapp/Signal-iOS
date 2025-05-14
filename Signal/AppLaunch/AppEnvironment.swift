@@ -179,7 +179,7 @@ public class AppEnvironment: NSObject {
             }
 
             Task {
-                self.avatarHistoryManager.cleanupOrphanedImages()
+                await self.avatarHistoryManager.cleanupOrphanedImages()
             }
 
             Task {
