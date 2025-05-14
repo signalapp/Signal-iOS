@@ -571,6 +571,15 @@
 /* Title for a button allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "關閉並刪除備份";
 
+/* Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error. */
+"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+
+/* Message shown in an action sheet when the user tries to disable Backups, but encountered a network error. */
+"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+
+/* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
+"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "每日";
 
@@ -612,6 +621,18 @@
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "重新啟用備份";
+
+/* Message for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use your phone as you normally do while the backup takes place.";
+
+/* Title for the primary button for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Back Up Now";
+
+/* Title for the secondary button for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Back Up Later";
+
+/* Title for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Backups. Start your backup now.";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Signal 備份";
@@ -1302,6 +1323,21 @@
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "You must be registered to enable Backups.";
+
+/* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Something went wrong. Please try again.";
+
+/* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong. Please contact support.";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Current plan";
@@ -3925,17 +3961,11 @@
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "全部已讀";
 
-/* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
-"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "選擇你的銀行";
-
 /* Fallback title confirming recurring donation with bank. */
 "IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "確認你的捐款";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}. */
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "要設定你的定期捐款，請輕按「繼續」以向銀行確認 %1$@ 的費用。這筆款項將自動退還，並允許從你的帳戶中扣除每月 %2$@ 的捐款。";
-
-/* Title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "與 %1$@ 確認你的捐款";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "隨意描繪以模糊";

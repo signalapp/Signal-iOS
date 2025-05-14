@@ -571,6 +571,15 @@
 /* Title for a button allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Désactiver et supprimer la sauvegarde";
 
+/* Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error. */
+"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+
+/* Message shown in an action sheet when the user tries to disable Backups, but encountered a network error. */
+"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+
+/* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
+"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Quotidienne";
 
@@ -612,6 +621,18 @@
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Réactiver les sauvegardes";
+
+/* Message for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use your phone as you normally do while the backup takes place.";
+
+/* Title for the primary button for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Back Up Now";
+
+/* Title for the secondary button for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Back Up Later";
+
+/* Title for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Backups. Start your backup now.";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Sauvegardes Signal";
@@ -1061,7 +1082,7 @@
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Cela supprimera définitivement tout l’historique des appels.";
 
 /* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Supprimer l’historique des appels ?";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Supprimer l'historique des appels ?";
 
 /* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Supprimer";
@@ -1302,6 +1323,21 @@
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "You must be registered to enable Backups.";
+
+/* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Something went wrong. Please try again.";
+
+/* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong. Please contact support.";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Current plan";
@@ -2513,7 +2549,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ a fait un don à Signal pour vous";
 
 /* You have a made a donation on a friend's behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ Vous avez fait un don pour %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ Vous avez fait un don à Signal pour %1$@";
 
 /* You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ a fait un don à Signal pour vous";
@@ -3925,17 +3961,11 @@
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Tout marquer comme lu";
 
-/* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
-"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Sélectionnez votre banque";
-
 /* Fallback title confirming recurring donation with bank. */
 "IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Confirmez votre don";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}. */
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Pour configurer votre don mensuel, appuyez sur \"Continuer\". Vous confirmez ainsi le prélèvement de %1$@ auprès de votre banque. Cette somme sera automatiquement remboursée et permettra de confirmer le prélèvement de la somme mensuelle de %2$@ sur votre compte.";
-
-/* Title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Confirmez votre don %1$@";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Dessinez sur n'importe quelle zone pour la flouter.";
@@ -5087,7 +5117,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Vous avez peut-être reçu des messages pendant le redémarrage de votre %1$@.";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Pour recevoir des notifications de nouveaux messages :";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Pour recevoir des notifications à l'arrivée de nouveaux messages :";
 
 /* First step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Touchez \"Accéder aux réglages\" ci-dessous.";
@@ -5258,7 +5288,7 @@
 "ONBOARDING_PERMISSIONS_PREAMBLE" = "Voulez-vous accorder les autorisations suivantes à Signal ?";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Accorder les autorisations";
+"ONBOARDING_PERMISSIONS_TITLE" = "Autorisations nécessaires";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choisissez qui peut vous trouver sur Signal grâce à votre numéro de téléphone %1$@";
@@ -6038,7 +6068,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "Le code PIN doit comporter au moins quatre chiffres.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Vous ne pouvez pas épingler plus de quatre conversations.";
+"PINNED_CONVERSATION_LIMIT" = "Vous ne pouvez pas épingler plus de 4 conversations.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Épinglées";
@@ -7415,7 +7445,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Réactiver les paiements";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Découvrez la fonctionnalité de paiement";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Fonctionnalité de paiement";
 
 /* Button when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Ignorer la phrase de récupération";
@@ -8453,7 +8483,7 @@
 "TEXT_MENU_BOLD" = "Gras";
 
 /* Option in selected text edit menu to clear all text formatting in the selected text range */
-"TEXT_MENU_CLEAR_FORMATTING" = "Effacer la mise en forme";
+"TEXT_MENU_CLEAR_FORMATTING" = "Annuler la mise en forme";
 
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "Mise en forme";

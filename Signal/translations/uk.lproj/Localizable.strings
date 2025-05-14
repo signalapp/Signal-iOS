@@ -571,6 +571,15 @@
 /* Title for a button allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Вимкнути й видалити резервну копію";
 
+/* Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error. */
+"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+
+/* Message shown in an action sheet when the user tries to disable Backups, but encountered a network error. */
+"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+
+/* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
+"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Щодня";
 
@@ -612,6 +621,18 @@
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Увімкнути знову";
+
+/* Message for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use your phone as you normally do while the backup takes place.";
+
+/* Title for the primary button for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Back Up Now";
+
+/* Title for the secondary button for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Back Up Later";
+
+/* Title for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Backups. Start your backup now.";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Резервне копіювання від Signal";
@@ -1302,6 +1323,21 @@
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "You must be registered to enable Backups.";
+
+/* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Something went wrong. Please try again.";
+
+/* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong. Please contact support.";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Current plan";
@@ -3925,17 +3961,11 @@
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Прочитати всі";
 
-/* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
-"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Оберіть свій банк";
-
 /* Fallback title confirming recurring donation with bank. */
 "IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Підтвердження донату";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}. */
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Щоб оформити регулярний донат, натисніть «Продовжити» й підтвердьте списання %1$@ зі свого банківського рахунку. Цю суму буде автоматично повернуто. Ця операція потрібна, щоб активувати списання %2$@/місяць з вашого рахунку.";
-
-/* Title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Підтвердьте донат через %1$@";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Замалюйте зону, щоб її розмити";
@@ -6173,7 +6203,7 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Ім'я";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Із вашим іменем користувача сталася помилка. Воно більше не належить до вашого акаунту. Ви можете спробувати встановити це ім'я повторно або вибрати нове.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "З вашим іменем користувача сталася помилка. Воно більше не пов'язане з вашим акаунтом. Ви можете спробувати встановити це ім'я повторно або вибрати нове.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Видалити ім'я користувача";
@@ -6221,7 +6251,7 @@
 "PROFILE_VIEW_TITLE" = "Профіль";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
-"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Ім'я користувача, QR-код і посилання не відображаються у вашому профілі. Діліться імʼям користувача тільки з людьми, яким ви довіряєте.";
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Ім'я користувача, QR-код і посилання не показуються у вашому профілі. Діліться іменем користувача тільки з тими, кому довіряєте.";
 
 /* Footer below the usernames section of the profile settings when a username has not been set. */
 "PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Тепер люди можуть писати вам, знаючи ваше ім'я користувача. Його можна створити в разі потреби не повідомляти свого номера телефону.";
@@ -6353,7 +6383,7 @@
 "RECIPIENT_CONTEXT_MENU_BLOCK_TITLE" = "Заблокувати";
 
 /* The title for a context menu item that removes a recipient from your recipient picker list. */
-"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "Видалити";
+"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "Вилучити";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Користувача неможливо обрати.";
@@ -6380,10 +6410,10 @@
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Ваш PIN-код — це створений вами цифровий або буквено-цифровий код, який містить мінімум 4 символи. Якщо ви забули PIN-код, вам доведеться зачекати 7 днів, після чого повторно зареєструвати свій акаунт.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Ваш PIN-код — це створений вами цифровий або буквено-цифровий код, який містить принаймні 4 символи. Якщо ви не можете згадати свій PIN-код, ви зможете зареєструватися і користуватися своїм акаунтом, але втратите деякі збережені налаштування, наприклад інформацію профілю.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Ваш PIN-код — це створений вами цифровий або буквено-цифровий код, який містить мінімум 4 символи. Якщо ви забули свій PIN-код, то можете зареєструвати й використовувати акаунт, але ви втратите частину збережених налаштувань, як-от інформацію профілю.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Ваш PIN-код — це створений вами цифровий або буквено-цифровий код, який містить принаймні 4 символи. Якщо ви не можете згадати свій PIN-код, ви можете створити новий. Ви зможете зареєструватися і користуватися своїм акаунтом, але втратите деякі збережені налаштування, наприклад інформацію профілю.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "PIN-код — це створений вами цифровий або буквено-цифровий код, який містить мінімум 4 символи. Якщо ви забули свій PIN-код, то можете створити новий. Ви можете зареєструвати й використовувати акаунт, але ви втратите частину збережених налаштувань, як-от інформацію профілю.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Неправильний PIN-код";
@@ -6407,7 +6437,7 @@
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Оновити";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "Щоби продовжити реєстрацію, оновіть Signal до останньої версії.";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "Щоб продовжити реєстрацію, оновіть Signal до останньої версії.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Необхідне оновлення";
@@ -6434,22 +6464,22 @@
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Введіть номер";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Для захисту вашої конфіденційності та безпеки ваш акаунт було заблоковано. Ви зможете заново зареєструвати цей номер телефону без PIN-коду після такого періоду бездіяльності в акаунті: %1$@. Увесь вміст буде видалено.";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Ваш акаунт заблоковано з міркувань конфіденційності й безпеки. Через %1$@ без активності в акаунті ви зможете заново зареєструвати цей номер телефону без введення PIN-коду. Весь вміст буде видалено.";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
-"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Дізнатися більше про заблоковану реєстрацію акаунту";
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Дізнатися більше про заблоковані акаунти";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
 "REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Використати інший номер";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
-"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Реєстрація акаунту заблокована";
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Акаунт заблоковано";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_BODY" = "Щоби продовжити, перевірте підключення телефону до інтернету і спробуйте ще раз.";
+"REGISTRATION_NETWORK_ERROR_BODY" = "Щоб продовжити, перевірте з'єднання з інтернетом і спробуйте ще раз.";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_TITLE" = "Перевірте підключення";
+"REGISTRATION_NETWORK_ERROR_TITLE" = "Перевірте з'єднання";
 
 /* Title of button to tap if you do not have a backup key during registration. */
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Не зберегли ключа?";
@@ -6542,13 +6572,13 @@
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "Ми не змогли надіслати вам код підтвердження в SMS. Код можна також отримати, прийнявши аудіовиклик.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Ви зробили забагато спроб ввести код. Запитайте код ще раз і спробуйте знову.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Ви зробили забагато спроб ввести код. Запитайте й введіть новий код.";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Ви зробили забагато спроб ввести код. Повторіть через %1$@";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Ви зробили забагато спроб ввести код. Спробуйте ще раз через %1$@";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "Введений код недійсний. Запитайте код ще раз і спробуйте знову.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "Ви ввели недійсний код. Запитайте й введіть новий код.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Щоб зареєструватися, введіть дійсний номер телефону.";
@@ -6578,13 +6608,13 @@
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Виправити";
 
 /* Label warning the user that something is wrong with their username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Із вашим іменем користувача сталася помилка. Воно більше не належить до вашого акаунту. Ви можете спробувати встановити це ім'я повторно або вибрати нове.";
+"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "З вашим іменем користувача сталася помилка. Воно більше не пов'язане з вашим акаунтом. Ви можете спробувати встановити це ім'я повторно або вибрати нове.";
 
 /* Button below the warning to fix a username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Виправити";
 
 /* Label warning the user that something is wrong with their username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Із вашим QR-кодом і посиланням імені користувача сталася помилка. Вони більше не дійсні. Створіть нове посилання, щоби поділитися ним з іншими.";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "З QR-кодом і посиланням, пов'язаними з вашим іменем користувача, сталася помилка. Вони більше не дійсні. Створіть нове посилання, щоб ділитися ним з іншими.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "Прибрати попередній вигляд";
@@ -6596,10 +6626,10 @@
 "REREGISTER_FOR_PUSH" = "Перереєструвати токен для push-сповіщень";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "Ви маєте ще %1$@. Якщо спроби закінчаться, ви зможете створити новий PIN-код. Ви зможете зареєструватися і користуватися своїм акаунтом, але втратите деякі збережені налаштування, наприклад інформацію профілю.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "У вас лишається ще %1$@. Якщо спроби закінчаться, можна створити новий PIN-код. Ви зможете зареєструвати й використовувати акаунт, але втратите частину збережених налаштувань, як-от інформацію профілю.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Ви маєте ще %1$@. Якщо спроби закінчаться, ваш акаунт буде заблоковано на 7 днів. Через 7 днів без активності ви зможете зареєструватися знову без PIN-коду. Увесь вміст буде видалено.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "У вас лишається ще %1$@. Якщо спроби закінчаться, ваш акаунт буде заблоковано на 7 днів. Через 7 днів без активності ви зможете зареєструватися знову без PIN-коду. Весь вміст буде видалено.";
 
 /* Configure reactions reset button text */
 "RESET" = "Скинути";
@@ -6908,34 +6938,34 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "Стандартна";
 
 /* Users can donate to Signal with a bank account. This is the label for email field on that screen. */
-"SEPA_DONATION_EMAIL_LABEL" = "Електронна пошта";
+"SEPA_DONATION_EMAIL_LABEL" = "Імейл";
 
 /* Users can donate to Signal with a bank account. This is placeholder text for the email field before the user starts typing. */
 "SEPA_DONATION_EMAIL_PLACEHOLDER" = "Адреса електронної пошти";
 
 /* SEPA bank account donation error for insufficient funds. */
-"SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS" = "На вказаному банківському рахунку недостатньо коштів. Спробуйте знову або зв'яжіться зі своїм банком для додаткової інформації.";
+"SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS" = "На зазначеному банківському рахунку недостатньо коштів для здійснення цієї операції. Повторіть платіж або зв'яжіться зі своїм банком для додаткової інформації.";
 
 /* SEPA bank account donation error for missing or incorrect mandate information. */
-"SEPA_DONATION_ERROR_NOT_AUTHORIZED" = "Під час обробки платежу виникла помилка. Будь ласка, спробуйте ще раз.";
+"SEPA_DONATION_ERROR_NOT_AUTHORIZED" = "Під час опрацювання платежу сталася помилка. Будь ласка, повторіть оплату.";
 
 /* SEPA bank account donation error for the account details not being able to be processed. */
-"SEPA_DONATION_ERROR_NOT_PROCESSED" = "Не вдалося обробити введені банківські реквізити. Зв'яжіться зі своїм банком для додаткової інформації.";
+"SEPA_DONATION_ERROR_NOT_PROCESSED" = "Не вдалось опрацювати введені банківські реквізити. Зв'яжіться зі своїм банком для додаткової інформації.";
 
 /* SEPA bank account donation error for unspecified decline failures. */
-"SEPA_DONATION_ERROR_OTHER" = "Переконайтеся, що банківські реквізити правильні, і повторіть спробу. Якщо проблема не вирішиться, зв'яжіться зі своїм банком.";
+"SEPA_DONATION_ERROR_OTHER" = "Переконайтеся, що правильно ввели банківські реквізити, і повторіть платіж. Якщо це не допоможе, зв'яжіться зі своїм банком.";
 
 /* SEPA bank account donation error for the payment not being authorizing by the account holder. */
-"SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED" = "Власник рахунку скасував цей платіж, тому його не вдалось обробити. Кошти не було стягнуто.";
+"SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED" = "Власник рахунку скасував цей платіж, тому його не було опрацьовано. Кошти не було стягнуто.";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) contains characters other than letters and numbers, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_INVALID_CHARACTERS_ERROR" = "IBAN може містити лише літери A–Z і цифри 0–9";
+"SEPA_DONATION_IBAN_INVALID_CHARACTERS_ERROR" = "IBAN може містити лише букви A–Z і цифри 0–9";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) does not pass validation, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_INVALID_CHECK_ERROR" = "Недійсний номер IBAN";
+"SEPA_DONATION_IBAN_INVALID_CHECK_ERROR" = "Такого номеру IBAN не існує";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) has an unsupported country code, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_INVALID_COUNTRY_ERROR" = "Код країни IBAN не підтримується";
+"SEPA_DONATION_IBAN_INVALID_COUNTRY_ERROR" = "IBAN з кодом цієї країни не підтримуються";
 
 /* Users can donate to Signal with a bank account. This is the label for IBAN (internation bank account number) field on that screen. */
 "SEPA_DONATION_IBAN_LABEL" = "IBAN";
@@ -6950,7 +6980,7 @@
 "SEPA_DONATION_NAME_LABEL" = "Ім'я";
 
 /* Users can donate to Signal with a bank account. This is placeholder text for the name field before the user starts typing. */
-"SEPA_DONATION_NAME_PLACEHOLDER" = "Ім'я на банківському рахунку";
+"SEPA_DONATION_NAME_PLACEHOLDER" = "Ім'я власника банківського рахунку";
 
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal використовує наскрізне шифрування, через що час від часу може оновлювати сесію чату. Це не впливає на безпеку чату, але ви могли пропустити повідомлення від цього контакту, тому попросіть надіслати його знов.";
@@ -6959,7 +6989,7 @@
 "SESSION_REFRESH_ALERT_TITLE" = "Сесію чату оновлено";
 
 /* If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient. */
-"SESSION_SWITCHOVER_EVENT" = "%2$@ володіє номером %1$@";
+"SESSION_SWITCHOVER_EVENT" = "Номер %1$@ належить користувачеві %2$@";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Обрати з фотографій";
@@ -7019,13 +7049,13 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Журнал помилок";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Назва застосунку «Signal» відображатиметься на головному екрані, у сповіщеннях і в бібліотеці програм.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Назву застосунку «Signal» буде видно на головному екрані, у сповіщеннях і в бібліотеці програм.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Ви можете приховати назву застосунку «Signal» на головному екрані, перемістивши програму на панель інструментів унизу головного екрана.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Ви можете приховати назву застосунку «Signal» на головному екрані, перемістивши застосунок на панель інструментів унизу головного екрана.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "Назва застосунку «Signal» відображатиметься на головному екрані, у сповіщеннях і в бібліотеці програм.";
+"SETTINGS_APP_ICON_FOOTER" = "Назву застосунку «Signal» буде видно на головному екрані, у сповіщеннях і в бібліотеці програм.";
 
 /* The title for the app icon selection settings page. */
 "SETTINGS_APP_ICON_TITLE" = "Значок застосунку";
@@ -7163,10 +7193,10 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Перенести залишок";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Видалити усі дані";
+"SETTINGS_DELETE_DATA_BUTTON" = "Видалити всі дані";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Ви впевнені, що хочете видалити всю історію (повідомлення, вкладення, виклики тощо)? Ця дія є незворотною.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Ви точно хочете видалити всю історію (повідомлення, вкладення, виклики тощо)? Видалення буде незворотне.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Видалити все";
@@ -7298,7 +7328,7 @@
 "SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Платежі у Signal більше не доступні. Ви й досі можете переказувати кошти для обміну, але більше не можете надсилати та отримувати платежі та поповнювати рахунок.";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Курси обміну валют приблизні та можуть не відображати остаточну суму.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Курси обміну валют орієнтовні, тому сума може бути неточна.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Усі валюти";
@@ -7322,10 +7352,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Вимкнути платежі";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Перш ніж відключити платежі, ми рекомендуємо перевести кошти в інший гаманець. Інакше кошти залишаться у вашому гаманці, прив'язаному до Signal, якщо ви знову активуєте платежі.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Перед вимкненням платежів рекомендуємо вивести кошти в інший гаманець. Якщо ви цього не зробите, то в разі повторної активації платежів кошти залишаться у вашому гаманці, зв'язаному із Signal.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Баланс залишиться в гаманці, прив'язаному до Signal, якщо ви вирішите знов увімкнути платежі.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Якщо ви знов активуєте платежі, залишок буде в гаманці, зв'язаному з Signal.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Деактивувати без переведення коштів?";
@@ -7430,10 +7460,10 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Після перевстановлення Signal ваш баланс буде автоматично відновлено, якщо ви підтвердите свій PIN-код Signal. Відновити баланс можна також за допомогою кодової фрази — вона унікальна й складається з 24 слів. Запишіть її та зберігайте в надійному місці.";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "Ви маєте баланс! Час зберегти кодову фразу — ключ із 24 слів, за допомогою якого можна відновити свій баланс.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "У вас є залишок! Збережіть кодову фразу — пароль з 24 слів, за допомогою якого ви зможете відновити свій залишок.";
 
 /* Explanation of the 'payments passphrase' when from the help card. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Час зберегти кодову фразу — ключ із 24 слів, за допомогою якого можна відновити свій баланс.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Збережіть кодову фразу — пароль з 24 слів, за допомогою якого ви зможете відновити свій залишок.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Додати кошти";
@@ -7493,19 +7523,19 @@
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Платежі вимкнено.";
 
 /* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Якщо пропустити цей крок, будь-яка людина з доступом до вашого телефону зможе перевести кошти чи переглянути вашу кодову фразу.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Якщо пропустити цей крок, то будь-хто з фізичним доступом до вашого телефону зможе здійснити переказ або побачити вашу кодову фразу.";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Face ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Пропустити ввімкнення Face ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Не вмикати Face ID?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Optic ID. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Не вмикати Optic ID?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Пропустити ввімкнення коду доступу?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Не вмикати код доступу?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Touch ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Пропустити ввімкнення Touch ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Не вмикати Touch ID?";
 
 /* Enable Button title in Payments Lock Prompt view for Face ID. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Використовувати Face ID";
@@ -7520,7 +7550,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Використовувати Touch ID";
 
 /* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Увімкніть Face ID і додайте ще один рівень безпеки, щоб людина з вашим телефоном не змогла отримати доступ до ваших коштів. Цю функцію можна вимкнути в параметах.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Увімкніть Face ID — додайте ще один рівень безпеки, щоб людина з вашим телефоном не змогла отримати доступ до ваших коштів. Цю функцію можна вимкнути в параметрах.";
 
 /* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Увімкніть Optic ID для додаткового захисту, щоб ніхто не міг отримати доступ до ваших коштів, навіть маючи ваш телефон. Цю функцію можна вимкнути в параметрах.";
@@ -7535,10 +7565,10 @@
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Оновити Signal";
 
 /* Message for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Потрібно оновити застосунок, щоб і надалі надсилати й отримувати платежі, а також переглядати актуальний баланс.";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Потрібно оновити застосунок, щоб і надалі надсилати й отримувати платежі, а також бачити актуальний залишок на рахунку.";
 
 /* Title for payments outdated sheet saying cant send. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Неможливо відправити платіж";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Неможливо надіслати платіж";
 
 /* Title for payments outdated sheet saying update required. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Необхідне оновлення";
@@ -7919,10 +7949,10 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Неможливо надіслати вкладення";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Завантаження %1$@ з %2$@…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Вивантаження: %1$@ з %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Завантаження…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Вивантаження…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Неможливо підготувати вкладення";
@@ -8060,7 +8090,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "Переслати";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Перейти до чату";
+"STORIES_GO_TO_CHAT_ACTION" = "Відкрити чат";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
 "STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Ви не можете відповісти на цю історію, тому що ви вже не учасник цієї групи.";

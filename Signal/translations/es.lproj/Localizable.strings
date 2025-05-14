@@ -248,7 +248,7 @@
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Ahora no";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La versión %1$@ ya está disponible en la App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La versión %1$@ ya está disponible en App Store.";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Hay una nueva versión de Signal disponible";
@@ -542,7 +542,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Gestionar o cancelar";
 
 /* Title for a button allowing users to reenable a paid backup plan that has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE" = "Volver a suscribirse";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE" = "Volver a suscribirme";
 
 /* Text describing that the user's paid backup plan has been canceled. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION" = "Suscripción cancelada";
@@ -571,6 +571,15 @@
 /* Title for a button allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Desactivar y eliminar copia de seguridad";
 
+/* Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error. */
+"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+
+/* Message shown in an action sheet when the user tries to disable Backups, but encountered a network error. */
+"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+
+/* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
+"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Diaria";
 
@@ -587,7 +596,7 @@
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_WEEKLY" = "Semanal";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Copia de seguridad con conexión móvil";
+"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Copia de seguridad usando datos móviles";
 
 /* Label for a menu item explaining the size of the user's backup. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL" = "Tamaño de la copia de seguridad";
@@ -612,6 +621,18 @@
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Volver a habilitar copias";
+
+/* Message for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use your phone as you normally do while the backup takes place.";
+
+/* Title for the primary button for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Back Up Now";
+
+/* Title for the secondary button for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Back Up Later";
+
+/* Title for a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Backups. Start your backup now.";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Copias de seguridad de Signal";
@@ -1302,6 +1323,21 @@
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "You must be registered to enable Backups.";
+
+/* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Something went wrong. Please try again.";
+
+/* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong. Please contact support.";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Current plan";
@@ -2195,7 +2231,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Añadir como dispositivo nuevo";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Registrar sin transferir";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Registrarme sin transferir";
 
 /* The title for the device transfer 'choice' view */
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Transferir cuenta y mensajes";
@@ -2549,7 +2585,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "Ver";
 
 /* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "¡%1$@ ha hecho una donación a Signal en tu nombre! Muesrtra tu insignia de apoyo a Signal en tu perfil.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "¡%1$@ ha hecho una donación a Signal en tu nombre! Muestra tu insignia de apoyo a Signal en tu perfil.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Mensajería privada. Sin anuncios, sin seguimiento, sin vigilancia.";
@@ -2558,7 +2594,7 @@
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal se financia con donaciones de personas como tú, con lo que tu privacidad es nuestra máxima prioridad. Signal está diseñada para ti, no para obtener datos ni ganancias.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Si puedes, haz una donación hoy para que Signal siga siendo un espacio seguro, confiable y accesible para todo el mundo.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Si puedes apoyar nuestra misión, haz una donación hoy para que Signal siga siendo una aplicación segura, confiable y accesible para todo el mundo.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
 "DONATION_READ_MORE_SCREEN_TITLE" = "Signal es diferente.";
@@ -3925,17 +3961,11 @@
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Leer todos";
 
-/* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
-"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Elige tu banco";
-
 /* Fallback title confirming recurring donation with bank. */
 "IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Confirma tu donación";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Si quieres configurar tu donación recurrente, toca \"Continuar\" para confirmar un cargo a tu banco de %1$@. Este monto se reembolsará automáticamente y permitirá que tu donación mensual de %2$@ se cargue a tu cuenta.";
-
-/* Title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Confirma tu donación con %1$@";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Si quieres configurar tu donación recurrente, toca \"Continuar\" para confirmar un cargo de %1$@ a tu banco. Este monto se reembolsará automáticamente y permitirá que tu donación mensual de %2$@ se cargue a tu cuenta.";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Toca sobre la foto para difuminar";
@@ -4316,7 +4346,7 @@
 "LINKED_DEVICES_HEADER_DESCRIPTION" = "Usa Signal para escritorio o iPad. Tus mensajes se sincronizarán en todos tus dispositivos vinculados.";
 
 /* Footer text below the list of currently-linked devices */
-"LINKED_DEVICES_LIST_FOOTER" = "Los mensajes y los chats están protegidos con cifrado de extremo a extremo en todos los dispositivos";
+"LINKED_DEVICES_LIST_FOOTER" = "Los mensajes y chats están protegidos con cifrado de extremo a extremo en todos los dispositivos";
 
 /* Title above the list of currently-linked devices */
 "LINKED_DEVICES_LIST_TITLE" = "Dispositivos vinculados";
@@ -4343,7 +4373,7 @@
 "LINKING_SYNCING_FINALIZING" = "Finalizando la transferencia de mensajes…";
 
 /* Footer text when loading messages during linking process. */
-"LINKING_SYNCING_FOOTER" = "Los mensajes y los chats, al igual que el proceso de sincronización, están protegidos con cifrado de extremo a extremo.";
+"LINKING_SYNCING_FOOTER" = "Los mensajes y chats, al igual que el proceso de sincronización, están protegidos con cifrado de extremo a extremo.";
 
 /* Title shown when loading messages during linking process */
 "LINKING_SYNCING_MESSAGES_TITLE" = "Sincronizando mensajes";
@@ -4439,13 +4469,13 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Los mensajes de voz y los archivos de audio que envíes y recibas aparecerán aquí.";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Aquí se mostrarán los mensajes de voz y archivos de audio que envíes y recibas.";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
 "MEDIA_GALLERY_NO_AUDIO_TITLE" = "No hay archivos de audio";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - second line. */
-"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "Los documentos que envíes y recibas aparecerán aquí.";
+"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "Aquí se mostrarán los documentos que envíes y recibas.";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - first line. */
 "MEDIA_GALLERY_NO_FILES_TITLE" = "No hay documentos";
@@ -4454,7 +4484,7 @@
 "MEDIA_GALLERY_NO_FILTER_RESULTS" = "No hay archivos multimedia";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Las fotos, vídeos y GIF que envíes y recibas aparecerán aquí.";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Aquí se mostrarán las fotos, vídeos y GIF que envíes y recibas.";
 
 /* Displayed in All Media screen when there's no media - first line. */
 "MEDIA_GALLERY_NO_MEDIA_TITLE" = "No hay archivos multimedia";
@@ -5183,7 +5213,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Continúa sin transferir tus mensajes ni archivos multimedia";
 
 /* The title for the skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Registrar sin transferir";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Registrarme sin transferir";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE" = "Restaurar o transferir cuenta";
@@ -5378,7 +5408,7 @@
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Actualizar ahora";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Actualiza Signal para continuar usando pagos. Es posible que tu saldo no esté actualizado.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Actualiza Signal para seguir usando pagos. Es posible que tu saldo no esté actualizado.";
 
 /* Body text describing the outgoing transfer. */
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Tu cuenta se transferirá a un nuevo dispositivo. En este dispositivo podrás ver tus grupos y contactos, acceder a tus chats y enviar mensajes desde tu perfil.";
@@ -5387,7 +5417,7 @@
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "Transferir cuenta";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Los mensajes y los chats están protegidos con cifrado de extremo a extremo en todos los dispositivos";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "Los mensajes y chats están protegidos con cifrado de extremo a extremo en todos los dispositivos";
 
 /* Title text describing the outgoing transfer. */
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Transferir cuenta";
@@ -5765,10 +5795,10 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invitaciones no válidas";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Personas invitadas por otros participantes";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Personas que otros participantes han invitado";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Personas invitadas por ti";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Personas que has invitado";
 
 /* Label for view-once messages indicating that the message's contents are expired and unavailable to download. */
 "PER_MESSAGE_EXPIRATION_EXPIRED" = "Caducado";
@@ -6845,7 +6875,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "No tengo Signal en mi teléfono…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Ve a la App Store en tu teléfono, instala Signal y completa el proceso de registro para poder vincular este iPad con tu cuenta.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Ve a App Store en tu teléfono, instala Signal y completa el proceso de registro para poder vincular este iPad con tu cuenta.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Instala Signal en tu teléfono";
@@ -7823,7 +7853,7 @@
 "SETTINGS_RELINK_BUTTON" = "Volver a vincular";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "Volver a registrarse";
+"SETTINGS_REREGISTER_BUTTON" = "Volver a registrarme";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Tiempo de espera para el bloqueo";
@@ -8024,7 +8054,7 @@
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No hay ningún paquete de stickers instalado";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Los stickers de tus mensajes recibidos aparecerán aquí";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Aquí se mostrarán los stickers de tus mensajes recibidos.";
 
 /* Title for the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_TITLE" = "Stickers";
@@ -8264,7 +8294,7 @@
 "STORY_SEND_FAILED_RETRY" = "Toca para reintentar";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "No enviada. Toca para reintentar.";
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "No enviado. Toca para reintentar.";
 
 /* Text indicating that the story send has partially failed */
 "STORY_SEND_PARTIALLY_FAILED" = "Enviado parcialmente";
