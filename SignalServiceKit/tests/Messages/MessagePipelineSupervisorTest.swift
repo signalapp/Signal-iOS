@@ -7,7 +7,7 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-class MessagePipelineSupervisorTest: SSKBaseTest {
+class MessagePipelineSupervisorTest: XCTestCase {
 
     var dut: MessagePipelineSupervisor! = nil
 
