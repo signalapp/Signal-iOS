@@ -34,6 +34,7 @@ public class AppEnvironment: NSObject {
     private(set) var badgeManager: BadgeManager!
     private(set) var callLinkProfileKeySharingManager: CallLinkProfileKeySharingManager!
     private(set) var callService: CallService!
+    private(set) var outgoingDeviceRestorePresenter: OutgoingDeviceRestorePresenter!
     private(set) var provisioningManager: ProvisioningManager!
     private(set) var quickRestoreManager: QuickRestoreManager!
     private var usernameValidationObserver: UsernameValidationObserver!
@@ -92,6 +93,11 @@ public class AppEnvironment: NSObject {
             appReadiness: appReadiness,
             manager: DependenciesBridge.shared.usernameValidationManager,
             database: DependenciesBridge.shared.db
+        )
+
+        self.outgoingDeviceRestorePresenter = OutgoingDeviceRestorePresenter(
+            deviceTransferService: deviceTransferServiceRef,
+            quickRestoreManager: quickRestoreManager
         )
 
         appReadiness.runNowOrWhenAppWillBecomeReady {

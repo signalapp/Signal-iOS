@@ -1691,6 +1691,7 @@
 		C113994D2CA1B3E200D4D90C /* QueuedBackupStickerPackDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C113994C2CA1B3DA00D4D90C /* QueuedBackupStickerPackDownload.swift */; };
 		C116A1D42C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C116A1D32C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift */; };
 		C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */; };
+		C12DB5E72DD39051005039FE /* RegistrationTransferStatusState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12DB5E62DD39051005039FE /* RegistrationTransferStatusState.swift */; };
 		C13341122C221DAD00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */; };
 		C13341132C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13341112C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift */; };
 		C13769402AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */; };
@@ -1700,8 +1701,10 @@
 		C13EDC3F2D94636000670597 /* Registration.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15EE0922D5D5AC00070838C /* Registration.pb.swift */; };
 		C14366262DA55CF8008DE746 /* RegistrationRestoreFromBackupConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14366252DA55CF8008DE746 /* RegistrationRestoreFromBackupConfirmationViewController.swift */; };
 		C14391132BD1C0DF00ED6FCB /* BackupRequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14391122BD1C0DF00ED6FCB /* BackupRequestManager.swift */; };
+		C147C1722D9C58D60026952D /* RegistrationTransferStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C147C1712D9C58D60026952D /* RegistrationTransferStatusViewController.swift */; };
 		C14AEBDF2C1A482900FAA31D /* CVComponentArchivedPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14AEBDE2C1A482900FAA31D /* CVComponentArchivedPayment.swift */; };
 		C14D47602DAEC45C006178AC /* OutgoingDeviceRestoreInitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14D475F2DAEC45C006178AC /* OutgoingDeviceRestoreInitialViewController.swift */; };
+		C14D47642DAEE351006178AC /* OutgoingDeviceRestoreProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14D47632DAEE351006178AC /* OutgoingDeviceRestoreProgressViewController.swift */; };
 		C14D49CE2D667F830033BA69 /* AccountKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14D49CD2D667F830033BA69 /* AccountKeyStore.swift */; };
 		C14EC1A22BA891D200A4D064 /* TransformingInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */; };
 		C14EC1A92BAA4B5F00A4D064 /* StreamTransformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */; };
@@ -1730,6 +1733,7 @@
 		C180878C2D763D4800B16D1E /* RegistrationProvisioningMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C180878B2D763D4800B16D1E /* RegistrationProvisioningMessage.swift */; };
 		C18806342BD8080B0024044A /* BackupAuthCredentialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18806332BD8080B0024044A /* BackupAuthCredentialManager.swift */; };
 		C18806362BD947970024044A /* OWSRequestFactory+Backups.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18806352BD947970024044A /* OWSRequestFactory+Backups.swift */; };
+		C1868F822DBAD04400DA512A /* TransferStatusState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1868F812DBAD04400DA512A /* TransferStatusState.swift */; };
 		C18D4A952B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */; };
 		C18D6FE02D4D8FB40085E3B9 /* AccountEntropyPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18D6FDF2D4D8FB40085E3B9 /* AccountEntropyPool.swift */; };
 		C18DB09F2DA6B9D40084CFD6 /* RegistrationUIStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18DB09E2DA6B9D40084CFD6 /* RegistrationUIStyles.swift */; };
@@ -1744,6 +1748,8 @@
 		C198FDD62A37C905000BCAC9 /* KyberPreKeyStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = C198FDD52A37C905000BCAC9 /* KyberPreKeyStoreImpl.swift */; };
 		C1A0F79D2B9F57340009DC0D /* BackupKeyMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A0F79C2B9F57340009DC0D /* BackupKeyMaterial.swift */; };
 		C1A0F79F2B9F59920009DC0D /* BackupKeyMaterialImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A0F79E2B9F59920009DC0D /* BackupKeyMaterialImpl.swift */; };
+		C1A136C32DB044950049CD05 /* OutgoingDeviceRestorePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A136C22DB044950049CD05 /* OutgoingDeviceRestorePresenter.swift */; };
+		C1A136C52DB044A20049CD05 /* OutgoingDeviceRestoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A136C42DB044A20049CD05 /* OutgoingDeviceRestoreViewModel.swift */; };
 		C1AE7C5A2D7B4451007A618D /* QuickRestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AE7C592D7B4451007A618D /* QuickRestoreManager.swift */; };
 		C1AE7C5D2D7B4538007A618D /* ProvisioningSocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18087892D76023400B16D1E /* ProvisioningSocketManager.swift */; };
 		C1BF1F712BA0D7CC0004B112 /* StreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1BF1F702BA0D7CC0004B112 /* StreamTransform.swift */; };
@@ -5602,6 +5608,7 @@
 		C113994C2CA1B3DA00D4D90C /* QueuedBackupStickerPackDownload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueuedBackupStickerPackDownload.swift; sourceTree = "<group>"; };
 		C116A1D32C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAccessLimitedReminderView.swift; sourceTree = "<group>"; };
 		C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHistoryTableSheetViewController.swift; sourceTree = "<group>"; };
+		C12DB5E62DD39051005039FE /* RegistrationTransferStatusState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferStatusState.swift; sourceTree = "<group>"; };
 		C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSIncomingArchivedPaymentMessage+SDS.swift"; sourceTree = "<group>"; };
 		C13341112C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSOutgoingArchivedPaymentMessage+SDS.swift"; sourceTree = "<group>"; };
 		C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsFindAccountInfoSheetViewController.swift; sourceTree = "<group>"; };
@@ -5609,8 +5616,10 @@
 		C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditMessage.swift; sourceTree = "<group>"; };
 		C14366252DA55CF8008DE746 /* RegistrationRestoreFromBackupConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRestoreFromBackupConfirmationViewController.swift; sourceTree = "<group>"; };
 		C14391122BD1C0DF00ED6FCB /* BackupRequestManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRequestManager.swift; sourceTree = "<group>"; };
+		C147C1712D9C58D60026952D /* RegistrationTransferStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferStatusViewController.swift; sourceTree = "<group>"; };
 		C14AEBDE2C1A482900FAA31D /* CVComponentArchivedPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentArchivedPayment.swift; sourceTree = "<group>"; };
 		C14D475F2DAEC45C006178AC /* OutgoingDeviceRestoreInitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceRestoreInitialViewController.swift; sourceTree = "<group>"; };
+		C14D47632DAEE351006178AC /* OutgoingDeviceRestoreProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceRestoreProgressViewController.swift; sourceTree = "<group>"; };
 		C14D49CD2D667F830033BA69 /* AccountKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountKeyStore.swift; sourceTree = "<group>"; };
 		C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformingInputStream.swift; sourceTree = "<group>"; };
 		C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTransformTests.swift; sourceTree = "<group>"; };
@@ -5641,6 +5650,7 @@
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
 		C18806332BD8080B0024044A /* BackupAuthCredentialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAuthCredentialManager.swift; sourceTree = "<group>"; };
 		C18806352BD947970024044A /* OWSRequestFactory+Backups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+Backups.swift"; sourceTree = "<group>"; };
+		C1868F812DBAD04400DA512A /* TransferStatusState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferStatusState.swift; sourceTree = "<group>"; };
 		C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+IDEAL.swift"; sourceTree = "<group>"; };
 		C18D6FDF2D4D8FB40085E3B9 /* AccountEntropyPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountEntropyPool.swift; sourceTree = "<group>"; };
 		C18DB09E2DA6B9D40084CFD6 /* RegistrationUIStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationUIStyles.swift; sourceTree = "<group>"; };
@@ -5654,6 +5664,8 @@
 		C198FDD52A37C905000BCAC9 /* KyberPreKeyStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KyberPreKeyStoreImpl.swift; sourceTree = "<group>"; };
 		C1A0F79C2B9F57340009DC0D /* BackupKeyMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyMaterial.swift; sourceTree = "<group>"; };
 		C1A0F79E2B9F59920009DC0D /* BackupKeyMaterialImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyMaterialImpl.swift; sourceTree = "<group>"; };
+		C1A136C22DB044950049CD05 /* OutgoingDeviceRestorePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceRestorePresenter.swift; sourceTree = "<group>"; };
+		C1A136C42DB044A20049CD05 /* OutgoingDeviceRestoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceRestoreViewModel.swift; sourceTree = "<group>"; };
 		C1AE7C592D7B4451007A618D /* QuickRestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickRestoreManager.swift; sourceTree = "<group>"; };
 		C1BD5FA792ACABB4855877BD /* Pods-SignalUI.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.app store release.xcconfig"; path = "Target Support Files/Pods-SignalUI/Pods-SignalUI.app store release.xcconfig"; sourceTree = "<group>"; };
 		C1BF1F702BA0D7CC0004B112 /* StreamTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamTransform.swift; sourceTree = "<group>"; };
@@ -9932,6 +9944,8 @@
 				F9426D17299FEC8900357352 /* RegistrationTransferChoiceViewController.swift */,
 				66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */,
 				66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */,
+				C12DB5E62DD39051005039FE /* RegistrationTransferStatusState.swift */,
+				C147C1712D9C58D60026952D /* RegistrationTransferStatusViewController.swift */,
 				C18DB09E2DA6B9D40084CFD6 /* RegistrationUIStyles.swift */,
 				F9EC3FE9299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift */,
 				F9E3006B299D76C3000323F8 /* RegistrationVerificationViewController.swift */,
@@ -10891,11 +10905,15 @@
 				887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */,
 				88C4E37F24635337009C9B97 /* DeviceTransferService.swift */,
 				C14D475F2DAEC45C006178AC /* OutgoingDeviceRestoreInitialViewController.swift */,
+				C1A136C22DB044950049CD05 /* OutgoingDeviceRestorePresenter.swift */,
+				C14D47632DAEE351006178AC /* OutgoingDeviceRestoreProgressViewController.swift */,
+				C1A136C42DB044A20049CD05 /* OutgoingDeviceRestoreViewModel.swift */,
 				88A4CC18246CE6810082211F /* OutgoingDeviceTransferInitialViewController.swift */,
 				88A4CC16246CE6190082211F /* OutgoingDeviceTransferNavigationController.swift */,
 				88A4CC1C246D00090082211F /* OutgoingDeviceTransferProgressViewController.swift */,
 				88A4CC1A246CEC8B0082211F /* OutgoingDeviceTransferQRScanningViewController.swift */,
 				88C659AF24688335002AC115 /* SelfSignedIdentity.swift */,
+				C1868F812DBAD04400DA512A /* TransferStatusState.swift */,
 			);
 			path = DeviceTransfer;
 			sourceTree = "<group>";
@@ -17096,6 +17114,9 @@
 				F9CA468828FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift in Sources */,
 				F9952B2F29F1E59F00EA989E /* OsExpiry.swift in Sources */,
 				C14D47602DAEC45C006178AC /* OutgoingDeviceRestoreInitialViewController.swift in Sources */,
+				C1A136C32DB044950049CD05 /* OutgoingDeviceRestorePresenter.swift in Sources */,
+				C14D47642DAEE351006178AC /* OutgoingDeviceRestoreProgressViewController.swift in Sources */,
+				C1A136C52DB044A20049CD05 /* OutgoingDeviceRestoreViewModel.swift in Sources */,
 				88A4CC19246CE6810082211F /* OutgoingDeviceTransferInitialViewController.swift in Sources */,
 				88A4CC17246CE6190082211F /* OutgoingDeviceTransferNavigationController.swift in Sources */,
 				88A4CC1D246D00090082211F /* OutgoingDeviceTransferProgressViewController.swift in Sources */,
@@ -17208,6 +17229,8 @@
 				F9426D18299FEC8900357352 /* RegistrationTransferChoiceViewController.swift in Sources */,
 				66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */,
 				66783C2B29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift in Sources */,
+				C12DB5E72DD39051005039FE /* RegistrationTransferStatusState.swift in Sources */,
+				C147C1722D9C58D60026952D /* RegistrationTransferStatusViewController.swift in Sources */,
 				C18DB09F2DA6B9D40084CFD6 /* RegistrationUIStyles.swift in Sources */,
 				3440426B273AB186008C9FA4 /* RegistrationUtils.swift in Sources */,
 				F9EC3FEA299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift in Sources */,
@@ -17288,6 +17311,7 @@
 				88D1D40422EF8A9700F472C5 /* ThreadDetailsInteraction.swift in Sources */,
 				1477630B275E20D700D1067E /* ThreadSwipeHandler.swift in Sources */,
 				88A4CC10246CE2760082211F /* TransferProgressView.swift in Sources */,
+				C1868F822DBAD04400DA512A /* TransferStatusState.swift in Sources */,
 				50BF51052BB1FE7E00C2C309 /* TSInteraction+DeleteActionSheet.swift in Sources */,
 				660248F02BBCD29D009E2956 /* TSMessage+RenderableContent.swift in Sources */,
 				C1661A1C2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift in Sources */,

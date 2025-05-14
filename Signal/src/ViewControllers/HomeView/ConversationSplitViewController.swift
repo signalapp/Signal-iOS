@@ -74,6 +74,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             object: UIDevice.current
         )
         NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: .OWSApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didStartTransfer), name: .outgoingDeviceTransferDidStart, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didEndTransfer), name: .outgoingDeviceTransferDidEnd, object: nil)
 
         applyTheme()
     }
@@ -107,6 +109,19 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         if let windowScene = view.window?.windowScene {
             lastActiveInterfaceOrientation = windowScene.interfaceOrientation
         }
+    }
+
+    @objc
+    private func didStartTransfer() {
+        // Disable the device transfer listener while the new device restore flow is active
+        AppEnvironment.shared.deviceTransferServiceRef.removeObserver(self)
+        AppEnvironment.shared.deviceTransferServiceRef.stopListeningForNewDevices()
+    }
+
+    @objc
+    private func didEndTransfer() {
+        AppEnvironment.shared.deviceTransferServiceRef.addObserver(self)
+        AppEnvironment.shared.deviceTransferServiceRef.startListeningForNewDevices()
     }
 
     func closeSelectedConversation(animated: Bool) {

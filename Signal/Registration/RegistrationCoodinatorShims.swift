@@ -13,6 +13,7 @@ extension RegistrationCoordinatorImpl {
     public enum Shims {
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerShim
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreShim
+        typealias DeviceTransferService = _RegistrationCoordinator_DeviceTransferServiceShim
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerShim
         public typealias FeatureFlags = _RegistrationCoordinator_FeatureFlagsShim
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorShim
@@ -21,6 +22,7 @@ extension RegistrationCoordinatorImpl {
         public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerShim
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerShim
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerShim
+        typealias QuickRestoreManager = _RegistrationCoordinator_QuickRestoreManagerShim
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerShim
         public typealias StorageServiceManager = _RegistrationCoordinator_StorageServiceManagerShim
         public typealias UDManager = _RegistrationCoordinator_UDManagerShim
@@ -29,6 +31,7 @@ extension RegistrationCoordinatorImpl {
     public enum Wrappers {
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerWrapper
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreWrapper
+        typealias DeviceTransferService = _RegistrationCoordinator_DeviceTransferServiceWrapper
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerWrapper
         public typealias FeatureFlags = _RegistrationCoordinator_FeatureFlagsWrapper
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorWrapper
@@ -37,6 +40,7 @@ extension RegistrationCoordinatorImpl {
         public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerWrapper
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerWrapper
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
+        typealias QuickRestoreManager = _RegistrationCoordinator_QuickRestoreManagerWrapper
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
         public typealias StorageServiceManager = _RegistrationCoordinator_StorageServiceManagerWrapper
         public typealias UDManager = _RegistrationCoordinator_UDManagerWrapper
@@ -91,6 +95,38 @@ public class _RegistrationCoordinator_CNContactsStoreWrapper: _RegistrationCoord
             future.resolve()
         }
         return guarantee
+    }
+}
+
+// MARK: - DeviceTransferService
+
+protocol _RegistrationCoordinator_DeviceTransferServiceShim {
+    func startAcceptingTransfersFromOldDevices(mode: DeviceTransferService.TransferMode) throws -> URL
+    func addObserver(_ observer: DeviceTransferServiceObserver)
+    func removeObserver(_ observer: DeviceTransferServiceObserver)
+    func stopAcceptingTransfersFromOldDevices()
+}
+
+class _RegistrationCoordinator_DeviceTransferServiceWrapper: _RegistrationCoordinator_DeviceTransferServiceShim {
+
+    private let deviceTransferService: DeviceTransferService
+    public init(_ deviceTransferService: DeviceTransferService) {
+        self.deviceTransferService = deviceTransferService
+    }
+
+    func startAcceptingTransfersFromOldDevices(mode: DeviceTransferService.TransferMode) throws -> URL {
+        return try deviceTransferService.startAcceptingTransfersFromOldDevices(mode: mode)
+    }
+
+    func addObserver(_ observer: DeviceTransferServiceObserver) {
+        deviceTransferService.addObserver(observer)
+    }
+    func removeObserver(_ observer: DeviceTransferServiceObserver) {
+        deviceTransferService.removeObserver(observer)
+    }
+
+    func stopAcceptingTransfersFromOldDevices() {
+        deviceTransferService.stopAcceptingTransfersFromOldDevices()
     }
 }
 
@@ -429,6 +465,29 @@ public class _RegistrationCoordinator_ReceiptManagerWrapper: _RegistrationCoordi
 
     public func setAreStoryViewedReceiptsEnabled(_ areEnabled: Bool, _ tx: DBWriteTransaction) {
         StoryManager.setAreViewReceiptsEnabled(areEnabled, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+}
+
+// MARK: - QuickRestoreManager
+
+protocol _RegistrationCoordinator_QuickRestoreManagerShim {
+    func reportRestoreMethodChoice(
+        method: QuickRestoreManager.RestoreMethodType,
+        restoreMethodToken: QuickRestoreManager.RestoreMethodToken
+    ) async throws
+}
+
+class _RegistrationCoordinator_QuickRestoreManagerWrapper: _RegistrationCoordinator_QuickRestoreManagerShim {
+    private let quickRestoreManager: QuickRestoreManager
+    public init(_ quickRestoreManager: QuickRestoreManager) {
+        self.quickRestoreManager = quickRestoreManager
+    }
+
+    func reportRestoreMethodChoice(
+        method: QuickRestoreManager.RestoreMethodType,
+        restoreMethodToken: QuickRestoreManager.RestoreMethodToken
+    ) async throws {
+        try await quickRestoreManager.reportRestoreMethodChoice(method: method, restoreMethodToken: restoreMethodToken)
     }
 }
 

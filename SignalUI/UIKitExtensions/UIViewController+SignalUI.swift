@@ -105,3 +105,23 @@ public extension UINavigationController {
         CATransaction.commit()
     }
 }
+
+// MARK: -
+
+public extension UIViewController {
+    func awaitableDismiss(animated: Bool) async {
+        await withCheckedContinuation { continuation in
+            self.dismiss(animated: animated) {
+                continuation.resume()
+            }
+        }
+    }
+
+    func awaitablePresent(_ viewController: UIViewController, animated: Bool) async {
+        await withCheckedContinuation { continuation in
+            self.present(viewController, animated: animated) {
+                continuation.resume()
+            }
+        }
+    }
+}

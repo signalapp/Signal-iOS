@@ -101,6 +101,12 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
         selector: #selector(didTapCancel)
     )
 
+    private let url: URL
+    public init(url: URL) {
+        self.url = url
+        super.init()
+    }
+
     override public func loadView() {
         view = UIView()
 
@@ -180,18 +186,7 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
         AppEnvironment.shared.deviceTransferServiceRef.addObserver(self)
 
         Task { @MainActor in
-            do {
-                let url = try AppEnvironment.shared.deviceTransferServiceRef.startAcceptingTransfersFromOldDevices(
-                    mode: .primary
-                )
-
-                qrCodeView.setQRCode(
-                    url: url,
-                    stylingMode: .brandedWithoutLogo
-                )
-            } catch {
-                owsFailDebug("error \(error)")
-            }
+            qrCodeView.setQRCode(url: url, stylingMode: .brandedWithoutLogo)
         }
     }
 

@@ -1339,24 +1339,11 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
 
                 let showQuickRestoreAction = ActionSheetAction(title: CommonStrings.continueButton) { _ in
                     self.dismiss(animated: true) {
-                        Task {
-                            do {
-                                let quickRestoreManager = AppEnvironment.shared.quickRestoreManager!
-                                let token = try await quickRestoreManager.register(deviceProvisioningUrl: provisioningURL)
-                                let method = try await quickRestoreManager.waitForRestoreMethodChoice(restoreMethodToken: token)
-
-                                switch method {
-                                case .decline, .localBackup:
-                                    Logger.error("Unexpected method")
-                                case .remoteBackup:
-                                    Logger.error("Remote backup")
-                                case .deviceTransfer(let data):
-                                    Logger.error("Device Transfer: \(data)")
-                                }
-                            } catch {
-                                Logger.error("Failed to register device via URL: \(error)")
-                            }
-                        }
+                        AppEnvironment.shared.outgoingDeviceRestorePresenter.present(
+                            provisioningURL: provisioningURL,
+                            presentingViewController: CurrentAppContext().frontmostViewController()!,
+                            animated: true
+                        )
                     }
                 }
                 let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton) { _ in

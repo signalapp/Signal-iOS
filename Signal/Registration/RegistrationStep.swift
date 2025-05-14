@@ -67,6 +67,8 @@ public enum RegistrationStep: Equatable {
     /// Prompt the user to choose from the available restore methods
     case chooseRestoreMethod
 
+    case deviceTransfer(RegistrationTransferStatusState)
+
     /// If the account has not set whether its phone number should be
     /// discoverable, this step happens after registration is complete.
     /// (Typically skipped during re-registration as a result.)
@@ -133,6 +135,7 @@ public enum RegistrationStep: Equatable {
         case .phoneNumberEntry: return "phoneNumberEntry"
         case .verificationCodeEntry: return "verificationCodeEntry"
         case .transferSelection: return "transferSelection"
+        case .deviceTransfer: return "deviceTransfer"
         case .pinEntry: return "pinEntry"
         case .pinAttemptsExhaustedWithoutReglock: return "pinAttemptsExhaustedWithoutReglock"
         case .captchaChallenge: return "captchaChallenge"

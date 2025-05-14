@@ -4,30 +4,18 @@
 //
 
 import Foundation
-import SwiftUI
-import SignalUI
 import SignalServiceKit
+import SignalUI
+import SwiftUI
 
-class OutgoingDeviceRestoreInitialViewModel: ObservableObject {
-
-    var onTransferCallback: () -> Void = {}
-
-    func startTransfer() {
-        onTransferCallback()
-    }
+protocol OutgoingDeviceRestoreInitialPresenter {
+    func didTapTransfer() async
 }
 
 class OutgoingDeviceRestoreIntialViewController: HostingController<OutgoingDeviceRestoreInitialView> {
-    private let viewModel = OutgoingDeviceRestoreInitialViewModel()
-
-    init() {
-        super.init(wrappedView: OutgoingDeviceRestoreInitialView(viewModel: viewModel))
-        viewModel.onTransferCallback = { [weak self] in
-            self?.onTransferButtonPressed()
-        }
-
-        self.modalPresentationStyle = .formSheet
-
+    init(presenter: OutgoingDeviceRestoreInitialPresenter) {
+        super.init(wrappedView: OutgoingDeviceRestoreInitialView(presenter: presenter))
+        self.modalPresentationStyle = .overFullScreen
         self.title = OWSLocalizedString(
             "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE",
             comment: "Title text describing the outgoing transfer."
@@ -36,21 +24,13 @@ class OutgoingDeviceRestoreIntialViewController: HostingController<OutgoingDevic
         view.backgroundColor = UIColor.Signal.secondaryBackground
         OWSTableViewController2.removeBackButtonText(viewController: self)
     }
-
-    func onTransferButtonPressed() {
-        let sheet = HeroSheetViewController(
-            hero: .image(UIImage(named: "transfer_account")!),
-            title: LocalizationNotNeeded("Continue on your other device"),
-            body: LocalizationNotNeeded("Continue transferring your account on your other device."),
-            primary: .hero(.animation(named: "circular_indeterminate", height: 60))
-        )
-        sheet.modalPresentationStyle = .formSheet
-        self.present(sheet, animated: true)
-    }
 }
 
 struct OutgoingDeviceRestoreInitialView: View {
-    @ObservedObject fileprivate var viewModel: OutgoingDeviceRestoreInitialViewModel
+    private let presenter: OutgoingDeviceRestoreInitialPresenter
+    init(presenter: OutgoingDeviceRestoreInitialPresenter) {
+        self.presenter = presenter
+    }
 
     var body: some View {
         SignalList {
@@ -73,7 +53,9 @@ struct OutgoingDeviceRestoreInitialView: View {
                         "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION",
                         comment: "Action button to begin account transfer."
                     )) {
-                        viewModel.startTransfer()
+                        Task {
+                            await self.presenter.didTapTransfer()
+                        }
                     }
                     .buttonStyle(Registration.UI.FilledButtonStyle())
                 }.padding([.top, .bottom], 12)
@@ -97,10 +79,18 @@ struct OutgoingDeviceRestoreInitialView: View {
 // MARK: Previews
 
 #if DEBUG
+struct PreviewOutgoingDeviceRestoreIntialPresenter: OutgoingDeviceRestoreInitialPresenter {
+    func didTapTransfer() async {
+        print("didTapTransfer()")
+    }
+}
+
 @available(iOS 17, *)
 #Preview {
     OWSNavigationController(
-        rootViewController: OutgoingDeviceRestoreIntialViewController()
+        rootViewController: OutgoingDeviceRestoreIntialViewController(
+            presenter: PreviewOutgoingDeviceRestoreIntialPresenter()
+        )
     )
 }
 #endif

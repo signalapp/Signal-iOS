@@ -272,6 +272,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    /// Note: This method does _not_ report the restore method back to the old device.
+    /// This is due to the fact we either lack the necessary information (e.g. - device transfer info)
+    /// and/or the user hasn't fully committed to the restore method yet (e.g. - they hit cancel on restore from
+    /// backup and choose device transfer instead).
     public func updateRestoreMethod(method: RegistrationRestoreMethod) -> Guarantee<RegistrationStep> {
         switch method {
         case .declined:
@@ -286,13 +290,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .deviceTransfer:
             inMemoryState.hasSkippedRestoreFromMessageBackup = true
             inMemoryState.needsToAskForDeviceTransfer = false
-            inMemoryState.restoreMethod = .declined
+            inMemoryState.restoreMethod = .deviceTransfer
             deps.db.write { tx in
                 updatePersistedState(tx) {
                     $0.hasDeclinedTransfer = false
                 }
             }
-            // TODO: Need to make a response to the old device with transfer info
         case .remote:
             inMemoryState.hasSkippedRestoreFromMessageBackup = false
             inMemoryState.needsToAskForDeviceTransfer = false
@@ -1379,12 +1382,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         {
             return .opening
         }
-        if
-            case .registering = mode,
-            persistedState.hasOldDevice,
-            inMemoryState.restoreMethod == nil
-        {
-            return .quickRestore
+        if case .registering = mode {
+            if persistedState.hasOldDevice {
+                if inMemoryState.restoreMethod == nil {
+                    return .quickRestore
+                } else if case .deviceTransfer = inMemoryState.restoreMethod {
+                    return .quickRestore
+                }
+            } else {
+                if case .deviceTransfer = inMemoryState.restoreMethod {
+                    return .quickRestore
+                }
+            }
         }
         if let session = inMemoryState.session {
             // If we have a session, always use that. We might have obtained SVR
@@ -1480,6 +1489,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func nextStepForQuickRestore() -> Guarantee<RegistrationStep> {
         if persistedState.accountEntropyPool == nil {
             return .value(.scanQuickRegistrationQrCode)
+        }
+        if case .deviceTransfer = inMemoryState.restoreMethod {
+            if let restoreToken = inMemoryState.restoreMethodToken {
+                let transferStatusState = RegistrationTransferStatusState(
+                    deviceTransferService: deps.deviceTransferService,
+                    quickRestoreManager: deps.quickRestoreManager,
+                    restoreMethodToken: restoreToken
+                )
+                return .value(.deviceTransfer(transferStatusState))
+            } else {
+                return .value(.scanQuickRegistrationQrCode)
+            }
         }
         return .value(.chooseRestoreMethod)
     }

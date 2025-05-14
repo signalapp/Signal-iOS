@@ -13,6 +13,7 @@ extension RegistrationCoordinatorImpl {
     public enum TestMocks {
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerMock
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreMock
+        public typealias DeviceTransferService = _RegistrationCoordinator_DeviceTransferServiceMock
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerMock
         public typealias FeatureFlags = _RegistrationCoordinator_FeatureFlagsMock
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorMock
@@ -22,6 +23,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerMock
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerMock
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerMock
+        public typealias QuickRestoreManager = _RegistrationCoordinator_QuickRestoreManagerMock
         public typealias StorageServiceManager = _RegistrationCoordinator_StorageServiceManagerMock
         public typealias UDManager = _RegistrationCoordinator_UDManagerMock
         public typealias UsernameApiClient = _RegistrationCoordinator_UsernameApiClientMock
@@ -59,6 +61,20 @@ public class _RegistrationCoordinator_CNContactsStoreMock: _RegistrationCoordina
         doesNeedContactsAuthorization = false
         return .value(())
     }
+}
+
+// MARK: DeviceTransferService
+
+public class _RegistrationCoordinator_DeviceTransferServiceMock: _RegistrationCoordinator_DeviceTransferServiceShim {
+    public func startAcceptingTransfersFromOldDevices(mode: Signal.DeviceTransferService.TransferMode) throws -> URL {
+        return URL(string: "https://example.com")!
+    }
+
+    public func addObserver(_ observer: any Signal.DeviceTransferServiceObserver) { }
+
+    public func removeObserver(_ observer: any Signal.DeviceTransferServiceObserver) { }
+
+    public func stopAcceptingTransfersFromOldDevices() { }
 }
 
 public class _RegistrationCoordinator_ExperienceManagerMock: _RegistrationCoordinator_ExperienceManagerShim {
@@ -272,6 +288,15 @@ public class _RegistrationCoordinator_ReceiptManagerMock: _RegistrationCoordinat
         didSetAreStoryViewedReceiptsEnabled = true
         setAreStoryViewedReceiptsEnabledMock?(areEnabled)
     }
+}
+
+// MARK: QuickRestoreManager
+
+public class _RegistrationCoordinator_QuickRestoreManagerMock: _RegistrationCoordinator_QuickRestoreManagerShim {
+    public func reportRestoreMethodChoice(
+        method: QuickRestoreManager.RestoreMethodType,
+        restoreMethodToken: QuickRestoreManager.RestoreMethodToken
+    ) async throws {}
 }
 
 // MARK: StorageService

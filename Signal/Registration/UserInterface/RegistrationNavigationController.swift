@@ -333,6 +333,15 @@ public class RegistrationNavigationController: OWSNavigationController {
                 },
                 update: nil
             )
+        case .deviceTransfer(let state):
+            return Controller(
+                type: RegistrationTransferStatusViewController.self,
+                make: { presenter in
+                    return RegistrationTransferStatusViewController(state: state, presenter: presenter)
+                },
+                // No state to update.
+                update: nil
+            )
         case .phoneNumberDiscoverability(let state):
             return Controller(
                 type: RegistrationPhoneNumberDiscoverabilityViewController.self,
@@ -576,12 +585,24 @@ extension RegistrationNavigationController: RegistrationTransferChoicePresenter 
 
     public func transferDevice() {
         Logger.info("Pushing device transfer")
-        // We push these controllers right onto the same navigation stack, even though they
-        // are not coordinator "steps". They have their own internal logic to proceed and go
-        // back (direct calls to push and pop) and, when they complete, they will have _totally_
-        // overwritten our local database, thus wiping any in progress reg coordinator state
-        // and putting us into the chat list.
-        pushViewController(RegistrationTransferQRCodeViewController(), animated: true, completion: nil)
+
+        do {
+            // TODO: [Backups] - Don't reach into app environment, but this should be removed
+            // once Backups launches
+            let url = try AppEnvironment.shared.deviceTransferServiceRef.startAcceptingTransfersFromOldDevices(
+                mode: .primary
+            )
+
+            // We push these controllers right onto the same navigation stack, even though they
+            // are not coordinator "steps". They have their own internal logic to proceed and go
+            // back (direct calls to push and pop) and, when they complete, they will have _totally_
+            // overwritten our local database, thus wiping any in progress reg coordinator state
+            // and putting us into the chat list.
+            pushViewController(RegistrationTransferQRCodeViewController(url: url), animated: true, completion: nil)
+        } catch {
+            // TODO: [Backups] - update this error handling
+            Logger.error("Error transferring")
+        }
     }
 
     func continueRegistration() {
@@ -641,13 +662,8 @@ extension RegistrationNavigationController: RegistrationEnterBackupKeyPresenter 
 
 extension RegistrationNavigationController: RegistrationChooseRestoreMethodPresenter {
     func didChooseRestoreMethod(method: RegistrationRestoreMethod) {
-        switch method {
-        case .deviceTransfer:
-            transferDevice()
-        case .declined, .local, .remote:
-            let guarantee = coordinator.updateRestoreMethod(method: method)
-            pushNextController(guarantee)
-        }
+        let guarantee = coordinator.updateRestoreMethod(method: method)
+        pushNextController(guarantee)
     }
 }
 
@@ -658,6 +674,13 @@ extension RegistrationNavigationController: RegistrationQuickRestoreQRCodePresen
     }
 
     func cancelChosenRestoreMethod() {
+        let guarantee = coordinator.resetRestoreMethodChoice()
+        pushNextController(guarantee)
+    }
+}
+
+extension RegistrationNavigationController: RegistrationTransferStatusPresenter {
+    func cancelTransfer() {
         let guarantee = coordinator.resetRestoreMethodChoice()
         pushNextController(guarantee)
     }
