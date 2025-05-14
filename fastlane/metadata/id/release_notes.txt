@@ -1,1 +1,1 @@
-• Pembaruan kali ini menyempurnakan tata letak pesan media dengan balasan yang dikutip, serta memperbaiki perbedaan visual yang ditampilkan antara bilah pencarian dan daftar chat Anda saat pengaturan Aksesibilitas iOS "Kurangi Transparansi" diaktifkan.
+• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.

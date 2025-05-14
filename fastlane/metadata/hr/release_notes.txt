@@ -1,1 +1,1 @@
-• Ovo ažuriranje poboljšava izgled poruka s medijskim zapisima u citiranim odgovorima te ispravlja razmak koji se pojavljivao između trake za pretraživanje i popisa razgovora.
+• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.

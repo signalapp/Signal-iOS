@@ -1,1 +1,1 @@
-• Met deze update is de lay-out van mediaberichten met geciteerde antwoorden verbeterd en zie je geen ruimte meer tussen de zoekbalk en je chatlijst.
+• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.

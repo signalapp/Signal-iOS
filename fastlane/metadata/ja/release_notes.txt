@@ -1,1 +1,1 @@
-• 今回のアップデートでは、引用返信を含むメディアメッセージのレイアウトを改善したほか、検索バーとチャットリストの間に見られた隙間を修正しました。
+• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.

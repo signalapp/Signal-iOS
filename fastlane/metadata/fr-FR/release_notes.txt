@@ -1,1 +1,1 @@
-• Cette mise à jour améliore l'affichage des messages multimédias cités dans des réponses. Et vous vous rappelez de l'espace vide entre la barre de recherche et la liste des conversations ? Il apparaissait lorsque le réglage d'accessibilité iOS "Réduire la transparence" était activé. Eh bien, hop, on l'a fait disparaître !
+• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.

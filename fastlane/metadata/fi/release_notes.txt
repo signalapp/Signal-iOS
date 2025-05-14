@@ -1,1 +1,1 @@
-• Tämä päivitys parantaa lainattuja vastauksia sisältävien mediaviestien asettelua ja korjaa myös visuaalisen aukon, joka saattoi ilmestyä hakupalkin ja keskustelulistan väliin.
+• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.

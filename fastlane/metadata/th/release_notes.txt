@@ -1,1 +1,1 @@
-• รุ่นอัปเดตนี้มาพร้อมการปรับปรุงเลย์เอาต์ของการตอบกลับข้อความที่มีไฟล์สื่อแนบ รวมถึงยังแก้ไขช่องว่างบนหน้าจอที่อาจเคยปรากฏระหว่างแถบค้นหาและรายการแชท
+• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.

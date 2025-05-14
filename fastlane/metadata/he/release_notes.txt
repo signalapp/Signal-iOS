@@ -1,1 +1,1 @@
-• העדכון הזה משפר את התצוגה של הודעות מדיה עם תשובות מצוטטות, וגם מתקן פער ויזואלי שלפעמים הופיע בין סרגל החיפוש לרשימת הצ׳אטים שלך.
+• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.

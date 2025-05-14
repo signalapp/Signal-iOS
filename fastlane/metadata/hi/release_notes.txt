@@ -1,1 +1,1 @@
-• इस अपडेट से, क्वोट किए गए जवाबों की मदद से मीडिया संदेशों के लेआउट में सुधार होता है। साथ ही, "पारदर्शिता कम करें" iOS एक्सेसिबिलिटी सेटिंग चालू करने पर, सर्च बार और आपकी चैट सूची के बीच में दिखाई देने वाला विज़ुअल गैप भी ठीक होता है।
+• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.

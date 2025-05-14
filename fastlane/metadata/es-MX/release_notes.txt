@@ -1,1 +1,1 @@
-• Esta actualización mejora el diseño de los mensajes multimedia con respuestas citadas y corrige un espacio visual que aparecía entre la barra de búsqueda y tu lista de chats cuando estaba habilitado el ajuste de accesibilidad de iOS "Reducir transparencia".
+• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.

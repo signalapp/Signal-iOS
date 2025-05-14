@@ -1,1 +1,1 @@
-• Esta atualização melhora o layout das mensagens de mídia com respostas citadas e corrige um espaçamento visual que aparecia entre a barra de busca e sua lista de conversas quando a opção de acessibilidade “Reduzir Transparência”, do iOS, estava ativada. 
+• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.

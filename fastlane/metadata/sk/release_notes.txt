@@ -1,1 +1,1 @@
-• Táto aktualizácia zlepšuje rozloženie multimediálnych správ s citovanými odpoveďami a opravuje tiež vizuálnu medzeru, ktorá sa zvykla objaviť medzi vyhľadávacím panelom a zoznamom četov.
+• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.
