@@ -253,7 +253,6 @@ extension DonationPaymentDetailsViewController {
 
     static func formState(
         IDEALPaymentType: IDEALPaymentType,
-        IDEALBank: Stripe.PaymentMethod.IDEALBank?,
         name: String,
         email: String,
         isEmailFieldFocused: Bool
@@ -269,25 +268,19 @@ extension DonationPaymentDetailsViewController {
             return .potentiallyValid
         }
 
-        guard let IDEALBank else {
-            return .potentiallyValid
-        }
-
         switch IDEALPaymentType {
         case let .recurring(mandate):
             return .fullyValid(.ideal(
                 .recurring(
                     mandate: mandate,
                     name: name,
-                    email: email,
-                    IDEALBank: IDEALBank
+                    email: email
                 )
             ))
         case .oneTime:
             return .fullyValid(.ideal(
                 .oneTime(
-                    name: name,
-                    IDEALBank: IDEALBank
+                    name: name
                 )
             ))
         }

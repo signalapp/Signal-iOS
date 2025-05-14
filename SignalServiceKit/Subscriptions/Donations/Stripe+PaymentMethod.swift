@@ -104,7 +104,7 @@ public extension Stripe {
                 return sepaMandate
             case .bankTransferIDEAL(.oneTime):
                 return nil
-            case let .bankTransferIDEAL(.recurring(mandate: idealMandate, _, _, _)):
+            case let .bankTransferIDEAL(.recurring(mandate: idealMandate, _, _)):
                 return idealMandate
             }
         }

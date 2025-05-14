@@ -327,7 +327,6 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         case let .ideal(paymentType):
             return Self.formState(
                 IDEALPaymentType: paymentType,
-                IDEALBank: IDEALBank,
                 name: nameView.text,
                 email: emailView.text,
                 isEmailFieldFocused: emailView.isFirstResponder
@@ -629,38 +628,10 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         case .monthly:
             textViewItems = [ Self.cell(for: self.nameView), Self.cell(for: self.emailView)]
         }
-        return [
-            OWSTableSection(items: [
-                OWSTableItem(customCellBlock: { [weak self] in
-                    if let bank = self?.IDEALBank {
-                        return OWSTableItem.buildImageCell(
-                            image: bank.image,
-                            itemName: bank.displayName,
-                            accessoryType: .disclosureIndicator
-                        )
-                    } else {
-                        return OWSTableItem.buildImageCell(
-                            image: UIImage(named: "building")?.withRenderingMode(.alwaysTemplate),
-                            itemName: OWSLocalizedString(
-                                "IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL",
-                                comment: "Label for both bank chooser header and the bank form field on the iDEAL payment detail page."
-                            ),
-                            accessoryType: .disclosureIndicator
-                        )
-                    }
-                }, actionBlock: { [weak self] in
-                    let bankSelectionVC = DonationPaymentDetailsSelectIdealBankViewController()
-                    bankSelectionVC.bankSelectionDelegate = self
-                    self?.navigationController?.pushViewController(bankSelectionVC, animated: true)
-                })
-            ]),
-            OWSTableSection(items: textViewItems)
-        ]
+        return [OWSTableSection(items: textViewItems)]
     }
 
     // MARK: Name & Email
-
-    private var IDEALBank: Stripe.PaymentMethod.IDEALBank?
 
     private lazy var nameView = FormFieldView(
         title: Self.nameTitle,
@@ -720,19 +691,10 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                 case .oneTime, .gift:
                     submitAction()
                 case .monthly:
-                    let title: String
-                    if let bankName = self.IDEALBank?.displayName {
-                        let titleFormat = OWSLocalizedString(
-                            "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE",
-                            comment: "Title confirming recurring donation with bank."
-                        )
-                        title = String(format: titleFormat, bankName)
-                    } else {
-                        title = OWSLocalizedString(
-                            "IDEAL_DONATION_CONFIRM_DONATION_TITLE",
-                            comment: "Fallback title confirming recurring donation with bank."
-                        )
-                    }
+                    let title = OWSLocalizedString(
+                        "IDEAL_DONATION_CONFIRM_DONATION_TITLE",
+                        comment: "Fallback title confirming recurring donation with bank."
+                    )
 
                     let messageFormat = OWSLocalizedString(
                         "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE",
@@ -810,21 +772,6 @@ extension DonationPaymentDetailsViewController: UITextViewDelegate {
 
 extension DonationPaymentDetailsViewController: CreditOrDebitCardDonationFormViewDelegate {
     func didSomethingChange() { render() }
-}
-
-// MARK: - DonationPaymentDetailsSelectIdealBankDelegate
-
-extension DonationPaymentDetailsViewController: DonationPaymentDetailsSelectIdealBankDelegate {
-    func viewController(
-        _ viewController: DonationPaymentDetailsSelectIdealBankViewController,
-        didSelect IDEALBank: SignalServiceKit.Stripe.PaymentMethod.IDEALBank
-    ) {
-        self.IDEALBank = IDEALBank
-        let sections = [donationAmountSection] + formSections()
-        contents = OWSTableContents(sections: sections)
-        viewController.navigationController?.popViewController(animated: true)
-        render()
-    }
 }
 
 // MARK: - Utilities

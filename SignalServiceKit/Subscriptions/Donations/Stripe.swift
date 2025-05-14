@@ -114,17 +114,15 @@ public struct Stripe {
         case let .bankTransferIDEAL(idealAccount):
             let parameters: [String: String] = {
                 switch idealAccount {
-                case let .oneTime(name: name, IDEALBank: bank):
+                case let .oneTime(name: name):
                     return [
                         "billing_details[name]": name,
-                        "ideal[bank]": bank.rawValue,
                         "type": "ideal"
                     ]
-                case let .recurring(mandate: _, name: name, email: email, IDEALBank: bank):
+                case let .recurring(mandate: _, name: name, email: email):
                     return [
                         "billing_details[name]": name,
                         "billing_details[email]": email,
-                        "ideal[bank]": bank.rawValue,
                         "type": "ideal"
                     ]
                 }
