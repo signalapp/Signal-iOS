@@ -34,7 +34,7 @@ extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
 
     public func attachmentApprovalDidCancel() {
         dismiss(animated: true, completion: nil)
-        self.openAttachmentKeyboard()
+        self.popKeyBoard()
     }
 
     public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
