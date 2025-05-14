@@ -13606,7 +13606,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>tokio 1.44.2, tokio-stream 0.1.17, tokio-util 0.7.14</string>
+			<string>tokio 1.45.0, tokio-stream 0.1.17, tokio-util 0.7.14</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
