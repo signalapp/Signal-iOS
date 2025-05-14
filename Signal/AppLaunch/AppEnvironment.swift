@@ -36,7 +36,7 @@ public class AppEnvironment: NSObject {
     private(set) var callService: CallService!
     private(set) var provisioningManager: ProvisioningManager!
     private(set) var quickRestoreManager: QuickRestoreManager!
-    private var usernameValidationObserverRef: UsernameValidationObserver!
+    private var usernameValidationObserver: UsernameValidationObserver!
 
     init(appReadiness: AppReadiness, deviceTransferService: DeviceTransferService) {
         self.deviceTransferServiceRef = deviceTransferService
@@ -70,7 +70,6 @@ public class AppEnvironment: NSObject {
             db: DependenciesBridge.shared.db,
             accountManager: DependenciesBridge.shared.tsAccountManager
         )
-
         self.provisioningManager = ProvisioningManager(
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             db: DependenciesBridge.shared.db,
@@ -82,7 +81,6 @@ public class AppEnvironment: NSObject {
             receiptManager: ProvisioningManager.Wrappers.ReceiptManager(SSKEnvironment.shared.receiptManagerRef),
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
-
         self.quickRestoreManager = QuickRestoreManager(
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             db: DependenciesBridge.shared.db,
@@ -90,8 +88,7 @@ public class AppEnvironment: NSObject {
             networkManager: SSKEnvironment.shared.networkManagerRef,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
-
-        self.usernameValidationObserverRef = UsernameValidationObserver(
+        self.usernameValidationObserver = UsernameValidationObserver(
             appReadiness: appReadiness,
             manager: DependenciesBridge.shared.usernameValidationManager,
             database: DependenciesBridge.shared.db
@@ -141,6 +138,7 @@ public class AppEnvironment: NSObject {
                 return tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
             }
 
+            // Things that should run on only the primary *or* linked devices.
             if isPrimaryDevice {
                 Task {
                     do {
@@ -164,23 +162,29 @@ public class AppEnvironment: NSObject {
                 }
             }
 
-            db.asyncWrite { tx in
-                masterKeySyncManager.runStartupJobs(tx: tx)
+            Task {
+                await db.awaitableWrite { tx in
+                    masterKeySyncManager.runStartupJobs(tx: tx)
+                }
             }
 
-            db.asyncWrite { tx in
-                groupCallRecordRingingCleanupManager.cleanupRingingCalls(tx: tx)
+            Task {
+                await db.awaitableWrite { tx in
+                    groupCallRecordRingingCleanupManager.cleanupRingingCalls(tx: tx)
+                }
             }
 
-            DispatchQueue.global().async {
+            Task {
+                deletedCallRecordCleanupManager.startCleanupIfNecessary()
+            }
+
+            Task {
                 self.avatarHistoryManager.cleanupOrphanedImages()
             }
 
             Task {
                 await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
             }
-
-            deletedCallRecordCleanupManager.startCleanupIfNecessary()
 
             Task {
                 do {
