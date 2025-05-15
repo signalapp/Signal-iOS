@@ -764,7 +764,13 @@ public class GroupMessageProcessorManager {
         if let groupV2 = contentProto.dataMessage?.groupV2 {
             return groupV2
         }
+        if let groupV2 = contentProto.editMessage?.dataMessage?.groupV2 {
+            return groupV2
+        }
         if let groupV2 = contentProto.syncMessage?.sent?.message?.groupV2 {
+            return groupV2
+        }
+        if let groupV2 = contentProto.syncMessage?.sent?.editMessage?.dataMessage?.groupV2 {
             return groupV2
         }
         return nil
