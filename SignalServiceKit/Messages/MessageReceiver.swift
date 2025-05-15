@@ -344,7 +344,7 @@ public final class MessageReceiver {
             return nil
         }
         do {
-            return try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey).groupId
+            return try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey).groupId.serialize().asData
         } catch {
             owsFailDebug("Invalid group context.")
             return nil
@@ -825,7 +825,7 @@ public final class MessageReceiver {
             owsFailDebug("Invalid group context.")
             return nil
         }
-        guard let groupThread = TSGroupThread.fetch(groupId: groupContextInfo.groupId, transaction: tx) else {
+        guard let groupThread = TSGroupThread.fetch(forGroupId: groupContextInfo.groupId, tx: tx) else {
             owsFailDebug("Unknown v2 group.")
             return nil
         }

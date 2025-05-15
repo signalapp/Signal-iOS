@@ -206,7 +206,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     ) throws -> StoryMessage? {
         Logger.info("Processing StoryMessage from \(author) with timestamp \(timestamp)")
 
-        let groupId: Data?
+        let groupId: GroupIdentifier?
         if let masterKey = storyMessage.group?.masterKey {
             let groupContext = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
             groupId = groupContext.groupId
@@ -214,7 +214,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             groupId = nil
         }
 
-        if let groupId = groupId, SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: transaction) {
+        if let groupId = groupId, SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId.serialize().asData, transaction: transaction) {
             Logger.warn("Ignoring StoryMessage in blocked group.")
             return nil
         } else {
@@ -284,7 +284,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         let record = StoryMessage(
             timestamp: timestamp,
             authorAci: author,
-            groupId: groupId,
+            groupId: groupId?.serialize().asData,
             manifest: manifest,
             attachment: attachment,
             replyCount: replyCount
@@ -320,7 +320,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             throw OWSAssertionError("Missing story message on transcript")
         }
 
-        let groupId: Data?
+        let groupId: GroupIdentifier?
         if let masterKey = storyMessage.group?.masterKey {
             let groupContext = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
             groupId = groupContext.groupId
@@ -399,7 +399,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         let record = StoryMessage(
             timestamp: proto.timestamp,
             authorAci: authorAci,
-            groupId: groupId,
+            groupId: groupId?.serialize().asData,
             manifest: manifest,
             attachment: attachment,
             replyCount: replyCount

@@ -323,7 +323,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
         }
 
         var groupModelBuilder = TSGroupModelBuilder()
-        groupModelBuilder.groupId = groupContextInfo.groupId
+        groupModelBuilder.groupId = groupContextInfo.groupId.serialize().asData
         groupModelBuilder.groupSecretParamsData = groupContextInfo.groupSecretParamsData
         groupModelBuilder.groupsVersion = .V2 // We don't back up V1 groups
         groupModelBuilder.groupV2Revision = groupSnapshot.version
@@ -393,7 +393,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
         }
 
         if groupProto.blocked {
-            blockingManager.addBlockedGroupId(groupContextInfo.groupId, tx: context.tx)
+            blockingManager.addBlockedGroupId(groupContextInfo.groupId.serialize().asData, tx: context.tx)
         }
 
         var partialErrors = [BackupArchive.RestoreFrameError<RecipientId>]()
@@ -405,7 +405,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
             do {
                 try avatarDefaultColorManager.persistDefaultColor(
                     defaultAvatarColor,
-                    groupId: groupContextInfo.groupId,
+                    groupId: groupContextInfo.groupId.serialize().asData,
                     tx: context.tx
                 )
             } catch {

@@ -370,7 +370,7 @@ public struct GroupV2ContextInfo {
     public let masterKeyData: Data
     public let groupSecretParams: GroupSecretParams
     public let groupSecretParamsData: Data
-    public let groupId: Data
+    public let groupId: GroupIdentifier
 
     public static func deriveFrom(masterKeyData: Data) throws -> GroupV2ContextInfo {
         let groupSecretParams = try self.groupSecretParams(for: masterKeyData)
@@ -378,7 +378,7 @@ public struct GroupV2ContextInfo {
         return GroupV2ContextInfo(
             masterKeyData: masterKeyData,
             groupSecretParams: groupSecretParams,
-            groupId: groupIdentifier.serialize().asData
+            groupId: groupIdentifier
         )
     }
 
@@ -387,7 +387,7 @@ public struct GroupV2ContextInfo {
         return try GroupSecretParams.deriveFromMasterKey(groupMasterKey: groupMasterKey)
     }
 
-    private init(masterKeyData: Data, groupSecretParams: GroupSecretParams, groupId: Data) {
+    private init(masterKeyData: Data, groupSecretParams: GroupSecretParams, groupId: GroupIdentifier) {
         self.masterKeyData = masterKeyData
         self.groupSecretParams = groupSecretParams
         self.groupSecretParamsData = groupSecretParams.serialize().asData

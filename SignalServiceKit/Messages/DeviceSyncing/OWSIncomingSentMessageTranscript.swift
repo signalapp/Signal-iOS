@@ -33,7 +33,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         }
 
         let recipientAddress: SignalServiceAddress?
-        let groupId: Data?
+        let groupId: GroupIdentifier?
         if let groupContextV2 = dataMessage.groupV2 {
             guard let masterKey = groupContextV2.masterKey else {
                 owsFailDebug("Missing masterKey.")
@@ -78,7 +78,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         if sentProto.isRecipientUpdate && !isEdit {
             guard
                 let groupId,
-                let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: SDSDB.shimOnlyBridge(tx))
+                let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx)
             else {
                 owsFailDebug("We should never receive a 'recipient update' for messages in contact threads.")
                 return nil
@@ -319,12 +319,12 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
 
     private static func getTarget(
         recipientAddress: SignalServiceAddress?,
-        groupId: Data?,
+        groupId: GroupIdentifier?,
         dataMessage: SSKProtoDataMessage,
         tx: DBWriteTransaction
     ) -> SentMessageTranscriptTarget? {
         if let groupId {
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: SDSDB.shimOnlyBridge(tx)) else {
+            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
                 owsFailDebug("Missing thread for group.")
                 return nil
             }

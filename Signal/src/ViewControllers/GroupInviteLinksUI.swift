@@ -42,7 +42,7 @@ public class GroupInviteLinksUI: UIView {
         // If the group already exists in the database, open it.
         if
             let existingGroupThread = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                TSGroupThread.fetch(groupId: groupV2ContextInfo.groupId, transaction: transaction)
+                TSGroupThread.fetch(forGroupId: groupV2ContextInfo.groupId, tx: transaction)
             }),
             existingGroupThread.isLocalUserFullMember || existingGroupThread.isLocalUserRequestingMember
         {
@@ -106,7 +106,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
         avatarView.image = databaseStorage.read { tx in
             avatarBuilder.defaultAvatarImage(
-                forGroupId: groupV2ContextInfo.groupId,
+                forGroupId: groupV2ContextInfo.groupId.serialize().asData,
                 diameterPoints: Self.avatarSize,
                 transaction: tx
             )
@@ -404,7 +404,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                             AssertIsOnMainThread()
                             let groupThread = SSKEnvironment.shared.databaseStorageRef.read { tx in
                                 // We successfully joined, so we must be able to find the TSGroupThread.
-                                return TSGroupThread.fetch(groupId: groupV2ContextInfo.groupId, transaction: tx)!
+                                return TSGroupThread.fetch(forGroupId: groupV2ContextInfo.groupId, tx: tx)!
                             }
                             SignalApp.shared.presentConversationForThread(
                                 threadUniqueId: groupThread.uniqueId,

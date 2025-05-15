@@ -224,7 +224,7 @@ internal class SpecificGroupMessageProcessor {
 
         return GroupMessageProcessorManager.discardMode(
             forMessageFrom: sourceAci,
-            groupId: groupContextInfo.groupId,
+            groupId: groupContextInfo.groupId.serialize().asData,
             tx: tx
         )
     }
@@ -240,7 +240,7 @@ internal class SpecificGroupMessageProcessor {
         }
         return GroupMessageProcessorManager.discardMode(
             forMessageFrom: sourceAci,
-            groupId: jobInfo.groupContextInfo.groupId,
+            groupId: jobInfo.groupContextInfo.groupId.serialize().asData,
             shouldCheckGroupModel: hasGroupBeenUpdated,
             tx: tx
         )
@@ -412,7 +412,7 @@ internal class SpecificGroupMessageProcessor {
     private func updateUsingEmbeddedGroupUpdate(
         jobInfo: IncomingGroupsV2MessageJobInfo
     ) async throws(RetryableError) -> Bool {
-        let groupId = jobInfo.groupContextInfo.groupId
+        let groupId = jobInfo.groupContextInfo.groupId.serialize().asData
         let secretParams = jobInfo.groupContextInfo.groupSecretParams
 
         // TODO: Move this to the other method to avoid duplicate fetches.
@@ -678,7 +678,7 @@ public class GroupMessageProcessorManager {
         }
         do {
             let groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupContext.masterKey ?? Data())
-            return groupContextInfo.groupId
+            return groupContextInfo.groupId.serialize().asData
         } catch {
             owsFailDebug("Invalid group context: \(error).")
             return nil
@@ -703,7 +703,7 @@ public class GroupMessageProcessorManager {
 
         let existsJob: Bool
         do {
-            existsJob = try GroupMessageProcessorJobStore().existsJob(forGroupId: groupContextInfo.groupId, tx: tx)
+            existsJob = try GroupMessageProcessorJobStore().existsJob(forGroupId: groupContextInfo.groupId.serialize().asData, tx: tx)
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: error)
             owsFailDebug("Couldn't check for existing group jobs: \(error)")
@@ -726,7 +726,7 @@ public class GroupMessageProcessorManager {
         groupContextInfo: GroupV2ContextInfo,
         tx: DBReadTransaction
     ) -> Bool {
-        guard let groupThread = TSGroupThread.fetch(groupId: groupContextInfo.groupId, transaction: tx) else {
+        guard let groupThread = TSGroupThread.fetch(forGroupId: groupContextInfo.groupId, tx: tx) else {
             return false
         }
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {

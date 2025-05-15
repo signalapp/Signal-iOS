@@ -130,7 +130,7 @@ public extension TSGroupThread {
         }
 
         let contextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: Data(keyBytes))
-        return contextInfo.groupId
+        return contextInfo.groupId.serialize().asData
     }
 
     private static func setGroupIdMapping(

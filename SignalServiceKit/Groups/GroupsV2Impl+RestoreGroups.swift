@@ -237,7 +237,7 @@ public extension GroupsV2Impl {
         }
 
         let isGroupInDatabase = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            TSGroupThread.fetch(groupId: groupContextInfo.groupId, transaction: transaction) != nil
+            TSGroupThread.fetch(forGroupId: groupContextInfo.groupId, tx: transaction) != nil
         }
         if isGroupInDatabase {
             // No work to be done, group already in database.

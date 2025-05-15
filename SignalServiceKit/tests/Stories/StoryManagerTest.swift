@@ -189,7 +189,7 @@ class StoryManagerTest: SSKBaseTest {
                 transaction: $0
             )
 
-            try Self.makeGroupThread(groupId: groupId, transaction: $0)
+            try Self.makeGroupThread(groupId: groupId.serialize().asData, transaction: $0)
 
             try StoryManager.processIncomingStoryMessage(
                 storyMessage,
@@ -224,7 +224,7 @@ class StoryManagerTest: SSKBaseTest {
                 transaction: $0
             )
 
-            try Self.makeGroupThread(groupId: groupId, announcementOnly: true, members: [author], transaction: $0)
+            try Self.makeGroupThread(groupId: groupId.serialize().asData, announcementOnly: true, members: [author], transaction: $0)
 
             try StoryManager.processIncomingStoryMessage(
                 storyMessage,
@@ -264,7 +264,7 @@ class StoryManagerTest: SSKBaseTest {
                 transaction: $0
             )
 
-            try Self.makeGroupThread(groupId: groupId, announcementOnly: true, admins: [author], transaction: $0)
+            try Self.makeGroupThread(groupId: groupId.serialize().asData, announcementOnly: true, admins: [author], transaction: $0)
 
             try StoryManager.processIncomingStoryMessage(
                 storyMessage,
@@ -304,7 +304,7 @@ class StoryManagerTest: SSKBaseTest {
                 transaction: $0
             )
 
-            try Self.makeGroupThread(groupId: groupId, members: [author], transaction: $0)
+            try Self.makeGroupThread(groupId: groupId.serialize().asData, members: [author], transaction: $0)
 
             try StoryManager.processIncomingStoryMessage(
                 storyMessage,
