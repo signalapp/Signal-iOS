@@ -145,6 +145,8 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
             deletedCallRecordStore.insert(deletedCallRecord: deletedCallRecord, tx: tx)
         }
 
-        deletedCallRecordCleanupManager.startCleanupIfNecessary()
+        Task {
+            await deletedCallRecordCleanupManager.startCleanupIfNecessary()
+        }
     }
 }

@@ -181,7 +181,7 @@ public class AppEnvironment: NSObject {
             }
 
             Task {
-                deletedCallRecordCleanupManager.startCleanupIfNecessary()
+                await deletedCallRecordCleanupManager.startCleanupIfNecessary()
             }
 
             Task {

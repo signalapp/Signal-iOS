@@ -36,13 +36,14 @@ public protocol DeletedCallRecordCleanupManager {
     /// - Important
     /// This method must be safe to call anytime, including while asynchronous
     /// cleanup is already scheduled.
-    func startCleanupIfNecessary()
+    func startCleanupIfNecessary() async
 }
 
 // MARK: -
 
 final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager {
     typealias TimeIntervalProvider = () -> TimeInterval
+    typealias SleepProvider = (TimeInterval) async -> Void
 
     private struct CleanupLock {
         private let lock = AtomicBool(false, lock: .init())
@@ -61,12 +62,12 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
         }
     }
 
-    private let minimumSecondsBetweenCleanupPasses: TimeIntervalProvider
     private let callLinkStore: any CallLinkRecordStore
     private let dateProvider: DateProvider
     private let db: any DB
     private let deletedCallRecordStore: DeletedCallRecordStore
-    private let schedulers: Schedulers
+    private let minimumSecondsBetweenCleanupPasses: TimeIntervalProvider
+    private let sleepProvider: SleepProvider
 
     private let cleanupLock = CleanupLock()
 
@@ -75,44 +76,42 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
     /// - Parameter minimumSecondsBetweenCleanupPasses
     /// Returns the minimum time interval between cleanup passes, in seconds.
     init(
-        minimumSecondsBetweenCleanupPasses: @escaping TimeIntervalProvider = { 1 },
         callLinkStore: any CallLinkRecordStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
         deletedCallRecordStore: DeletedCallRecordStore,
-        schedulers: Schedulers
+        minimumSecondsBetweenCleanupPasses: @escaping TimeIntervalProvider = { 1 },
+        sleepProvider: @escaping SleepProvider = { try! await Task.sleep(nanoseconds: $0.clampedNanoseconds) },
     ) {
-        self.minimumSecondsBetweenCleanupPasses = minimumSecondsBetweenCleanupPasses
         self.callLinkStore = callLinkStore
         self.dateProvider = dateProvider
         self.db = db
         self.deletedCallRecordStore = deletedCallRecordStore
-        self.schedulers = schedulers
+        self.minimumSecondsBetweenCleanupPasses = minimumSecondsBetweenCleanupPasses
+        self.sleepProvider = sleepProvider
     }
 
-    func startCleanupIfNecessary() {
+    func startCleanupIfNecessary() async {
         guard cleanupLock.tryTake() else {
             return
         }
 
-        schedulers.global().async {
-            guard let notYetExpiredRecord = self.cleanUpAlreadyExpiredRecords() else {
-                self.cleanupLock.release()
-                return
-            }
-
-            self.scheduleCleanup(beginningWith: notYetExpiredRecord)
+        guard let notYetExpiredRecord = await self.cleanUpAlreadyExpiredRecords() else {
+            self.cleanupLock.release()
+            return
         }
+
+        await self.scheduleCleanup(beginningWith: notYetExpiredRecord)
     }
 
     /// Cleans up any deleted call records that have already expired.
     ///
     /// - Returns
     /// The not-yet-expired deleted call record that will next expire.
-    private func cleanUpAlreadyExpiredRecords() -> DeletedCallRecord? {
+    private func cleanUpAlreadyExpiredRecords() async -> DeletedCallRecord? {
        var firstRecordNotDeleted: DeletedCallRecord?
 
-        _ = TimeGatedBatch.processAll(db: db) { tx in
+        _ = await TimeGatedBatch.processAllAsync(db: db) { tx in
             if
                 let nextExpiringRecord = deletedCallRecordStore
                     .nextDeletedRecord(tx: tx)
@@ -185,7 +184,7 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
     /// records scheduled for cleanup.
     private func scheduleCleanup(
         beginningWith recordToScheduleExpiration: DeletedCallRecord
-    ) {
+    ) async {
         owsPrecondition(cleanupLock.get())
 
         let secondsUntilNextCleanupPass: TimeInterval = max(
@@ -195,14 +194,16 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
             minimumSecondsBetweenCleanupPasses()
         )
 
-        schedulers.global().asyncAfter(deadline: .now() + secondsUntilNextCleanupPass) {
-            let nextRecordToSchedule = self.cleanUpAlreadyExpiredRecords()
+        await sleepProvider(secondsUntilNextCleanupPass)
 
-            if let nextRecordToSchedule {
-                self.scheduleCleanup(beginningWith: nextRecordToSchedule)
-            } else {
-                self.cleanupLock.release()
-            }
+        try! await Task.sleep(nanoseconds: secondsUntilNextCleanupPass.clampedNanoseconds)
+
+        let nextRecordToSchedule = await self.cleanUpAlreadyExpiredRecords()
+
+        if let nextRecordToSchedule {
+            await self.scheduleCleanup(beginningWith: nextRecordToSchedule)
+        } else {
+            self.cleanupLock.release()
         }
     }
 }

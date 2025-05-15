@@ -633,7 +633,6 @@ public class AppSetup {
             dateProvider: dateProvider,
             db: db,
             deletedCallRecordStore: deletedCallRecordStore,
-            schedulers: schedulers
         )
         let callRecordStore = CallRecordStoreImpl(
             deletedCallRecordStore: deletedCallRecordStore,

@@ -6,10 +6,7 @@
 #if TESTABLE_BUILD
 
 final class MockDeletedCallRecordCleanupManager: DeletedCallRecordCleanupManager {
-    var cleanupStartCount: UInt = 0
-    func startCleanupIfNecessary() {
-        cleanupStartCount += 1
-    }
+    func startCleanupIfNecessary() async {}
 }
 
 #endif
