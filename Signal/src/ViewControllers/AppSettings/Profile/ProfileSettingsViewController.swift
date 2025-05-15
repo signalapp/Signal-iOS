@@ -568,10 +568,10 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     private func deleteUsernameBehindModalActivityIndicator() {
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
-            canCancel: false
-        ) { modal in
-            Guarantee.wrapAsync { await self.context.localUsernameManager.deleteUsername() }
-            .map(on: self.context.schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Void> in
+            canCancel: false,
+            asyncBlock: { modal in
+                let remoteMutationResult = await self.context.localUsernameManager.deleteUsername()
+
                 let newState = self.context.db.read { tx in
                     return self.context.localUsernameManager.usernameState(tx: tx)
                 }
@@ -579,9 +579,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 // State may have changed with either success or failure.
                 self.usernameStateDidChange(newState: newState)
 
-                return remoteMutationResult
-            }
-            .done(on: self.context.schedulers.main) { remoteMutationResult in
                 switch remoteMutationResult {
                 case .success:
                     modal.dismiss()
@@ -593,7 +590,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                     }
                 }
             }
-        }
+        )
     }
 
     private func presentUsernameLink(
