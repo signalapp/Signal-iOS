@@ -55,7 +55,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
     @MainActor
     private func presentSheet() {
         let sheet = HeroSheetViewController(
-            hero: .image(UIImage(named: "transfer_account")!),
+            hero: .image(UIImage(named: "other-device")!),
             // TODO: [Backups] - Localize
             title: LocalizationNotNeeded("Continue on your other device"),
             body: LocalizationNotNeeded("Continue transferring your account on your other device."),
