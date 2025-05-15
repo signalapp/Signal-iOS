@@ -650,18 +650,20 @@ public enum DonationSubscriptionManager {
             }
         }
 
-        let subscriptionRedemptionNecessaryChecker = SubscriptionRedemptionNecessityChecker<
+        let logger = PrefixedLogger(prefix: "[Donations]")
+
+        let subscriptionRedemptionNecessityChecker = SubscriptionRedemptionNecessityChecker<
             DonationReceiptCredentialRedemptionJobRecord
         >(
             checkerStore: CheckerStore(donationSubscriptionManager: self),
             dateProvider: { Date() },
             db: DependenciesBridge.shared.db,
-            logger: PrefixedLogger(prefix: "[Donations]"),
+            logger: logger,
             networkManager: SSKEnvironment.shared.networkManagerRef,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
 
-        try await subscriptionRedemptionNecessaryChecker.redeemSubscriptionIfNecessary(
+        try await subscriptionRedemptionNecessityChecker.redeemSubscriptionIfNecessary(
             fetchSubscriptionBlock: { db, subscriptionFetcher -> (subscriberID: Data, subscription: Subscription)? in
                 if
                     let subscriberID = db.read(block: { getSubscriberID(transaction: $0) }),
@@ -687,9 +689,32 @@ public enum DonationSubscriptionManager {
                 // "current" one.
                 return subscriptionBadgeEntitlements.map(\.expirationSeconds).max()
             },
-            enqueueRedemptionJobBlock: { subscriberId, subscription, tx -> DonationReceiptCredentialRedemptionJobRecord in
+            enqueueRedemptionJobBlock: { subscriberId, subscription, tx -> DonationReceiptCredentialRedemptionJobRecord? in
+                if receiptCredentialRedemptionJobQueue.subscriptionJobExists(
+                    subscriberID: subscriberId,
+                    tx: tx
+                ) {
+                    // A redemption job is already enqueued for this subscription!
+                    // This can happen if a previously-enqueued job hasn't
+                    // finished but the NecessityChecker decided it should run,
+                    // maybe because it's been >3d.
+                    //
+                    // That's not implausible, for example for SEPA donations in
+                    // which a payment could be "processing" for days (and an
+                    // enqueued redemption job stalled during that time).
+                    //
+                    // Since the jobs persist state (such as "redemption success
+                    // or error"), avoid enqueuing multiple that might step on
+                    // each other.
+                    logger.warn("Not enqueuing new subscription redemption job: one already exists for this subscriber ID!")
+                    return nil
+                }
+
                 guard let donationPaymentProcessor = subscription.donationPaymentProcessor else {
-                    throw OWSAssertionError("Unexpectedly missing donation payment processor while redeeming donation subscription!")
+                    throw OWSAssertionError(
+                        "Unexpectedly missing donation payment processor while redeeming donation subscription!",
+                        logger: logger
+                    )
                 }
 
                 let (
