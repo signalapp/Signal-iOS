@@ -67,10 +67,26 @@ class ViewOnceMessageViewController: OWSViewController {
 
         let defaultMediaView = UIView()
         defaultMediaView.backgroundColor = Theme.darkThemeWashColor
-        self.mediaView = buildMediaView() ?? defaultMediaView
+
+        let accessoryView: UIView?
+        if let (mediaView, _accessoryView) = buildMediaView() {
+            self.mediaView = mediaView
+            accessoryView = _accessoryView
+        } else {
+            self.mediaView = defaultMediaView
+            accessoryView = nil
+        }
 
         self.scrollView = ZoomableMediaView(mediaView: mediaView)
         scrollView.delegate = self
+        view.addSubview(scrollView)
+        scrollView.autoPinEdgesToSuperviewEdges()
+
+        if let accessoryView {
+            view.addSubview(accessoryView)
+            accessoryView.autoPinEdge(toSuperviewMargin: .trailing, withInset: 16)
+            accessoryView.autoPinEdge(toSuperviewMargin: .top, withInset: 30)
+        }
 
         let dismissButton = OWSButton(imageName: Theme.iconName(.buttonX), tintColor: Theme.darkThemePrimaryColor) { [weak self] in
             self?.dismissButtonPressed()
@@ -80,13 +96,9 @@ class ViewOnceMessageViewController: OWSViewController {
         dismissButton.layer.shadowOpacity = 0.7
         dismissButton.layer.shadowRadius = 3.0
         dismissButton.setShadow(opacity: 0.66)
-
-        view.addSubview(scrollView)
-        scrollView.autoPinEdgesToSuperviewEdges()
-
         view.addSubview(dismissButton)
         dismissButton.autoPinEdge(toSuperviewMargin: .leading, withInset: 16)
-        dismissButton.autoPinEdge(toSuperviewMargin: .top, withInset: 20)
+        dismissButton.autoPinEdge(toSuperviewMargin: .top, withInset: 30)
 
         setupDatabaseObservation()
     }
@@ -104,7 +116,10 @@ class ViewOnceMessageViewController: OWSViewController {
 
     // MARK: -
 
-    private func buildMediaView() -> UIView? {
+    private func buildMediaView() -> (
+        UIView,
+        accessoryView: UIView?
+    )? {
         switch content.type {
         case .loopingVideo:
             guard let asset = try? content.loadAVAsset() else {
@@ -115,7 +130,7 @@ class ViewOnceMessageViewController: OWSViewController {
             let view = LoopingVideoView()
             view.contentMode = .scaleAspectFit
             view.video = video
-            return view
+            return (view, accessoryView: nil)
         case .animatedImage:
             guard let image = try? content.loadYYImage() else {
                 owsFailDebug("Could not load attachment.")
@@ -136,7 +151,7 @@ class ViewOnceMessageViewController: OWSViewController {
             animatedImageView.layer.magnificationFilter = .trilinear
             animatedImageView.layer.allowsEdgeAntialiasing = true
             animatedImageView.image = image
-            return animatedImageView
+            return (animatedImageView, accessoryView: nil)
         case .stillImage:
             guard let image = try? content.loadImage() else {
                 owsFailDebug("Could not load attachment.")
@@ -158,10 +173,8 @@ class ViewOnceMessageViewController: OWSViewController {
             imageView.layer.magnificationFilter = .trilinear
             imageView.layer.allowsEdgeAntialiasing = true
             imageView.image = image
-            return imageView
+            return (imageView, accessoryView: nil)
         case .video:
-            let videoContainer = UIView()
-
             guard let asset = try? content.loadAVAsset() else {
                 owsFailDebug("Could not load attachment.")
                 return nil
@@ -173,17 +186,10 @@ class ViewOnceMessageViewController: OWSViewController {
             let playerView = VideoPlayerView()
             playerView.player = player.avPlayer
 
-            videoContainer.addSubview(playerView)
-            playerView.autoPinEdgesToSuperviewEdges()
-
             let label = UILabel()
             label.textColor = Theme.darkThemePrimaryColor
             label.font = UIFont.dynamicTypeBody.monospaced()
             label.setShadow()
-
-            videoContainer.addSubview(label)
-            label.autoPinEdge(toSuperviewMargin: .top, withInset: 16)
-            label.autoPinEdge(toSuperviewMargin: .trailing, withInset: 16)
 
             let formatter = DateComponentsFormatter()
             formatter.unitsStyle = .positional
@@ -213,7 +219,7 @@ class ViewOnceMessageViewController: OWSViewController {
                 label.text = remainingString
             }
 
-            return videoContainer
+            return (playerView, accessoryView: label)
         }
     }
 
