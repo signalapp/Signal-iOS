@@ -634,10 +634,9 @@ public class GroupMessageProcessorManager {
 
     // MARK: -
 
-    public func enqueue(
+    func enqueue(
+        envelope: DecryptedIncomingEnvelope,
         envelopeData: Data,
-        plaintextData: Data,
-        wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
@@ -646,7 +645,7 @@ public class GroupMessageProcessorManager {
             return
         }
 
-        guard let groupId = groupId(fromPlaintextData: plaintextData) else {
+        guard let groupId = Self.groupId(from: envelope.content) else {
             owsFailDebug("Missing or invalid group id")
             return
         }
@@ -656,9 +655,9 @@ public class GroupMessageProcessorManager {
         failIfThrows {
             _ = try GroupMessageProcessorJob.insertRecord(
                 envelopeData: envelopeData,
-                plaintextData: plaintextData,
+                plaintextData: envelope.plaintextData,
                 groupId: groupId,
-                wasReceivedByUD: wasReceivedByUD,
+                wasReceivedByUD: envelope.wasReceivedByUD,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 tx: tx
             )
@@ -671,8 +670,8 @@ public class GroupMessageProcessorManager {
         }
     }
 
-    private func groupId(fromPlaintextData plaintextData: Data) -> Data? {
-        guard let groupContext = GroupMessageProcessorManager.groupContextV2(fromPlaintextData: plaintextData) else {
+    private static func groupId(from contentProto: SSKProtoContent?) -> Data? {
+        guard let contentProto, let groupContext = groupContextV2(from: contentProto) else {
             owsFailDebug("Invalid content.")
             return nil
         }
@@ -744,7 +743,7 @@ public class GroupMessageProcessorManager {
         return false
     }
 
-    public class func groupContextV2(fromPlaintextData plaintextData: Data) -> SSKProtoGroupContextV2? {
+    fileprivate static func groupContextV2(fromPlaintextData plaintextData: Data) -> SSKProtoGroupContextV2? {
         guard !plaintextData.isEmpty else {
             return nil
         }

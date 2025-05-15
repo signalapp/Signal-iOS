@@ -289,9 +289,8 @@ public class MessageProcessor {
             Logger.info("Envelope completed early with error \(String(describing: error))")
         case .enqueueForGroup(let decryptedEnvelope, let envelopeData):
             SSKEnvironment.shared.groupMessageProcessorManagerRef.enqueue(
+                envelope: decryptedEnvelope,
                 envelopeData: envelopeData,
-                plaintextData: decryptedEnvelope.plaintextData,
-                wasReceivedByUD: decryptedEnvelope.wasReceivedByUD,
                 serverDeliveryTimestamp: request.receivedEnvelope.serverDeliveryTimestamp,
                 tx: transaction
             )
