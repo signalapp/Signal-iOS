@@ -57,7 +57,7 @@ public enum FeatureFlags {
     }
 
     public static let runTSAttachmentMigrationInMainAppBackground = true
-    public static let runTSAttachmentMigrationBlockingOnLaunch = false
+    public static let runTSAttachmentMigrationBlockingOnLaunch = true
 
     public static let useNewConversationLoadIndex = true
 
