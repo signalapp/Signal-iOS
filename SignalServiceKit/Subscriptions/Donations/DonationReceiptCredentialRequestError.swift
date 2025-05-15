@@ -4,10 +4,6 @@
 //
 
 /// Represents an error encountered while making a receipt credential request.
-///
-/// These are persisted in the ``SubscriptionReceiptCredentialRequestResultStore``
-/// by the ``DonationReceiptCredentialRedemptionJobQueue``'s
-/// ``SubscriptionReceiptCredentailRedemptionOperation``.
 public struct DonationReceiptCredentialRequestError: Codable, Equatable {
     public enum ErrorCode: Int {
         case paymentStillProcessing = 204

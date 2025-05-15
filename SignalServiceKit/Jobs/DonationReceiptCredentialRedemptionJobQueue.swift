@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import GRDB
 import LibSignalClient
 
 /// Manages "donation receipt credential" redemption.
@@ -37,7 +38,7 @@ import LibSignalClient
 /// Some payment types (such as credit cards) usually process immediately,
 /// but others (such as SEPA debit transfers) can take days/weeks to
 /// process. During that time, receipt credential request redemption will
-/// fail.
+/// fail with a "still processing" error.
 public class DonationReceiptCredentialRedemptionJobQueue {
     private let jobQueueRunner: JobQueueRunner<
         JobRecordFinderImpl<DonationReceiptCredentialRedemptionJobRecord>,
@@ -77,6 +78,8 @@ public class DonationReceiptCredentialRedemptionJobQueue {
         guard appContext.isMainApp else { return }
         jobQueueRunner.start(shouldRestartExistingJobs: true)
     }
+
+    // MARK: -
 
     /// Persists and returns a `JobRecord` for redeeming a boost donation.
     ///
@@ -174,6 +177,51 @@ public class DonationReceiptCredentialRedemptionJobQueue {
     }
 }
 
+// MARK: -
+
+extension DonationReceiptCredentialRedemptionJobQueue {
+    func subscriptionJobExists(
+        subscriberID: Data,
+        tx: DBReadTransaction,
+    ) -> Bool {
+        return DonationReceiptCredentialRedemptionJobFinder()
+            .subscriptionJobExists(subscriberID: subscriberID, tx: tx)
+    }
+}
+
+struct DonationReceiptCredentialRedemptionJobFinder {
+    init() {}
+
+    func subscriptionJobExists(
+        subscriberID: Data,
+        tx: DBReadTransaction,
+    ) -> Bool {
+        let sql = """
+            SELECT EXISTS (
+                SELECT 1 FROM \(DonationReceiptCredentialRedemptionJobRecord.databaseTableName)
+                WHERE \(DonationReceiptCredentialRedemptionJobRecord.columnName(.recordType)) IS ?
+                AND \(DonationReceiptCredentialRedemptionJobRecord.columnName(.subscriberID)) IS ?
+            )
+        """
+        let arguments: StatementArguments = [
+            SDSRecordType.receiptCredentialRedemptionJobRecord.rawValue,
+            subscriberID
+        ]
+
+        do {
+            return try Bool.fetchOne(tx.database, sql: sql, arguments: arguments) ?? false
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Unable to find job: \(error.grdbErrorForLogging)")
+        }
+    }
+}
+
+// MARK: -
+
 private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
     private let dateProvider: DateProvider
     private let db: DB
@@ -212,16 +260,18 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
     }
 }
 
+// MARK: -
+
 private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
     private let continuation: CheckedContinuation<Void, Error>?
 
     private let dateProvider: DateProvider
     private let db: DB
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
-    private let logger: PrefixedLogger
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
 
+    private var logger: PrefixedLogger = .donations
     private var transientFailureCount: UInt = 0
 
     init(
@@ -237,7 +287,6 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         self.dateProvider = dateProvider
         self.db = db
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
-        self.logger = .donations
         self.networkManager = networkManager
         self.profileManager = profileManager
     }
@@ -459,13 +508,16 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         // operation can't ever succeed, so we throw it away.
         let configuration = try parseJobRecord(jobRecord)
 
-        logger.info("Running job for \(configuration.paymentType).")
+        // Now that we know what type of job we are, suffix the logger.
+        logger = logger.suffixed(with: "[\(configuration.paymentType)]")
+
+        logger.info("Running job.")
 
         // When the app relaunches, we'll try to restart all pending redemption
         // jobs. If one is for SEPA, and if that job hit a "still processing" error
         // in the past 24 hours, don't check again until 24 hours after the error.
         if let retryDelay = sepaRetryDelay(configuration: configuration) {
-            logger.info("Skipping SEPA job for \(configuration.paymentType): in SEPA retry-delay period!")
+            logger.info("Skipping SEPA job: in SEPA retry-delay period!")
             return .retryAfter(retryDelay, canRetryEarly: false)
         }
 
@@ -563,6 +615,26 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         )
 
         return await db.awaitableWrite { tx in
+            switch configuration.paymentType.receiptCredentialResultMode {
+            case .oneTimeBoost:
+                donationReceiptCredentialResultStore
+                    .clearRequestError(errorMode: .oneTimeBoost, tx: tx)
+            case .recurringSubscriptionInitiation, .recurringSubscriptionRenewal:
+                // For a time, we might have enqueued both the "initiation" job
+                // and one or more "renewal" jobs for the same subscription
+                // period; for example, if a SEPA initiation job was processing
+                // for several days, we might have later enqueued a redundant
+                // renewal job. If the initiation job persisted an error (such
+                // as "still processing", and the renewal job later succeeded,
+                // then the initiation job may never have gotten to clear its
+                // error.
+                //
+                // This shouldn't happen anymore, but we can clear all errors
+                // (including any orphaned errors) now that we've succeeded.
+                donationReceiptCredentialResultStore
+                    .clearRequestErrorForAnyRecurringSubscription(tx: tx)
+            }
+
             self.donationReceiptCredentialResultStore.clearRequestError(
                 errorMode: configuration.paymentType.receiptCredentialResultMode,
                 tx: tx

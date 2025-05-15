@@ -2739,6 +2739,7 @@
 		D9CAFAE62A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAFAE52A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift */; };
 		D9CAFAEA2A53CB1F00B32BDE /* UsernameLinkTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAFAE92A53CB1F00B32BDE /* UsernameLinkTooltipView.swift */; };
 		D9CD40622A155C4800545803 /* TSInfoMessage+PersistableGroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CD40612A155C4800545803 /* TSInfoMessage+PersistableGroupUpdateItemTest.swift */; };
+		D9D1A6EB2DD69D0800050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A6EA2DD69CFE00050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift */; };
 		D9D3216A2A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D321692A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift */; };
 		D9DB37EF2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DB37EE2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift */; };
 		D9DB37F32B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DB37F22B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift */; };
@@ -6660,6 +6661,7 @@
 		D9CAFAE52A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeContentController.swift; sourceTree = "<group>"; };
 		D9CAFAE92A53CB1F00B32BDE /* UsernameLinkTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkTooltipView.swift; sourceTree = "<group>"; };
 		D9CD40612A155C4800545803 /* TSInfoMessage+PersistableGroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+PersistableGroupUpdateItemTest.swift"; sourceTree = "<group>"; };
+		D9D1A6EA2DD69CFE00050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptCredentialRedemptionJobFinderTest.swift; sourceTree = "<group>"; };
 		D9D321692A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingGroupCallUpdateMessageTest.swift; sourceTree = "<group>"; };
 		D9D3217B2A8FEA9B004FC110 /* Groups.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = Groups.proto; path = SignalServiceKit/protobuf/Groups.proto; sourceTree = SOURCE_ROOT; };
 		D9D3217C2A8FEA9B004FC110 /* DeviceTransfer.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = DeviceTransfer.proto; path = SignalServiceKit/protobuf/DeviceTransfer.proto; sourceTree = SOURCE_ROOT; };
@@ -10326,6 +10328,7 @@
 			isa = PBXGroup;
 			children = (
 				D97992A02D9E55E10080A4F5 /* CurrencyFormatterTest.swift */,
+				D9D1A6EA2DD69CFE00050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift */,
 				F992ACC328F8C9D900906038 /* StripeTest.swift */,
 			);
 			path = Subscriptions;
@@ -18660,6 +18663,7 @@
 				F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */,
 				F9E39CE929493D4C001D7721 /* DisappearingMessageFinderTest.swift in Sources */,
 				F9426267289B1B5500460798 /* DispatchQueue+OWSTest.swift in Sources */,
+				D9D1A6EB2DD69D0800050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift in Sources */,
 				501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */,
 				C13B9BB22A17BC32007F74C4 /* EditManagerTests.swift in Sources */,
 				D9106E022AC20066007ABFE6 /* EmptyForCodableTest.swift in Sources */,
