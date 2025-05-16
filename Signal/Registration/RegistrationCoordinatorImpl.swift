@@ -538,6 +538,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     public func resetRestoreMethodChoice() -> Guarantee<RegistrationStep> {
         inMemoryState.restoreMethod = nil
+        inMemoryState.needsToAskForDeviceTransfer = true
+        deps.db.write { tx in
+            updatePersistedState(tx) {
+                $0.hasDeclinedTransfer = false
+            }
+        }
         return returnToSplash()
     }
 
@@ -1143,7 +1149,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func exportAndWipeState(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep> {
         Logger.info("")
 
-        func writeState(_ tx: DBWriteTransaction) {
+        func persistRegistrationState(_ tx: DBWriteTransaction) {
             if
                 inMemoryState.hasBackedUpToSVR
                 || inMemoryState.didHaveSVRBackupsPriorToReg
@@ -1205,7 +1211,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             /// just-generated our PNI identity key is correct.
             deps.pniHelloWorldManager.markHelloWorldAsUnnecessary(tx: tx)
 
-            writeState(tx)
             persistLocalIdentifiers(tx: tx)
         }
 
@@ -1226,25 +1231,29 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         switch mode {
         case .registering:
-            return restoreBackupIfNecessary()
-            .then { _ in
-                self.db.write { tx in
-                    /// For new registrations, we want to force-set some state.
-                    if self.inMemoryState.restoreMethod?.backupType == nil {
-                        /// Read receipts should be on by default.
-                        self.deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
-                        self.deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
+            db.write { tx in
+                /// For new registrations, we want to force-set some state.
+                if self.inMemoryState.restoreMethod?.backupType == nil {
+                    /// Read receipts should be on by default.
+                    self.deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
+                    self.deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
 
-                        /// Enable the onboarding banner cards.
-                        self.deps.experienceManager.enableAllGetStartedCards(tx)
-                    }
-                    finalizeRegistration(tx: tx)
+                    /// Enable the onboarding banner cards.
+                    self.deps.experienceManager.enableAllGetStartedCards(tx)
                 }
-                return setupContactsAndFinish()
+                persistRegistrationState(tx)
             }
+            return restoreBackupIfNecessary()
+                .then {
+                    self.db.write { tx in
+                        finalizeRegistration(tx: tx)
+                    }
+                    return setupContactsAndFinish()
+                }
 
         case .reRegistering:
             db.write { tx in
+                persistRegistrationState(tx)
                 finalizeRegistration(tx: tx)
             }
             return setupContactsAndFinish()
@@ -1552,6 +1561,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             } else {
                 return .value(.transferSelection)
             }
+        } else if
+            inMemoryState.restoreMethod?.backupType != nil,
+            inMemoryState.accountEntropyPool == nil
+        {
+            // If the user chose 'restore from backup', ask them
+            // for the AEP before continuing with registration
+            return .value(.enterBackupKey)
         }
 
         // Attempt to register right away with the password.

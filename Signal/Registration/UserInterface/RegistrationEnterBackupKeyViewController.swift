@@ -9,6 +9,7 @@ import SwiftUI
 
 protocol RegistrationEnterBackupKeyPresenter: AnyObject {
     func next(accountEntropyPool: AccountEntropyPool)
+    func cancelKeyEntry()
 }
 
 class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigationChildController {
@@ -20,6 +21,9 @@ class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigation
 
         // TODO: [Backups] Disable this next button until the input is valid
         navigationItem.rightBarButtonItem = nextBarButton
+        navigationItem.leftBarButtonItem = .button(title: CommonStrings.backButton, style: .done) { [weak self] in
+            self?.presenter?.cancelKeyEntry()
+        }
 
         self.view.backgroundColor = UIColor.Signal.background
 
@@ -284,6 +288,10 @@ private extension String {
 private class PreviewRegistrationEnterBackupKeyPresenter: RegistrationEnterBackupKeyPresenter {
     func next(accountEntropyPool: AccountEntropyPool) {
         print("next")
+    }
+
+    func cancelKeyEntry() {
+        print("cancel")
     }
 }
 
