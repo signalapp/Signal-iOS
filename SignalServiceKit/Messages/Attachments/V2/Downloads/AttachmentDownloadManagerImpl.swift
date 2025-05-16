@@ -803,7 +803,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 result = try await attachmentUpdater.updateAttachmentAsDownloaded(
                     attachmentId: attachment.id,
                     pendingAttachment: pendingAttachment,
-                    source: record.sourceType
+                    source: record.sourceType,
+                    priority: record.priority,
+                    timestamp: dateProvider().ows_millisecondsSince1970
                 )
             } catch let error {
                 return .retryableError(OWSAssertionError("Failed to update attachment: \(error)"))
@@ -1859,7 +1861,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         func updateAttachmentAsDownloaded(
             attachmentId: Attachment.IDType,
             pendingAttachment: PendingAttachment,
-            source: QueuedAttachmentDownloadRecord.SourceType
+            source: QueuedAttachmentDownloadRecord.SourceType,
+            priority: AttachmentDownloadPriority,
+            timestamp: UInt64,
         ) async throws -> DownloadResult {
             return try await db.awaitableWrite { tx in
                 guard let existingAttachment = self.attachmentStore.fetch(id: attachmentId, tx: tx) else {
@@ -1888,9 +1892,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // Try and update the attachment.
                     try self.attachmentStore.updateAttachmentAsDownloaded(
                         from: source,
+                        priority: priority,
                         id: attachmentId,
                         validatedMimeType: pendingAttachment.mimeType,
                         streamInfo: streamInfo,
+                        timestamp: timestamp,
                         tx: tx
                     )
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!

@@ -25,6 +25,7 @@ extension Attachment {
         public let thumbnailMediaTierInfo: ThumbnailMediaTierInfo?
         public let localRelativeFilePathThumbnail: String?
         public let originalAttachmentIdForQuotedReply: Attachment.IDType?
+        public let lastFullscreenViewTimestamp: UInt64?
 
         private init(
             blurHash: String?,
@@ -36,7 +37,8 @@ extension Attachment {
             mediaTierInfo: MediaTierInfo?,
             thumbnailMediaTierInfo: ThumbnailMediaTierInfo?,
             localRelativeFilePathThumbnail: String?,
-            originalAttachmentIdForQuotedReply: Attachment.IDType?
+            originalAttachmentIdForQuotedReply: Attachment.IDType?,
+            lastFullscreenViewTimestamp: UInt64?,
         ) {
             self.blurHash = blurHash
             self.mimeType = mimeType
@@ -48,6 +50,7 @@ extension Attachment {
             self.thumbnailMediaTierInfo = thumbnailMediaTierInfo
             self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
             self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
+            self.lastFullscreenViewTimestamp = lastFullscreenViewTimestamp
         }
 
         public static func fromPointer(
@@ -66,7 +69,8 @@ extension Attachment {
                 mediaTierInfo: nil,
                 thumbnailMediaTierInfo: nil,
                 localRelativeFilePathThumbnail: nil,
-                originalAttachmentIdForQuotedReply: nil
+                originalAttachmentIdForQuotedReply: nil,
+                lastFullscreenViewTimestamp: nil,
             )
         }
 
@@ -87,7 +91,8 @@ extension Attachment {
                 mediaTierInfo: nil,
                 thumbnailMediaTierInfo: nil,
                 localRelativeFilePathThumbnail: nil,
-                originalAttachmentIdForQuotedReply: nil
+                originalAttachmentIdForQuotedReply: nil,
+                lastFullscreenViewTimestamp: nil,
             )
         }
 
@@ -110,7 +115,8 @@ extension Attachment {
                 mediaTierInfo: mediaTierInfo,
                 thumbnailMediaTierInfo: thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: nil,
-                originalAttachmentIdForQuotedReply: nil
+                originalAttachmentIdForQuotedReply: nil,
+                lastFullscreenViewTimestamp: nil,
             )
         }
 
@@ -130,7 +136,8 @@ extension Attachment {
                 mediaTierInfo: nil,
                 thumbnailMediaTierInfo: nil,
                 localRelativeFilePathThumbnail: nil,
-                originalAttachmentIdForQuotedReply: nil
+                originalAttachmentIdForQuotedReply: nil,
+                lastFullscreenViewTimestamp: nil,
             )
         }
 
@@ -151,7 +158,8 @@ extension Attachment {
                 mediaTierInfo: nil,
                 thumbnailMediaTierInfo: nil,
                 localRelativeFilePathThumbnail: nil,
-                originalAttachmentIdForQuotedReply: originalAttachment.id
+                originalAttachmentIdForQuotedReply: originalAttachment.id,
+                lastFullscreenViewTimestamp: nil,
             )
         }
 
@@ -159,7 +167,8 @@ extension Attachment {
             attachment: Attachment,
             validatedMimeType: String,
             streamInfo: Attachment.StreamInfo,
-            mediaName: String
+            mediaName: String,
+            lastFullscreenViewTimestamp: UInt64?,
         ) -> ConstructionParams {
             let transitTierInfo = attachment.transitTierInfo.map {
                 return Attachment.TransitTierInfo(
@@ -184,7 +193,8 @@ extension Attachment {
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: lastFullscreenViewTimestamp ?? attachment.lastFullscreenViewTimestamp,
             )
         }
 
@@ -214,7 +224,8 @@ extension Attachment {
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: attachment.lastFullscreenViewTimestamp,
             )
         }
 
@@ -231,7 +242,8 @@ extension Attachment {
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: attachment.lastFullscreenViewTimestamp,
             )
         }
 
@@ -239,7 +251,8 @@ extension Attachment {
             attachment: Attachment,
             validatedMimeType: String,
             streamInfo: Attachment.StreamInfo,
-            mediaName: String
+            mediaName: String,
+            lastFullscreenViewTimestamp: UInt64?,
         ) -> ConstructionParams {
             let mediaTierInfo = attachment.mediaTierInfo.map {
                 return Attachment.MediaTierInfo(
@@ -262,7 +275,8 @@ extension Attachment {
                 mediaTierInfo: mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: lastFullscreenViewTimestamp ?? attachment.lastFullscreenViewTimestamp,
             )
         }
 
@@ -290,7 +304,8 @@ extension Attachment {
                 mediaTierInfo: mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: attachment.lastFullscreenViewTimestamp,
             )
         }
 
@@ -318,7 +333,8 @@ extension Attachment {
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: streamInfo.localRelativeFilePath,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: attachment.lastFullscreenViewTimestamp,
             )
         }
 
@@ -343,7 +359,8 @@ extension Attachment {
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: attachment.lastFullscreenViewTimestamp,
             )
         }
 
@@ -373,7 +390,8 @@ extension Attachment {
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: attachment.lastFullscreenViewTimestamp,
             )
         }
 
@@ -392,7 +410,27 @@ extension Attachment {
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: attachment.lastFullscreenViewTimestamp,
+            )
+        }
+
+        public static func forMarkingViewedFullscreen(
+            attachment: Attachment,
+            viewTimestamp: UInt64
+        ) -> ConstructionParams {
+            return .init(
+                blurHash: attachment.blurHash,
+                mimeType: attachment.mimeType,
+                encryptionKey: attachment.encryptionKey,
+                streamInfo: attachment.streamInfo,
+                transitTierInfo: attachment.transitTierInfo,
+                mediaName: attachment.mediaName,
+                mediaTierInfo: attachment.mediaTierInfo,
+                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: viewTimestamp,
             )
         }
     }

@@ -326,6 +326,7 @@ public class GRDBSchemaMigrator {
         case addAvatarDefaultColorTable
         case populateAvatarDefaultColorTable
         case addStoryRecipient
+        case addAttachmentLastFullscreenViewTimestamp
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -389,7 +390,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 111
+    public static let grdbSchemaVersionLatest: UInt = 112
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3949,6 +3950,13 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.addStoryRecipient) { tx in
             try createStoryRecipients(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addAttachmentLastFullscreenViewTimestamp) { tx in
+            try tx.database.alter(table: "Attachment") { table in
+                table.add(column: "lastFullscreenViewTimestamp", .integer)
+            }
             return .success(())
         }
 

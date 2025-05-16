@@ -60,6 +60,13 @@ public class Attachment {
     /// This thumbnail is exclusively used for backup purposes.
     public let localRelativeFilePathThumbnail: String?
 
+    /// The last time the user viewed this attachment ("fullscreen", which really means "not just scrolling past it
+    /// in a conversation"). Set if viewing in the media gallery, story viewer, etc.
+    /// Not set when viewing a thread wallpaper.
+    /// May not be set for e.g. attachments that were viewed before we started tracking this; do not use
+    /// this for anything that would rely on this being historically correct.
+    public let lastFullscreenViewTimestamp: UInt64?
+
     // MARK: - Inner structs
 
     /// Information supporting "streaming" video, which requires computing an
@@ -206,6 +213,7 @@ public class Attachment {
         self.originalAttachmentIdForQuotedReply = record.originalAttachmentIdForQuotedReply
         self.mediaName = record.mediaName
         self.localRelativeFilePathThumbnail = record.localRelativeFilePathThumbnail
+        self.lastFullscreenViewTimestamp = record.lastFullscreenViewTimestamp
 
         self.streamInfo = StreamInfo(
             sha256ContentHash: record.sha256ContentHash,

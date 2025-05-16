@@ -127,9 +127,11 @@ public protocol AttachmentStore {
 
     func updateAttachmentAsDownloaded(
         from source: QueuedAttachmentDownloadRecord.SourceType,
+        priority: AttachmentDownloadPriority,
         id: Attachment.IDType,
         validatedMimeType: String,
         streamInfo: Attachment.StreamInfo,
+        timestamp: UInt64,
         tx: DBWriteTransaction
     ) throws
 
@@ -203,6 +205,14 @@ public protocol AttachmentStore {
     /// Remove all owners of thread types (wallpaper and global wallpaper owners).
     /// Will also delete any attachments that become unowned, like any other deletion.
     func removeAllThreadOwners(tx: DBWriteTransaction) throws
+
+    /// Call this when viewing an attachment "fullscreen", which really means "anything
+    /// other than scrolling past it in a conversation".
+    func markViewedFullscreen(
+        attachment: Attachment,
+        timestamp: UInt64,
+        tx: DBWriteTransaction
+    ) throws
 
     // MARK: - Thread Merging
 

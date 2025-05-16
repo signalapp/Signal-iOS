@@ -335,9 +335,11 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     public func updateAttachmentAsDownloaded(
         from source: QueuedAttachmentDownloadRecord.SourceType,
+        priority: AttachmentDownloadPriority,
         id: Attachment.IDType,
         validatedMimeType: String,
         streamInfo: Attachment.StreamInfo,
+        timestamp: UInt64,
         tx: DBWriteTransaction
     ) throws {
         let existingAttachment = fetch(ids: [id], tx: tx).first
@@ -367,6 +369,15 @@ public class AttachmentStoreImpl: AttachmentStore {
             throw AttachmentInsertError.duplicateMediaName(existingAttachmentId: existingMediaNameRecord.id)
         }
 
+        // We count it as a "view" if the download was initiated by the user
+        let lastFullscreenViewTimestamp: UInt64?
+        switch priority {
+        case .userInitiated:
+            lastFullscreenViewTimestamp = timestamp
+        case .backupRestoreLow, .backupRestoreHigh, .default, .localClone:
+            lastFullscreenViewTimestamp = nil
+        }
+
         var newRecord: Attachment.Record
         switch source {
         case .transitTier:
@@ -375,7 +386,8 @@ public class AttachmentStoreImpl: AttachmentStore {
                     attachment: existingAttachment,
                     validatedMimeType: validatedMimeType,
                     streamInfo: streamInfo,
-                    mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext)
+                    mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext),
+                    lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
                 )
             )
         case .mediaTierFullsize:
@@ -384,7 +396,8 @@ public class AttachmentStoreImpl: AttachmentStore {
                     attachment: existingAttachment,
                     validatedMimeType: validatedMimeType,
                     streamInfo: streamInfo,
-                    mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext)
+                    mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext),
+                    lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
                 )
             )
         case .mediaTierThumbnail:
@@ -751,5 +764,21 @@ public class AttachmentStoreImpl: AttachmentStore {
         try AttachmentReference.MessageAttachmentReferenceRecord
             .filter(threadRowIdColumn == fromThreadRowId)
             .updateAll(tx.database, threadRowIdColumn.set(to: intoThreadRowId))
+    }
+
+    public func markViewedFullscreen(
+        attachment: Attachment,
+        timestamp: UInt64,
+        tx: DBWriteTransaction
+    ) throws {
+        var newRecord = Attachment.Record(
+            params: .forMarkingViewedFullscreen(
+                attachment: attachment,
+                viewTimestamp: timestamp
+            )
+        )
+        newRecord.sqliteId = attachment.id
+        try newRecord.checkAllUInt64FieldsFitInInt64()
+        try newRecord.update(tx.database)
     }
 }

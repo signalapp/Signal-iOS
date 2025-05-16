@@ -170,6 +170,32 @@ class StoryItemMediaView: UIView {
 
     func setIsViewVisible(_ isVisible: Bool) {
         self.isViewVisible = isVisible
+
+        let attachmentIdToMarkViewed: Attachment.IDType?
+        switch item.attachment {
+        case .pointer:
+            // we don't mark pointers viewed.
+            attachmentIdToMarkViewed = nil
+        case .stream(let stream):
+            attachmentIdToMarkViewed = stream.attachment.attachment.id
+        case .text(let preloadedTextAttachment):
+            attachmentIdToMarkViewed = preloadedTextAttachment.linkPreviewAttachment?.attachment.asStream()?.id
+        }
+        if let attachmentIdToMarkViewed {
+            let timestamp = Date().ows_millisecondsSince1970
+            Task {
+                try await DependenciesBridge.shared.db.awaitableWrite { tx in
+                    guard let attachment = DependenciesBridge.shared.attachmentStore.fetch(id: attachmentIdToMarkViewed, tx: tx) else {
+                        return
+                    }
+                    try DependenciesBridge.shared.attachmentStore.markViewedFullscreen(
+                        attachment: attachment,
+                        timestamp: timestamp,
+                        tx: tx
+                    )
+                }
+            }
+        }
     }
 
     // MARK: - Playback

@@ -1246,6 +1246,7 @@ CREATE
                 ,"mediaTierIncrementalMacChunkSize" INTEGER
                 ,"transitTierIncrementalMac" BLOB
                 ,"transitTierIncrementalMacChunkSize" INTEGER
+                ,"lastFullscreenViewTimestamp" INTEGER
 )
 ;
 

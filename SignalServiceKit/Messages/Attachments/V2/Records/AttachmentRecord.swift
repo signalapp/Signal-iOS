@@ -49,6 +49,7 @@ extension Attachment {
         var mediaTierIncrementalMacChunkSize: UInt32?
         let transitTierIncrementalMac: Data?
         let transitTierIncrementalMacChunkSize: UInt32?
+        let lastFullscreenViewTimestamp: UInt64?
 
         // MARK: - Coding Keys
 
@@ -91,6 +92,7 @@ extension Attachment {
             case mediaTierIncrementalMacChunkSize
             case transitTierIncrementalMac
             case transitTierIncrementalMacChunkSize
+            case lastFullscreenViewTimestamp
         }
 
         // MARK: - UInt64SafeRecord
@@ -102,7 +104,8 @@ extension Attachment {
                 \.transitUploadTimestamp,
                 \.lastTransitDownloadAttemptTimestamp,
                 \.lastMediaTierDownloadAttemptTimestamp,
-                \.lastThumbnailDownloadAttemptTimestamp
+                \.lastThumbnailDownloadAttemptTimestamp,
+                \.lastFullscreenViewTimestamp,
             ]
         }
 
@@ -154,7 +157,8 @@ extension Attachment {
             mediaTierIncrementalMac: Data?,
             mediaTierIncrementalMacChunkSize: UInt32?,
             transitTierIncrementalMac: Data?,
-            transitTierIncrementalMacChunkSize: UInt32?
+            transitTierIncrementalMacChunkSize: UInt32?,
+            lastFullscreenViewTimestamp: UInt64?,
         ) {
             self.sqliteId = sqliteId
             self.blurHash = blurHash
@@ -194,6 +198,7 @@ extension Attachment {
             self.mediaTierIncrementalMacChunkSize = mediaTierIncrementalMacChunkSize
             self.transitTierIncrementalMac = transitTierIncrementalMac
             self.transitTierIncrementalMacChunkSize = transitTierIncrementalMacChunkSize
+            self.lastFullscreenViewTimestamp = lastFullscreenViewTimestamp
         }
 
         internal init(attachment: Attachment) {
@@ -208,7 +213,8 @@ extension Attachment {
                 transitTierInfo: attachment.transitTierInfo,
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: attachment.lastFullscreenViewTimestamp,
             )
         }
 
@@ -224,7 +230,8 @@ extension Attachment {
                 transitTierInfo: params.transitTierInfo,
                 mediaTierInfo: params.mediaTierInfo,
                 thumbnailMediaTierInfo: params.thumbnailMediaTierInfo,
-                originalAttachmentIdForQuotedReply: params.originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: params.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: params.lastFullscreenViewTimestamp,
             )
         }
 
@@ -239,7 +246,8 @@ extension Attachment {
             transitTierInfo: Attachment.TransitTierInfo?,
             mediaTierInfo: Attachment.MediaTierInfo?,
             thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
-            originalAttachmentIdForQuotedReply: Int64?
+            originalAttachmentIdForQuotedReply: Int64?,
+            lastFullscreenViewTimestamp: UInt64?,
         ) {
             self.init(
                 optionalSqliteId: sqliteId,
@@ -252,7 +260,8 @@ extension Attachment {
                 transitTierInfo: transitTierInfo,
                 mediaTierInfo: mediaTierInfo,
                 thumbnailMediaTierInfo: thumbnailMediaTierInfo,
-                originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
             )
         }
 
@@ -268,7 +277,8 @@ extension Attachment {
             transitTierInfo: Attachment.TransitTierInfo?,
             mediaTierInfo: Attachment.MediaTierInfo?,
             thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
-            originalAttachmentIdForQuotedReply: Int64?
+            originalAttachmentIdForQuotedReply: Int64?,
+            lastFullscreenViewTimestamp: UInt64?,
         ) {
             self.sqliteId = optionalSqliteId
             self.blurHash = blurHash
@@ -302,6 +312,7 @@ extension Attachment {
             self.localRelativeFilePath = streamInfo?.localRelativeFilePath
             self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
             self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
+            self.lastFullscreenViewTimestamp = lastFullscreenViewTimestamp
 
             let cachedAudioDurationSeconds: TimeInterval?
             let cachedMediaSizePixels: CGSize?

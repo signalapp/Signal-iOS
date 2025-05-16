@@ -212,6 +212,21 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
             playVideo()
             hasAutoPlayedVideo = true
         }
+
+        let timestamp = Date().ows_millisecondsSince1970
+        let attachmentId = galleryItem.attachmentStream.attachment.id
+        Task {
+            try await DependenciesBridge.shared.db.awaitableWrite { tx in
+                guard let attachment = DependenciesBridge.shared.attachmentStore.fetch(id: attachmentId, tx: tx) else {
+                    return
+                }
+                try DependenciesBridge.shared.attachmentStore.markViewedFullscreen(
+                    attachment: attachment,
+                    timestamp: timestamp,
+                    tx: tx
+                )
+            }
+        }
     }
 
     override func viewDidLayoutSubviews() {

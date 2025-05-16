@@ -1196,7 +1196,8 @@ class AttachmentStoreTests: XCTestCase {
                 \.transitUploadTimestamp: "transitUploadTimestamp",
                 \.lastTransitDownloadAttemptTimestamp: "lastTransitDownloadAttemptTimestamp",
                 \.lastMediaTierDownloadAttemptTimestamp: "lastMediaTierDownloadAttemptTimestamp",
-                \.lastThumbnailDownloadAttemptTimestamp: "lastThumbnailDownloadAttemptTimestamp"
+                \.lastThumbnailDownloadAttemptTimestamp: "lastThumbnailDownloadAttemptTimestamp",
+                \.lastFullscreenViewTimestamp: "lastFullscreenViewTimestamp",
             ]
         )
     }

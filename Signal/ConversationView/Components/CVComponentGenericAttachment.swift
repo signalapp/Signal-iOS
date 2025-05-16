@@ -5,12 +5,14 @@
 
 public import PassKit
 public import QuickLook
-import SignalServiceKit
+public import SignalServiceKit
 public import SignalUI
 
 public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .genericAttachment }
+
+    public var attachmentId: Attachment.IDType { genericAttachment.attachment.attachment.attachment.id }
 
     private let genericAttachment: CVComponentState.GenericAttachment
     private var attachment: ReferencedAttachment { genericAttachment.attachment.attachment }

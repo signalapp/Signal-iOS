@@ -402,6 +402,21 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction {
         AssertIsOnMainThread()
 
+        let timestamp = Date().ows_millisecondsSince1970
+        let attachmentId = attachment.attachmentId
+        Task {
+            try await DependenciesBridge.shared.db.awaitableWrite { tx in
+                guard let attachment = DependenciesBridge.shared.attachmentStore.fetch(id: attachmentId, tx: tx) else {
+                    return
+                }
+                try DependenciesBridge.shared.attachmentStore.markViewedFullscreen(
+                    attachment: attachment,
+                    timestamp: timestamp,
+                    tx: tx
+                )
+            }
+        }
+
         if
             PKAddPassesViewController.canAddPasses(),
             let pkPass = attachment.representedPKPass(),

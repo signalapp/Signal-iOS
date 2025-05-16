@@ -180,6 +180,23 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
                 forThreadUniqueId: renderItem.itemModel.thread.uniqueId
             )
             AppEnvironment.shared.cvAudioPlayerRef.togglePlayState(forAudioAttachment: audioAttachment)
+
+            // We mark audio attachments "viewed" when they're played.
+            let timestamp = Date().ows_millisecondsSince1970
+            let attachmentId = audioAttachment.attachment.id
+            Task {
+                try await DependenciesBridge.shared.db.awaitableWrite { tx in
+                    guard let attachment = DependenciesBridge.shared.attachmentStore.fetch(id: attachmentId, tx: tx) else {
+                        return
+                    }
+                    try DependenciesBridge.shared.attachmentStore.markViewedFullscreen(
+                        attachment: attachment,
+                        timestamp: timestamp,
+                        tx: tx
+                    )
+                }
+            }
+
             return true
 
         } else if audioAttachment.isDownloading, let pointerId = audioAttachment.attachmentPointer?.attachment.id {
