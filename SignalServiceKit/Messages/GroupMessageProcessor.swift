@@ -527,7 +527,7 @@ internal class SpecificGroupMessageProcessor {
                 }
             }
             switch error {
-            case GroupsV2Error.timeout, GroupsV2Error.shouldRetry:
+            case GroupsV2Error.timeout:
                 return true
             default:
                 return false

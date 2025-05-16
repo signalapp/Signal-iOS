@@ -299,7 +299,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
                 Logger.warn("Group update failed: \(error)")
             } else {
                 switch error {
-                case GroupsV2Error.localUserNotInGroup, GroupsV2Error.timeout, GroupsV2Error.missingGroupChangeProtos:
+                case GroupsV2Error.localUserNotInGroup, GroupsV2Error.timeout:
                     Logger.warn("Group update failed: \(error)")
                 default:
                     owsFailDebug("Group update failed: \(error)")
@@ -355,10 +355,6 @@ private extension GroupV2UpdatesImpl {
                     // snapshot. For example, if we are joining via an
                     // invite link we will be unable to fetch change
                     // actions.
-                    return true
-                case GroupsV2Error.missingGroupChangeProtos:
-                    // If the service returns a group state without change protos,
-                    // fail over to the snapshot.
                     return true
                 case GroupsV2Error.groupChangeProtoForIncompatibleRevision:
                     // If we got change protos for an incompatible revision,
@@ -901,9 +897,7 @@ extension GroupsV2Error: IsRetryableProvider {
         switch self {
         case
                 .conflictingChangeOnService,
-                .shouldRetry,
-                .timeout,
-                .newMemberMissingAnnouncementOnlyCapability:
+                .timeout:
             return true
         case
                 .redundantChange,
@@ -912,14 +906,9 @@ extension GroupsV2Error: IsRetryableProvider {
                 .cannotBuildGroupChangeProto_conflictingChange,
                 .cannotBuildGroupChangeProto_lastAdminCantLeaveGroup,
                 .cannotBuildGroupChangeProto_tooManyMembers,
-                .gv2NotEnabled,
                 .localUserIsNotARequestingMember,
                 .cantApplyChangesToPlaceholder,
                 .expiredGroupInviteLink,
-                .groupNeedsToBeMigrated,
-                .groupCannotBeMigrated,
-                .groupDowngradeNotAllowed,
-                .missingGroupChangeProtos,
                 .groupBlocked,
                 .localUserBlockedFromJoining,
                 .groupChangeProtoForIncompatibleRevision,

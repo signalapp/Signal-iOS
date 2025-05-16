@@ -11,23 +11,16 @@ public enum GroupsV2Error: Error {
     case redundantChange
     /// The change we attempted conflicts with what is on the service.
     case conflictingChangeOnService
-    case shouldRetry
     case shouldDiscard
     case timeout
     case localUserNotInGroup
     case cannotBuildGroupChangeProto_conflictingChange
     case cannotBuildGroupChangeProto_lastAdminCantLeaveGroup
     case cannotBuildGroupChangeProto_tooManyMembers
-    case gv2NotEnabled
     case localUserIsNotARequestingMember
     case cantApplyChangesToPlaceholder
     case expiredGroupInviteLink
-    case groupNeedsToBeMigrated
-    case groupCannotBeMigrated
-    case groupDowngradeNotAllowed
-    case missingGroupChangeProtos
     case groupBlocked
-    case newMemberMissingAnnouncementOnlyCapability
     case localUserBlockedFromJoining
 
     /// We tried to apply an incremental group change proto but failed due to
