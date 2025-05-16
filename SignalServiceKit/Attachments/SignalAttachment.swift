@@ -1387,3 +1387,17 @@ public class SignalAttachment: NSObject {
         return attachment
     }
 }
+
+
+extension SignalAttachment : NSItemProviderReading {
+    
+    public static var readableTypeIdentifiersForItemProvider: [String] {
+        return Array(inputImageUTISet) //Only support images for now
+    }
+    
+    public static func object(withItemProviderData data: Data, typeIdentifier: String) throws -> Self {
+        let dataSource = DataSourceValue(data, utiType: typeIdentifier)
+        return SignalAttachment.attachment(dataSource: dataSource, dataUTI: typeIdentifier) as! Self
+    }
+    
+}
