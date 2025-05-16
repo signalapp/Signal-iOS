@@ -197,27 +197,14 @@ class NotificationService: UNNotificationServiceExtension {
 
             try await SSKEnvironment.shared.messageFetcherJobRef.fetchViaRest()
 
-            try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing(stages: [.messageProcessor, .groupMessageProcessor])
+            let backgroundMessageFetcher = BackgroundMessageFetcher(
+                messageFetcherJob: SSKEnvironment.shared.messageFetcherJobRef,
+                messageProcessor: SSKEnvironment.shared.messageProcessorRef,
+                messageSender: SSKEnvironment.shared.messageSenderRef,
+                receiptSender: SSKEnvironment.shared.receiptSenderRef,
+            )
 
-            // Wait for these in parallel.
-            do {
-                // Wait until all ACKs are complete.
-                async let pendingAcks: Void = SSKEnvironment.shared.messageFetcherJobRef.waitForPendingAcks()
-                // Wait until all outgoing receipt sends are complete.
-                async let pendingReceipts: Void = SSKEnvironment.shared.receiptSenderRef.waitForPendingReceipts()
-                // Wait until all outgoing messages are sent.
-                async let pendingMessages: Void = SSKEnvironment.shared.messageSenderRef.waitForPendingMessages()
-                // Wait until all sync requests are fulfilled.
-                async let pendingOps: Void = MessageReceiver.waitForPendingTasks()
-
-                try await pendingAcks
-                try await pendingReceipts
-                try await pendingMessages
-                try await pendingOps
-            }
-
-            // Finally, wait for any notifications to finish posting
-            try await NotificationPresenterImpl.waitForPendingNotifications()
+            try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
         } catch is CancellationError {
             Logger.warn("Message fetching & processing canceled.")
             return UNMutableNotificationContent()

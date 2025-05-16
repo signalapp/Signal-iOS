@@ -539,6 +539,7 @@
 		500AF3AD2C5834A400CB9F4F /* CancellableContinuationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AF3AC2C5834A400CB9F4F /* CancellableContinuationTest.swift */; };
 		500AF3AF2C58366700CB9F4F /* CooperativeTimeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AF3AE2C58366700CB9F4F /* CooperativeTimeout.swift */; };
 		500AF3B12C58385600CB9F4F /* CooperativeTimeoutTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AF3B02C58385600CB9F4F /* CooperativeTimeoutTest.swift */; };
+		500B25832DD6A08300E9ECAA /* BackgroundMessageFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500B25822DD6A08300E9ECAA /* BackgroundMessageFetcher.swift */; };
 		500BAD802C519F2D00B4CD7F /* MessageTimestampGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500BAD7E2C519F2D00B4CD7F /* MessageTimestampGenerator.swift */; };
 		500BAD822C519F3600B4CD7F /* MessageTimestampGeneratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500BAD7F2C519F2D00B4CD7F /* MessageTimestampGeneratorTest.swift */; };
 		500FB6182915B86D00257951 /* UITableView+ReusableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */; };
@@ -4440,6 +4441,7 @@
 		500AF3AC2C5834A400CB9F4F /* CancellableContinuationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableContinuationTest.swift; sourceTree = "<group>"; };
 		500AF3AE2C58366700CB9F4F /* CooperativeTimeout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CooperativeTimeout.swift; sourceTree = "<group>"; };
 		500AF3B02C58385600CB9F4F /* CooperativeTimeoutTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CooperativeTimeoutTest.swift; sourceTree = "<group>"; };
+		500B25822DD6A08300E9ECAA /* BackgroundMessageFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundMessageFetcher.swift; sourceTree = "<group>"; };
 		500BAD7E2C519F2D00B4CD7F /* MessageTimestampGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimestampGenerator.swift; sourceTree = "<group>"; };
 		500BAD7F2C519F2D00B4CD7F /* MessageTimestampGeneratorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimestampGeneratorTest.swift; sourceTree = "<group>"; };
 		500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+ReusableCell.swift"; sourceTree = "<group>"; };
@@ -13515,6 +13517,7 @@
 				F9C5C917289453B100548EEE /* Stickers */,
 				F9C5C968289453B100548EEE /* Stories */,
 				F9C5C95F289453B100548EEE /* UD */,
+				500B25822DD6A08300E9ECAA /* BackgroundMessageFetcher.swift */,
 				50AABEE72CDD9A440077E306 /* BlockedGroupStore.swift */,
 				50F039C32C6D239500162B99 /* BlockedRecipientStore.swift */,
 				F9C5C940289453B100548EEE /* BlockingManager.swift */,
@@ -17522,6 +17525,7 @@
 				7254651E2BA012BD00EABFD2 /* AvatarBuilder.swift in Sources */,
 				D93F4D5A2D800DD20042926C /* AvatarDefaultColorManager.swift in Sources */,
 				720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */,
+				500B25832DD6A08300E9ECAA /* BackgroundMessageFetcher.swift in Sources */,
 				D972E2FF2C542BCD001D7337 /* Backup.pb.swift in Sources */,
 				660A603E2D371C9100D2765B /* BackupArchive+Bench.swift in Sources */,
 				66CD257F2B0D67F300139E17 /* BackupArchive+ChatContexts.swift in Sources */,
