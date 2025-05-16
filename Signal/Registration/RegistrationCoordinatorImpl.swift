@@ -319,24 +319,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func updateAccountEntropyPool(_ accountEntropyPool: SignalServiceKit.AccountEntropyPool) -> Guarantee<RegistrationStep> {
-        deps.db.write { tx in
-            updatePersistedState(tx) {
-                $0.accountEntropyPool = accountEntropyPool
-            }
-        }
+        inMemoryState.accountEntropyPool = accountEntropyPool
         return self.nextStep()
     }
 
     public func restoreFromRegistrationMessage(message: RegistrationProvisioningMessage) -> Guarantee<RegistrationStep> {
-        inMemoryState.restoreMethodToken = message.restoreMethodToken
+        inMemoryState.accountEntropyPool = message.accountEntropyPool
+        inMemoryState.registrationMessage = message
+        inMemoryState.pinFromUser = message.pin
+        inMemoryState.pinFromDisk = message.pin
+
         deps.db.write { tx in
             updatePersistedState(tx) {
                 $0.e164 = message.phoneNumber
-                $0.accountEntropyPool = message.accountEntropyPool
-                $0.registrationMessagePin = message.pin
             }
-            inMemoryState.pinFromUser = message.pin
-            inMemoryState.pinFromDisk = message.pin
             updateMasterKeyAndLocalState(masterKey: message.accountEntropyPool.getMasterKey(), tx: tx)
         }
         // TODO: Display prompt for restore method selection
@@ -542,7 +538,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     public func resetRestoreMethodChoice() -> Guarantee<RegistrationStep> {
         inMemoryState.restoreMethod = nil
-        inMemoryState.restoreMethodToken = nil
         return returnToSplash()
     }
 
@@ -762,6 +757,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var hasRestoredFromStorageService = false
         var hasSkippedRestoreFromStorageService = false
 
+        /// Root key entered or generated during registration.  This value should be persisted at
+        /// the end of registration
+        var accountEntropyPool: SignalServiceKit.AccountEntropyPool?
+
+        /// RegistrationProvisioningMessage provided by the device that scanned
+        /// the displayed QR code
+        var registrationMessage: RegistrationProvisioningMessage?
+
         /// Tracks the state of "username reclamation" following Storage Service
         /// restore during registration. See ``attemptToReclaimUsername()`` for
         /// more details.
@@ -771,10 +774,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case reclamationAttempted
         }
         var usernameReclamationState: UsernameReclamationState = .localUsernameStateNotLoaded
-
-        // The token provided from the `RegistrationProvisioningMessage`
-        // This shouldn't be cached since it doesn't have a long lifetime on the server.
-        var restoreMethodToken: QuickRestoreManager.RestoreMethodToken?
 
         // The restore method selected by the user.  Since the restore method may
         // rely on other in-memory state (e.g. restoreMethodToken), don't persist this.
@@ -868,17 +867,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// to alternate registration paths (e.g. falling back to session based registration)
         var hasRestoredFromSVR = false
 
-        /// Root key entered or generated during registration.  This value should be persisted at
-        /// the end of registration
-        var accountEntropyPool: SignalServiceKit.AccountEntropyPool?
-
         /// Restored SVR master key. This value will be used to restore a session and allow the user
         /// to register and recover storage service, but should never be persisted.  If this value is missing
         /// and `accountEntropyPool` is present, it can be used to derive an SVR master key for
         /// use in registration
         var recoveredSVRMasterKey: MasterKey?
-
-        var registrationMessagePin: String?
 
         struct SessionState: Codable {
             let sessionId: String
@@ -1011,9 +1004,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case didRefreshOneTimePreKeys
             case hasDeclinedTransfer
             case hasOldDevice
-            case accountEntropyPool
             case recoveredSVRMasterKey
-            case registrationMessagePin
         }
     }
 
@@ -1075,9 +1066,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             var initialMasterKey: MasterKey?
             if let aep = deps.accountKeyStore.getAccountEntropyPool(tx: tx) {
-                updatePersistedState(tx) {
-                    $0.accountEntropyPool = aep
-                }
+                inMemoryState.accountEntropyPool = aep
                 initialMasterKey = aep.getMasterKey()
             } else if let masterKey = deps.accountKeyStore.getMasterKey(tx: tx) {
                 updatePersistedState(tx) {
@@ -1088,7 +1077,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             self.updateMasterKeyAndLocalState(masterKey: initialMasterKey, tx: tx)
             inMemoryState.tsRegistrationState = deps.tsAccountManager.registrationState(tx: tx)
-            if let quickRestorePin = persistedState.registrationMessagePin {
+            if let quickRestorePin = inMemoryState.registrationMessage?.pin {
                 inMemoryState.pinFromDisk = quickRestorePin
                 inMemoryState.pinFromUser = quickRestorePin
             } else {
@@ -1166,7 +1155,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
             let userHasPIN = (inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk) != nil
-            if let accountEntropyPool = persistedState.accountEntropyPool {
+            if let accountEntropyPool = inMemoryState.accountEntropyPool {
                 deps.svr.useDeviceLocalAccountEntropyPool(
                     accountEntropyPool,
                     disablePIN: !userHasPIN,
@@ -1487,11 +1476,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func nextStepForQuickRestore() -> Guarantee<RegistrationStep> {
-        if persistedState.accountEntropyPool == nil {
+        if inMemoryState.accountEntropyPool == nil {
             return .value(.scanQuickRegistrationQrCode)
         }
         if case .deviceTransfer = inMemoryState.restoreMethod {
-            if let restoreToken = inMemoryState.restoreMethodToken {
+            if let restoreToken = inMemoryState.registrationMessage?.restoreMethodToken {
                 let transferStatusState = RegistrationTransferStatusState(
                     deviceTransferService: deps.deviceTransferService,
                     quickRestoreManager: deps.quickRestoreManager,
@@ -3096,17 +3085,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return stepGuarantee
         }
 
-        if persistedState.accountEntropyPool == nil {
+        if inMemoryState.accountEntropyPool == nil {
             if inMemoryState.restoreMethod?.backupType != nil {
                 // If the user want's to restore from backup, ask for the key
                 return .value(.enterBackupKey)
             } else {
                 // If the AccountEntropyPool doesn't exist yet, create one.
                 db.write { tx in
-                    updatePersistedState(tx) {
-                        $0.accountEntropyPool = deps.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
-                    }
-                    let newMasterKey = persistedState.accountEntropyPool?.getMasterKey()
+                    let accountEntropyPool = deps.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
+                    inMemoryState.accountEntropyPool = accountEntropyPool
+                    let newMasterKey = accountEntropyPool.getMasterKey()
                     updateMasterKeyAndLocalState(masterKey: newMasterKey, tx: tx)
                 }
             }
@@ -3117,7 +3105,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         // This will restore after backup, _or_ it will rotate to the new AEP derived key
-        let masterKey = persistedState.accountEntropyPool?.getMasterKey()
+        let masterKey = inMemoryState.accountEntropyPool?.getMasterKey()
 
         if
             shouldRestoreFromStorageService(),
@@ -3384,7 +3372,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             authMethod = backupAuthMethod
         }
 
-        let masterKey = persistedState.accountEntropyPool?.getMasterKey()
+        let masterKey = inMemoryState.accountEntropyPool?.getMasterKey()
 
         guard let masterKey else {
             Logger.error("Failed to back up to SVR due to missing root key")
@@ -4492,7 +4480,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .registering:
             return
                 deps.featureFlags.backupFileAlphaRegistrationFlow
-                && persistedState.accountEntropyPool != nil
+                && inMemoryState.accountEntropyPool != nil
                 && inMemoryState.hasBackedUpToSVR
                 && !inMemoryState.hasRestoredFromLocalMessageBackup
                 && !inMemoryState.hasSkippedRestoreFromMessageBackup
