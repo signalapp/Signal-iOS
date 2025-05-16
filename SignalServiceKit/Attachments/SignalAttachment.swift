@@ -1397,7 +1397,7 @@ extension SignalAttachment : NSItemProviderReading {
     
     public static func object(withItemProviderData data: Data, typeIdentifier: String) throws -> Self {
         let dataSource = DataSourceValue(data, utiType: typeIdentifier)
-        return SignalAttachment.attachment(dataSource: dataSource, dataUTI: typeIdentifier) as! Self
+        return imageAttachment(dataSource: dataSource, dataUTI: typeIdentifier, isBorderless: dataSource?.hasStickerLikeProperties ?? false) as! Self
     }
     
 }
