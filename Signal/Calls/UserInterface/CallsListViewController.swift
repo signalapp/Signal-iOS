@@ -870,7 +870,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     tx: SDSDB.shimOnlyBridge(tx)
                 ).unwrapped
             },
-            shouldFetchUpcomingCallLinks: !onlyLoadMissedCalls
+            shouldFetchUpcomingCallLinks: !onlyLoadMissedCalls && onlyMatchThreadRowIds == nil
         )
 
         self.reloadUpcomingCallLinks()
