@@ -31,6 +31,8 @@ public struct RegistrationProvisioningMessage {
 
     public let accountEntropyPool: AccountEntropyPool
     public let aci: Aci
+    public let aciIdentityKeyPair: IdentityKeyPair
+    public let pniIdentityKeyPair: IdentityKeyPair
     public let phoneNumber: E164
     public let pin: String?
     public let platform: Platform
@@ -42,6 +44,8 @@ public struct RegistrationProvisioningMessage {
     public init(
         accountEntropyPool: AccountEntropyPool,
         aci: Aci,
+        aciIdentityKeyPair: IdentityKeyPair,
+        pniIdentityKeyPair: IdentityKeyPair,
         phoneNumber: E164,
         pin: String?,
         tier: BackupTier?,
@@ -52,6 +56,8 @@ public struct RegistrationProvisioningMessage {
         self.platform = .ios
         self.accountEntropyPool = accountEntropyPool
         self.aci = aci
+        self.aciIdentityKeyPair = aciIdentityKeyPair
+        self.pniIdentityKeyPair = pniIdentityKeyPair
         self.phoneNumber = phoneNumber
         self.pin = pin
         self.tier = tier
@@ -62,6 +68,16 @@ public struct RegistrationProvisioningMessage {
 
     public init(plaintext: Data) throws {
         let proto = try RegistrationProtos_RegistrationProvisionMessage(serializedBytes: plaintext)
+
+        self.aciIdentityKeyPair = try IdentityKeyPair(
+            publicKey: PublicKey(proto.aciIdentityKeyPublic),
+            privateKey: PrivateKey(proto.aciIdentityKeyPrivate)
+        )
+
+        self.pniIdentityKeyPair = try IdentityKeyPair(
+            publicKey: PublicKey(proto.pniIdentityKeyPublic),
+            privateKey: PrivateKey(proto.pniIdentityKeyPrivate)
+        )
 
         guard
             let accountEntropyPool = proto.accountEntropyPool.nilIfEmpty,
@@ -98,6 +114,12 @@ public struct RegistrationProvisioningMessage {
         if let pin {
             messageBuilder.pin = pin
         }
+
+        messageBuilder.aciIdentityKeyPublic = aciIdentityKeyPair.publicKey.serialize().asData
+        messageBuilder.aciIdentityKeyPrivate = aciIdentityKeyPair.privateKey.serialize().asData
+
+        messageBuilder.pniIdentityKeyPublic = pniIdentityKeyPair.publicKey.serialize().asData
+        messageBuilder.pniIdentityKeyPrivate = pniIdentityKeyPair.privateKey.serialize().asData
 
         messageBuilder.platform = .ios
 

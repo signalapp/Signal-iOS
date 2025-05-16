@@ -116,6 +116,7 @@ public class RegistrationCoordinatorTest {
             experienceManager: experienceManager,
             featureFlags: featureFlags,
             accountKeyStore: accountKeyStore,
+            identityManager: RegistrationCoordinatorImpl.TestMocks.IdentityManager(),
             localUsernameManager: localUsernameManagerMock,
             messagePipelineSupervisor: mockMessagePipelineSupervisor,
             messageProcessor: mockMessageProcessor,

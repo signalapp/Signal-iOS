@@ -75,6 +75,14 @@ struct RegistrationProtos_RegistrationProvisionMessage: @unchecked Sendable {
 
   var restoreMethodToken: String = String()
 
+  var aciIdentityKeyPublic: Data = Data()
+
+  var aciIdentityKeyPrivate: Data = Data()
+
+  var pniIdentityKeyPublic: Data = Data()
+
+  var pniIdentityKeyPrivate: Data = Data()
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Platform: SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -204,6 +212,10 @@ extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message
     7: .same(proto: "tier"),
     8: .same(proto: "backupSizeBytes"),
     9: .same(proto: "restoreMethodToken"),
+    10: .same(proto: "aciIdentityKeyPublic"),
+    11: .same(proto: "aciIdentityKeyPrivate"),
+    12: .same(proto: "pniIdentityKeyPublic"),
+    13: .same(proto: "pniIdentityKeyPrivate"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -221,6 +233,10 @@ extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message
       case 7: try { try decoder.decodeSingularEnumField(value: &self._tier) }()
       case 8: try { try decoder.decodeSingularUInt64Field(value: &self.backupSizeBytes) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self.restoreMethodToken) }()
+      case 10: try { try decoder.decodeSingularBytesField(value: &self.aciIdentityKeyPublic) }()
+      case 11: try { try decoder.decodeSingularBytesField(value: &self.aciIdentityKeyPrivate) }()
+      case 12: try { try decoder.decodeSingularBytesField(value: &self.pniIdentityKeyPublic) }()
+      case 13: try { try decoder.decodeSingularBytesField(value: &self.pniIdentityKeyPrivate) }()
       default: break
       }
     }
@@ -258,6 +274,18 @@ extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message
     if !self.restoreMethodToken.isEmpty {
       try visitor.visitSingularStringField(value: self.restoreMethodToken, fieldNumber: 9)
     }
+    if !self.aciIdentityKeyPublic.isEmpty {
+      try visitor.visitSingularBytesField(value: self.aciIdentityKeyPublic, fieldNumber: 10)
+    }
+    if !self.aciIdentityKeyPrivate.isEmpty {
+      try visitor.visitSingularBytesField(value: self.aciIdentityKeyPrivate, fieldNumber: 11)
+    }
+    if !self.pniIdentityKeyPublic.isEmpty {
+      try visitor.visitSingularBytesField(value: self.pniIdentityKeyPublic, fieldNumber: 12)
+    }
+    if !self.pniIdentityKeyPrivate.isEmpty {
+      try visitor.visitSingularBytesField(value: self.pniIdentityKeyPrivate, fieldNumber: 13)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -271,6 +299,10 @@ extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message
     if lhs._tier != rhs._tier {return false}
     if lhs.backupSizeBytes != rhs.backupSizeBytes {return false}
     if lhs.restoreMethodToken != rhs.restoreMethodToken {return false}
+    if lhs.aciIdentityKeyPublic != rhs.aciIdentityKeyPublic {return false}
+    if lhs.aciIdentityKeyPrivate != rhs.aciIdentityKeyPrivate {return false}
+    if lhs.pniIdentityKeyPublic != rhs.pniIdentityKeyPublic {return false}
+    if lhs.pniIdentityKeyPrivate != rhs.pniIdentityKeyPrivate {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

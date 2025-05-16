@@ -20,6 +20,7 @@ public class QuickRestoreManager {
     private let accountKeyStore: AccountKeyStore
     private let db: any DB
     private let deviceProvisioningService: DeviceProvisioningService
+    private let identityManager: OWSIdentityManager
     private let networkManager: NetworkManager
     private let tsAccountManager: TSAccountManager
 
@@ -27,18 +28,26 @@ public class QuickRestoreManager {
         accountKeyStore: AccountKeyStore,
         db: any DB,
         deviceProvisioningService: DeviceProvisioningService,
+        identityManager: OWSIdentityManager,
         networkManager: NetworkManager,
         tsAccountManager: TSAccountManager
     ) {
         self.accountKeyStore = accountKeyStore
         self.db = db
         self.deviceProvisioningService = deviceProvisioningService
+        self.identityManager = identityManager
         self.networkManager = networkManager
         self.tsAccountManager = tsAccountManager
     }
 
     public func register(deviceProvisioningUrl: DeviceProvisioningURL) async throws -> RestoreMethodToken {
-        let (localIdentifiers, accountEntropyPool, pinCode) = try db.read { tx in
+        let (
+            localIdentifiers,
+            accountEntropyPool,
+            aciIdentityKeyPair,
+            pniIdentityKeyPair,
+            pinCode
+        ) = try db.read { tx in
             guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
                 owsFailDebug("Can't quick restore without local identifiers")
                 throw Error.missingRestoreInformation
@@ -49,8 +58,22 @@ public class QuickRestoreManager {
                 owsFailDebug("Can't quick restore without AccountEntropyPool")
                 throw Error.missingRestoreInformation
             }
+            guard let aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx) else {
+                owsFailDebug("Can't quick restore without local identity key")
+                throw Error.missingRestoreInformation
+            }
+            guard let pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx) else {
+                owsFailDebug("Can't quick restore without local identity key")
+                throw Error.missingRestoreInformation
+            }
             let pinCode = SSKEnvironment.shared.ows2FAManagerRef.pinCode(transaction: tx)
-            return (localIdentifiers, accountEntropyPool, pinCode)
+            return (
+                localIdentifiers,
+                accountEntropyPool,
+                aciIdentityKeyPair,
+                pniIdentityKeyPair,
+                pinCode
+            )
         }
 
         let myAci = localIdentifiers.aci
@@ -65,6 +88,8 @@ public class QuickRestoreManager {
         let registrationMessage = RegistrationProvisioningMessage(
             accountEntropyPool: accountEntropyPool,
             aci: myAci,
+            aciIdentityKeyPair: aciIdentityKeyPair.identityKeyPair,
+            pniIdentityKeyPair: pniIdentityKeyPair.identityKeyPair,
             phoneNumber: myPhoneNumber,
             pin: pinCode,
             tier: nil,

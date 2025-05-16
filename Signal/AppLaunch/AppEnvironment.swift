@@ -86,6 +86,7 @@ public class AppEnvironment: NSObject {
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             db: DependenciesBridge.shared.db,
             deviceProvisioningService: deviceProvisioningService,
+            identityManager: DependenciesBridge.shared.identityManager,
             networkManager: SSKEnvironment.shared.networkManagerRef,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )

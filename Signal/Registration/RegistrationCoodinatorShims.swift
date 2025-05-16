@@ -16,6 +16,7 @@ extension RegistrationCoordinatorImpl {
         typealias DeviceTransferService = _RegistrationCoordinator_DeviceTransferServiceShim
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerShim
         public typealias FeatureFlags = _RegistrationCoordinator_FeatureFlagsShim
+        public typealias IdentityManager = _RegistrationCoordinator_IdentityManagerShim
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorShim
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorShim
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerShim
@@ -34,6 +35,7 @@ extension RegistrationCoordinatorImpl {
         typealias DeviceTransferService = _RegistrationCoordinator_DeviceTransferServiceWrapper
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerWrapper
         public typealias FeatureFlags = _RegistrationCoordinator_FeatureFlagsWrapper
+        public typealias IdentityManager = _RegistrationCoordinator_IdentityManagerWrapper
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorWrapper
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorWrapper
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerWrapper
@@ -164,6 +166,21 @@ public class _RegistrationCoordinator_FeatureFlagsWrapper: _RegistrationCoordina
     public init() {}
 
     public var backupFileAlphaRegistrationFlow: Bool { FeatureFlags.Backups.fileAlphaRegistrationFlow }
+}
+
+public protocol _RegistrationCoordinator_IdentityManagerShim {
+    func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction)
+}
+
+public class _RegistrationCoordinator_IdentityManagerWrapper: _RegistrationCoordinator_IdentityManagerShim {
+    private let identityManager: OWSIdentityManager
+    public init(_ identityManager: OWSIdentityManager) {
+        self.identityManager = identityManager
+    }
+
+    public func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction) {
+        identityManager.setIdentityKeyPair(keyPair, for: identity, tx: tx)
+    }
 }
 
 // MARK: - MessagePipelineSupervisor

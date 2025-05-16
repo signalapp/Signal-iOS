@@ -3882,6 +3882,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         }
     }
+    private func persistRegistrationMessage(_ registrationMessage: RegistrationProvisioningMessage) {
+        db.write { tx in
+            deps.identityManager.setIdentityKeyPair(
+                registrationMessage.aciIdentityKeyPair.asECKeyPair,
+                for: .aci,
+                tx: tx
+            )
+            deps.identityManager.setIdentityKeyPair(
+                registrationMessage.pniIdentityKeyPair.asECKeyPair,
+                for: .pni,
+                tx: tx
+            )
+            deps.accountKeyStore.setAccountEntropyPool(
+                registrationMessage.accountEntropyPool,
+                tx: tx
+            )
+        }
+    }
 
     private func makeCreateAccountRequestAndFinalizePreKeys(
         method: RegistrationRequestFactory.VerificationMethod,
@@ -3892,6 +3910,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
         responseHandler: @escaping (AccountResponse) -> Guarantee<RegistrationStep>
     ) -> Guarantee<RegistrationStep> {
+        // If there are identity keys, we have to persist them before generating prekeys
+        if let registrationMessage = inMemoryState.registrationMessage {
+            persistRegistrationMessage(registrationMessage)
+        }
         return self.deps.preKeyManager.createPreKeysForRegistration()
             .map(on: self.schedulers.sync) { (bundles: RegistrationPreKeyUploadBundles) -> RegistrationPreKeyUploadBundles? in
                 return bundles

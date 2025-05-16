@@ -16,6 +16,7 @@ extension RegistrationCoordinatorImpl {
         public typealias DeviceTransferService = _RegistrationCoordinator_DeviceTransferServiceMock
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerMock
         public typealias FeatureFlags = _RegistrationCoordinator_FeatureFlagsMock
+        public typealias IdentityManager = _RegistrationCoordinator_IdentityManagerMock
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorMock
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorMock
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerMock
@@ -103,6 +104,14 @@ public class _RegistrationCoordinator_FeatureFlagsMock: _RegistrationCoordinator
     public init() {}
 
     public var backupFileAlphaRegistrationFlow: Bool { false }
+}
+
+// MARK: - IdentityManager
+
+public class _RegistrationCoordinator_IdentityManagerMock: _RegistrationCoordinator_IdentityManagerShim {
+    public init() {}
+
+    public func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction) { }
 }
 
 // MARK: - MessagePipelineSupervisor
