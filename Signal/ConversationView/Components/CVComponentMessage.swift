@@ -1298,6 +1298,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             )
         }
         contents.append(timestampText)
+        
+        if let readAndUnreadFooterAccessibilityLabel = itemViewState.footerState?.accessibilityLabel {
+            contents.append(readAndUnreadFooterAccessibilityLabel)
+        }
 
         elements.append(contents.joined(separator: ", "))
 
