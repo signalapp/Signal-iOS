@@ -237,7 +237,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // may happen immediately, after a short delay, or never.)
         if let remoteNotification = launchOptions?[.remoteNotification] as? [AnyHashable: Any] {
             Logger.info("Application was launched by tapping a push notification.")
-            processRemoteNotification(remoteNotification, completion: {})
+            Task {
+                try await processRemoteNotification(remoteNotification)
+            }
         }
 
         // Do this even if `appVersion` isn't used -- there's side effects.
@@ -1359,16 +1361,21 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             Logger.info("")
         }
 
-        // Mark down that the APNS token is working because we got a push.
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx in
-                APNSRotationStore.didReceiveAPNSPush(transaction: tx)
-            }
-        }
-
-        processRemoteNotification(userInfo) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+        Task {
+            defer {
+                // TODO: Report the actual outcome.
                 completionHandler(.newData)
+            }
+            try await withCooperativeTimeout(seconds: 27) {
+                try await self.appReadiness.waitForAppReady()
+
+                // Mark down that the APNS token is working because we got a push.
+                let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+                async let _ = databaseStorage.awaitableWrite { tx in
+                    APNSRotationStore.didReceiveAPNSPush(transaction: tx)
+                }
+
+                try await self.processRemoteNotification(userInfo)
             }
         }
     }
@@ -1379,40 +1386,39 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     // TODO: NSE Lifecycle, is this invoked when the NSE wakes the main app?
-    private func processRemoteNotification(_ remoteNotification: [AnyHashable: Any], completion: @escaping () -> Void) {
-        AssertIsOnMainThread()
-
-        appReadiness.runNowOrWhenAppDidBecomeReadySync {
-            // TODO: Wait to invoke this until we've finished fetching messages.
-            defer { completion() }
-
-            switch self.handleSilentPushContent(remoteNotification) {
-            case .handled:
-                break
-            case .notHandled:
-                let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-                guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-                    Logger.info("Ignoring remote notification; user is not registered.")
-                    return
-                }
-                Task {
-                    await SSKEnvironment.shared.messageFetcherJobRef.startFetchingViaWebSocket()
-                }
-                // If the main app gets woken to process messages in the background, check
-                // for any pending NSE requests to fulfill.
-                _ = SSKEnvironment.shared.syncManagerRef.syncAllContactsIfFullSyncRequested()
+    private nonisolated func processRemoteNotification(_ remoteNotification: [AnyHashable: Any]) async throws {
+        switch try await self.handleSilentPushContent(remoteNotification) {
+        case .handled:
+            break
+        case .notHandled:
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+                Logger.info("Ignoring remote notification; user is not registered.")
+                return
             }
+
+            await SSKEnvironment.shared.messageFetcherJobRef.startFetchingViaWebSocket()
+
+            // If the main app gets woken to process messages in the background, check
+            // for any pending NSE requests to fulfill.
+            async let _ = SSKEnvironment.shared.syncManagerRef.syncAllContactsIfFullSyncRequested().awaitable()
+
+            try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
         }
     }
 
-    private func handleSilentPushContent(_ remoteNotification: [AnyHashable: Any]) -> HandleSilentPushContentResult {
+    private nonisolated func handleSilentPushContent(_ remoteNotification: [AnyHashable: Any]) async throws -> HandleSilentPushContentResult {
         if let spamChallengeToken = remoteNotification["rateLimitChallenge"] as? String {
             SSKEnvironment.shared.spamChallengeResolverRef.handleIncomingPushChallengeToken(spamChallengeToken)
+            // TODO: Wait only until the token has been submitted.
+            try await Task.sleep(nanoseconds: 20.clampedNanoseconds)
             return .handled
         }
 
         if let preAuthChallengeToken = remoteNotification["challenge"] as? String {
             AppEnvironment.shared.pushRegistrationManagerRef.didReceiveVanillaPreAuthChallengeToken(preAuthChallengeToken)
+            // TODO: Wait only until the token has been submitted.
+            try await Task.sleep(nanoseconds: 20.clampedNanoseconds)
             return .handled
         }
 
