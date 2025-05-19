@@ -617,6 +617,7 @@ extension ReferencedAttachment {
         let locator: BackupProto_FilePointer.OneOf_Locator
         let incrementalMacInfo: Attachment.IncrementalMacInfo?
         if
+            FeatureFlags.Backups.remoteExportAlpha,
             let mediaName = attachment.mediaName,
             let mediaTierDigest =
                 attachment.mediaTierInfo?.digestSHA256Ciphertext
