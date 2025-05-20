@@ -170,6 +170,10 @@ public class Attachment {
         /// Timestamp we last tried (and failed) to download from the media tier.
         /// Nil if we have not tried or have successfully downloaded.
         public let lastDownloadAttemptTimestamp: UInt64?
+
+        /// How long we keep attachment files locally by default when "optimize media"
+        /// is enabled. Measured from the receive time of the most recent owning message.
+        public static let offloadingThresholdMs: UInt64 = .dayInMs * 30
     }
 
     public struct ThumbnailMediaTierInfo {

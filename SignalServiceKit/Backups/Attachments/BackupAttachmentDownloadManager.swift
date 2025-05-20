@@ -42,6 +42,10 @@ public protocol BackupAttachmentDownloadManager {
     /// Removes all enqueued downloads and attempts to cancel in progress ones.
     func cancelPendingDownloads() async throws
 
+    /// Cancel pending attachment downloads for old media, when "optimize media" is enabled.
+    /// Removes all necessary enqueued downloads and attempts to cancel in progress ones.
+    func cancelOldPendingDownloads() async throws
+
     /// Schedule a download from media tier for _every_ attachment for which this is
     /// currently possible (has media tier CDN info).
     /// There are only 3 situations where we want to schedule all media tier downloads:
@@ -252,6 +256,43 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         try? await progress.beginObserving()
         // Kill status observation
         await statusManager.didEmptyQueue(type: .download)
+    }
+
+    public func cancelOldPendingDownloads() async throws {
+        // Stop current downloads
+        try await taskQueue.stop()
+        try await db.awaitableWrite { tx in
+            // Downloads are already tagged with the latest timestamp of
+            // owning message(s); just dequeue any with timestamps older
+            // than the optimize media threshold.
+            try self.backupAttachmentDownloadStore.removeAll(
+                olderThan: dateProvider().ows_millisecondsSince1970 - Attachment.MediaTierInfo.offloadingThresholdMs,
+                tx: tx
+            )
+
+            // Count the total bytes to download from scratch for the
+            // remaining enqueued downloads.
+            var totalRemainingByteCount: UInt64 = 0
+            let cursor = try QueuedBackupAttachmentDownload
+                .fetchCursor(tx.database)
+            while let download = try cursor.next() {
+                guard
+                    let attachment = attachmentStore.fetch(id: download.attachmentRowId, tx: tx),
+                    let unencryptedByteCount = attachment.mediaTierInfo?.unencryptedByteCount
+                        ?? attachment.transitTierInfo?.unencryptedByteCount
+                else {
+                    continue
+                }
+                totalRemainingByteCount += UInt64(Cryptography.paddedSize(
+                    unpaddedSize: UInt(unencryptedByteCount))
+                )
+            }
+
+            backupAttachmentDownloadStore.setTotalPendingDownloadByteCount(totalRemainingByteCount, tx: tx)
+            backupAttachmentDownloadStore.setCachedRemainingPendingDownloadByteCount(totalRemainingByteCount, tx: tx)
+        }
+        // Kick the tires again to resume downloads.
+        try await restoreAttachmentsIfNeeded()
     }
 
     public func scheduleAllMediaTierDownloads(tx: DBWriteTransaction) throws {
@@ -1085,6 +1126,10 @@ open class BackupAttachmentDownloadManagerMock: BackupAttachmentDownloadManager 
     }
 
     public func cancelPendingDownloads() async throws {
+        // Do nothing
+    }
+
+    public  func cancelOldPendingDownloads() async throws {
         // Do nothing
     }
 

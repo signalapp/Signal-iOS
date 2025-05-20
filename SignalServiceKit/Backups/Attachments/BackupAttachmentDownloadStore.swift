@@ -46,6 +46,9 @@ public protocol BackupAttachmentDownloadStore {
     /// Remove all enqueued downloads from the table.
     func removeAll(tx: DBWriteTransaction) throws
 
+    /// Remove all enqueued downloads from the table for attachments older than the provided timestamp.
+    func removeAll(olderThan timestamp: UInt64, tx: DBWriteTransaction) throws
+
     // MARK: Progress tracking cache
 
     /// We display the total byte count of backup attachment downloads. We want this number to remain consistent
@@ -169,6 +172,13 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
 
     public func removeAll(tx: DBWriteTransaction) throws {
         try QueuedBackupAttachmentDownload.deleteAll(tx.database)
+    }
+
+    public func removeAll(olderThan timestamp: UInt64, tx: DBWriteTransaction) throws {
+        try QueuedBackupAttachmentDownload
+            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.timestamp) != nil)
+            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.timestamp) < timestamp)
+            .deleteAll(tx.database)
     }
 
     private let totalPendingDownloadByteCountKey = "totalPendingDownloadByteCountKey"
