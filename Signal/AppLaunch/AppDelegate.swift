@@ -1387,6 +1387,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // TODO: NSE Lifecycle, is this invoked when the NSE wakes the main app?
     private nonisolated func processRemoteNotification(_ remoteNotification: [AnyHashable: Any]) async throws {
+        try await self.appReadiness.waitForAppReady()
         switch try await self.handleSilentPushContent(remoteNotification) {
         case .handled:
             break
