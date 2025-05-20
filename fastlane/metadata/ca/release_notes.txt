@@ -1,1 +1,1 @@
-• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.
+• Hem corregit un error que feia que s'obrís el selector d'imatges en enganxar un arxiu adjunt en un xat.

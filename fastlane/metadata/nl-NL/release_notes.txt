@@ -1,1 +1,1 @@
-• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.
+• We hebben een fout opgelost waardoor de fotokiezer werd geopend nadat een bijlage in een chat was geplakt en vervolgens werd besloten deze niet te verzenden.

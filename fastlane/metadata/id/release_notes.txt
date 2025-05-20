@@ -1,1 +1,1 @@
-• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.
+• Berubah pikiran itu tak masalah. Oleh karena itu, kami memperbaiki bug yang menyebabkan pemilih gambar terbuka ketika Anda tidak jadi mengirim lampiran yang sudah dimasukkan di dalam chat.

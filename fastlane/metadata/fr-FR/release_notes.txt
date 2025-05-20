@@ -1,1 +1,1 @@
-• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.
+• On a tous le droit de changer d'avis : le sélecteur d'images ne s'affichera donc plus par erreur lorsque vous collez une pièce jointe dans une conversation et décidez finalement de ne pas l'envoyer.

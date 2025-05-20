@@ -1,1 +1,1 @@
-• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.
+• Opravili jsme chybu, která po vložení přílohy do chatu mohla způsobit otevření nástroje pro výběr obrázků.

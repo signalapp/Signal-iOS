@@ -1,1 +1,1 @@
-• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.
+•添付ファイルをチャットに貼り付けた後に、画像ピッカーが開いてしまう不具合を修正しました。

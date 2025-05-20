@@ -1,1 +1,1 @@
-• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.
+• قُمنا بإصلاح خطأ كان يتسبب في فتح أداة مُحَدِّد الصور بعد لصق ملف مُرفَق في دردشة ما وعدم إرساله بعد ذلك.

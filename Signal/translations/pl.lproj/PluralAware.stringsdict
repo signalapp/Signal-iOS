@@ -1023,13 +1023,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d osoba została zaproszona do grupy.</string>
+			<string>%1$d osoba zostaje zaproszona do grupy.</string>
 			<key>few</key>
-			<string>%1$d osoby zostały zaproszone do grupy.</string>
+			<string>%1$d osoby zostają zaproszone do grupy.</string>
 			<key>many</key>
-			<string>%1$d osób zostało zaproszonych do grupy.</string>
+			<string>%1$d osób zostaje zaproszonych do grupy.</string>
 			<key>other</key>
-			<string>%1$d osób zostało zaproszonych do grupy.</string>
+			<string>%1$d osoby zostaje zaproszone do grupy.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -1063,13 +1063,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Zaproszenie do grupy dla %1$d osoby zostało wycofane.</string>
+			<string>Zaproszenie do grupy dla %1$d osoby zostaje wycofane.</string>
 			<key>few</key>
-			<string>Zaproszenia do grupy dla %1$d osób zostały wycofane.</string>
+			<string>Zaproszenia do grupy dla %1$d osób zostają wycofane.</string>
 			<key>many</key>
-			<string>Zaproszenia do grupy dla %1$d osób zostały wycofane.</string>
+			<string>Zaproszenia do grupy dla %1$d osób zostają wycofane.</string>
 			<key>other</key>
-			<string>Zaproszenia do grupy dla %1$d osoby zostały wycofane.</string>
+			<string>Zaproszenia do grupy dla %1$d osoby zostają wycofane.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -1663,13 +1663,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Cofnąć %1$d zaproszenie do grupy, którego nadawca to %2$@?</string>
+			<string>Cofnąć %1$d zaproszenie do grupy, którego nadawcą jest %2$@?</string>
 			<key>few</key>
-			<string>Cofnąć %1$d zaproszenia do grupy, których nadawca to %2$@?</string>
+			<string>Cofnąć %1$d zaproszenia do grupy, których nadawcą jest %2$@?</string>
 			<key>many</key>
-			<string>Cofnąć %1$d zaproszeń do grupy, których nadawca to %2$@?</string>
+			<string>Cofnąć %1$d zaproszeń do grupy, których nadawcą jest %2$@?</string>
 			<key>other</key>
-			<string>Cofnąć %1$d zaproszenia do grupy, którego nadawca to %2$@?</string>
+			<string>Cofnąć %1$d zaproszenia do grupy, którego nadawcą jest %2$@?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>

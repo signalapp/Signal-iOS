@@ -1,1 +1,1 @@
-• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.
+• תיקנו באג שלפעמים גרם לבורר התמונות להיפתח לאחר הדבקת קובץ מצורף לתוך צ׳אט.
