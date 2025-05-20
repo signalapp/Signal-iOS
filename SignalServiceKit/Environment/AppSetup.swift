@@ -438,11 +438,24 @@ public class AppSetup {
             db: db
         )
 
+        let backupListMediaManager = BackupListMediaManagerImpl(
+            attachmentStore: attachmentStore,
+            attachmentUploadStore: attachmentUploadStore,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupKeyMaterial: backupKeyMaterial,
+            backupRequestManager: backupRequestManager,
+            backupSubscriptionManager: backupSubscriptionManager,
+            db: db,
+            orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
+            tsAccountManager: tsAccountManager
+        )
+
         let backupAttachmentUploadManager = BackupAttachmentUploadManagerImpl(
             appReadiness: appReadiness,
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
+            backupListMediaManager: backupListMediaManager,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             backupSubscriptionManager: backupSubscriptionManager,
@@ -1019,20 +1032,17 @@ public class AppSetup {
                 appReadiness: appReadiness,
                 attachmentStore: attachmentStore,
                 attachmentDownloadManager: attachmentDownloadManager,
-                attachmentUploadStore: attachmentUploadStore,
                 backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-                backupKeyMaterial: backupKeyMaterial,
+                backupListMediaManager: backupListMediaManager,
+                backupRequestManager: backupRequestManager,
                 backupSettingsStore: backupSettingsStore,
                 backupSubscriptionManager: backupSubscriptionManager,
                 dateProvider: dateProvider,
                 db: db,
                 mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
-                backupRequestManager: backupRequestManager,
-                orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
                 progress: backupAttachmentDownloadProgress,
                 remoteConfigProvider: remoteConfigManager,
                 statusManager: backupAttachmentQueueStatusManager,
-                svr: svr,
                 tsAccountManager: tsAccountManager
             )
 

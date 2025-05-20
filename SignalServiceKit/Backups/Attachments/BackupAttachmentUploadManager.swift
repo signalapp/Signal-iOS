@@ -33,6 +33,10 @@ public protocol BackupAttachmentUploadManager {
         tx: DBWriteTransaction
     ) throws
 
+    /// Enqueue all attachments than are elibile to be uploaded to media tier.
+    /// Call this when enabling paid backups to begin backing up all attachments.
+    func enqueueAllEligibleAttachments(tx: DBWriteTransaction) throws
+
     /// Backs up all pending attachments in the BackupAttachmentUploadQueue.
     ///
     /// Will keep backing up attachments until there are none left, then returns.
@@ -61,6 +65,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: any DB
+    private let listMediaManager: BackupListMediaManager
     private let progress: BackupAttachmentUploadProgress
     private let statusManager: BackupAttachmentQueueStatusUpdates
     private let taskQueue: TaskQueueLoader<TaskRunner>
@@ -71,6 +76,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         attachmentStore: AttachmentStore,
         attachmentUploadManager: AttachmentUploadManager,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
+        backupListMediaManager: BackupListMediaManager,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
@@ -86,6 +92,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
+        self.listMediaManager = backupListMediaManager
         self.progress = progress
         self.statusManager = statusManager
         self.tsAccountManager = tsAccountManager
@@ -118,6 +125,40 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         _ attachment: Attachment,
         tx: DBWriteTransaction
     ) throws {
+        let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
+
+        // Its okay if our local subscription state is outdated.
+        // If we think we're free but we're paid, we'll recover by scheduling any unuploaded
+        // attachments when we next back up.
+        // If we think we're paid but we're free, the upload will fail gracefully.
+        let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
+
+        try enqueueUsingHighestPriorityOwnerIfNeeded(
+            attachment,
+            currentUploadEra: currentUploadEra,
+            currentBackupPlan: currentBackupPlan,
+            tx: tx
+        )
+    }
+
+    private func enqueueUsingHighestPriorityOwnerIfNeeded(
+        _ attachment: Attachment,
+        currentUploadEra: String,
+        currentBackupPlan: BackupPlan?,
+        tx: DBWriteTransaction
+    ) throws {
+        // Before we fetch references, check if the attachment is
+        // eligible to begin with.
+        guard
+            shouldEnqueue(
+                attachment,
+                currentUploadEra: currentUploadEra,
+                currentBackupPlan: currentBackupPlan
+            )
+        else {
+            return
+        }
+
         // Backup uploads are prioritized by attachment owner. Find the highest
         // priority owner to use.
         var referenceToUse: AttachmentReference?
@@ -135,6 +176,8 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         if let referenceToUse {
             try self.enqueueIfNeeded(
                 ReferencedAttachment(reference: referenceToUse, attachment: attachment),
+                currentUploadEra: currentUploadEra,
+                currentBackupPlan: currentBackupPlan,
                 tx: tx
             )
         }
@@ -166,14 +209,13 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         currentBackupPlan: BackupPlan?,
         tx: DBWriteTransaction
     ) throws {
-        guard FeatureFlags.Backups.fileAlpha else {
-            return
-        }
-        guard currentBackupPlan == .paid else {
-            return
-        }
-        guard let referencedStream = referencedAttachment.asReferencedStream else {
-            // We only upload streams
+        guard
+            shouldEnqueue(
+                referencedAttachment.attachment,
+                currentUploadEra: currentUploadEra,
+                currentBackupPlan: currentBackupPlan
+            )
+        else {
             return
         }
 
@@ -186,18 +228,69 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             return
         }
 
-        let stream = referencedStream.attachmentStream
+        guard let referencedStream = referencedAttachment.asReferencedStream else {
+            return
+        }
+
+        try backupAttachmentUploadStore.enqueue(
+            referencedStream,
+            tx: tx
+        )
+    }
+
+    private func shouldEnqueue(
+        _ attachment: Attachment,
+        currentUploadEra: String,
+        currentBackupPlan: BackupPlan?
+    ) -> Bool {
+        guard FeatureFlags.Backups.fileAlpha else {
+            return false
+        }
+        guard currentBackupPlan == .paid else {
+            return false
+        }
+        guard let stream = attachment.asStream() else {
+            // We can only upload streams, duh
+            return false
+        }
         guard
             stream.needsMediaTierUpload(currentUploadEra: currentUploadEra)
             || stream.needsMediaTierThumbnailUpload(currentUploadEra: currentUploadEra)
         else {
             // If we don't need fullsize or thumbnail upload, dont bother enqueuing.
+            return false
+        }
+        return true
+    }
+
+    public func enqueueAllEligibleAttachments(tx: DBWriteTransaction) throws {
+        guard FeatureFlags.Backups.remoteExportAlpha else {
             return
         }
-        try backupAttachmentUploadStore.enqueue(
-            referencedStream,
-            tx: tx
-        )
+        let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
+        guard currentBackupPlan == .paid else {
+            return
+        }
+        let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
+
+        // Go ahead and dequeue everything; we'll just requeue
+        // from scratch.
+        try self.backupAttachmentUploadStore.removeAll(tx: tx)
+
+        try attachmentStore.enumerateAllAttachmentsWithMediaName(tx: tx) { attachment in
+            try enqueueUsingHighestPriorityOwnerIfNeeded(
+                attachment,
+                currentUploadEra: currentUploadEra,
+                currentBackupPlan: currentBackupPlan,
+                tx: tx
+            )
+        }
+        // Kick off uploads when the tx finishes.
+        tx.addSyncCompletion {
+            Task {
+                try await self.backUpAllAttachments()
+            }
+        }
     }
 
     public func backUpAllAttachments() async throws {
@@ -257,6 +350,10 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             return
         case .paid:
             break
+        }
+
+        if FeatureFlags.Backups.remoteExportAlpha {
+            try await listMediaManager.queryListMediaIfNeeded()
         }
 
         try await taskQueue.loadAndRunTasks()
@@ -632,6 +729,10 @@ open class BackupAttachmentUploadManagerMock: BackupAttachmentUploadManager {
         _ attachment: Attachment,
         tx: DBWriteTransaction
     ) throws {
+        // Do nothing
+    }
+
+    public func enqueueAllEligibleAttachments(tx: DBWriteTransaction) {
         // Do nothing
     }
 

@@ -1086,6 +1086,7 @@
 		66B1E26C2CB187B3005F43AC /* AttachmentUploadStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1E26B2CB187A0005F43AC /* AttachmentUploadStoreImpl.swift */; };
 		66B1E2702CB48C53005F43AC /* Array+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1E26F2CB48C48005F43AC /* Array+SSKTest.swift */; };
 		66B2FBFE2D10F5EB00189908 /* IncrementalMessageTSAttachmentMigratorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B2FBFD2D10F5DE00189908 /* IncrementalMessageTSAttachmentMigratorFactory.swift */; };
+		66B5451A2DD5B9A00016289B /* BackupListMediaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B545192DD5B9980016289B /* BackupListMediaManager.swift */; };
 		66B78E032BE59B860022580E /* StickerMetadata+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */; };
 		66B78E062BE5AADF0022580E /* AttachmentViewOnceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E052BE5AADF0022580E /* AttachmentViewOnceManager.swift */; };
 		66B78E082BE5AAFC0022580E /* AttachmentViewOnceManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E072BE5AAFB0022580E /* AttachmentViewOnceManagerImpl.swift */; };
@@ -5006,6 +5007,7 @@
 		66B1E26B2CB187A0005F43AC /* AttachmentUploadStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadStoreImpl.swift; sourceTree = "<group>"; };
 		66B1E26F2CB48C48005F43AC /* Array+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+SSKTest.swift"; sourceTree = "<group>"; };
 		66B2FBFD2D10F5DE00189908 /* IncrementalMessageTSAttachmentMigratorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalMessageTSAttachmentMigratorFactory.swift; sourceTree = "<group>"; };
+		66B545192DD5B9980016289B /* BackupListMediaManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupListMediaManager.swift; sourceTree = "<group>"; };
 		66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StickerMetadata+TSResource.swift"; sourceTree = "<group>"; };
 		66B78E052BE5AADF0022580E /* AttachmentViewOnceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentViewOnceManager.swift; sourceTree = "<group>"; };
 		66B78E072BE5AAFB0022580E /* AttachmentViewOnceManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentViewOnceManagerImpl.swift; sourceTree = "<group>"; };
@@ -9640,6 +9642,7 @@
 				6683454F2DCA9BE700566AB3 /* BackupAttachmentUploadProgress.swift */,
 				66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */,
 				66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */,
+				66B545192DD5B9980016289B /* BackupListMediaManager.swift */,
 				668478F62CAB66D600430D68 /* OrphanedBackupAttachment.swift */,
 				668479002CB0A77C00430D68 /* OrphanedBackupAttachmentManager.swift */,
 				668478F82CAB686F00430D68 /* OrphanedBackupAttachmentStore.swift */,
@@ -17604,6 +17607,7 @@
 				D923DF9C2DC135D200CDAFC3 /* BackupIdManager.swift in Sources */,
 				C1A0F79D2B9F57340009DC0D /* BackupKeyMaterial.swift in Sources */,
 				C1A0F79F2B9F59920009DC0D /* BackupKeyMaterialImpl.swift in Sources */,
+				66B5451A2DD5B9A00016289B /* BackupListMediaManager.swift in Sources */,
 				D970541F2CFE4D0200AC7954 /* BackupPaymentMethod.swift in Sources */,
 				D97054202CFE4D0200AC7954 /* BackupPaymentProcessor.swift in Sources */,
 				D9EE79112CF525A4007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift in Sources */,
