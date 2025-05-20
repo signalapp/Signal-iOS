@@ -8939,7 +8939,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to cancel";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Voice Message";
+"VOICE_MESSAGE_FILE_NAME" = "signal";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";

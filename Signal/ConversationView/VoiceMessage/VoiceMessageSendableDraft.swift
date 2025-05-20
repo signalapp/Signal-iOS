@@ -14,10 +14,13 @@ protocol VoiceMessageSendableDraft {
 
 extension VoiceMessageSendableDraft {
     private func userVisibleFilename(currentDate: Date) -> String {
-        String(
-            format: "%@ %@.%@",
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss-SSS"
+        let dateString = dateFormatter.string(from: Date())
+        return String(
+            format: "%@-%@.%@",
             OWSLocalizedString("VOICE_MESSAGE_FILE_NAME", comment: "Filename for voice messages."),
-            DateFormatter.localizedString(from: currentDate, dateStyle: .short, timeStyle: .short),
+            dateString,
             VoiceMessageConstants.fileExtension
         )
     }
