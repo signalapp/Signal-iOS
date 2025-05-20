@@ -30,6 +30,7 @@ public struct BackupSettingsStore {
         static let lastBackupSizeBytes = "lastBackupSizeBytes"
         static let backupFrequency = "backupFrequency"
         static let shouldBackUpOnCellular = "shouldBackUpOnCellular"
+        static let shouldOptimizeLocalStorage = "shouldOptimizeLocalStorage"
     }
 
     private let kvStore: KeyValueStore
@@ -116,5 +117,19 @@ public struct BackupSettingsStore {
         tx.addSyncCompletion {
             NotificationCenter.default.post(name: Self.shouldBackUpOnCellularChangedNotification, object: nil)
         }
+    }
+
+    // MARK: -
+
+    public func getShouldOptimizeLocalStorage(tx: DBReadTransaction) -> Bool {
+        guard backupPlan(tx: tx) == .paid else {
+            // This setting is only for paid subscribers.
+            return false
+        }
+        return kvStore.getBool(Keys.shouldOptimizeLocalStorage, defaultValue: false, transaction: tx)
+    }
+
+    public func setShouldOptimizeLocalStorage(_ newValue: Bool, tx: DBWriteTransaction) {
+        kvStore.setBool(newValue, key: Keys.shouldOptimizeLocalStorage, transaction: tx)
     }
 }

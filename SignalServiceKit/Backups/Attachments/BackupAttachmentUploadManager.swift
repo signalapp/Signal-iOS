@@ -165,7 +165,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         try attachmentStore.enumerateAllReferences(
             toAttachmentId: attachment.id,
             tx: tx
-        ) { reference in
+        ) { reference, _ in
             guard let sourceType = reference.owner.asUploadSourceType() else {
                 return
             }

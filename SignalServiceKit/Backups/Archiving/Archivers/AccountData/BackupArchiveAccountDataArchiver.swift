@@ -334,9 +334,15 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         // These MUST get set before we restore custom chat colors/wallpapers.
         context.uploadEra = uploadEra
         context.backupPlan = backupPlan
-        // TODO:[Backups] this setting should be in the AccountSettings proto
-        // For now default true.
-        context.shouldStoreAllMediaLocally = true
+        context.shouldOptimizeLocalStorage = switch backupPlan {
+        case .free:
+            // Always treat this as false if we are free tier.
+            false
+        case .paid:
+            // TODO: [Backups] this setting should be in the AccountSettings proto
+            // For now default false.
+            false
+        }
 
         // Restore local settings
         if accountData.hasAccountSettings {

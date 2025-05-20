@@ -1083,6 +1083,7 @@
 		66AE8A872C169A900044D388 /* MediaGalleryAttachmentFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE8A852C169A830044D388 /* MediaGalleryAttachmentFinderTest.swift */; };
 		66AEC77E2DD47FE40097AAA2 /* BackupArchive+AccountDataContexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AEC77D2DD47FD80097AAA2 /* BackupArchive+AccountDataContexts.swift */; };
 		66AEFCA42A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */; };
+		66B152AC2DD6FDA700DE25CC /* AttachmentOffloadingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B152AB2DD6FD9400DE25CC /* AttachmentOffloadingManager.swift */; };
 		66B1E26C2CB187B3005F43AC /* AttachmentUploadStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1E26B2CB187A0005F43AC /* AttachmentUploadStoreImpl.swift */; };
 		66B1E2702CB48C53005F43AC /* Array+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1E26F2CB48C48005F43AC /* Array+SSKTest.swift */; };
 		66B2FBFE2D10F5EB00189908 /* IncrementalMessageTSAttachmentMigratorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B2FBFD2D10F5DE00189908 /* IncrementalMessageTSAttachmentMigratorFactory.swift */; };
@@ -1734,9 +1735,9 @@
 		C17A54992D7B3DDE00E1D267 /* ProvisioningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17B31542D710DBD0060664D /* ProvisioningManager.swift */; };
 		C17A549A2D7B3DFB00E1D267 /* ProvisioningManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17B31582D710DD80060664D /* ProvisioningManager+Shims.swift */; };
 		C180878C2D763D4800B16D1E /* RegistrationProvisioningMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C180878B2D763D4800B16D1E /* RegistrationProvisioningMessage.swift */; };
+		C1868F822DBAD04400DA512A /* TransferStatusState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1868F812DBAD04400DA512A /* TransferStatusState.swift */; };
 		C18806342BD8080B0024044A /* BackupAuthCredentialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18806332BD8080B0024044A /* BackupAuthCredentialManager.swift */; };
 		C18806362BD947970024044A /* OWSRequestFactory+Backups.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18806352BD947970024044A /* OWSRequestFactory+Backups.swift */; };
-		C1868F822DBAD04400DA512A /* TransferStatusState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1868F812DBAD04400DA512A /* TransferStatusState.swift */; };
 		C18D4A952B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */; };
 		C18D6FE02D4D8FB40085E3B9 /* AccountEntropyPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18D6FDF2D4D8FB40085E3B9 /* AccountEntropyPool.swift */; };
 		C18DB09F2DA6B9D40084CFD6 /* RegistrationUIStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18DB09E2DA6B9D40084CFD6 /* RegistrationUIStyles.swift */; };
@@ -5004,6 +5005,7 @@
 		66AEC77D2DD47FD80097AAA2 /* BackupArchive+AccountDataContexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupArchive+AccountDataContexts.swift"; sourceTree = "<group>"; };
 		66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerableLabelAnimator.swift; sourceTree = "<group>"; };
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
+		66B152AB2DD6FD9400DE25CC /* AttachmentOffloadingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentOffloadingManager.swift; sourceTree = "<group>"; };
 		66B1E26B2CB187A0005F43AC /* AttachmentUploadStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadStoreImpl.swift; sourceTree = "<group>"; };
 		66B1E26F2CB48C48005F43AC /* Array+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+SSKTest.swift"; sourceTree = "<group>"; };
 		66B2FBFD2D10F5DE00189908 /* IncrementalMessageTSAttachmentMigratorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalMessageTSAttachmentMigratorFactory.swift; sourceTree = "<group>"; };
@@ -5655,9 +5657,9 @@
 		C180878B2D763D4800B16D1E /* RegistrationProvisioningMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationProvisioningMessage.swift; sourceTree = "<group>"; };
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
+		C1868F812DBAD04400DA512A /* TransferStatusState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferStatusState.swift; sourceTree = "<group>"; };
 		C18806332BD8080B0024044A /* BackupAuthCredentialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAuthCredentialManager.swift; sourceTree = "<group>"; };
 		C18806352BD947970024044A /* OWSRequestFactory+Backups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+Backups.swift"; sourceTree = "<group>"; };
-		C1868F812DBAD04400DA512A /* TransferStatusState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferStatusState.swift; sourceTree = "<group>"; };
 		C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+IDEAL.swift"; sourceTree = "<group>"; };
 		C18D6FDF2D4D8FB40085E3B9 /* AccountEntropyPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountEntropyPool.swift; sourceTree = "<group>"; };
 		C18DB09E2DA6B9D40084CFD6 /* RegistrationUIStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationUIStyles.swift; sourceTree = "<group>"; };
@@ -9632,6 +9634,7 @@
 		667BB2042C58073600E79B57 /* Attachments */ = {
 			isa = PBXGroup;
 			children = (
+				66B152AB2DD6FD9400DE25CC /* AttachmentOffloadingManager.swift */,
 				6685FEED2DB06F740086CF3C /* BackupAttachmentDownloadEligibility.swift */,
 				66E257022CA3860B00100A08 /* BackupAttachmentDownloadManager.swift */,
 				6685FEEF2DB073F60086CF3C /* BackupAttachmentDownloadProgress.swift */,
@@ -17488,6 +17491,7 @@
 				66D7B8FF2B9287F00005C98B /* AttachmentManager.swift in Sources */,
 				66D7B9012B92889E0005C98B /* AttachmentManagerImpl.swift in Sources */,
 				66D7B9032B928AE10005C98B /* AttachmentManagerMock.swift in Sources */,
+				66B152AC2DD6FDA700DE25CC /* AttachmentOffloadingManager.swift in Sources */,
 				66C38A3C2D405A23004B6B15 /* AttachmentPointer.swift in Sources */,
 				66144B3D2BFD22FA00E2C9CD /* AttachmentRecord.swift in Sources */,
 				6640132E2BFFDC2700F10FC4 /* AttachmentReference+ConstructionParams.swift in Sources */,

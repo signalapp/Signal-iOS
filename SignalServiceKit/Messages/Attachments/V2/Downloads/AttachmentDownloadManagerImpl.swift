@@ -855,9 +855,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 try? attachmentStore.enumerateAllReferences(
                     toAttachmentId: record.attachmentId,
                     tx: tx,
-                    block: { reference in
+                    block: { reference, stop in
                         switch reference.owner {
                         case .message(.sticker(let metadata)):
+                            stop = true
                             stickerMetadata = metadata
                         default:
                             break
@@ -1010,11 +1011,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 try? self.attachmentStore.enumerateAllReferences(
                     toAttachmentId: record.attachmentId,
                     tx: tx
-                ) { reference in
-                    // If one reference marks it downloadable, don't check further ones.
-                    if downloadability == .downloadable {
-                        return
-                    }
+                ) { reference, stop in
                     downloadability = self.downloadability(
                         of: reference,
                         priority: record.priority,
@@ -1022,6 +1019,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         mimeType: attachment.mimeType,
                         tx: tx
                     )
+                    // If one reference marks it downloadable, don't check further ones.
+                    if downloadability == .downloadable {
+                        stop = true
+                    }
                 }
                 guard let downloadability else {
                     owsFailDebug("Downloading attachment with no references")
@@ -1991,7 +1992,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     try self.attachmentStore.enumerateAllReferences(
                         toAttachmentId: attachmentId,
                         tx: tx
-                    ) { reference in
+                    ) { reference, _ in
                         references.append(reference)
                     }
                     try references.forEach { reference in
@@ -2047,8 +2048,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 try self.attachmentStore.enumerateAllReferences(
                     toAttachmentId: attachmentId,
                     tx: tx
-                ) {
-                    references.append($0)
+                ) { reference, _ in
+                    references.append(reference)
                 }
                 // Arbitrarily pick the first reference as the one we will use as the initial ref to
                 // the new stream. The others' references will be re-pointed to the new stream afterwards.
@@ -2217,8 +2218,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                 let references = try thumbnailAttachments.flatMap { attachment in
                     var refs = [AttachmentReference]()
-                    try self.attachmentStore.enumerateAllReferences(toAttachmentId: attachment.id, tx: tx) {
-                        refs.append($0)
+                    try self.attachmentStore.enumerateAllReferences(
+                        toAttachmentId: attachment.id,
+                        tx: tx
+                    ) { ref, _ in
+                        refs.append(ref)
                     }
                     return refs
                 }
@@ -2363,7 +2367,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             try? self.attachmentStore.enumerateAllReferences(
                 toAttachmentId: attachmentId,
                 tx: tx
-            ) { reference in
+            ) { reference, _ in
                 touchOwner(reference.owner, tx: tx)
             }
         }

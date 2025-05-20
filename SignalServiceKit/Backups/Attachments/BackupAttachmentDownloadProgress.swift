@@ -263,11 +263,10 @@ public actor BackupAttachmentDownloadProgress {
 
     private nonisolated func computeRemainingUndownloadedByteCount() throws -> UInt64 {
         let remoteConfig = remoteConfigProvider.currentConfig()
-        let now = dateProvider()
+        let now = dateProvider().ows_millisecondsSince1970
 
         return try db.read { tx in
-            let shouldStoreAllMediaLocally = backupAttachmentDownloadStore.getShouldStoreAllMediaLocally(tx: tx)
-            let backupPlan = backupSettingsStore.backupPlan(tx: tx)
+            let shouldOptimizeLocalStorage = backupSettingsStore.getShouldOptimizeLocalStorage(tx: tx)
 
             var totalByteCount: UInt64 = 0
 
@@ -287,10 +286,9 @@ public actor BackupAttachmentDownloadProgress {
                 }
                 let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
                     attachment,
-                    attachmentTimestamp: joinedRecord.QueuedBackupAttachmentDownload.timestamp,
-                    now: now,
-                    shouldStoreAllMediaLocally: shouldStoreAllMediaLocally,
-                    backupPlan: backupPlan,
+                    downloadRecord: joinedRecord.QueuedBackupAttachmentDownload,
+                    currentTimestamp: now,
+                    shouldOptimizeLocalStorage: shouldOptimizeLocalStorage,
                     remoteConfig: remoteConfig
                 )
                 if

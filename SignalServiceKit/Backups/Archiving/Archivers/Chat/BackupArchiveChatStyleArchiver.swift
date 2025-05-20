@@ -526,8 +526,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
         }
 
         guard
-            let shouldStoreAllMediaLocally = context.accountDataContext.shouldStoreAllMediaLocally,
-            let backupPlan = context.accountDataContext.backupPlan
+            let shouldOptimizeLocalStorage = context.accountDataContext.shouldOptimizeLocalStorage
         else {
             return .failure([.restoreFrameError(
                 .invalidProtoData(
@@ -542,8 +541,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
                 try backupAttachmentDownloadManager.enqueueFromBackupIfNeeded(
                     $0,
                     restoreStartTimestampMs: context.startTimestampMs,
-                    shouldStoreAllMediaLocally: shouldStoreAllMediaLocally,
-                    backupPlan: backupPlan,
+                    shouldOptimizeLocalStorage: shouldOptimizeLocalStorage,
                     remoteConfig: context.accountDataContext.currentRemoteConfig,
                     tx: context.tx
                 )

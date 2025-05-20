@@ -55,7 +55,7 @@ public protocol AttachmentStore {
     func enumerateAllReferences(
         toAttachmentId: Attachment.IDType,
         tx: DBReadTransaction,
-        block: (AttachmentReference) -> Void
+        block: (AttachmentReference, _ stop: inout Bool) -> Void
     ) throws
 
     /// Enumerate all attachments with non-nil media names, calling the block for each one.

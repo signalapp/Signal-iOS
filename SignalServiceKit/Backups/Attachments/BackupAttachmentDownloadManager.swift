@@ -19,8 +19,7 @@ public protocol BackupAttachmentDownloadManager {
     func enqueueFromBackupIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         restoreStartTimestampMs: UInt64,
-        shouldStoreAllMediaLocally: Bool,
-        backupPlan: BackupPlan?,
+        shouldOptimizeLocalStorage: Bool,
         remoteConfig: RemoteConfig,
         tx: DBWriteTransaction
     ) throws
@@ -146,28 +145,15 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     public func enqueueFromBackupIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         restoreStartTimestampMs: UInt64,
-        shouldStoreAllMediaLocally: Bool,
-        backupPlan: BackupPlan?,
+        shouldOptimizeLocalStorage: Bool,
         remoteConfig: RemoteConfig,
         tx: DBWriteTransaction
     ) throws {
-        let timestamp: UInt64?
-        switch referencedAttachment.reference.owner {
-        case .message(let messageSource):
-            timestamp = messageSource.receivedAtTimestamp
-        case .thread:
-            timestamp = nil
-        case .storyMessage:
-            owsFailDebug("Story messages shouldn't have been backed up")
-            timestamp = nil
-        }
-
         let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
             referencedAttachment.attachment,
-            attachmentTimestamp: timestamp,
-            now: Date(millisecondsSince1970: restoreStartTimestampMs),
-            shouldStoreAllMediaLocally: shouldStoreAllMediaLocally,
-            backupPlan: backupPlan,
+            reference: referencedAttachment.reference,
+            currentTimestamp: restoreStartTimestampMs,
+            shouldOptimizeLocalStorage: shouldOptimizeLocalStorage,
             remoteConfig: remoteConfig
         )
 
@@ -250,9 +236,12 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         try await db.awaitableWrite { tx in
             // Downloads are already tagged with the latest timestamp of
             // owning message(s); just dequeue any with timestamps older
-            // than the optimize media threshold.
+            // than the offloading threshold.
+            // Anything older than that threshold should be offloaded.
+            // unless viewed recently, but you can't view undownloaded
+            // attachments so that't moot.
             try self.backupAttachmentDownloadStore.removeAll(
-                olderThan: dateProvider().ows_millisecondsSince1970 - Attachment.MediaTierInfo.offloadingThresholdMs,
+                olderThan: dateProvider().ows_millisecondsSince1970 - Attachment.offloadingThresholdMs,
                 tx: tx
             )
 
@@ -291,13 +280,13 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         let currentDate = dateProvider()
         let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
-        let shouldStoreAllMediaLocally = backupAttachmentDownloadStore
-            .getShouldStoreAllMediaLocally(tx: tx)
+        let shouldOptimizeLocalStorage = backupSettingsStore
+            .getShouldOptimizeLocalStorage(tx: tx)
         let backupPlan = backupSettingsStore.backupPlan(tx: tx)
         let remoteConfig = remoteConfigProvider.currentConfig()
 
         owsAssertDebug(
-            shouldStoreAllMediaLocally || backupPlan != .paid,
+            !shouldOptimizeLocalStorage || backupPlan != .paid,
             "Why are we scheduling all downloads when media shouldn't be stored locally?"
         )
 
@@ -315,12 +304,25 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         while let attachment = try cursor.next() {
             let attachment = try Attachment(record: attachment)
-            let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
+
+            var cachedReferenceWithMostRecentTimestamp: AttachmentReference?
+            let getReferenceWithMostRecentTimestamp = {
+                if let cachedReferenceWithMostRecentTimestamp {
+                    return cachedReferenceWithMostRecentTimestamp
+                }
+                let reference = try self.attachmentStore.fetchMostRecentReference(
+                    toAttachmentId: attachment.id,
+                    tx: tx
+                )
+                cachedReferenceWithMostRecentTimestamp = reference
+                return reference
+            }
+
+            let eligibility = try BackupAttachmentDownloadEligibility.forAttachment(
                 attachment,
-                attachmentTimestamp: nil,
-                now: currentDate,
-                shouldStoreAllMediaLocally: shouldStoreAllMediaLocally,
-                backupPlan: backupPlan,
+                reference: getReferenceWithMostRecentTimestamp(),
+                currentTimestamp: currentDate.ows_millisecondsSince1970,
+                shouldOptimizeLocalStorage: shouldOptimizeLocalStorage,
                 remoteConfig: remoteConfig
             )
 
@@ -328,38 +330,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 continue
             }
 
-            var referenceWithMostRecentTimestamp: AttachmentReference?
-            try attachmentStore.enumerateAllReferences(
-                toAttachmentId: attachment.id,
-                tx: tx,
-            ) { reference in
-                switch reference.owner {
-                case .message(let messageSource):
-                    switch referenceWithMostRecentTimestamp?.owner {
-                    case nil, .storyMessage:
-                        referenceWithMostRecentTimestamp = reference
-                    case .thread:
-                        return
-                    case .message(let oldMessageSource):
-                        if oldMessageSource.receivedAtTimestamp < messageSource.receivedAtTimestamp {
-                            referenceWithMostRecentTimestamp = reference
-                        }
-                    }
-                case .storyMessage:
-                    // Ignore story references
-                    return
-                case .thread:
-                    // Threads win all ties
-                    referenceWithMostRecentTimestamp = reference
-                }
-            }
-
-            guard let referenceWithMostRecentTimestamp else {
-                continue
-            }
-
             let wasPreviouslyEnqueued = try backupAttachmentDownloadStore.enqueue(
-                referenceWithMostRecentTimestamp,
+                try getReferenceWithMostRecentTimestamp(),
                 tx: tx
             )
 
@@ -485,17 +457,19 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             }
 
             let (attachment, eligibility) = db.read { (tx) -> (Attachment?, BackupAttachmentDownloadEligibility?) in
+                let nowMs = dateProvider().ows_millisecondsSince1970
+                let shouldOptimizeLocalStorage = backupSettingsStore.getShouldOptimizeLocalStorage(tx: tx)
+                let remoteConfig = remoteConfigProvider.currentConfig()
+
                 return attachmentStore
                     .fetch(id: record.record.attachmentRowId, tx: tx)
                     .map { attachment in
                         let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
                             attachment,
-                            attachmentTimestamp: record.record.timestamp,
-                            dateProvider: dateProvider,
-                            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-                            backupSettingsStore: backupSettingsStore,
-                            remoteConfigProvider: remoteConfigProvider,
-                            tx: tx
+                            downloadRecord: record.record,
+                            currentTimestamp: nowMs,
+                            shouldOptimizeLocalStorage: shouldOptimizeLocalStorage,
+                            remoteConfig: remoteConfig
                         )
                         return (attachment, eligibility)
                     } ?? (nil, nil)
@@ -669,8 +643,7 @@ open class BackupAttachmentDownloadManagerMock: BackupAttachmentDownloadManager 
     public func enqueueFromBackupIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         restoreStartTimestampMs: UInt64,
-        shouldStoreAllMediaLocally: Bool,
-        backupPlan: BackupPlan?,
+        shouldOptimizeLocalStorage: Bool,
         remoteConfig: RemoteConfig,
         tx: DBWriteTransaction
     ) throws {

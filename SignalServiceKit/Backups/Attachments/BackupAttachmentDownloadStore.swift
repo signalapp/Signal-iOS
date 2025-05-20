@@ -8,13 +8,6 @@ import GRDB
 
 public protocol BackupAttachmentDownloadStore {
 
-    /// If true, keep a copy of all media on local device, even if media backups are enabled.
-    /// If false, keep only the past N days of media locally and rely on backups for the rest.
-    func getShouldStoreAllMediaLocally(tx: DBReadTransaction) -> Bool
-
-    /// See ``getShouldStoreAllMediaLocally``.
-    func setShouldStoreAllMediaLocally(_ newValue: Bool, tx: DBWriteTransaction)
-
     /// "Enqueue" an attachment from a backup for download (using its reference).
     ///
     /// If the same attachment pointed to by the reference is already enqueued, updates it to the greater
@@ -87,16 +80,6 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
 
     public init() {
         self.kvStore = KeyValueStore(collection: "BackupAttachmentDownloadStoreImpl")
-    }
-
-    private let shouldStoreAllMediaLocallyKey = "shouldStoreAllMediaLocallyKey"
-
-    public func getShouldStoreAllMediaLocally(tx: DBReadTransaction) -> Bool {
-        return kvStore.getBool(shouldStoreAllMediaLocallyKey, defaultValue: true, transaction: tx)
-    }
-
-    public func setShouldStoreAllMediaLocally(_ newValue: Bool, tx: DBWriteTransaction) {
-        kvStore.setBool(newValue, key: shouldStoreAllMediaLocallyKey, transaction: tx)
     }
 
     public func enqueue(_ reference: AttachmentReference, tx: DBWriteTransaction) throws -> Bool {

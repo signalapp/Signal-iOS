@@ -977,7 +977,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             try self.attachmentStore.enumerateAllReferences(
                 toAttachmentId: attachmentStream.attachment.id,
                 tx: tx
-            ) { attachmentReference in
+            ) { attachmentReference, _ in
                 switch attachmentReference.owner {
                 case .message(let messageSource):
                     guard

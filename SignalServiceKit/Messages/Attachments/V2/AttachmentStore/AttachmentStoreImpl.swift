@@ -172,7 +172,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     public func enumerateAllReferences(
         toAttachmentId attachmentId: Attachment.IDType,
         tx: DBReadTransaction,
-        block: (AttachmentReference) -> Void
+        block: (AttachmentReference, _ stop: inout Bool) -> Void
     ) throws {
         try AttachmentReference.recordTypes.forEach { recordType in
             try enumerateReferences(
@@ -201,15 +201,19 @@ public class AttachmentStoreImpl: AttachmentStore {
         attachmentId: Attachment.IDType,
         recordType: RecordType.Type,
         tx: DBReadTransaction,
-        block: (AttachmentReference) -> Void
+        block: (AttachmentReference, _ stop: inout Bool) -> Void
     ) throws {
         let cursor = try recordType
             .filter(recordType.attachmentRowIdColumn == attachmentId)
             .fetchCursor(tx.database)
 
+        var stop = false
         while let record = try cursor.next() {
             let reference = try record.asReference()
-            block(reference)
+            block(reference, &stop)
+            if stop {
+                break
+            }
         }
     }
 
