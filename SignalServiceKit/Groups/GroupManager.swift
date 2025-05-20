@@ -166,6 +166,7 @@ public class GroupManager: NSObject {
         try await SSKEnvironment.shared.groupsV2Ref.tryToFetchProfileKeyCredentials(
             for: initialGroupMembership.allMembersOfAnyKind.compactMap { $0.serviceId as? Aci },
             ignoreMissingProfiles: false,
+            ignoreMissingCredentials: true,
             forceRefresh: false
         )
 
@@ -1405,6 +1406,7 @@ extension GroupManager {
         try await SSKEnvironment.shared.groupsV2Ref.tryToFetchProfileKeyCredentials(
             for: serviceIds.compactMap { $0 as? Aci },
             ignoreMissingProfiles: false,
+            ignoreMissingCredentials: true,
             forceRefresh: false
         )
 

@@ -260,6 +260,7 @@ public class GroupsV2OutgoingChangesImpl: GroupsV2OutgoingChanges {
 
         let profileKeyCredentialMap = try await SSKEnvironment.shared.groupsV2Ref.loadProfileKeyCredentials(
             for: Array(newUserAcis),
+            ignoreMissingCredentials: false,
             forceRefresh: forceRefreshProfileKeyCredentials
         )
 

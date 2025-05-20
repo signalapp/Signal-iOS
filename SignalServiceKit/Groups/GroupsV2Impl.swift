@@ -185,6 +185,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         let profileKeyCredentialMap = try await loadProfileKeyCredentials(
             for: acis,
+            ignoreMissingCredentials: false,
             forceRefresh: shouldForceRefreshProfileKeyCredentials
         )
         return try GroupsV2Protos.buildNewGroupProto(
@@ -1282,11 +1283,13 @@ public class GroupsV2Impl: GroupsV2 {
     /// any are missing, returns an error.
     public func loadProfileKeyCredentials(
         for acis: [Aci],
-        forceRefresh: Bool
+        ignoreMissingCredentials: Bool,
+        forceRefresh: Bool,
     ) async throws -> ProfileKeyCredentialMap {
         try await tryToFetchProfileKeyCredentials(
             for: acis,
             ignoreMissingProfiles: false,
+            ignoreMissingCredentials: ignoreMissingCredentials,
             forceRefresh: forceRefresh
         )
 
@@ -1308,6 +1311,7 @@ public class GroupsV2Impl: GroupsV2 {
     public func tryToFetchProfileKeyCredentials(
         for acis: [Aci],
         ignoreMissingProfiles: Bool,
+        ignoreMissingCredentials: Bool,
         forceRefresh: Bool
     ) async throws {
         let acis = Set(acis)
@@ -1329,6 +1333,8 @@ public class GroupsV2Impl: GroupsV2 {
                         context.mustFetchNewCredential = true
                         _ = try await profileFetcher.fetchProfile(for: aciToFetch, context: context)
                     } catch ProfileRequestError.notFound where ignoreMissingProfiles {
+                        // this is fine
+                    } catch ProfileFetcherError.couldNotFetchCredential where ignoreMissingCredentials {
                         // this is fine
                     }
                 }
@@ -1839,7 +1845,7 @@ public class GroupsV2Impl: GroupsV2 {
     ) async throws -> GroupsProtoGroupChangeActions {
         let localAci = localIdentifiers.aci
 
-        let profileKeyCredentialMap = try await loadProfileKeyCredentials(for: [localAci], forceRefresh: false)
+        let profileKeyCredentialMap = try await loadProfileKeyCredentials(for: [localAci], ignoreMissingCredentials: false, forceRefresh: false)
 
         guard let localProfileKeyCredential = profileKeyCredentialMap[localAci] else {
             throw OWSAssertionError("Missing localProfileKeyCredential.")
