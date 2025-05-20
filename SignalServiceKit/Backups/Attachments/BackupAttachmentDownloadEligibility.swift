@@ -24,6 +24,7 @@ internal struct BackupAttachmentDownloadEligibility {
         attachmentTimestamp: UInt64?,
         dateProvider: DateProvider,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupSettingsStore: BackupSettingsStore,
         remoteConfigProvider: RemoteConfigProvider,
         tx: DBReadTransaction
     ) -> Self {
@@ -32,6 +33,7 @@ internal struct BackupAttachmentDownloadEligibility {
             attachmentTimestamp: attachmentTimestamp,
             now: dateProvider(),
             shouldStoreAllMediaLocally: backupAttachmentDownloadStore.getShouldStoreAllMediaLocally(tx: tx),
+            backupPlan: backupSettingsStore.backupPlan(tx: tx),
             remoteConfig: remoteConfigProvider.currentConfig()
         )
     }
@@ -41,6 +43,7 @@ internal struct BackupAttachmentDownloadEligibility {
         attachmentTimestamp: UInt64?,
         now: Date,
         shouldStoreAllMediaLocally: Bool,
+        backupPlan: BackupPlan?,
         remoteConfig: RemoteConfig
     ) -> Self {
         if attachment.asStream() != nil {
@@ -63,10 +66,12 @@ internal struct BackupAttachmentDownloadEligibility {
             isRecent = true
         }
 
+        let shouldDownloadEverything = shouldStoreAllMediaLocally || backupPlan != .paid
+
         let canDownloadMediaTierFullsize =
             FeatureFlags.Backups.fileAlpha
             && attachment.mediaTierInfo != nil
-            && (isRecent || shouldStoreAllMediaLocally)
+            && (isRecent || shouldDownloadEverything)
 
         let canDownloadTransitTierFullsize: Bool
         if let transitTierInfo = attachment.transitTierInfo {

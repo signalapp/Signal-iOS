@@ -48,6 +48,7 @@ extension BackupArchive {
 
 /// Archives the ``BackupProto_AccountData`` frame.
 public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
+    private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let chatStyleArchiver: BackupArchiveChatStyleArchiver
     private let disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore
@@ -68,6 +69,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     private let usernameEducationManager: UsernameEducationManager
 
     public init(
+        backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         chatStyleArchiver: BackupArchiveChatStyleArchiver,
         disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore,
@@ -87,6 +89,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         udManager: BackupArchive.Shims.UDManager,
         usernameEducationManager: UsernameEducationManager
     ) {
+        self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.chatStyleArchiver = chatStyleArchiver
         self.disappearingMessageConfigurationStore = disappearingMessageConfigurationStore
@@ -271,7 +274,8 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
 
     func restore(
         _ accountData: BackupProto_AccountData,
-        chatColorsContext context: BackupArchive.CustomChatColorRestoringContext,
+        context: BackupArchive.AccountDataRestoringContext,
+        chatColorsContext: BackupArchive.CustomChatColorRestoringContext,
         chatItemContext: BackupArchive.ChatItemRestoringContext
     ) -> BackupArchive.RestoreAccountDataResult {
         guard let profileKey = Aes256Key(data: accountData.profileKey) else {
@@ -301,13 +305,16 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             donationSubscriptionManager.setUserManuallyCancelledSubscription(value: donationSubscriberData.manuallyCancelled, tx: context.tx)
         }
 
+        let backupPlan: BackupPlan
         let uploadEra: String
         if accountData.hasBackupsSubscriberData, accountData.backupsSubscriberData.subscriberID.isEmpty.negated {
             backupSubscriptionManager.setRestoredIAPSubscriberData(
                 accountData.backupsSubscriberData,
                 tx: context.tx
             )
+            backupSettingsStore.setBackupPlan(.paid, tx: context.tx)
             uploadEra = backupSubscriptionManager.getUploadEra(tx: context.tx)
+            backupPlan = .paid
         } else {
             // The exporting client was not subscribed at export time.
             // It may have subscribed after, or not. We don't know, and we don't
@@ -319,10 +326,17 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             // Querying the list endpoint will bring us up to date on the upload status
             // within this "era" otherwise.
             uploadEra = backupSubscriptionManager.getUploadEra(tx: context.tx)
+            // TODO[LocalBackups]: if restoring a local backup file don't set remote backup plan.
+            backupSettingsStore.setBackupPlan(.free, tx: context.tx)
+            backupPlan = .free
         }
-        // This MUST get set before we restore custom chat colors/wallpapers.
+
+        // These MUST get set before we restore custom chat colors/wallpapers.
         context.uploadEra = uploadEra
-        chatItemContext.uploadEra = uploadEra
+        context.backupPlan = backupPlan
+        // TODO:[Backups] this setting should be in the AccountSettings proto
+        // For now default true.
+        context.shouldStoreAllMediaLocally = true
 
         // Restore local settings
         if accountData.hasAccountSettings {
@@ -375,7 +389,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
 
             let customChatColorsResult = chatStyleArchiver.restoreCustomChatColors(
                 settings.customChatColors,
-                context: context
+                context: chatColorsContext
             )
             switch customChatColorsResult {
             case .success:
@@ -399,7 +413,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             }
             let defaultChatStyleResult = chatStyleArchiver.restoreDefaultChatStyle(
                 defaultChatStyleToRestore,
-                context: context
+                context: chatColorsContext
             )
             switch defaultChatStyleResult {
             case .success:

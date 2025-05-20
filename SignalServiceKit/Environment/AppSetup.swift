@@ -1007,6 +1007,7 @@ public class AppSetup {
             appContext: appContext,
             appReadiness: appReadiness,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             db: db,
             remoteConfigProvider: remoteConfigManager
@@ -1021,6 +1022,7 @@ public class AppSetup {
                 attachmentUploadStore: attachmentUploadStore,
                 backupAttachmentDownloadStore: backupAttachmentDownloadStore,
                 backupKeyMaterial: backupKeyMaterial,
+                backupSettingsStore: backupSettingsStore,
                 backupSubscriptionManager: backupSubscriptionManager,
                 dateProvider: dateProvider,
                 db: db,
@@ -1126,6 +1128,7 @@ public class AppSetup {
 
         let backupArchiveManager = BackupArchiveManagerImpl(
             accountDataArchiver: BackupArchiveAccountDataArchiver(
+                backupSettingsStore: backupSettingsStore,
                 backupSubscriptionManager: backupSubscriptionManager,
                 chatStyleArchiver: backupChatStyleArchiver,
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
@@ -1239,6 +1242,7 @@ public class AppSetup {
                 threadStore: backupThreadStore
             ),
             releaseNotesRecipientArchiver: BackupArchiveReleaseNotesRecipientArchiver(),
+            remoteConfigManager: remoteConfigManager,
             stickerPackArchiver: BackupArchiveStickerPackArchiver(
                 backupStickerPackDownloadStore: backupStickerPackDownloadStore
             )

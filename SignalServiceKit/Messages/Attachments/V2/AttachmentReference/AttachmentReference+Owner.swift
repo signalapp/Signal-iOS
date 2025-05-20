@@ -225,6 +225,23 @@ extension AttachmentReference {
                     return metadata.messageRowId
                 }
             }
+
+            public var receivedAtTimestamp: UInt64 {
+                switch self {
+                case .bodyAttachment(let metadata):
+                    return metadata.receivedAtTimestamp
+                case .oversizeText(let metadata):
+                    return metadata.receivedAtTimestamp
+                case .linkPreview(let metadata):
+                    return metadata.receivedAtTimestamp
+                case .quotedReply(let metadata):
+                    return metadata.receivedAtTimestamp
+                case .sticker(let metadata):
+                    return metadata.receivedAtTimestamp
+                case .contactAvatar(let metadata):
+                    return metadata.receivedAtTimestamp
+                }
+            }
         }
 
         // MARK: - Story Message

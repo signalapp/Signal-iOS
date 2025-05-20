@@ -181,7 +181,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             let fileSize = attachmentStream.unencryptedByteCount
             text = OWSFormat.localizedFileSizeString(from: Int64(fileSize))
         } else if let _ = genericAttachment.attachmentBackupThumbnail {
-            // TODO[Backups]: Handle similar to attachment pointers above
+            // TODO:[Backups]: Handle similar to attachment pointers above
             owsFailDebug("Not implemented yet")
         } else {
             let attributedString = NSAttributedString.composed(of: [

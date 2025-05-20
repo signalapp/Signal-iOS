@@ -142,6 +142,7 @@ public actor BackupAttachmentDownloadProgress {
 
     private nonisolated let appContext: AppContext
     private nonisolated let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private nonisolated let backupSettingsStore: BackupSettingsStore
     private nonisolated let dateProvider: DateProvider
     private nonisolated let db: DB
     private nonisolated let remoteConfigProvider: RemoteConfigProvider
@@ -150,12 +151,14 @@ public actor BackupAttachmentDownloadProgress {
         appContext: AppContext,
         appReadiness: AppReadiness,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: DB,
         remoteConfigProvider: RemoteConfigProvider
     ) {
         self.appContext = appContext
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
         self.db = db
         self.remoteConfigProvider = remoteConfigProvider
@@ -264,6 +267,7 @@ public actor BackupAttachmentDownloadProgress {
 
         return try db.read { tx in
             let shouldStoreAllMediaLocally = backupAttachmentDownloadStore.getShouldStoreAllMediaLocally(tx: tx)
+            let backupPlan = backupSettingsStore.backupPlan(tx: tx)
 
             var totalByteCount: UInt64 = 0
 
@@ -286,6 +290,7 @@ public actor BackupAttachmentDownloadProgress {
                     attachmentTimestamp: joinedRecord.QueuedBackupAttachmentDownload.timestamp,
                     now: now,
                     shouldStoreAllMediaLocally: shouldStoreAllMediaLocally,
+                    backupPlan: backupPlan,
                     remoteConfig: remoteConfig
                 )
                 if

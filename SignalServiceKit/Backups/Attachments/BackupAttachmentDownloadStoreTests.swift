@@ -37,7 +37,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 timestamp: 1234,
                 tx: tx
             )
-            try store.enqueue(reference, tx: tx)
+            _ = try store.enqueue(reference, tx: tx)
 
             // Ensure the row exists.
             let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
@@ -55,7 +55,9 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 timestamp: 5678,
                 tx: tx
             )
-            try store.enqueue(reference, tx: tx)
+            let didReEnqueue = try store.enqueue(reference, tx: tx)
+
+            XCTAssert(didReEnqueue)
 
             let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
             XCTAssertNotNil(row)
@@ -72,10 +74,12 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 threadSource: .globalThreadWallpaperImage(creationTimestamp: 1)
             )
             try referenceRecord.insert(tx.database)
-            try store.enqueue(
+            let didReEnqueue = try store.enqueue(
                 try AttachmentReference(record: referenceRecord),
                 tx: tx
             )
+
+            XCTAssert(didReEnqueue)
 
             let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
             XCTAssertNotNil(row)
@@ -92,7 +96,9 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 timestamp: 9999,
                 tx: tx
             )
-            try store.enqueue(reference, tx: tx)
+            let didReEnqueue = try store.enqueue(reference, tx: tx)
+
+            XCTAssert(didReEnqueue)
 
             let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
             XCTAssertNotNil(row)
@@ -119,7 +125,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                     timestamp: timestamp,
                     tx: tx
                 )
-                try store.enqueue(reference, tx: tx)
+                _ = try store.enqueue(reference, tx: tx)
             }
         }
 

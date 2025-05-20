@@ -201,7 +201,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                         case .stream:
                             return nil
                         case .backupThumbnail:
-                            // TODO[Backups]: Check for media tier download state
+                            // TODO:[Backups]: Check for media tier download state
                             return nil
                         case .pointer(let attachment, let downloadState):
                             if item.threadHasPendingMessageRequest {

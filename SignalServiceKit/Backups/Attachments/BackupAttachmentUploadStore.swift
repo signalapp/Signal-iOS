@@ -111,22 +111,7 @@ extension AttachmentReference.Owner {
     public func asUploadSourceType() -> QueuedBackupAttachmentUpload.SourceType? {
         switch self {
         case .message(let messageSource):
-            return .message(timestamp: {
-                switch messageSource {
-                case .bodyAttachment(let metadata):
-                    return metadata.receivedAtTimestamp
-                case .oversizeText(let metadata):
-                    return metadata.receivedAtTimestamp
-                case .linkPreview(let metadata):
-                    return metadata.receivedAtTimestamp
-                case .quotedReply(let metadata):
-                    return metadata.receivedAtTimestamp
-                case .sticker(let metadata):
-                    return metadata.receivedAtTimestamp
-                case .contactAvatar(let metadata):
-                    return metadata.receivedAtTimestamp
-                }
-            }())
+            return .message(timestamp: messageSource.receivedAtTimestamp)
         case .thread(let threadSource):
             switch threadSource {
             case .threadWallpaperImage, .globalThreadWallpaperImage:

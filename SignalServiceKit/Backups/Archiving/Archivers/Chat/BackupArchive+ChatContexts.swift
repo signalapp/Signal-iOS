@@ -371,14 +371,14 @@ extension BackupArchive {
 
         private let map = SharedMap<CustomChatColorId, CustomChatColor.Key>()
 
-        /// Will only be nil if there was no earier AccountData frame to set it, which
-        /// should be treated as an error at read time when processing all subsequent frames.
-        var uploadEra: String?
+        let accountDataContext: AccountDataRestoringContext
 
-        override init(
+        init(
             startTimestampMs: UInt64,
+            accountDataContext: AccountDataRestoringContext,
             tx: DBWriteTransaction
         ) {
+            self.accountDataContext = accountDataContext
             super.init(
                 startTimestampMs: startTimestampMs,
                 tx: tx

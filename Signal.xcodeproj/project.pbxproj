@@ -1081,6 +1081,7 @@
 		66AAC2CA29CBC07300566AD6 /* RegistrationPhoneNumberViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AAC2C929CBC07300566AD6 /* RegistrationPhoneNumberViewState.swift */; };
 		66AE5779298440A100E40CFA /* ViewControllerContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */; };
 		66AE8A872C169A900044D388 /* MediaGalleryAttachmentFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE8A852C169A830044D388 /* MediaGalleryAttachmentFinderTest.swift */; };
+		66AEC77E2DD47FE40097AAA2 /* BackupArchive+AccountDataContexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AEC77D2DD47FD80097AAA2 /* BackupArchive+AccountDataContexts.swift */; };
 		66AEFCA42A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */; };
 		66B1E26C2CB187B3005F43AC /* AttachmentUploadStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1E26B2CB187A0005F43AC /* AttachmentUploadStoreImpl.swift */; };
 		66B1E2702CB48C53005F43AC /* Array+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1E26F2CB48C48005F43AC /* Array+SSKTest.swift */; };
@@ -4999,6 +5000,7 @@
 		66AAC2C729CB9ED900566AD6 /* RegistrationChangePhoneNumberConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationChangePhoneNumberConfirmationViewController.swift; sourceTree = "<group>"; };
 		66AAC2C929CBC07300566AD6 /* RegistrationPhoneNumberViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPhoneNumberViewState.swift; sourceTree = "<group>"; };
 		66AE8A852C169A830044D388 /* MediaGalleryAttachmentFinderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryAttachmentFinderTest.swift; sourceTree = "<group>"; };
+		66AEC77D2DD47FD80097AAA2 /* BackupArchive+AccountDataContexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupArchive+AccountDataContexts.swift"; sourceTree = "<group>"; };
 		66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerableLabelAnimator.swift; sourceTree = "<group>"; };
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
 		66B1E26B2CB187A0005F43AC /* AttachmentUploadStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadStoreImpl.swift; sourceTree = "<group>"; };
@@ -10097,6 +10099,7 @@
 		66CD255B2B06885400139E17 /* AccountData */ = {
 			isa = PBXGroup;
 			children = (
+				66AEC77D2DD47FD80097AAA2 /* BackupArchive+AccountDataContexts.swift */,
 				66CD25632B06949C00139E17 /* BackupArchiveAccountDataArchiver.swift */,
 			);
 			path = AccountData;
@@ -17527,6 +17530,7 @@
 				720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */,
 				500B25832DD6A08300E9ECAA /* BackgroundMessageFetcher.swift in Sources */,
 				D972E2FF2C542BCD001D7337 /* Backup.pb.swift in Sources */,
+				66AEC77E2DD47FE40097AAA2 /* BackupArchive+AccountDataContexts.swift in Sources */,
 				660A603E2D371C9100D2765B /* BackupArchive+Bench.swift in Sources */,
 				66CD257F2B0D67F300139E17 /* BackupArchive+ChatContexts.swift in Sources */,
 				668478FD2CAF364C00430D68 /* BackupArchive+ChatItemContexts.swift in Sources */,

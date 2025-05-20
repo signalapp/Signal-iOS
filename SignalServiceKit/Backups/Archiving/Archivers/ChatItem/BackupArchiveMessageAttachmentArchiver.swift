@@ -470,7 +470,7 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
         context: BackupArchive.ChatItemRestoringContext
     ) -> BackupArchive.RestoreInteractionResult<Void> {
         // Whether we're free or paid this should be set when we restored the account data frame.
-        guard let uploadEra = context.uploadEra else {
+        guard let uploadEra = context.chatContext.customChatColorContext.accountDataContext.uploadEra else {
             return .messageFailure([.restoreFrameError(.invalidProtoData(.accountDataNotFound), chatItemId)])
         }
 
@@ -514,9 +514,29 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
             )])
         }
 
+        let accountDataContext = context.chatContext.customChatColorContext.accountDataContext
+        guard
+            let shouldStoreAllMediaLocally = accountDataContext.shouldStoreAllMediaLocally,
+            let backupPlan = accountDataContext.backupPlan
+        else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(
+                    .accountDataNotFound
+                ),
+                chatItemId
+            )])
+        }
+
         do {
             try results.forEach {
-                try backupAttachmentDownloadManager.enqueueIfNeeded($0, tx: context.tx)
+                try backupAttachmentDownloadManager.enqueueFromBackupIfNeeded(
+                    $0,
+                    restoreStartTimestampMs: context.startTimestampMs,
+                    shouldStoreAllMediaLocally: shouldStoreAllMediaLocally,
+                    backupPlan: backupPlan,
+                    remoteConfig: accountDataContext.currentRemoteConfig,
+                    tx: context.tx
+                )
             }
         } catch {
             return .partialRestore((), [.restoreFrameError(

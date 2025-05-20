@@ -22,7 +22,10 @@ public protocol BackupAttachmentDownloadStore {
     ///
     /// Doesn't actually trigger a download; callers must later call `dequeueAndClearTable` to insert
     /// rows into the normal AttachmentDownloadQueue, as this table serves only as an intermediary.
-    func enqueue(_ reference: AttachmentReference, tx: DBWriteTransaction) throws
+    ///
+    /// - returns True IFF the attachment was previously enqueued for download, whether at higher
+    /// or lower priority.
+    func enqueue(_ reference: AttachmentReference, tx: DBWriteTransaction) throws -> Bool
 
     /// Returns whether a download is enqueued for a target attachment.
     func hasEnqueuedDownload(
@@ -93,22 +96,12 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
         kvStore.setBool(newValue, key: shouldStoreAllMediaLocallyKey, transaction: tx)
     }
 
-    public func enqueue(_ reference: AttachmentReference, tx: DBWriteTransaction) throws {
+    public func enqueue(_ reference: AttachmentReference, tx: DBWriteTransaction) throws -> Bool {
         let db = tx.database
         let timestamp: UInt64? = {
             switch reference.owner {
-            case .message(.bodyAttachment(let metadata)):
-                return metadata.receivedAtTimestamp
-            case .message(.contactAvatar(let metadata)):
-                return metadata.receivedAtTimestamp
-            case .message(.linkPreview(let metadata)):
-                return metadata.receivedAtTimestamp
-            case .message(.oversizeText(let metadata)):
-                return metadata.receivedAtTimestamp
-            case .message(.quotedReply(let metadata)):
-                return metadata.receivedAtTimestamp
-            case .message(.sticker(let metadata)):
-                return metadata.receivedAtTimestamp
+            case .message(let messageSource):
+                return messageSource.receivedAtTimestamp
             case .storyMessage, .thread:
                 return nil
             }
@@ -129,7 +122,7 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
         } else if existingRecord != nil {
             // Otherwise we had an existing record with a larger
             // timestamp, stop.
-            return
+            return true
         }
 
         var record = QueuedBackupAttachmentDownload(
@@ -137,6 +130,8 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
             timestamp: timestamp
         )
         try record.insert(db)
+
+        return existingRecord != nil
     }
 
     public func hasEnqueuedDownload(

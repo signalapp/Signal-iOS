@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import GRDB
 import LibSignalClient
 
 public protocol BackupAttachmentDownloadManager {
@@ -15,8 +16,12 @@ public protocol BackupAttachmentDownloadManager {
     ///
     /// Doesn't actually trigger a download; callers must later call `restoreAttachmentsIfNeeded`
     /// to insert rows into the normal AttachmentDownloadQueue and download.
-    func enqueueIfNeeded(
+    func enqueueFromBackupIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
+        restoreStartTimestampMs: UInt64,
+        shouldStoreAllMediaLocally: Bool,
+        backupPlan: BackupPlan?,
+        remoteConfig: RemoteConfig,
         tx: DBWriteTransaction
     ) throws
 
@@ -36,13 +41,31 @@ public protocol BackupAttachmentDownloadManager {
     /// Cancel any pending attachment downloads, e.g. when backups are disabled.
     /// Removes all enqueued downloads and attempts to cancel in progress ones.
     func cancelPendingDownloads() async throws
+
+    /// Schedule a download from media tier for _every_ attachment for which this is
+    /// currently possible (has media tier CDN info).
+    /// There are only 3 situations where we want to schedule all media tier downloads:
+    /// 1. We just restored a backup
+    /// 2. Disabling "optimize media"
+    /// 3. After downgrading from paid to free backups and triggering downloads
+    ///
+    /// The first case is handled by backup restore code, which itself schedules all
+    /// restored attachments for download as appropriate.
+    /// Case 2 (and 2s, which is equivalent) requires we restore all previously-offloaded
+    /// attachmnets, and thus should use this method to schedule all those downloads.
+    ///
+    /// Note: this does a relatively expensive SQL query so use with caution.
+    func scheduleAllMediaTierDownloads(tx: DBWriteTransaction) throws
 }
 
 public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManager {
 
     private let appContext: AppContext
     private let appReadiness: AppReadiness
+    private let attachmentStore: AttachmentStore
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupSettingsStore: BackupSettingsStore
+    private let backupSubscriptionManager: BackupSubscriptionManager
     private let dateProvider: DateProvider
     private let db: any DB
     private let listMediaManager: ListMediaManager
@@ -61,6 +84,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         attachmentUploadStore: AttachmentUploadStore,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupKeyMaterial: BackupKeyMaterial,
+        backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
@@ -75,7 +99,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     ) {
         self.appContext = appContext
         self.appReadiness = appReadiness
+        self.attachmentStore = attachmentStore
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupSettingsStore = backupSettingsStore
+        self.backupSubscriptionManager = backupSubscriptionManager
         self.dateProvider = dateProvider
         self.db = db
         self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
@@ -101,6 +128,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             attachmentDownloadManager: attachmentDownloadManager,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupRequestManager: backupRequestManager,
+            backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             db: db,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
@@ -125,27 +153,18 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
     }
 
-    public func enqueueIfNeeded(
+    public func enqueueFromBackupIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
+        restoreStartTimestampMs: UInt64,
+        shouldStoreAllMediaLocally: Bool,
+        backupPlan: BackupPlan?,
+        remoteConfig: RemoteConfig,
         tx: DBWriteTransaction
     ) throws {
         let timestamp: UInt64?
         switch referencedAttachment.reference.owner {
         case .message(let messageSource):
-            switch messageSource {
-            case .bodyAttachment(let metadata):
-                timestamp = metadata.receivedAtTimestamp
-            case .oversizeText(let metadata):
-                timestamp = metadata.receivedAtTimestamp
-            case .linkPreview(let metadata):
-                timestamp = metadata.receivedAtTimestamp
-            case .quotedReply(let metadata):
-                timestamp = metadata.receivedAtTimestamp
-            case .sticker(let metadata):
-                timestamp = metadata.receivedAtTimestamp
-            case .contactAvatar(let metadata):
-                timestamp = metadata.receivedAtTimestamp
-            }
+            timestamp = messageSource.receivedAtTimestamp
         case .thread:
             timestamp = nil
         case .storyMessage:
@@ -156,30 +175,33 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
             referencedAttachment.attachment,
             attachmentTimestamp: timestamp,
-            dateProvider: dateProvider,
-            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-            remoteConfigProvider: remoteConfigProvider,
-            tx: tx
+            now: Date(millisecondsSince1970: restoreStartTimestampMs),
+            shouldStoreAllMediaLocally: shouldStoreAllMediaLocally,
+            backupPlan: backupPlan,
+            remoteConfig: remoteConfig
         )
 
         guard eligibility.canBeDownloadedAtAll else {
             return
         }
 
-        // As we go enqueuing attachments, increment the total byte count we
-        // need to download.
-        if let byteCount = referencedAttachment.attachment.anyPointerFullsizeUnencryptedByteCount {
-            let totalPendingByteCount = backupAttachmentDownloadStore.getTotalPendingDownloadByteCount(tx: tx) ?? 0
-            backupAttachmentDownloadStore.setTotalPendingDownloadByteCount(
-                totalPendingByteCount + UInt64(byteCount),
-                tx: tx
-            )
-        }
-
-        try backupAttachmentDownloadStore.enqueue(
+        let wasPreviouslyEnqueued = try backupAttachmentDownloadStore.enqueue(
             referencedAttachment.reference,
             tx: tx
         )
+
+        // As we go enqueuing attachments, increment the total byte count we
+        // need to download.
+        if
+            !wasPreviouslyEnqueued,
+            let byteCount = referencedAttachment.attachment.anyPointerFullsizeUnencryptedByteCount
+        {
+            let totalPendingByteCount = backupAttachmentDownloadStore.getTotalPendingDownloadByteCount(tx: tx) ?? 0
+            backupAttachmentDownloadStore.setTotalPendingDownloadByteCount(
+                totalPendingByteCount + UInt64(Cryptography.paddedSize(unpaddedSize: UInt(byteCount))),
+                tx: tx
+            )
+        }
     }
 
     public func restoreAttachmentsIfNeeded() async throws {
@@ -230,6 +252,109 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         try? await progress.beginObserving()
         // Kill status observation
         await statusManager.didEmptyQueue(type: .download)
+    }
+
+    public func scheduleAllMediaTierDownloads(tx: DBWriteTransaction) throws {
+        // Kick off downloads once the transaction commits.
+        tx.addSyncCompletion { [weak self] in
+            Task {
+                try await self?.restoreAttachmentsIfNeeded()
+            }
+        }
+
+        let currentDate = dateProvider()
+        let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
+        let shouldStoreAllMediaLocally = backupAttachmentDownloadStore
+            .getShouldStoreAllMediaLocally(tx: tx)
+        let backupPlan = backupSettingsStore.backupPlan(tx: tx)
+        let remoteConfig = remoteConfigProvider.currentConfig()
+
+        owsAssertDebug(
+            shouldStoreAllMediaLocally || backupPlan != .paid,
+            "Why are we scheduling all downloads when media shouldn't be stored locally?"
+        )
+
+        let cursor = try Attachment.Record
+            // Ignore stuff already downloaded, duh
+            .filter(Column(Attachment.Record.CodingKeys.localRelativeFilePath) == nil)
+            // We need a mediaName to download
+            .filter(Column(Attachment.Record.CodingKeys.mediaName) != nil)
+            // Only download stuff in the current upload era; other stuff we don't expect
+            // to be available for download.
+            .filter(Column(Attachment.Record.CodingKeys.mediaTierUploadEra) == currentUploadEra)
+            .fetchCursor(tx.database)
+
+        var totalPendingByteCount = backupAttachmentDownloadStore.getTotalPendingDownloadByteCount(tx: tx) ?? 0
+
+        while let attachment = try cursor.next() {
+            let attachment = try Attachment(record: attachment)
+            let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
+                attachment,
+                attachmentTimestamp: nil,
+                now: currentDate,
+                shouldStoreAllMediaLocally: shouldStoreAllMediaLocally,
+                backupPlan: backupPlan,
+                remoteConfig: remoteConfig
+            )
+
+            guard eligibility.canBeDownloadedAtAll else {
+                continue
+            }
+
+            var referenceWithMostRecentTimestamp: AttachmentReference?
+            try attachmentStore.enumerateAllReferences(
+                toAttachmentId: attachment.id,
+                tx: tx,
+            ) { reference in
+                switch reference.owner {
+                case .message(let messageSource):
+                    switch referenceWithMostRecentTimestamp?.owner {
+                    case nil, .storyMessage:
+                        referenceWithMostRecentTimestamp = reference
+                    case .thread:
+                        return
+                    case .message(let oldMessageSource):
+                        if oldMessageSource.receivedAtTimestamp < messageSource.receivedAtTimestamp {
+                            referenceWithMostRecentTimestamp = reference
+                        }
+                    }
+                case .storyMessage:
+                    // Ignore story references
+                    return
+                case .thread:
+                    // Threads win all ties
+                    referenceWithMostRecentTimestamp = reference
+                }
+            }
+
+            guard let referenceWithMostRecentTimestamp else {
+                continue
+            }
+
+            let wasPreviouslyEnqueued = try backupAttachmentDownloadStore.enqueue(
+                referenceWithMostRecentTimestamp,
+                tx: tx
+            )
+
+            // As we go enqueuing attachments, increment the total byte count we
+            // need to download.
+            if
+                !wasPreviouslyEnqueued,
+                let byteCount = attachment.anyPointerFullsizeUnencryptedByteCount
+            {
+                totalPendingByteCount += UInt64(Cryptography.paddedSize(unpaddedSize: UInt(byteCount)))
+            }
+        }
+
+        backupAttachmentDownloadStore.setTotalPendingDownloadByteCount(
+            totalPendingByteCount,
+            tx: tx
+        )
+
+        // We want to list media before we go doing any downloads, to ensure we have the latest
+        // CDN information. To that end, wipe the most recent list media upload era so that
+        // we will query again.
+        listMediaManager.setNeedsQueryListMedia(tx: tx)
     }
 
     // MARK: - Queue status observation
@@ -671,6 +796,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.kvStore.setString(uploadEra, key: Constants.lastListMediaUploadEraKey, transaction: tx)
         }
 
+        func setNeedsQueryListMedia(tx: DBWriteTransaction) {
+            self.kvStore.removeValue(forKey: Constants.lastListMediaUploadEraKey, transaction: tx)
+        }
+
         private enum Constants {
             /// Maps to the upload era (active subscription) when we last queried the list media
             /// endpoint, or nil if its never been queried.
@@ -686,6 +815,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         private let attachmentDownloadManager: AttachmentDownloadManager
         private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
         private let backupRequestManager: BackupRequestManager
+        private let backupSettingsStore: BackupSettingsStore
         private let dateProvider: DateProvider
         private let db: any DB
         private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
@@ -703,6 +833,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             attachmentDownloadManager: AttachmentDownloadManager,
             backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
             backupRequestManager: BackupRequestManager,
+            backupSettingsStore: BackupSettingsStore,
             dateProvider: @escaping DateProvider,
             db: any DB,
             mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
@@ -715,6 +846,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.attachmentDownloadManager = attachmentDownloadManager
             self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
             self.backupRequestManager = backupRequestManager
+            self.backupSettingsStore = backupSettingsStore
             self.dateProvider = dateProvider
             self.db = db
             self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
@@ -764,6 +896,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                             attachmentTimestamp: record.record.timestamp,
                             dateProvider: dateProvider,
                             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+                            backupSettingsStore: backupSettingsStore,
                             remoteConfigProvider: remoteConfigProvider,
                             tx: tx
                         )
@@ -777,7 +910,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             /// Media and transit tier byte counts should be interchangeable.
             /// Still, we shouldn't rely on this for anything other that progress tracking,
             /// where its just a UI glitch if it turns out they are not.
-            var fullsizeByteCountForProgress = UInt64(
+            let fullsizeByteCountForProgress = UInt64(
                 Cryptography.paddedSize(
                     unpaddedSize: UInt(attachment.anyPointerFullsizeUnencryptedByteCount ?? 0)
                 )
@@ -918,7 +1051,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             }
         }
 
-        func removeRecord(_ record: Record, tx: DBWriteTransaction) throws {
+        func removeRecord(_ record: TaskRecord, tx: DBWriteTransaction) throws {
             try backupAttachmentDownloadStore.removeQueuedDownload(attachmentId: record.id, tx: tx)
         }
     }
@@ -936,8 +1069,12 @@ open class BackupAttachmentDownloadManagerMock: BackupAttachmentDownloadManager 
 
     public init() {}
 
-    public func enqueueIfNeeded(
+    public func enqueueFromBackupIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
+        restoreStartTimestampMs: UInt64,
+        shouldStoreAllMediaLocally: Bool,
+        backupPlan: BackupPlan?,
+        remoteConfig: RemoteConfig,
         tx: DBWriteTransaction
     ) throws {
         // Do nothing
@@ -951,8 +1088,8 @@ open class BackupAttachmentDownloadManagerMock: BackupAttachmentDownloadManager 
         // Do nothing
     }
 
-    public var progress: BackupAttachmentDownloadProgress {
-        fatalError("Unimplemented")
+    public func scheduleAllMediaTierDownloads(tx: DBWriteTransaction) throws {
+        // Do nothing
     }
 }
 

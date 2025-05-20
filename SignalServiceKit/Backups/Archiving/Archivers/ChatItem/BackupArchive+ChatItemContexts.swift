@@ -10,10 +10,6 @@ extension BackupArchive {
         let chatContext: ChatRestoringContext
         let recipientContext: RecipientRestoringContext
 
-        /// Will only be nil if there was no earlier AccountData frame to set it, which
-        /// should be treated as an error at read time when processing all subsequent frames.
-        var uploadEra: String?
-
         init(
             chatContext: ChatRestoringContext,
             recipientContext: RecipientRestoringContext,

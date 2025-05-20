@@ -69,6 +69,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let plaintextStreamProvider: BackupArchivePlaintextProtoStreamProvider
     private let postFrameRestoreActionManager: BackupArchivePostFrameRestoreActionManager
     private let releaseNotesRecipientArchiver: BackupArchiveReleaseNotesRecipientArchiver
+    private let remoteConfigManager: RemoteConfigManager
     private let stickerPackArchiver: BackupArchiveStickerPackArchiver
 
     public init(
@@ -106,6 +107,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         plaintextStreamProvider: BackupArchivePlaintextProtoStreamProvider,
         postFrameRestoreActionManager: BackupArchivePostFrameRestoreActionManager,
         releaseNotesRecipientArchiver: BackupArchiveReleaseNotesRecipientArchiver,
+        remoteConfigManager: RemoteConfigManager,
         stickerPackArchiver: BackupArchiveStickerPackArchiver
     ) {
         self.accountDataArchiver = accountDataArchiver
@@ -142,6 +144,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.plaintextStreamProvider = plaintextStreamProvider
         self.postFrameRestoreActionManager = postFrameRestoreActionManager
         self.releaseNotesRecipientArchiver = releaseNotesRecipientArchiver
+        self.remoteConfigManager = remoteConfigManager
         self.stickerPackArchiver = stickerPackArchiver
         self.adHocCallArchiver = adHocCallArchiver
     }
@@ -796,6 +799,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
         let startTimestampMs = dateProvider().ows_millisecondsSince1970
 
+        let currentRemoteConfig = remoteConfigManager.currentConfig()
+
         // Drops all indexes on the `TSInteraction` table before doing the
         // import, which dramatically speeds up the import. We'll then recreate
         // all these indexes in bulk afterwards.
@@ -862,6 +867,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
             /// Wraps all the various "contexts" we pass to downstream archivers.
             struct Contexts {
+                let accountData: BackupArchive.AccountDataRestoringContext
                 let chat: BackupArchive.ChatRestoringContext
                 var chatItem: BackupArchive.ChatItemRestoringContext
                 let customChatColor: BackupArchive.CustomChatColorRestoringContext
@@ -871,10 +877,17 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 init(
                     localIdentifiers: LocalIdentifiers,
                     startTimestampMs: UInt64,
+                    currentRemoteConfig: RemoteConfig,
                     tx: DBWriteTransaction
                 ) {
+                    accountData = BackupArchive.AccountDataRestoringContext(
+                        startTimestampMs: startTimestampMs,
+                        currentRemoteConfig: currentRemoteConfig,
+                        tx: tx
+                    )
                     customChatColor = BackupArchive.CustomChatColorRestoringContext(
                         startTimestampMs: startTimestampMs,
+                        accountDataContext: accountData,
                         tx: tx
                     )
                     recipient = BackupArchive.RecipientRestoringContext(
@@ -903,6 +916,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             let contexts = Contexts(
                 localIdentifiers: localIdentifiers,
                 startTimestampMs: startTimestampMs,
+                currentRemoteConfig: currentRemoteConfig,
                 tx: tx
             )
 
@@ -1051,6 +1065,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                         case .account(let backupProtoAccountData):
                             let accountDataResult = accountDataArchiver.restore(
                                 backupProtoAccountData,
+                                context: contexts.accountData,
                                 chatColorsContext: contexts.customChatColor,
                                 chatItemContext: contexts.chatItem
                             )

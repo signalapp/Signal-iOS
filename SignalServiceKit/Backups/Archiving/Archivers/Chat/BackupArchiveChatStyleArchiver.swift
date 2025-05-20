@@ -479,7 +479,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
         errorId: IDType,
         context: BackupArchive.CustomChatColorRestoringContext
     ) -> BackupArchive.RestoreFrameResult<IDType> {
-        guard let uploadEra = context.uploadEra else {
+        guard let uploadEra = context.accountDataContext.uploadEra else {
             return .failure([.restoreFrameError(
                 .invalidProtoData(.accountDataNotFound),
                 errorId
@@ -525,9 +525,28 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
             )])
         }
 
+        guard
+            let shouldStoreAllMediaLocally = context.accountDataContext.shouldStoreAllMediaLocally,
+            let backupPlan = context.accountDataContext.backupPlan
+        else {
+            return .failure([.restoreFrameError(
+                .invalidProtoData(
+                    .accountDataNotFound
+                ),
+                errorId
+            )])
+        }
+
         do {
             try results.forEach {
-                try backupAttachmentDownloadManager.enqueueIfNeeded($0, tx: context.tx)
+                try backupAttachmentDownloadManager.enqueueFromBackupIfNeeded(
+                    $0,
+                    restoreStartTimestampMs: context.startTimestampMs,
+                    shouldStoreAllMediaLocally: shouldStoreAllMediaLocally,
+                    backupPlan: backupPlan,
+                    remoteConfig: context.accountDataContext.currentRemoteConfig,
+                    tx: context.tx
+                )
             }
         } catch {
             return .partialRestore([.restoreFrameError(

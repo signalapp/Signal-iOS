@@ -25,18 +25,8 @@ extension AttachmentReference {
     var datedId: DatedAttachmentReferenceId {
         let receivedAtTimestamp: UInt64
         switch owner {
-        case .message(.bodyAttachment(let metadata)):
-            receivedAtTimestamp = metadata.receivedAtTimestamp
-        case .message(.oversizeText(let metadata)):
-            receivedAtTimestamp = metadata.receivedAtTimestamp
-        case .message(.linkPreview(let metadata)):
-            receivedAtTimestamp = metadata.receivedAtTimestamp
-        case .message(.quotedReply(let metadata)):
-            receivedAtTimestamp = metadata.receivedAtTimestamp
-        case .message(.sticker(let metadata)):
-            receivedAtTimestamp = metadata.receivedAtTimestamp
-        case .message(.contactAvatar(let metadata)):
-            receivedAtTimestamp = metadata.receivedAtTimestamp
+        case .message(let messageSource):
+            receivedAtTimestamp = messageSource.receivedAtTimestamp
         case .storyMessage, .thread:
             owsFailDebug("Should not be indexing non-message attachments in gallery")
             receivedAtTimestamp = Date().ows_millisecondsSince1970
