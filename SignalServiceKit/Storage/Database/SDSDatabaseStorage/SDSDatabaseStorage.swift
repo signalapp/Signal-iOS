@@ -253,35 +253,38 @@ public class SDSDatabaseStorage: NSObject, DB {
     }
 
     @discardableResult
-    public func read<T>(
+    public func read<T, E: Error>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBReadTransaction) throws -> T
-    ) rethrows -> T {
-        return try _read(file: file, function: function, line: line, block: block, rescue: { throw $0 })
+        block: (DBReadTransaction) throws(E) -> T
+    ) throws(E) -> T {
+        return try _read(file: file, function: function, line: line, block: block, rescue: { err throws(E) in throw err })
     }
 
     // The "rescue" pattern is used in LibDispatch (and replicated here) to
     // allow "rethrows" to work properly.
-    private func _read<T>(
+    private func _read<T, E: Error>(
         file: String,
         function: String,
         line: Int,
-        block: (DBReadTransaction) throws -> T,
-        rescue: (Error) throws -> Never
-    ) rethrows -> T {
+        block: (DBReadTransaction) throws(E) -> T,
+        rescue: (E) throws(E) -> Never
+    ) throws(E) -> T {
         var value: T!
-        var thrown: Error?
+        var thrown: E?
         read(file: file, function: function, line: line) { tx in
-            do {
+            do throws(E) {
                 value = try block(tx)
             } catch {
                 thrown = error
             }
         }
         if let thrown {
-            try rescue(thrown.grdbErrorForLogging)
+            // The `grdbError` has the same type as `thrown` (or isn't present).
+            // Therefore `grdbError ?? thrown` is guaranteed to be of type `E`.
+            let grdbError: GRDB.DatabaseError? = (thrown as? GRDB.DatabaseError)?.forLogging
+            try rescue((grdbError as! E?) ?? thrown)
         }
         return value
     }

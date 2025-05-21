@@ -30,17 +30,18 @@ public class SearchableNameFinder {
         maxResults: Int,
         localIdentifiers: LocalIdentifiers,
         tx: DBReadTransaction,
-        checkCancellation: () throws -> Void,
         addGroupThread: (TSGroupThread) -> Void,
         addStoryThread: (TSPrivateStoryThread) -> Void
-    ) rethrows -> [SignalServiceAddress] {
+    ) throws(CancellationError) -> [SignalServiceAddress] {
         var contactMatches = ContactMatches()
         try searchableNameIndexer.search(
             for: searchText,
             maxResults: maxResults,
             tx: tx
-        ) { indexableName in
-            try checkCancellation()
+        ) { indexableName throws(CancellationError) in
+            if Task.isCancelled {
+                throw CancellationError()
+            }
 
             switch indexableName {
             case let signalAccount as SignalAccount:

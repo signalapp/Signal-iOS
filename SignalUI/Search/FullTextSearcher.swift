@@ -295,7 +295,7 @@ public class FullTextSearcher: NSObject {
         includeStories: Bool,
         maxResults: Int = kDefaultMaxResults,
         tx: DBReadTransaction
-    ) -> RecipientSearchResultSet {
+    ) throws(CancellationError) -> RecipientSearchResultSet {
         var groupResults = [GroupSearchResult]()
         var storyResults = [StorySearchResult]()
 
@@ -304,7 +304,7 @@ public class FullTextSearcher: NSObject {
             owsFail("Can't search if you've never been registered.")
         }
 
-        var addresses = SearchableNameFinder(
+        var addresses = try SearchableNameFinder(
             contactManager: SSKEnvironment.shared.contactManagerRef,
             searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
             phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher,
@@ -314,7 +314,6 @@ public class FullTextSearcher: NSObject {
             maxResults: maxResults,
             localIdentifiers: localIdentifiers,
             tx: tx,
-            checkCancellation: {},
             addGroupThread: { groupThread in
                 let sortKey = ConversationSortKey(
                     isContactThread: false,
@@ -394,30 +393,20 @@ public class FullTextSearcher: NSObject {
     public func searchForHomeScreen(
         searchText: String,
         maxResults: Int = kDefaultMaxResults,
-        isCanceled: () -> Bool,
-        transaction: DBReadTransaction
-    ) -> HomeScreenSearchResultSet? {
-        do {
-            return try _searchForHomeScreen(
-                searchText: searchText,
-                maxResults: maxResults,
-                isCanceled: isCanceled,
-                transaction: transaction
-            )
-        } catch is CancellationError {
-            return nil
-        } catch {
-            owsFailDebug("Couldn't search: \(error)")
-            return nil
-        }
+        tx: DBReadTransaction
+    ) throws(CancellationError) -> HomeScreenSearchResultSet {
+        return try _searchForHomeScreen(
+            searchText: searchText,
+            maxResults: maxResults,
+            transaction: tx
+        )
     }
 
     private func _searchForHomeScreen(
         searchText: String,
         maxResults: Int,
-        isCanceled: () -> Bool,
         transaction: DBReadTransaction
-    ) throws -> HomeScreenSearchResultSet? {
+    ) throws(CancellationError) -> HomeScreenSearchResultSet {
         var contactResults = [ContactSearchResult]()
         var contactThreadResults = [ConversationSearchResult<ConversationSortKey>]()
         var groupResults: [GroupSearchResult] = []
@@ -565,8 +554,8 @@ public class FullTextSearcher: NSObject {
         // Check if we've been canceled before running the first query. If we have
         // to wait a while for the database to be available, this search may have
         // already been canceled.
-        guard !isCanceled() else {
-            return nil
+        if Task.isCancelled {
+            throw CancellationError()
         }
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
@@ -584,7 +573,6 @@ public class FullTextSearcher: NSObject {
             maxResults: remainingResultCount(),
             localIdentifiers: localIdentifiers,
             tx: transaction,
-            checkCancellation: { if isCanceled() { throw CancellationError() } },
             addGroupThread: { groupThread in
                 appendGroup(threadUniqueId: groupThread.uniqueId, groupThread: groupThread)
             },
@@ -592,8 +580,8 @@ public class FullTextSearcher: NSObject {
             }
         )
 
-        guard !isCanceled() else {
-            return nil
+        if Task.isCancelled {
+            throw CancellationError()
         }
 
         addresses.removeAll(where: { $0 == localIdentifiers.aciAddress })
@@ -606,8 +594,8 @@ public class FullTextSearcher: NSObject {
             break
         }
 
-        guard !isCanceled() else {
-            return nil
+        if Task.isCancelled {
+            throw CancellationError()
         }
 
         for address in addresses {
@@ -619,8 +607,8 @@ public class FullTextSearcher: NSObject {
             )
         }
 
-        guard !isCanceled() else {
-            return nil
+        if Task.isCancelled {
+            throw CancellationError()
         }
 
         FullTextSearchIndexer.search(
@@ -628,7 +616,7 @@ public class FullTextSearcher: NSObject {
             maxResults: remainingResultCount(),
             tx: transaction
         ) { (message: TSMessage, snippet: String?, stop) in
-            if isCanceled() || remainingResultCount() == 0 {
+            if Task.isCancelled || remainingResultCount() == 0 {
                 stop = true
                 return
             }
@@ -667,8 +655,8 @@ public class FullTextSearcher: NSObject {
             appendMessage(message, snippet: styledSnippet)
         }
 
-        guard !isCanceled() else {
-            return nil
+        if Task.isCancelled {
+            throw CancellationError()
         }
 
         // Order the conversation and message results in reverse chronological order.
@@ -684,11 +672,12 @@ public class FullTextSearcher: NSObject {
     }
 
     public func searchWithinConversation(
-        thread: TSThread,
+        threadUniqueId: String,
+        isGroupThread: Bool,
         searchText: String,
         maxResults: Int = kDefaultMaxResults,
         transaction: DBReadTransaction
-    ) -> ConversationScreenSearchResultSet {
+    ) throws(CancellationError) -> ConversationScreenSearchResultSet {
         var messages: [UInt64: MessageSearchResult] = [:]
 
         func appendMessage(_ message: TSMessage) {
@@ -706,18 +695,18 @@ public class FullTextSearcher: NSObject {
                 stop = true
                 return
             }
-            if message.uniqueThreadId == thread.uniqueId {
+            if message.uniqueThreadId == threadUniqueId {
                 appendMessage(message)
             }
         }
 
-        let canSearchForMentions: Bool = thread is TSGroupThread
+        let canSearchForMentions: Bool = isGroupThread
         if canSearchForMentions {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction) else {
                 owsFail("Can't search if you've never been registered.")
             }
-            let addresses = SearchableNameFinder(
+            let addresses = try SearchableNameFinder(
                 contactManager: SSKEnvironment.shared.contactManagerRef,
                 searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
                 phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher,
@@ -727,7 +716,6 @@ public class FullTextSearcher: NSObject {
                 maxResults: maxResults - messages.count,
                 localIdentifiers: localIdentifiers,
                 tx: transaction,
-                checkCancellation: {},
                 addGroupThread: { _ in },
                 addStoryThread: { _ in }
             )
@@ -735,7 +723,7 @@ public class FullTextSearcher: NSObject {
                 guard let aci = address.serviceId as? Aci else {
                     continue
                 }
-                let messagesMentioningAccount = MentionFinder.messagesMentioning(aci: aci, in: thread, tx: transaction)
+                let messagesMentioningAccount = MentionFinder.messagesMentioning(aci: aci, in: threadUniqueId, tx: transaction)
                 messagesMentioningAccount.forEach { appendMessage($0) }
             }
         }

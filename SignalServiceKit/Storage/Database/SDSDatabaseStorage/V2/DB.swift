@@ -54,12 +54,12 @@ public protocol DB {
 
     // MARK: - Value Methods
 
-    func read<T>(
+    func read<T, E: Error>(
         file: String,
         function: String,
         line: Int,
-        block: (DBReadTransaction) throws -> T
-    ) rethrows -> T
+        block: (DBReadTransaction) throws(E) -> T
+    ) throws(E) -> T
 
     func write<T>(
         file: String,
@@ -153,12 +153,12 @@ extension DB {
 
     // MARK: - Value Methods
 
-    public func read<T>(
+    public func read<T, E: Error>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBReadTransaction) throws -> T
-    ) rethrows -> T {
+        block: (DBReadTransaction) throws(E) -> T
+    ) throws(E) -> T {
         return try read(file: file, function: function, line: line, block: block)
     }
 

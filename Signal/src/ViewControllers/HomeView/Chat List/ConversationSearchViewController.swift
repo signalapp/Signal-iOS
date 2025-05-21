@@ -48,10 +48,6 @@ public class ConversationSearchViewController: UITableViewController {
     }
     private var lastSearchText: String?
 
-    var searcher: FullTextSearcher {
-        return FullTextSearcher.shared
-    }
-
     enum SearchSection: Int {
         case noResults
         case contactThreads
@@ -560,7 +556,7 @@ public class ConversationSearchViewController: UITableViewController {
         }
     }
 
-    private let currentSearchCounter = AtomicUInt(0, lock: .init())
+    private var currentSearchTask: Task<Void, Never>?
 
     private func updateSearchResults(searchText: String) {
         let searchText = searchText.stripped
@@ -578,16 +574,15 @@ public class ConversationSearchViewController: UITableViewController {
             return
         }
 
-        currentSearchCounter.increment()
-        let searchCounter = currentSearchCounter.get()
-
-        let isCanceled: () -> Bool = { [weak currentSearchCounter] in currentSearchCounter?.get() != searchCounter }
-
-        fetchSearchResults(
-            searchText: searchText,
-            isCanceled: isCanceled
-        ).done(on: DispatchQueue.main) { [weak self] searchResultSet in
-            guard let self, let searchResultSet, !isCanceled() else {
+        self.currentSearchTask?.cancel()
+        self.currentSearchTask = Task {
+            let searchResultSet: HomeScreenSearchResultSet
+            do throws(CancellationError) {
+                searchResultSet = try await fetchSearchResults(searchText: searchText)
+                if Task.isCancelled {
+                    throw CancellationError()
+                }
+            } catch {
                 return
             }
             self.searchResultSet = searchResultSet
@@ -595,20 +590,15 @@ public class ConversationSearchViewController: UITableViewController {
         }
     }
 
-    private func fetchSearchResults(searchText: String, isCanceled: @escaping () -> Bool) -> Guarantee<HomeScreenSearchResultSet?> {
+    private nonisolated func fetchSearchResults(searchText: String) async throws(CancellationError) -> HomeScreenSearchResultSet {
         if searchText.isEmpty {
-            return .value(.empty)
+            return .empty
         }
 
-        let (result, future) = Guarantee<HomeScreenSearchResultSet?>.pending()
-        SSKEnvironment.shared.databaseStorageRef.asyncRead { [searcher] transaction in
-            future.resolve(searcher.searchForHomeScreen(
-                searchText: searchText,
-                isCanceled: isCanceled,
-                transaction: transaction
-            ))
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        return try databaseStorage.read { tx throws(CancellationError) in
+            return try FullTextSearcher.shared.searchForHomeScreen(searchText: searchText, tx: tx)
         }
-        return result
     }
 
     // MARK: -

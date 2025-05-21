@@ -13,8 +13,8 @@ public protocol SearchableNameIndexer {
         for searchText: String,
         maxResults: Int,
         tx: DBReadTransaction,
-        block: (_ indexableName: any IndexableName) throws -> Void
-    ) rethrows
+        block: (_ indexableName: any IndexableName) throws(CancellationError) -> Void
+    ) throws(CancellationError)
 
     /// Inserts `indexableName` into the FTS index.
     func insert(_ indexableName: IndexableName, tx: DBWriteTransaction)
@@ -41,7 +41,7 @@ public protocol SearchableNameIndexer {
 #if TESTABLE_BUILD
 
 struct MockSearchableNameIndexer: SearchableNameIndexer {
-    func search(for searchText: String, maxResults: Int, tx: DBReadTransaction, block: (any IndexableName) throws -> Void) rethrows { owsFail("") }
+    func search(for searchText: String, maxResults: Int, tx: DBReadTransaction, block: (any IndexableName) throws(CancellationError) -> Void) throws(CancellationError) { owsFail("") }
     func insert(_ indexableName: any IndexableName, tx: DBWriteTransaction) {}
     func update(_ indexableName: any IndexableName, tx: DBWriteTransaction) {}
     func delete(_ indexableName: any IndexableName, tx: DBWriteTransaction) {}
@@ -93,8 +93,8 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         for searchText: String,
         maxResults: Int,
         tx: DBReadTransaction,
-        block: (_ indexableName: IndexableName) throws -> Void
-    ) rethrows {
+        block: (_ indexableName: IndexableName) throws(CancellationError) -> Void
+    ) throws(CancellationError) {
         let query = FullTextSearchIndexer.buildQuery(for: searchText)
         if query.isEmpty {
             return

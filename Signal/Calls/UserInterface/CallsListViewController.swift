@@ -457,7 +457,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     @objc
     private func filterChanged() {
-        Task { await reinitializeLoadedViewModels(animated: true) }
+        reinitializeLoadedViewModels(debounceInterval: 0, animated: true)
         updateMultiselectToolbarButtons()
     }
 
@@ -739,7 +739,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     /// Used to avoid concurrent calls to `reinitializeLoadedViewModels` from
     /// clobbering each other.
-    private var reinitializeLoadedViewModelsDebounceToken = 0
+    private var reinitializeLoadedViewModelsTask: Task<Void, any Error>?
 
     /// Asynchronously resets our `viewModelLoader` for the current UI state,
     /// then kicks off an initial page load.
@@ -748,7 +748,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     /// This method will perform an FTS search for our current search term, if
     /// we have one. That operation can be painfully slow for users with a large
     /// FTS index, so we need to do it asynchronously.
-    private func reinitializeLoadedViewModels(animated: Bool) async {
+    private func _reinitializeLoadedViewModels(animated: Bool) async throws(CancellationError) {
         let searchTerm = self.searchTerm
         let onlyLoadMissedCalls: Bool = {
             switch self.currentFilterMode {
@@ -757,20 +757,17 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             }
         }()
 
-        self.reinitializeLoadedViewModelsDebounceToken += 1
-        let debounceTokenSnapshot = self.reinitializeLoadedViewModelsDebounceToken
-
         let threadRowIdsMatchingSearchTerm: [Int64]?
         if let searchTerm {
-            threadRowIdsMatchingSearchTerm = await findThreadRowIdsMatchingSearchTerm(searchTerm)
+            threadRowIdsMatchingSearchTerm = try await findThreadRowIdsMatchingSearchTerm(searchTerm)
         } else {
             threadRowIdsMatchingSearchTerm = nil
         }
 
-        guard self.reinitializeLoadedViewModelsDebounceToken == debounceTokenSnapshot else {
+        if Task.isCancelled {
             /// While we were performing a search above, another caller entered
             /// this method. Bail out in preference of the later caller!
-            return
+            throw CancellationError()
         }
 
         setAndPrimeViewModelLoader(
@@ -788,19 +785,18 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     /// inherit the `@MainActor` isolation of `UIViewController`.
     private nonisolated func findThreadRowIdsMatchingSearchTerm(
         _ searchTerm: String
-    ) async -> [Int64] {
-        return self.deps.databaseStorage.read { tx -> [Int64] in
+    ) async throws(CancellationError) -> [Int64] {
+        return try self.deps.databaseStorage.read { tx throws(CancellationError) -> [Int64] in
             guard let localIdentifiers = self.deps.tsAccountManager.localIdentifiers(tx: tx) else {
                 owsFail("Can't search if you've never been registered.")
             }
 
             var threadRowIdsMatchingSearchTerm = Set<Int64>()
-            let addresses = self.deps.searchableNameFinder.searchNames(
+            let addresses = try self.deps.searchableNameFinder.searchNames(
                 for: searchTerm,
                 maxResults: Constants.maxSearchResults,
                 localIdentifiers: localIdentifiers,
                 tx: tx,
-                checkCancellation: {},
                 addGroupThread: { groupThread in
                     guard let sqliteRowId = groupThread.sqliteRowId else {
                         owsFail("How did we match a thread in the FTS index that hasn't been inserted?")
@@ -1300,23 +1296,19 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         set { _searchTerm = newValue?.nilIfEmpty }
     }
 
-    private var searchTermDebounceToken = 0
-
     private func searchTermDidChange() {
-        self.searchTermDebounceToken += 1
-        let debounceTokenSnapshot = self.searchTermDebounceToken
+        reinitializeLoadedViewModels(debounceInterval: Constants.searchDebounceInterval, animated: true)
+    }
 
-        Task {
-            try await Task.sleep(nanoseconds: Constants.searchDebounceInterval.clampedNanoseconds)
-
-            guard self.searchTermDebounceToken == debounceTokenSnapshot else {
-                /// The search term changed in the debounce period, so we'll
-                /// bail out here in preference for the later-changed search
-                /// term.
-                return
+    private func reinitializeLoadedViewModels(debounceInterval: TimeInterval, animated: Bool) {
+        self.reinitializeLoadedViewModelsTask?.cancel()
+        self.reinitializeLoadedViewModelsTask = Task {
+            do {
+                try await Task.sleep(nanoseconds: debounceInterval.clampedNanoseconds)
+                try await self._reinitializeLoadedViewModels(animated: true)
+            } catch {
+                // A new reinitialize call was started, so bail out.
             }
-
-            await self.reinitializeLoadedViewModels(animated: true)
         }
     }
 
@@ -2188,7 +2180,7 @@ extension CallsListViewController: DatabaseChangeDelegate {
     func databaseChangesDidUpdateExternally() {
         logger.info("Database changed externally, loading calls anew and reloading all rows.")
 
-        Task { await reinitializeLoadedViewModels(animated: false) }
+        reinitializeLoadedViewModels(debounceInterval: 0, animated: false)
         reloadAllRows()
     }
 

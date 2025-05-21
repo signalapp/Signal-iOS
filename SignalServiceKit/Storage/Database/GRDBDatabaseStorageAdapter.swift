@@ -1006,22 +1006,24 @@ extension GRDBDatabaseStorageAdapter {
 
 // MARK: -
 
-public extension Error {
-    var grdbErrorForLogging: Error {
-        // If not a GRDB error, return unmodified.
-        guard let grdbError = self as? GRDB.DatabaseError else {
-            return self
-        }
+extension GRDB.DatabaseError {
+    public var forLogging: Self {
         // DatabaseError.description includes the arguments.
-        Logger.verbose("grdbError: \(grdbError))")
+        Logger.verbose("grdbError: \(self))")
         // DatabaseError.description does not include the extendedResultCode.
-        Logger.verbose("resultCode: \(grdbError.resultCode), extendedResultCode: \(grdbError.extendedResultCode), message: \(String(describing: grdbError.message)), sql: \(String(describing: grdbError.sql))")
-        let error = GRDB.DatabaseError(
-            resultCode: grdbError.extendedResultCode,
-            message: "\(String(describing: grdbError.message)) (extended result code: \(grdbError.extendedResultCode.rawValue))",
+        Logger.verbose("resultCode: \(self.resultCode), extendedResultCode: \(self.extendedResultCode), message: \(String(describing: self.message)), sql: \(String(describing: self.sql))")
+        return Self(
+            resultCode: self.extendedResultCode,
+            message: "\(String(describing: self.message)) (extended result code: \(self.extendedResultCode.rawValue))",
             sql: nil,
-            arguments: nil
+            arguments: nil,
         )
-        return error
+    }
+}
+
+extension Error {
+    public var grdbErrorForLogging: any Error {
+        // If not a GRDB error, return unmodified.
+        return (self as? GRDB.DatabaseError)?.forLogging ?? self
     }
 }

@@ -33,6 +33,7 @@ public class ConversationSearchController: NSObject {
     public let resultsBar: SearchResultsBar = SearchResultsBar(frame: .zero)
 
     private var lastSearchText: String?
+    private var currentSearchTask: Task<Void, Never>?
 
     // MARK: Initializer
 
@@ -81,6 +82,7 @@ extension ConversationSearchController: UISearchResultsUpdating {
             self.resultsBar.updateResults(resultSet: nil)
             self.delegate?.conversationSearchController(self, didUpdateSearchResults: nil)
             self.lastSearchText = nil
+            self.currentSearchTask?.cancel()
             return
         }
 
@@ -90,23 +92,41 @@ extension ConversationSearchController: UISearchResultsUpdating {
         }
         lastSearchText = searchText
 
-        var resultSet: ConversationScreenSearchResultSet?
-        SSKEnvironment.shared.databaseStorageRef.asyncRead(block: { [weak self] transaction in
-            guard let self = self else {
-                return
-            }
-            resultSet = self.dbSearcher.searchWithinConversation(thread: self.thread, searchText: searchText, transaction: transaction)
-        }, completion: { [weak self] in
-            guard let self = self else {
-                return
-            }
-            guard self.lastSearchText == searchText else {
+        self.currentSearchTask?.cancel()
+        self.currentSearchTask = Task {
+            let resultSet: ConversationScreenSearchResultSet
+            do throws(CancellationError) {
+                resultSet = try await performSearch(
+                    searchText: searchText,
+                    threadUniqueId: thread.uniqueId,
+                    isGroupThread: thread is TSGroupThread,
+                )
+                if Task.isCancelled {
+                    throw CancellationError()
+                }
+            } catch {
                 // Discard obsolete search results.
                 return
             }
             self.resultsBar.updateResults(resultSet: resultSet)
             self.delegate?.conversationSearchController(self, didUpdateSearchResults: resultSet)
-        })
+        }
+    }
+
+    private nonisolated func performSearch(
+        searchText: String,
+        threadUniqueId: String,
+        isGroupThread: Bool,
+    ) async throws(CancellationError) -> ConversationScreenSearchResultSet {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        return try databaseStorage.read { tx throws(CancellationError) in
+            return try dbSearcher.searchWithinConversation(
+                threadUniqueId: threadUniqueId,
+                isGroupThread: isGroupThread,
+                searchText: searchText,
+                transaction: tx,
+            )
+        }
     }
 }
 

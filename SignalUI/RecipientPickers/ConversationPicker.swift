@@ -42,6 +42,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     private let footerView = ApprovalFooterView()
 
+    private var searchTask: Task<Void, Never>?
+
     fileprivate lazy var searchBar: OWSSearchBar = {
         let searchBar = OWSSearchBar()
         searchBar.placeholder = CommonStrings.searchPlaceholder
@@ -281,13 +283,14 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         updateUIForCurrentSelection(animated: false)
     }
 
-    private nonisolated func buildSearchResults(searchText: String) async -> RecipientSearchResultSet? {
+    private nonisolated func buildSearchResults(searchText: String) async throws(CancellationError) -> RecipientSearchResultSet? {
         guard searchText.count > 1 else {
             return nil
         }
 
-        return SSKEnvironment.shared.databaseStorageRef.read { tx in
-            FullTextSearcher.shared.searchForRecipients(
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        return try databaseStorage.read { tx throws(CancellationError) in
+            return try FullTextSearcher.shared.searchForRecipients(
                 searchText: searchText,
                 includeLocalUser: true,
                 includeStories: true,
@@ -1163,12 +1166,18 @@ extension ConversationPickerViewController: NewStoryHeaderDelegate {
 
 extension ConversationPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        Task { [self] in
-            let searchResults = await buildSearchResults(searchText: searchText)
-            guard searchBar.text == searchText else { return }
-            let conversationCollection = await buildConversationCollection(sectionOptions: sectionOptions, searchResults: searchResults)
-            guard searchBar.text == searchText else { return }
-            self.conversationCollection = conversationCollection
+        self.searchTask?.cancel()
+        self.searchTask = Task { [self] in
+            do throws(CancellationError) {
+                let searchResults = try await buildSearchResults(searchText: searchText)
+                let conversationCollection = await buildConversationCollection(sectionOptions: sectionOptions, searchResults: searchResults)
+                if Task.isCancelled {
+                    throw CancellationError()
+                }
+                self.conversationCollection = conversationCollection
+            } catch {
+                // Ignore results for cancelled searches.
+            }
         }
     }
 

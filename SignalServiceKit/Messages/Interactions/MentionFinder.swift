@@ -13,7 +13,7 @@ public class MentionFinder {
 
     public class func messagesMentioning(
         aci: Aci,
-        in thread: TSThread? = nil,
+        in threadUniqueId: String? = nil,
         includeReadMessages: Bool = true,
         tx: DBReadTransaction
     ) -> [TSMessage] {
@@ -22,7 +22,7 @@ public class MentionFinder {
 
         var isIndexedByUnreadIndex = false
 
-        if let thread {
+        if let threadUniqueId {
             // The TSMention's uniqueThreadId should always match the TSInteraction's
             // threadUniqueId. However, we pick one column or the other depending on
             // whether or not we're filtering out read messages.
@@ -40,10 +40,10 @@ public class MentionFinder {
             // conversation, and that's much slower.)
             if includeReadMessages {
                 filters.append("mention.\(TSMention.columnName(.uniqueThreadId)) = ?")
-                arguments.append(thread.uniqueId)
+                arguments.append(threadUniqueId)
             } else {
                 filters.append("interaction.\(interactionColumn: .threadUniqueId) = ?")
-                arguments.append(thread.uniqueId)
+                arguments.append(threadUniqueId)
                 isIndexedByUnreadIndex = true
             }
         }

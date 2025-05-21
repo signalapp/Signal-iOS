@@ -122,19 +122,19 @@ public final class InMemoryDB: DB {
 
     // MARK: - Value Methods
 
-    public func read<T>(
+    public func read<T, E: Error>(
         file: String,
         function: String,
         line: Int,
-        block: (DBReadTransaction) throws -> T
-    ) rethrows -> T {
-        return try _read(block: block, rescue: { throw $0 })
+        block: (DBReadTransaction) throws(E) -> T
+    ) throws(E) -> T {
+        return try _read(block: block, rescue: { err throws(E) in throw err })
     }
 
-    private func _read<T>(block: (DBReadTransaction) throws -> T, rescue: (Error) throws -> Never) rethrows -> T {
-        var thrownError: Error?
+    private func _read<T, E: Error>(block: (DBReadTransaction) throws(E) -> T, rescue: (E) throws(E) -> Never) throws(E) -> T {
+        var thrownError: E?
         let result: T? = try! databaseQueue.read { db in
-            do {
+            do throws(E) {
                 return try block(DBReadTransaction(database: db))
             } catch {
                 thrownError = error

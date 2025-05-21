@@ -21,7 +21,7 @@ class ConversationViewModel {
 
         let unreadMentionMessageIds = MentionFinder.messagesMentioning(
             aci: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)!.aci,
-            in: thread,
+            in: thread.uniqueId,
             includeReadMessages: false,
             tx: tx
         ).map { $0.uniqueId }
