@@ -53,6 +53,8 @@ open class HostingContainer<Wrapped: View>: UIViewController {
     }
 }
 
+// MARK: OWSNavigationChildController
+
 extension HostingContainer: OWSNavigationChildController {
     public var childForOWSNavigationConfiguration: (any OWSNavigationChildController)? {
         hostingController
@@ -67,7 +69,7 @@ extension HostingContainer: OWSNavigationChildController {
 /// Adds `EnvironmentValues.appearanceTransitionState` to the wrapped view's
 /// environment, allowing SwiftUI views to explicitly control whether animations
 /// are performed during a navigation transition, or after completion.
-open class HostingController<Wrapped: View>: UIHostingController<_HostingControllerWrapperView<Wrapped>> {
+open class HostingController<Wrapped: View>: UIHostingController<_HostingControllerWrapperView<Wrapped>>, OWSNavigationChildController {
 
     private var scrollOffset: CGFloat = 0 {
         didSet {
@@ -116,9 +118,9 @@ open class HostingController<Wrapped: View>: UIHostingController<_HostingControl
 
         rootView.appearanceTransitionState = nil
     }
-}
 
-extension HostingController: OWSNavigationChildController {
+    // MARK: OWSNavigationChildController
+
     private var usesSolidNavbarStyle: Bool {
         scrollOffset <= 0
     }
@@ -130,7 +132,11 @@ extension HostingController: OWSNavigationChildController {
     public var navbarBackgroundColorOverride: UIColor? {
         usesSolidNavbarStyle ? UIColor.Signal.groupedBackground : nil
     }
+
+    open var prefersNavigationBarHidden: Bool { false }
 }
+
+// MARK: - _HostingControllerWrapperView
 
 public struct _HostingControllerWrapperView<Wrapped: View>: View {
     fileprivate var wrappedView: Wrapped

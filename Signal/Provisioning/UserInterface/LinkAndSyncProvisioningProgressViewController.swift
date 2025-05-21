@@ -310,26 +310,6 @@ struct LinkAndSyncProvisioningProgressView: View {
         .padding()
         .multilineTextAlignment(.center)
     }
-
-    // MARK: Linear Progress View
-
-    private struct LinearProgressView: View {
-        var progress: Float
-
-        var body: some View {
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    Capsule()
-                        .foregroundStyle(Color.Signal.secondaryFill)
-
-                    Capsule()
-                        .foregroundStyle(Color.Signal.accent)
-                        .frame(width: geo.size.width * CGFloat(progress))
-                }
-            }
-            .frame(width: 360, height: 4)
-        }
-    }
 }
 
 // MARK: Previews

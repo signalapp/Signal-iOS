@@ -148,7 +148,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
     private var progressObserver: NSKeyValueObservation?
     func deviceTransferServiceDidStartTransfer(progress: Progress) {
         self.progressObserver = progress.observe(\.fractionCompleted, options: [.new]) { [weak self] _, change in
-            Task {
+            Task { @MainActor in
                 let newValue = change.newValue ?? 0
                 self?.transferStatusViewModel.state = .transferring(newValue)
             }

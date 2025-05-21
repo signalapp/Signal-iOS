@@ -11,20 +11,18 @@ import SignalServiceKit
 
 class OutgoingDeviceRestoreProgressViewController: HostingController<TransferStatusView> {
     init(viewModel: TransferStatusViewModel) {
-        super.init(wrappedView: TransferStatusView(viewModel: viewModel))
+        super.init(wrappedView: TransferStatusView(viewModel: viewModel, isNewDevice: false))
         view.backgroundColor = UIColor.Signal.background
         modalPresentationStyle = .overFullScreen
     }
-    var prefersNavigationBarHidden: Bool { true }
+    override var prefersNavigationBarHidden: Bool { true }
 }
 
 #if DEBUG
 @available(iOS 17, *)
 #Preview {
-    {
-        let viewModel = TransferStatusViewModel()
-        viewModel.state = .starting
-        return OutgoingDeviceRestoreProgressViewController(viewModel: viewModel)
-    }()
+    let viewModel = TransferStatusViewModel()
+    Task { try? await viewModel.simulateProgressForPreviews() }
+    return OutgoingDeviceRestoreProgressViewController(viewModel: viewModel)
 }
 #endif

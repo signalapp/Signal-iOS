@@ -72,8 +72,10 @@ public class RegistrationTransferStatusState: DeviceTransferServiceObserver, Equ
     private var progressObserver: NSKeyValueObservation?
     func deviceTransferServiceDidStartTransfer(progress: Progress) {
         self.progressObserver = progress.observe(\.fractionCompleted, options: [.new]) { [weak self] _, change in
-            let newValue = change.newValue ?? 0
-            self?.transferStatusViewModel.state = .transferring(newValue)
+            DispatchQueue.main.async {
+                let newValue = change.newValue ?? 0
+                self?.transferStatusViewModel.state = .transferring(newValue)
+            }
         }
     }
 
