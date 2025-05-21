@@ -1,1 +1,1 @@
-• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.
+• Es ist immer okay, seine Meinung zu ändern. Deshalb haben wir einen Fehler behoben, der dazu führte, dass sich das Foto-Auswahlmenü öffnete, wenn du einen Anhang in einen Chat eingefügt und dich dann dazu entschlossen hast, diesen doch nicht zu senden.

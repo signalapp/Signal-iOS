@@ -1,1 +1,1 @@
-• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.
+• Zdarzyło Ci się kiedyś wkleić załącznik do czatu, po czym zdecydować, że jednak go nie wyślesz? Naprawiliśmy błąd, który powodował, że czasem w takich sytuacjach otwierało się okno wyboru obrazów. Wysłać czy nie wysłać – teraz możesz zmieniać zdanie do woli.

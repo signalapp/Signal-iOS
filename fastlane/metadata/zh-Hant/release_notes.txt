@@ -1,1 +1,1 @@
-• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.
+• 改變主意當然沒問題，因此我們修復了一個錯誤，以後在聊天中貼上附件之後決定不傳送時，圖片選擇器就不會再打開。

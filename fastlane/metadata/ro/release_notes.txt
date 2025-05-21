@@ -1,1 +1,1 @@
-• It's always OK to change your mind, so we fixed a bug that caused the image picker to open after pasting an attachment into a chat and then deciding not to send it.
+• Este întotdeauna în regulă să te răzgândești, așa că am remediat o eroare care făcea ca selectorul de imagini să se deschidă după ce lipeai un atașament într-un chat și apoi decideai să nu îl trimiți.
