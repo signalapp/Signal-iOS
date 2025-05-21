@@ -211,58 +211,6 @@ public struct GroupsV2BuiltGroupChange {
     let groupUpdateMessageBehavior: GroupUpdateMessageBehavior
 }
 
-public protocol GroupsV2OutgoingChanges: AnyObject {
-    var groupId: Data { get }
-    var groupSecretParams: GroupSecretParams { get }
-
-    var newAvatarData: Data? { get }
-    var newAvatarUrlPath: String? { get }
-
-    func setTitle(_ value: String)
-
-    func setDescriptionText(_ value: String?)
-
-    func setAvatar(_ avatar: (data: Data, urlPath: String)?)
-
-    func addMember(_ aci: Aci, role: TSGroupMemberRole)
-
-    func removeMember(_ serviceId: ServiceId)
-
-    func addBannedMember(_ aci: Aci)
-
-    func removeBannedMember(_ aci: Aci)
-
-    func revokeInvalidInvites()
-
-    func changeRoleForMember(_ aci: Aci, role: TSGroupMemberRole)
-
-    func setAccessForMembers(_ value: GroupV2Access)
-
-    func setAccessForAttributes(_ value: GroupV2Access)
-
-    func addInvitedMember(_ serviceId: ServiceId, role: TSGroupMemberRole)
-
-    func setLocalShouldAcceptInvite()
-
-    func setShouldLeaveGroupDeclineInvite()
-
-    func setNewDisappearingMessageToken(_ newDisappearingMessageToken: DisappearingMessageToken)
-
-    func setLinkMode(_ linkMode: GroupsV2LinkMode)
-
-    func rotateInviteLinkPassword()
-
-    func setIsAnnouncementsOnly(_ isAnnouncementsOnly: Bool)
-
-    func setShouldUpdateLocalProfileKey()
-
-    func buildGroupChangeProto(
-        currentGroupModel: TSGroupModelV2,
-        currentDisappearingMessageToken: DisappearingMessageToken,
-        forceRefreshProfileKeyCredentials: Bool
-    ) async throws -> GroupsV2BuiltGroupChange
-}
-
 // MARK: -
 
 public protocol GroupV2Updates {

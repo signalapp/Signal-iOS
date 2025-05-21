@@ -35,7 +35,7 @@ public import LibSignalClient
 // * If we try to add a new member and another user beats us to it, we'll throw
 //   GroupsV2Error.redundantChange when computing a GroupChange proto.
 // * If we add (alice and bob) but another user adds (alice) first, we'll just add (bob).
-public class GroupsV2OutgoingChangesImpl: GroupsV2OutgoingChanges {
+public class GroupsV2OutgoingChanges {
 
     public let groupId: Data
     public let groupSecretParams: GroupSecretParams
@@ -59,8 +59,8 @@ public class GroupsV2OutgoingChangesImpl: GroupsV2OutgoingChanges {
     // Non-nil if changed. Empty string is allowed.
     private var newDescriptionText: String?
 
-    public var newAvatarData: Data?
-    public var newAvatarUrlPath: String?
+    public private(set) var newAvatarData: Data?
+    public private(set) var newAvatarUrlPath: String?
     private var shouldUpdateAvatar = false
 
     private var membersToAdd = [Aci: TSGroupMemberRole]()

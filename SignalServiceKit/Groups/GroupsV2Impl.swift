@@ -993,7 +993,7 @@ public class GroupsV2Impl: GroupsV2 {
         groupSecretParams: GroupSecretParams,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
     ) async throws {
-        let changes = GroupsV2OutgoingChangesImpl(
+        let changes = GroupsV2OutgoingChanges(
             groupId: groupId,
             groupSecretParams: groupSecretParams
         )
