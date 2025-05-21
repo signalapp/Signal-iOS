@@ -53,9 +53,10 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         title: String,
         body: String,
         iconName: String,
+        iconSize: CGFloat? = nil,
         selector: Selector
     ) -> OWSFlatButton {
-        let button = RegistrationChoiceButton(title: title, body: body, iconName: iconName)
+        let button = RegistrationChoiceButton(title: title, body: body, iconName: iconName, iconSize: iconSize)
         button.addTarget(target: self, selector: selector)
         return button
     }
@@ -69,7 +70,8 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
             "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY",
             comment: "The body for the device transfer 'choice' view 'transfer' option"
         ),
-        iconName: Theme.iconName(.backup),
+        iconName: "backup-light",
+        iconSize: 32,
         selector: #selector(didSelectRestoreLocal)
     )
 
@@ -114,7 +116,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
 
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
-        scrollView.autoPinEdgesToSuperviewMargins()
+        scrollView.autoPinEdgesToSuperviewEdges()
 
         // TODO: [Backups]: Check for list of available restore options
         // and build list based on that.
@@ -131,11 +133,12 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         stackView.axis = .vertical
         stackView.distribution = .fill
         stackView.spacing = 16
+        stackView.layoutMargins = .init(hMargin: 20, vMargin: 0)
+        stackView.isLayoutMarginsRelativeArrangement = true
         stackView.setCustomSpacing(12, after: titleLabel)
         stackView.setCustomSpacing(24, after: explanationLabel)
         scrollView.addSubview(stackView)
         stackView.autoPinWidth(toWidthOf: scrollView)
-        stackView.autoPinHeightToSuperview()
 
         render()
     }
@@ -206,6 +209,8 @@ private class PreviewRegistrationChooseRestoreMethodPresenter: RegistrationChoos
 private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
 @available(iOS 17, *)
 #Preview {
-    RegistrationChooseRestoreMethodViewController(presenter: presenter)
+    OWSNavigationController(
+        rootViewController: RegistrationChooseRestoreMethodViewController(presenter: presenter)
+    )
 }
 #endif
