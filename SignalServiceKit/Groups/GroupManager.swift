@@ -136,7 +136,7 @@ public class GroupManager: NSObject {
     public static func localCreateNewGroup(
         seed: NewGroupSeed,
         members membersParam: [SignalServiceAddress],
-        name: String,
+        name: StrippedNonEmptyString,
         avatarData: Data?,
         disappearingMessageToken: DisappearingMessageToken,
     ) async throws -> TSGroupThread {

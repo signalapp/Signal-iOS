@@ -84,14 +84,14 @@ public class GroupsV2Protos {
 
     public struct NewGroupParams {
         public let secretParams: GroupSecretParams
-        public let title: String
+        public let title: StrippedNonEmptyString
         public let avatarUrlPath: String?
         public let otherMembers: [ServiceId]
         public let disappearingMessageToken: DisappearingMessageToken
 
         public init(
             secretParams: GroupSecretParams,
-            title: String,
+            title: StrippedNonEmptyString,
             avatarUrlPath: String?,
             otherMembers: [ServiceId],
             disappearingMessageToken: DisappearingMessageToken,
@@ -123,7 +123,7 @@ public class GroupsV2Protos {
         groupBuilder.setPublicKey(try newGroup.secretParams.getPublicParams().serialize().asData)
         // GroupsV2 TODO: Will production implementation of encryptString() pad?
 
-        let groupTitle = newGroup.title.ows_stripped()
+        let groupTitle = newGroup.title.rawValue
         let groupTitleEncrypted = try groupV2Params.encryptGroupName(groupTitle)
         guard groupTitle.glyphCount <= GroupManager.maxGroupNameGlyphCount else {
             throw OWSAssertionError("groupTitle is too long.")

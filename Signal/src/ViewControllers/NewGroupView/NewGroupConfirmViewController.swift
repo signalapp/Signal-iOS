@@ -205,7 +205,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
             owsFailDebug("missing local address")
             return
         }
-        guard let groupName = newGroupState.groupName, !groupName.isEmpty else {
+        guard let groupName = newGroupState.groupName.flatMap({ StrippedNonEmptyString(rawValue: $0) }) else {
             Self.showMissingGroupNameAlert()
             return
         }
