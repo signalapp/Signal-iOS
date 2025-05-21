@@ -221,6 +221,16 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
 
     @MainActor
     func groupCall(onSpeakingNotification groupCall: SignalRingRTC.GroupCall, event: SpeechEvent) {
+        // TODO: Implement speaking notification handling for group calls.
+    }
 
+    @MainActor
+    func groupCall(onRemoteMuteRequest groupCall: SignalRingRTC.GroupCall, muteSource: UInt32) {
+        // TODO: Implement remote mute request handling for group calls.
+    }
+
+    @MainActor
+    func groupCall(onObservedRemoteMute groupCall: SignalRingRTC.GroupCall, muteSource: UInt32, muteTarget: UInt32) {
+        // TODO: Implement remote mute observed handling for group calls.
     }
 }
