@@ -100,7 +100,7 @@ public class ReactionManager: NSObject {
                 sentAtTimestamp: outgoingMessage.timestamp,
                 receivedAtTimestamp: outgoingMessage.timestamp,
                 tx: tx
-            )
+            )?.newValue
 
             // Always immediately mark outgoing reactions as read.
             outgoingMessage.createdReaction?.markAsRead(transaction: tx)
@@ -179,9 +179,14 @@ public class ReactionManager: NSObject {
 
                 // If this is a reaction to a message we sent, notify the user.
                 let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci
-                if let reaction, let message = message as? TSOutgoingMessage, reactor != localAci {
+                if
+                    let reaction,
+                    reaction.oldValue?.sentAtTimestamp != reaction.newValue.sentAtTimestamp,
+                    let message = message as? TSOutgoingMessage,
+                    reactor != localAci
+                {
                     SSKEnvironment.shared.notificationPresenterRef.notifyUser(
-                        forReaction: reaction,
+                        forReaction: reaction.newValue,
                         onOutgoingMessage: message,
                         thread: thread,
                         transaction: transaction

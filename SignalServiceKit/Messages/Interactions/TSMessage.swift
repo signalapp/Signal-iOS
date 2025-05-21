@@ -203,7 +203,7 @@ public extension TSMessage {
         sentAtTimestamp: UInt64,
         receivedAtTimestamp: UInt64,
         tx: DBWriteTransaction
-    ) -> OWSReaction? {
+    ) -> (oldValue: OWSReaction?, newValue: OWSReaction)? {
         return self.recordReaction(
             for: reactor,
             emoji: emoji,
@@ -220,7 +220,7 @@ public extension TSMessage {
         sentAtTimestamp: UInt64,
         sortOrder: UInt64,
         tx: DBWriteTransaction
-    ) -> OWSReaction? {
+    ) -> (oldValue: OWSReaction?, newValue: OWSReaction)? {
         guard !wasRemotelyDeleted else {
             owsFailDebug("attempted to record a reaction for a message that was deleted")
             return nil
@@ -229,9 +229,9 @@ public extension TSMessage {
         assert(emoji.isSingleEmoji)
 
         // Remove any previous reaction, there can only be one
-        removeReaction(for: reactor, tx: tx)
+        let oldReaction = removeReaction(for: reactor, tx: tx)
 
-        let reaction = OWSReaction(
+        let newReaction = OWSReaction(
             uniqueMessageId: uniqueId,
             emoji: emoji,
             reactor: reactor,
@@ -239,25 +239,30 @@ public extension TSMessage {
             receivedAtTimestamp: receivedAtTimestamp
         )
 
-        reaction.anyInsert(transaction: tx)
+        newReaction.anyInsert(transaction: tx)
 
         // Reactions to messages we send need to be manually marked
         // as read as they trigger notifications we need to clear
         // out. Everything else can be automatically read.
-        if !(self is TSOutgoingMessage) { reaction.markAsRead(transaction: tx) }
+        if !(self is TSOutgoingMessage) { newReaction.markAsRead(transaction: tx) }
 
         SSKEnvironment.shared.databaseStorageRef.touch(interaction: self, shouldReindex: false, tx: tx)
 
-        return reaction
+        return (oldReaction, newReaction)
     }
 
-    func removeReaction(for reactor: Aci, tx: DBWriteTransaction) {
-        guard let reaction = reaction(for: reactor, tx: tx) else { return }
+    @discardableResult
+    func removeReaction(for reactor: Aci, tx: DBWriteTransaction) -> OWSReaction? {
+        guard let reaction = reaction(for: reactor, tx: tx) else {
+            return nil
+        }
 
         reaction.anyRemove(transaction: tx)
         SSKEnvironment.shared.databaseStorageRef.touch(interaction: self, shouldReindex: false, tx: tx)
 
         SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(reactionId: reaction.uniqueId)
+
+        return reaction
     }
 
     // MARK: - Edits
