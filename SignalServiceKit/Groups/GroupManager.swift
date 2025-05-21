@@ -133,84 +133,47 @@ public class GroupManager: NSObject {
     // MARK: - Create New Group
 
     /// Create a new group locally, and upload it to the service.
-    ///
-    /// - Parameter groupId
-    /// A fixed group ID. Intended for use exclusively in tests.
     public static func localCreateNewGroup(
+        seed: NewGroupSeed,
         members membersParam: [SignalServiceAddress],
-        groupId: Data? = nil,
-        name: String? = nil,
-        avatarData: Data? = nil,
+        name: String,
+        avatarData: Data?,
         disappearingMessageToken: DisappearingMessageToken,
-        newGroupSeed: NewGroupSeed? = nil,
-        shouldSendMessage: Bool
     ) async throws -> TSGroupThread {
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             throw OWSAssertionError("Missing localIdentifiers.")
         }
 
+        var otherMembers = membersParam.compactMap(\.serviceId)
+        otherMembers.removeAll(where: { $0 == localIdentifiers.aci })
+
         try await ensureLocalProfileHasCommitmentIfNecessary()
 
-        // Build member list.
-        //
-        // The group creator is an administrator;
-        // the other members are normal users.
-        var builder = GroupMembership.Builder()
-        builder.addFullMembers(Set(membersParam), role: .normal)
-        builder.remove(localIdentifiers.aci)
-        builder.addFullMember(localIdentifiers.aci, role: .administrator)
-        let initialGroupMembership = builder.build()
+        var downloadedAvatars = GroupAvatarStateMap()
 
-        // Try to get profile key credentials for all group members, since
-        // we need them to fully add (rather than merely inviting) members.
-        try await SSKEnvironment.shared.groupsV2Ref.tryToFetchProfileKeyCredentials(
-            for: initialGroupMembership.allMembersOfAnyKind.compactMap { $0.serviceId as? Aci },
-            ignoreMissingProfiles: false,
-            ignoreMissingCredentials: true,
-            forceRefresh: false
+        let newGroupParams = GroupsV2Protos.NewGroupParams(
+            secretParams: seed.groupSecretParams,
+            title: name,
+            avatarUrlPath: try await { () async throws -> String? in
+                guard let avatarData else {
+                    return nil
+                }
+                // Upload avatar.
+                let avatarUrlPath = try await SSKEnvironment.shared.groupsV2Ref.uploadGroupAvatar(
+                    avatarData: avatarData,
+                    groupSecretParams: seed.groupSecretParams
+                )
+                downloadedAvatars.set(avatarDataState: .available(avatarData), avatarUrlPath: avatarUrlPath)
+                return avatarUrlPath
+            }(),
+            otherMembers: otherMembers,
+            disappearingMessageToken: disappearingMessageToken,
         )
 
-        let groupAccess = GroupAccess.defaultForV2
-        let separatedGroupMembership = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            // Before we create the group, we need to separate out the
-            // pending and full members.
-            return separateInvitedMembersForNewGroup(
-                withMembership: initialGroupMembership,
-                transaction: tx
-            )
-        }
-
-        guard separatedGroupMembership.isFullMember(localIdentifiers.aci) else {
-            throw OWSAssertionError("Local ACI is missing from group membership.")
-        }
-
-        var groupModelBuilder = TSGroupModelBuilder()
-        groupModelBuilder.groupId = groupId
-        groupModelBuilder.name = name
-        groupModelBuilder.groupMembership = separatedGroupMembership
-        groupModelBuilder.groupAccess = groupAccess
-        groupModelBuilder.newGroupSeed = newGroupSeed
-
-        var proposedGroupModel = try groupModelBuilder.buildAsV2()
-
-        if let avatarData {
-            // Upload avatar.
-            let avatarUrlPath = try await SSKEnvironment.shared.groupsV2Ref.uploadGroupAvatar(
-                avatarData: avatarData,
-                groupSecretParams: try proposedGroupModel.secretParams()
-            )
-
-            // Fill in the avatarUrl on the group model.
-            var builder = proposedGroupModel.asBuilder
-            builder.avatarDataState = .available(avatarData)
-            builder.avatarUrlPath = avatarUrlPath
-
-            proposedGroupModel = try builder.buildAsV2()
-        }
-
         let snapshotResponse = try await SSKEnvironment.shared.groupsV2Ref.createNewGroupOnService(
-            groupModel: proposedGroupModel,
-            disappearingMessageToken: disappearingMessageToken
+            newGroupParams,
+            downloadedAvatars: downloadedAvatars,
+            localAci: localIdentifiers.aci,
         )
 
         let thread = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
@@ -246,51 +209,9 @@ public class GroupManager: NSObject {
             return thread
         }
 
-        if shouldSendMessage {
-            await sendDurableNewGroupMessage(forThread: thread)
-        }
+        await sendDurableNewGroupMessage(forThread: thread)
+
         return thread
-    }
-
-    // Separates pending and non-pending members.
-    // We cannot add non-pending members unless:
-    //
-    // * We know their profile key.
-    // * We have a profile key credential for them.
-    private static func separateInvitedMembersForNewGroup(
-        withMembership newGroupMembership: GroupMembership,
-        transaction tx: DBReadTransaction
-    ) -> GroupMembership {
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci else {
-            owsFailDebug("Missing localAci.")
-            return newGroupMembership
-        }
-        var builder = GroupMembership.Builder()
-
-        let newMembers = newGroupMembership.allMembersOfAnyKind
-
-        // We only need to separate new members.
-        for address in newMembers {
-            // We must call this _after_ we try to fetch profile key credentials for
-            // all members.
-            let hasCredential = SSKEnvironment.shared.groupsV2Ref.hasProfileKeyCredential(for: address, transaction: tx)
-            guard let role = newGroupMembership.role(for: address) else {
-                owsFailDebug("Missing role: \(address)")
-                continue
-            }
-
-            guard let serviceId = address.serviceId else {
-                owsFailDebug("Missing serviceId.")
-                continue
-            }
-
-            if let aci = serviceId as? Aci, hasCredential {
-                builder.addFullMember(aci, role: role)
-            } else {
-                builder.addInvitedMember(serviceId, role: role, addedByAci: localAci)
-            }
-        }
-        return builder.build()
     }
 
     // MARK: - Tests

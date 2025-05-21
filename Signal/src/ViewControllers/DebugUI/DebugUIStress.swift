@@ -167,12 +167,6 @@ class DebugUIStress: DebugUIPage {
             }))
         }
 
-        items.append(OWSTableItem(title: "Make group w. unregistered users", actionBlock: {
-            Task {
-                try await DebugUIStress.makeUnregisteredGroup()
-            }
-        }))
-
         // Other
         items.append(OWSTableItem(title: "Delete other profiles", actionBlock: { [weak self] in
             self?.deleteOtherProfiles()
@@ -211,27 +205,6 @@ class DebugUIStress: DebugUIPage {
     }
 
     // MARK: Groups
-
-    @MainActor
-    private static func makeUnregisteredGroup() async throws {
-        var recipientAddresses = [SignalServiceAddress]()
-
-        recipientAddresses.append(contentsOf: (0...2).map { _ in SignalServiceAddress(Aci(fromUUID: UUID())) })
-
-        if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress {
-            recipientAddresses.append(localAddress)
-        }
-
-        recipientAddresses.append(contentsOf: (0...2).map { _ in SignalServiceAddress(Aci(fromUUID: UUID())) })
-
-        let groupThread = try await GroupManager.localCreateNewGroup(
-            members: recipientAddresses,
-            name: UUID().uuidString,
-            disappearingMessageToken: .disabledToken,
-            shouldSendMessage: false
-        )
-        SignalApp.shared.presentConversationForThread(threadUniqueId: groupThread.uniqueId, animated: true)
-    }
 
     private func copyToAnotherGroup(_ srcGroupThread: TSGroupThread, fromViewController: UIViewController) {
         let groupThreads = self.databaseStorage.read { (transaction: DBReadTransaction) -> [TSGroupThread] in

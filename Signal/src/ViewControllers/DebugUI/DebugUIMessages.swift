@@ -58,9 +58,6 @@ class DebugUIMessages: DebugUIPage {
                 OWSTableItem(title: "Receive UUID message", actionBlock: {
                     DebugUIMessages.receiveUUIDEnvelopeInNewThread()
                 }),
-                OWSTableItem(title: "Create UUID group", actionBlock: {
-                    DebugUIMessages.createUUIDGroup()
-                }),
                 OWSTableItem(title: "Send Media Gallery", actionBlock: {
                     DebugUIMessages.sendMediaAlbumInThread(thread)
                 }),
@@ -136,14 +133,6 @@ class DebugUIMessages: DebugUIPage {
             ]
         }
 
-        if let contactThread = thread as? TSContactThread {
-            let recipientAddress = contactThread.contactAddress
-            items.append(OWSTableItem(title: "Create New Groups", actionBlock: {
-                DebugUIMessages.askForQuantityWithTitle("How many Groups?") { quantity in
-                    DebugUIMessages.createNewGroups(count: quantity, recipientAddress: recipientAddress)
-                }
-            }))
-        }
         if let groupThread = thread as? TSGroupThread {
             items.append(OWSTableItem(title: "Send message to all members", actionBlock: {
                     DebugUIMessages.sendMessages(1, toAllMembersOfGroup: groupThread)
@@ -1170,21 +1159,6 @@ class DebugUIMessages: DebugUIPage {
         ) {}
     }
 
-    private static func createUUIDGroup() {
-        let uuidMembers = (0...3).map { _ in CommonGenerator.address(hasPhoneNumber: false) }
-        let members = uuidMembers + [DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress]
-        let groupName = "UUID Group"
-
-        Task {
-            _ = try? await GroupManager.localCreateNewGroup(
-                members: members,
-                name: groupName,
-                disappearingMessageToken: .disabledToken,
-                shouldSendMessage: true
-            )
-        }
-    }
-
     // MARK: Fake Threads & Messages
 
     private static func createFakeThreads(_ threadQuantity: UInt, withFakeMessages messageQuantity: UInt) async {
@@ -1425,43 +1399,6 @@ class DebugUIMessages: DebugUIPage {
         }
     }
 
-    private static func createNewGroups(count: UInt, recipientAddress: SignalServiceAddress) {
-        guard count > 0 else { return }
-
-        let completion: (TSGroupThread) -> Void = { groupThread in
-            ThreadUtil.enqueueMessage(
-                body: MessageBody(text: "\(count)", ranges: .empty),
-                thread: groupThread
-            )
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                createNewGroups(count: count - 1, recipientAddress: recipientAddress)
-            }
-        }
-
-        Task {
-            let groupName = randomShortText()
-            await createRandomGroupWithName(groupName, member: recipientAddress, completion: completion)
-        }
-    }
-
-    private static func createRandomGroupWithName(
-        _ groupName: String,
-        member: SignalServiceAddress,
-        completion: @escaping (TSGroupThread) -> Void
-    ) async {
-        let members = [ member, DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress ]
-        do {
-            let groupThread = try await GroupManager.localCreateNewGroup(
-                members: members,
-                disappearingMessageToken: .disabledToken,
-                shouldSendMessage: true
-            )
-            completion(groupThread)
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
     // MARK: International
 
     private static func testLinkificationInThread(_ thread: TSThread) {
@@ -1489,11 +1426,6 @@ class DebugUIMessages: DebugUIPage {
                     messageBody: string,
                     transaction: transaction
                 )
-
-                let member = SignalServiceAddress(Aci(fromUUID: UUID()))
-                Task {
-                    await createRandomGroupWithName(string, member: member, completion: { _ in })
-                }
             }
         }
     }
@@ -1515,11 +1447,6 @@ class DebugUIMessages: DebugUIPage {
                     messageBody: string,
                     transaction: transaction
                 )
-
-                let member = SignalServiceAddress(Aci(fromUUID: UUID()))
-                Task {
-                    await createRandomGroupWithName(string, member: member, completion: { _ in })
-                }
             }
         }
     }
@@ -1539,11 +1466,6 @@ class DebugUIMessages: DebugUIPage {
                     messageBody: string,
                     transaction: transaction
                 )
-
-                let member = SignalServiceAddress(Aci(fromUUID: UUID()))
-                Task {
-                    await createRandomGroupWithName(string, member: member, completion: { _ in })
-                }
             }
         }
     }

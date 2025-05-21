@@ -82,15 +82,37 @@ public class GroupsV2Protos {
         return presentation.serialize().asData
     }
 
+    public struct NewGroupParams {
+        public let secretParams: GroupSecretParams
+        public let title: String
+        public let avatarUrlPath: String?
+        public let otherMembers: [ServiceId]
+        public let disappearingMessageToken: DisappearingMessageToken
+
+        public init(
+            secretParams: GroupSecretParams,
+            title: String,
+            avatarUrlPath: String?,
+            otherMembers: [ServiceId],
+            disappearingMessageToken: DisappearingMessageToken,
+        ) {
+            self.secretParams = secretParams
+            self.title = title
+            self.avatarUrlPath = avatarUrlPath
+            self.otherMembers = otherMembers
+            self.disappearingMessageToken = disappearingMessageToken
+        }
+    }
+
     public class func buildNewGroupProto(
-        groupModel: TSGroupModelV2,
-        disappearingMessageToken: DisappearingMessageToken,
-        groupV2Params: GroupV2Params,
-        profileKeyCredentialMap: GroupsV2.ProfileKeyCredentialMap,
+        _ newGroup: NewGroupParams,
+        profileKeyCredentials: GroupsV2.ProfileKeyCredentialMap,
         localAci: Aci
     ) throws -> GroupsProtoGroup {
+        let groupV2Params = try GroupV2Params(groupSecretParams: newGroup.secretParams)
+
         // Collect credential for self.
-        guard let localProfileKeyCredential = profileKeyCredentialMap[localAci] else {
+        guard let localProfileKeyCredential = profileKeyCredentials[localAci] else {
             throw OWSAssertionError("Missing localProfileKeyCredential.")
         }
         // Collect credentials for all members except self.
@@ -98,10 +120,10 @@ public class GroupsV2Protos {
         var groupBuilder = GroupsProtoGroup.builder()
         let initialRevision: UInt32 = 0
         groupBuilder.setRevision(initialRevision)
-        groupBuilder.setPublicKey(groupV2Params.groupPublicParamsData)
+        groupBuilder.setPublicKey(try newGroup.secretParams.getPublicParams().serialize().asData)
         // GroupsV2 TODO: Will production implementation of encryptString() pad?
 
-        let groupTitle = groupModel.groupName?.ows_stripped() ?? " "
+        let groupTitle = newGroup.title.ows_stripped()
         let groupTitleEncrypted = try groupV2Params.encryptGroupName(groupTitle)
         guard groupTitle.glyphCount <= GroupManager.maxGroupNameGlyphCount else {
             throw OWSAssertionError("groupTitle is too long.")
@@ -111,77 +133,39 @@ public class GroupsV2Protos {
         }
         groupBuilder.setTitle(groupTitleEncrypted)
 
-        let hasAvatarUrl = groupModel.avatarUrlPath != nil
-        let hasAvatarData = groupModel.avatarDataState.dataIfPresent != nil
-        guard hasAvatarData == hasAvatarUrl else {
-            throw OWSAssertionError("hasAvatarData: (\(hasAvatarData)) != hasAvatarUrl: (\(hasAvatarUrl))")
-        }
-        if let avatarUrl = groupModel.avatarUrlPath {
-            groupBuilder.setAvatar(avatarUrl)
+        if let avatarUrlPath = newGroup.avatarUrlPath {
+            groupBuilder.setAvatar(avatarUrlPath)
         }
 
-        let groupAccess = groupModel.access
-        groupBuilder.setAccessControl(buildAccessProto(groupAccess: groupAccess))
-
-        if let inviteLinkPassword = groupModel.inviteLinkPassword, !inviteLinkPassword.isEmpty {
-            groupBuilder.setInviteLinkPassword(inviteLinkPassword)
-        }
+        groupBuilder.setAccessControl(buildAccessProto(groupAccess: GroupAccess.defaultForV2))
 
         // * You will be member 0 and the only admin.
         // * Other members will be non-admin members.
         //
         // Add local user first to ensure that they are user 0.
-        let groupMembership = groupModel.groupMembership
-        assert(groupMembership.isFullMemberAndAdministrator(localAci))
         groupBuilder.addMembers(try buildMemberProto(
             profileKeyCredential: localProfileKeyCredential,
             role: .administrator,
             groupV2Params: groupV2Params
         ))
-        for (aci, profileKeyCredential) in profileKeyCredentialMap {
-            guard aci != localAci else {
-                continue
+        for serviceId in newGroup.otherMembers {
+            if let aci = serviceId as? Aci, let profileKeyCredential = profileKeyCredentials[aci] {
+                groupBuilder.addMembers(try buildMemberProto(
+                    profileKeyCredential: profileKeyCredential,
+                    role: .default,
+                    groupV2Params: groupV2Params
+                ))
+            } else {
+                groupBuilder.addPendingMembers(try buildPendingMemberProto(
+                    serviceId: serviceId,
+                    role: .default,
+                    groupV2Params: groupV2Params
+                ))
             }
-            let isInvited = groupMembership.isInvitedMember(aci)
-            guard !isInvited else {
-                continue
-            }
-            let isAdministrator = groupMembership.isFullMemberAndAdministrator(aci)
-            let role: GroupsProtoMemberRole = isAdministrator ? .administrator : .`default`
-            groupBuilder.addMembers(try buildMemberProto(
-                profileKeyCredential: profileKeyCredential,
-                role: role,
-                groupV2Params: groupV2Params
-            ))
-        }
-        for address in groupMembership.invitedMembers {
-            guard let serviceId = address.serviceId else {
-                throw OWSAssertionError("Missing uuid.")
-            }
-            guard serviceId != localAci else {
-                continue
-            }
-            let isAdministrator = groupMembership.isFullOrInvitedAdministrator(serviceId)
-            let role: GroupsProtoMemberRole = isAdministrator ? .administrator : .`default`
-            groupBuilder.addPendingMembers(try buildPendingMemberProto(
-                serviceId: serviceId,
-                role: role,
-                groupV2Params: groupV2Params
-            ))
         }
 
-        for (aci, _) in groupMembership.bannedMembers {
-            owsFailDebug("There should never be a banned member in a freshly created group!")
-
-            groupBuilder.addBannedMembers(try buildBannedMemberProto(aci: aci, groupV2Params: groupV2Params))
-        }
-
-        let encryptedTimerData = try groupV2Params.encryptDisappearingMessagesTimer(disappearingMessageToken)
+        let encryptedTimerData = try groupV2Params.encryptDisappearingMessagesTimer(newGroup.disappearingMessageToken)
         groupBuilder.setDisappearingMessagesTimer(encryptedTimerData)
-
-        validateInviteLinkState(inviteLinkPassword: groupModel.inviteLinkPassword, groupAccess: groupAccess)
-
-        groupBuilder.setAnnouncementsOnly(groupModel.isAnnouncementsOnly)
 
         return groupBuilder.buildInfallibly()
     }

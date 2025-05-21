@@ -79,8 +79,9 @@ public protocol GroupsV2 {
     typealias ProfileKeyCredentialMap = [Aci: ExpiringProfileKeyCredential]
 
     func createNewGroupOnService(
-        groupModel: TSGroupModelV2,
-        disappearingMessageToken: DisappearingMessageToken
+        _ newGroup: GroupsV2Protos.NewGroupParams,
+        downloadedAvatars: GroupAvatarStateMap,
+        localAci: Aci,
     ) async throws -> GroupV2SnapshotResponse
 
     func loadProfileKeyCredentials(
@@ -477,8 +478,9 @@ public struct InvalidInvite: Equatable {
 public class MockGroupsV2: GroupsV2 {
 
     public func createNewGroupOnService(
-        groupModel: TSGroupModelV2,
-        disappearingMessageToken: DisappearingMessageToken
+        _ newGroup: GroupsV2Protos.NewGroupParams,
+        downloadedAvatars: GroupAvatarStateMap,
+        localAci: Aci,
     ) async throws -> GroupV2SnapshotResponse {
         owsFail("Not implemented.")
     }

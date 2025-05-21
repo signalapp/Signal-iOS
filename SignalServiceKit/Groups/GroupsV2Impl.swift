@@ -95,13 +95,15 @@ public class GroupsV2Impl: GroupsV2 {
     // MARK: - Create Group
 
     public func createNewGroupOnService(
-        groupModel: TSGroupModelV2,
-        disappearingMessageToken: DisappearingMessageToken
+        _ newGroup: GroupsV2Protos.NewGroupParams,
+        downloadedAvatars: GroupAvatarStateMap,
+        localAci: Aci,
     ) async throws -> GroupV2SnapshotResponse {
         do {
             return try await _createNewGroupOnService(
-                groupModel: groupModel,
-                disappearingMessageToken: disappearingMessageToken,
+                newGroup,
+                downloadedAvatars: downloadedAvatars,
+                localAci: localAci,
                 isRetryingAfterRecoverable400: false
             )
         } catch GroupsV2Error.serviceRequestHitRecoverable400 {
@@ -110,31 +112,30 @@ public class GroupsV2Impl: GroupsV2 {
             // local clock and the service. We should try again exactly once, forcing a
             // refresh of all the credentials first.
             return try await _createNewGroupOnService(
-                groupModel: groupModel,
-                disappearingMessageToken: disappearingMessageToken,
+                newGroup,
+                downloadedAvatars: downloadedAvatars,
+                localAci: localAci,
                 isRetryingAfterRecoverable400: true
             )
         }
     }
 
     private func _createNewGroupOnService(
-        groupModel: TSGroupModelV2,
-        disappearingMessageToken: DisappearingMessageToken,
-        isRetryingAfterRecoverable400: Bool
+        _ newGroup: GroupsV2Protos.NewGroupParams,
+        downloadedAvatars: GroupAvatarStateMap,
+        localAci: Aci,
+        isRetryingAfterRecoverable400: Bool,
     ) async throws -> GroupV2SnapshotResponse {
-        let groupV2Params = try groupModel.groupV2Params()
-
         let groupProto = try await self.buildProtoToCreateNewGroupOnService(
-            groupModel: groupModel,
-            disappearingMessageToken: disappearingMessageToken,
-            groupV2Params: groupV2Params,
+            newGroup,
+            localAci: localAci,
             shouldForceRefreshProfileKeyCredentials: isRetryingAfterRecoverable400
         )
 
         let requestBuilder: RequestBuilder = { authCredential -> GroupsV2Request in
             return try StorageService.buildNewGroupRequest(
                 groupProto: groupProto,
-                groupV2Params: groupV2Params,
+                groupV2Params: GroupV2Params(groupSecretParams: newGroup.secretParams),
                 authCredential: authCredential
             )
         }
@@ -150,8 +151,8 @@ public class GroupsV2Impl: GroupsV2 {
 
         return try GroupsV2Protos.parse(
             groupResponseProto: groupResponseProto,
-            downloadedAvatars: GroupAvatarStateMap.from(groupModel: groupModel),
-            groupV2Params: groupV2Params
+            downloadedAvatars: downloadedAvatars,
+            groupV2Params: GroupV2Params(groupSecretParams: newGroup.secretParams)
         )
     }
 
@@ -159,40 +160,19 @@ public class GroupsV2Impl: GroupsV2 {
     /// - Parameters:
     ///   - shouldForceRefreshProfileKeyCredentials: Whether we should force-refresh PKCs for the group members.
     private func buildProtoToCreateNewGroupOnService(
-        groupModel: TSGroupModelV2,
-        disappearingMessageToken: DisappearingMessageToken,
-        groupV2Params: GroupV2Params,
-        shouldForceRefreshProfileKeyCredentials: Bool = false
+        _ newGroup: GroupsV2Protos.NewGroupParams,
+        localAci: Aci,
+        shouldForceRefreshProfileKeyCredentials: Bool
     ) async throws -> GroupsProtoGroup {
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-            throw OWSAssertionError("Missing localAci.")
-        }
-
-        // Gather the ACIs for all full (not invited) members, and get profile key
-        // credentials for them. By definition, we cannot get a PKC for the invited
-        // members.
-        let acis: [Aci] = groupModel.groupMembers.compactMap { address in
-            guard let aci = address.aci else {
-                owsFailDebug("Address of full member in new group missing ACI.")
-                return nil
-            }
-            return aci
-        }
-
-        guard acis.contains(localAci) else {
-            throw OWSAssertionError("localUuid is not a member.")
-        }
-
+        // Get profile key credentials for everybody who might need them.
         let profileKeyCredentialMap = try await loadProfileKeyCredentials(
-            for: acis,
-            ignoreMissingCredentials: false,
+            for: [localAci] + newGroup.otherMembers.compactMap({ $0 as? Aci }),
+            ignoreMissingCredentials: true,
             forceRefresh: shouldForceRefreshProfileKeyCredentials
         )
         return try GroupsV2Protos.buildNewGroupProto(
-            groupModel: groupModel,
-            disappearingMessageToken: disappearingMessageToken,
-            groupV2Params: groupV2Params,
-            profileKeyCredentialMap: profileKeyCredentialMap,
+            newGroup,
+            profileKeyCredentials: profileKeyCredentialMap,
             localAci: localAci
         )
     }
@@ -1295,13 +1275,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         let acis = Set(acis)
 
-        let credentialMap = self.loadPresentProfileKeyCredentials(for: acis)
-
-        guard acis.isSubset(of: credentialMap.keys) else {
-            throw OWSGenericError("Missing requested keys from credential map!")
-        }
-
-        return credentialMap
+        return self.loadPresentProfileKeyCredentials(for: acis)
     }
 
     /// Makes a best-effort to fetch the profile key credential for each passed

@@ -225,13 +225,11 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
             Task {
                 do {
                     let groupThread = try await GroupManager.localCreateNewGroup(
+                        seed: newGroupSeed,
                         members: members,
-                        groupId: nil,
                         name: groupName,
                         avatarData: avatarData,
                         disappearingMessageToken: disappearingMessageToken,
-                        newGroupSeed: newGroupSeed,
-                        shouldSendMessage: true
                     )
                     self.groupWasCreated(
                         groupThread: groupThread,
