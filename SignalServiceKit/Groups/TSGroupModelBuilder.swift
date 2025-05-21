@@ -94,18 +94,7 @@ public struct TSGroupModelBuilder {
         }
     }
 
-    private func checkUsers() throws {
-        let allUsers = groupMembership.allMembersOfAnyKind
-        for recipientAddress in allUsers {
-            guard recipientAddress.isValid else {
-                throw OWSAssertionError("Invalid address.")
-            }
-        }
-    }
-
     public func build() throws -> TSGroupModel {
-        try checkUsers()
-
         let allUsers = groupMembership.allMembersOfAnyKind
         for recipientAddress in allUsers {
             guard recipientAddress.isValid else {

@@ -133,20 +133,11 @@ public class GroupAccess: MTLModel {
         try super.init(dictionary: dictionaryValue)
     }
 
-    @objc
+    #if TESTABLE_BUILD
     public static var allAccess: GroupAccess {
         return GroupAccess(members: .member, attributes: .member, addFromInviteLink: .any)
     }
-
-    @objc
-    public static var adminOnly: GroupAccess {
-        return GroupAccess(members: .administrator, attributes: .administrator, addFromInviteLink: .administrator)
-    }
-
-    @objc
-    public static var defaultForV1: GroupAccess {
-        return GroupAccess(members: .member, attributes: .member, addFromInviteLink: .unsatisfiable)
-    }
+    #endif
 
     @objc
     public static var defaultForV2: GroupAccess {
