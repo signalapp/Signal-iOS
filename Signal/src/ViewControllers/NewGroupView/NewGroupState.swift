@@ -17,7 +17,7 @@ class NewGroupState {
     var avatarData: Data?
 
     func deriveNewGroupSeedForRetry() {
-        groupSeed = groupSeed.deriveNewGroupSeedForRetry
+        groupSeed = NewGroupSeed()
     }
 
     var hasUnsavedChanges: Bool {

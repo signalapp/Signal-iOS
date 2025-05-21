@@ -33,9 +33,8 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
     init(newGroupState: NewGroupState) {
         self.newGroupState = newGroupState
 
-        let groupId = newGroupState.groupSeed.groupIdV2
         self.helper = GroupAttributesEditorHelper(
-            groupId: groupId,
+            groupId: try! newGroupState.groupSeed.groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData,
             groupNameOriginal: newGroupState.groupName,
             groupDescriptionOriginal: nil,
             avatarOriginalData: newGroupState.avatarData,
@@ -238,9 +237,8 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                     owsFailDebug("Could not create group: \(error)")
 
                     modalActivityIndicator.dismiss {
-                        // Partial success could create the group on the service.
-                        // This would cause retries to fail with 409.  Therefore
-                        // we must rotate the seed after every failure.
+                        // Partial success could create the group on the service. This would cause
+                        // retries to fail with 409. Therefore we rotate the seed after failures.
                         self.newGroupState.deriveNewGroupSeedForRetry()
 
                         NewGroupConfirmViewController.showCreateErrorUI(error: error)
