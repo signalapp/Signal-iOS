@@ -689,6 +689,7 @@ extension AttachmentStream {
     func needsMediaTierUpload(currentUploadEra: String) -> Bool {
         if let mediaTierInfo = attachment.mediaTierInfo {
             return mediaTierInfo.uploadEra != currentUploadEra
+                || mediaTierInfo.cdnNumber == nil
         } else {
             return true
         }

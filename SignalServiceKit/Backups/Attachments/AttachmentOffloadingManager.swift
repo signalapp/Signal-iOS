@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import GRDB
+
 extension Attachment {
     /// How long we keep attachment files locally by default when "optimize local storage"
     /// is enabled. Measured from the receive time of the most recent owning message.
@@ -54,6 +56,168 @@ extension Attachment {
             // We never offload thread wallpapers.
             return false
         }
+    }
+}
+
+public protocol AttachmentOffloadingManager {
+
+    /// Walk over all attachments and delete local files for any that are eligible to be
+    /// offloaded.
+    /// This can be a very expensive operation (e.g. if "optimize local storage" was
+    /// just enabled and there's a lot to clean up) so it is best to call this in a
+    /// non-user-blocking context, e.g. during an overnight backup BGProcessingTask.
+    ///
+    /// Supports cooperative cancellation; makes incremental progress if cancelled.
+    func offloadAttachmentsIfNeeded() async throws
+}
+
+public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
+
+    private let attachmentStore: AttachmentStore
+    private let dateProvider: DateProvider
+    private let db: DB
+    private let backupSettingsStore: BackupSettingsStore
+    private let backupSubscriptionManager: BackupSubscriptionManager
+    private let listMediaManager: BackupListMediaManager
+    private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
+    private let orphanedAttachmentStore: OrphanedAttachmentStore
+
+    public init(
+        attachmentStore: AttachmentStore,
+        dateProvider: @escaping DateProvider,
+        db: DB,
+        backupSettingsStore: BackupSettingsStore,
+        backupSubscriptionManager: BackupSubscriptionManager,
+        listMediaManager: BackupListMediaManager,
+        orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
+        orphanedAttachmentStore: OrphanedAttachmentStore,
+    ) {
+        self.attachmentStore = attachmentStore
+        self.dateProvider = dateProvider
+        self.db = db
+        self.backupSettingsStore = backupSettingsStore
+        self.backupSubscriptionManager = backupSubscriptionManager
+        self.listMediaManager = listMediaManager
+        self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
+        self.orphanedAttachmentStore = orphanedAttachmentStore
+    }
+
+    public func offloadAttachmentsIfNeeded() async throws {
+        guard FeatureFlags.Backups.remoteExportAlpha else {
+            return
+        }
+        guard db.read(block: backupSettingsStore.getShouldOptimizeLocalStorage(tx:)) else {
+            // Don't offload; early exit after a cheap read.
+            return
+        }
+
+        // Query list media if needed to ensure we have the latest cdn info
+        // for all our uploads.
+        try await listMediaManager.queryListMediaIfNeeded()
+
+        let startTimeMs = dateProvider().ows_millisecondsSince1970
+        var lastAttachmentId: Attachment.IDType?
+        while true {
+            try Task.checkCancellation()
+            lastAttachmentId = try await db.awaitableWrite { tx in
+                try self.offloadNextBatch(startTimeMs: startTimeMs, lastAttachmentId: lastAttachmentId, tx: tx)
+            }
+            if lastAttachmentId == nil {
+                break
+            }
+        }
+
+        await orphanedAttachmentCleaner.runUntilFinished()
+    }
+
+    // Returns nil if finished.
+    private func offloadNextBatch(
+        startTimeMs: UInt64,
+        lastAttachmentId: Attachment.IDType?,
+        tx: DBWriteTransaction
+    ) throws -> Attachment.IDType? {
+        guard backupSettingsStore.getShouldOptimizeLocalStorage(tx: tx) else {
+            return nil
+        }
+        let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
+        let viewedTimestampCutoff = startTimeMs - Attachment.offloadingThresholdMs
+
+        var attachmentsQuery = Attachment.Record
+            // We only offload downloaded attachments, duh
+            .filter(Column(Attachment.Record.CodingKeys.localRelativeFilePath) != nil)
+            // Only offload stuff we've uploaded in the current upload era.
+            .filter(Column(Attachment.Record.CodingKeys.mediaTierUploadEra) == currentUploadEra)
+            .filter(Column(Attachment.Record.CodingKeys.mediaTierCdnNumber) != nil)
+            // Don't offload stuff viewed recently
+            .filter(Column(Attachment.Record.CodingKeys.lastFullscreenViewTimestamp) < viewedTimestampCutoff)
+
+        if let lastAttachmentId {
+            attachmentsQuery = attachmentsQuery
+                .filter(Column(Attachment.Record.CodingKeys.sqliteId) > lastAttachmentId)
+        }
+
+        let attachmentCursor = try attachmentsQuery
+            .order(Column(Attachment.Record.CodingKeys.sqliteId).asc)
+            .fetchCursor(tx.database)
+
+        var lastAttachmentId: Attachment.IDType?
+        var numAttachmentsChecked = 0
+        var numAttachmentsDeleted = 0
+        while let attachment = try attachmentCursor.next() {
+            let attachment = try Attachment(record: attachment)
+            lastAttachmentId = attachment.id
+
+            if
+                try attachment.shouldBeOffloaded(
+                    shouldOptimizeLocalStorage: true,
+                    currentUploadEra: currentUploadEra,
+                    currentTimestamp: startTimeMs,
+                    attachmentStore: attachmentStore,
+                    tx: tx
+                )
+            {
+                var orphanRecord = OrphanedAttachmentRecord(
+                    localRelativeFilePath: attachment.streamInfo?.localRelativeFilePath,
+                    // Don't delete the thumbnail
+                    localRelativeFilePathThumbnail: nil,
+                    localRelativeFilePathAudioWaveform: {
+                        switch attachment.streamInfo?.contentType {
+                        case .audio(_, let waveformRelativeFilePath):
+                            return waveformRelativeFilePath
+                        default:
+                            return nil
+                        }
+                    }(),
+                    localRelativeFilePathVideoStillFrame: {
+                        switch attachment.streamInfo?.contentType {
+                        case .video(_, _, let stillFrameRelativeFilePath):
+                            return stillFrameRelativeFilePath
+                        default:
+                            return nil
+                        }
+                    }()
+                )
+                try orphanedAttachmentStore.insert(&orphanRecord, tx: tx)
+                let params = Attachment.ConstructionParams.forOffloadingFiles(attachment: attachment)
+                var newRecord = Attachment.Record(params: params)
+                newRecord.sqliteId = attachment.id
+                try newRecord.update(tx.database)
+                numAttachmentsDeleted += 1
+            }
+            numAttachmentsChecked += 1
+            if
+                // Do up to 50 mark-for-deletions per batch
+                numAttachmentsDeleted >= 50
+                // But because checking is expensive (requires an AttachmentReference join)
+                // and we may skip many we check, limit batch size by skipped ones too
+                || numAttachmentsChecked >= 100
+            {
+                return lastAttachmentId
+            }
+        }
+
+        // If we reached the end of the cursor, we're done.
+        return nil
     }
 }
 

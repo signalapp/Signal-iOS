@@ -19,6 +19,8 @@ public protocol OrphanedAttachmentCleaner {
     /// Also fires immediately to clean up existing rows in the table, if any remained from prior app launches.
     func beginObserving()
 
+    func runUntilFinished() async
+
     /// Marks pending attachment files for deletion.
     /// Call `releasePendingAttachment` to un-mark the files for deletion
     /// once the attachment has been created.
@@ -103,6 +105,10 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
         dbProvider().add(transactionObserver: observer)
     }
 
+    public func runUntilFinished() async {
+        await observer.jobRunner.runNextCleanupJob()
+    }
+
     public func commitPendingAttachmentWithSneakyTransaction(
         _ record: OrphanedAttachmentRecord
     ) throws -> OrphanedAttachmentRecord.IDType {
@@ -151,6 +157,8 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
         private nonisolated let fileSystem: Shims.OWSFileSystem
         private weak var cleaner: OrphanedAttachmentCleanerImpl?
 
+        private let taskQueue = SerialTaskQueue()
+
         init(
             dbProvider: @escaping () -> DatabaseWriter,
             fileSystem: Shims.OWSFileSystem,
@@ -161,22 +169,28 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
             self.cleaner = cleaner
         }
 
-        private var isRunning = false
-
         func runNextCleanupJob() async {
+            try! await taskQueue.enqueue(operation: {
+                await self._runNextCleanupJob()
+            }).value
+        }
+
+        private func _runNextCleanupJob() async {
+            // TODO: [Backups] does the BGProcessingTask count as "isMainApp"? I think yes but
+            // if this doesn't run this is the thing to check.
             guard CurrentAppContext().isMainApp else {
                 // Don't run the cleaner outside the main app.
                 return
             }
-            guard !isRunning else {
-                return
-            }
-            isRunning = true
             guard let nextRecord = fetchNextOrphanRecord() else {
-                isRunning = false
                 return
             }
 
+            do {
+                try Task.checkCancellation()
+            } catch {
+                return
+            }
             await Task.yield()
 
             if nextRecord.isPendingAttachment {
@@ -224,8 +238,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
             }
 
             // Kick off the next run whether the prior run succeeded or not.
-            isRunning = false
-            await runNextCleanupJob()
+            await _runNextCleanupJob()
         }
 
         private func fetchNextOrphanRecord() -> OrphanedAttachmentRecord? {

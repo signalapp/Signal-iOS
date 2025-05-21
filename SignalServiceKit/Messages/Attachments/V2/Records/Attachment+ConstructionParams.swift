@@ -433,5 +433,25 @@ extension Attachment {
                 lastFullscreenViewTimestamp: viewTimestamp,
             )
         }
+
+        public static func forOffloadingFiles(
+            attachment: Attachment
+        ) -> ConstructionParams {
+            return .init(
+                blurHash: attachment.blurHash,
+                mimeType: attachment.mimeType,
+                encryptionKey: attachment.encryptionKey,
+                // Remove stream info
+                streamInfo: nil,
+                transitTierInfo: attachment.transitTierInfo,
+                // Keep medianame so we can download again
+                mediaName: attachment.mediaName,
+                mediaTierInfo: attachment.mediaTierInfo,
+                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: attachment.lastFullscreenViewTimestamp,
+            )
+        }
     }
 }
