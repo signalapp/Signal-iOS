@@ -301,23 +301,18 @@ extension ForwardMessageViewController {
     private func tryToSend() {
         AssertIsOnMainThread()
 
-        do {
-            try tryToSendThrows()
-        } catch {
-            owsFailDebug("Error: \(error)")
-
-            self.forwardMessageDelegate?.forwardMessageFlowDidCancel()
+        Task {
+            await _tryToSend()
         }
     }
 
-    private func tryToSendThrows() throws {
+    private func _tryToSend() async {
         let content = self.content
         let textMessage = self.textMessage?.strippedOrNil
 
         let recipientConversations = self.selectedConversations
-        firstly(on: DispatchQueue.global()) {
-            self.outgoingMessageRecipientThreads(for: recipientConversations)
-        }.then(on: DispatchQueue.main) { (outgoingMessageRecipientThreads: [TSThread]) -> Promise<Void> in
+        do {
+            let outgoingMessageRecipientThreads = try await self.outgoingMessageRecipientThreads(for: recipientConversations)
             try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 for recipientThread in outgoingMessageRecipientThreads {
                     // We're sending a message to this thread, approve any pending message request
@@ -353,110 +348,86 @@ extension ForwardMessageViewController {
             }
 
             // TODO: Ideally we would enqueue all with a single write transaction.
-            return firstly { () -> Promise<Void> in
-                // Maintain order of interactions.
-                let sortedItems = content.allItems.sorted { lhs, rhs in
-                    lhs.interaction?.sortId ?? 0 < rhs.interaction?.sortId ?? 0
-                }
-                // _Enqueue_ each item serially.
-                // Each item waits on the previous' enqueue promise, then sets its own
-                // enqueue promise as the previous promise var.
-                var prevEnqueuePromise = Promise<Void>.value(())
-                for item in sortedItems {
-                    prevEnqueuePromise = prevEnqueuePromise.then(on: DispatchQueue.main) {
-                        return self.send(item: item, toOutgoingMessageRecipientThreads: outgoingMessageRecipientThreads)
-                    }
-                }
-                return prevEnqueuePromise.then(on: DispatchQueue.main) { _ -> Promise<Void> in
-                    // The user may have added an additional text message to the forward.
-                    // It should be sent last.
-                    if let textMessage = textMessage {
-                        let messageBody = MessageBody(text: textMessage, ranges: .empty)
-                        return self.send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
-                            self.send(body: messageBody, recipientThread: recipientThread)
-                        }
-                    } else {
-                        return Promise.value(())
-                    }
-                }
-            }.map(on: DispatchQueue.main) {
-                self.forwardMessageDelegate?.forwardMessageFlowDidComplete(
-                    items: content.allItems,
-                    recipientThreads: outgoingMessageRecipientThreads
-                )
+
+            // Maintain order of interactions.
+            let sortedItems = content.allItems.sorted { lhs, rhs in
+                lhs.interaction?.sortId ?? 0 < rhs.interaction?.sortId ?? 0
             }
-        }.catch(on: DispatchQueue.main) { error in
+            // _Enqueue_ each item serially.
+            for item in sortedItems {
+                try await self.send(item: item, toOutgoingMessageRecipientThreads: outgoingMessageRecipientThreads)
+            }
+            // The user may have added an additional text message to the forward.
+            // It should be sent last.
+            if let textMessage {
+                let messageBody = MessageBody(text: textMessage, ranges: .empty)
+                await enqueueMessageViaThreadUtil(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
+                    self.send(body: messageBody, recipientThread: recipientThread)
+                }
+            }
+
+            self.forwardMessageDelegate?.forwardMessageFlowDidComplete(
+                items: content.allItems,
+                recipientThreads: outgoingMessageRecipientThreads
+            )
+        } catch {
             owsFailDebug("Error: \(error)")
 
             Self.showAlertForForwardError(error: error, forwardedInteractionCount: content.allItems.count)
         }
     }
 
-    private func send(item: Item, toOutgoingMessageRecipientThreads outgoingMessageRecipientThreads: [TSThread]) -> Promise<Void> {
-        AssertIsOnMainThread()
-
+    private func send(item: Item, toOutgoingMessageRecipientThreads outgoingMessageRecipientThreads: [TSThread]) async throws {
         if let stickerMetadata = item.stickerMetadata {
             let stickerInfo = stickerMetadata.stickerInfo
             if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
-                return send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
+                await enqueueMessageViaThreadUtil(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
                     self.send(installedSticker: stickerInfo, thread: recipientThread)
                 }
             } else {
                 guard let stickerAttachment = item.stickerAttachment else {
-                    return Promise(error: OWSAssertionError("Missing stickerAttachment."))
+                    throw OWSAssertionError("Missing stickerAttachment.")
                 }
-                do {
-                    let stickerData = try stickerAttachment.decryptedRawData()
-                    return send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
-                        self.send(uninstalledSticker: stickerMetadata,
-                                  stickerData: stickerData,
-                                  thread: recipientThread)
-                    }
-                } catch {
-                    return Promise(error: error)
+                let stickerData = try stickerAttachment.decryptedRawData()
+                await enqueueMessageViaThreadUtil(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
+                    self.send(uninstalledSticker: stickerMetadata, stickerData: stickerData, thread: recipientThread)
                 }
             }
         } else if let contactShare = item.contactShare {
-            return send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
-                return self.send(contactShare: contactShare.copyForResending(), thread: recipientThread)
+            await enqueueMessageViaThreadUtil(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
+                self.send(contactShare: contactShare.copyForResending(), thread: recipientThread)
             }
-        } else if let attachments = item.attachments,
-                  !attachments.isEmpty {
+        } else if let attachments = item.attachments, !attachments.isEmpty {
             // TODO: What about link previews in this case?
             let conversations = selectedConversations
-            return AttachmentMultisend.sendApprovedMedia(
+            _ = try await AttachmentMultisend.sendApprovedMedia(
                 conversations: conversations,
                 approvedMessageBody: item.messageBody,
                 approvedAttachments: attachments
-            ).enqueuedPromise.asVoid()
+            ).enqueuedPromise.awaitable()
         } else if let textAttachment = item.textAttachment {
             // TODO: we want to reuse the uploaded link preview image attachment instead of re-uploading
             // if the original was sent recently (if not the image could be stale)
-            return AttachmentMultisend.sendTextAttachment(
+            _ = try await AttachmentMultisend.sendTextAttachment(
                 textAttachment.asUnsentAttachment(), to: selectedConversations
-            ).enqueuedPromise.asVoid()
+            ).enqueuedPromise.awaitable()
         } else if let messageBody = item.messageBody {
             let linkPreviewDraft = item.linkPreviewDraft
-            let nonStorySendPromise = send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
-                self.send(
-                    body: messageBody,
-                    linkPreviewDraft: linkPreviewDraft,
-                    recipientThread: recipientThread
-                )
+            await enqueueMessageViaThreadUtil(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
+                self.send(body: messageBody, linkPreviewDraft: linkPreviewDraft, recipientThread: recipientThread)
             }
 
             // Send the text message to any selected story recipients
             // as a text story with default styling.
             let storyConversations = selectedConversations.filter { $0.outgoingMessageType == .storyMessage }
             let storySendResult = StorySharing.sendTextStory(with: messageBody, linkPreviewDraft: linkPreviewDraft, to: storyConversations)
-            let storySendEnqueuedPromise = storySendResult?.enqueuedPromise.asVoid() ?? .value(())
-            return Promise<Void>.when(fulfilled: [nonStorySendPromise, storySendEnqueuedPromise])
+            _ = try await storySendResult?.enqueuedPromise.awaitable()
         } else {
-            return Promise(error: ForwardError.invalidInteraction)
+            throw ForwardError.invalidInteraction
         }
     }
 
-    fileprivate func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft? = nil, recipientThread: TSThread) -> Promise<Void> {
+    fileprivate func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft? = nil, recipientThread: TSThread) {
         let body = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return body.forForwarding(to: recipientThread, transaction: transaction).asMessageBodyForForwarding()
         }
@@ -465,54 +436,46 @@ extension ForwardMessageViewController {
             thread: recipientThread,
             linkPreviewDraft: linkPreviewDraft
         )
-        return Promise.value(())
     }
 
-    fileprivate func send(contactShare: ContactShareDraft, thread: TSThread) -> Promise<Void> {
+    fileprivate func send(contactShare: ContactShareDraft, thread: TSThread) {
         ThreadUtil.enqueueMessage(withContactShare: contactShare, thread: thread)
-        return Promise.value(())
     }
 
-    fileprivate func send(body: MessageBody, attachment: SignalAttachment, thread: TSThread) -> Promise<Void> {
-        let body = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return body.forForwarding(to: thread, transaction: transaction).asMessageBodyForForwarding()
-        }
-        ThreadUtil.enqueueMessage(body: body,
-                                  mediaAttachments: [attachment],
-                                  thread: thread)
-        return Promise.value(())
-    }
-
-    fileprivate func send(installedSticker stickerInfo: StickerInfo, thread: TSThread) -> Promise<Void> {
+    fileprivate func send(installedSticker stickerInfo: StickerInfo, thread: TSThread) {
         ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, thread: thread)
-        return Promise.value(())
     }
 
-    fileprivate func send(uninstalledSticker stickerMetadata: any StickerMetadata, stickerData: Data, thread: TSThread) -> Promise<Void> {
+    fileprivate func send(uninstalledSticker stickerMetadata: any StickerMetadata, stickerData: Data, thread: TSThread) {
         ThreadUtil.enqueueMessage(withUninstalledSticker: stickerMetadata, stickerData: stickerData, thread: thread)
-        return Promise.value(())
     }
 
-    fileprivate func send(toRecipientThreads recipientThreads: [TSThread],
-                          enqueueBlock: @escaping (TSThread) -> Promise<Void>) -> Promise<Void> {
-        AssertIsOnMainThread()
-
-        return Promise.when(fulfilled: recipientThreads.map { thread in enqueueBlock(thread) }).asVoid()
+    fileprivate func enqueueMessageViaThreadUtil(
+        toRecipientThreads recipientThreads: [TSThread],
+        enqueueBlock: (TSThread) -> Void
+    ) async {
+        for recipientThread in recipientThreads {
+            enqueueBlock(recipientThread)
+        }
+        // This should be changed in the future, but waiting on this queue will
+        // ensure that `enqueueBlock` (the prior line) has finished its work.
+        await withCheckedContinuation { continuation in
+            ThreadUtil.enqueueSendQueue.async { continuation.resume() }
+        }
     }
 
-    fileprivate func outgoingMessageRecipientThreads(for conversationItems: [ConversationItem]) -> Promise<[TSThread]> {
-        firstly(on: DispatchQueue.global()) {
-            guard conversationItems.count > 0 else {
-                throw OWSAssertionError("No recipients.")
-            }
+    fileprivate func outgoingMessageRecipientThreads(for conversationItems: [ConversationItem]) async throws -> [TSThread] {
+        guard conversationItems.count > 0 else {
+            throw OWSAssertionError("No recipients.")
+        }
 
-            return try SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                try conversationItems.lazy.filter { $0.outgoingMessageType == .message }.map {
-                    guard let thread = $0.getOrCreateThread(transaction: transaction) else {
-                        throw ForwardError.missingThread
-                    }
-                    return thread
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        return try await databaseStorage.awaitableWrite { transaction in
+            try conversationItems.lazy.filter { $0.outgoingMessageType == .message }.map {
+                guard let thread = $0.getOrCreateThread(transaction: transaction) else {
+                    throw ForwardError.missingThread
                 }
+                return thread
             }
         }
     }
