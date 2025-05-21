@@ -1404,7 +1404,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             // for any pending NSE requests to fulfill.
             async let _ = SSKEnvironment.shared.syncManagerRef.syncAllContactsIfFullSyncRequested().awaitable()
 
-            try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
+            let backgroundMessageFetcher = BackgroundMessageFetcher(
+                messageFetcherJob: SSKEnvironment.shared.messageFetcherJobRef,
+                messageProcessor: SSKEnvironment.shared.messageProcessorRef,
+                messageSender: SSKEnvironment.shared.messageSenderRef,
+                receiptSender: SSKEnvironment.shared.receiptSenderRef,
+            )
+            try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
         }
     }
 

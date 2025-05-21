@@ -110,7 +110,13 @@ public class MessageFetchBGRefreshTask {
                 try await withCooperativeTimeout(seconds: 27) {
                     try await appReadiness.waitForAppReady()
                     await self.messageFetcherJob.startFetchingViaWebSocket()
-                    try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
+                    let backgroundMessageFetcher = BackgroundMessageFetcher(
+                        messageFetcherJob: SSKEnvironment.shared.messageFetcherJobRef,
+                        messageProcessor: SSKEnvironment.shared.messageProcessorRef,
+                        messageSender: SSKEnvironment.shared.messageSenderRef,
+                        receiptSender: SSKEnvironment.shared.receiptSenderRef,
+                    )
+                    try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
                 }
             }
             if appReadiness.isAppReady {
