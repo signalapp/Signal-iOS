@@ -242,6 +242,12 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         accountSettings.phoneNumberSharingMode = phoneNumberSharingMode
         accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: context.tx) ?? []
         accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: context.tx)
+        // For the purposes of backup export, we want the actual underlying setting, which we only get
+        // if we have a paid backup plan. So pretend we do, just for this state check.
+        accountSettings.optimizeOnDeviceStorage = backupSettingsStore.getShouldOptimizeLocalStorage(
+            backupPlan: .paid,
+            tx: context.tx
+        )
 
         let customChatColorsResult = chatStyleArchiver.archiveCustomChatColors(
             context: context
@@ -339,10 +345,10 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             // Always treat this as false if we are free tier.
             false
         case .paid:
-            // TODO: [Backups] this setting should be in the AccountSettings proto
-            // For now default false.
-            false
+            accountData.accountSettings.optimizeOnDeviceStorage
         }
+        // What we write to disk though is independent of plan and comes right off the proto.
+        backupSettingsStore.setShouldOptimizeLocalStorage(accountData.accountSettings.optimizeOnDeviceStorage, tx: context.tx)
 
         // Restore local settings
         if accountData.hasAccountSettings {

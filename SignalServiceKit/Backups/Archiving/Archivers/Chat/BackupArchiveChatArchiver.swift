@@ -279,7 +279,7 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
             chat.expirationTimerMs = UInt64(versionedExpireTimerToken.durationSeconds) * 1000
         }
         chat.expireTimerVersion = versionedExpireTimerToken.version
-        if threadAssociatedData.isMuted {
+        if threadAssociatedData.mutedUntilTimestamp > 0 {
             let muteUntilMs = threadAssociatedData.mutedUntilTimestamp
             if BackupArchive.Timestamps.isValid(muteUntilMs) {
                 chat.muteUntilMs = muteUntilMs

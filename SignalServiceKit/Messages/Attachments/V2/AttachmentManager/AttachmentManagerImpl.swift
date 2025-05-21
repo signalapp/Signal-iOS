@@ -456,88 +456,164 @@ public class AttachmentManagerImpl: AttachmentManager {
 
         let attachmentParams: Attachment.ConstructionParams
         let sourceUnencryptedByteCount: UInt32?
-        switch proto.locator {
-        case .backupLocator(let backupLocator):
-            let mediaTierCdnNumber = backupLocator.hasCdnNumber ? backupLocator.cdnNumber : nil
-            guard let mediaName = backupLocator.mediaName.nilIfEmpty else {
-                return .failure(.missingMediaName)
-            }
-            guard let encryptionKey = backupLocator.key.nilIfEmpty else {
-                return .failure(.missingEncryptionKey)
-            }
-            guard let digestSHA256Ciphertext = backupLocator.digest.nilIfEmpty else {
-                return .failure(.missingDigest)
-            }
 
-            let transitTierInfo: Attachment.TransitTierInfo?
-            switch self.transitTierInfo(from: backupLocator, incrementalMacInfo: incrementalMacInfo) {
-            case .success(let value):
-                transitTierInfo = value
-            case .failure(let error):
-                return .failure(error)
-            }
+        // Prefer the newer locatorInfo format, but for backwards compatibility
+        // fall back to the oneOfLocator if unset.
+        if proto.hasLocatorInfo {
 
-            attachmentParams = .fromBackup(
-                blurHash: proto.blurHash.nilIfEmpty,
-                mimeType: mimeType,
-                encryptionKey: encryptionKey,
-                transitTierInfo: transitTierInfo,
-                mediaName: mediaName,
-                mediaTierInfo: .init(
-                    cdnNumber: mediaTierCdnNumber,
-                    unencryptedByteCount: backupLocator.size,
-                    digestSHA256Ciphertext: digestSHA256Ciphertext,
-                    incrementalMacInfo: incrementalMacInfo,
-                    uploadEra: uploadEra,
-                    lastDownloadAttemptTimestamp: nil
-                ),
-                thumbnailMediaTierInfo: .init(
-                    // Assume the thumbnail uses the same cdn as fullsize;
-                    // this _can_ go wrong if the server changes cdns between
-                    // the two uploads but worst case we lose the thumbnail.
-                    cdnNumber: mediaTierCdnNumber,
-                    uploadEra: uploadEra,
-                    lastDownloadAttemptTimestamp: nil
-                )
-            )
-            if backupLocator.size > 0 {
-                sourceUnencryptedByteCount = backupLocator.size
+            if let encryptionKey = proto.locatorInfo.key.nilIfEmpty {
+                let transitTierInfo: Attachment.TransitTierInfo?
+                switch self.transitTierInfo(
+                    from: proto.locatorInfo,
+                    owningMessageReceivedAtTimestamp: ownedProto.owningMessageReceivedAtTimestamp,
+                    incrementalMacInfo: incrementalMacInfo
+                ) {
+                case .success(let value):
+                    transitTierInfo = value
+                case .failure(let error):
+                    return .failure(error)
+                }
+
+                if proto.locatorInfo.size > 0 {
+                    sourceUnencryptedByteCount = proto.locatorInfo.size
+                } else {
+                    sourceUnencryptedByteCount = nil
+                }
+
+                let mediaTierCdnNumber = proto.locatorInfo.hasMediaTierCdnNumber ? proto.locatorInfo.mediaTierCdnNumber : nil
+                if
+                    let mediaName = proto.locatorInfo.mediaName.nilIfEmpty
+                {
+                    guard let digestSHA256Ciphertext = proto.locatorInfo.digest.nilIfEmpty else {
+                        return .failure(.missingDigest)
+                    }
+                    attachmentParams = .fromBackup(
+                        blurHash: proto.blurHash.nilIfEmpty,
+                        mimeType: mimeType,
+                        encryptionKey: encryptionKey,
+                        transitTierInfo: transitTierInfo,
+                        mediaName: mediaName,
+                        mediaTierInfo: .init(
+                            cdnNumber: mediaTierCdnNumber,
+                            unencryptedByteCount: proto.locatorInfo.size,
+                            digestSHA256Ciphertext: digestSHA256Ciphertext,
+                            incrementalMacInfo: incrementalMacInfo,
+                            uploadEra: uploadEra,
+                            lastDownloadAttemptTimestamp: nil
+                        ),
+                        thumbnailMediaTierInfo: .init(
+                            // Assume the thumbnail uses the same cdn as fullsize;
+                            // this _can_ go wrong if the server changes cdns between
+                            // the two uploads but worst case we lose the thumbnail.
+                            cdnNumber: mediaTierCdnNumber,
+                            uploadEra: uploadEra,
+                            lastDownloadAttemptTimestamp: nil
+                        )
+                    )
+                } else if let transitTierInfo {
+                    attachmentParams = .fromPointer(
+                        blurHash: proto.blurHash.nilIfEmpty,
+                        mimeType: mimeType,
+                        encryptionKey: encryptionKey,
+                        transitTierInfo: transitTierInfo
+                    )
+                } else {
+                    attachmentParams = .forInvalidBackupAttachment(
+                        blurHash: proto.blurHash.nilIfEmpty,
+                        mimeType: mimeType
+                    )
+                }
             } else {
+                attachmentParams = .forInvalidBackupAttachment(
+                    blurHash: proto.blurHash.nilIfEmpty,
+                    mimeType: mimeType
+                )
                 sourceUnencryptedByteCount = nil
             }
-        case .attachmentLocator(let attachmentLocator):
-            let transitTierInfo: Attachment.TransitTierInfo?
-            switch self.transitTierInfo(
-                from: attachmentLocator,
-                owningMessageReceivedAtTimestamp: ownedProto.owningMessageReceivedAtTimestamp,
-                incrementalMacInfo: incrementalMacInfo
-            ) {
-            case .success(let value):
-                transitTierInfo = value
-            case .failure(let error):
-                return .failure(error)
-            }
+        } else {
+            switch proto.locator {
+            case .backupLocator(let backupLocator):
+                let mediaTierCdnNumber = backupLocator.hasCdnNumber ? backupLocator.cdnNumber : nil
+                guard let mediaName = backupLocator.mediaName.nilIfEmpty else {
+                    return .failure(.missingMediaName)
+                }
+                guard let encryptionKey = backupLocator.key.nilIfEmpty else {
+                    return .failure(.missingEncryptionKey)
+                }
+                guard let digestSHA256Ciphertext = backupLocator.digest.nilIfEmpty else {
+                    return .failure(.missingDigest)
+                }
 
-            if let transitTierInfo {
-                attachmentParams = .fromPointer(
+                let transitTierInfo: Attachment.TransitTierInfo?
+                switch self.transitTierInfo(from: backupLocator, incrementalMacInfo: incrementalMacInfo) {
+                case .success(let value):
+                    transitTierInfo = value
+                case .failure(let error):
+                    return .failure(error)
+                }
+
+                attachmentParams = .fromBackup(
                     blurHash: proto.blurHash.nilIfEmpty,
                     mimeType: mimeType,
-                    encryptionKey: attachmentLocator.key,
-                    transitTierInfo: transitTierInfo
+                    encryptionKey: encryptionKey,
+                    transitTierInfo: transitTierInfo,
+                    mediaName: mediaName,
+                    mediaTierInfo: .init(
+                        cdnNumber: mediaTierCdnNumber,
+                        unencryptedByteCount: backupLocator.size,
+                        digestSHA256Ciphertext: digestSHA256Ciphertext,
+                        incrementalMacInfo: incrementalMacInfo,
+                        uploadEra: uploadEra,
+                        lastDownloadAttemptTimestamp: nil
+                    ),
+                    thumbnailMediaTierInfo: .init(
+                        // Assume the thumbnail uses the same cdn as fullsize;
+                        // this _can_ go wrong if the server changes cdns between
+                        // the two uploads but worst case we lose the thumbnail.
+                        cdnNumber: mediaTierCdnNumber,
+                        uploadEra: uploadEra,
+                        lastDownloadAttemptTimestamp: nil
+                    )
                 )
-                sourceUnencryptedByteCount = transitTierInfo.unencryptedByteCount
-            } else {
-                // We successfully parsed the transit tier info, but decided we
-                // should discard it. To that end, fall through to the handling
-                // for invalid attachment locators.
-                fallthrough
+                if backupLocator.size > 0 {
+                    sourceUnencryptedByteCount = backupLocator.size
+                } else {
+                    sourceUnencryptedByteCount = nil
+                }
+            case .attachmentLocator(let attachmentLocator):
+                let transitTierInfo: Attachment.TransitTierInfo?
+                switch self.transitTierInfo(
+                    from: attachmentLocator,
+                    owningMessageReceivedAtTimestamp: ownedProto.owningMessageReceivedAtTimestamp,
+                    incrementalMacInfo: incrementalMacInfo
+                ) {
+                case .success(let value):
+                    transitTierInfo = value
+                case .failure(let error):
+                    return .failure(error)
+                }
+
+                if let transitTierInfo {
+                    attachmentParams = .fromPointer(
+                        blurHash: proto.blurHash.nilIfEmpty,
+                        mimeType: mimeType,
+                        encryptionKey: attachmentLocator.key,
+                        transitTierInfo: transitTierInfo
+                    )
+                    sourceUnencryptedByteCount = transitTierInfo.unencryptedByteCount
+                } else {
+                    // We successfully parsed the transit tier info, but decided we
+                    // should discard it. To that end, fall through to the handling
+                    // for invalid attachment locators.
+                    fallthrough
+                }
+            case .invalidAttachmentLocator, .none:
+                attachmentParams = .forInvalidBackupAttachment(
+                    blurHash: proto.blurHash.nilIfEmpty,
+                    mimeType: mimeType
+                )
+                sourceUnencryptedByteCount = nil
             }
-        case .invalidAttachmentLocator, .none:
-            attachmentParams = .forInvalidBackupAttachment(
-                blurHash: proto.blurHash.nilIfEmpty,
-                mimeType: mimeType
-            )
-            sourceUnencryptedByteCount = nil
         }
 
         let referenceParams: AttachmentReference.ConstructionParams
@@ -678,6 +754,53 @@ public class AttachmentManagerImpl: AttachmentManager {
             encryptionKey: attachmentLocator.key,
             unencryptedByteCount: unencryptedByteCount,
             digestSHA256Ciphertext: attachmentLocator.digest,
+            incrementalMacInfo: incrementalMacInfo,
+            lastDownloadAttemptTimestamp: nil
+        ))
+    }
+
+    private func transitTierInfo(
+        from locatorInfo: BackupProto_FilePointer.LocatorInfo,
+        owningMessageReceivedAtTimestamp: UInt64?,
+        incrementalMacInfo: Attachment.IncrementalMacInfo?
+    ) -> Result<Attachment.TransitTierInfo?, OwnedAttachmentBackupPointerProto.CreationError> {
+        guard locatorInfo.key.count > 0 else { return .failure(.missingEncryptionKey) }
+
+        guard locatorInfo.transitCdnKey.isEmpty.negated else {
+            // Ok to be missing transit-tier CDN info on a backup locator, if
+            // this attachment was never uploaded.
+            return .success(nil)
+        }
+
+        let unencryptedByteCount: UInt32?
+        if locatorInfo.size > 0 {
+            unencryptedByteCount = locatorInfo.size
+        } else {
+            unencryptedByteCount = nil
+        }
+
+        let uploadTimestampMs: UInt64
+        if locatorInfo.hasTransitTierUploadTimestamp, locatorInfo.transitTierUploadTimestamp > 0 {
+            uploadTimestampMs = locatorInfo.transitTierUploadTimestamp
+        } else if let owningMessageReceivedAtTimestamp {
+            // iOS historically did not set the `uploadTimestamp` on attachment
+            // protos we sent with outgoing messages. As a workaround for our
+            // purposes here, we'll sub in the `receivedAt` timestamp for the
+            // message this attachment is owned by (if applicable).
+            uploadTimestampMs = owningMessageReceivedAtTimestamp
+        } else {
+            uploadTimestampMs = 0
+        }
+
+        guard locatorInfo.digest.count > 0 else { return .failure(.missingDigest) }
+
+        return .success(Attachment.TransitTierInfo(
+            cdnNumber: locatorInfo.transitCdnNumber,
+            cdnKey: locatorInfo.transitCdnKey,
+            uploadTimestamp: uploadTimestampMs,
+            encryptionKey: locatorInfo.key,
+            unencryptedByteCount: unencryptedByteCount,
+            digestSHA256Ciphertext: locatorInfo.digest,
             incrementalMacInfo: incrementalMacInfo,
             lastDownloadAttemptTimestamp: nil
         ))

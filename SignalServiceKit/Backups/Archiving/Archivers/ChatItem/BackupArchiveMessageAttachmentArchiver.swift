@@ -602,7 +602,7 @@ extension BackupArchive.RestoreFrameError.ErrorType {
 extension ReferencedAttachment {
 
     internal func asBackupFilePointer(
-        currentBackupAttachmentUploadEra: String?
+        currentBackupAttachmentUploadEra: String
     ) -> BackupProto_FilePointer {
         var proto = BackupProto_FilePointer()
         proto.contentType = attachment.mimeType
@@ -632,8 +632,24 @@ extension ReferencedAttachment {
             }
         }
 
-        let locator: BackupProto_FilePointer.OneOf_Locator
-        let incrementalMacInfo: Attachment.IncrementalMacInfo?
+        // We set both kinds of locator for backwards compatibility.
+        // Eventually we should remove the oneOf variant.
+        proto.locator = self.asBackupFilePointerOneOfLocator(currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra)
+        proto.locatorInfo = self.asBackupFilePointerLocatorInfo(currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra)
+
+        if let incrementalMacInfo = attachment.mediaTierInfo?.incrementalMacInfo ?? attachment.transitTierInfo?.incrementalMacInfo {
+            proto.incrementalMac = incrementalMacInfo.mac
+            proto.incrementalMacChunkSize = incrementalMacInfo.chunkSize
+        }
+
+        // Notes:
+        // * incrementalMac and incrementalMacChunkSize unsupported by iOS
+        return proto
+    }
+
+    private func asBackupFilePointerOneOfLocator(
+        currentBackupAttachmentUploadEra: String
+    ) -> BackupProto_FilePointer.OneOf_Locator{
         if
             FeatureFlags.Backups.remoteExportAlpha,
             let mediaName = attachment.mediaName,
@@ -682,8 +698,7 @@ extension ReferencedAttachment {
                 backupLocator.transitCdnNumber = transitTierInfo.cdnNumber
             }
 
-            locator = .backupLocator(backupLocator)
-            incrementalMacInfo = attachment.mediaTierInfo?.incrementalMacInfo
+            return .backupLocator(backupLocator)
         } else if
             let transitTierInfo = attachment.transitTierInfo
         {
@@ -702,22 +717,66 @@ extension ReferencedAttachment {
             if let unencryptedByteCount = transitTierInfo.unencryptedByteCount {
                 transitTierLocator.size = unencryptedByteCount
             }
-            locator = .attachmentLocator(transitTierLocator)
-            incrementalMacInfo = transitTierInfo.incrementalMacInfo
+            return .attachmentLocator(transitTierLocator)
         } else {
-            locator = .invalidAttachmentLocator(BackupProto_FilePointer.InvalidAttachmentLocator())
-            incrementalMacInfo = nil
+            return .invalidAttachmentLocator(BackupProto_FilePointer.InvalidAttachmentLocator())
+        }
+    }
+
+    private func asBackupFilePointerLocatorInfo(
+        currentBackupAttachmentUploadEra: String
+    ) -> BackupProto_FilePointer.LocatorInfo {
+        var locatorInfo = BackupProto_FilePointer.LocatorInfo()
+
+        // Include the transit tier cdn info as a fallback, but only
+        // if the encryption key matches.
+        // When we need this: we create a backup and don't get to copy to
+        // media tier before the device dies; on restore the restoring device
+        // can't find the attachment on the media tier but its on the transit
+        // tier if its been less than 30 days.
+        // When encryption keys don't match: if we reupload (e.g. forward) an
+        // attachment after 3+ days, we rotate to a new encryption key; transit
+        // tier info uses this new random key and can't be the fallback here.
+        if
+            let transitTierInfo = attachment.transitTierInfo,
+            transitTierInfo.encryptionKey == attachment.encryptionKey
+        {
+            locatorInfo.transitCdnKey = transitTierInfo.cdnKey
+            locatorInfo.transitCdnNumber = transitTierInfo.cdnNumber
+            locatorInfo.transitTierUploadTimestamp = transitTierInfo.uploadTimestamp
         }
 
-        proto.locator = locator
-
-        if let incrementalMacInfo {
-            proto.incrementalMac = incrementalMacInfo.mac
-            proto.incrementalMacChunkSize = incrementalMacInfo.chunkSize
+        if
+            let mediaName = attachment.mediaName
+        {
+            locatorInfo.mediaName = mediaName
+            if let mediaTierCdnNumber = attachment.mediaTierInfo?.cdnNumber {
+                locatorInfo.mediaTierCdnNumber = mediaTierCdnNumber
+            }
         }
 
-        // Notes:
-        // * incrementalMac and incrementalMacChunkSize unsupported by iOS
-        return proto
+        // Set fields only if some cdn info is available.
+        if
+            locatorInfo.mediaName.isEmpty.negated
+            || locatorInfo.transitCdnKey.isEmpty.negated
+        {
+            locatorInfo.key = attachment.encryptionKey
+            if
+                let digest = attachment.streamInfo?.digestSHA256Ciphertext
+                    ?? attachment.mediaTierInfo?.digestSHA256Ciphertext
+                    ?? attachment.transitTierInfo?.digestSHA256Ciphertext
+            {
+                locatorInfo.digest = digest
+            }
+            if
+                let unencryptedByteCount = attachment.streamInfo?.unencryptedByteCount
+                    ?? attachment.mediaTierInfo?.unencryptedByteCount
+                    ?? attachment.transitTierInfo?.unencryptedByteCount
+            {
+                locatorInfo.size = unencryptedByteCount
+            }
+        }
+
+        return locatorInfo
     }
 }

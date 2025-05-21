@@ -122,7 +122,11 @@ public struct BackupSettingsStore {
     // MARK: -
 
     public func getShouldOptimizeLocalStorage(tx: DBReadTransaction) -> Bool {
-        guard backupPlan(tx: tx) == .paid else {
+        return getShouldOptimizeLocalStorage(backupPlan: backupPlan(tx: tx), tx: tx)
+    }
+
+    public func getShouldOptimizeLocalStorage(backupPlan: BackupPlan?, tx: DBReadTransaction) -> Bool {
+        guard backupPlan == .paid else {
             // This setting is only for paid subscribers.
             return false
         }
