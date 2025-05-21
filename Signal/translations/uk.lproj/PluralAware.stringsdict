@@ -348,13 +348,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Цей настроюваний колір використовується в %1$d чаті. Бажаєте його видалити?</string>
+			<string>Цей власний колір використовується в %1$d чаті. Видалити його?</string>
 			<key>few</key>
-			<string>Цей настроюваний колір використовується в %1$d чатах. Бажаєте його видалити для всіх чатів?</string>
+			<string>Цей власний колір використовується в %1$d чатах. Видалити його для всіх чатів?</string>
 			<key>many</key>
-			<string>Цей настроюваний колір використовується в %1$d чатах. Бажаєте його видалити для всіх чатів?</string>
+			<string>Цей власний колір використовується в %1$d чатах. Видалити його для всіх чатів?</string>
 			<key>other</key>
-			<string>Цей настроюваний колір використовується в %1$d чата. Бажаєте його видалити для всіх чатів?</string>
+			<string>Цей власний колір використовується в %1$d чата. Видалити його для всіх чатів?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -368,13 +368,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Цей колір використовується в %1$d чаті. Бажаєте зберегти зміни для всіх чатів?</string>
+			<string>Цей колір використовується в %1$d чаті. Зберегти зміни для всіх чатів?</string>
 			<key>few</key>
-			<string>Цей колір використовується в %1$d чатах. Бажаєте зберегти зміни для всіх чатів?</string>
+			<string>Цей колір використовується в %1$d чатах. Зберегти зміни для всіх чатів?</string>
 			<key>many</key>
-			<string>Цей колір використовується в %1$d чатах. Бажаєте зберегти зміни для всіх чатів?</string>
+			<string>Цей колір використовується в %1$d чатах. Зберегти зміни для всіх чатів?</string>
 			<key>other</key>
-			<string>Цей колір використовується в %1$d чата. Бажаєте зберегти зміни для всіх чатів?</string>
+			<string>Цей колір використовується в %1$d чата. Зберегти зміни для всіх чатів?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -428,13 +428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Не можна вибрати більше ніж %1$d чат.</string>
+			<string>Не можна вибрати більш ніж %1$d чат.</string>
 			<key>few</key>
-			<string>Не можна вибрати більше ніж %1$d чати.</string>
+			<string>Не можна вибрати більш ніж %1$d чати.</string>
 			<key>many</key>
-			<string>Не можна вибрати більше ніж %1$d чатів.</string>
+			<string>Не можна вибрати більш ніж %1$d чатів.</string>
 			<key>other</key>
-			<string>Не можна вибрати більше ніж %1$d чата.</string>
+			<string>Не можна вибрати більш ніж %1$d чата.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -609,7 +609,7 @@
 			<key>many</key>
 			<string>Це повідомлення можна змінити тільки %1$d разів.</string>
 			<key>other</key>
-			<string>Це повідомлення можна змінити тільки %1$d разу.</string>
+			<string>Це повідомлення можна змінити тільки %1$d раза.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -663,13 +663,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Досягнута максимальна кількість учасників (%1$d) для цього виклику. Спробуйте пізніше.</string>
+			<string>Для цього виклику досягнуто максимальної кількості учасників (%1$d). Спробуйте пізніше.</string>
 			<key>few</key>
-			<string>Досягнута максимальна кількість учасників (%1$d) для цього виклику. Спробуйте пізніше.</string>
+			<string>Для цього виклику досягнуто максимальної кількості учасників (%1$d). Спробуйте пізніше.</string>
 			<key>many</key>
-			<string>Досягнута максимальна кількість учасників (%1$d) для цього виклику. Спробуйте пізніше.</string>
+			<string>Для цього виклику досягнуто максимальної кількості учасників (%1$d). Спробуйте пізніше.</string>
 			<key>other</key>
-			<string>Досягнута максимальна кількість учасників (%1$d) для цього виклику. Спробуйте пізніше.</string>
+			<string>Для цього виклику досягнуто максимальної кількості учасників (%1$d). Спробуйте пізніше.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -723,13 +723,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ і ще %1$d у цьому виклику</string>
+			<string>У цьому виклику: %2$@, %3$@ і ще %1$d користувач</string>
 			<key>few</key>
-			<string>%2$@, %3$@ і ще %1$d у цьому виклику</string>
+			<string>У цьому виклику: %2$@, %3$@ і ще %1$d користувачі</string>
 			<key>many</key>
-			<string>%2$@, %3$@ і ще %1$d у цьому виклику</string>
+			<string>У цьому виклику: %2$@, %3$@ і ще %1$d користувачів</string>
 			<key>other</key>
-			<string>%2$@, %3$@ і ще %1$d у цьому виклику</string>
+			<string>У цьому виклику: %2$@, %3$@ і ще %1$d користувача</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_ROW_%ld</key>
@@ -783,13 +783,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ та ще %1$d покинули виклик</string>
+			<string>%2$@, %3$@ і ще %1$d користувач покинули виклик</string>
 			<key>few</key>
-			<string>%2$@, %3$@ і ще %1$d покинули виклик</string>
+			<string>%2$@, %3$@ і ще %1$d користувачі покинули виклик</string>
 			<key>many</key>
-			<string>%2$@, %3$@ і ще %1$d покинули виклик</string>
+			<string>%2$@, %3$@ і ще %1$d користувачів покинули виклик</string>
 			<key>other</key>
-			<string>%2$@, %3$@ і ще %1$d покинули виклик</string>
+			<string>%2$@, %3$@ і ще %1$d користувача покинули виклик</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_ONE_KNOWN_AND_MANY_OTHERS_HERE</key>
@@ -823,13 +823,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ і %1$d інший користувач отримають сповіщення</string>
+			<string>%2$@, %3$@ і ще %1$d користувач отримають сповіщення</string>
 			<key>few</key>
-			<string>%2$@, %3$@ і %1$d інших отримають сповіщення</string>
+			<string>%2$@, %3$@ і ще %1$d користувачі отримають сповіщення</string>
 			<key>many</key>
-			<string>%2$@, %3$@ і %1$d інших отримають сповіщення</string>
+			<string>%2$@, %3$@ і ще %1$d користувачів отримають сповіщення</string>
 			<key>other</key>
-			<string>%2$@, %3$@ і %1$d інших отримають сповіщення</string>
+			<string>%2$@, %3$@ і ще %1$d користувача отримають сповіщення</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -843,13 +843,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ і %1$d інший користувач отримають виклик у Signal</string>
+			<string>%2$@, %3$@ і ще %1$d користувач отримають виклик у Signal</string>
 			<key>few</key>
-			<string>%2$@, %3$@ і %1$d інших отримають виклик у Signal</string>
+			<string>%2$@, %3$@ і ще %1$d користувачі отримають виклик у Signal</string>
 			<key>many</key>
-			<string>%2$@, %3$@ і %1$d інших отримають виклик у Signal</string>
+			<string>%2$@, %3$@ і ще %1$d користувачів отримають виклик у Signal</string>
 			<key>other</key>
-			<string>%2$@, %3$@ і %1$d інших отримають виклик у Signal</string>
+			<string>%2$@, %3$@ і ще %1$d користувача отримають виклик у Signal</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -1243,13 +1243,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Видалити %1$d елемент?</string>
+			<string>Видалити %1$d файл?</string>
 			<key>few</key>
-			<string>Видалити %1$d елементи?</string>
+			<string>Видалити %1$d файли?</string>
 			<key>many</key>
-			<string>Видалити %1$d елементів?</string>
+			<string>Видалити %1$d файлів?</string>
 			<key>other</key>
-			<string>Видалити %1$d елементу?</string>
+			<string>Видалити %1$d файлу?</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MEDIA_TOAST</key>
@@ -1263,13 +1263,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Видалено %1$d елемент</string>
+			<string>Видалено %1$d файл</string>
 			<key>few</key>
-			<string>Видалено %1$d елементи</string>
+			<string>Видалено %1$d файли</string>
 			<key>many</key>
-			<string>Видалено %1$d елементів</string>
+			<string>Видалено %1$d файлів</string>
 			<key>other</key>
-			<string>Видалено %1$d елементу</string>
+			<string>Видалено %1$d файлу</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -1303,13 +1303,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d елемент</string>
+			<string>%1$d файл</string>
 			<key>few</key>
-			<string>%1$d елементи</string>
+			<string>%1$d файли</string>
 			<key>many</key>
-			<string>%1$d елементів</string>
+			<string>%1$d файлів</string>
 			<key>other</key>
-			<string>%1$d елементу</string>
+			<string>%1$d файлу</string>
 		</dict>
 	</dict>
 	<key>MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE_%d</key>
@@ -1383,13 +1383,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d реакція %2$@.</string>
+			<string>%1$d реакція: %2$@.</string>
 			<key>few</key>
-			<string>%1$d реакції %2$@.</string>
+			<string>%1$d реакції: %2$@.</string>
 			<key>many</key>
-			<string>%1$d реакцій %2$@.</string>
+			<string>%1$d реакцій: %2$@.</string>
 			<key>other</key>
-			<string>%1$d реакції %2$@.</string>
+			<string>%1$d реакції: %2$@.</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1403,13 +1403,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Вилучено %1$d</string>
+			<string>Приховано від %1$d</string>
 			<key>few</key>
-			<string>Вилучено %1$d</string>
+			<string>Приховано від %1$d</string>
 			<key>many</key>
-			<string>Вилучено %1$d</string>
+			<string>Приховано від %1$d</string>
 			<key>other</key>
-			<string>Вилучено %1$d</string>
+			<string>Приховано від %1$d</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
@@ -1583,13 +1583,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ запрошує %1$d людину</string>
+			<string>Користувач %2$@ запросив %1$d людину</string>
 			<key>few</key>
-			<string>%2$@ запрошує %1$d людей</string>
+			<string>Користувач %2$@ запросив %1$d людей</string>
 			<key>many</key>
-			<string>%2$@ запрошує %1$d людей</string>
+			<string>Користувач %2$@ запросив %1$d людей</string>
 			<key>other</key>
-			<string>%2$@ запрошує %1$d людини</string>
+			<string>Користувач %2$@ запросив %1$d людини</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -1663,13 +1663,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Відкликати %1$d запрошення до групи, надіслане «%2$@»?</string>
+			<string>Відкликати %1$d запрошення до групи, надіслане користувачем %2$@?</string>
 			<key>few</key>
-			<string>Відкликати %1$d запрошення, надісланих «%2$@»?</string>
+			<string>Відкликати %1$d запрошення, надісланих користувачем %2$@?</string>
 			<key>many</key>
-			<string>Відкликати %1$d запрошень, надісланих «%2$@»?</string>
+			<string>Відкликати %1$d запрошень, надісланих користувачем %2$@?</string>
 			<key>other</key>
-			<string>Відкликати %1$d запрошення, надісланих «%2$@»?</string>
+			<string>Відкликати %1$d запрошення, надісланих користувачем %2$@?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1723,7 +1723,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d спробу</string>
+			<string>%1$d спроба</string>
 			<key>few</key>
 			<string>%1$d спроби</string>
 			<key>many</key>
@@ -1803,13 +1803,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Вилучено %1$d</string>
+			<string>Приховано від %1$d</string>
 			<key>few</key>
-			<string>Вилучено %1$d</string>
+			<string>Приховано від %1$d</string>
 			<key>many</key>
-			<string>Вилучено %1$d</string>
+			<string>Приховано від %1$d</string>
 			<key>other</key>
-			<string>Вилучено %1$d</string>
+			<string>Приховано від %1$d</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>

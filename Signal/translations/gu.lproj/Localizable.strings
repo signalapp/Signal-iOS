@@ -527,16 +527,16 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "ટેક્સ્ટ + 45 દિવસના મીડિયાનું બેકઅપ";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "એક ભૂલ આવી. કૃપા કરીને સપોર્ટનો સંપર્ક કરો.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Failed to Fetch Backup Plan";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "બેકઅપ પ્લાન મેળવવામાં નિષ્ફળ";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "તમારું કનેક્શન તપાસો અને ફરીથી પ્રયત્ન કરો.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Network Error";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "નેટવર્ક એરર";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "મેનેજ કરો અથવા રદ કરો";
@@ -572,13 +572,13 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "બંધ કરો અને બેકઅપ ડિલીટ કરો";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "કંઈક ખોટું થયું. કૃપા કરીને સપોર્ટનો સંપર્ક કરો.";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but encountered a network error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "કંઈક ખોટું થયું. તમારું કનેક્શન તપાસો અને ફરીથી પ્રયત્ન કરો.";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "બેકઅપને અક્ષમ કરવા માટે તમે રજીસ્ટર કરાવેલું હોવું આવશ્યક છે.";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "દૈનિક";
@@ -623,16 +623,16 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "બેકઅપ ફરીથી સક્ષમ કરો";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use your phone as you normally do while the backup takes place.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "તમારા બેકઅપની સાઇઝના આધારે, આમાં વધુ સમય લાગી શકે છે. જ્યારે બેકઅપ લેવામાં આવે ત્યારે તમે સામાન્ય રીતે કરતાં હોવ તેમ તમે તમારા ફોનનો ઉપયોગ કરી શકો છો.";
 
 /* Title for the primary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "હમણાં બેકઅપ લો";
 
 /* Title for the secondary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Back Up Later";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "પછી બેકઅપ લો";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Signal બેકઅપ પર સ્વાગત છે. હવે તમારું બેકઅપ શરૂ કરો.";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Signal બેકઅપ";
@@ -1313,55 +1313,55 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "કોઈ વાંચ્યા વગરની ચેટ નથી";
 
 /* Text for a bullet point in a list of Backup features, describing that all media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Full media backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "સંપૂર્ણ મીડિયા બેકઅપ";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Full text message backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "સંપૂર્ણ ટેક્સ્ટ મેસેજ બેકઅપ";
 
 /* Text for a bullet point in a list of Backup features, describing that recent media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Last 45 days of media";
+"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "મીડિયાના છેલ્લા 45 દિવસ";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB સ્ટોરેજ (~250k ફોટા)";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "કંઈક ખોટું થયું. કૃપા કરીને સપોર્ટનો સંપર્ક કરો.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "કંઈક ખોટું થયું. તમારું કનેક્શન તપાસો અને ફરીથી પ્રયત્ન કરો.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "You must be registered to enable Backups.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "બેકઅપને સક્ષમ કરવા માટે તમે રજીસ્ટર કરાવેલું હોવું આવશ્યક છે.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Something went wrong. Please try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "કંઈક ખોટું થયું. કૃપા કરીને ફરીથી પ્રયાસ કરો.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "કંઈક ખોટું થયું. કૃપા કરીને સપોર્ટનો સંપર્ક કરો.";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
-"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Current plan";
+"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "વર્તમાન પ્લાન";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Text + 45 days of media";
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "ટેક્સ્ટ + 45 દિવસના મીડિયા";
 
 /* Title for the free plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Free";
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "મફત";
 
 /* Subtitle for the paid plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Text + All your media";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "ટેક્સ્ટ + તમારા બધા મીડિયા";
 
 /* Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/month";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/મહિને";
 
 /* Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
-"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Subscribe for %1$@/month";
+"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "%1$@/મહિને સબ્સ્ક્રાઇબ કરો";
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_SUBTITLE" = "All backups are end-to-end encrypted. Signal is a non-profit — paying for backups helps support our mission.";
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "બધા બેકઅપ એન્ડ-ટૂ-એન્ડ એન્ક્રિપ્ટેડ છે. Signal એક બિન-લાભકારી છે—બેકઅપ માટે ચૂકવણી કરવાથી અમારા મિશનને સપોર્ટ કરવામાં મદદ મળે છે.";
 
 /* Title for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Your Backup Plan";
+"CHOOSE_BACKUP_PLAN_TITLE" = "તમારો બેકઅપ પ્લાન પસંદ કરો";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "ચેટ કલર અને વૉલપેપર";
@@ -6635,46 +6635,46 @@
 "RESET" = "ફરીથી સેટ કરો";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps. */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Details";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "વિગતો";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up to %1$@ of space on this device to restore your media.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up %1$@ of space on this device to restore your media.";
 
 /* Title shown on chat list banner for restoring media from a backupis finished */
-"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Restore Complete";
+"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "રિસ્ટોર પૂર્ણ થયું";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
-"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Device has low battery";
+"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "ડિવાઇસની બેટરી ઓછી છે";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
-"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Restore Paused";
+"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "રિસ્ટોર થોભાવ્યું";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no wifi connection */
-"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Waiting for Wi-Fi…";
+"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "વાઇ-ફાઇની રાહ જોઈ રહ્યાં છીએ…";
 
 /* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
-"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ of %2$@";
+"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%2$@માંથી %1$@";
 
 /* Title shown on chat list banner for restoring media from a backup */
-"RESTORING_MEDIA_BANNER_TITLE" = "Restoring Media";
+"RESTORING_MEDIA_BANNER_TITLE" = "મીડિયા રિસ્ટોર થાય છે";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Skip Restore";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "રિસ્ટોર કરવાનું સ્કિપ કરો";
 
 /* Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "To finish restoring your media your device needs %1$@ of storage space.\n\nTo free up space go to Settings > General > iPhone Storage. You can choose to offload or delete unused apps or content.";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "તમારા મીડિયાને રિસ્ટોર કરવાનું પૂર્ણ કરવા માટે તમારા ડિવાઇસને %1$@ સ્ટોરેજ સ્પેસની જરૂર છે.\n\nજગ્યા ખાલી કરવા માટે સેટિંગ્સ > સામાન્ય > iPhone સ્ટોરેજ પર જાઓ. તમે ન વપરાયેલી ઍપ અથવા કન્ટેન્ટને ઓફલોડ કરવાનું અથવા ડિલીટ કરવાનું પસંદ કરી શકો છો.";
 
 /* Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Free up %1$@ on this device";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "આ ડિવાઇસ પર %1$@ ખાલી કરો";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "If you skip restore the remaining media and attachments in your backup can be downloaded at a later time when storage space becomes available.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "જો તમે રિસ્ટોર કરવાનું છોડી દો છો તો તમારા બેકઅપમાંના બાકીના મીડિયા અને અટેચમેન્ટ જ્યારે સ્ટોરેજ સ્પેસ ઉપલબ્ધ થાય ત્યારે પછીના સમયે ડાઉનલોડ કરી શકાય છે.";
 
 /* Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Skip Restore";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "રિસ્ટોર કરવાનું સ્કિપ કરો";
 
 /* Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Skip Restore?";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "રિસ્ટોર કરવાનું સ્કિપ કરવું છે?";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "ફરી પ્રયાસ કરો";
@@ -8939,7 +8939,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "રદ કરવા માટે સ્લાઇડ કરો";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "વૉઈસ મેસેજ";
+"VOICE_MESSAGE_FILE_NAME" = "signal";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "રેકોર્ડ કરવા માટે દબાવો અને હોલ્ડ કરો.";

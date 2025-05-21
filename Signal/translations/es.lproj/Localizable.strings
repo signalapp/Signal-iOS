@@ -527,16 +527,16 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "Mensajes de texto + 45 días de archivos multimedia";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "Se ha producido un error. Contacta con el equipo de asistencia.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Failed to Fetch Backup Plan";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "No se ha podido recuperar tu plan de copia de seguridad";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "Comprueba tu conexión e inténtalo de nuevo.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Network Error";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Error de red";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Gestionar o cancelar";
@@ -572,13 +572,13 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Desactivar y eliminar copia de seguridad";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Se ha producido un error. Contacta con el equipo de asistencia.";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but encountered a network error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Se ha producido un error. Comprueba tu conexión e inténtalo de nuevo.";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "Debes haberte registrado para poder deshabilitar las copias de seguridad.";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Diaria";
@@ -623,16 +623,16 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Volver a habilitar copias";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use your phone as you normally do while the backup takes place.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Dependiendo del tamaño de tu copia de seguridad, este proceso puede llevar bastante tiempo. Mientras se realiza la copia de seguridad, podrás seguir usando tu teléfono como de costumbre.";
 
 /* Title for the primary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Iniciar copia";
 
 /* Title for the secondary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Back Up Later";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Crear copia más tarde";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Te damos la bienvenida a las copias de seguridad de Signal. Ya puedes iniciar tu copia de seguridad.";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Copias de seguridad de Signal";
@@ -692,7 +692,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "Si tienes más de una insignia, puedes seleccionar cuál quieres que otras personas vean en tu perfil.";
 
 /* On the bank donation screen, show a link below the input form to show help about finding account info. */
-"BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "¿Dónde encuentro mis datos bancarios?";
+"BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "Buscar datos bancarios";
 
 /* On the bank transfer donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their bank information (2) tell them that Signal does not collect or store their personal information. */
 "BANK_DONATION_SUBHEADER_TEXT" = "Introduce tus datos bancarios. Signal no recoge ni almacena tu información personal.";
@@ -704,7 +704,7 @@
 "BANK_MANDATE_READ_MORE" = "Más información";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a subtitle about the payment processor Stripe above that mandate. */
-"BANK_MANDATE_SUBTITLE" = "Stripe procesa las donaciones que se hacen a Signal. Signal no recoge ni almacena tu información personal.";
+"BANK_MANDATE_SUBTITLE" = "Stripe se encarga de procesar las donaciones a Signal. Signal no recoge ni almacena tu información personal.";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is the title above that mandate. */
 "BANK_MANDATE_TITLE" = "Transferencia bancaria";
@@ -1232,7 +1232,7 @@
 "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER" = "MM/AA";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
-"CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal no recoge ni almacena tu información personal cuando haces una donación.\n\nUsamos Stripe como nuestro procesador de pagos para recibir tus donaciones. No accedemos, ni almacenamos, ni guardamos ninguno de los datos que les proporcionas.\n\nSignal no vincula ni puede vincular tu donación con tu cuenta de Signal.\n\n¡Gracias por tu apoyo!";
+"CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal no recoge ni almacena tu información personal cuando haces una donación.\n\nUsamos Stripe para procesar las donaciones que recibimos. No accedemos, ni almacenamos, ni guardamos ninguno de los datos que le proporcionas.\n\nSignal no vincula ni puede vincular tu donación con tu cuenta de Signal.\n\n¡Gracias por tu apoyo!";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the title of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_TITLE" = "Tu información es privada";
@@ -1313,55 +1313,55 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No hay chats sin leer";
 
 /* Text for a bullet point in a list of Backup features, describing that all media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Full media backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Copia de seguridad de todos los archivos multimedia";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Full text message backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Copia de seguridad de todos los mensajes de texto";
 
 /* Text for a bullet point in a list of Backup features, describing that recent media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Last 45 days of media";
+"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Últimos 45 días de archivos multimedia";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1 TB de espacio de almacenamiento (~250.000 fotos)";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Se ha producido un error. Contacta con el equipo de asistencia.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Se ha producido un error. Comprueba tu conexión e inténtalo de nuevo.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "You must be registered to enable Backups.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "Debes haberte registrado para poder habilitar las copias de seguridad.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Something went wrong. Please try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Se ha producido un error. Inténtalo de nuevo.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Se ha producido un error. Contacta con el equipo de asistencia.";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
-"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Current plan";
+"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Plan actual";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Text + 45 days of media";
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Mensajes de texto + 45 días de archivos multimedia";
 
 /* Title for the free plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Free";
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Gratis";
 
 /* Subtitle for the paid plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Text + All your media";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Mensajes de texto + todos tus archivos multimedia";
 
 /* Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/month";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/mes";
 
 /* Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
-"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Subscribe for %1$@/month";
+"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Suscríbete por %1$@/mes";
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_SUBTITLE" = "All backups are end-to-end encrypted. Signal is a non-profit — paying for backups helps support our mission.";
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "Todas las copias de seguridad están cifradas de extremo a extremo. Signal es una organización sin ánimo de lucro: el pago de las copias de seguridad nos ayuda a llevar a cabo nuestra misión.";
 
 /* Title for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Your Backup Plan";
+"CHOOSE_BACKUP_PLAN_TITLE" = "Elige tu plan de copia de seguridad";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Color y fondo de pantalla del chat";
@@ -2423,7 +2423,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Las transferencias bancarias pueden tardar entre 1 y 14 días hábiles en procesarse. Espera hasta que se complete esta donación antes de actualizar tu suscripción.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
-"DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Puedes enviar hasta %1$@ mediante transferencia bancaria. Prueba con un importe o un método de pago diferentes.";
+"DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Puedes enviar hasta %1$@ mediante transferencia bancaria. Prueba con otro importe o un método de pago.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Tu donación aún se está procesando. Este proceso puede llevar unos minutos dependiendo de tu conexión. Espera hasta que se complete esta donación antes de realizar otra.";
@@ -2480,10 +2480,10 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Donación pendiente";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tu donación única está pendiente. Podrás mostrar la insignia %1$@ en tu perfil cuando recibamos tu donación.\n\nLas transferencias bancarias pueden tardar entre 1 y 14 días hábiles en procesarse.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tu donación única está pendiente. Cuando la recibamos, podrás mostrar la insignia %1$@ en tu perfil.\n\nLas transferencias bancarias pueden tardar entre 1 y 14 días hábiles en procesarse.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tu donación mensual está pendiente. Podrás mostrar la insignia %1$@ en tu perfil cuando recibamos tu donación.\n\nLas transferencias bancarias pueden tardar entre 1 y 14 días hábiles en procesarse.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tu donación mensual está pendiente. Cuando la recibamos, podrás mostrar la insignia %1$@ en tu perfil.\n\nLas transferencias bancarias pueden tardar entre 1 y 14 días hábiles en procesarse.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Renovar suscripción";
@@ -3014,7 +3014,7 @@
 "FILE_UNAVAILABLE_SHEET_TITLE" = "Archivo no disponible";
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet. */
-"FIND_ACCOUNT_INFO_SHEET_BODY" = "Busca tu IBAN, un número de hasta 34 caracteres, en la parte superior de tu extracto bancario. El nombre que introduzcas debe coincidir con tu nombre completo, tal como aparece en tu cuenta bancaria. Contacta con tu banco para obtener más información.";
+"FIND_ACCOUNT_INFO_SHEET_BODY" = "Busca tu IBAN, un código de hasta 34 caracteres, en la parte superior de tu extracto bancario. El nombre que introduzcas debe coincidir con tu nombre, tal como figura en tu cuenta bancaria. Contacta con tu banco para obtener más información.";
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "¿Dónde encuentro mis datos bancarios?";
@@ -5255,7 +5255,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Vincular iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Seleccionar \"Registrar iPad\" te permitirá crear una cuenta de Signal o transferir tu cuenta a este iPad. Esta acción desactivará Signal en cualquier otro dispositivo que esté registrado con el mismo número de teléfono.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Si seleccionas \"Registrar iPad\", podrás crear una cuenta de Signal o transferir tu cuenta a este iPad. Se desactivará Signal en cualquier otro dispositivo que esté registrado con el mismo número de teléfono.";
 
 /* explanation to the user they're switching from registering to linking flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Seleccionar \"Vincular iPhone\" te permitirá conectar tu dispositivo con tu cuenta. Vincular tu teléfono no es la opción recomendada, ya que limitará funcionalidades como las llamadas.";
@@ -6635,52 +6635,52 @@
 "RESET" = "Restablecer";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps. */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Details";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Detalles";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up to %1$@ of space on this device to restore your media.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up %1$@ of space on this device to restore your media.";
 
 /* Title shown on chat list banner for restoring media from a backupis finished */
-"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Restore Complete";
+"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Restauración completada";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
-"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Device has low battery";
+"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Tu dispositivo tiene poca batería";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
-"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Restore Paused";
+"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Restauración en pausa";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no wifi connection */
-"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Waiting for Wi-Fi…";
+"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Esperando red Wi-Fi…";
 
 /* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
-"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ of %2$@";
+"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ de %2$@";
 
 /* Title shown on chat list banner for restoring media from a backup */
-"RESTORING_MEDIA_BANNER_TITLE" = "Restoring Media";
+"RESTORING_MEDIA_BANNER_TITLE" = "Restaurando archivos multimedia";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Skip Restore";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Omitir restauración";
 
 /* Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "To finish restoring your media your device needs %1$@ of storage space.\n\nTo free up space go to Settings > General > iPhone Storage. You can choose to offload or delete unused apps or content.";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "Para terminar de restaurar tus archivos multimedia, tu dispositivo necesita %1$@ de espacio de almacenamiento.\n\nPara liberar espacio, ve a Ajustes > General > Almacenamiento del iPhone. Puedes optar por desinstalar o eliminar aplicaciones o contenido que no uses.";
 
 /* Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Free up %1$@ on this device";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Libera %1$@ en este dispositivo";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "If you skip restore the remaining media and attachments in your backup can be downloaded at a later time when storage space becomes available.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "Si omites la restauración, podrás descargar el resto de los archivos adjuntos y multimedia de tu copia de seguridad cuando se libere espacio.";
 
 /* Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Skip Restore";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Omitir restauración";
 
 /* Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Skip Restore?";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "¿Omitir restauración?";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Reintentar";
 
 /* Button to return to current group call */
-"RETURN_CALL_PILL_BUTTON" = "Atrás";
+"RETURN_CALL_PILL_BUTTON" = "Volver";
 
 /* Text for a toast confirming that ringing has been turned off for a call. */
 "RING_OFF_CONFIRMATION_TOAST_LABEL" = "Sonido desactivado";
@@ -6920,7 +6920,7 @@
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Descartar archivo";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "Regresar a la cámara";
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Volver a la cámara";
 
 /* In-app camera: confirmation button in the prompt to turn off multi-mode. */
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Desactivar";
@@ -7376,7 +7376,7 @@
 "SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Bloqueo de pagos";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin es una nueva moneda digital enfocada en la privacidad.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin es una moneda digital enfocada en la privacidad.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "Acerca de MobileCoin";
@@ -7439,13 +7439,13 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Pagos activados.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Usa Signal para enviar y recibir MobileCoin, una nueva moneda digital enfocada en la privacidad. Activa esta opción para comenzar.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Usa Signal para enviar y recibir MobileCoin, una moneda digital enfocada en la privacidad. Activa esta opción para comenzar.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivar pagos";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "¡Los pagos han llegado a Signal!";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Pagos a través de Signal";
 
 /* Button when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Omitir frase de recuperación";
@@ -8939,7 +8939,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Desliza para cancelar";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Mensaje de voz";
+"VOICE_MESSAGE_FILE_NAME" = "signal";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Mantén pulsado para grabar.";

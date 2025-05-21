@@ -527,16 +527,16 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "文字 + 45 天的媒體備份";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "發生錯誤。請聯絡支援團隊。";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Failed to Fetch Backup Plan";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "無法取得備份計畫";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "請檢查你的連線，然後再試一次。";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Network Error";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "網路出錯。";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "辦理或取消";
@@ -572,13 +572,13 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "關閉並刪除備份";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "發生一些錯誤。請聯絡支援團隊。";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but encountered a network error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "發生一些錯誤。請檢查你的連線，然後再試一次。";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "你必須登記才能停用備份。";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "每日";
@@ -623,16 +623,16 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "重新啟用備份";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use your phone as you normally do while the backup takes place.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "視備份的大小而定，這可能需要一段較長的時間。備份期間，你可以如常使用手機。";
 
 /* Title for the primary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "立即備份";
 
 /* Title for the secondary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Back Up Later";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "稍後備份";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "歡迎使用 Signal 備份。立即開始你的備份。";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Signal 備份";
@@ -1313,55 +1313,55 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "沒有未讀聊天訊息";
 
 /* Text for a bullet point in a list of Backup features, describing that all media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Full media backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "完整媒體備份";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Full text message backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "完整文字訊息備份";
 
 /* Text for a bullet point in a list of Backup features, describing that recent media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Last 45 days of media";
+"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "最近 45 天的媒體";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB 的儲存空間 (~250k 張相片)";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "發生一些錯誤。請聯絡支援團隊。";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "發生一些錯誤。請檢查你的連線，然後再試一次。";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "You must be registered to enable Backups.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "你必須登記才能啟用備份。";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Something went wrong. Please try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "發生一些錯誤。請重試。";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "發生一些錯誤。請聯絡支援團隊。";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
-"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Current plan";
+"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "目前計劃";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Text + 45 days of media";
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "文字 + 30 天的媒體";
 
 /* Title for the free plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Free";
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "免費";
 
 /* Subtitle for the paid plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Text + All your media";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "文字 + 你所有的媒體";
 
 /* Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/month";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "每月 %1$@";
 
 /* Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
-"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Subscribe for %1$@/month";
+"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "以每月 %1$@ 定期贊助";
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_SUBTITLE" = "All backups are end-to-end encrypted. Signal is a non-profit — paying for backups helps support our mission.";
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "所有備份均經端對端加密。Signal 是一個非營利組織—支付備份費用有助於支持我們的使命。";
 
 /* Title for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Your Backup Plan";
+"CHOOSE_BACKUP_PLAN_TITLE" = "選擇你的備份計畫";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "聊天色彩與背景";
@@ -6635,46 +6635,46 @@
 "RESET" = "重設";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps. */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Details";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "詳細資料";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up to %1$@ of space on this device to restore your media.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up %1$@ of space on this device to restore your media.";
 
 /* Title shown on chat list banner for restoring media from a backupis finished */
-"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Restore Complete";
+"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "還原完成";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
-"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Device has low battery";
+"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "裝置電池電量不足";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
-"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Restore Paused";
+"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "還原已暫停";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no wifi connection */
-"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Waiting for Wi-Fi…";
+"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "等待 Wi-Fi…";
 
 /* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
-"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ of %2$@";
+"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "第 %1$@ 個，共 %2$@ 個";
 
 /* Title shown on chat list banner for restoring media from a backup */
-"RESTORING_MEDIA_BANNER_TITLE" = "Restoring Media";
+"RESTORING_MEDIA_BANNER_TITLE" = "正在還原媒體";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Skip Restore";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "跳過還原";
 
 /* Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "To finish restoring your media your device needs %1$@ of storage space.\n\nTo free up space go to Settings > General > iPhone Storage. You can choose to offload or delete unused apps or content.";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "要完成還原你的媒體，你的裝置需要 %1$@ 的儲存空間。\n\n若要釋放空間，請前往「設定」 > 「一般」 > 「iPhone 儲存空間」。你可以選擇卸載或刪除不常用的應用程式或內容。";
 
 /* Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Free up %1$@ on this device";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "在此裝置上釋放 %1$@";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "If you skip restore the remaining media and attachments in your backup can be downloaded at a later time when storage space becomes available.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "如果你跳過還原，備份內尚餘的媒體和附件可以稍後在儲存空間可用時下載。";
 
 /* Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Skip Restore";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "跳過還原";
 
 /* Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Skip Restore?";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "要跳過還原嗎？";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "重試";
@@ -8939,7 +8939,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "滑動以取消";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "語音訊息";
+"VOICE_MESSAGE_FILE_NAME" = "signal";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "按住以錄製。";

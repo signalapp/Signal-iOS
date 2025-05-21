@@ -527,16 +527,16 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "Текст + медіафайли за минулі 45 днів";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "Сталася помилка. Будь ласка, зверніться до служби підтримки.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Failed to Fetch Backup Plan";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Не вдалось отримати дані про план резервного копіювання";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "Перевірте з'єднання й спробуйте ще раз.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Network Error";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Мережева помилка";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Змінити або скасувати";
@@ -572,13 +572,13 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Вимкнути й видалити резервну копію";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Сталася помилка. Зверніться до служби підтримки.";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but encountered a network error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Сталася помилка. Перевірте з'єднання й спробуйте ще раз.";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "Щоб вимкнути резервне копіювання, потрібно зареєструватися.";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Щодня";
@@ -623,16 +623,16 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Увімкнути знову";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use your phone as you normally do while the backup takes place.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Що більший розмір резервної копії, то довше триватиме її завантаження. Поки копія створюється, ви можете користуватися телефоном як зазвичай.";
 
 /* Title for the primary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Створити копію зараз";
 
 /* Title for the secondary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Back Up Later";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Створити пізніше";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Усе готово. Тепер можна створити резервну копію.";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Резервне копіювання від Signal";
@@ -1313,55 +1313,55 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "Непрочитаних чатів немає";
 
 /* Text for a bullet point in a list of Backup features, describing that all media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Full media backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Резервна копія всіх медіафайлів";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Full text message backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Резервна копія всіх текстових повідомлень";
 
 /* Text for a bullet point in a list of Backup features, describing that recent media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Last 45 days of media";
+"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Медіафайли за минулі 45 днів";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1 ТБ пам'яті (~250 тис. фото)";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Сталася помилка. Зверніться до служби підтримки.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Сталася помилка. Перевірте з'єднання й спробуйте ще раз.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "You must be registered to enable Backups.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "Щоб увімкнути резервне копіювання, потрібно зареєструватися.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Something went wrong. Please try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Сталася помилка. Будь ласка, повторіть оплату.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Сталася помилка. Зверніться до служби підтримки.";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
-"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Current plan";
+"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Поточний план";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Text + 45 days of media";
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Текст + медіафайли за минулі 45 днів";
 
 /* Title for the free plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Free";
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Безплатно";
 
 /* Subtitle for the paid plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Text + All your media";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Текст + усі медіафайли";
 
 /* Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/month";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/місяць";
 
 /* Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
-"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Subscribe for %1$@/month";
+"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Передплатити за %1$@/місяць";
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_SUBTITLE" = "All backups are end-to-end encrypted. Signal is a non-profit — paying for backups helps support our mission.";
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "Усі резервні копії захищені наскрізним шифруванням. Signal — неприбуткова організація, і сплачуючи за резервне копіювання, ви підтримуєте нашу місію.";
 
 /* Title for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Your Backup Plan";
+"CHOOSE_BACKUP_PLAN_TITLE" = "Оберіть план резервного копіювання";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Колір і шпалери чатів";
@@ -6635,46 +6635,46 @@
 "RESET" = "Скинути";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps. */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Details";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Докладніше";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up to %1$@ of space on this device to restore your media.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up %1$@ of space on this device to restore your media.";
 
 /* Title shown on chat list banner for restoring media from a backupis finished */
-"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Restore Complete";
+"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Відновлення завершено";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
-"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Device has low battery";
+"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Низький заряд акумулятора";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
-"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Restore Paused";
+"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Відновлення припинено";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no wifi connection */
-"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Waiting for Wi-Fi…";
+"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Очікування Wi-Fi…";
 
 /* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
-"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ of %2$@";
+"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ з %2$@";
 
 /* Title shown on chat list banner for restoring media from a backup */
-"RESTORING_MEDIA_BANNER_TITLE" = "Restoring Media";
+"RESTORING_MEDIA_BANNER_TITLE" = "Відновлення медіафайлів";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Skip Restore";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Не відновлювати";
 
 /* Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "To finish restoring your media your device needs %1$@ of storage space.\n\nTo free up space go to Settings > General > iPhone Storage. You can choose to offload or delete unused apps or content.";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "Щоб завершити відновлення медіафайлів, на пристрої має бути %1$@ вільної пам'яті.\n\nЩоб звільнити місце, перейдіть у параметри > Загальні > Сховище iPhone. Ви можете усунути або видалити непотрібні програми й вміст.";
 
 /* Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Free up %1$@ on this device";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Звільніть %1$@ на цьому пристрої";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "If you skip restore the remaining media and attachments in your backup can be downloaded at a later time when storage space becomes available.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "Якщо не відновити дані з резервної копії зараз, решту медіафайлів і вкладень можна буде завантажити пізніше, коли на пристрої буде вільне місце.";
 
 /* Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Skip Restore";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Не відновлювати";
 
 /* Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Skip Restore?";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Пропустити відновлення?";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Повторити";
@@ -7445,7 +7445,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Активувати платежі знов";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Представляємо платежі";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Новинка: платежі";
 
 /* Button when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Пропустити кодову фразу";
@@ -7484,13 +7484,13 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Відправник";
 
 /* Label for the sender in the payment details view in the app settings when the status is 'Failed'. Followed by sender name. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Спроба";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Хто надсилав платіж";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@, %2$@";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Надсилаємо користувачеві %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Триває надсилання користувачеві %1$@";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Надіслано";
@@ -7760,7 +7760,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Запишіть ці 24 слова в такому ж порядку. Збережіть цей список слів у надійному місці.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "Не передавайте цей список нікому";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "Ні з ким не діліться цим списком";
 
 /* Title for the content section of the  'payments lock prompt' view shown after payemts activation. */
 "SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "Додатковий рівень захисту";
@@ -7787,7 +7787,7 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Хто може знайти мене за номером";
 
 /* Description label for Phone Number Privacy */
-"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Виберіть, хто може бачити ваш номер телефону і хто може зв'язатися з вами в Signal через номер.";
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Оберіть, хто зможе бачити ваш номер і зв'язуватися з вами в Signal за номером.";
 
 /* The title for phone number privacy settings. */
 "SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Номер телефону";
@@ -8183,7 +8183,7 @@
 "STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "Куди не надіслано:";
 
 /* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
-"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Надіслано частково";
+"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Надіслано не всім";
 
 /* Subtitle shown when failing to send an incompatible file to stories via the sharesheet. */
 "STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "Вибраний тип файлу не підтримується.";
@@ -8213,7 +8213,7 @@
 "STORY_COMPOSER_CAMERA" = "Камера";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Не вдалося завантажити посилання. Перевірте підключення до мережі і спробуйте знову.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Не вдалося завантажити посилання. Перевірте з'єднання з мережею і спробуйте знову.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
 "STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Поділіться посиланням з глядачами вашої історії";
@@ -8267,10 +8267,10 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Відповідь групі";
 
 /* placeholder text for replying to a group story */
-"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Відповісти на історію групи";
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Відповідь групі";
 
 /* placeholder text for replying to a private story. Embeds {{author name}} */
-"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Відповісти користувачу %1$@";
+"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Відповідь користувачу %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Не вдалося надіслати історію. Перевірте з'єднання з мережею і спробуйте знову";
@@ -8300,10 +8300,10 @@
 "STORY_SEND_PARTIALLY_FAILED" = "Надіслано частково";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Надіслано частково. Натисніть, щоб переглянути подробиці";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Надіслано частково. Торкніться для інформації";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "Надсилаємо…";
+"STORY_SENDING" = "Надсилання...";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "ви почали з ними чат; або";
@@ -8348,10 +8348,10 @@
 "STORY_VIEWER_ONBOARDING_CONFIRMATION" = "Зрозуміло";
 
 /* Text indicating that the user has views turned off */
-"STORY_VIEWS_OFF" = "Перегляди не відображаються";
+"STORY_VIEWS_OFF" = "Показ переглядів вимкнено";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ID пожертвувача скопійовано в буфер обміну";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Ідентифікатор донора скопійовано в буфер обміну";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ваші коди безпеки з користувачем %1$@ збігаються. Ви можете позначити цей контакт як перевірений.";
@@ -8432,19 +8432,19 @@
 "SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "Помилка авторизації платежу";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Помилка обробки донату";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Помилка під час опрацювання";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%1$@/місяць";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Донат обробляється…";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Триває опрацювання донату…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Наступний платіж %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Ваш донат все ще обробляється. Обробка може зайняти кілька хвилин в залежності від вашого з'єднання.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Опрацювання вашого донату ще триває. Воно може зайняти кілька хвилин — швидкість залежить від вашого з'єднання.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Вашу підписку скасовано";
@@ -8483,7 +8483,7 @@
 "TEXT_MENU_BOLD" = "Жирний";
 
 /* Option in selected text edit menu to clear all text formatting in the selected text range */
-"TEXT_MENU_CLEAR_FORMATTING" = "Очистити форматування";
+"TEXT_MENU_CLEAR_FORMATTING" = "Скинути форматування";
 
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "Форматування";
@@ -8507,7 +8507,7 @@
 "TEXT_MENU_SPOILER" = "Спойлер";
 
 /* Option in selected text edit menu to make text strikethrough */
-"TEXT_MENU_STRIKETHROUGH" = "Закреслення";
+"TEXT_MENU_STRIKETHROUGH" = "Закреслений";
 
 /* Option in selected text edit menu to translate the word */
 "TEXT_MENU_TRANSLATE" = "Перекласти";
@@ -8648,7 +8648,7 @@
 "UNAVAILABLE_MEDIA_TAP_TOAST" = "Цей медіафайл більше не доступний";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Користувача немає у ваших контактах. Бажаєте заблокувати цього користувача?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Цього користувача немає у ваших контактах. Заблокувати його?";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Один з ваших пристроїв надіслав повідомлення, яке неможливо опрацювати або показати, оскільки він використовує нову функцію Signal.";
@@ -8693,10 +8693,10 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Відв'язати «%1$@»?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Цей пристрій більше не зв'язаний. Щоб і надалі користуватися повідомленнями, зв'яжіть свій телефон із Signal повторно.";
+"UNLINKED_WARNING" = "Цей пристрій більше не зв'язаний. Щоб і надалі надсилати й отримувати повідомлення, зв'яжіть Signal з телефоном ще раз.";
 
 /* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
-"UNLINKED_WARNING_ACTION_TITLE" = "Зв'язати пристрій";
+"UNLINKED_WARNING_ACTION_TITLE" = "Зв'яжіть пристрій ще раз";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal не вдалося відв'язати ваш пристрій.";
@@ -8735,13 +8735,13 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Групу не вдалось оновити. Перевірте з'єднання з інтернетом і спробуйте ще раз.";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "Використати проксі";
+"USE_PROXY_BUTTON" = "Використовувати проксі-сервер";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "Використовуйте проксі-сервер тільки в тому випадку, якщо ви не можете підключитися до Signal за допомогою мобільних даних або Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "Використовуйте проксі-сервер, тільки якщо не можете встановити з'єднання з Signal через мобільний інтернет або Wi-Fi.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Ім’я користувача має унікальний QR-код і посилання, якими можна поділитися з друзями, щоб вони могли легко розпочати з вами чат.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Ім’я користувача має унікальний QR-код і посилання, якими можна поділитися з друзями, щоб вони могли швидко почати з вами чат.";
 
 /* Title for the username links and QR codes section on the username education sheet */
 "USERNAME_EDUCATION_LINK_TITLE" = "QR-коди й посилання";
@@ -8774,16 +8774,16 @@
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Діліться QR-кодом і посиланням лише з тими, кому довіряєте. Перейшовши за посиланням чи зісканувавши код, інші користувачі побачать ваше ім'я користувача й зможуть почати з вами чат.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
-"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR-код і посилання не встановлено. Перевірте підключення до мережі і спробуйте знову.";
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR-код і посилання не встановлено. Перевірте з'єднання з мережею і спробуйте знову.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Скинути";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Якщо скинути QR-код і посилання, поточні QR-код і посилання більше не працюватимуть.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Якщо скинути QR-код і посилання, то наявні QR-код і посилання більше не працюватимуть.";
 
 /* Text presenting an action sheet notifying the user their QR code and link were reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Ваші QR-код і посилання було скинуто. Натомість було створено нові.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "QR-код і посилання було скинуто. Натомість створено нові.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "поділитися";
@@ -8792,7 +8792,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Код";
 
 /* A title for a view that allows you to scan a username link QR code using the camera. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Сканувати";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Сканування";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Ім’я користувача скопійовано";
@@ -8819,19 +8819,19 @@
 "USERNAME_LINK_TOOLTIP_TITLE" = "Повідомте своє ім'я користувача";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "Виникла помилка під час пошуку імені користувача. Будь ласка, спробуйте пізніше ще раз.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "Під час пошуку імені користувача сталася помилка. Повторіть пошук пізніше.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ не є дійсним іменем користувача. Переконайтеся, що ви ввели повне ім'я з цифрами.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "Імені користувача %1$@ не існує. Перевірте, чи ви ввели повне ім'я користувача з цифрами.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Недійсне ім'я користувача";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Такого імені користувача не існує";
 
 /* A message indicating that a username link the user attempted to query is no longer valid. */
-"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Це посилання імені користувача більше не дійсне.";
+"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Це посилання на ім'я користувача вже не дійсне.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ не користувач Signal. Переконайтеся, що ви ввели повне ім'я користувача.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ не користується Signal. Перевірте, чи ви ввели повне ім'я користувача.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Користувача не знайдено";
@@ -8840,16 +8840,16 @@
 "USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Зіскануйте цей QR-код телефоном, щоб написати мені в Signal.";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
-"USERNAME_RESET_SUCCESSFUL_TOAST" = "Ваш QR-код і посилання було скинуто. Ваше ім’я користувача: %1$@";
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "Ваш QR-код і посилання скинуто. Ваше ім’я користувача: %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Ім'я користувача не може починатись із цифри";
 
 /* A message explaining the side effects of changing your username. */
-"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Якщо змінити ім'я користувача, поточні QR-код і посилання буде скинуто. Змінити ім'я?";
+"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Якщо змінити ім'я користувача, поточний QR-код і посилання буде скинуто. Змінити ім'я?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Імена користувачів завжди поєднуються з кількома цифрами. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Імена користувачів завжди поєднуються з цифрами. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Створіть ім'я користувача";
@@ -8858,7 +8858,7 @@
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Ім'я користувача може містити лише a-z, 0-9, та _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
-"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Недійсне ім'я користувача, введіть мінімум 2 цифри";
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Неналежне ім'я користувача, введіть мінімум 2 цифри";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Завдяки цифрам ваше ім'я користувача конфіденційне, а ви не отримуєте небажаних повідомлень. Повідомляйте своє ім'я користувача тільки тим людям і групам, з якими хочете спілкуватися. Якщо змінити ім'я користувача, цифри також зміняться.";
@@ -8924,7 +8924,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Натисніть тут, щоб це повідомлення зникло після перегляду.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Вихідні одноразові медіа-файли автоматично видаляються після того, як були відправлені.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Вихідні одноразові медіафайли автоматично видаляються після надсилання.";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Переглянути фото";
@@ -8939,7 +8939,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Скасувати: тягніть";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Голосове повідомлення";
+"VOICE_MESSAGE_FILE_NAME" = "signal";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Натисніть і тримайте для запису.";

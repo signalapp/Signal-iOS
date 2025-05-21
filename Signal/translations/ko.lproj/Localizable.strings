@@ -527,16 +527,16 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "텍스트 + 45일간의 미디어 백업";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "오류가 발생했습니다. 고객 지원팀에 문의하세요.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Failed to Fetch Backup Plan";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "백업 플랜을 가져오지 못함";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "연결을 확인하고 다시 시도하세요.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Network Error";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "네트워크 오류";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "관리 또는 취소";
@@ -572,13 +572,13 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "백업 끄기 및 삭제";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "오류가 발생했습니다. 고객 지원팀에 문의하세요.";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but encountered a network error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "오류가 발생했습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "백업을 비활성화하려면 먼저 등록해야 합니다.";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "매일";
@@ -623,16 +623,16 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "백업 재활성화";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use your phone as you normally do while the backup takes place.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "백업 용량에 따라 시간이 더 오래 걸릴 수 있습니다. 백업하는 동안 평상시처럼 휴대폰을 사용하셔도 됩니다.";
 
 /* Title for the primary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "지금 백업";
 
 /* Title for the secondary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Back Up Later";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "나중에 백업";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Signal 백업에 오신 것을 환영합니다. 지금 백업을 시작하세요.";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Signal 백업";
@@ -1313,55 +1313,55 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "안 읽은 대화 없음";
 
 /* Text for a bullet point in a list of Backup features, describing that all media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Full media backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "전체 미디어 백업";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Full text message backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "전체 문자 메시지 백업";
 
 /* Text for a bullet point in a list of Backup features, describing that recent media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Last 45 days of media";
+"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "지난 45일간의 미디어";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "저장 용량 1TB(최대 25만 장의 사진)";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "오류가 발생했습니다. 고객 지원팀에 문의하세요.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "오류가 발생했습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "You must be registered to enable Backups.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "백업을 활성화하려면 먼저 등록해야 합니다.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Something went wrong. Please try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "오류가 발생했습니다. 다시 시도해 주세요.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "오류가 발생했습니다. 고객 지원팀에 문의하세요.";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
-"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Current plan";
+"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "현재 플랜";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Text + 45 days of media";
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "텍스트 + 45일 분량의 미디어";
 
 /* Title for the free plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Free";
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "무료";
 
 /* Subtitle for the paid plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Text + All your media";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "문자 + 모든 미디어";
 
 /* Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/month";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/월";
 
 /* Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
-"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Subscribe for %1$@/month";
+"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "월 %1$@로 구독";
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_SUBTITLE" = "All backups are end-to-end encrypted. Signal is a non-profit — paying for backups helps support our mission.";
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "모든 백업 내용은 엔드투엔드로 암호화됩니다. Signal은 비영리 단체입니다. 백업 요금은 Signal의 사명을 지원하는 데 사용됩니다.";
 
 /* Title for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Your Backup Plan";
+"CHOOSE_BACKUP_PLAN_TITLE" = "백업 플랜 선택";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "대화창 색 및 배경 화면";
@@ -6635,46 +6635,46 @@
 "RESET" = "초기화";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps. */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Details";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "세부 정보";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up to %1$@ of space on this device to restore your media.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up %1$@ of space on this device to restore your media.";
 
 /* Title shown on chat list banner for restoring media from a backupis finished */
-"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Restore Complete";
+"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "복구가 완료되었습니다.";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
-"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Device has low battery";
+"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "기기 배터리 부족";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
-"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Restore Paused";
+"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "복원을 일시 중지함";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no wifi connection */
-"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Waiting for Wi-Fi…";
+"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Wi-Fi를 기다리는 중…";
 
 /* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
-"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ of %2$@";
+"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%2$@ 중 %1$@";
 
 /* Title shown on chat list banner for restoring media from a backup */
-"RESTORING_MEDIA_BANNER_TITLE" = "Restoring Media";
+"RESTORING_MEDIA_BANNER_TITLE" = "미디어 복원 중";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Skip Restore";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "복원 건너뛰기";
 
 /* Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "To finish restoring your media your device needs %1$@ of storage space.\n\nTo free up space go to Settings > General > iPhone Storage. You can choose to offload or delete unused apps or content.";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "미디어 복원을 완료하려면 장치에 %1$@의 저장 공간이 필요합니다.\n\n공간을 확보하려면 설정 > 일반 > iPhone 저장 공간으로 이동하세요. 사용하지 않는 앱이나 콘텐츠를 오프로드하거나 삭제하도록 선택할 수 있습니다.";
 
 /* Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Free up %1$@ on this device";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "기기에서 %1$@ 공간을 확보하세요";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "If you skip restore the remaining media and attachments in your backup can be downloaded at a later time when storage space becomes available.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "복원을 건너뛸 경우 나중에 저장 공간을 사용할 수 있을 때 백업의 남은 미디어와 첨부 파일을 다운로드할 수 있습니다.";
 
 /* Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Skip Restore";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "복원 건너뛰기";
 
 /* Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Skip Restore?";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "복원을 건너뛰시겠어요?";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "재시도";
@@ -8939,7 +8939,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "쓸어넘겨 취소";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "음성 메시지";
+"VOICE_MESSAGE_FILE_NAME" = "signal";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "길게 누르면 녹음됩니다.";

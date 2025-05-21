@@ -122,13 +122,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Rozumiem";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Nie udało się dostarczyć Ci w tym czacie wiadomości, naklejki, reakcji, multimediów lub potwierdzenia odczytania wiadomości, których nadawca to %1$@.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Nie udało się dostarczyć Ci w tym czacie wiadomości, naklejki, reakcji, multimediów lub potwierdzenia odczytania wiadomości, których nadawcą jest %1$@.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problem z dostarczeniem wiadomości";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Nie udało się dostarczyć Ci wiadomości, naklejki, reakcji, multimediów lub potwierdzenia odczytania wiadomości, których nadawca to %1$@. Ta osoba mogła próbować przesłać Ci ten element w wiadomości prywatnej lub w czacie grupowym.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Nie udało się dostarczyć Ci wiadomości, naklejki, reakcji, multimediów lub potwierdzenia odczytania wiadomości, których nadawcą jest %1$@. Ta osoba mogła próbować przesłać Ci ten element w wiadomości prywatnej lub w czacie grupowym.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Odrzuć";
@@ -527,16 +527,16 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER" = "Wiadomości tekstowe, w tym multimedia z ostatnich 45 dni";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "Wystąpił błąd. Skontaktuj się z naszą pomocą techniczną.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Failed to Fetch Backup Plan";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Nie udało się wczytać trybu tworzenia kopii zapasowej";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to a network error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Network Error";
+"BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Błąd sieci";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Zarządzaj lub anuluj";
@@ -572,13 +572,13 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Usuń kopię zapasową i wyłącz tworzenie kolejnych";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Coś poszło nie tak. Skontaktuj się z pomocą techniczną.";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but encountered a network error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Coś poszło nie tak. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "Aby wyłączyć tworzenie kopii zapasowych, najpierw musisz zarejestrować urządzenie.";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Codziennie";
@@ -623,16 +623,16 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Włącz z powrotem";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use your phone as you normally do while the backup takes place.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "W przypadku dużej ilości danych tworzenie kopii zapasowej może zająć sporo czasu. Podczas gdy to się dzieje, możesz normalnie korzystać z telefonu.";
 
 /* Title for the primary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Utwórz teraz";
 
 /* Title for the secondary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Back Up Later";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Utwórz później";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Wszystko gotowe. Możesz już utworzyć kopię zapasową";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Kopie zapasowe Signal";
@@ -740,7 +740,7 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Odblokuj";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Będziecie w stanie do siebie nawzajem dzwonić i wysyłać wiadomości.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Będziecie mieć możliwość dzwonienia i wysyłania wiadomości do siebie nawzajem.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Osoby z tej grupy znów będą mogły Cię do niej dodać.";
@@ -1313,55 +1313,55 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "Brak nieodczytanych czatów";
 
 /* Text for a bullet point in a list of Backup features, describing that all media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Full media backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Pełna kopia zapasowa multimediów";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Full text message backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Pełna kopia zapasowa wiadomości tekstowych";
 
 /* Text for a bullet point in a list of Backup features, describing that recent media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Last 45 days of media";
+"CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Multimedia z ostatnich 45 dni";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1 TB pamięci (ok. 250 tys. zdjęć)";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Coś poszło nie tak. Skontaktuj się z pomocą techniczną.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Coś poszło nie tak. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "You must be registered to enable Backups.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "Aby włączyć tworzenie kopii zapasowych, najpierw musisz zarejestrować urządzenie.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Something went wrong. Please try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Coś poszło nie tak. Spróbuj ponownie.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Coś poszło nie tak. Skontaktuj się z pomocą techniczną.";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
-"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Current plan";
+"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Aktualna usługa";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Text + 45 days of media";
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Wiadomości tekstowe, w tym multimedia z ostatnich 45 dni";
 
 /* Title for the free plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Free";
+"CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Za darmo";
 
 /* Subtitle for the paid plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Text + All your media";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Wiadomości tekstowe + wszystkie Twoje multimedia";
 
 /* Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/month";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@ miesięcznie";
 
 /* Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
-"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Subscribe for %1$@/month";
+"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Subskrybuj za %1$@/mies.";
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_SUBTITLE" = "All backups are end-to-end encrypted. Signal is a non-profit — paying for backups helps support our mission.";
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "Wszystkie kopie zapasowe są szyfrowane metodą end-to-end. Signal jest organizacją non profit – opłata za tworzenie kopii zapasowych to wsparcie w realizacji naszej misji.";
 
 /* Title for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Your Backup Plan";
+"CHOOSE_BACKUP_PLAN_TITLE" = "Wybierz tryb tworzenia kopii zapasowych";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Kolor i tapeta czatu";
@@ -1793,7 +1793,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Zawsze powiadamiaj";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Gdy czat jest wyciszony, nie wysyłaj powiadomień";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Nie powiadamiaj, gdy czat jest wyciszony";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Powiadamiać, gdy w wyciszonym czacie pojawi się wzmianka o Tobie?";
@@ -2906,7 +2906,7 @@
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Nie udało się przesłać załącznika.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Nie udało się dostarczyć wiadomości, której nadawca to %1$@";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Nie udało się dostarczyć wiadomości, której nadawcą jest %1$@";
 
 /* Error message for a decryption failure. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Nie udało się dostarczyć wiadomości";
@@ -3170,7 +3170,7 @@
 "GROUP_CALL_CONTINUE_BUTTON" = "Kontynuuj połączenie";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "Połączenie grupowe zostało zakończone";
+"GROUP_CALL_ENDED_MESSAGE" = "Połączenie grupowe zakończone";
 
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "Więcej informacji";
@@ -3218,13 +3218,13 @@
 "GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "Zanim dołączysz do rozmowy, wyświetlą się tylko imiona osób, które masz w kontaktach telefonu, osób, z którymi jesteś w jakiejś grupie, lub osób, z którymi zdarzyło Ci się wymienić wiadomości prywatne. Wszystkie imiona oraz zdjęcia wyświetlą się, gdy dołączysz do rozmowy.";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Nie można odebrać treści audio ani wideo, których nadawca to %1$@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Nie można odebrać treści audio ani wideo, których nadawcą jest %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Ta osoba mogła nie zweryfikować Twojego numeru bezpieczeństwa, ma problem z urządzeniem albo Cię zablokowała.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Nie można odebrać połączenia audio ani wideo, którego nadawca to %1$@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Nie można odebrać połączenia audio ani wideo, którego nadawcą jest %1$@";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Nikogo tu nie ma";
@@ -3269,7 +3269,7 @@
 "GROUP_CALL_REQUEST_DENIED" = "Prośba o przyjęcie odrzucona";
 
 /* The message of an alert when tried to join a call using a link but the admin rejected your request. */
-"GROUP_CALL_REQUEST_DENIED_MESSAGE" = "Twoja prośba o przyjęcie do rozmowy została odrzucona.";
+"GROUP_CALL_REQUEST_DENIED_MESSAGE" = "Twoja prośba o przyjęcie do rozmowy zostaje odrzucona.";
 
 /* notification body when you join a group call and an already-joined participant has an untrusted safety number */
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "Osoba uczestnicząca w rozmowie ma nowy numer bezpieczeństwa. Dotknij, aby wyświetlić.";
@@ -3329,7 +3329,7 @@
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ tworzy grupę.";
 
 /* Message indicating that group was created by an unknown user. */
-"GROUP_CREATED_BY_UNKNOWN_USER" = "Grupa została utworzona.";
+"GROUP_CREATED_BY_UNKNOWN_USER" = "Grupa zostaje utworzona.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Nie wszystkie osoby udało się dodać do grupy. Dotknij, aby spróbować ponownie.";
@@ -3350,7 +3350,7 @@
 "GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Opis grupy (%1$@)";
 
 /* Message indicating that the group invite link was disabled. */
-"GROUP_INVITE_LINK_DISABLED" = "Link do grupy został wyłączony.";
+"GROUP_INVITE_LINK_DISABLED" = "Link do grupy zostaje wyłączony.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
 "GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Wyłączasz link do grupy.";
@@ -3359,7 +3359,7 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ wyłącza link do grupy.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Link do grupy został włączony. Zatwierdzanie nowych osób przez administratora jest wymagane.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Link do grupy zostaje włączony. Zatwierdzanie nowych osób przez administratora jest wymagane.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Włączasz link do grupy. Zatwierdzanie nowych osób przez administratora jest wymagane.";
@@ -3368,7 +3368,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ włącza link do grupy. Zatwierdzanie nowych osób przez administratora jest wymagane.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Link do grupy został włączony. Zatwierdzanie nowych osób przez administratora nie jest wymagane.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Link do grupy zostaje włączony. Zatwierdzanie nowych osób przez administratora nie jest wymagane.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Włączasz link do grupy. Zatwierdzanie nowych osób przez administratora nie jest wymagane.";
@@ -3377,7 +3377,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ włącza link do grupy. Zatwierdzanie nowych osób przez administratora nie jest wymagane.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = " Link do grupy został zresetowany.";
+"GROUP_INVITE_LINK_RESET" = " Link do grupy zostaje zresetowany.";
 
 /* Message indicating that the group invite link was reset by the local user. */
 "GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Resetujesz link do grupy.";
@@ -3386,19 +3386,19 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%1$@ resetuje link do grupy.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "W ustawieniach linku do grupy wyłączono wymaganie zatwierdzania nowych osób przez administratora.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "W ustawieniach linku do grupy zostaje wyłączone wymaganie zatwierdzania nowych osób przez administratora.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Wyłączasz wymaganie zatwierdzania nowych osób przez administratora w ustawieniach linku do grupy.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Wyłączasz w ustawieniach linku do grupy wymaganie zatwierdzania nowych osób przez administratora.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ wyłącza w ustawieniach linku do grupy wymaganie zatwierdzania nowych osób przez administratora.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "W ustawieniach linku do grupy włączono wymaganie zatwierdzania nowych osób przez administratora.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "W ustawieniach linku do grupy zostaje włączone wymaganie zatwierdzania nowych osób przez administratora.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Włączasz wymaganie zatwierdzania nowych osób przez administratora w ustawieniach linku do grupy.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Włączasz w ustawieniach linku do grupy wymaganie zatwierdzania nowych osób przez administratora.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ włącza w ustawieniach linku do grupy wymaganie zatwierdzania nowych osób przez administratora.";
@@ -3410,7 +3410,7 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Nie możesz automatycznie dodać tych osób do grupy. Otrzymają one zaproszenie i nie zobaczą żadnych wiadomości grupowych, dopóki go nie zaakceptują.";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Ustawienia grupy zostały zmienione tak, aby wszyscy jej członkowie mogli wysyłać wiadomości.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Ustawienia grupy zostają zmienione tak, aby wszyscy jej członkowie mogli wysyłać wiadomości.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Zmieniasz ustawienia grupy tak, aby wszyscy jej członkowie mogli wysyłać wiadomości.";
@@ -3419,7 +3419,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ zmienia ustawienia grupy tak, aby wszyscy członkowie mogli wysyłać wiadomości.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Ustawienia grupy zostały zmienione tak, aby tylko administratorzy mogli wysyłać wiadomości.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Ustawienia grupy zostają zmienione tak, aby tylko administratorzy mogli wysyłać wiadomości.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Zmieniasz ustawienia grupy tak, aby tylko administratorzy mogli wysyłać wiadomości.";
@@ -3545,25 +3545,25 @@
 "GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Przyjmujesz zaproszenie do grupy.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Przyjmujesz zaproszenie do grupy, które przesyła %1$@.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Przyjmujesz zaproszenie do grupy, którego nadawcą jest %1$@.";
 
 /* Message indicating that the local user declined an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Odrzucasz zaproszenie do grupy.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Odrzucasz zaproszenie do grupy, którego nadawca to %1$@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Odrzucasz zaproszenie do grupy, którego nadawcą jest %1$@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%1$@ cofa Twoje zaproszenie do grupy.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Twoje zaproszenie do grupy zostało wycofane.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Twoje zaproszenie do grupy zostaje wycofane.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%1$@ Cię zaprasza.";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Zaproszono Cię do grupy.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Otrzymujesz zaproszenie do grupy.";
 
 /* Message indicating that the local user has joined the group. */
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Dołączasz do grupy.";
@@ -3578,22 +3578,22 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Ktoś usuwa Cię z grupy.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Twoja prośba o przyjęcie do grupy została zaakceptowana.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Twoja prośba o przyjęcie do grupy zostaje zaakceptowana.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ akceptuje Twoją prośbę o przyjęcie do grupy.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Prośba o przyjęcie do grupy została przez Ciebie anulowana.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Prośba o przyjęcie do grupy zostaje przez Ciebie anulowana.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Twoja prośba o przyjęcie do grupy została odrzucona.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Twoja prośba o przyjęcie do grupy zostaje odrzucona.";
 
 /* Message indicating that the local user requested to join the group. */
 "GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Wysłano prośbę o przyjęcie do grupy.";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Twoje uprawnienia administratora zostały cofnięte.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Twoje uprawnienia administratora zostają cofnięte.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ cofa Twoje uprawnienia administratora.";
@@ -3638,13 +3638,13 @@
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ przyjmuje Twoje zaproszenie do grupy.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ przyjmuje zaproszenie do grupy, które przesyła %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ przyjmuje zaproszenie do grupy, którego nadawcą jest %2$@.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Dodajesz tę osobę: %1$@.";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%2$@ należy teraz do grupy. Tę osobą dodaje %1$@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%2$@ dodaje tę osobę: %1$@.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%1$@ należy teraz do grupy.";
@@ -3653,7 +3653,7 @@
 "GROUP_REMOTE_USER_DECLINED_INVITE" = "1 osoba odrzuciła zaproszenie do grupy.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 osoba odrzuciła zaproszenie do grupy, którego nadawca to %1$@.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 osoba odrzuciła zaproszenie do grupy, którego nadawcą jest %1$@.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ odrzuca Twoje zaproszenie do grupy.";
@@ -3662,13 +3662,13 @@
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%1$@ jest teraz administratorem.";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Mianujesz tę osobę administratorem: %1$@.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Mianujesz administratorem tę osobę: %1$@.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%2$@ jest teraz administratorem. Tę osobę mianuje %1$@.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%2$@ mianuje administratorem tę osobę: %1$@.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Cofnięto zaproszenie do grupy, którego nadawca to %1$@.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Cofnięto zaproszenie do grupy, którego nadawcą jest %1$@.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "%1$@ otrzymuje od Ciebie zaproszenie do grupy.";
@@ -3692,10 +3692,10 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ usuwa tę osobę: %2$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Zatwierdzasz prośbę o przyjęcie do grupy, którą przesyła %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Zatwierdzasz prośbę o przyjęcie do grupy, której nadawcą jest %1$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ zatwierdza prośbę o przyjęcie do grupy, którą przesyła %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ zatwierdza prośbę o przyjęcie do grupy, której nadawcą jest %1$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ prosi o przyjęcie do grupy. Prośba zostaje zaakceptowana.";
@@ -3704,13 +3704,13 @@
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ cofa prośbę o przyjęcie do grupy.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Odrzucasz prośbę o przyjęcie do grupy, której nadawca to %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Odrzucasz prośbę o przyjęcie do grupy, której nadawcą jest %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ rejecting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ odrzuca prośbę o przyjęcie do grupy, którą przesyła %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ odrzuca prośbę o przyjęcie do grupy, której nadawcą jest %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Odrzucono prośbę o przyjęcie do grupy, której nadawca to %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Odrzucono prośbę o przyjęcie do grupy, której nadawcą jest %1$@.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%1$@ prosi o przyjęcie do grupy przez link.";
@@ -3719,7 +3719,7 @@
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%1$@ nie ma już uprawnień administratora.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "%1$@ nie ma już uprawnień administratora, ponieważ zostały przez Ciebie cofnięte.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "%1$@ nie ma już uprawnień administratora, ponieważ zostają one przez Ciebie cofnięte.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%2$@ nie jest już administratorem. Te uprawnienia cofa %1$@.";
@@ -3812,10 +3812,10 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Nazwa grupy to teraz „%1$@”.";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "Ta grupa została przeniesiona do nowej grupy.";
+"GROUP_WAS_MIGRATED" = "Ta grupa zostaje przeniesiona do nowej grupy.";
 
 /* Message indicating that the local user was invited after the group was migrated. */
-"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "Nie udało się Ciebie dodać do nowej grupy. Otrzymujesz do niej zaproszenie.";
+"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "Nie udało się dodać Cię do nowej grupy. Otrzymujesz do niej zaproszenie.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Opuszczasz grupę.";
@@ -4040,7 +4040,7 @@
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "Akceptujesz prośbę o kontakt.";
 
 /* Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "Zaakceptowano prośbę o kontakt, której nadawca to %1$@. Jeżeli to pomyłka, wybierz jedną z opcji poniżej.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "Zaakceptowano prośbę o kontakt, której nadawcą jest %1$@. Jeżeli to pomyłka, wybierz jedną z opcji poniżej.";
 
 /* Header for an action sheet providing options in response to an accepted group message request. */
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "Zaakceptowano prośbę o kontakt od tej grupy. Jeżeli to pomyłka, wybierz jedną z opcji poniżej.";
@@ -4211,7 +4211,7 @@
 "LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "To jest tzw. stara grupa, której już nie obsługujemy. Aby dalej rozmawiać na czacie, utwórz nową grupę. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "W nowych grupach można korzystać z funkcji, takich jak @wzmianki i administracja. W przyszłości opcji będzie jeszcze więcej.\n\nCała historia wiadomości i wszystkie multimedia sprzed aktualizacji zostały zachowane.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "W nowych grupach można korzystać z takich funkcji jak @wzmianki i administracja. W przyszłości opcji będzie jeszcze więcej.\n\nCała historia wiadomości i wszystkie multimedia sprzed aktualizacji zostały zachowane.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Co to są nowe grupy?";
@@ -4670,7 +4670,7 @@
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Nazwa pliku";
 
 /* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "Szczegóły wiadomości";
+"MESSAGE_METADATA_VIEW_TITLE" = "Informacje o wiadomości";
 
 /* Context menu message preview accessibility label */
 "MESSAGE_PREVIEW" = "Podgląd wiadomości";
@@ -4781,7 +4781,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Czy %1$@ może wysyłać Ci wiadomości oraz czy udostępnić tej osobie Twoje imię i zdjęcie? Nie dowie się ona, że wiadomość została przez Ciebie odczytana, dopóki nie zaakceptujesz zaproszenia.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Czy chcesz dołączyć do tej grupy i udostępnić jej członkom swoje imię oraz zdjęcie? Członkowie grupy nie będą wiedzieć, że wiadomość została przez Ciebie odczytana, dopóki nie zaakceptujesz zaproszenia.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Czy chcesz dołączyć do tej grupy i udostępnić jej członkom swoje imię oraz zdjęcie? Członkowie grupy nie dowiedzą się, że wiadomość została przez Ciebie odczytana, dopóki nie zaakceptujesz zaproszenia.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Czy chcesz dołączyć do tej grupy? Jej członkowie nie będą wiedzieć, że wiadomość została przez Ciebie odczytana, dopóki nie zaakceptujesz zaproszenia.";
@@ -4943,7 +4943,7 @@
 "MY_STORY_TAP_TO_ADD" = "Dotknij, aby dodać";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ ma nową nazwę profilu: %3$@ (stara nazwa: %2$@)";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ ma nowe imię w profilu: %3$@ (poprzednie imię: %2$@)";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Pomiń";
@@ -5762,7 +5762,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Odrzuć prośbę";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Odrzucić prośbę, której nadawca to %1$@? Osoba ta nie będzie mogła ponownie poprosić o przyjęcie do grupy za pomocą linku.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Odrzucić prośbę, której nadawcą jest %1$@? Osoba ta nie będzie mogła ponownie poprosić o przyjęcie do grupy za pomocą linku.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Nie ma oczekujących próśb o przyjęcie.";
@@ -5777,7 +5777,7 @@
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Wyświetl prośby";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Prośba, której nadawca to %1$@, została odrzucona.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Prośba, której nadawcą jest %1$@, zostaje odrzucona.";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Cofnij zaproszenie";
@@ -6284,7 +6284,7 @@
 "PUSH_REGISTER_SUCCESS" = "Udało się ponownie skonfigurować powiadomienia push.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Odpowiedź na wiadomość, której nadawca to %1$@.";
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Odpowiedź na wiadomość, której nadawcą jest %1$@.";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
@@ -6635,46 +6635,46 @@
 "RESET" = "Zresetuj";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps. */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Details";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Szczegóły";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up to %1$@ of space on this device to restore your media.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up %1$@ of space on this device to restore your media.";
 
 /* Title shown on chat list banner for restoring media from a backupis finished */
-"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Restore Complete";
+"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Przywracanie zakończone";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
-"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Device has low battery";
+"RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Niski poziom naładowania baterii";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
-"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Restore Paused";
+"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Przywracanie wstrzymane";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no wifi connection */
-"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Waiting for Wi-Fi…";
+"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Oczekiwanie na Wi-Fi…";
 
 /* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
-"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ of %2$@";
+"RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ z %2$@";
 
 /* Title shown on chat list banner for restoring media from a backup */
-"RESTORING_MEDIA_BANNER_TITLE" = "Restoring Media";
+"RESTORING_MEDIA_BANNER_TITLE" = "Przywracanie multimediów";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Skip Restore";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Pomiń przywracanie";
 
 /* Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "To finish restoring your media your device needs %1$@ of storage space.\n\nTo free up space go to Settings > General > iPhone Storage. You can choose to offload or delete unused apps or content.";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "Aby dokończyć przywracanie multimediów na urządzeniu, potrzebujesz %1$@ miejsca na dysku.\n\nOto jak zwolnić miejsce: przejdź do sekcji Ustawienia > Ogólne > Miejsce na iPhonie. Tutaj możesz usunąć nieużywane aplikacje lub treści.";
 
 /* Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Free up %1$@ on this device";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Zwolnij %1$@ na urządzeniu";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "If you skip restore the remaining media and attachments in your backup can be downloaded at a later time when storage space becomes available.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "Jeśli pominiesz przywracanie, pozostałe multimedia i załączniki z kopii zapasowej będzie można pobrać później, gdy zwolni się miejsce na dysku.";
 
 /* Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Skip Restore";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Pomiń przywracanie";
 
 /* Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Skip Restore?";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Pominąć przywracanie?";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Spróbuj ponownie";
@@ -6899,7 +6899,7 @@
 "SECURE_SESSION_RESET" = "Bezpieczna sesja zresetowana.";
 
 /* Label for the 'see all' button. */
-"SEE_ALL_BUTTON" = "Wyświetl wszystko";
+"SEE_ALL_BUTTON" = "Wyświetl resztę";
 
 /* Button text to select all in any list selection mode */
 "SELECT_ALL" = "Zaznacz wszystko";
@@ -7997,10 +7997,10 @@
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Kontynuować bez weryfikacji?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Aby pomóc zapobiegać spamowi w aplikacji Signal, przejdź weryfikację.\n\nGdy to zrobisz, możesz dalej wysyłać wiadomości. Wszystkie wstrzymane wiadomości zostaną automatycznie wysłane.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Aby pomóc zapobiegać spamowi w aplikacji Signal, przejdź weryfikację.\n\nGdy to zrobisz, możesz dalej wysyłać i otrzymywać wiadomości. Wszystkie wstrzymane wiadomości zostaną automatycznie wysłane.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Zweryfikuj, aby dalej wysyłać wiadomości";
+"SPAM_CAPTCHA_SHEET_TITLE" = "Zweryfikuj, aby dalej wysyłać i otrzymywać wiadomości";
 
 /* Action to skip verification */
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Pomiń weryfikację";
@@ -8669,16 +8669,16 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Używasz już aktualnej wersji Signal. Możesz wyświetlić tę wiadomość, gdy %1$@ ponownie Ci ją wyśle.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Używasz juz aktualnej wersji Signal. Możesz wyświetlić tę wiadomość, gdy nadawca ponownie CI ją wyśle.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Używasz już aktualnej wersji Signal. Możesz wyświetlić tę wiadomość, gdy nadawca ponownie Ci ją wyśle.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "Nieznana osoba";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Znikające wiadomości zostały wyłączone.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Znikające wiadomości zostają wyłączone.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Czas, po którym wiadomości znikają, został ustawiony na %1$@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Czas, po którym wiadomości znikają, zostaje ustawiony na %1$@.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Nieznane informacje";
@@ -8939,7 +8939,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Przesuń, aby anulować";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Wiadomość głosowa";
+"VOICE_MESSAGE_FILE_NAME" = "signal";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Dotknij i przytrzymaj, aby nagrać wiadomość.";
