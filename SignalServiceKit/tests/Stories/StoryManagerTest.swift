@@ -180,7 +180,7 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makeGroupStory()
 
-        let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
+        let secretParams = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupSecretParams
 
         try write {
             SSKEnvironment.shared.profileManagerRef.addUser(
@@ -189,7 +189,7 @@ class StoryManagerTest: SSKBaseTest {
                 transaction: $0
             )
 
-            try Self.makeGroupThread(groupId: groupId.serialize().asData, transaction: $0)
+            try Self.makeGroupThread(secretParams: secretParams, transaction: $0)
 
             try StoryManager.processIncomingStoryMessage(
                 storyMessage,
@@ -215,7 +215,7 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makeGroupStory()
 
-        let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
+        let secretParams = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupSecretParams
 
         try write {
             SSKEnvironment.shared.profileManagerRef.addUser(
@@ -224,7 +224,7 @@ class StoryManagerTest: SSKBaseTest {
                 transaction: $0
             )
 
-            try Self.makeGroupThread(groupId: groupId.serialize().asData, announcementOnly: true, members: [author], transaction: $0)
+            try Self.makeGroupThread(secretParams: secretParams, announcementOnly: true, members: [author], transaction: $0)
 
             try StoryManager.processIncomingStoryMessage(
                 storyMessage,
@@ -250,7 +250,7 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makeGroupStory()
 
-        let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
+        let secretParams = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupSecretParams
 
         let profileManager = SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager
         profileManager.fakeUserProfiles = [
@@ -264,7 +264,7 @@ class StoryManagerTest: SSKBaseTest {
                 transaction: $0
             )
 
-            try Self.makeGroupThread(groupId: groupId.serialize().asData, announcementOnly: true, admins: [author], transaction: $0)
+            try Self.makeGroupThread(secretParams: secretParams, announcementOnly: true, admins: [author], transaction: $0)
 
             try StoryManager.processIncomingStoryMessage(
                 storyMessage,
@@ -290,7 +290,7 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makeGroupStory()
 
-        let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
+        let secretParams = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupSecretParams
 
         let profileManager = SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager
         profileManager.fakeUserProfiles = [
@@ -304,7 +304,7 @@ class StoryManagerTest: SSKBaseTest {
                 transaction: $0
             )
 
-            try Self.makeGroupThread(groupId: groupId.serialize().asData, members: [author], transaction: $0)
+            try Self.makeGroupThread(secretParams: secretParams, members: [author], transaction: $0)
 
             try StoryManager.processIncomingStoryMessage(
                 storyMessage,
@@ -429,7 +429,7 @@ class StoryManagerTest: SSKBaseTest {
     }
 
     static func makeGroupThread(
-        groupId: Data,
+        secretParams: GroupSecretParams,
         announcementOnly: Bool = false,
         members: [Aci] = [],
         admins: [Aci] = [],
@@ -445,8 +445,7 @@ class StoryManagerTest: SSKBaseTest {
             membershipBuilder.addFullMember(admin, role: .administrator)
         }
 
-        var modelBuilder = TSGroupModelBuilder()
-        modelBuilder.groupId = groupId
+        var modelBuilder = TSGroupModelBuilder(secretParams: secretParams)
         modelBuilder.groupMembership = membershipBuilder.build()
         modelBuilder.isAnnouncementsOnly = announcementOnly
         let groupModel = try modelBuilder.buildAsV2()

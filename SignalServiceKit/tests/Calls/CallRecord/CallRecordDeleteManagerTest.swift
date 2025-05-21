@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -51,7 +52,8 @@ final class CallRecordDeleteManagerTest: XCTestCase {
     }
 
     private func insertGroupCallInteraction() -> (OWSGroupCallMessage, TSGroupThread) {
-        let thread = TSGroupThread(groupModel: try! TSGroupModelBuilder().buildAsV2())
+        let secretParams = try! GroupSecretParams.generate()
+        let thread = TSGroupThread(groupModel: try! TSGroupModelBuilder(secretParams: secretParams).buildAsV2())
         let interaction = OWSGroupCallMessage(joinedMemberAcis: [], creatorAci: nil, thread: thread, sentAtTimestamp: 0)
 
         mockDB.write { tx in

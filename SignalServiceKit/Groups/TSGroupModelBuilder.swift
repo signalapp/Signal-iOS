@@ -4,20 +4,23 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public struct TSGroupModelBuilder {
 
-    public var groupId: Data?
+    private enum GroupVersion {
+        case V1(groupId: Data)
+        case V2(secretParamsData: Data)
+    }
+
+    private let groupVersion: GroupVersion
+
     public var name: String?
     public var descriptionText: String?
     public var avatarDataState: TSGroupModel.AvatarDataState = .missing
     public var groupMembership = GroupMembership()
     public var groupAccess: GroupAccess?
-    public var groupsVersion: GroupsVersion?
     public var groupV2Revision: UInt32 = 0
-    public var groupSecretParamsData: Data?
-    public var newGroupSeed: NewGroupSeed?
     public var avatarUrlPath: String?
     public var inviteLinkPassword: Data?
     public var isAnnouncementsOnly: Bool = false
@@ -27,20 +30,52 @@ public struct TSGroupModelBuilder {
     public var wasJustMigrated: Bool = false
     public var didJustAddSelfViaGroupLink: Bool = false
 
-    public init() {}
+    private init(groupVersion: GroupVersion) {
+        self.groupVersion = groupVersion
+    }
+
+    public init(secretParams: GroupSecretParams) {
+        self.init(groupVersion: .V2(secretParamsData: secretParams.serialize().asData))
+    }
+
+    fileprivate init(groupModel: TSGroupModel) {
+        if let v2 = groupModel as? TSGroupModelV2 {
+            self.init(groupVersion: .V2(secretParamsData: v2.secretParamsData))
+
+            self.groupAccess = v2.access
+            self.groupV2Revision = v2.revision
+            self.avatarUrlPath = v2.avatarUrlPath
+            self.inviteLinkPassword = v2.inviteLinkPassword
+            self.isAnnouncementsOnly = v2.isAnnouncementsOnly
+            self.descriptionText = v2.descriptionText
+
+            // Do not copy transient properties:
+            //
+            // * isJoinRequestPlaceholder
+            // * wasJustMigrated
+            // * didJustAddSelfViaGroupLink
+            //
+            // We want to discard these values when updating group models.
+        } else {
+            self.init(groupVersion: .V1(groupId: groupModel.groupId))
+        }
+
+        self.name = groupModel.groupName
+        self.avatarDataState = groupModel.avatarDataState
+        self.groupMembership = groupModel.groupMembership
+        self.addedByAddress = groupModel.addedByAddress
+    }
 
     // Convert a group state proto received from the service
     // into a group model.
     private init(groupV2Snapshot: GroupV2Snapshot) throws {
-        self.groupId = try groupV2Snapshot.groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
+        self.init(secretParams: groupV2Snapshot.groupSecretParams)
         self.name = groupV2Snapshot.title
         self.descriptionText = groupV2Snapshot.descriptionText
         self.avatarDataState = groupV2Snapshot.avatarDataState
         self.groupMembership = groupV2Snapshot.groupMembership
         self.groupAccess = groupV2Snapshot.groupAccess
-        self.groupsVersion = GroupsVersion.V2
         self.groupV2Revision = groupV2Snapshot.revision
-        self.groupSecretParamsData = groupV2Snapshot.groupSecretParams.serialize().asData
         self.avatarUrlPath = groupV2Snapshot.avatarUrlPath
         self.inviteLinkPassword = groupV2Snapshot.inviteLinkPassword
         self.isAnnouncementsOnly = groupV2Snapshot.isAnnouncementsOnly
@@ -71,46 +106,6 @@ public struct TSGroupModelBuilder {
     public func build() throws -> TSGroupModel {
         try checkUsers()
 
-        let groupsVersion = self.groupsVersion ?? .V2
-        let newGroupSeed = self.newGroupSeed ?? NewGroupSeed()
-
-        let groupId: Data
-        if let builderValue = self.groupId {
-            groupId = builderValue
-        } else {
-            switch groupsVersion {
-            case .V1:
-                groupId = newGroupSeed.groupIdV1
-            case .V2:
-                groupId = newGroupSeed.groupIdV2
-            }
-        }
-
-        let groupSecretParams: GroupSecretParams?
-        switch groupsVersion {
-        case .V1:
-            groupSecretParams = nil
-        case .V2:
-            if let builderValue = groupSecretParamsData {
-                groupSecretParams = try GroupSecretParams(contents: [UInt8](builderValue))
-            } else {
-                groupSecretParams = newGroupSeed.groupSecretParams
-            }
-        }
-
-        return try build(
-            groupsVersion: groupsVersion,
-            groupId: groupId,
-            groupSecretParams: groupSecretParams
-        )
-    }
-
-    private func build(
-        groupsVersion: GroupsVersion,
-        groupId: Data,
-        groupSecretParams: GroupSecretParams?
-    ) throws -> TSGroupModel {
-
         let allUsers = groupMembership.allMembersOfAnyKind
         for recipientAddress in allUsers {
             guard recipientAddress.isValid else {
@@ -123,12 +118,11 @@ public struct TSGroupModelBuilder {
             name = strippedName
         }
 
-        guard GroupManager.isValidGroupId(groupId, groupsVersion: groupsVersion) else {
-            throw OWSAssertionError("Invalid groupId.")
-        }
-
-        switch groupsVersion {
-        case .V1:
+        switch groupVersion {
+        case .V1(let groupId):
+            guard GroupManager.isValidGroupId(groupId, groupsVersion: .V1) else {
+                throw OWSAssertionError("Invalid groupId.")
+            }
             return TSGroupModel(
                 groupId: groupId,
                 name: name,
@@ -136,18 +130,16 @@ public struct TSGroupModelBuilder {
                 members: Array(groupMembership.fullMembers),
                 addedBy: addedByAddress
             )
-        case .V2:
-            guard let groupSecretParams else {
-                throw OWSAssertionError("Missing groupSecretParamsData.")
-            }
+        case .V2(let secretParamsData):
+            let groupSecretParams = try GroupSecretParams(contents: [UInt8](secretParamsData))
 
             return TSGroupModelV2(
-                groupId: groupId,
+                groupId: try groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData,
                 name: name,
                 descriptionText: descriptionText?.stripped.nilIfEmpty,
                 avatarDataState: avatarDataState,
                 groupMembership: groupMembership,
-                groupAccess: buildGroupAccess(groupsVersion: groupsVersion),
+                groupAccess: groupAccess ?? .defaultForV2,
                 revision: groupV2Revision,
                 secretParamsData: groupSecretParams.serialize().asData,
                 avatarUrlPath: avatarUrlPath,
@@ -167,52 +159,13 @@ public struct TSGroupModelBuilder {
         }
         return model
     }
-
-    private func buildGroupAccess(groupsVersion: GroupsVersion) -> GroupAccess {
-        if let value = groupAccess {
-            return value
-        }
-
-        switch groupsVersion {
-        case .V1:
-            return GroupAccess.defaultForV1
-        case .V2:
-            return GroupAccess.defaultForV2
-        }
-    }
 }
 
 // MARK: -
 
 public extension TSGroupModel {
     var asBuilder: TSGroupModelBuilder {
-        var builder = TSGroupModelBuilder()
-        builder.groupId = self.groupId
-        builder.name = self.groupName
-        builder.avatarDataState = self.avatarDataState
-        builder.groupMembership = self.groupMembership
-        builder.groupsVersion = self.groupsVersion
-        builder.addedByAddress = self.addedByAddress
-
-        if let v2 = self as? TSGroupModelV2 {
-            builder.groupAccess = v2.access
-            builder.groupV2Revision = v2.revision
-            builder.groupSecretParamsData = v2.secretParamsData
-            builder.avatarUrlPath = v2.avatarUrlPath
-            builder.inviteLinkPassword = v2.inviteLinkPassword
-            builder.isAnnouncementsOnly = v2.isAnnouncementsOnly
-            builder.descriptionText = v2.descriptionText
-
-            // Do not copy transient properties:
-            //
-            // * isJoinRequestPlaceholder
-            // * wasJustMigrated
-            // * didJustAddSelfViaGroupLink
-            //
-            // We want to discard these values when updating group models.
-        }
-
-        return builder
+        return TSGroupModelBuilder(groupModel: self)
     }
 }
 

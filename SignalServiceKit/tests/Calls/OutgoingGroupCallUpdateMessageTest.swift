@@ -22,8 +22,9 @@ final class OutgoingGroupCallUpdateMessageSerializationTest: SSKBaseTest {
             )
         }
 
+        let secretParams = try GroupSecretParams.generate()
         let updateMessage = write { tx in
-            var groupModelBuilder = TSGroupModelBuilder()
+            var groupModelBuilder = TSGroupModelBuilder(secretParams: secretParams)
             groupModelBuilder.name = "Test group"
 
             return OutgoingGroupCallUpdateMessage(

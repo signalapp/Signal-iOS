@@ -1767,16 +1767,13 @@ public class GroupsV2Impl: GroupsV2 {
                 )
             } else {
                 // Create a placeholder group.
-                var builder = TSGroupModelBuilder()
-                builder.groupId = groupId.serialize().asData
+                var builder = TSGroupModelBuilder(secretParams: secretParams)
                 builder.name = inviteLinkPreview.title
                 builder.descriptionText = inviteLinkPreview.descriptionText
                 builder.groupAccess = GroupAccess(members: GroupAccess.defaultForV2.members,
                                                   attributes: GroupAccess.defaultForV2.attributes,
                                                   addFromInviteLink: inviteLinkPreview.addFromInviteLinkAccess)
-                builder.groupsVersion = .V2
                 builder.groupV2Revision = revision
-                builder.groupSecretParamsData = secretParams.serialize().asData
                 builder.inviteLinkPassword = inviteLinkPassword
                 builder.isJoinRequestPlaceholder = true
                 builder.avatarUrlPath = inviteLinkPreview.avatarUrlPath

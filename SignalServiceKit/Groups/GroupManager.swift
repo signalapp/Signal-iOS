@@ -224,12 +224,13 @@ public class GroupManager: NSObject {
     /// Whether an info message describing this group's creation should be
     /// inserted in the to-be-created thread corresponding to the group. If
     /// `true`, the local user must be a member of the group.
-    public static func createGroupForTests(members: [SignalServiceAddress],
-                                           shouldInsertInfoMessage: Bool = false,
-                                           name: String? = nil,
-                                           descriptionText: String? = nil,
-                                           groupId: Data? = nil,
-                                           transaction: DBWriteTransaction) throws -> TSGroupThread {
+    public static func createGroupForTests(
+        members: [SignalServiceAddress],
+        shouldInsertInfoMessage: Bool = false,
+        name: String? = nil,
+        descriptionText: String? = nil,
+        transaction: DBWriteTransaction
+    ) throws -> TSGroupThread {
 
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
             throw OWSAssertionError("Missing localIdentifiers.")
@@ -239,8 +240,8 @@ public class GroupManager: NSObject {
         // GroupsV2 TODO: Let tests specify access levels.
         // GroupsV2 TODO: Fill in avatarUrlPath when we test v2 groups.
 
-        var builder = TSGroupModelBuilder()
-        builder.groupId = groupId
+        let secretParams = try GroupSecretParams.generate()
+        var builder = TSGroupModelBuilder(secretParams: secretParams)
         builder.name = name
         builder.descriptionText = descriptionText
         builder.groupMembership = GroupMembership(membersForTest: members)

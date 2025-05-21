@@ -746,9 +746,9 @@ private extension GroupV2UpdatesImpl {
             var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
             builder.apply(options: options)
 
+            let groupId = try secretParams.getPublicParams().getGroupIdentifier()
             if
-                let groupId = builder.groupId,
-                let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction),
+                let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction),
                 let oldGroupModel = groupThread.groupModel as? TSGroupModelV2,
                 oldGroupModel.revision == builder.groupV2Revision
             {

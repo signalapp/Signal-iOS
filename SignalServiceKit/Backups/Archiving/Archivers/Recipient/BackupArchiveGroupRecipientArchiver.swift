@@ -322,10 +322,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
             )
         }
 
-        var groupModelBuilder = TSGroupModelBuilder()
-        groupModelBuilder.groupId = groupContextInfo.groupId.serialize().asData
-        groupModelBuilder.groupSecretParamsData = groupContextInfo.groupSecretParamsData
-        groupModelBuilder.groupsVersion = .V2 // We don't back up V1 groups
+        var groupModelBuilder = TSGroupModelBuilder(secretParams: groupContextInfo.groupSecretParams)
         groupModelBuilder.groupV2Revision = groupSnapshot.version
         groupModelBuilder.name = groupSnapshot.extractTitle
         groupModelBuilder.descriptionText = groupSnapshot.extractDescriptionText
