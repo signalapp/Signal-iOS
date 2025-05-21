@@ -511,12 +511,9 @@ public extension PaymentsImpl {
 
 public extension PaymentsImpl {
 
-    func maximumPaymentAmount() -> Promise<TSPaymentAmount> {
-        return firstly(on: DispatchQueue.global()) { () -> Promise<MobileCoinAPI> in
-            self.getMobileCoinAPI()
-        }.then(on: DispatchQueue.global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<TSPaymentAmount> in
-            try mobileCoinAPI.maxTransactionAmount()
-        }
+    func maximumPaymentAmount() async throws -> TSPaymentAmount {
+        let mobileCoinAPI = try await self.getMobileCoinAPI().awaitable()
+        return try await mobileCoinAPI.maxTransactionAmount()
     }
 
     func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<TSPaymentAmount> {

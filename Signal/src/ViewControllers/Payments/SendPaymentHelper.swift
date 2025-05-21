@@ -150,18 +150,15 @@ class SendPaymentHelper {
     }
 
     private func updateMaximumPaymentAmount() {
-        firstly {
-            SUIEnvironment.shared.paymentsSwiftRef.maximumPaymentAmount()
-        }.done(on: DispatchQueue.main) { [weak self] maximumPaymentAmount in
-            guard let self = self else { return }
-            self.maximumPaymentAmount = maximumPaymentAmount
-            self.delegate?.balanceDidChange()
-        }.catch(on: DispatchQueue.global()) { [weak self] error in
-            if case PaymentsError.insufficientFunds = error {
-                guard let self = self else { return }
-                self.maximumPaymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: 0)
-                self.delegate?.balanceDidChange()
-            } else {
+        Task { @MainActor [weak self] in
+            do {
+                let maximumPaymentAmount = try await SUIEnvironment.shared.paymentsSwiftRef.maximumPaymentAmount()
+                self?.maximumPaymentAmount = maximumPaymentAmount
+                self?.delegate?.balanceDidChange()
+            } catch PaymentsError.insufficientFunds {
+                self?.maximumPaymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: 0)
+                self?.delegate?.balanceDidChange()
+            } catch {
                 owsFailDebugUnlessMCNetworkFailure(error)
             }
         }

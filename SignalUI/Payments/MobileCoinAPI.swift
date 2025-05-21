@@ -211,43 +211,37 @@ public class MobileCoinAPI {
         }
     }
 
-    func maxTransactionAmount() throws -> Promise<TSPaymentAmount> {
+    func maxTransactionAmount() async throws -> TSPaymentAmount {
         // We don't need to support amountPicoMobHigh.
+        if DebugFlags.paymentsNoRequestsComplete.get() {
+            // Never resolve.
+            try! await Task.sleep(nanoseconds: .max)
+        }
 
-        let client = self.client
-
-        return firstly(on: DispatchQueue.global()) { () -> Promise<TSPaymentAmount> in
-            let (promise, future) = Promise<TSPaymentAmount>.pending()
-            if DebugFlags.paymentsNoRequestsComplete.get() {
-                // Never resolve.
-                return promise
-            }
-            client.amountTransferable(tokenId: .MOB, feeLevel: Self.feeLevel) { (result: Swift.Result<UInt64,
-                                                                                       BalanceTransferEstimationFetcherError>) in
-                switch result {
-                case .success(let feePicoMob):
-                    let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
-                    guard paymentAmount.isValidAmount(canBeEmpty: true) else {
-                        future.reject(OWSAssertionError("Invalid amount."))
-                        return
+        do {
+            let feePicoMob = try await withUncooperativeTimeout(seconds: Self.timeoutDuration) {
+                try await withCheckedThrowingContinuation { continuation in
+                    self.client.amountTransferable(tokenId: .MOB, feeLevel: Self.feeLevel) {
+                        continuation.resume(with: $0)
                     }
-                    Logger.verbose("Success paymentAmount: \(paymentAmount), ")
-                    future.resolve(paymentAmount)
-                case .failure(let error):
-                    let error = Self.convertMCError(error: error)
-                    future.reject(error)
                 }
             }
-            return promise
-        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<TSPaymentAmount> in
+            let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
+            guard paymentAmount.isValidAmount(canBeEmpty: true) else {
+                throw OWSAssertionError("Invalid amount.")
+            }
+            Logger.verbose("Success paymentAmount: \(paymentAmount), ")
+            return paymentAmount
+        } catch is UncooperativeTimeoutError {
+            throw PaymentsError.timeout
+        } catch {
+            let error = Self.convertMCError(error: error)
             if case PaymentsError.insufficientFunds = error {
                 Logger.warn("Error: \(error)")
             } else {
                 owsFailDebugUnlessMCNetworkFailure(error)
             }
             throw error
-        }.timeout(seconds: Self.timeoutDuration, description: "maxTransactionAmount") { () -> Error in
-            PaymentsError.timeout
         }
     }
 

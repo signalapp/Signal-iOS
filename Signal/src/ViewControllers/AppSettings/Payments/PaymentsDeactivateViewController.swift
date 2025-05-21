@@ -169,32 +169,32 @@ public class PaymentsDeactivateViewController: OWSViewController {
 
     @objc
     private func didTapTransferBalanceButton() {
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: false) { [weak self] modalActivityIndicator in
-
-            firstly(on: DispatchQueue.global()) {
-                SUIEnvironment.shared.paymentsSwiftRef.maximumPaymentAmount()
-            }.done { (transferAmount: TSPaymentAmount) in
-                AssertIsOnMainThread()
-
-                modalActivityIndicator.dismiss {
-                    guard let navigationController = self?.navigationController else {
-                        owsFailDebug("Missing navigationController.")
-                        return
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false,
+            asyncBlock: { modalActivityIndicator in
+                do {
+                    let transferAmount = try await SUIEnvironment.shared.paymentsSwiftRef.maximumPaymentAmount()
+                    modalActivityIndicator.dismiss {
+                        guard let navigationController = self.navigationController else {
+                            owsFailDebug("Missing navigationController.")
+                            return
+                        }
+                        let view = PaymentsTransferOutViewController(transferAmount: transferAmount)
+                        navigationController.pushViewController(view, animated: true)
                     }
-                    let view = PaymentsTransferOutViewController(transferAmount: transferAmount)
-                    navigationController.pushViewController(view, animated: true)
-                }
-            }.catch { error in
-                AssertIsOnMainThread()
-                owsFailDebug("Error: \(error)")
+                } catch {
+                    owsFailDebug("Error: \(error)")
 
-                modalActivityIndicator.dismiss {
-                    OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATION_FAILED",
-                                                                              comment: "Error indicating that payments could not be deactivated in the payments settings."))
+                    modalActivityIndicator.dismiss {
+                        OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
+                            "SETTINGS_PAYMENTS_DEACTIVATION_FAILED",
+                            comment: "Error indicating that payments could not be deactivated in the payments settings."
+                        ))
+                    }
                 }
             }
-        }
+        )
     }
 
     @objc

@@ -54,7 +54,7 @@ public protocol PaymentsSwift: Payments {
 
     func initiateOutgoingPayment(preparedPayment: PreparedPayment) -> Promise<TSPaymentModel>
 
-    func maximumPaymentAmount() -> Promise<TSPaymentAmount>
+    func maximumPaymentAmount() async throws -> TSPaymentAmount
 
     var passphrase: PaymentsPassphrase? { get }
 
@@ -205,7 +205,7 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
-    public func maximumPaymentAmount() -> Promise<TSPaymentAmount> {
+    public func maximumPaymentAmount() async throws -> TSPaymentAmount {
         owsFail("Not implemented.")
     }
 
