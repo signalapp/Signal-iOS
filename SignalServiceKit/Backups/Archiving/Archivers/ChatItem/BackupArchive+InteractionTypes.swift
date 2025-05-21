@@ -154,12 +154,7 @@ extension BackupArchive {
                 }
             }
 
-            switch (threadInfo, author) {
-            case (.groupThread, _), (.contactThread, .localUser):
-                break
-            case (.contactThread(let threadContactAddress), .contact(_)):
-                let threadRecipientId = threadContactAddress.map { context[.contact($0)] } ?? nil
-
+            func swizzleContactThreadMessageAuthorIfNeeded(threadRecipientId: BackupArchive.RecipientId?) {
                 // If this message is in a contact thread, the author must either
                 // be the local user or that contact.
                 if let threadRecipientId, threadRecipientId != authorRecipientId {
@@ -184,6 +179,16 @@ extension BackupArchive {
                         interactionUniqueId
                     ))
                 }
+            }
+
+            switch (threadInfo, author) {
+            case (.groupThread, _), (.contactThread, .localUser), (.noteToSelfThread, .localUser):
+                break
+            case (.noteToSelfThread, .contact(_)):
+                swizzleContactThreadMessageAuthorIfNeeded(threadRecipientId: context.localRecipientId)
+            case (.contactThread(let threadContactAddress), .contact(_)):
+                let threadRecipientId = threadContactAddress.map { context[.contact($0)] } ?? nil
+                swizzleContactThreadMessageAuthorIfNeeded(threadRecipientId: threadRecipientId)
             }
 
             let details = InteractionArchiveDetails(

@@ -197,6 +197,8 @@ final class BackupArchiveSimpleChatUpdateArchiver {
                     return messageFailure(.simpleChatUpdateMessageNotInContactThread)
                 }
                 updateAuthorAddress = .contact(authorAddress)
+            case .noteToSelfThread:
+                updateAuthorAddress = .localUser
             }
         case .localUser:
             updateAuthorAddress = .localUser

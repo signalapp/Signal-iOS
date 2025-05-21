@@ -99,6 +99,7 @@ extension BackupArchive {
             // Contact threads may be _missing_ their address, which
             // will likely cause partial failures downstream.
             case contactThread(contactAddress: BackupArchive.ContactAddress?)
+            case noteToSelfThread
         }
 
         private let threadCache = SharedMap<ChatId, CachedThreadInfo>()
@@ -133,9 +134,18 @@ extension BackupArchive {
             }
             map[ThreadUniqueId(thread: thread)] = currentChatId
             if let contactThread = thread as? TSContactThread {
-                threadCache[currentChatId] = .contactThread(
-                    contactAddress: contactThread.contactAddress.asSingleServiceIdBackupAddress()
-                )
+                let contactAddress = contactThread.contactAddress
+                if
+                    contactAddress.serviceId == recipientContext.localIdentifiers.aci
+                    || contactAddress.serviceId == recipientContext.localIdentifiers.pni
+                    || contactAddress.phoneNumber == recipientContext.localIdentifiers.phoneNumber
+                {
+                    threadCache[currentChatId] = .noteToSelfThread
+                } else {
+                    threadCache[currentChatId] = .contactThread(
+                        contactAddress: contactAddress.asSingleServiceIdBackupAddress()
+                    )
+                }
             } else if thread is TSGroupThread {
                 threadCache[currentChatId] = .groupThread
             }

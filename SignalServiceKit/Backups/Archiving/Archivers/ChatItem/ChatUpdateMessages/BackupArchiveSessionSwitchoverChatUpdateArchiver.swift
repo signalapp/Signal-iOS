@@ -44,12 +44,11 @@ final class BackupArchiveSessionSwitchoverChatUpdateArchiver {
 
         let switchedOverContactAddress: BackupArchive.ContactAddress
         switch threadInfo {
+        case .noteToSelfThread:
+            // See comment on skippable update enum case.
+            return .skippableInteraction(.legacyInfoMessage(.sessionSwitchoverInNoteToSelf))
         case .contactThread(let contactAddress):
             guard let contactAddress else { fallthrough }
-            if contactAddress.aci == context.recipientContext.localIdentifiers.aci {
-                // See comment on skippable update enum case.
-                return .skippableInteraction(.legacyInfoMessage(.sessionSwitchoverInNoteToSelf))
-            }
             switchedOverContactAddress = contactAddress
         case .groupThread:
             return messageFailure(.sessionSwitchoverUpdateMissingAuthor)

@@ -129,13 +129,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchiveTSMessageEditHist
             return errorResult
         }
 
-        let detailsAuthor: Details.AuthorAddress
-        let directionalDetails: BackupProto_ChatItem.OneOf_DirectionalDetails
-        if author == context.recipientContext.localRecipientId {
-            // Incoming messages from self are not allowed in backups
-            // but have been observed in real-world databases.
-            // If we encounter these, fudge them a bit and pretend
-            // they were outgoing messages.
+        func buildSwizzledOutgoingNoteToSelfMessage() -> (BackupProto_ChatItem.OneOf_DirectionalDetails, Details.AuthorAddress) {
             var outgoingDetails = BackupProto_ChatItem.OutgoingMessageDetails()
             var sendStatus = BackupProto_SendStatus()
             sendStatus.recipientID = context.recipientContext.localRecipientId.value
@@ -144,12 +138,36 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchiveTSMessageEditHist
             viewedStatus.sealedSender = incomingMessage.wasReceivedByUD
             sendStatus.deliveryStatus = .viewed(viewedStatus)
             outgoingDetails.sendStatus = [sendStatus]
-            directionalDetails = .outgoing(outgoingDetails)
+            return (.outgoing(outgoingDetails), .localUser)
+        }
+
+        let detailsAuthor: Details.AuthorAddress
+        let directionalDetails: BackupProto_ChatItem.OneOf_DirectionalDetails
+
+        if author == context.recipientContext.localRecipientId {
+            // Incoming messages from self are not allowed in backups
+            // but have been observed in real-world databases.
+            // If we encounter these, fudge them a bit and pretend
+            // they were outgoing messages.
             partialErrors.append(.archiveFrameError(
                 .incomingMessageFromSelf,
                 incomingMessage.uniqueInteractionId
             ))
-            detailsAuthor = .localUser
+            let pair = buildSwizzledOutgoingNoteToSelfMessage()
+            directionalDetails = pair.0
+            detailsAuthor = pair.1
+        } else if case .noteToSelfThread = threadInfo {
+            // Incoming messages in the note to self are not allowed in backups because:
+            // 1. Messages not from self are not allowed in note to self
+            // 2. Incoming messages from self are not allowed in general
+            // So we swizzle this into an outgoing message from self.
+            partialErrors.append(.archiveFrameError(
+                .nonSelfAuthorInNoteToSelf,
+                incomingMessage.uniqueInteractionId
+            ))
+            let pair = buildSwizzledOutgoingNoteToSelfMessage()
+            directionalDetails = pair.0
+            detailsAuthor = pair.1
         } else {
             let incomingMessageDetails: BackupProto_ChatItem.IncomingMessageDetails = buildIncomingMessageDetails(
                 incomingMessage,

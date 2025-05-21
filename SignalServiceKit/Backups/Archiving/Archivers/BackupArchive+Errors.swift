@@ -73,6 +73,8 @@ extension BackupArchive {
             case invalidIncomingMessageAuthor
             /// An incoming message came from the self recipient.
             case incomingMessageFromSelf
+            /// An message not from self in Note to Self
+            case nonSelfAuthorInNoteToSelf
             /// An outgoing message has an invalid or missing recipient address information,
             /// causing the message to be skipped.
             case invalidOutgoingMessageRecipient
@@ -278,7 +280,7 @@ extension BackupArchive {
                     .contactThreadMissingAddress:
                 // Collapse these by the id they refer to, which is in the "type".
                 return idLogString
-            case .incomingMessageFromSelf, .messageFromOtherRecipientInContactThread:
+            case .incomingMessageFromSelf, .nonSelfAuthorInNoteToSelf, .messageFromOtherRecipientInContactThread:
                 // Collapse these all together.
                 return id.typeLogString
             case
@@ -427,6 +429,11 @@ extension BackupArchive {
             case .incomingMessageFromSelf:
                 // We've seen real world databases with messages from self; we
                 // fudge these into outgoing messages on export and issue a warning.
+                return .warning
+            case .nonSelfAuthorInNoteToSelf:
+                // We've seen real world databases with messages from other authors
+                // in note to self; we fudge these into outgoing messages on export
+                // and issue a warning.
                 return .warning
             case .stickerMessageMissingStickerAttachment:
                 // We lose a lot of stickers, apparently, in real world testing.

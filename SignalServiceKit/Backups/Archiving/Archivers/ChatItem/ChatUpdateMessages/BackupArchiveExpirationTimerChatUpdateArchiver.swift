@@ -68,6 +68,8 @@ final class BackupArchiveExpirationTimerChatUpdateArchiver {
         switch threadInfo {
         case .contactThread(let contactAddress):
             recipientAddress = contactAddress
+        case .noteToSelfThread:
+            recipientAddress = context.recipientContext.localRecipientAddress
         case .groupThread:
             // This may have been a DM timer update in a gv1 group that became a gv2 group;
             // we can't tell anymore if this group was ever gv1 so just assume so

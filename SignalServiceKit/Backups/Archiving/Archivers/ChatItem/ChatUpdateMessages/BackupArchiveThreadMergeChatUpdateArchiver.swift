@@ -44,6 +44,8 @@ final class BackupArchiveThreadMergeChatUpdateArchiver {
 
         let mergedContactAddress: BackupArchive.ContactAddress
         switch threadInfo {
+        case .noteToSelfThread:
+            mergedContactAddress = context.recipientContext.localRecipientAddress
         case .contactThread(let contactAddress):
             guard let contactAddress else { fallthrough }
             mergedContactAddress = contactAddress

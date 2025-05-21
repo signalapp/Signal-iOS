@@ -871,11 +871,11 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 .storyReplyInGroupThread,
                 interactionUniqueId
             )])
+        case .noteToSelfThread:
+            // See comment on skippable update enum case.
+            return .skippableInteraction(.directStoryReplyInNoteToSelf)
         case .contactThread(let contactAddress):
-            if contactAddress?.aci == context.recipientContext.localIdentifiers.aci {
-                // See comment on skippable update enum case.
-                return .skippableInteraction(.directStoryReplyInNoteToSelf)
-            }
+            break
         }
 
         guard !message.isGroupStoryReply else {
