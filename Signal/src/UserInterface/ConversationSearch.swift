@@ -75,12 +75,7 @@ extension ConversationSearchController: UISearchResultsUpdating {
     }
 
     public func updateSearchResults(for searchController: UISearchController) {
-        guard let rawSearchText = searchController.searchBar.text?.stripped else {
-            self.resultsBar.updateResults(resultSet: nil)
-            self.delegate?.conversationSearchController(self, didUpdateSearchResults: nil)
-            return
-        }
-        let searchText = FullTextSearchIndexer.normalizeText(rawSearchText)
+        let searchText = FullTextSearchIndexer.normalizeText((searchController.searchBar.text ?? "").stripped)
 
         guard searchText.count >= ConversationSearchController.kMinimumSearchTextLength else {
             self.resultsBar.updateResults(resultSet: nil)
