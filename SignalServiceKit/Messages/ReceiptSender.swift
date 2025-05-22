@@ -78,13 +78,6 @@ public class ReceiptSender: NSObject {
                 queue: nil,
                 using: { [weak self] _ in self?.sendPendingReceiptsIfNeeded() }
             ))
-
-            self.observers.append(NotificationCenter.default.addObserver(
-                forName: SSKReachability.owsReachabilityDidChange,
-                object: self,
-                queue: nil,
-                using: { [weak self] _ in self?.sendPendingReceiptsIfNeeded() }
-            ))
         }
     }
 
@@ -192,9 +185,6 @@ public class ReceiptSender: NSObject {
 
     private func _sendPendingReceiptsIfNeeded() async {
         do {
-            guard SSKEnvironment.shared.reachabilityManagerRef.isReachable else {
-                return
-            }
             guard sendingState.update(block: { $0.startIfPossible() }) else {
                 return
             }
