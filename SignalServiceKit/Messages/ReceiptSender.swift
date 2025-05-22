@@ -197,7 +197,7 @@ public class ReceiptSender: NSObject {
             guard sendingState.update(block: { $0.startIfPossible() }) else {
                 return
             }
-            try? await sendPendingReceipts()
+            await sendPendingReceipts()
         }
 
         // Wait N seconds before conducting another pass. This allows time for a
@@ -210,26 +210,26 @@ public class ReceiptSender: NSObject {
         await _sendPendingReceiptsIfNeeded(pendingTask: nil)
     }
 
-    private func sendPendingReceipts() async throws {
-        return try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+    private func sendPendingReceipts() async {
+        return await withTaskGroup(of: Void.self) { taskGroup in
             for receiptType in ReceiptType.allCases {
-                taskGroup.addTask { try await self.sendReceipts(receiptType: receiptType) }
+                taskGroup.addTask { await self.sendReceipts(receiptType: receiptType) }
             }
-            try await taskGroup.waitForAll()
+            await taskGroup.waitForAll()
         }
     }
 
-    private func sendReceipts(receiptType: ReceiptType) async throws {
+    private func sendReceipts(receiptType: ReceiptType) async {
         let pendingReceipts = SSKEnvironment.shared.databaseStorageRef.read { tx in fetchAllReceiptSets(receiptType: receiptType, tx: tx) }
-        try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+        await withTaskGroup(of: Void.self) { taskGroup in
             for (aci, receiptBatches) in pendingReceipts {
                 for receiptBatch in receiptBatches {
                     taskGroup.addTask {
-                        try await self.sendReceipts(receiptType: receiptType, to: aci, receiptBatch: receiptBatch)
+                        try? await self.sendReceipts(receiptType: receiptType, to: aci, receiptBatch: receiptBatch)
                     }
                 }
             }
-            try await taskGroup.waitForAll()
+            await taskGroup.waitForAll()
         }
     }
 
