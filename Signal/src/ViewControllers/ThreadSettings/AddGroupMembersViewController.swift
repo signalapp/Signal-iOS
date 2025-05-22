@@ -191,14 +191,7 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         case .alreadyInGroup:
             return true
         case .addableWithProfileKeyCredential:
-            // We can "add" pending or requesting members if they support gv2
-            // and we know their profile key credential.
-            let canAddMember: Bool
-            if let aci = serviceId as? Aci {
-                canAddMember = SSKEnvironment.shared.groupsV2Ref.hasProfileKeyCredential(for: aci, transaction: transaction)
-            } else {
-                canAddMember = false
-            }
+            let canAddMember = GroupMembership.canTryToAddWithProfileKeyCredential(serviceId: serviceId, tx: transaction)
             return !canAddMember
         case .addableOrInvitable:
             return false

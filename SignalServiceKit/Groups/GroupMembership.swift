@@ -589,6 +589,28 @@ public class GroupMembership: MTLModel {
         return .addableOrInvitable
     }
 
+    public static func canTryToAddWithProfileKeyCredential(
+        serviceId: ServiceId,
+        groupsV2: any GroupsV2 = SSKEnvironment.shared.groupsV2Ref,
+        profileManager: any ProfileManager = SSKEnvironment.shared.profileManagerRef,
+        tsAccountManager: any TSAccountManager = DependenciesBridge.shared.tsAccountManager,
+        udManager: any OWSUDManager = SSKEnvironment.shared.udManagerRef,
+        tx: DBReadTransaction,
+    ) -> Bool {
+        // We can add invited members if we have...
+        if let aci = serviceId as? Aci, groupsV2.hasProfileKeyCredential(for: aci, transaction: tx) {
+            return true
+        }
+        // ...or can get a credential for them.
+        return ProfileFetcherJob.canTryToFetchCredential(
+            serviceId: serviceId,
+            localIdentifiers: tsAccountManager.localIdentifiers(tx: tx)!,
+            profileManager: profileManager,
+            udManager: udManager,
+            tx: tx,
+        )
+    }
+
     // MARK: - Builder
 
     public struct Builder {

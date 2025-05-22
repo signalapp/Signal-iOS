@@ -178,13 +178,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
             case .alreadyInGroup:
                 isAlreadyAMember = true
             case .addableWithProfileKeyCredential:
-                let groupsV2 = SSKEnvironment.shared.groupsV2Ref
-                let canAddToGroup: Bool
-                if let aci = serviceId as? Aci {
-                    canAddToGroup = groupsV2.hasProfileKeyCredential(for: aci, transaction: tx)
-                } else {
-                    canAddToGroup = false
-                }
+                let canAddToGroup = GroupMembership.canTryToAddWithProfileKeyCredential(serviceId: serviceId, tx: tx)
                 isAlreadyAMember = !canAddToGroup
             case .addableOrInvitable:
                 isAlreadyAMember = false
