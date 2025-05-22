@@ -632,6 +632,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         let accountAttributes = self.db.read { tx in
             return self.makeAccountAttributes(
                 encryptedDeviceName: encryptedDeviceName,
+                isManualMessageFetchEnabled: apnRegistrationId == nil,
                 profileKey: provisionMessage.profileKey,
                 aciRegistrationId: aciRegistrationId,
                 pniRegistrationId: pniRegistrationId,
@@ -712,23 +713,12 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
     private func makeAccountAttributes(
         encryptedDeviceName encryptedDeviceNameRaw: Data,
+        isManualMessageFetchEnabled: Bool,
         profileKey: Aes256Key,
         aciRegistrationId: UInt32,
         pniRegistrationId: UInt32,
         tx: DBReadTransaction
     ) -> AccountAttributes {
-        // Secondary devices only use account attributes during registration;
-        // at this time they have historically set this to true.
-        // Some forensic investigation is required as to why, but the best bet
-        // is that some form of message delivery needs to succeed _before_ it
-        // sets its APNS token, and thus it needs manual message fetch enabled.
-
-        // This field is scoped to the device that sets it and does not overwrite
-        // the attribute from the primary device.
-
-        // TODO: can we change this with atomic device linking?
-        let isManualMessageFetchEnabled = true
-
         let udAccessKey = SMKUDAccessKey(profileKey: profileKey).keyData.base64EncodedString()
         let allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(tx: tx)
 

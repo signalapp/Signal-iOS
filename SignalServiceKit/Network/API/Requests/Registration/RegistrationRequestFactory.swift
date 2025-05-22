@@ -241,7 +241,7 @@ public enum RegistrationRequestFactory {
         apnRegistrationId: ApnRegistrationId?,
         prekeyBundles: RegistrationPreKeyUploadBundles
     ) -> TSRequest {
-        owsAssertDebug(apnRegistrationId != nil || accountAttributes.isManualMessageFetchEnabled)
+        owsAssertDebug((apnRegistrationId != nil) != accountAttributes.isManualMessageFetchEnabled)
 
         let urlPathComponents = URLPathComponents(
             ["v1", "registration"]
@@ -272,11 +272,9 @@ public enum RegistrationRequestFactory {
             parameters["recoveryPassword"] = recoveryPassword
         }
 
-        if
-            let apnRegistrationId,
-            let apnRegistrationIdData = try? jsonEncoder.encode(apnRegistrationId),
-            let apnRegistrationIdDict = try? JSONSerialization.jsonObject(with: apnRegistrationIdData, options: .fragmentsAllowed) as? [String: Any]
-        {
+        if let apnRegistrationId {
+            let apnRegistrationIdData = try! jsonEncoder.encode(apnRegistrationId)
+            let apnRegistrationIdDict = try! JSONSerialization.jsonObject(with: apnRegistrationIdData, options: .fragmentsAllowed) as! [String: Any]
             parameters["apnToken"] = apnRegistrationIdDict
         }
 

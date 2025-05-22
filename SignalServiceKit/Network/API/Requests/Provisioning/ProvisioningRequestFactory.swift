@@ -17,7 +17,7 @@ public enum ProvisioningRequestFactory {
     ) -> TSRequest {
         owsAssertDebug(verificationCode.isEmpty.negated)
         owsAssertDebug(phoneNumber.isEmpty.negated)
-        owsAssertDebug(apnRegistrationId != nil || attributes.isManualMessageFetchEnabled)
+        owsAssertDebug((apnRegistrationId != nil) != attributes.isManualMessageFetchEnabled)
 
         let urlPathComponents = URLPathComponents(
             ["v1", "devices", "link"]
@@ -31,7 +31,7 @@ public enum ProvisioningRequestFactory {
         let accountAttributesData = try! jsonEncoder.encode(attributes)
         let accountAttributesDict = try! JSONSerialization.jsonObject(with: accountAttributesData, options: .fragmentsAllowed) as! [String: Any]
 
-        let parameters: [String: Any] = [
+        var parameters: [String: Any] = [
             "verificationCode": verificationCode,
             "accountAttributes": accountAttributesDict,
             "aciSignedPreKey": OWSRequestFactory.signedPreKeyRequestParameters(prekeyBundles.aci.signedPreKey),
@@ -39,6 +39,12 @@ public enum ProvisioningRequestFactory {
             "aciPqLastResortPreKey": OWSRequestFactory.pqPreKeyRequestParameters(prekeyBundles.aci.lastResortPreKey),
             "pniPqLastResortPreKey": OWSRequestFactory.pqPreKeyRequestParameters(prekeyBundles.pni.lastResortPreKey)
         ]
+
+        if let apnRegistrationId {
+            let apnRegistrationIdData = try! jsonEncoder.encode(apnRegistrationId)
+            let apnRegistrationIdDict = try! JSONSerialization.jsonObject(with: apnRegistrationIdData, options: .fragmentsAllowed) as! [String: Any]
+            parameters["apnToken"] = apnRegistrationIdDict
+        }
 
         var result = TSRequest(url: url, method: "PUT", parameters: parameters)
         // The "verify code" request handles auth differently.
