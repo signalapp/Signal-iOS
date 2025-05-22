@@ -250,7 +250,7 @@ public struct StorageService {
                     return .error(.manifestProtoDeserializationFailed(version: encryptedManifestContainer.version))
                 }
             case .masterKeyMissing, .cryptographyError:
-                owsFailDebug("Failed to decrypt manifest!")
+                Logger.warn("Failed to decrypt manifest!")
                 return .error(.manifestDecryptionFailed(version: encryptedManifestContainer.version))
             }
         case .notFound:
