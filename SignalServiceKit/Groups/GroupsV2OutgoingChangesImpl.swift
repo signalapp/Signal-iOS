@@ -63,16 +63,14 @@ public class GroupsV2OutgoingChanges {
     public private(set) var newAvatarUrlPath: String?
     private var shouldUpdateAvatar = false
 
-    private var membersToAdd = [Aci: TSGroupMemberRole]()
+    private var membersToAdd = [ServiceId]()
     // Full, pending profile key or pending request members to remove.
     private var membersToRemove = [ServiceId]()
     private var membersToChangeRole = [Aci: TSGroupMemberRole]()
-    private var invitedMembersToAdd = [ServiceId: TSGroupMemberRole]()
     private var invalidInvitesToRemove = [Data: InvalidInvite]()
 
     // Banning
     private var membersToBan = [Aci]()
-    private var membersToUnban = [Aci]()
 
     // These access properties should only be set if the value is changing.
     private var accessForMembers: GroupV2Access?
@@ -132,9 +130,9 @@ public class GroupsV2OutgoingChanges {
         self.shouldUpdateAvatar = true
     }
 
-    public func addMember(_ aci: Aci, role: TSGroupMemberRole) {
-        owsAssertDebug(membersToAdd[aci] == nil)
-        membersToAdd[aci] = role
+    public func addMember(_ serviceId: ServiceId) {
+        owsAssertDebug(!membersToAdd.contains(serviceId))
+        membersToAdd.append(serviceId)
     }
 
     public func removeMember(_ serviceId: ServiceId) {
@@ -147,19 +145,9 @@ public class GroupsV2OutgoingChanges {
         membersToBan.append(aci)
     }
 
-    public func removeBannedMember(_ aci: Aci) {
-        owsAssertDebug(!membersToUnban.contains(aci))
-        membersToUnban.append(aci)
-    }
-
     public func changeRoleForMember(_ aci: Aci, role: TSGroupMemberRole) {
         owsAssertDebug(membersToChangeRole[aci] == nil)
         membersToChangeRole[aci] = role
-    }
-
-    public func addInvitedMember(_ serviceId: ServiceId, role: TSGroupMemberRole) {
-        owsAssertDebug(invitedMembersToAdd[serviceId] == nil)
-        invitedMembersToAdd[serviceId] = role
     }
 
     public func setLocalShouldAcceptInvite() {
@@ -249,18 +237,16 @@ public class GroupsV2OutgoingChanges {
             throw OWSAssertionError("Missing localIdentifiers.")
         }
 
-        // Note that we're calculating the set of users for whom we need
-        // profile key credentials for based on the "original intent".
-        // We could slightly optimize by only gathering profile key
-        // credentials that we'll actually need to build the change proto.
-        //
-        // NOTE: We don't (and can't) gather profile key credentials for pending members.
-        var newUserAcis: Set<Aci> = Set(membersToAdd.keys)
+        // Note that we're calculating the set of users for whom we MIGHT WANT
+        // profile key credentials based on the "original intent". We always
+        // include our own ACI because non-add operations (e.g., updating our
+        // profile key) will require our own profile key credential.
+        var newUserAcis: Set<Aci> = Set(membersToAdd.compactMap { $0 as? Aci })
         newUserAcis.insert(localIdentifiers.aci)
 
-        let profileKeyCredentialMap = try await SSKEnvironment.shared.groupsV2Ref.loadProfileKeyCredentials(
+        let profileKeyCredentials = try await SSKEnvironment.shared.groupsV2Ref.loadProfileKeyCredentials(
             for: Array(newUserAcis),
-            ignoreMissingCredentials: false,
+            ignoreMissingCredentials: true,
             forceRefresh: forceRefreshProfileKeyCredentials
         )
 
@@ -268,7 +254,7 @@ public class GroupsV2OutgoingChanges {
             currentGroupModel: currentGroupModel,
             currentDisappearingMessageToken: currentDisappearingMessageToken,
             localIdentifiers: localIdentifiers,
-            profileKeyCredentialMap: profileKeyCredentialMap
+            profileKeyCredentials: profileKeyCredentials
         )
     }
 
@@ -314,7 +300,7 @@ public class GroupsV2OutgoingChanges {
         currentGroupModel: TSGroupModelV2,
         currentDisappearingMessageToken: DisappearingMessageToken,
         localIdentifiers: LocalIdentifiers,
-        profileKeyCredentialMap: GroupsV2.ProfileKeyCredentialMap
+        profileKeyCredentials: GroupsV2.ProfileKeyCredentialMap,
     ) throws -> GroupsV2BuiltGroupChange {
         let groupV2Params = try currentGroupModel.groupV2Params()
 
@@ -416,45 +402,56 @@ public class GroupsV2OutgoingChanges {
             }
         }
 
+        var membersToUnban = [Aci]()
+
         let currentGroupMembership = currentGroupModel.groupMembership
-        for (aci, role) in membersToAdd {
-            guard !currentGroupMembership.isFullMember(aci) else {
-                // Another user has already added this member.
-                // They may have been added with a different role.
-                // We don't treat that as a conflict.
-                continue
-            }
-            if currentGroupMembership.isRequestingMember(aci) {
+        for serviceId in membersToAdd {
+            if currentGroupMembership.isFullMember(serviceId) {
+                // Another user has already added this member. They may have been added
+                // with a different role. We don't treat that as a conflict.
+            } else if let aci = serviceId as? Aci, currentGroupMembership.isRequestingMember(aci) {
                 var actionBuilder = GroupsProtoGroupChangeActionsPromoteRequestingMemberAction.builder()
                 let userId = try groupV2Params.userId(for: aci)
                 actionBuilder.setUserID(userId)
-                actionBuilder.setRole(role.asProtoRole)
+                actionBuilder.setRole(.default)
                 actionsBuilder.addPromoteRequestingMembers(actionBuilder.buildInfallibly())
+                didChange = true
+                membersToUnban.append(aci)
 
                 membersOfAnyKind.insert(aci)
                 fullMembers.insert(aci)
-                if role == .administrator {
-                    fullMemberAdmins.insert(aci)
-                }
-            } else {
-                guard let profileKeyCredential = profileKeyCredentialMap[aci] else {
-                    throw OWSAssertionError("Missing profile key credential: \(aci)")
-                }
+            } else if let aci = serviceId as? Aci, let profileKeyCredential = profileKeyCredentials[aci] {
                 var actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
                 actionBuilder.setAdded(try GroupsV2Protos.buildMemberProto(
                     profileKeyCredential: profileKeyCredential,
-                    role: role.asProtoRole,
+                    role: .default,
                     groupV2Params: groupV2Params
                 ))
                 actionsBuilder.addAddMembers(actionBuilder.buildInfallibly())
+                didChange = true
+                membersToUnban.append(aci)
 
                 membersOfAnyKind.insert(aci)
                 fullMembers.insert(aci)
-                if role == .administrator {
-                    fullMemberAdmins.insert(aci)
+            } else if currentGroupMembership.isInvitedMember(serviceId) {
+                // Another user has already invited this member. They may have been added
+                // with a different role. We don't treat that as a conflict.
+            } else {
+                guard membersOfAnyKind.count <= GroupManager.groupsV2MaxGroupSizeHardLimit else {
+                    throw GroupsV2Error.cannotBuildGroupChangeProto_tooManyMembers
                 }
+                var actionBuilder = GroupsProtoGroupChangeActionsAddPendingMemberAction.builder()
+                actionBuilder.setAdded(try GroupsV2Protos.buildPendingMemberProto(
+                    serviceId: serviceId,
+                    role: .default,
+                    groupV2Params: groupV2Params
+                ))
+                actionsBuilder.addAddPendingMembers(actionBuilder.buildInfallibly())
+                didChange = true
+                if let aci = serviceId as? Aci { membersToUnban.append(aci) }
+
+                membersOfAnyKind.insert(serviceId)
             }
-            didChange = true
         }
 
         for serviceId in self.membersToRemove {
@@ -540,30 +537,6 @@ public class GroupsV2OutgoingChanges {
                 actionsBuilder.addDeleteBannedMembers(actionBuilder.buildInfallibly())
                 didChange = true
             }
-        }
-
-        for (serviceId, role) in self.invitedMembersToAdd {
-            guard !currentGroupMembership.isMemberOfAnyKind(serviceId) else {
-                // Another user has already added or invited this member.
-                // They may have been added with a different role.
-                // We don't treat that as a conflict.
-                continue
-            }
-
-            guard membersOfAnyKind.count <= GroupManager.groupsV2MaxGroupSizeHardLimit else {
-                throw GroupsV2Error.cannotBuildGroupChangeProto_tooManyMembers
-            }
-
-            var actionBuilder = GroupsProtoGroupChangeActionsAddPendingMemberAction.builder()
-            actionBuilder.setAdded(try GroupsV2Protos.buildPendingMemberProto(
-                serviceId: serviceId,
-                role: role.asProtoRole,
-                groupV2Params: groupV2Params
-            ))
-            actionsBuilder.addAddPendingMembers(actionBuilder.buildInfallibly())
-            didChange = true
-
-            membersOfAnyKind.insert(serviceId)
         }
 
         if shouldRevokeInvalidInvites {
@@ -662,7 +635,7 @@ public class GroupsV2OutgoingChanges {
         }
 
         if self.shouldAcceptInvite {
-            guard let localProfileKeyCredential = profileKeyCredentialMap[localAci] else {
+            guard let localProfileKeyCredential = profileKeyCredentials[localAci] else {
                 throw OWSAssertionError("Missing local profile key credential!")
             }
 
@@ -780,7 +753,7 @@ public class GroupsV2OutgoingChanges {
         }
 
         if shouldUpdateLocalProfileKey {
-            guard let profileKeyCredential = profileKeyCredentialMap[localAci] else {
+            guard let profileKeyCredential = profileKeyCredentials[localAci] else {
                 throw OWSAssertionError("Missing profile key credential: \(localAci)")
             }
             var actionBuilder = GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.builder()

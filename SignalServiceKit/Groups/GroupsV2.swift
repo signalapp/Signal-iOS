@@ -90,13 +90,6 @@ public protocol GroupsV2 {
         forceRefresh: Bool
     ) async throws -> ProfileKeyCredentialMap
 
-    func tryToFetchProfileKeyCredentials(
-        for acis: [Aci],
-        ignoreMissingProfiles: Bool,
-        ignoreMissingCredentials: Bool,
-        forceRefresh: Bool
-    ) async throws
-
     func fetchLatestSnapshot(
         secretParams: GroupSecretParams,
         justUploadedAvatars: GroupAvatarStateMap?
@@ -497,13 +490,6 @@ public class MockGroupsV2: GroupsV2 {
     ) async throws -> ProfileKeyCredentialMap {
         owsFail("Not implemented.")
     }
-
-    public func tryToFetchProfileKeyCredentials(
-        for acis: [Aci],
-        ignoreMissingProfiles: Bool,
-        ignoreMissingCredentials: Bool,
-        forceRefresh: Bool
-    ) async throws { }
 
     public func fetchLatestSnapshot(
         secretParams: GroupSecretParams,

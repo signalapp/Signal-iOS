@@ -586,7 +586,7 @@ public class GroupManager: NSObject {
         let description = (shouldAccept ? "Accept group member request" : "Deny group member request")
         try await updateGroupV2(groupModel: groupModel, description: description) { groupChangeSet in
             if shouldAccept {
-                groupChangeSet.addMember(aci, role: .`normal`)
+                groupChangeSet.addMember(aci)
             } else {
                 groupChangeSet.removeMember(aci)
                 groupChangeSet.addBannedMember(aci)
@@ -1322,38 +1322,12 @@ extension GroupManager {
             owsFail("[GV1] Mutations on V1 groups should be impossible!")
         }
 
-        // Ensure we have fetched profile key credentials before performing
-        // the add below, since we depend on credential state to decide
-        // whether to add or invite a user.
-        try await SSKEnvironment.shared.groupsV2Ref.tryToFetchProfileKeyCredentials(
-            for: serviceIds.compactMap { $0 as? Aci },
-            ignoreMissingProfiles: false,
-            ignoreMissingCredentials: true,
-            forceRefresh: false
-        )
-
         try await updateGroupV2(
             groupModel: existingGroupModel,
             description: "Add/Invite new non-admin members"
         ) { groupChangeSet in
-            SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                for serviceId in serviceIds {
-                    owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(serviceId))
-
-                    let groupsV2 = SSKEnvironment.shared.groupsV2Ref
-
-                    // Important that at this point we already have the
-                    // profile keys for these users
-                    if let aci = serviceId as? Aci, groupsV2.hasProfileKeyCredential(for: aci, transaction: transaction) {
-                        groupChangeSet.addMember(aci, role: .normal)
-                    } else {
-                        groupChangeSet.addInvitedMember(serviceId, role: .normal)
-                    }
-
-                    if let aci = serviceId as? Aci, existingGroupModel.groupMembership.isBannedMember(aci) {
-                        groupChangeSet.removeBannedMember(aci)
-                    }
-                }
+            for serviceId in serviceIds {
+                groupChangeSet.addMember(serviceId)
             }
         }
     }

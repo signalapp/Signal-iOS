@@ -1282,7 +1282,7 @@ public class GroupsV2Impl: GroupsV2 {
     /// ACI. If a profile exists for the user but the credential cannot be
     /// fetched (e.g., the ACI is not a contact of ours), skips it. Optionally
     /// ignores "missing profile" errors during fetch.
-    public func tryToFetchProfileKeyCredentials(
+    private func tryToFetchProfileKeyCredentials(
         for acis: [Aci],
         ignoreMissingProfiles: Bool,
         ignoreMissingCredentials: Bool,
