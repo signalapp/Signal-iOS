@@ -299,7 +299,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         let alertMessage: String
         let alertTitleFormat = OWSLocalizedString("GROUP_INVITES_SENT_ALERT_TITLE_%d", tableName: "PluralAware",
                                        comment: "Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }}")
-        if pendingMembers.count > 0 {
+        if pendingMembers.count > 1 {
             alertTitle = String.localizedStringWithFormat(alertTitleFormat, pendingMembers.count)
             alertMessage = OWSLocalizedString("GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE",
                                              comment: "Message for an alert indicating that some members were invited to a group.")
