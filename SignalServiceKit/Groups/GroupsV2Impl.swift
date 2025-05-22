@@ -1339,16 +1339,10 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     public func hasProfileKeyCredential(
-        for address: SignalServiceAddress,
+        for aci: Aci,
         transaction: DBReadTransaction
     ) -> Bool {
         do {
-            guard let serviceId = address.serviceId else {
-                throw OWSAssertionError("Missing ACI.")
-            }
-            guard let aci = serviceId as? Aci else {
-                return false
-            }
             return try SSKEnvironment.shared.versionedProfilesRef.validProfileKeyCredential(
                 for: aci,
                 transaction: transaction

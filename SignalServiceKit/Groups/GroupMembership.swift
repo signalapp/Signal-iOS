@@ -568,6 +568,27 @@ public class GroupMembership: MTLModel {
         }
     }
 
+    // MARK: -
+
+    public enum AddableResult {
+        case alreadyInGroup
+        case addableWithProfileKeyCredential
+        case addableOrInvitable
+    }
+
+    public func canTryToAddToGroup(serviceId: ServiceId) -> AddableResult {
+        if self.isFullMember(serviceId) {
+            return .alreadyInGroup
+        }
+        if self.isRequestingMember(serviceId) {
+            return .addableWithProfileKeyCredential
+        }
+        if self.isInvitedMember(serviceId) {
+            return .addableWithProfileKeyCredential
+        }
+        return .addableOrInvitable
+    }
+
     // MARK: - Builder
 
     public struct Builder {

@@ -1253,10 +1253,10 @@ public class GroupManager: NSObject {
                 guard accountManager.registrationState(tx: tx).isRegistered else {
                     return false
                 }
-                guard let localAddress = accountManager.localIdentifiers(tx: tx)?.aciAddress else {
-                    throw OWSAssertionError("Missing localAddress.")
+                guard let localAci = accountManager.localIdentifiers(tx: tx)?.aci else {
+                    throw OWSAssertionError("Missing localAci.")
                 }
-                return SSKEnvironment.shared.groupsV2Ref.hasProfileKeyCredential(for: localAddress, transaction: tx)
+                return SSKEnvironment.shared.groupsV2Ref.hasProfileKeyCredential(for: localAci, transaction: tx)
             }
         }
 
@@ -1340,14 +1340,11 @@ extension GroupManager {
                 for serviceId in serviceIds {
                     owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(serviceId))
 
+                    let groupsV2 = SSKEnvironment.shared.groupsV2Ref
+
                     // Important that at this point we already have the
                     // profile keys for these users
-                    let hasCredential = SSKEnvironment.shared.groupsV2Ref.hasProfileKeyCredential(
-                        for: SignalServiceAddress(serviceId),
-                        transaction: transaction
-                    )
-
-                    if let aci = serviceId as? Aci, hasCredential {
+                    if let aci = serviceId as? Aci, groupsV2.hasProfileKeyCredential(for: aci, transaction: transaction) {
                         groupChangeSet.addMember(aci, role: .normal)
                     } else {
                         groupChangeSet.addInvitedMember(serviceId, role: .normal)

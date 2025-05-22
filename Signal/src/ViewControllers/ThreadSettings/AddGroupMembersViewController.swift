@@ -182,28 +182,27 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient,
                                             transaction: DBReadTransaction) -> Bool {
-        guard let address = recipient.address else {
+        guard let serviceId = recipient.address?.serviceId else {
             owsFailDebug("Invalid recipient.")
             return false
         }
         let groupMembership = oldGroupModel.groupMembership
-        if groupMembership.isFullMember(address) {
+        switch groupMembership.canTryToAddToGroup(serviceId: serviceId) {
+        case .alreadyInGroup:
             return true
-        }
-        if groupMembership.isInvitedMember(address) ||
-            groupMembership.isRequestingMember(address) {
+        case .addableWithProfileKeyCredential:
             // We can "add" pending or requesting members if they support gv2
             // and we know their profile key credential.
-            let canAddMember: Bool = {
-                guard GroupManager.doesUserSupportGroupsV2(address: address) else {
-                    return false
-                }
-                return SSKEnvironment.shared.groupsV2Ref.hasProfileKeyCredential(for: address, transaction: transaction)
-            }()
-
+            let canAddMember: Bool
+            if let aci = serviceId as? Aci {
+                canAddMember = SSKEnvironment.shared.groupsV2Ref.hasProfileKeyCredential(for: aci, transaction: transaction)
+            } else {
+                canAddMember = false
+            }
             return !canAddMember
+        case .addableOrInvitable:
+            return false
         }
-        return false
     }
 
     func groupMemberViewDismiss() {

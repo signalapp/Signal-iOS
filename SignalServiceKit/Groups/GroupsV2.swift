@@ -61,7 +61,7 @@ public enum GroupsV2LinkMode: UInt, CustomStringConvertible {
 public protocol GroupsV2 {
 
     func hasProfileKeyCredential(
-        for address: SignalServiceAddress,
+        for aci: Aci,
         transaction: DBReadTransaction
     ) -> Bool
 
@@ -485,7 +485,7 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func hasProfileKeyCredential(for address: SignalServiceAddress,
+    public func hasProfileKeyCredential(for aci: Aci,
                                         transaction: DBReadTransaction) -> Bool {
         owsFail("Not implemented.")
     }
