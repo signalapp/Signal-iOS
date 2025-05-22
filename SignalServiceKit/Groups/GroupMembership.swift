@@ -581,7 +581,7 @@ public class GroupMembership: MTLModel {
             return .alreadyInGroup
         }
         if self.isRequestingMember(serviceId) {
-            return .addableWithProfileKeyCredential
+            return .addableOrInvitable
         }
         if self.isInvitedMember(serviceId) {
             return .addableWithProfileKeyCredential
