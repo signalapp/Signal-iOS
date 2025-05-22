@@ -75,18 +75,18 @@ public class ReceiptSender: NSObject {
             forName: .identityStateDidChange,
             object: self,
             queue: nil,
-            using: { [weak self] _ in self?.sendPendingReceiptsIfNeeded(pendingTask: nil) }
+            using: { [weak self] _ in self?.sendPendingReceiptsIfNeeded() }
         ))
 
         observers.append(NotificationCenter.default.addObserver(
             forName: SSKReachability.owsReachabilityDidChange,
             object: self,
             queue: nil,
-            using: { [weak self] _ in self?.sendPendingReceiptsIfNeeded(pendingTask: nil) }
+            using: { [weak self] _ in self?.sendPendingReceiptsIfNeeded() }
         ))
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.sendPendingReceiptsIfNeeded(pendingTask: nil)
+            self.sendPendingReceiptsIfNeeded()
         }
     }
 
@@ -156,8 +156,11 @@ public class ReceiptSender: NSObject {
         persistedSet.insert(timestamp: timestamp, messageUniqueId: messageUniqueId)
         storeReceiptSet(persistedSet, receiptType: receiptType, aci: aci, tx: tx)
         tx.addSyncCompletion {
-            self.sendingState.update { $0.mightHavePendingReceipts = true }
-            self.sendPendingReceiptsIfNeeded(pendingTask: pendingTask)
+            self.sendingState.update {
+                $0.mightHavePendingReceipts = true
+                $0.pendingTasks.append(pendingTask)
+            }
+            self.sendPendingReceiptsIfNeeded()
         }
     }
 
@@ -172,6 +175,8 @@ public class ReceiptSender: NSObject {
         /// sent when the app launches.
         var mightHavePendingReceipts = true
 
+        var pendingTasks = [PendingTask]()
+
         mutating func startIfPossible() -> Bool {
             guard mightHavePendingReceipts, !inProgress else {
                 return false
@@ -183,19 +188,25 @@ public class ReceiptSender: NSObject {
     }
 
     /// Schedules a processing pass, unless one is already scheduled.
-    func sendPendingReceiptsIfNeeded(pendingTask: PendingTask?) {
-        Task { await self._sendPendingReceiptsIfNeeded(pendingTask: pendingTask) }
+    func sendPendingReceiptsIfNeeded() {
+        Task { await self._sendPendingReceiptsIfNeeded() }
     }
 
-    private func _sendPendingReceiptsIfNeeded(pendingTask: PendingTask?) async {
+    private func _sendPendingReceiptsIfNeeded() async {
         do {
-            defer { pendingTask?.complete() }
-
             guard appReadiness.isAppReady, SSKEnvironment.shared.reachabilityManagerRef.isReachable else {
                 return
             }
             guard sendingState.update(block: { $0.startIfPossible() }) else {
                 return
+            }
+            let pendingTasks = sendingState.update(block: {
+                let result = $0.pendingTasks
+                $0.pendingTasks = []
+                return result
+            })
+            defer {
+                pendingTasks.forEach { $0.complete() }
             }
             await sendPendingReceipts()
         }
@@ -207,7 +218,7 @@ public class ReceiptSender: NSObject {
         // receipts without being so high that the user notices.
         try? await Task.sleep(nanoseconds: 3 * NSEC_PER_SEC)
         sendingState.update(block: { $0.inProgress = false })
-        await _sendPendingReceiptsIfNeeded(pendingTask: nil)
+        await _sendPendingReceiptsIfNeeded()
     }
 
     private func sendPendingReceipts() async {
