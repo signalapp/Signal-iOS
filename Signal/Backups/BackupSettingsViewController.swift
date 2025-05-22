@@ -122,10 +122,33 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
             viewModel.handleDisableBackupsRemoteTask(disableRemotelyTask)
         } catch {
             errorActionSheet(OWSLocalizedString(
-                "BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED",
+                "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED",
                 comment: "Message shown in an action sheet when the user tries to disable Backups, but is not registered."
             ))
         }
+    }
+
+    func showDisablingBackupsFailedSheet() {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE",
+                comment: "Title shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error."
+            ),
+            message: OWSLocalizedString(
+                "BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE",
+                comment: "Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error."
+            ),
+        )
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.contactSupport) { _ in
+            ContactSupportActionSheet.present(
+                emailFilter: .custom("iOS Disable Backups Failed"),
+                logDumper: .fromGlobals(),
+                fromViewController: self
+            )
+        })
+        actionSheet.addAction(.okay)
+
+        OWSActionSheets.showActionSheet(actionSheet, fromViewController: self)
     }
 
     // MARK: -
@@ -314,6 +337,7 @@ private class BackupSettingsViewModel: ObservableObject {
     protocol ActionsDelegate: AnyObject {
         func enableBackups()
         func disableBackups()
+        func showDisablingBackupsFailedSheet()
 
         func loadBackupPlan() async throws -> BackupPlanLoadingState.LoadedBackupPlan
         func upgradeFromFreeToPaidPlan()
@@ -405,13 +429,14 @@ private class BackupSettingsViewModel: ObservableObject {
             backupEnabledState = .disabledLocallyStillDisablingRemotely
         }
 
-        Task {
+        Task { @MainActor in
             let newBackupEnabledState: BackupEnabledState
             do {
                 try await disableRemotelyTask.value
                 newBackupEnabledState = .disabled
             } catch {
                 newBackupEnabledState = .disabledLocallyButDisableRemotelyFailed(error)
+                actionsDelegate?.showDisablingBackupsFailedSheet()
             }
 
             withAnimation {
@@ -974,6 +999,7 @@ private extension BackupSettingsViewModel {
 
             func enableBackups() { print("Enabling!") }
             func disableBackups() { print("Disabling!") }
+            func showDisablingBackupsFailedSheet() { print("Showing disabling-Backups-failed sheet!") }
 
             func loadBackupPlan() async throws -> BackupSettingsViewModel.BackupPlanLoadingState.LoadedBackupPlan {
                 try! await Task.sleep(nanoseconds: 2.clampedNanoseconds)
