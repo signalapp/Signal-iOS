@@ -13,6 +13,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let appContext: AppContext
     private let authCredentialStore: AuthCredentialStore
     private let backupIdManager: BackupIdManager
+    private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
@@ -35,6 +36,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         appContext: AppContext,
         authCredentialStore: AuthCredentialStore,
         backupIdManager: BackupIdManager,
+        backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
         db: DB,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
@@ -56,6 +58,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         self.appContext = appContext
         self.authCredentialStore = authCredentialStore
         self.backupIdManager = backupIdManager
+        self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.dmConfigurationStore = dmConfigurationStore
@@ -243,6 +246,37 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
     public func unregisterFromService(auth: ChatServiceAuth) async throws {
         owsAssertBeta(appContext.isMainAppAndActive)
+
+        let localIdentifiers: LocalIdentifiers? = db.read { tx in
+            tsAccountManager.localIdentifiers(tx: tx)
+        }
+
+        // Fetch Backup auth before unregistering ourselves remotely, for use
+        // after we make the unregistration request.
+        let backupAuths: [BackupServiceAuth]?
+        if let localIdentifiers {
+            backupAuths = await withTaskGroup { [backupRequestManager] taskGroup in
+                for credentialType in BackupAuthCredentialType.allCases {
+                    taskGroup.addTask {
+                        return try? await backupRequestManager.fetchBackupServiceAuth(
+                            for: credentialType,
+                            localAci: localIdentifiers.aci,
+                            auth: .implicit()
+                        )
+                    }
+                }
+
+                var auths: [BackupServiceAuth] = []
+                for await auth in taskGroup {
+                    guard let auth else { continue }
+                    auths.append(auth)
+                }
+                return auths
+            }
+        } else {
+            backupAuths = nil
+        }
+
         var request = OWSRequestFactory.unregisterAccountRequest()
         request.auth = .identified(auth)
         do {
@@ -255,16 +289,21 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             throw error
         }
 
-        let (localIdentifiers, backupPlan) = db.read { tx in
-            (
-                tsAccountManager.localIdentifiers(tx: tx),
-                backupSettingsStore.backupPlan(tx: tx)
-            )
-        }
-
-        // Make best effort to delete backup objects on server.
-        if backupPlan != nil, let localIdentifiers {
-            try await backupIdManager.deleteBackupId(localIdentifiers: localIdentifiers, auth: auth)
+        // Now that we've successfully unregistered, make a best effort to wipe
+        // our Backups. This is safe to try even if Backups were disabled.
+        if let localIdentifiers, let backupAuths {
+            for backupAuth in backupAuths {
+                try? await Retry.performWithBackoff(
+                    maxAttempts: 3,
+                    isRetryable: { $0.isNetworkFailureOrTimeout || ($0 as? OWSHTTPError)?.isRetryable == true },
+                    block: {
+                        try await backupIdManager.deleteBackupId(
+                            localIdentifiers: localIdentifiers,
+                            backupAuth: backupAuth
+                        )
+                    }
+                )
+            }
         }
 
         // No need to set any state, as we wipe the whole app anyway.

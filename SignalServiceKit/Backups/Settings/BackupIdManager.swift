@@ -113,18 +113,28 @@ public class BackupIdManager {
                 auth: auth
             )
 
-            do {
-                try await api.deleteBackupId(backupAuth: backupAuth)
-            } catch where error.httpStatusCode == 401 {
-                // This will happen if, for whatever reason, the user doesn't have
-                // a Backup to delete. (It's a 401 because this really means the
-                // server has deleted the key we use to authenticate Backup
-                // requests, which happens in response to an earlier success in
-                // calling this API.)
-                //
-                // Treat this like a success: maybe we deleted earlier, but
-                // never got the response back.
-            }
+            try await deleteBackupId(
+                localIdentifiers: localIdentifiers,
+                backupAuth: backupAuth
+            )
+        }
+    }
+
+    public func deleteBackupId(
+        localIdentifiers: LocalIdentifiers,
+        backupAuth: BackupServiceAuth
+    ) async throws {
+        do {
+            try await api.deleteBackupId(backupAuth: backupAuth)
+        } catch where error.httpStatusCode == 401 {
+            // This will happen if, for whatever reason, the user doesn't have
+            // a Backup to delete. (It's a 401 because this really means the
+            // server has deleted the key we use to authenticate Backup
+            // requests, which happens in response to an earlier success in
+            // calling this API.)
+            //
+            // Treat this like a success: maybe we deleted earlier, but
+            // never got the response back.
         }
     }
 
@@ -140,7 +150,7 @@ public class BackupIdManager {
         public func registerBackupKey(
             backupAuth: BackupServiceAuth
         ) async throws {
-            try await asyncRequestWithNetworkRetries(
+            _ = try await networkManager.asyncRequest(
                 .backupSetPublicKeyRequest(backupAuth: backupAuth)
             )
         }
@@ -163,7 +173,7 @@ public class BackupIdManager {
             let base64MessageRequestContext = messageBackupRequestContext.getRequest().serialize().asData.base64EncodedString()
             let base64MediaRequestContext = mediaBackupRequestContext.getRequest().serialize().asData.base64EncodedString()
 
-            try await asyncRequestWithNetworkRetries(
+            _ = try await networkManager.asyncRequest(
                 .reserveBackupId(
                     backupId: base64MessageRequestContext,
                     mediaBackupId: base64MediaRequestContext,
@@ -173,18 +183,8 @@ public class BackupIdManager {
         }
 
         public func deleteBackupId(backupAuth: BackupServiceAuth) async throws {
-            try await asyncRequestWithNetworkRetries(
+            _ = try await networkManager.asyncRequest(
                 .deleteBackupRequest(backupAuth: backupAuth)
-            )
-        }
-
-        private func asyncRequestWithNetworkRetries(_ request: TSRequest) async throws {
-            try await Retry.performWithBackoff(
-                maxAttempts: 3,
-                isRetryable: { $0.isNetworkFailureOrTimeout || ($0 as? OWSHTTPError)?.isRetryable == true },
-                block: {
-                    _ = try await networkManager.asyncRequest(request)
-                }
             )
         }
     }

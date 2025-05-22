@@ -843,6 +843,7 @@ public class AppSetup {
             appContext: appContext,
             authCredentialStore: authCredentialStore,
             backupIdManager: backupIdManager,
+            backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             db: db,
             dmConfigurationStore: disappearingMessagesConfigurationStore,
