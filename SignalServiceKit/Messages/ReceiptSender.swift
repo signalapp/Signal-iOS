@@ -50,7 +50,6 @@ class MessageReceiptSet: NSObject, Codable {
 public class ReceiptSender: NSObject {
     private let recipientDatabaseTable: RecipientDatabaseTable
 
-    private let appReadiness: AppReadiness
     private let deliveryReceiptStore: KeyValueStore
     private let readReceiptStore: KeyValueStore
     private let viewedReceiptStore: KeyValueStore
@@ -60,7 +59,6 @@ public class ReceiptSender: NSObject {
     private let sendingState: AtomicValue<SendingState>
 
     public init(appReadiness: AppReadiness, recipientDatabaseTable: RecipientDatabaseTable) {
-        self.appReadiness = appReadiness
         self.recipientDatabaseTable = recipientDatabaseTable
         self.deliveryReceiptStore = KeyValueStore(collection: "kOutgoingDeliveryReceiptManagerCollection")
         self.readReceiptStore = KeyValueStore(collection: "kOutgoingReadReceiptManagerCollection")
@@ -71,22 +69,22 @@ public class ReceiptSender: NSObject {
         super.init()
         SwiftSingletons.register(self)
 
-        observers.append(NotificationCenter.default.addObserver(
-            forName: .identityStateDidChange,
-            object: self,
-            queue: nil,
-            using: { [weak self] _ in self?.sendPendingReceiptsIfNeeded() }
-        ))
-
-        observers.append(NotificationCenter.default.addObserver(
-            forName: SSKReachability.owsReachabilityDidChange,
-            object: self,
-            queue: nil,
-            using: { [weak self] _ in self?.sendPendingReceiptsIfNeeded() }
-        ))
-
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.sendPendingReceiptsIfNeeded()
+
+            self.observers.append(NotificationCenter.default.addObserver(
+                forName: .identityStateDidChange,
+                object: self,
+                queue: nil,
+                using: { [weak self] _ in self?.sendPendingReceiptsIfNeeded() }
+            ))
+
+            self.observers.append(NotificationCenter.default.addObserver(
+                forName: SSKReachability.owsReachabilityDidChange,
+                object: self,
+                queue: nil,
+                using: { [weak self] _ in self?.sendPendingReceiptsIfNeeded() }
+            ))
         }
     }
 
@@ -194,7 +192,7 @@ public class ReceiptSender: NSObject {
 
     private func _sendPendingReceiptsIfNeeded() async {
         do {
-            guard appReadiness.isAppReady, SSKEnvironment.shared.reachabilityManagerRef.isReachable else {
+            guard SSKEnvironment.shared.reachabilityManagerRef.isReachable else {
                 return
             }
             guard sendingState.update(block: { $0.startIfPossible() }) else {
