@@ -102,6 +102,11 @@ public class BackupIdManager {
     /// De-initialize Backups by deleting the "Backup ID". This is effectively a
     /// "delete Backup" operation, as subsequent to this operation any
     /// Backup-related objects for this account will be deleted from the server.
+    ///
+    /// - Important
+    /// This operation is key to, but not all of, "disabling Backups". Callers
+    /// interested in a user-level "disable Backups" operation should instead
+    /// refer to `BackupDisablingManager`.
     public func deleteBackupId(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth

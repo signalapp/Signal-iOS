@@ -31,6 +31,7 @@ public class AppEnvironment: NSObject {
 
     private(set) var appIconBadgeUpdater: AppIconBadgeUpdater!
     private(set) var avatarHistoryManager: AvatarHistoryManager!
+    private(set) var backupDisablingManager: BackupDisablingManager!
     private(set) var badgeManager: BadgeManager!
     private(set) var callLinkProfileKeySharingManager: CallLinkProfileKeySharingManager!
     private(set) var callService: CallService!
@@ -66,6 +67,12 @@ public class AppEnvironment: NSObject {
             db: DependenciesBridge.shared.db
         )
         self.badgeManager = badgeManager
+        self.backupDisablingManager = BackupDisablingManager(
+            backupIdManager: DependenciesBridge.shared.backupIdManager,
+            backupSettingsStore: BackupSettingsStore(),
+            db: DependenciesBridge.shared.db,
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+        )
         self.callService = callService
         self.callLinkProfileKeySharingManager = CallLinkProfileKeySharingManager(
             db: DependenciesBridge.shared.db,
@@ -183,6 +190,10 @@ public class AppEnvironment: NSObject {
 
             Task {
                 await deletedCallRecordCleanupManager.startCleanupIfNecessary()
+            }
+
+            Task {
+                await self.backupDisablingManager.disableRemotelyIfNecessary()
             }
 
             Task {

@@ -22,7 +22,7 @@ public final actor ConcurrentTaskQueue {
         self.remainingCount = concurrentLimit
     }
 
-    public func run<T>(_ block: () async throws -> T) async rethrows -> T {
+    public func run<T, E>(_ block: () async throws(E) -> T) async throws(E) -> T {
         if self.remainingCount > 0 {
             self.remainingCount -= 1
         } else {

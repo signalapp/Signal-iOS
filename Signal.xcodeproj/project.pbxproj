@@ -2434,6 +2434,8 @@
 		D90D4D842BBB61680097C573 /* BackupArchive+EmptyFrameId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D832BBB61680097C573 /* BackupArchive+EmptyFrameId.swift */; };
 		D9106DFF2AC1FEFD007ABFE6 /* EmptyForCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9106DFE2AC1FEFD007ABFE6 /* EmptyForCodable.swift */; };
 		D9106E022AC20066007ABFE6 /* EmptyForCodableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9106E002AC20061007ABFE6 /* EmptyForCodableTest.swift */; };
+		D912209C2DDD8465008BCC4B /* DebouncedTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = D912209B2DDD8463008BCC4B /* DebouncedTask.swift */; };
+		D912209F2DDD94EC008BCC4B /* DebouncedTaskTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D912209D2DDD94E1008BCC4B /* DebouncedTaskTest.swift */; };
 		D91444E72CDD72C200221D81 /* TSThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91444E62CDD72BE00221D81 /* TSThread.swift */; };
 		D9170EEA290C57BF00CD813A /* CVViewState+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */; };
 		D9170EEF2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9170EEE2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift */; };
@@ -2651,6 +2653,7 @@
 		D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979DA152B8D1FDD000EEAB8 /* BadgeCountFetcher.swift */; };
 		D97C43962D7F74F300BA41E0 /* recipient_contacts_05.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D97C43952D7F74F300BA41E0 /* recipient_contacts_05.txtproto */; };
 		D97C43972D7F74F300BA41E0 /* recipient_contacts_05.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D97C43942D7F74F300BA41E0 /* recipient_contacts_05.binproto */; };
+		D97C9FF22DD3FB7E00191CE2 /* BackupDisablingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */; };
 		D984F7242C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */; };
 		D985D86629B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */; };
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
@@ -6348,6 +6351,8 @@
 		D90D4D832BBB61680097C573 /* BackupArchive+EmptyFrameId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupArchive+EmptyFrameId.swift"; sourceTree = "<group>"; };
 		D9106DFE2AC1FEFD007ABFE6 /* EmptyForCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyForCodable.swift; sourceTree = "<group>"; };
 		D9106E002AC20061007ABFE6 /* EmptyForCodableTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyForCodableTest.swift; sourceTree = "<group>"; };
+		D912209B2DDD8463008BCC4B /* DebouncedTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebouncedTask.swift; sourceTree = "<group>"; };
+		D912209D2DDD94E1008BCC4B /* DebouncedTaskTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebouncedTaskTest.swift; sourceTree = "<group>"; };
 		D91444E62CDD72BE00221D81 /* TSThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSThread.swift; sourceTree = "<group>"; };
 		D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CVViewState+Banners.swift"; sourceTree = "<group>"; };
 		D9170EEE2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJobRecord.swift; sourceTree = "<group>"; };
@@ -6571,6 +6576,7 @@
 		D979DA152B8D1FDD000EEAB8 /* BadgeCountFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeCountFetcher.swift; sourceTree = "<group>"; };
 		D97C43942D7F74F300BA41E0 /* recipient_contacts_05.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = recipient_contacts_05.binproto; sourceTree = "<group>"; };
 		D97C43952D7F74F300BA41E0 /* recipient_contacts_05.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = recipient_contacts_05.txtproto; sourceTree = "<group>"; };
+		D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupDisablingManager.swift; sourceTree = "<group>"; };
 		D98300B12936E6C70018FDC2 /* DonationSubscriptionManager+DonationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationSubscriptionManager+DonationConfiguration.swift"; sourceTree = "<group>"; };
 		D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageTest.swift; sourceTree = "<group>"; };
 		D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerTest.swift; sourceTree = "<group>"; };
@@ -8821,6 +8827,8 @@
 				50C0203B2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift */,
 				500AF3AE2C58366700CB9F4F /* CooperativeTimeout.swift */,
 				500AF3B02C58385600CB9F4F /* CooperativeTimeoutTest.swift */,
+				D912209B2DDD8463008BCC4B /* DebouncedTask.swift */,
+				D912209D2DDD94E1008BCC4B /* DebouncedTaskTest.swift */,
 				50C0203D2CA4A7A500BDC4EF /* Retry.swift */,
 				6605B9852B2112A100E8A68A /* SerialTaskQueue.swift */,
 				726C94212D6F442200ABF9B9 /* UncooperativeTimeout.swift */,
@@ -12413,6 +12421,7 @@
 		D951F52F2D9B233300C5EBF3 /* Backups */ = {
 			isa = PBXGroup;
 			children = (
+				D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */,
 				D951F5302D9B236100C5EBF3 /* BackupSettingsViewController.swift */,
 				D9680CF22DBB0B28005DD5BE /* ChooseBackupPlanViewController.swift */,
 			);
@@ -16653,6 +16662,7 @@
 				32C584A825B81C6600256804 /* AvatarViewController.swift in Sources */,
 				B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */,
 				66485EB02CCC515A00B8613F /* BackupArchiveInternalErrorViewController.swift in Sources */,
+				D97C9FF22DD3FB7E00191CE2 /* BackupDisablingManager.swift in Sources */,
 				D951F5312D9B236700C5EBF3 /* BackupSettingsViewController.swift in Sources */,
 				32E035242739059C0081EE11 /* BadgeCollectionView.swift in Sources */,
 				32E03522273901710081EE11 /* BadgeConfigurationViewController.swift in Sources */,
@@ -17699,6 +17709,7 @@
 				D9B3E6352D4067CA00594475 /* DBFileSizeProvider.swift in Sources */,
 				6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */,
 				F9C5CDD8289453B400548EEE /* DebouncedEvent.swift in Sources */,
+				D912209C2DDD8465008BCC4B /* DebouncedTask.swift in Sources */,
 				668A00DF2C2B5ECF007B8808 /* DebuggerUtils.m in Sources */,
 				7255A4D02B98E2A400E95368 /* DebugLogger.swift in Sources */,
 				F94C912228FDEAF50065DF75 /* Decimal+IsInteger.swift in Sources */,
@@ -18665,6 +18676,7 @@
 				724E68642C91FA73002199F3 /* DataHexadecimalTest.swift in Sources */,
 				F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */,
 				66485EB92CD17D6400B8613F /* DbRollbackTests.swift in Sources */,
+				D912209F2DDD94EC008BCC4B /* DebouncedTaskTest.swift in Sources */,
 				F94C912428FDECC40065DF75 /* DecimalTest.swift in Sources */,
 				D9CA8AB32B6ACC0600787167 /* DeletedCallRecordCleanupManagerTest.swift in Sources */,
 				D91AC9362B61C79600814975 /* DeletedCallRecordStoreTest.swift in Sources */,

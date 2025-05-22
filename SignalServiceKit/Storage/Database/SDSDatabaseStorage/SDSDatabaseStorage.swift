@@ -259,17 +259,14 @@ public class SDSDatabaseStorage: NSObject, DB {
         line: Int = #line,
         block: (DBReadTransaction) throws(E) -> T
     ) throws(E) -> T {
-        return try _read(file: file, function: function, line: line, block: block, rescue: { err throws(E) in throw err })
+        return try _read(file: file, function: function, line: line, block: block)
     }
 
-    // The "rescue" pattern is used in LibDispatch (and replicated here) to
-    // allow "rethrows" to work properly.
     private func _read<T, E: Error>(
         file: String,
         function: String,
         line: Int,
         block: (DBReadTransaction) throws(E) -> T,
-        rescue: (E) throws(E) -> Never
     ) throws(E) -> T {
         var value: T!
         var thrown: E?
@@ -281,10 +278,7 @@ public class SDSDatabaseStorage: NSObject, DB {
             }
         }
         if let thrown {
-            // The `grdbError` has the same type as `thrown` (or isn't present).
-            // Therefore `grdbError ?? thrown` is guaranteed to be of type `E`.
-            let grdbError: GRDB.DatabaseError? = (thrown as? GRDB.DatabaseError)?.forLogging
-            try rescue((grdbError as! E?) ?? thrown)
+            throw thrown
         }
         return value
     }
@@ -347,13 +341,19 @@ public class SDSDatabaseStorage: NSObject, DB {
     }
 
     @discardableResult
-    public func write<T>(
+    public func write<T, E>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBWriteTransaction) throws -> T
-    ) rethrows -> T {
-        return try _writeCommitIfThrows(file: file, function: function, line: line, isAwaitableWrite: false, block: block, rescue: { throw $0 })
+        block: (DBWriteTransaction) throws(E) -> T
+    ) throws(E) -> T {
+        return try _writeCommitIfThrows(
+            file: file,
+            function: function,
+            line: line,
+            isAwaitableWrite: false,
+            block: block,
+        )
     }
 
     @discardableResult
@@ -376,18 +376,15 @@ public class SDSDatabaseStorage: NSObject, DB {
         }
     }
 
-    // The "rescue" pattern is used in LibDispatch (and replicated here) to
-    // allow "rethrows" to work properly.
-    private func _writeCommitIfThrows<T>(
+    private func _writeCommitIfThrows<T, E>(
         file: String,
         function: String,
         line: Int,
         isAwaitableWrite: Bool,
-        block: (DBWriteTransaction) throws -> T,
-        rescue: (Error) throws -> Never
-    ) rethrows -> T {
+        block: (DBWriteTransaction) throws(E) -> T,
+    ) throws(E) -> T {
         var value: T!
-        var thrown: Error?
+        var thrown: E?
         do {
             try performWriteWithTxCompletion(
                 file: file,
@@ -395,7 +392,7 @@ public class SDSDatabaseStorage: NSObject, DB {
                 line: line,
                 isAwaitableWrite: isAwaitableWrite
             ) { tx in
-                do {
+                do throws(E) {
                     value = try block(tx)
                 } catch {
                     thrown = error
@@ -407,7 +404,7 @@ public class SDSDatabaseStorage: NSObject, DB {
             owsFail("error: \(error.grdbErrorForLogging)")
         }
         if let thrown {
-            try rescue(thrown.grdbErrorForLogging)
+            throw thrown
         }
         return value
     }
@@ -494,14 +491,14 @@ public class SDSDatabaseStorage: NSObject, DB {
 
     // MARK: - Awaitable
 
-    public func awaitableWrite<T>(
+    public func awaitableWrite<T, E>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBWriteTransaction) throws -> T
-    ) async rethrows -> T {
-        return try await self.awaitableWriteQueue.run {
-            return try self._writeCommitIfThrows(file: file, function: function, line: line, isAwaitableWrite: true, block: block, rescue: { throw $0 })
+        block: (DBWriteTransaction) throws(E) -> T
+    ) async throws(E) -> T {
+        return try await self.awaitableWriteQueue.run { () throws(E) -> T in
+            return try self._writeCommitIfThrows(file: file, function: function, line: line, isAwaitableWrite: true, block: block)
         }
     }
 
