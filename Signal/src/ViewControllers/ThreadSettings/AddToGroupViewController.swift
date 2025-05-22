@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 public import SignalServiceKit
 public import SignalUI
 
@@ -86,7 +87,10 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     private func updateTableContents() {
         AssertIsOnMainThread()
-        let groupsSection = OWSTableSection(items: groupThreads.map(item(forGroupThread:)))
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let groupsSection = databaseStorage.read { tx in
+            return OWSTableSection(items: groupThreads.map { item(forGroupThread: $0, tx: tx) })
+        }
         self.contents = OWSTableContents(sections: [groupsSection])
     }
 
@@ -107,16 +111,6 @@ public class AddToGroupViewController: OWSTableViewController2 {
     private func didSelectGroup(_ groupThread: TSGroupThread) {
         let shortName = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return SSKEnvironment.shared.contactManagerRef.displayName(for: self.address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
-        }
-
-        guard !groupThread.groupModel.groupMembership.isMemberOfAnyKind(address) else {
-            let toastFormat = OWSLocalizedString(
-                "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT",
-                comment: "A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name}"
-            )
-            let toastText = String(format: toastFormat, shortName, groupThread.groupNameOrDefault)
-            presentToast(text: toastText)
-            return
         }
 
         let messageFormat = OWSLocalizedString("ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT",
@@ -146,12 +140,6 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
         let oldGroupModel = groupThread.groupModel
 
-        guard !oldGroupModel.groupMembership.isMemberOfAnyKind(serviceId) else {
-            let error = OWSAssertionError("Receipient is already in group")
-            GroupViewUtils.showUpdateErrorUI(error: error)
-            return
-        }
-
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
             updateBlock: {
@@ -179,12 +167,31 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     // MARK: -
 
-    private func item(forGroupThread groupThread: TSGroupThread) -> OWSTableItem {
+    private func item(forGroupThread groupThread: TSGroupThread, tx: DBReadTransaction) -> OWSTableItem {
         let alreadyAMemberText = OWSLocalizedString(
             "ADD_TO_GROUP_ALREADY_A_MEMBER",
             comment: "Text indicating your contact is already a member of the group on the 'add to group' view."
         )
-        let isAlreadyAMember = groupThread.groupMembership.isFullMember(address)
+        let isAlreadyAMember: Bool
+        if let serviceId = self.address.serviceId {
+            switch groupThread.groupMembership.canTryToAddToGroup(serviceId: serviceId) {
+            case .alreadyInGroup:
+                isAlreadyAMember = true
+            case .addableWithProfileKeyCredential:
+                let groupsV2 = SSKEnvironment.shared.groupsV2Ref
+                let canAddToGroup: Bool
+                if let aci = serviceId as? Aci {
+                    canAddToGroup = groupsV2.hasProfileKeyCredential(for: aci, transaction: tx)
+                } else {
+                    canAddToGroup = false
+                }
+                isAlreadyAMember = !canAddToGroup
+            case .addableOrInvitable:
+                isAlreadyAMember = false
+            }
+        } else {
+            isAlreadyAMember = false
+        }
 
         return OWSTableItem(
             customCellBlock: {

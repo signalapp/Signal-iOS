@@ -106,9 +106,6 @@
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
 "ADD_TO_GROUP_ALREADY_A_MEMBER" = "Already a member";
 
-/* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
-
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
 
