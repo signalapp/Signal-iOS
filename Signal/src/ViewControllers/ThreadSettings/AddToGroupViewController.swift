@@ -37,7 +37,9 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
 
-        updateGroupThreadsAsync()
+        Task {
+            await self.updateGroupThreads()
+        }
     }
 
     private var groupThreads = [TSGroupThread]() {
@@ -47,17 +49,13 @@ public class AddToGroupViewController: OWSTableViewController2 {
         }
     }
 
-    private func updateGroupThreadsAsync() {
-        DispatchQueue.sharedUserInitiated.async { [weak self] in
-            let fetchedGroupThreads = Self.fetchGroupThreads()
-            DispatchQueue.main.async {
-                self?.groupThreads = fetchedGroupThreads
-            }
-        }
+    private func updateGroupThreads() async {
+        self.groupThreads = await fetchGroupThreads()
     }
 
-    private class func fetchGroupThreads() -> [TSGroupThread] {
-        SSKEnvironment.shared.databaseStorageRef.read { transaction in
+    private nonisolated func fetchGroupThreads() async -> [TSGroupThread] {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        return databaseStorage.read { transaction in
             var result = [TSGroupThread]()
 
             do {
