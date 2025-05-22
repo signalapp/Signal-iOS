@@ -363,63 +363,57 @@ public class GroupMembership: MTLModel {
         result += "]"
         return result
     }
-}
 
-// MARK: - Accessors
+    // MARK: - Accessors
 
-public extension GroupMembership {
-
-    var fullMemberAdministrators: Set<SignalServiceAddress> {
+    public var fullMemberAdministrators: Set<SignalServiceAddress> {
         return Set(memberStates.lazy.filter { $0.value.isAdministrator && $0.value.isFullMember }.map { $0.key })
     }
 
-    var fullMembers: Set<SignalServiceAddress> {
+    public var fullMembers: Set<SignalServiceAddress> {
         return Set(memberStates.lazy.filter { $0.value.isFullMember }.map { $0.key })
     }
 
-    var invitedMembers: Set<SignalServiceAddress> {
+    public var invitedMembers: Set<SignalServiceAddress> {
         return Set(memberStates.lazy.filter { $0.value.isInvited }.map { $0.key })
     }
 
-    var requestingMembers: Set<SignalServiceAddress> {
+    public var requestingMembers: Set<SignalServiceAddress> {
         return Set(memberStates.lazy.filter { $0.value.isRequesting }.map { $0.key })
     }
 
-    var fullOrInvitedMembers: Set<SignalServiceAddress> {
+    public var fullOrInvitedMembers: Set<SignalServiceAddress> {
         return Set(memberStates.lazy.filter {
             $0.value.isFullMember || $0.value.isInvited
         }.map { $0.key })
     }
 
-    var invitedOrRequestMembers: Set<SignalServiceAddress> {
+    public var invitedOrRequestMembers: Set<SignalServiceAddress> {
         return Set(memberStates.lazy.filter {
             $0.value.isInvited || $0.value.isRequesting
         }.map { $0.key })
     }
 
-    var allMembersOfAnyKind: Set<SignalServiceAddress> {
+    public var allMembersOfAnyKind: Set<SignalServiceAddress> {
         return Set(memberStates.keys)
     }
 
-    var allMembersOfAnyKindServiceIds: Set<ServiceId> {
+    public var allMembersOfAnyKindServiceIds: Set<ServiceId> {
         return Set(memberStates.keys.lazy.compactMap { $0.serviceId })
     }
-}
 
-public extension GroupMembership {
-
-    func role(for serviceId: ServiceId) -> TSGroupMemberRole? {
+    public func role(for serviceId: ServiceId) -> TSGroupMemberRole? {
         return role(for: SignalServiceAddress(serviceId))
     }
 
-    func role(for address: SignalServiceAddress) -> TSGroupMemberRole? {
+    public func role(for address: SignalServiceAddress) -> TSGroupMemberRole? {
         guard let memberState = memberStates[address] else {
             return nil
         }
         return memberState.role
     }
 
-    func isFullOrInvitedAdministrator(_ address: SignalServiceAddress) -> Bool {
+    public func isFullOrInvitedAdministrator(_ address: SignalServiceAddress) -> Bool {
         guard let memberState = memberStates[address] else {
             return false
         }
@@ -433,73 +427,73 @@ public extension GroupMembership {
         }
     }
 
-    func isFullOrInvitedAdministrator(_ serviceId: ServiceId) -> Bool {
+    public func isFullOrInvitedAdministrator(_ serviceId: ServiceId) -> Bool {
         return isFullOrInvitedAdministrator(SignalServiceAddress(serviceId))
     }
 
-    func isFullMemberAndAdministrator(_ address: SignalServiceAddress) -> Bool {
+    public func isFullMemberAndAdministrator(_ address: SignalServiceAddress) -> Bool {
         guard let memberState = memberStates[address] else {
             return false
         }
         return memberState.isAdministrator && memberState.isFullMember
     }
 
-    func isFullMemberAndAdministrator(_ serviceId: ServiceId) -> Bool {
+    public func isFullMemberAndAdministrator(_ serviceId: ServiceId) -> Bool {
         return isFullMemberAndAdministrator(SignalServiceAddress(serviceId))
     }
 
     @objc
-    func isFullMember(_ address: SignalServiceAddress) -> Bool {
+    public func isFullMember(_ address: SignalServiceAddress) -> Bool {
         guard let memberState = memberStates[address] else {
             return false
         }
         return memberState.isFullMember
     }
 
-    func isFullMember(_ serviceId: ServiceId) -> Bool {
+    public func isFullMember(_ serviceId: ServiceId) -> Bool {
         return isFullMember(SignalServiceAddress(serviceId))
     }
 
-    func isInvitedMember(_ address: SignalServiceAddress) -> Bool {
+    public func isInvitedMember(_ address: SignalServiceAddress) -> Bool {
         guard let memberState = memberStates[address] else {
             return false
         }
         return memberState.isInvited
     }
 
-    func isInvitedMember(_ serviceId: ServiceId) -> Bool {
+    public func isInvitedMember(_ serviceId: ServiceId) -> Bool {
         return isInvitedMember(SignalServiceAddress(serviceId))
     }
 
-    func isRequestingMember(_ address: SignalServiceAddress) -> Bool {
+    public func isRequestingMember(_ address: SignalServiceAddress) -> Bool {
         guard let memberState = memberStates[address] else {
             return false
         }
         return memberState.isRequesting
     }
 
-    func isRequestingMember(_ serviceId: ServiceId) -> Bool {
+    public func isRequestingMember(_ serviceId: ServiceId) -> Bool {
         return isRequestingMember(SignalServiceAddress(serviceId))
     }
 
-    func isMemberOfAnyKind(_ address: SignalServiceAddress) -> Bool {
+    public func isMemberOfAnyKind(_ address: SignalServiceAddress) -> Bool {
         return memberStates[address] != nil
     }
 
-    func isMemberOfAnyKind(_ serviceId: ServiceId) -> Bool {
+    public func isMemberOfAnyKind(_ serviceId: ServiceId) -> Bool {
         return isMemberOfAnyKind(SignalServiceAddress(serviceId))
     }
 
-    func isBannedMember(_ aci: Aci) -> Bool {
+    public func isBannedMember(_ aci: Aci) -> Bool {
         return bannedMembers[aci] != nil
     }
 
-    func hasInvalidInvite(forUserId userId: Data) -> Bool {
+    public func hasInvalidInvite(forUserId userId: Data) -> Bool {
         return invalidInviteMap[userId] != nil
     }
 
     /// This method should only be called on invited members.
-    func addedByAci(forInvitedMember address: SignalServiceAddress) -> Aci? {
+    public func addedByAci(forInvitedMember address: SignalServiceAddress) -> Aci? {
         guard let memberState = memberStates[address] else {
             return nil
         }
@@ -512,12 +506,12 @@ public extension GroupMembership {
         }
     }
 
-    func addedByAci(forInvitedMember serviceId: ServiceId) -> Aci? {
+    public func addedByAci(forInvitedMember serviceId: ServiceId) -> Aci? {
         return addedByAci(forInvitedMember: SignalServiceAddress(serviceId))
     }
 
     /// This method should only be called for full members.
-    func didJoinFromInviteLink(forFullMember address: SignalServiceAddress) -> Bool {
+    public func didJoinFromInviteLink(forFullMember address: SignalServiceAddress) -> Bool {
         guard let memberState = memberStates[address] else {
             owsFailDebug("Missing member: \(address)")
             return false
@@ -532,7 +526,7 @@ public extension GroupMembership {
     }
 
     /// this method should only be called for full members.
-    func didJoinFromAcceptedJoinRequest(forFullMember address: SignalServiceAddress) -> Bool {
+    public func didJoinFromAcceptedJoinRequest(forFullMember address: SignalServiceAddress) -> Bool {
         guard let memberState = memberStates[address] else {
             owsFailDebug("Missing member: \(address)")
             return false
@@ -547,7 +541,7 @@ public extension GroupMembership {
     }
 
     /// Is this user's profile key exposed to the group?
-    func hasProfileKeyInGroup(serviceId: ServiceId) -> Bool {
+    public func hasProfileKeyInGroup(serviceId: ServiceId) -> Bool {
         guard let memberState = memberStates[SignalServiceAddress(serviceId)] else {
             return false
         }
@@ -561,7 +555,7 @@ public extension GroupMembership {
     }
 
     /// Can this user view the profile keys in the group?
-    func canViewProfileKeys(serviceId: ServiceId) -> Bool {
+    public func canViewProfileKeys(serviceId: ServiceId) -> Bool {
         guard let memberState = memberStates[SignalServiceAddress(serviceId)] else {
             return false
         }
@@ -573,12 +567,10 @@ public extension GroupMembership {
             return false
         }
     }
-}
 
-// MARK: - Builder
+    // MARK: - Builder
 
-public extension GroupMembership {
-    struct Builder {
+    public struct Builder {
         fileprivate var memberStates = MemberStateMap()
         private var bannedMembers = BannedMembersMap()
         private var invalidInviteMap = InvalidInviteMap()
@@ -766,11 +758,9 @@ public extension GroupMembership {
             )
         }
     }
-}
 
-// MARK: - Local user accessors
+    // MARK: - Local user accessors
 
-public extension GroupMembership {
     /// The local PNI, if it is present and an invited member.
     ///
     /// - Note
@@ -785,7 +775,7 @@ public extension GroupMembership {
         return nil
     }
 
-    var isLocalUserMemberOfAnyKind: Bool {
+    public var isLocalUserMemberOfAnyKind: Bool {
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             return false
         }
@@ -797,7 +787,7 @@ public extension GroupMembership {
         return localPniAsInvitedMember(localIdentifiers: localIdentifiers) != nil
     }
 
-    var isLocalUserFullMember: Bool {
+    public var isLocalUserFullMember: Bool {
         guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             return false
         }
@@ -809,7 +799,7 @@ public extension GroupMembership {
     ///
     /// Checks membership for the local ACI first. If none is available, falls
     /// back to checking membership for the local PNI.
-    func localUserInvitedAtServiceId(localIdentifiers: LocalIdentifiers) -> ServiceId? {
+    public func localUserInvitedAtServiceId(localIdentifiers: LocalIdentifiers) -> ServiceId? {
         if isMemberOfAnyKind(localIdentifiers.aci) {
             // If our ACI is any kind of member, return that membership rather
             // than falling back to the PNI.
@@ -827,7 +817,7 @@ public extension GroupMembership {
     ///
     /// Checks membership for the local ACI first. If none is available, falls
     /// back to checking membership for the local PNI.
-    var isLocalUserInvitedMember: Bool {
+    public var isLocalUserInvitedMember: Bool {
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             return false
         }
@@ -835,7 +825,7 @@ public extension GroupMembership {
         return localUserInvitedAtServiceId(localIdentifiers: localIdentifiers) != nil
     }
 
-    var isLocalUserRequestingMember: Bool {
+    public var isLocalUserRequestingMember: Bool {
         guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             return false
         }
@@ -843,11 +833,11 @@ public extension GroupMembership {
         return isRequestingMember(localAci)
     }
 
-    var isLocalUserFullOrInvitedMember: Bool {
+    public var isLocalUserFullOrInvitedMember: Bool {
         return isLocalUserFullMember || isLocalUserInvitedMember
     }
 
-    var isLocalUserFullMemberAndAdministrator: Bool {
+    public var isLocalUserFullMemberAndAdministrator: Bool {
         guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             return false
         }
