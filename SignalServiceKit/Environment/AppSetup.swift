@@ -846,6 +846,7 @@ public class AppSetup {
             appContext: appContext,
             authCredentialStore: authCredentialStore,
             backupIdManager: backupIdManager,
+            backupListMediaManager: backupListMediaManager,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             db: db,

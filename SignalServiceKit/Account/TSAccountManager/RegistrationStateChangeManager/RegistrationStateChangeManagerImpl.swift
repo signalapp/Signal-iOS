@@ -13,6 +13,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let appContext: AppContext
     private let authCredentialStore: AuthCredentialStore
     private let backupIdManager: BackupIdManager
+    private let backupListMediaManager: BackupListMediaManager
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
@@ -36,6 +37,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         appContext: AppContext,
         authCredentialStore: AuthCredentialStore,
         backupIdManager: BackupIdManager,
+        backupListMediaManager: BackupListMediaManager,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
         db: DB,
@@ -58,6 +60,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         self.appContext = appContext
         self.authCredentialStore = authCredentialStore
         self.backupIdManager = backupIdManager
+        self.backupListMediaManager = backupListMediaManager
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
@@ -154,6 +157,8 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
         if isDeregisteredOrDelinked {
             notificationPresenter.notifyUserOfDeregistration(tx: tx)
+            // Ensure when we reregister, we will query list media.
+            backupListMediaManager.setNeedsQueryListMedia(tx: tx)
             // On linked devices, reset all DM timer versions. If the user
             // relinks a new primary and resets all its DM timer versions,
             // our local higher version number would prevent us getting

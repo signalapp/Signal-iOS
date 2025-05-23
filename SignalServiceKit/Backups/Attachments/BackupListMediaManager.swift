@@ -460,11 +460,25 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             // If we've never queried, we absolutely should.
             return true
         }
-        return currentUploadEra != lastQueriedUploadEra
+        guard tsAccountManager.registrationState(tx: tx).isPrimaryDevice == true else {
+            // We only query once ever on linked devices, not again when
+            // state changes.
+            return true
+        }
+        if currentUploadEra != lastQueriedUploadEra {
+            return true
+        }
+        let nowMs = dateProvider().ows_millisecondsSince1970
+        let lastListMediaMs = kvStore.getUInt64(Constants.lastListMediaTimestampKey, defaultValue: 0, transaction: tx)
+        if nowMs > lastListMediaMs, nowMs - lastListMediaMs > Constants.refreshIntervalMs {
+            return true
+        }
+        return false
     }
 
     private func didQueryListMedia(uploadEraAtStartOfRequest uploadEra: String, tx: DBWriteTransaction) {
         self.kvStore.setString(uploadEra, key: Constants.lastListMediaUploadEraKey, transaction: tx)
+        self.kvStore.setUInt64(dateProvider().ows_millisecondsSince1970, key: Constants.lastListMediaTimestampKey, transaction: tx)
     }
 
     public func setNeedsQueryListMedia(tx: DBWriteTransaction) {
@@ -475,5 +489,11 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         /// Maps to the upload era (active subscription) when we last queried the list media
         /// endpoint, or nil if its never been queried.
         static let lastListMediaUploadEraKey = "lastListMediaUploadEra"
+
+        /// Maps to the timestamp we last completed a list media request.
+        static let lastListMediaTimestampKey = "lastListMediaTimestamp"
+
+        /// If we haven't listed in this long, we will list again.
+        static let refreshIntervalMs: UInt64 = .dayInMs * 30
     }
 }
