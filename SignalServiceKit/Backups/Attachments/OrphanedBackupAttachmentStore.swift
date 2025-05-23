@@ -14,6 +14,12 @@ public protocol OrphanedBackupAttachmentStore {
     /// Returns an empty array if the table is empty.
     func peek(count: UInt, tx: DBReadTransaction) throws -> [OrphanedBackupAttachment]
 
+    /// Remove any tasks with the given media name
+    func remove(
+        mediaName: String,
+        tx: DBWriteTransaction
+    ) throws
+
     /// Remove the task from the queue. Should be called once deleted on the cdn (or permanently failed).
     func remove(
         _ record: OrphanedBackupAttachment,
@@ -44,6 +50,15 @@ public class OrphanedBackupAttachmentStoreImpl: OrphanedBackupAttachmentStore {
             .order([Column(OrphanedBackupAttachment.CodingKeys.id).asc])
             .limit(Int(count))
             .fetchAll(db)
+    }
+
+    public func remove(
+        mediaName: String,
+        tx: DBWriteTransaction
+    ) throws {
+        try OrphanedBackupAttachment
+            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
+            .deleteAll(tx.database)
     }
 
     public func remove(

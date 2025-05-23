@@ -18,12 +18,16 @@ public protocol OrphanedBackupAttachmentManager {
     /// and see mediaId abcd there with no associated local attachment.
     /// We add it to the orphan table to schedule for deletion.
     /// Later, we either send or receive (and download) an attachment with the same
-    /// mediaId (same file contents). Now the orphan delete job races with the upload
-    /// of that new attachment instance. So we need to cancel (delete) the orphan row.
+    /// mediaId (same file contents). We don't want to delete the upload anymore,
+    /// so dequeue it for deletion.
     func didCreateOrUpdateAttachment(
         withMediaName mediaName: String,
         tx: DBWriteTransaction
     )
+
+    /// Run all remote deletions, returning when finished. Supports cooperative cancellation.
+    /// Should only be run after backup uploads have finished to avoid races.
+    func runIfNeeded() async throws
 }
 
 public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManager {
@@ -32,7 +36,6 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
     private let backupKeyMaterial: BackupKeyMaterial
     private let db: any DB
     private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
-    private let tableObserver: TableObserver
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
 
@@ -65,20 +68,6 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
             db: db,
             runner: taskRunner
         )
-        // Avoid handing self to tableObserver both to limit its API
-        // surface and avoid retain cycles.
-        var runIfNeeded: (() -> Void)?
-        self.tableObserver = TableObserver {
-            runIfNeeded?()
-        }
-        runIfNeeded = { [weak self] in
-            self?.runIfNeeded()
-        }
-
-        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
-            self?.runIfNeeded()
-            self?.startObserving()
-        }
     }
 
     public func didCreateOrUpdateAttachment(
@@ -115,77 +104,13 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         }
     }
 
-    // MARK: - Private
-
-    private func runIfNeeded() {
-        guard appReadiness.isAppReady else {
-            return
-        }
+    public func runIfNeeded() async throws {
+        try await appReadiness.waitForAppReady()
+        try Task.checkCancellation()
         guard tsAccountManager.localIdentifiersWithMaybeSneakyTransaction != nil else {
             return
         }
-        Task {
-            try await taskQueue.loadAndRunTasks()
-        }
-    }
-
-    // MARK: - Observation
-
-    private func startObserving() {
-        db.add(transactionObserver: tableObserver, extent: .observerLifetime)
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didUpdateRegistrationState),
-            name: .registrationStateDidChange,
-            object: nil
-        )
-    }
-
-    @objc
-    private func didUpdateRegistrationState() {
-        runIfNeeded()
-    }
-
-    private class TableObserver: TransactionObserver {
-
-        private let runIfNeeded: () -> Void
-
-        init(runIfNeeded: @escaping () -> Void) {
-            self.runIfNeeded = runIfNeeded
-        }
-
-        func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
-            switch eventKind {
-            case .insert:
-                return eventKind.tableName == OrphanedBackupAttachment.databaseTableName
-            case .delete, .update:
-                return false
-            }
-        }
-
-        /// `observes(eventsOfKind:)` filtering _only_ applies to `databaseDidChange`,  _not_ `databaseDidCommit`.
-        /// We want to filter, but only want to _do_ anything after the changes commit.
-        /// Use this bool to track when the filter is passed (didChange) so we know whether to do anything on didCommit .
-        private var shouldRunOnNextCommit = false
-
-        func databaseDidChange(with event: DatabaseEvent) {
-            shouldRunOnNextCommit = true
-        }
-
-        func databaseDidCommit(_ db: GRDB.Database) {
-            guard shouldRunOnNextCommit else {
-                return
-            }
-            shouldRunOnNextCommit = false
-
-            // When we get a matching event, run the next task _after_ committing.
-            // The task queue should pick up whatever new row(s) got added to the table.
-            // This is harmless if the queue is already running tasks.
-            runIfNeeded()
-        }
-
-        func databaseDidRollback(_ db: GRDB.Database) {}
+        try await taskQueue.loadAndRunTasks()
     }
 
     // MARK: - TaskRecordRunner
@@ -441,6 +366,10 @@ open class OrphanedBackupAttachmentManagerMock: OrphanedBackupAttachmentManager 
         withMediaName mediaName: String,
         tx: DBWriteTransaction
     ) {
+        // Do nothing
+    }
+
+    open func runIfNeeded() async throws {
         // Do nothing
     }
 }

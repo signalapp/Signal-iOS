@@ -82,6 +82,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         backupSubscriptionManager: BackupSubscriptionManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
+        orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
         progress: BackupAttachmentUploadProgress,
         statusManager: BackupAttachmentQueueStatusUpdates,
         tsAccountManager: TSAccountManager
@@ -105,6 +106,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             backupSubscriptionManager: backupSubscriptionManager,
             dateProvider: dateProvider,
             db: db,
+            orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
             progress: progress,
             statusManager: statusManager,
             tsAccountManager: tsAccountManager
@@ -400,6 +402,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         private let backupSubscriptionManager: BackupSubscriptionManager
         private let dateProvider: DateProvider
         private let db: any DB
+        private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
         private let progress: BackupAttachmentUploadProgress
         private let statusManager: BackupAttachmentQueueStatusUpdates
         private let tsAccountManager: TSAccountManager
@@ -415,6 +418,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             backupSubscriptionManager: BackupSubscriptionManager,
             dateProvider: @escaping DateProvider,
             db: any DB,
+            orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
             progress: BackupAttachmentUploadProgress,
             statusManager: BackupAttachmentQueueStatusUpdates,
             tsAccountManager: TSAccountManager
@@ -427,6 +431,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             self.backupSubscriptionManager = backupSubscriptionManager
             self.dateProvider = dateProvider
             self.db = db
+            self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
             self.progress = progress
             self.statusManager = statusManager
             self.tsAccountManager = tsAccountManager
@@ -462,7 +467,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                 return .cancelled
             }
 
-            guard let stream = attachment.asStream() else {
+            guard let stream = attachment.asStream(), let mediaName = attachment.mediaName else {
                 // We only back up attachments we've downloaded (streams)
                 return .cancelled
             }
@@ -590,6 +595,17 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             // Upload thumbnail first
             if needsThumbnailUpload {
                 do {
+                    // See comment on fullsize if branch below
+                    try await db.awaitableWrite { tx in
+                        try orphanedBackupAttachmentStore.remove(
+                            mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
+                            tx: tx
+                        )
+                    }
+                } catch {
+                    owsFailDebug("Unable to delete orphan row. Proceeding anyway.")
+                }
+                do {
                     try await attachmentUploadManager.uploadMediaTierThumbnailAttachment(
                         attachmentId: attachment.id,
                         uploadEra: currentUploadEra,
@@ -603,6 +619,23 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
 
             // Upload fullsize next
             if needsMediaTierUpload {
+                // We're about to upload; ensure we aren't also enqueuing a media tier delete.
+                // This is mostly defensive as in practice the only place we delete is if we
+                // discover a listed mediaName we don't have locally. To then later have it
+                // for upload means someone forwarded the same attachment with the same
+                // encryption key. Unlikely, but more important in the future mediaName
+                // might change to NOT include encryptionKey as input which makes this
+                // quite a bit more likely, so its good hygiene to be defensive.
+                do {
+                    try await db.awaitableWrite { tx in
+                        try orphanedBackupAttachmentStore.remove(
+                            mediaName: mediaName,
+                            tx: tx
+                        )
+                    }
+                } catch {
+                    owsFailDebug("Unable to delete orphan row. Proceeding anyway.")
+                }
                 do {
                     let progressSink = await progress.willBeginUploadingAttachment(
                         attachmentId: attachment.id,

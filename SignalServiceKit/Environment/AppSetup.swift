@@ -463,6 +463,7 @@ public class AppSetup {
             backupSubscriptionManager: backupSubscriptionManager,
             dateProvider: dateProvider,
             db: db,
+            orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
             progress: backupAttachmentUploadProgress,
             statusManager: backupAttachmentQueueStatusManager,
             tsAccountManager: tsAccountManager
