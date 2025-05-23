@@ -151,9 +151,17 @@ extension ConversationViewController: CVComponentDelegate {
                 let referencedAttachments = attachmentStore
                     .fetchAllReferencedAttachments(owningMessageRowId: messageRowId, tx: tx)
 
-                return try referencedAttachments.map { $0.attachment.id }.contains { attachmentRowId in
-                    try backupAttachmentDownloadStore.hasEnqueuedDownload(
-                        attachmentRowId: attachmentRowId,
+                return try referencedAttachments.contains { referencedAttachment in
+                    // We only auto-download on appear if we've got a cdn number to try.
+                    // The user can still manual download if there isn't one (using fallback cdn).
+                    guard referencedAttachment.attachment.mediaTierInfo?.cdnNumber != nil else {
+                        return false
+                    }
+                    // Otherwise use presence in the backup download queue to indicate
+                    // downloadability; this just functionally bumps the priority so the
+                    // download happens immediately and unconditionally.
+                    return try backupAttachmentDownloadStore.hasEnqueuedDownload(
+                        attachmentRowId: referencedAttachment.attachment.id,
                         tx: tx
                     )
                 }

@@ -183,7 +183,11 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     public func restoreAttachmentsIfNeeded() async throws {
         guard appContext.isMainApp else { return }
 
-        if FeatureFlags.Backups.remoteExportAlpha {
+        if
+            FeatureFlags.Backups.remoteExportAlpha,
+            db.read(block: tsAccountManager.registrationState(tx:))
+                .isRegistered
+        {
             try await listMediaManager.queryListMediaIfNeeded()
         }
 

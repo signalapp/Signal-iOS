@@ -230,6 +230,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     return mediaTierInfo == nil ? .transitTier : .mediaTierFullsize
                 }
                 if
+                    FeatureFlags.Backups.remoteExportAlpha,
                     mediaTierInfo.lastDownloadAttemptTimestamp == nil
                 {
                     // If we've never tried media tier, always try that first.
@@ -241,8 +242,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // next time.
                     return .transitTier
                 } else {
-                    // If both have failed fall back to media tier.
-                    return .mediaTierFullsize
+                    // If both have failed fall back to default.
+                    return FeatureFlags.Backups.remoteExportAlpha
+                        ? .mediaTierFullsize
+                        : .transitTier
                 }
             }()
 

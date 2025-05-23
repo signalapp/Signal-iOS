@@ -83,10 +83,12 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
         var progressSource: OWSProgressSource?
         if let progress {
             remainingAttachmentCount = databaseStorage.read(block: fetchRemainingTSAttachmentCount(tx:))
-            progressSource = await progress.addSource(
-                withLabel: "Remaining Interactions",
-                unitCount: remainingAttachmentCount
-            )
+            if remainingAttachmentCount > 0 {
+                progressSource = await progress.addSource(
+                    withLabel: "Remaining Interactions",
+                    unitCount: remainingAttachmentCount
+                )
+            }
         }
 
         store.willAttemptMigrationUntilFinished()

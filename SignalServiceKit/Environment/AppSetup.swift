@@ -445,8 +445,10 @@ public class AppSetup {
             backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             backupSubscriptionManager: backupSubscriptionManager,
+            dateProvider: dateProvider,
             db: db,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
+            remoteConfigManager: remoteConfigManager,
             tsAccountManager: tsAccountManager
         )
 

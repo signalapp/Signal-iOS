@@ -823,6 +823,11 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     plaintextDataLength: stream.unencryptedByteCount,
                     // This is the length from the stream, not the transit tier,
                     // but the length is the same regardless of the key used.
+                    // Note we use this when copying to media tier (the server requires
+                    // the blob length on CDN) which is somewhat brittle if our local
+                    // padding length doesn't match the padding length from the sender
+                    // on CDN. This only becomes a problem if we ever change padding
+                    // values or they drift between clients.
                     encryptedDataLength: stream.encryptedByteCount
                 ))
             } else {

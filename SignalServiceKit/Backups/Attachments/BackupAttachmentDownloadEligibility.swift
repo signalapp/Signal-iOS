@@ -109,23 +109,12 @@ internal struct BackupAttachmentDownloadEligibility {
             canDownloadMediaTierFullsize = false
         }
 
-        let canDownloadTransitTierFullsize: Bool
-        if let transitTierInfo = attachment.transitTierInfo {
-            // Download if the upload was < 45 days old,
-            // otherwise don't bother trying automatically.
-            // (The user could still try a manual download later).
-            // First try the upload timestamp, if that doesn't pass the check
-            // try the received timestamp.
-            if transitTierInfo.uploadTimestamp + remoteConfig.messageQueueTimeMs > currentTimestamp {
-                canDownloadTransitTierFullsize = true
-            } else if try cached(getAttachmentTimestamp) ?? 0 + remoteConfig.messageQueueTimeMs > currentTimestamp {
-                canDownloadTransitTierFullsize = true
-            } else {
-                canDownloadTransitTierFullsize = false
-            }
-        } else {
-            canDownloadTransitTierFullsize = false
-        }
+        let canDownloadTransitTierFullsize = try Self.canDownloadTransitTierFullsize(
+            attachment: attachment,
+            attachmentTimestamp: { try cached(getAttachmentTimestamp) }(),
+            currentTimestamp: currentTimestamp,
+            remoteConfig: remoteConfig
+        )
 
         let canDownloadThumbnail =
             FeatureFlags.Backups.fileAlpha
@@ -165,5 +154,29 @@ internal struct BackupAttachmentDownloadEligibility {
             canDownloadThumbnail: canDownloadThumbnail,
             downloadPriority: downloadPriority
         )
+    }
+
+    static func canDownloadTransitTierFullsize(
+        attachment: Attachment,
+        attachmentTimestamp getAttachmentTimestamp: @autoclosure () throws -> UInt64?,
+        currentTimestamp: UInt64,
+        remoteConfig: RemoteConfig
+    ) rethrows -> Bool {
+        if let transitTierInfo = attachment.transitTierInfo {
+            // Download if the upload was < 45 days old,
+            // otherwise don't bother trying automatically.
+            // (The user could still try a manual download later).
+            // First try the upload timestamp, if that doesn't pass the check
+            // try the received timestamp.
+            if transitTierInfo.uploadTimestamp + remoteConfig.messageQueueTimeMs > currentTimestamp {
+                return true
+            } else if try getAttachmentTimestamp() ?? 0 + remoteConfig.messageQueueTimeMs > currentTimestamp {
+                return true
+            } else {
+                return false
+            }
+        } else {
+            return false
+        }
     }
 }

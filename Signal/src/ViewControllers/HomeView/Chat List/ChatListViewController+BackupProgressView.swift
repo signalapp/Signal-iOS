@@ -11,6 +11,7 @@ public class CLVBackupProgressView {
 
     public class State {
         var downloadQueueStatus: BackupAttachmentQueueStatus?
+        var backupPlan: BackupPlan?
         var didDismissDownloadCompleteBanner: Bool?
         var totalPendingBackupAttachmentDownloadByteCount: UInt64?
         var downloadProgress: OWSProgress?
@@ -23,6 +24,7 @@ public class CLVBackupProgressView {
         }
 
         func refetchDBState(tx: DBReadTransaction) {
+            self.backupPlan = BackupSettingsStore().backupPlan(tx: tx)
             self.didDismissDownloadCompleteBanner = backupAttachmentDownloadStore
                 .getDidDismissDownloadCompleteBanner(tx: tx)
             self.totalPendingBackupAttachmentDownloadByteCount = backupAttachmentDownloadStore
@@ -123,6 +125,12 @@ public class CLVBackupProgressView {
         completeDismissAction: @escaping () -> Void,
         backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager
     ) -> BackupAttachmentDownloadProgressView.State? {
+        switch viewState.backupPlan {
+        case nil, .free:
+            return .none
+        case .paid:
+            break
+        }
         switch viewState.downloadQueueStatus {
         case .none, .notRegisteredAndReady:
             return nil
