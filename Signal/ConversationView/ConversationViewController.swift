@@ -5,6 +5,7 @@
 
 public import SignalServiceKit
 public import SignalUI
+import UIKit
 
 public enum ConversationUIMode: UInt {
     case normal
@@ -223,6 +224,9 @@ public final class ConversationViewController: OWSViewController {
         loadCoordinator.viewDidLoad()
 
         self.startReloadTimer()
+        
+        let dropInteraction = UIDropInteraction(delegate: self)
+        self.view.addInteraction(dropInteraction)
     }
 
     private func createContents() {
@@ -682,4 +686,32 @@ extension ConversationViewController: ContactsViewHelperObserver {
 
         loadCoordinator.enqueueReload(canReuseInteractionModels: true, canReuseComponentStates: false)
     }
+}
+
+extension ConversationViewController: UIDropInteractionDelegate {
+    
+    public func dropInteraction(_ interaction: UIDropInteraction, canHandle session: any UIDropSession) -> Bool {
+        let inputUtiTypes = Array(MimeTypeUtil.supportedInputImageUtiTypes)
+        return session.hasItemsConforming(toTypeIdentifiers: inputUtiTypes) && uiMode == .normal
+    }
+    
+    public func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: any UIDropSession) -> UIDropProposal {
+        return UIDropProposal(operation: .copy)
+    }
+        
+    public func dropInteraction(_ interaction: UIDropInteraction, performDrop session: any UIDropSession) {
+        //session.loadObject automatically runs on the main thread as per documentation
+        session.loadObjects(ofClass: SignalAttachment.self) { [weak self] attachmentItems in
+            if let attachments = attachmentItems as? [SignalAttachment], let firstAttachment = attachments.first {
+                //MARK: Perhaps if we're using this code block so much, it should be refactored into its own function somewhere.
+                if firstAttachment.isBorderless {
+                    self?.tryToSendAttachments([ firstAttachment ], messageBody: nil)
+                } else {
+                    self?.dismissKeyBoard()
+                    self?.showApprovalDialog(forAttachment: firstAttachment)
+                }
+            }
+        }
+    }
+    
 }
