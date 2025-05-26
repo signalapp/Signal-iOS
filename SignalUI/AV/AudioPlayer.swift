@@ -224,7 +224,9 @@ public class AudioPlayer: NSObject {
                     asset = AVURLAsset(url: symlinkUrl)
                 }
             }
-            return AVPlayer(playerItem: .init(asset: asset))
+            let avPlayer = AVPlayer(playerItem: .init(asset: asset))
+            avPlayer.allowsExternalPlayback = false
+            return avPlayer
         }
 
         let audioPlayer: AVPlayer
@@ -235,6 +237,7 @@ public class AudioPlayer: NSObject {
             case .attachment(let attachment):
                 let asset = try attachment.decryptedAVAsset()
                 audioPlayer = .init(playerItem: .init(asset: asset))
+                audioPlayer.allowsExternalPlayback = false
             }
         } catch let error as NSError {
             Logger.error("Error: \(error)")
