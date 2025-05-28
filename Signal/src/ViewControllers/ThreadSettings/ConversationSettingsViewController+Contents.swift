@@ -474,8 +474,8 @@ extension ConversationSettingsViewController {
                 return cell
             }, actionBlock: { [weak self] in
                 let vc = DisappearingMessagesTimerSettingsViewController(
-                    thread: thread,
-                    configuration: disappearingMessagesConfiguration
+                    initialConfiguration: disappearingMessagesConfiguration,
+                    settingsMode: .chat(thread: thread),
                 ) { configuration in
                     self?.disappearingMessagesConfiguration = configuration
                     self?.updateTableContents()

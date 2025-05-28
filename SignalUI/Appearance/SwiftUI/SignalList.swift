@@ -14,12 +14,16 @@ public struct SignalList<Content: View>: View {
         self.content = content()
     }
 
+    @ViewBuilder
     private var list: some View {
+        let horizontalPadding: CGFloat = UIDevice.current.isIPad ? 32 : 0
+
         List {
             content
         }
         .readScrollOffset()
         .listStyle(.insetGrouped)
+        .padding(.horizontal, horizontalPadding)
     }
 
     public var body: some View {

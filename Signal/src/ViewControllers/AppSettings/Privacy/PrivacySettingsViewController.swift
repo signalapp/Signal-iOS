@@ -115,7 +115,10 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 )
                 return cell
             }, actionBlock: { [weak self] in
-                let vc = DisappearingMessagesTimerSettingsViewController(configuration: disappearingMessagesConfiguration, isUniversal: true) { configuration in
+                let vc = DisappearingMessagesTimerSettingsViewController(
+                    initialConfiguration: disappearingMessagesConfiguration,
+                    settingsMode: .universal,
+                ) { configuration in
                     if self != nil {
                         SSKEnvironment.shared.databaseStorageRef.write { transaction in
                             configuration.anyUpsert(transaction: transaction)

@@ -157,7 +157,10 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                 return cell
             }, actionBlock: { [weak self] in
                 guard let self = self else { return }
-                let vc = DisappearingMessagesTimerSettingsViewController(configuration: self.disappearingMessagesConfiguration) { configuration in
+                let vc = DisappearingMessagesTimerSettingsViewController(
+                    initialConfiguration: self.disappearingMessagesConfiguration,
+                    settingsMode: .newGroup,
+                ) { configuration in
                     self.disappearingMessagesConfiguration = configuration
                     self.updateTableContents()
                 }

@@ -2335,6 +2335,12 @@
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
 
+/* Title for a picker for the unit of time to use for disappearing messages. */
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "Unit";
+
+/* Title for a picker for the amount of time, in a given unit, to use for disappearing messages. */
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "Value";
+
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "days";
 

@@ -1612,7 +1612,6 @@
 		88DF81A328E15D1600F8BA80 /* ProxySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF81A228E15D1600F8BA80 /* ProxySettingsViewController.swift */; };
 		88E728FF25F0241100A2E4A4 /* AccountSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E728FE25F0241100A2E4A4 /* AccountSettingsViewController.swift */; };
 		88E8BEF028D53C3700509CE2 /* indeterminate_spinner_20.json in Resources */ = {isa = PBXBuildFile; fileRef = 88E8BEEF28D53C3700509CE2 /* indeterminate_spinner_20.json */; };
-		88EF42E525F825650017C057 /* DisappearingMessagesTimerSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88EF42E425F825650017C057 /* DisappearingMessagesTimerSettingsViewController.swift */; };
 		88EFF4F825AD1F0D000FAFBA /* ForwardMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340E9ABF235F876800FA362C /* ForwardMessageViewController.swift */; };
 		88EFF4FC25AD4230000FAFBA /* SharingThreadPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88EFF4FB25AD4230000FAFBA /* SharingThreadPickerViewController.swift */; };
 		88F58A1725EEE5B9008CDA24 /* AppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */; };
@@ -1808,6 +1807,8 @@
 		D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
+		D900E6F82DE10499004D01A1 /* DisappearingMessagesTimerSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D900E6F72DE1048A004D01A1 /* DisappearingMessagesTimerSettingsViewController.swift */; };
+		D900E6FF2DE143F9004D01A1 /* DisappearingMessagesCustomTimePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D900E6FE2DE143E9004D01A1 /* DisappearingMessagesCustomTimePickerViewController.swift */; };
 		D90AA3322CC9616B00021CB0 /* chat_item_standard_message_special_attachments_12.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D90AA2222CC9616A00021CB0 /* chat_item_standard_message_special_attachments_12.txtproto */; };
 		D90AA3332CC9616B00021CB0 /* account_data_03.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D90AA0772CC9616A00021CB0 /* account_data_03.binproto */; };
 		D90AA3342CC9616B00021CB0 /* chat_item_sticker_message_08.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D90AA2B52CC9616A00021CB0 /* chat_item_sticker_message_08.binproto */; };
@@ -5502,7 +5503,6 @@
 		88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageServiceProto+Sync.swift"; sourceTree = "<group>"; };
 		88E728FE25F0241100A2E4A4 /* AccountSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsViewController.swift; sourceTree = "<group>"; };
 		88E8BEEF28D53C3700509CE2 /* indeterminate_spinner_20.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_20.json; sourceTree = "<group>"; };
-		88EF42E425F825650017C057 /* DisappearingMessagesTimerSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisappearingMessagesTimerSettingsViewController.swift; sourceTree = "<group>"; };
 		88EFF4FB25AD4230000FAFBA /* SharingThreadPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingThreadPickerViewController.swift; sourceTree = "<group>"; };
 		88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsViewController.swift; sourceTree = "<group>"; };
 		88F5D7892880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPrivateStoryRecipientsViewController.swift; sourceTree = "<group>"; };
@@ -5724,6 +5724,8 @@
 		D221A0E7169DFFC500537ABF /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = ../../../../../../System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		D24B5BD4169F568C00681372 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = ../../../../../../System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<group>"; };
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		D900E6F72DE1048A004D01A1 /* DisappearingMessagesTimerSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisappearingMessagesTimerSettingsViewController.swift; sourceTree = "<group>"; };
+		D900E6FE2DE143E9004D01A1 /* DisappearingMessagesCustomTimePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisappearingMessagesCustomTimePickerViewController.swift; sourceTree = "<group>"; };
 		D90AA0712CC9616A00021CB0 /* account_data_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = account_data_00.binproto; sourceTree = "<group>"; };
 		D90AA0722CC9616A00021CB0 /* account_data_00.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = account_data_00.txtproto; sourceTree = "<group>"; };
 		D90AA0732CC9616A00021CB0 /* account_data_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = account_data_01.binproto; sourceTree = "<group>"; };
@@ -7905,7 +7907,8 @@
 				34E20D4D2425672A002C011E /* ConversationSettingsViewController+Contents.swift */,
 				34A17D80253F7236009F8C02 /* ConversationSettingsViewController+LegacyGroups.swift */,
 				34235F3724213550008C74CB /* ConversationSettingsViewController.swift */,
-				88EF42E425F825650017C057 /* DisappearingMessagesTimerSettingsViewController.swift */,
+				D900E6FE2DE143E9004D01A1 /* DisappearingMessagesCustomTimePickerViewController.swift */,
+				D900E6F72DE1048A004D01A1 /* DisappearingMessagesTimerSettingsViewController.swift */,
 				346594812434D5E000E5C510 /* GroupAttributesEditorHelper.swift */,
 				34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */,
 				889DFA11264EE77C00D03921 /* GroupDescriptionViewController.swift */,
@@ -16918,7 +16921,8 @@
 				887CD4812473098D00FDD265 /* DeviceTransferService+State.swift in Sources */,
 				887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */,
 				88C4E38024635337009C9B97 /* DeviceTransferService.swift in Sources */,
-				88EF42E525F825650017C057 /* DisappearingMessagesTimerSettingsViewController.swift in Sources */,
+				D900E6FF2DE143F9004D01A1 /* DisappearingMessagesCustomTimePickerViewController.swift in Sources */,
+				D900E6F82DE10499004D01A1 /* DisappearingMessagesTimerSettingsViewController.swift in Sources */,
 				34A95501271B503E00B05242 /* DisplayableText.swift in Sources */,
 				5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */,
 				F96B66AA2912B88B004FFFAA /* DonateChoosePaymentMethodSheet.swift in Sources */,

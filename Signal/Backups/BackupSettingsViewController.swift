@@ -71,6 +71,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
             "BACKUPS_SETTINGS_TITLE",
             comment: "Title for the 'Backup' settings menu."
         )
+        OWSTableViewController2.removeBackButtonText(viewController: self)
 
         viewModel.actionsDelegate = self
         // Run as soon as we've set the actionDelegate.
