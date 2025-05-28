@@ -223,7 +223,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
             return false
         }
 
-        Logger.info("background refresh and notifications were disabled. Device is susceptible to push registration failure.")
+        Logger.warn("background refresh and notifications were disabled. Device is susceptible to push registration failure.")
         return true
     }
 
@@ -266,7 +266,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
                         // so the user doesn't remain indefinitely hung for no good reason.
                         throw PushRegistrationError.pushNotSupported(description: "Device configuration disallows push notifications")
                     } else {
-                        Logger.info("Push registration is taking a while. Continuing to wait since this configuration is not known to fail push registration.")
+                        Logger.warn("Push registration is taking a while. Continuing to wait since this configuration is not known to fail push registration.")
                         // Sometimes registration can just take a while.
                         // If we're not on a device known to be susceptible to push registration failure,
                         // just return the original promise.
