@@ -281,7 +281,7 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
     }
 }
 
-// MARK: -
+// MARK: - ChooseBackupPlanViewController.Delegate
 
 extension BackupSettingsViewController: ChooseBackupPlanViewController.Delegate {
     func chooseBackupPlanViewController(

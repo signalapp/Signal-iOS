@@ -72,7 +72,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
     }
 }
 
-// MARK: -
+// MARK: - ChooseBackupPlanViewModel.ActionsDelegate
 
 extension ChooseBackupPlanViewController: ChooseBackupPlanViewModel.ActionsDelegate {
     fileprivate func confirmSelection(_ planSelection: PlanSelection) {
