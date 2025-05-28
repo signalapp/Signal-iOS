@@ -19,7 +19,7 @@ public protocol BackupAttachmentDownloadManager {
     func enqueueFromBackupIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         restoreStartTimestampMs: UInt64,
-        shouldOptimizeLocalStorage: Bool,
+        backupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
         tx: DBWriteTransaction
     ) throws
@@ -145,7 +145,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     public func enqueueFromBackupIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         restoreStartTimestampMs: UInt64,
-        shouldOptimizeLocalStorage: Bool,
+        backupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
         tx: DBWriteTransaction
     ) throws {
@@ -153,7 +153,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             referencedAttachment.attachment,
             reference: referencedAttachment.reference,
             currentTimestamp: restoreStartTimestampMs,
-            shouldOptimizeLocalStorage: shouldOptimizeLocalStorage,
+            backupPlan: backupPlan,
             remoteConfig: remoteConfig
         )
 
@@ -284,15 +284,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         let currentDate = dateProvider()
         let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
-        let shouldOptimizeLocalStorage = backupSettingsStore
-            .getShouldOptimizeLocalStorage(tx: tx)
         let backupPlan = backupSettingsStore.backupPlan(tx: tx)
         let remoteConfig = remoteConfigProvider.currentConfig()
-
-        owsAssertDebug(
-            !shouldOptimizeLocalStorage || backupPlan != .paid,
-            "Why are we scheduling all downloads when media shouldn't be stored locally?"
-        )
 
         let cursor = try Attachment.Record
             // Ignore stuff already downloaded, duh
@@ -326,7 +319,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 attachment,
                 reference: getReferenceWithMostRecentTimestamp(),
                 currentTimestamp: currentDate.ows_millisecondsSince1970,
-                shouldOptimizeLocalStorage: shouldOptimizeLocalStorage,
+                backupPlan: backupPlan,
                 remoteConfig: remoteConfig
             )
 
@@ -460,9 +453,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 return .retryableError(NeedsToBeRegisteredError())
             }
 
-            let (attachment, eligibility) = db.read { (tx) -> (Attachment?, BackupAttachmentDownloadEligibility?) in
+            let (attachment, eligibility) = db.read { tx -> (Attachment?, BackupAttachmentDownloadEligibility?) in
                 let nowMs = dateProvider().ows_millisecondsSince1970
-                let shouldOptimizeLocalStorage = backupSettingsStore.getShouldOptimizeLocalStorage(tx: tx)
+                let backupPlan = backupSettingsStore.backupPlan(tx: tx)
                 let remoteConfig = remoteConfigProvider.currentConfig()
 
                 return attachmentStore
@@ -472,7 +465,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                             attachment,
                             downloadRecord: record.record,
                             currentTimestamp: nowMs,
-                            shouldOptimizeLocalStorage: shouldOptimizeLocalStorage,
+                            backupPlan: backupPlan,
                             remoteConfig: remoteConfig
                         )
                         return (attachment, eligibility)
@@ -647,7 +640,7 @@ open class BackupAttachmentDownloadManagerMock: BackupAttachmentDownloadManager 
     public func enqueueFromBackupIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         restoreStartTimestampMs: UInt64,
-        shouldOptimizeLocalStorage: Bool,
+        backupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
         tx: DBWriteTransaction
     ) throws {

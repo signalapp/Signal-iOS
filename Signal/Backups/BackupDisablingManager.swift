@@ -68,7 +68,7 @@ class BackupDisablingManager {
             throw NotRegisteredError()
         }
 
-        backupSettingsStore.setBackupPlan(nil, tx: tx)
+        backupSettingsStore.setBackupPlan(.disabled, tx: tx)
         kvStore.setBool(true, key: StoreKeys.attemptingDisableRemotely, transaction: tx)
 
         logger.info("Disabled Backups locally. Disabling remotely...")
@@ -108,7 +108,10 @@ class BackupDisablingManager {
     /// A boolean indicating if disabling remotely was necessary.
     private func _disableRemotelyIfNecessary() async throws -> Bool {
         let localIdentifiers: LocalIdentifiers? = try db.read { tx in
-            let disabledLocally = backupSettingsStore.backupPlan(tx: tx) == nil
+            let disabledLocally = switch backupSettingsStore.backupPlan(tx: tx) {
+            case .disabled: true
+            case .free, .paid, .paidExpiringSoon: false
+            }
             let attemptingDisableRemotely = kvStore.hasValue(StoreKeys.attemptingDisableRemotely, transaction: tx)
 
             guard disabledLocally && attemptingDisableRemotely else {

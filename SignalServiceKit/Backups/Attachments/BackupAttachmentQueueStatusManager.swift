@@ -298,7 +298,7 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
 
         let notificationsToObserve: [(NSNotification.Name, Selector)] = [
             (.registrationStateDidChange, #selector(registrationStateDidChange)),
-            (BackupSettingsStore.shouldBackUpOnCellularChangedNotification, #selector(shouldBackUpOnCellularDidChange)),
+            (BackupSettingsStore.Notifications.shouldBackUpOnCellularChanged, #selector(shouldBackUpOnCellularDidChange)),
             (.reachabilityChanged, #selector(reachabilityDidChange)),
             (UIDevice.batteryLevelDidChangeNotification, #selector(batteryLevelDidChange)),
             (Notification.Name.NSProcessInfoPowerStateDidChange, #selector(lowPowerModeDidChange)),

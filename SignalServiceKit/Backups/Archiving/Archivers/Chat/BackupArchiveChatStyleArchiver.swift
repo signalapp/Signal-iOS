@@ -525,9 +525,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
             )])
         }
 
-        guard
-            let shouldOptimizeLocalStorage = context.accountDataContext.shouldOptimizeLocalStorage
-        else {
+        guard let backupPlan = context.accountDataContext.backupPlan else {
             return .failure([.restoreFrameError(
                 .invalidProtoData(
                     .accountDataNotFound
@@ -541,7 +539,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
                 try backupAttachmentDownloadManager.enqueueFromBackupIfNeeded(
                     $0,
                     restoreStartTimestampMs: context.startTimestampMs,
-                    shouldOptimizeLocalStorage: shouldOptimizeLocalStorage,
+                    backupPlan: backupPlan,
                     remoteConfig: context.accountDataContext.currentRemoteConfig,
                     tx: context.tx
                 )

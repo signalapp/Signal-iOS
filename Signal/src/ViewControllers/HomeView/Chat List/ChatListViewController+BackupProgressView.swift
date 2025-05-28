@@ -126,9 +126,9 @@ public class CLVBackupProgressView {
         backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager
     ) -> BackupAttachmentDownloadProgressView.State? {
         switch viewState.backupPlan {
-        case nil, .free:
+        case nil, .disabled, .free:
             return .none
-        case .paid:
+        case .paid, .paidExpiringSoon:
             break
         }
         switch viewState.downloadQueueStatus {

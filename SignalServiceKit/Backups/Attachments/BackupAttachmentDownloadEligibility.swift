@@ -23,14 +23,14 @@ internal struct BackupAttachmentDownloadEligibility {
         _ attachment: Attachment,
         downloadRecord: QueuedBackupAttachmentDownload,
         currentTimestamp: UInt64,
-        shouldOptimizeLocalStorage: Bool,
+        backupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
     ) -> Self {
         return forAttachment(
             attachment,
             attachmentTimestamp: downloadRecord.timestamp,
             currentTimestamp: currentTimestamp,
-            shouldOptimizeLocalStorage: shouldOptimizeLocalStorage,
+            backupPlan: backupPlan,
             remoteConfig: remoteConfig
         )
     }
@@ -39,7 +39,7 @@ internal struct BackupAttachmentDownloadEligibility {
         _ attachment: Attachment,
         reference: @autoclosure () throws -> AttachmentReference,
         currentTimestamp: UInt64,
-        shouldOptimizeLocalStorage: Bool,
+        backupPlan: BackupPlan,
         remoteConfig: RemoteConfig
     ) rethrows -> Self {
         return try forAttachment(
@@ -53,7 +53,7 @@ internal struct BackupAttachmentDownloadEligibility {
                 }
             }(),
             currentTimestamp: currentTimestamp,
-            shouldOptimizeLocalStorage: shouldOptimizeLocalStorage,
+            backupPlan: backupPlan,
             remoteConfig: remoteConfig
         )
     }
@@ -62,7 +62,7 @@ internal struct BackupAttachmentDownloadEligibility {
         _ attachment: Attachment,
         attachmentTimestamp getAttachmentTimestamp: @autoclosure () throws -> UInt64?,
         currentTimestamp: UInt64,
-        shouldOptimizeLocalStorage: Bool,
+        backupPlan: BackupPlan,
         remoteConfig: RemoteConfig
     ) rethrows -> Self {
         if attachment.asStream() != nil {
@@ -95,15 +95,27 @@ internal struct BackupAttachmentDownloadEligibility {
             // all, because even if the era changed the upload may not have expired.
             attachment.mediaTierInfo != nil
         {
-            let canBeOffloaded: Bool
-            if
-                shouldOptimizeLocalStorage,
-                let attachmentTimestamp = try cached(getAttachmentTimestamp)
-            {
-                canBeOffloaded = attachmentTimestamp + Attachment.offloadingThresholdMs > currentTimestamp
-            } else {
-                canBeOffloaded = false
-            }
+            let canBeOffloaded: Bool = try {
+                switch backupPlan {
+                case .paid(let optimizeLocalStorage):
+                    if
+                        optimizeLocalStorage,
+                        let attachmentTimestamp = try cached(getAttachmentTimestamp),
+                        attachmentTimestamp + Attachment.offloadingThresholdMs > currentTimestamp
+                    {
+                        return true
+                    }
+
+                    return false
+                case .paidExpiringSoon(_):
+                    // Don't offload if our subscription expires soon, regardless of the
+                    // optimizeLocalStorage setting.
+                    return false
+                case .disabled, .free:
+                    return false
+                }
+            }()
+
             canDownloadMediaTierFullsize = !canBeOffloaded
         } else {
             canDownloadMediaTierFullsize = false

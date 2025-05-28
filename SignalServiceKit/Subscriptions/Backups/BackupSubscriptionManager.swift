@@ -43,7 +43,7 @@ public enum BackupSubscription {
             }
         }
 
-        public var uploadEra: String {
+        fileprivate var uploadEra: String {
             // We just hash and base64 encode the subscriptionId as the "upload era".
             // All the "era" means is if it changes, all existing uploads to the backup
             // tier should be considered invalid and needing reupload.
@@ -102,6 +102,7 @@ public final class BackupSubscriptionManager {
 
     private let logger = PrefixedLogger(prefix: "[Backups][Sub]")
 
+    private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
     private let db: any DB
     private let networkManager: NetworkManager
@@ -111,6 +112,7 @@ public final class BackupSubscriptionManager {
     private let tsAccountManager: TSAccountManager
 
     init(
+        backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
         networkManager: NetworkManager,
@@ -118,6 +120,7 @@ public final class BackupSubscriptionManager {
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager
     ) {
+        self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
         self.db = db
         self.networkManager = networkManager
@@ -255,6 +258,73 @@ public final class BackupSubscriptionManager {
         store.setIAPSubscriberData(iapSubscriberData, tx: tx)
     }
 
+    // MARK: - Fetch current subscription
+
+    public func fetchAndMaybeDowngradeSubscription() async throws -> Subscription? {
+        guard let subscriberID = db.read(block: { store.getIAPSubscriberData(tx: $0)?.subscriberId }) else {
+            return nil
+        }
+
+        return try await _fetchAndMaybeDowngradeSubscription(
+            subscriberID: subscriberID,
+            subscriptionFetcher: SubscriptionFetcher(networkManager: networkManager)
+        )
+    }
+
+    private func _fetchAndMaybeDowngradeSubscription(
+        subscriberID: Data,
+        subscriptionFetcher: SubscriptionFetcher
+    ) async throws -> Subscription? {
+        let subscription = try await subscriptionFetcher.fetch(subscriberID: subscriberID)
+        await downgradeBackupPlanIfNecessary(fetchedSubscription: subscription)
+        return subscription
+    }
+
+    /// Our remote `Subscription` is the source of truth for what state our
+    /// colloquial "backup plan" is in. So, any time we fetch a `Subscription`
+    /// could be the moment we learn our subscription has changed. Specifically,
+    /// our subscription could have changed since we last fetched such that we
+    /// should "downgrade" our local `BackupPlan`; for example, it might have
+    /// expired, or will be expiring soon.
+    ///
+    /// - Note
+    /// Upgrading requires redeeming a subscription that's renewed, which
+    /// necessarily needs the app to run in order to happen. So, the redemption
+    /// code also sets `BackupPlan` as appropriate.
+    private func downgradeBackupPlanIfNecessary(
+        fetchedSubscription subscription: Subscription?
+    ) async {
+        let currentBackupPlan = db.read { backupSettingsStore.backupPlan(tx: $0) }
+
+        let downgradedBackupPlan: BackupPlan? = {
+            if let subscription, subscription.active, subscription.cancelAtEndOfPeriod {
+                switch currentBackupPlan {
+                case .paid(let optimizeLocalStorage):
+                    return .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
+                case .disabled, .free, .paidExpiringSoon:
+                    break
+                }
+            } else if let subscription, subscription.active {
+                // No downgrade – subscription present and active!
+            } else {
+                switch currentBackupPlan {
+                case .paid, .paidExpiringSoon:
+                    return .free
+                case .disabled, .free:
+                    break
+                }
+            }
+
+            return nil
+        }()
+
+        if let downgradedBackupPlan {
+            await db.awaitableWrite { tx in
+                backupSettingsStore.setBackupPlan(downgradedBackupPlan, tx: tx)
+            }
+        }
+    }
+
     // MARK: - Purchase new subscription
 
     /// Returns the price for a Backups subscription, formatted for display.
@@ -302,15 +372,11 @@ public final class BackupSubscriptionManager {
 
     // MARK: - Redeem subscription
 
-    /// Serializes multiple attempts to redeem a subscription, so they don't
-    /// race. Specifically, if a caller attempts to redeem a subscription while
-    /// a previous caller's attempt is in progress, the latter caller will wait
-    /// on the previous caller.
-    ///
+    /// - Note
     /// `_redeemSubscriptionIfNecessary()` uses persisted state, so latter
     /// callers may be able to short-circuit based on state persisted by an
     /// earlier caller.
-    private let redemptionAttemptSerializer = SerialTaskQueue()
+    private let redemptionTaskQueue = SerialTaskQueue()
 
     /// Redeems a StoreKit Backups subscription with Signal servers for access
     /// to paid-tier Backup credentials, if there exists a StoreKit transaction
@@ -320,7 +386,7 @@ public final class BackupSubscriptionManager {
     /// This method serializes callers, is safe to call repeatedly, and returns
     /// quickly if there is not a transaction we have yet to redeem.
     public func redeemSubscriptionIfNecessary() async throws {
-        return try await redemptionAttemptSerializer.enqueue {
+        return try await redemptionTaskQueue.enqueue {
             try await self._redeemSubscriptionIfNecessary()
         }.value
     }
@@ -423,7 +489,10 @@ public final class BackupSubscriptionManager {
             fetchSubscriptionBlock: { db, subscriptionFetcher -> (subscriberID: Data, subscription: Subscription)? in
                 if
                     let subscriberID = db.read(block: { store.getIAPSubscriberData(tx: $0)?.subscriberId }),
-                    let subscription = try await subscriptionFetcher.fetch(subscriberID: subscriberID)
+                    let subscription = try await _fetchAndMaybeDowngradeSubscription(
+                        subscriberID: subscriberID,
+                        subscriptionFetcher: subscriptionFetcher
+                    )
                 {
                     return (subscriberID, subscription)
                 }
@@ -439,8 +508,9 @@ public final class BackupSubscriptionManager {
                         originalTransactionId: localEntitlingTransaction.originalID
                     )
 
-                    if let subscription = try await subscriptionFetcher.fetch(
-                        subscriberID: newSubscriberId
+                    if let subscription = try await _fetchAndMaybeDowngradeSubscription(
+                        subscriberID: newSubscriberId,
+                        subscriptionFetcher: subscriptionFetcher
                     ) {
                         return (newSubscriberId, subscription)
                     } else {
@@ -460,6 +530,7 @@ public final class BackupSubscriptionManager {
                 )
             },
             startRedemptionJobBlock: { jobRecord async throws in
+                // Note that this step, if successful, will set BackupPlan.
                 try await receiptCredentialRedemptionJobQueue.runBackupRedemptionJob(jobRecord: jobRecord)
             }
         )
@@ -524,26 +595,6 @@ public final class BackupSubscriptionManager {
         storageServiceManager.recordPendingLocalAccountUpdates()
 
         return newSubscriberId
-    }
-
-    public func setRestoredIAPSubscriberData(
-        _ subscriberDataProto: BackupProto_AccountData.IAPSubscriberData,
-        tx: DBWriteTransaction
-    ) {
-        let iapSubscriptionId: IAPSubscriberData.IAPSubscriptionId
-        switch subscriberDataProto.iapSubscriptionID {
-        case .purchaseToken(let string):
-            iapSubscriptionId = .purchaseToken(string)
-        case .originalTransactionID(let uInt64):
-            iapSubscriptionId = .originalTransactionId(uInt64)
-        case .none:
-            return
-        }
-        let subscriberData = IAPSubscriberData(
-            subscriberId: subscriberDataProto.subscriberID,
-            iapSubscriptionId: iapSubscriptionId
-        )
-        store.setIAPSubscriberData(subscriberData, tx: tx)
     }
 
     // MARK: - UploadEra

@@ -81,6 +81,13 @@ extension ChatListViewController {
             name: BackupAttachmentQueueStatus.didChangeNotification,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(backupPlanDidChange(_:)),
+            name: BackupSettingsStore.Notifications.backupPlanChanged,
+            object: nil
+        )
+
         viewState.backupProgressViewState.downloadQueueStatus =
             DependenciesBridge.shared.backupAttachmentQueueStatusManager.currentStatus(type: .download)
         Task { @MainActor in
@@ -262,6 +269,13 @@ extension ChatListViewController {
         self.viewState.backupProgressViewState.downloadQueueStatus =
             DependenciesBridge.shared.backupAttachmentQueueStatusManager.currentStatus(type: .download)
         self.viewState.backupProgressView.update(viewState: self.viewState.backupProgressViewState)
+    }
+
+    @objc
+    private func backupPlanDidChange(_ notification: Notification) {
+        let db = DependenciesBridge.shared.db
+        db.read { viewState.backupProgressViewState.refetchDBState(tx: $0) }
+        viewState.backupProgressView.update(viewState: viewState.backupProgressViewState)
     }
 }
 

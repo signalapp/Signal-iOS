@@ -266,7 +266,7 @@ public actor BackupAttachmentDownloadProgress {
         let now = dateProvider().ows_millisecondsSince1970
 
         return try db.read { tx in
-            let shouldOptimizeLocalStorage = backupSettingsStore.getShouldOptimizeLocalStorage(tx: tx)
+            let backupPlan = backupSettingsStore.backupPlan(tx: tx)
 
             var totalByteCount: UInt64 = 0
 
@@ -288,7 +288,7 @@ public actor BackupAttachmentDownloadProgress {
                     attachment,
                     downloadRecord: joinedRecord.QueuedBackupAttachmentDownload,
                     currentTimestamp: now,
-                    shouldOptimizeLocalStorage: shouldOptimizeLocalStorage,
+                    backupPlan: backupPlan,
                     remoteConfig: remoteConfig
                 )
                 if

@@ -152,6 +152,17 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                 return .failure(error)
             }
 
+            if let iapSubscriberData = backupSubscriptionManager.getIAPSubscriberData(tx: context.tx) {
+                var iapSubscriberDataProto = BackupProto_AccountData.IAPSubscriberData()
+                iapSubscriberDataProto.subscriberID = iapSubscriberData.subscriberId
+                iapSubscriberDataProto.iapSubscriptionID = switch iapSubscriberData.iapSubscriptionId {
+                case .originalTransactionId(let value): .originalTransactionID(value)
+                case .purchaseToken(let value): .purchaseToken(value)
+                }
+
+                accountData.backupsSubscriberData = iapSubscriberDataProto
+            }
+
             if
                 context.includedContentFilter.shouldIncludePin,
                 let pin = ows2FAManager.getPin(tx: context.tx)
@@ -242,12 +253,10 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         accountSettings.phoneNumberSharingMode = phoneNumberSharingMode
         accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: context.tx) ?? []
         accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: context.tx)
-        // For the purposes of backup export, we want the actual underlying setting, which we only get
-        // if we have a paid backup plan. So pretend we do, just for this state check.
-        accountSettings.optimizeOnDeviceStorage = backupSettingsStore.getShouldOptimizeLocalStorage(
-            backupPlan: .paid,
-            tx: context.tx
-        )
+        accountSettings.optimizeOnDeviceStorage = switch backupSettingsStore.backupPlan(tx: context.tx) {
+        case .disabled, .free: false
+        case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage): optimizeLocalStorage
+        }
 
         let customChatColorsResult = chatStyleArchiver.archiveCustomChatColors(
             context: context
@@ -313,14 +322,33 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
 
         let backupPlan: BackupPlan
         let uploadEra: String
-        if accountData.hasBackupsSubscriberData, accountData.backupsSubscriberData.subscriberID.isEmpty.negated {
-            backupSubscriptionManager.setRestoredIAPSubscriberData(
-                accountData.backupsSubscriberData,
+        if
+            accountData.hasBackupsSubscriberData,
+            let subscriberID = accountData.backupsSubscriberData.subscriberID.nilIfEmpty,
+            let protoIapSubscriberID = accountData.backupsSubscriberData.iapSubscriptionID
+        {
+            typealias IAPSubscriptionID = BackupSubscriptionManager.IAPSubscriberData.IAPSubscriptionId
+            let iapSubscriptionID: IAPSubscriptionID = switch protoIapSubscriberID {
+            case .purchaseToken(let value):
+                .purchaseToken(value)
+            case .originalTransactionID(let value):
+                .originalTransactionId(value)
+            }
+
+            backupSubscriptionManager.restoreIAPSubscriberData(
+                BackupSubscriptionManager.IAPSubscriberData(
+                    subscriberId: subscriberID,
+                    iapSubscriptionId: iapSubscriptionID
+                ),
                 tx: context.tx
             )
-            backupSettingsStore.setBackupPlan(.paid, tx: context.tx)
+
             uploadEra = backupSubscriptionManager.getUploadEra(tx: context.tx)
-            backupPlan = .paid
+            backupPlan = .paid(
+                optimizeLocalStorage: accountData.accountSettings.optimizeOnDeviceStorage
+            )
+
+            backupSettingsStore.setBackupPlan(backupPlan, tx: context.tx)
         } else {
             // The exporting client was not subscribed at export time.
             // It may have subscribed after, or not. We don't know, and we don't
@@ -332,23 +360,15 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             // Querying the list endpoint will bring us up to date on the upload status
             // within this "era" otherwise.
             uploadEra = backupSubscriptionManager.getUploadEra(tx: context.tx)
-            // TODO[LocalBackups]: if restoring a local backup file don't set remote backup plan.
-            backupSettingsStore.setBackupPlan(.free, tx: context.tx)
             backupPlan = .free
+
+            // TODO[LocalBackups]: if restoring a local backup file don't set remote backup plan.
+            backupSettingsStore.setBackupPlan(backupPlan, tx: context.tx)
         }
 
         // These MUST get set before we restore custom chat colors/wallpapers.
         context.uploadEra = uploadEra
         context.backupPlan = backupPlan
-        context.shouldOptimizeLocalStorage = switch backupPlan {
-        case .free:
-            // Always treat this as false if we are free tier.
-            false
-        case .paid:
-            accountData.accountSettings.optimizeOnDeviceStorage
-        }
-        // What we write to disk though is independent of plan and comes right off the proto.
-        backupSettingsStore.setShouldOptimizeLocalStorage(accountData.accountSettings.optimizeOnDeviceStorage, tx: context.tx)
 
         // Restore local settings
         if accountData.hasAccountSettings {

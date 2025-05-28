@@ -75,9 +75,9 @@ extension BackupArchive {
 
         func enqueueAttachmentForUploadIfNeeded(_ referencedAttachment: ReferencedAttachment) throws {
             switch currentBackupPlan {
-            case .free:
+            case .disabled, .free:
                 return
-            case .paid:
+            case .paid, .paidExpiringSoon:
                 break
             }
             try backupAttachmentUploadManager.enqueueIfNeeded(

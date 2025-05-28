@@ -663,7 +663,7 @@ public enum DonationSubscriptionManager {
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
 
-        try await subscriptionRedemptionNecessityChecker.redeemSubscriptionIfNecessary(
+        _ = try await subscriptionRedemptionNecessityChecker.redeemSubscriptionIfNecessary(
             fetchSubscriptionBlock: { db, subscriptionFetcher -> (subscriberID: Data, subscription: Subscription)? in
                 if
                     let subscriberID = db.read(block: { getSubscriberID(transaction: $0) }),

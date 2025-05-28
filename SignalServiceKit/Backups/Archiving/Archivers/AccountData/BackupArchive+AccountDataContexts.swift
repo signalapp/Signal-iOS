@@ -18,10 +18,6 @@ extension BackupArchive {
 
         /// Will only be nil if there was no earier AccountData frame to set it, which
         /// should be treated as an error at read time when processing all subsequent frames.
-        var shouldOptimizeLocalStorage: Bool?
-
-        /// Will only be nil if there was no earier AccountData frame to set it, which
-        /// should be treated as an error at read time when processing all subsequent frames.
         var uploadEra: String?
 
         init(

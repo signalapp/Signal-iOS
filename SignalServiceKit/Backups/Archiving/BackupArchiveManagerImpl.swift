@@ -383,17 +383,23 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             }
             try Task.checkCancellation()
 
-            let currentBackupPlan: BackupPlan
+            var currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
             switch backupPurpose {
             case .remoteBackup:
-                guard let backupPlan = backupSettingsStore.backupPlan(tx: tx) else {
+                switch currentBackupPlan {
+                case .disabled:
                     throw OWSAssertionError("Generating remote backup while backups disabled!")
+                case .free, .paid, .paidExpiringSoon:
+                    break
                 }
-                currentBackupPlan = backupPlan
             case .deviceTransfer:
                 // You don't need backups enabled to do a link'n'sync; default free.
-                currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
-                    ?? .free
+                switch currentBackupPlan {
+                case .disabled:
+                    currentBackupPlan = .free
+                case .free, .paid, .paidExpiringSoon:
+                    break
+                }
             }
             let currentBackupAttachmentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
 

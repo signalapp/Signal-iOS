@@ -106,8 +106,8 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         guard FeatureFlags.Backups.remoteExportAlpha else {
             return
         }
-        guard db.read(block: backupSettingsStore.getShouldOptimizeLocalStorage(tx:)) else {
-            // Don't offload; early exit after a cheap read.
+
+        guard db.read(block: { backupPlanAllowsOffloading(tx: $0) }) else {
             return
         }
 
@@ -136,9 +136,10 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         lastAttachmentId: Attachment.IDType?,
         tx: DBWriteTransaction
     ) throws -> Attachment.IDType? {
-        guard backupSettingsStore.getShouldOptimizeLocalStorage(tx: tx) else {
+        guard backupPlanAllowsOffloading(tx: tx) else {
             return nil
         }
+
         let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
         let viewedTimestampCutoff = startTimeMs - Attachment.offloadingThresholdMs
 
@@ -218,6 +219,19 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
 
         // If we reached the end of the cursor, we're done.
         return nil
+    }
+
+    private func backupPlanAllowsOffloading(tx: DBReadTransaction) -> Bool {
+        switch db.read(block: { backupSettingsStore.backupPlan(tx: $0) }) {
+        case .disabled, .free:
+            return false
+        case .paidExpiringSoon(_):
+            // Don't offload if our subscription expires soon, regardless of the
+            // optimizeLocalStorage setting.
+            return false
+        case .paid(let optimizeLocalStorage):
+            return optimizeLocalStorage
+        }
     }
 }
 

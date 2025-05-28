@@ -18,12 +18,14 @@ class BackupReceiptCredentialRedemptionJobQueue {
 
     public init(
         authCredentialStore: AuthCredentialStore,
+        backupSettingsStore: BackupSettingsStore,
         db: any DB,
         networkManager: NetworkManager,
         reachabilityManager: SSKReachabilityManager
     ) {
         self.jobRunnerFactory = BackupReceiptCredentialRedemptionJobRunnerFactory(
             authCredentialStore: authCredentialStore,
+            backupSettingsStore: backupSettingsStore,
             db: db,
             networkManager: networkManager
         )
@@ -68,15 +70,18 @@ class BackupReceiptCredentialRedemptionJobQueue {
 
 private class BackupReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
     private let authCredentialStore: AuthCredentialStore
+    private let backupSettingsStore: BackupSettingsStore
     private let db: any DB
     private let networkManager: NetworkManager
 
     init(
         authCredentialStore: AuthCredentialStore,
+        backupSettingsStore: BackupSettingsStore,
         db: any DB,
         networkManager: NetworkManager
     ) {
         self.authCredentialStore = authCredentialStore
+        self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.networkManager = networkManager
     }
@@ -84,6 +89,7 @@ private class BackupReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactor
     func buildRunner() -> BackupReceiptCredentialRedemptionJobRunner {
         return BackupReceiptCredentialRedemptionJobRunner(
             authCredentialStore: authCredentialStore,
+            backupSettingsStore: backupSettingsStore,
             db: db,
             networkManager: networkManager,
             continuation: nil
@@ -93,6 +99,7 @@ private class BackupReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactor
     func buildRunner(continuation: CheckedContinuation<Void, Error>) -> BackupReceiptCredentialRedemptionJobRunner {
         return BackupReceiptCredentialRedemptionJobRunner(
             authCredentialStore: authCredentialStore,
+            backupSettingsStore: backupSettingsStore,
             db: db,
             networkManager: networkManager,
             continuation: continuation
@@ -117,6 +124,7 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
     }
 
     private let authCredentialStore: AuthCredentialStore
+    private let backupSettingsStore: BackupSettingsStore
     private let db: any DB
     private let networkManager: NetworkManager
 
@@ -125,11 +133,13 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
 
     init(
         authCredentialStore: AuthCredentialStore,
+        backupSettingsStore: BackupSettingsStore,
         db: any DB,
         networkManager: NetworkManager,
         continuation: CheckedContinuation<Void, Error>?
     ) {
         self.authCredentialStore = authCredentialStore
+        self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.networkManager = networkManager
         self.continuation = continuation
@@ -151,6 +161,36 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
     func runJobAttempt(_ jobRecord: BackupReceiptCredentialRedemptionJobRecord) async -> JobAttemptResult {
         switch await _redeemBackupReceiptCredential(jobRecord: jobRecord) {
         case .success:
+            await db.awaitableWrite { tx in
+                jobRecord.anyRemove(transaction: tx)
+
+                // By redeeming, we've got the server-side entitlement to get
+                // paid-tier Backup credentials. Correspondingly, upgrade our
+                // local BackupPlan to paid.
+                switch backupSettingsStore.backupPlan(tx: tx) {
+                case .free:
+                    // "Optimize Media" is off by default when you first upgrade.
+                    backupSettingsStore.setBackupPlan(
+                        .paid(optimizeLocalStorage: false),
+                        tx: tx
+                    )
+                case .disabled:
+                    // "Upgrade" assumes Backups is already enabled – don't
+                    // enable it if it's not. (It's a little weird to have
+                    // Backups disabled, but be paying for a subscription, but
+                    // it's allowed.)
+                    break
+                case .paid, .paidExpiringSoon:
+                    // No need to change anything – we're already paid.
+                    break
+                }
+
+                /// Clear out any cached Backup auth credentials, since we
+                /// may now be able to fetch credentials with a higher level
+                /// of access than we had cached.
+                authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
+            }
+
             return .finished(.success(()))
         case .networkError, .needsReattempt, .paymentStillProcessing:
             return .retryAfter(incrementExponentialRetryDelay())
@@ -354,15 +394,6 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
             switch response.responseStatusCode {
             case 204:
                 logger.info("Receipt credential redeemed successfully.")
-
-                await db.awaitableWrite { tx in
-                    jobRecord.anyRemove(transaction: tx)
-
-                    /// Clear out any cached Backup auth credentials, since we
-                    /// may now be able to fetch credentials with a higher level
-                    /// of access than we had cached.
-                    authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
-                }
                 return .success
 
             default:

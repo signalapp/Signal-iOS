@@ -15,7 +15,7 @@ public protocol BackupAttachmentUploadManager {
     func enqueueIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         currentUploadEra: String,
-        currentBackupPlan: BackupPlan?,
+        currentBackupPlan: BackupPlan,
         tx: DBWriteTransaction
     ) throws
 
@@ -146,7 +146,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     private func enqueueUsingHighestPriorityOwnerIfNeeded(
         _ attachment: Attachment,
         currentUploadEra: String,
-        currentBackupPlan: BackupPlan?,
+        currentBackupPlan: BackupPlan,
         tx: DBWriteTransaction
     ) throws {
         // Before we fetch references, check if the attachment is
@@ -208,7 +208,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     public func enqueueIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         currentUploadEra: String,
-        currentBackupPlan: BackupPlan?,
+        currentBackupPlan: BackupPlan,
         tx: DBWriteTransaction
     ) throws {
         guard
@@ -243,13 +243,16 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     private func shouldEnqueue(
         _ attachment: Attachment,
         currentUploadEra: String,
-        currentBackupPlan: BackupPlan?
+        currentBackupPlan: BackupPlan
     ) -> Bool {
         guard FeatureFlags.Backups.fileAlpha else {
             return false
         }
-        guard currentBackupPlan == .paid else {
+        switch currentBackupPlan {
+        case .disabled, .free:
             return false
+        case .paid, .paidExpiringSoon:
+            break
         }
         guard let stream = attachment.asStream() else {
             // We can only upload streams, duh
@@ -269,11 +272,16 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         guard FeatureFlags.Backups.remoteExportAlpha else {
             return
         }
+
         let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
-        guard currentBackupPlan == .paid else {
-            return
-        }
         let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
+
+        switch currentBackupPlan {
+        case .disabled, .free:
+            return
+        case .paid, .paidExpiringSoon:
+            break
+        }
 
         // Go ahead and dequeue everything; we'll just requeue
         // from scratch.
@@ -311,9 +319,9 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         }
 
         switch backupPlan {
-        case nil, .free:
+        case .disabled, .free:
             return
-        case .paid:
+        case .paid, .paidExpiringSoon:
             break
         }
 
@@ -473,10 +481,10 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             }
 
             switch backupPlan {
-            case nil, .free:
+            case .disabled, .free:
                 try? await loader.stop()
                 return .cancelled
-            case .paid:
+            case .paid, .paidExpiringSoon:
                 break
             }
 
@@ -746,7 +754,7 @@ open class BackupAttachmentUploadManagerMock: BackupAttachmentUploadManager {
     public func enqueueIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         currentUploadEra: String,
-        currentBackupPlan: BackupPlan?,
+        currentBackupPlan: BackupPlan,
         tx: DBWriteTransaction
     ) throws {
         // Do nothing

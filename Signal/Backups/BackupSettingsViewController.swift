@@ -14,7 +14,6 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
-    private let networkManager: NetworkManager
     private let tsAccountManager: TSAccountManager
 
     private let viewModel: BackupSettingsViewModel
@@ -25,7 +24,6 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
             backupSettingsStore: BackupSettingsStore(),
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
-            networkManager: SSKEnvironment.shared.networkManagerRef,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
     }
@@ -35,14 +33,12 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
-        networkManager: NetworkManager,
         tsAccountManager: TSAccountManager
     ) {
         self.backupDisablingManager = backupDisablingManager
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
-        self.networkManager = networkManager
         self.tsAccountManager = tsAccountManager
 
         self.viewModel = db.read { tx in
@@ -55,12 +51,15 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
                 shouldBackUpOnCellular: backupSettingsStore.shouldBackUpOnCellular(tx: tx)
             )
 
-            if backupSettingsStore.backupPlan(tx: tx) != nil {
-                viewModel.backupEnabledState = .enabled
-            } else if let disableBackupsRemotelyTask = backupDisablingManager.isDisablingRemotely() {
+            if let disableBackupsRemotelyTask = backupDisablingManager.isDisablingRemotely() {
                 viewModel.handleDisableBackupsRemoteTask(disableBackupsRemotelyTask)
             } else {
-                viewModel.backupEnabledState = .disabled
+                switch backupSettingsStore.backupPlan(tx: tx) {
+                case .disabled:
+                    viewModel.backupEnabledState = .disabled
+                case .free, .paid, .paidExpiringSoon:
+                    viewModel.backupEnabledState = .enabled
+                }
             }
 
             return viewModel
@@ -154,17 +153,9 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
     // MARK: -
 
     fileprivate func loadBackupPlan() async throws -> BackupSettingsViewModel.BackupPlanLoadingState.LoadedBackupPlan {
-        // TODO: [Backups] Remove when this goes to prod!
-        try await Task.sleep(nanoseconds: 2.clampedNanoseconds)
-
-        let backupSubscriberID: Data? = db.read { tx in
-            backupSubscriptionManager.getIAPSubscriberData(tx: tx)?.subscriberId
-        }
-
         guard
-            let backupSubscriberID,
-            let backupSubscription = try await SubscriptionFetcher(networkManager: networkManager)
-                .fetch(subscriberID: backupSubscriberID)
+            let backupSubscription = try await backupSubscriptionManager
+                .fetchAndMaybeDowngradeSubscription()
         else {
             return .free
         }

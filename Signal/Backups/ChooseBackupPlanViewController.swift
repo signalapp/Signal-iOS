@@ -151,10 +151,17 @@ extension ChooseBackupPlanViewController: ChooseBackupPlanViewModel.ActionsDeleg
 
             switch purchaseResult {
             case .success:
+                // Enable Backups, so that the redemption can upgrade it to
+                // .paid below.
+                await db.awaitableWrite { tx in
+                    backupSettingsStore.setBackupPlan(.free, tx: tx)
+                }
+
                 do {
                     try await ModalActivityIndicatorViewController.presentAndPropagateResult(
                         from: self
                     ) {
+                        // This upgrades BackupPlan to .paid if it succeeds.
                         try await self.backupSubscriptionManager.redeemSubscriptionIfNecessary()
                     }
                 } catch {
@@ -165,20 +172,18 @@ extension ChooseBackupPlanViewController: ChooseBackupPlanViewModel.ActionsDeleg
                     ))
                 }
 
-                await db.awaitableWrite { tx in
-                    backupSettingsStore.setBackupPlan(.paid, tx: tx)
-                }
+                // Since BackupPlan is set to .paid when redemption succeeds, we
+                // don't need to do anything here.
 
                 delegate?.chooseBackupPlanViewController(
                     self,
                     didEnablePlan: planSelection
                 )
             case .pending:
-                // The subscription won't be redeemed until if/when the
-                // purchase is approved, but we can treat it like a
-                // success except they'll be a free-tier user for the
-                // time being.
-                // TODO: [Backups] Ensure this is upgraded to `.paid` when if/when the purchase is approved.
+                // The subscription won't be redeemed until if/when the purchase
+                // is approved, but if/when that happens BackupPlan will get set
+                // set to .paid. For the time being, we can enable Backups as
+                // a free-tier user!
                 await db.awaitableWrite { tx in
                     backupSettingsStore.setBackupPlan(.free, tx: tx)
                 }

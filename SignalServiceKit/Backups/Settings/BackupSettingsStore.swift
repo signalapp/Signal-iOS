@@ -12,16 +12,44 @@ public enum BackupFrequency: Int, CaseIterable, Identifiable {
     public var id: Int { rawValue }
 }
 
-public enum BackupPlan: Int, CaseIterable {
-    case free = 1
-    case paid = 2
+public enum BackupPlan: RawRepresentable {
+    case disabled
+    case free
+    case paid(optimizeLocalStorage: Bool)
+    case paidExpiringSoon(optimizeLocalStorage: Bool)
+
+    // MARK: RawRepresentable
+
+    public init?(rawValue: Int) {
+        switch rawValue {
+        case 6: self = .disabled
+        case 1: self = .free
+        case 2: self = .paid(optimizeLocalStorage: false)
+        case 3: self = .paid(optimizeLocalStorage: true)
+        case 4: self = .paidExpiringSoon(optimizeLocalStorage: false)
+        case 5: self = .paidExpiringSoon(optimizeLocalStorage: true)
+        default: return nil
+        }
+    }
+
+    public var rawValue: Int {
+        switch self {
+        case .disabled: return 6
+        case .free: return 1
+        case .paid(let optimizeLocalStorage): return optimizeLocalStorage ? 3 : 2
+        case .paidExpiringSoon(let optimizeLocalStorage): return optimizeLocalStorage ? 5 : 4
+        }
+    }
 }
 
 // MARK: -
 
 public struct BackupSettingsStore {
 
-    public static let shouldBackUpOnCellularChangedNotification = Notification.Name("BackupSettingsStore.shouldBackUpOnCellularChangedNotification")
+    public enum Notifications {
+        public static let backupPlanChanged = Notification.Name("BackupSettingsStore.backupPlanChanged")
+        public static let shouldBackUpOnCellularChanged = Notification.Name("BackupSettingsStore.shouldBackUpOnCellularChanged")
+    }
 
     private enum Keys {
         static let haveEverBeenEnabled = "haveEverBeenEnabled"
@@ -52,20 +80,23 @@ public struct BackupSettingsStore {
     ///
     /// - Important
     /// This value represents the user's plan *as this client is aware of it*.
-    /// It's possible that this method may return `.paid` even though the user's
-    /// paid subscription has expired, in which case they have been de facto
-    /// downgraded (as far as the server is concerned) to the `.free` plan.
-    public func backupPlan(tx: DBReadTransaction) -> BackupPlan? {
-        return kvStore.getInt(Keys.plan, transaction: tx)
-            .flatMap { BackupPlan(rawValue: $0) }
+    /// It's possible that the value returned by this method is out of date
+    /// w.r.t server state; for example, if the user's `.paid` Backup plan has
+    /// expired, but the client hasn't yet learned that fact.
+    public func backupPlan(tx: DBReadTransaction) -> BackupPlan {
+        if let rawValue = kvStore.getInt(Keys.plan, transaction: tx) {
+            return BackupPlan(rawValue: rawValue) ?? .disabled
+        }
+
+        return .disabled
     }
 
-    public func setBackupPlan(_ backupPlan: BackupPlan?, tx: DBWriteTransaction) {
+    public func setBackupPlan(_ backupPlan: BackupPlan, tx: DBWriteTransaction) {
         kvStore.setBool(true, key: Keys.haveEverBeenEnabled, transaction: tx)
-        if let backupPlan {
-            kvStore.setInt(backupPlan.rawValue, key: Keys.plan, transaction: tx)
-        } else {
-            kvStore.removeValue(forKey: Keys.plan, transaction: tx)
+        kvStore.setInt(backupPlan.rawValue, key: Keys.plan, transaction: tx)
+
+        tx.addSyncCompletion {
+            NotificationCenter.default.post(name: Notifications.backupPlanChanged, object: nil)
         }
     }
 
@@ -114,26 +145,9 @@ public struct BackupSettingsStore {
 
     public func setShouldBackUpOnCellular(_ shouldBackUpOnCellular: Bool, tx: DBWriteTransaction) {
         kvStore.setBool(shouldBackUpOnCellular, key: Keys.shouldBackUpOnCellular, transaction: tx)
+
         tx.addSyncCompletion {
-            NotificationCenter.default.post(name: Self.shouldBackUpOnCellularChangedNotification, object: nil)
+            NotificationCenter.default.post(name: Notifications.shouldBackUpOnCellularChanged, object: nil)
         }
-    }
-
-    // MARK: -
-
-    public func getShouldOptimizeLocalStorage(tx: DBReadTransaction) -> Bool {
-        return getShouldOptimizeLocalStorage(backupPlan: backupPlan(tx: tx), tx: tx)
-    }
-
-    public func getShouldOptimizeLocalStorage(backupPlan: BackupPlan?, tx: DBReadTransaction) -> Bool {
-        guard backupPlan == .paid else {
-            // This setting is only for paid subscribers.
-            return false
-        }
-        return kvStore.getBool(Keys.shouldOptimizeLocalStorage, defaultValue: false, transaction: tx)
-    }
-
-    public func setShouldOptimizeLocalStorage(_ newValue: Bool, tx: DBWriteTransaction) {
-        kvStore.setBool(newValue, key: Keys.shouldOptimizeLocalStorage, transaction: tx)
     }
 }

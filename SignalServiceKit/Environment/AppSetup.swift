@@ -420,11 +420,13 @@ public class AppSetup {
 
         let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(
             authCredentialStore: authCredentialStore,
+            backupSettingsStore: backupSettingsStore,
             db: db,
             networkManager: networkManager,
             reachabilityManager: reachabilityManager
         )
         let backupSubscriptionManager = BackupSubscriptionManager(
+            backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             db: db,
             networkManager: networkManager,

@@ -515,9 +515,7 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
         }
 
         let accountDataContext = context.chatContext.customChatColorContext.accountDataContext
-        guard
-            let shouldOptimizeLocalStorage = accountDataContext.shouldOptimizeLocalStorage
-        else {
+        guard let backupPlan = accountDataContext.backupPlan else {
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(
                     .accountDataNotFound
@@ -531,7 +529,7 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
                 try backupAttachmentDownloadManager.enqueueFromBackupIfNeeded(
                     $0,
                     restoreStartTimestampMs: context.startTimestampMs,
-                    shouldOptimizeLocalStorage: shouldOptimizeLocalStorage,
+                    backupPlan: backupPlan,
                     remoteConfig: accountDataContext.currentRemoteConfig,
                     tx: context.tx
                 )
