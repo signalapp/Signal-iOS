@@ -167,7 +167,6 @@ public class GroupsV2Impl: GroupsV2 {
         // Get profile key credentials for everybody who might need them.
         let profileKeyCredentialMap = try await loadProfileKeyCredentials(
             for: [localAci] + newGroup.otherMembers.compactMap({ $0 as? Aci }),
-            ignoreMissingCredentials: true,
             forceRefresh: shouldForceRefreshProfileKeyCredentials
         )
         return try GroupsV2Protos.buildNewGroupProto(
@@ -1259,66 +1258,62 @@ public class GroupsV2Impl: GroupsV2 {
 
     // MARK: - ProfileKeyCredentials
 
-    /// Fetches and returnes the profile key credential for each passed ACI. If
-    /// any are missing, returns an error.
+    /// Fetches a profile key credential for each passed ACI.
+    ///
+    /// If credentials aren't available, they are omitted from the result.
+    /// (Callers use the absence of a credential to invite a user to a group
+    /// rather than adding them directly.)
+    ///
+    /// If a credential isn't available and the client believes it can fetch it
+    /// (i.e., it has a profile key for that user), it will try to do so. If
+    /// that fetch fails, this method will re-throw the fetch error.
+    ///
+    /// - Parameter forceRefresh: If true, a new credential will be fetched for
+    /// every element of `acis` for which the client has a believed-to-be-valid
+    /// profile key. The result will contain only those new credentials (i.e.,
+    /// it will omit credentials for users with missing/incorrect profile keys).
+    /// (This handles situations where you have a cached credential the client
+    /// believes is valid but the server rejects. If you can't fetch a new
+    /// credential for that user, you'll fall back to an invite.)
     public func loadProfileKeyCredentials(
         for acis: [Aci],
-        ignoreMissingCredentials: Bool,
         forceRefresh: Bool,
     ) async throws -> ProfileKeyCredentialMap {
-        try await tryToFetchProfileKeyCredentials(
-            for: acis,
-            ignoreMissingProfiles: false,
-            ignoreMissingCredentials: ignoreMissingCredentials,
-            forceRefresh: forceRefresh
-        )
+        var results = ProfileKeyCredentialMap()
 
-        let acis = Set(acis)
-
-        return self.loadPresentProfileKeyCredentials(for: acis)
-    }
-
-    /// Makes a best-effort to fetch the profile key credential for each passed
-    /// ACI. If a profile exists for the user but the credential cannot be
-    /// fetched (e.g., the ACI is not a contact of ours), skips it. Optionally
-    /// ignores "missing profile" errors during fetch.
-    private func tryToFetchProfileKeyCredentials(
-        for acis: [Aci],
-        ignoreMissingProfiles: Bool,
-        ignoreMissingCredentials: Bool,
-        forceRefresh: Bool
-    ) async throws {
-        let acis = Set(acis)
-
-        let acisToFetch: Set<Aci>
-        if forceRefresh {
-            acisToFetch = acis
-        } else {
-            acisToFetch = acis.subtracting(loadPresentProfileKeyCredentials(for: acis).keys)
+        if !forceRefresh {
+            results.merge(loadValidProfileKeyCredentials(for: acis), uniquingKeysWith: { _, new in new })
         }
 
         let profileFetcher = SSKEnvironment.shared.profileFetcherRef
 
-        try await withThrowingTaskGroup(of: Void.self) { taskGroup in
-            for aciToFetch in acisToFetch {
+        let fetchedAcis = try await withThrowingTaskGroup(of: Aci?.self) { taskGroup in
+            for aciToFetch in Set(acis).subtracting(results.keys) {
                 taskGroup.addTask {
                     do {
                         var context = ProfileFetchContext()
                         context.mustFetchNewCredential = true
                         _ = try await profileFetcher.fetchProfile(for: aciToFetch, context: context)
-                    } catch ProfileRequestError.notFound where ignoreMissingProfiles {
+                        return aciToFetch
+                    } catch ProfileFetcherError.couldNotFetchCredential {
                         // this is fine
-                    } catch ProfileFetcherError.couldNotFetchCredential where ignoreMissingCredentials {
-                        // this is fine
+                        return nil
                     }
                 }
             }
-            try await taskGroup.waitForAll()
+            return try await taskGroup.reduce(into: [], { $0.append($1) }).compacted()
         }
+
+        if !fetchedAcis.isEmpty {
+            results.merge(loadValidProfileKeyCredentials(for: fetchedAcis), uniquingKeysWith: { _, new in new })
+        }
+
+        return results
     }
 
-    private func loadPresentProfileKeyCredentials(for acis: Set<Aci>) -> ProfileKeyCredentialMap {
-        SSKEnvironment.shared.databaseStorageRef.read { transaction in
+    private func loadValidProfileKeyCredentials(for acis: some Sequence<Aci>) -> ProfileKeyCredentialMap {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        return databaseStorage.read { transaction in
             var credentialMap = ProfileKeyCredentialMap()
 
             for aci in acis {
@@ -1810,7 +1805,7 @@ public class GroupsV2Impl: GroupsV2 {
     ) async throws -> GroupsProtoGroupChangeActions {
         let localAci = localIdentifiers.aci
 
-        let profileKeyCredentialMap = try await loadProfileKeyCredentials(for: [localAci], ignoreMissingCredentials: false, forceRefresh: false)
+        let profileKeyCredentialMap = try await loadProfileKeyCredentials(for: [localAci], forceRefresh: false)
 
         guard let localProfileKeyCredential = profileKeyCredentialMap[localAci] else {
             throw OWSAssertionError("Missing localProfileKeyCredential.")

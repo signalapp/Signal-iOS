@@ -86,7 +86,6 @@ public protocol GroupsV2 {
 
     func loadProfileKeyCredentials(
         for acis: [Aci],
-        ignoreMissingCredentials: Bool,
         forceRefresh: Bool
     ) async throws -> ProfileKeyCredentialMap
 
@@ -485,7 +484,6 @@ public class MockGroupsV2: GroupsV2 {
 
     public func loadProfileKeyCredentials(
         for acis: [Aci],
-        ignoreMissingCredentials: Bool,
         forceRefresh: Bool
     ) async throws -> ProfileKeyCredentialMap {
         owsFail("Not implemented.")
