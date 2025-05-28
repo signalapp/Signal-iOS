@@ -261,7 +261,9 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         // HACK: Without this async, dialing sound only plays once. I don't really understand why. Does the audioSession
         // need some time to settle? Is something else interrupting our session?
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
-            self.play(sound: .callConnecting)
+            if call.state == .dialing {
+                self.play(sound: .callConnecting)
+            }
         }
     }
 
