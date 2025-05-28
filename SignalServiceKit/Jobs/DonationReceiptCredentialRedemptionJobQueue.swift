@@ -563,10 +563,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                 let paymentType = configuration.paymentType
 
                 return await db.awaitableWrite { tx in
-                    if
-                        errorCode == .paymentIntentRedeemed,
-                        case .recurringSubscription = paymentType
-                    {
+                    if errorCode == .paymentIntentRedeemed {
                         /// This error indicates that the user has gotten their
                         /// badge via another redemption from another job. No
                         /// harm done, so we'll treat these like a success.
