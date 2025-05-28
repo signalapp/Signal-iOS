@@ -1284,7 +1284,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         let mostRecentDateKey = "mostRecentPromptDate"
         let promptCountKey = "promptCount"
 
-        let shouldShowPrompt = SSKEnvironment.shared.databaseStorageRef.read { tx in
+        let shouldShowPrompt = SSKEnvironment.shared.databaseStorageRef.read { tx -> Bool in
             // If we've shown the prompt recently, don't show it again.
             let promptCount = keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx)
             let promptBackoff: TimeInterval = {
@@ -1311,6 +1311,17 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 let mostRecentMessage = InteractionFinder.lastInsertedIncomingMessage(transaction: tx),
                 Date(millisecondsSince1970: mostRecentMessage.receivedAtTimestamp) > upgradeDate
             else {
+                return false
+            }
+            guard let serverTimestampMs = mostRecentMessage.serverTimestamp else {
+                return false
+            }
+            let serverTimestamp = Date(millisecondsSince1970: serverTimestampMs.uint64Value)
+            let serverDeliveryTimestamp = Date(millisecondsSince1970: mostRecentMessage.serverDeliveryTimestamp)
+            // If the most recent message was delivered quickly, don't show it. (This
+            // handles cases where the NSE doesn't launch because the app happens to be
+            // open when the message is received.)
+            guard serverDeliveryTimestamp > (serverTimestamp + .minute) else {
                 return false
             }
             return true
