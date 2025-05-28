@@ -6638,7 +6638,7 @@
 "RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Detaljer";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up %1$@ of space on this device to restore your media.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Slett %1$@ med plass fra enheten for å gjenopprette mediefilene dine.";
 
 /* Title shown on chat list banner for restoring media from a backupis finished */
 "RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Gjenoppretting er utført";
@@ -8939,7 +8939,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Skyv for å avbryte";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "signal";
+"VOICE_MESSAGE_FILE_NAME" = "Signal";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Trykk og hold for å spille inn.";

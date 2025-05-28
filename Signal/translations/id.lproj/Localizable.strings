@@ -6638,7 +6638,7 @@
 "RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Detail";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up %1$@ of space on this device to restore your media.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Kosongkan ruang penyimpanan sebesar %1$@ di perangkat ini untuk memulihkan media.";
 
 /* Title shown on chat list banner for restoring media from a backupis finished */
 "RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Pemulihan Selesai";
