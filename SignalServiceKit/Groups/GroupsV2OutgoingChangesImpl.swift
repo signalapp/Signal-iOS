@@ -299,7 +299,7 @@ public class GroupsV2OutgoingChanges {
         currentGroupModel: TSGroupModelV2,
         currentDisappearingMessageToken: DisappearingMessageToken,
         localIdentifiers: LocalIdentifiers,
-        profileKeyCredentials: GroupsV2.ProfileKeyCredentialMap,
+        profileKeyCredentials: [Aci: ExpiringProfileKeyCredential],
     ) throws -> GroupsV2BuiltGroupChange {
         let groupV2Params = try currentGroupModel.groupV2Params()
 

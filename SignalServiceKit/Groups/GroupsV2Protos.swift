@@ -106,7 +106,7 @@ public class GroupsV2Protos {
 
     public class func buildNewGroupProto(
         _ newGroup: NewGroupParams,
-        profileKeyCredentials: GroupsV2.ProfileKeyCredentialMap,
+        profileKeyCredentials: [Aci: ExpiringProfileKeyCredential],
         localAci: Aci
     ) throws -> GroupsProtoGroup {
         let groupV2Params = try GroupV2Params(groupSecretParams: newGroup.secretParams)

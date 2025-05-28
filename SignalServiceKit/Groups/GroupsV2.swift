@@ -76,8 +76,6 @@ public protocol GroupsV2 {
         transaction: DBReadTransaction
     ) -> Bool
 
-    typealias ProfileKeyCredentialMap = [Aci: ExpiringProfileKeyCredential]
-
     func createNewGroupOnService(
         _ newGroup: GroupsV2Protos.NewGroupParams,
         downloadedAvatars: GroupAvatarStateMap,
@@ -87,7 +85,7 @@ public protocol GroupsV2 {
     func loadProfileKeyCredentials(
         for acis: [Aci],
         forceRefresh: Bool
-    ) async throws -> ProfileKeyCredentialMap
+    ) async throws -> [Aci: ExpiringProfileKeyCredential]
 
     func fetchLatestSnapshot(
         secretParams: GroupSecretParams,
@@ -485,7 +483,7 @@ public class MockGroupsV2: GroupsV2 {
     public func loadProfileKeyCredentials(
         for acis: [Aci],
         forceRefresh: Bool
-    ) async throws -> ProfileKeyCredentialMap {
+    ) async throws -> [Aci: ExpiringProfileKeyCredential] {
         owsFail("Not implemented.")
     }
 

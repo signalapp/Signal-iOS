@@ -1278,8 +1278,8 @@ public class GroupsV2Impl: GroupsV2 {
     public func loadProfileKeyCredentials(
         for acis: [Aci],
         forceRefresh: Bool,
-    ) async throws -> ProfileKeyCredentialMap {
-        var results = ProfileKeyCredentialMap()
+    ) async throws -> [Aci: ExpiringProfileKeyCredential] {
+        var results = [Aci: ExpiringProfileKeyCredential]()
 
         if !forceRefresh {
             results.merge(loadValidProfileKeyCredentials(for: acis), uniquingKeysWith: { _, new in new })
@@ -1311,10 +1311,10 @@ public class GroupsV2Impl: GroupsV2 {
         return results
     }
 
-    private func loadValidProfileKeyCredentials(for acis: some Sequence<Aci>) -> ProfileKeyCredentialMap {
+    private func loadValidProfileKeyCredentials(for acis: some Sequence<Aci>) -> [Aci: ExpiringProfileKeyCredential] {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         return databaseStorage.read { transaction in
-            var credentialMap = ProfileKeyCredentialMap()
+            var credentialMap = [Aci: ExpiringProfileKeyCredential]()
 
             for aci in acis {
                 do {
