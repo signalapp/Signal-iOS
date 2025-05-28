@@ -344,13 +344,13 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
     struct JoinedMember {
         enum ID: Hashable {
-            case aci(Aci)
+            case serviceId(ServiceId)
             case demuxID(DemuxId)
         }
 
         let id: ID
 
-        let aci: Aci
+        let serviceId: ServiceId
         let displayName: String
         let comparableName: DisplayName.ComparableValue
         let demuxID: DemuxId?
@@ -418,8 +418,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
             if let nameComparison {
                 return nameComparison
             }
-            if $0.aci != $1.aci {
-                return $0.aci < $1.aci
+            if $0.serviceId != $1.serviceId {
+                return $0.serviceId < $1.serviceId
             }
             return $0.demuxID ?? 0 < $1.demuxID ?? 0
         }
@@ -850,7 +850,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
     class ViewModel {
         typealias Member = CallDrawerSheet.JoinedMember
 
-        let aci: Aci
+        let serviceId: ServiceId
         let name: String
         let isLocalUser: Bool
         let demuxId: DemuxId?
@@ -860,7 +860,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
         @Published var shouldShowPresentingIcon = false
 
         init(member: Member) {
-            self.aci = member.aci
+            self.serviceId = member.serviceId
             self.name = member.displayName
             self.isLocalUser = member.isLocalUser
             self.demuxId = member.demuxID
@@ -868,7 +868,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
         }
 
         func update(using member: Member) {
-            owsAssertDebug(aci == member.aci)
+            owsAssertDebug(serviceId == member.serviceId)
             self.shouldShowAudioMutedIcon = member.isAudioMuted ?? false
             self.shouldShowVideoMutedIcon = member.isVideoMuted == true && member.isPresenting != true
             self.shouldShowPresentingIcon = member.isPresenting ?? false
@@ -1012,7 +1012,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
         self.nameLabel.text = viewModel.name
         self.avatarView.updateWithSneakyTransactionIfNecessary { config in
-            config.dataSource = .address(SignalServiceAddress(viewModel.aci))
+            config.dataSource = .address(SignalServiceAddress(viewModel.serviceId))
         }
 
         self.demuxId = viewModel.demuxId
@@ -1119,8 +1119,8 @@ private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
             avatarView.isHiddenInStackView = true
         }
 
-        func configure(with aci: Aci?, totalAvatars: Int) {
-            guard let aci else {
+        func configure(with serviceId: ServiceId?, totalAvatars: Int) {
+            guard let serviceId else {
                 borderView.isHiddenInStackView = true
                 avatarView.isHiddenInStackView = true
                 return
@@ -1128,7 +1128,7 @@ private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
             borderView.isHiddenInStackView = false
             avatarView.isHiddenInStackView = false
             avatarView.updateWithSneakyTransactionIfNecessary { configuration in
-                configuration.dataSource = .address(SignalServiceAddress(aci))
+                configuration.dataSource = .address(SignalServiceAddress(serviceId))
 
                 let avatarSize = Self.avatarSize(for: totalAvatars)
                 configuration.sizeClass = .customDiameter(avatarSize)
@@ -1217,22 +1217,22 @@ private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
         }
 
         frontAvatar.configure(
-            with: unknownMembers.members.first?.aci,
+            with: unknownMembers.members.first?.serviceId,
             totalAvatars: unknownMembers.members.count
         )
         if unknownMembers.members.count == 2 {
             middleAvatar.hide()
             backAvatar.configure(
-                with: unknownMembers.members.last?.aci,
+                with: unknownMembers.members.last?.serviceId,
                 totalAvatars: unknownMembers.members.count
             )
         } else {
             middleAvatar.configure(
-                with: unknownMembers.members[safe: 1]?.aci,
+                with: unknownMembers.members[safe: 1]?.serviceId,
                 totalAvatars: unknownMembers.members.count
             )
             backAvatar.configure(
-                with: unknownMembers.members[safe: 2]?.aci,
+                with: unknownMembers.members[safe: 2]?.serviceId,
                 totalAvatars: unknownMembers.members.count
             )
         }

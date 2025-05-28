@@ -89,7 +89,7 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
 
                 return JoinedMember(
                     id: .demuxID(member.demuxId),
-                    aci: member.aci,
+                    serviceId: member.aci,
                     displayName: resolvedName,
                     comparableName: comparableName,
                     demuxID: member.demuxId,
@@ -109,12 +109,12 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
                 id = .demuxID(localDemuxId)
                 demuxId = localDemuxId
             } else {
-                id = .aci(localIdentifiers.aci)
+                id = .serviceId(localIdentifiers.aci)
                 demuxId = nil
             }
             members.append(JoinedMember(
                 id: id,
-                aci: localIdentifiers.aci,
+                serviceId: localIdentifiers.aci,
                 displayName: displayName,
                 comparableName: comparableName,
                 demuxID: demuxId,
@@ -138,8 +138,8 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
                     true
                 }
                 return JoinedMember(
-                    id: .aci(aci),
-                    aci: aci,
+                    id: .serviceId(aci),
+                    serviceId: aci,
                     displayName: displayName.resolvedValue(config: config.displayNameConfig),
                     comparableName: displayName.comparableValue(config: config),
                     demuxID: nil,
@@ -244,15 +244,15 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
     func unsortedMembers(tx: DBReadTransaction) -> [JoinedMember] {
         var members = [JoinedMember]()
 
-        if let remoteAci = thread.contactAddress.aci {
+        if let remoteServiceId = thread.contactAddress.serviceId {
             let remoteDisplayName = SSKEnvironment.shared.contactManagerRef.displayName(
                 for: thread.contactAddress,
                 tx: SDSDB.shimOnlyBridge(tx)
             ).resolvedValue()
             let remoteComparableName: DisplayName.ComparableValue = .nameValue(remoteDisplayName)
             members.append(JoinedMember(
-                id: .aci(remoteAci),
-                aci: remoteAci,
+                id: .serviceId(remoteServiceId),
+                serviceId: remoteServiceId,
                 displayName: remoteDisplayName,
                 comparableName: remoteComparableName,
                 demuxID: nil,
@@ -269,8 +269,8 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
         let comparableName: DisplayName.ComparableValue = .nameValue(displayName)
         if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci {
             members.append(JoinedMember(
-                id: .aci(localAci),
-                aci: localAci,
+                id: .serviceId(localAci),
+                serviceId: localAci,
                 displayName: displayName,
                 comparableName: comparableName,
                 demuxID: nil,
