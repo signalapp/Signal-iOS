@@ -106,9 +106,6 @@
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
 "ADD_TO_GROUP_ALREADY_A_MEMBER" = "Już należy do grupy";
 
-/* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ należy już do grupy %2$@";
-
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ należy teraz do grupy %2$@";
 
@@ -562,6 +559,21 @@
 /* Footer for a menu section related to settings for when Backups are disabled. */
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Tworzenie kopii zapasowych zostało wyłączone, a Twoje dane zostały usunięte z bezpiecznej usługi przechowywania Signal.";
 
+/* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+
+/* Header for a menu section related to settings for when disabling Backups encountered an unexpected error. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "An error occurred when deleting your data from Signal's secure storage service.";
+
+/* Title for a view indicating we failed to delete the user's Backup due to an unexpected error. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "Failed to Delete Backup";
+
+/* Description for a progress view tracking Backups being disabled. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "Deleting Backup...";
+
+/* Header for a menu section related to disabling Backups. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "Backups have been turned off and your data will be deleted from Signal's secure storage service.";
+
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Szczegóły kopii zapasowej";
 
@@ -571,14 +583,14 @@
 /* Title for a button allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Usuń kopię zapasową i wyłącz tworzenie kolejnych";
 
-/* Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Coś poszło nie tak. Skontaktuj się z pomocą techniczną.";
+/* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "An error occurred when deleting your data from Signal's secure storage service.";
 
-/* Message shown in an action sheet when the user tries to disable Backups, but encountered a network error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Coś poszło nie tak. Sprawdź połączenie z internetem i spróbuj ponownie.";
+/* Title shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "Failed to Delete Backup";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "Aby wyłączyć tworzenie kopii zapasowych, najpierw musisz zarejestrować urządzenie.";
+"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Codziennie";
@@ -2213,7 +2225,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Zatrzymaj przenoszenie";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Jeśli zamkniesz to okno, przenoszenie zostanie przerwane. Czy na pewno chcesz to zrobić?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Jeśli zamkniesz to okno, przenoszenie zostanie przerwane. Czy chcesz to zrobić?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Zatrzymać przenoszenie?";
@@ -2322,6 +2334,12 @@
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Ustaw inny czas";
+
+/* Title for a picker for the unit of time to use for disappearing messages. */
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "Unit";
+
+/* Title for a picker for the amount of time, in a given unit, to use for disappearing messages. */
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "Value";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "dni";
@@ -2660,7 +2678,7 @@
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Wpłać darowiznę";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Jeśli przejdziesz dalej, anulujesz swoją ostatnią darowiznę. Pieniądze nie zostaną pobrane, ale w Twojej aplikacji bankowej może być widoczne żądanie płatności. Na pewno chcesz wpłacić nową darowiznę?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Jeśli przejdziesz dalej, anulujesz swoją ostatnią darowiznę. Pieniądze nie zostaną pobrane, ale w Twojej aplikacji bankowej może być widoczne żądanie płatności. Czy w takim razie chcesz wpłacić nową darowiznę?";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Ponów darowiznę cykliczną";
@@ -3740,13 +3758,13 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Usuń relację grupową";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Czy na pewno chcesz usunąć grupę „%1$@”?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Usunąć grupę „%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Osoby, które należą do czatu grupowego „%1$@”, mogą wyświetlać relację i na nią odpowiadać. Listę tych osób możesz edytować w grupie.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Kto może wyświetlić tę relację";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Kto może wyświetlić te relacje";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Zaktualizowano grupę.";
@@ -4631,7 +4649,7 @@
 "MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "Znika za";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Dostarczono";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Wiadomość dostarczona";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Błąd";
@@ -4640,13 +4658,13 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Wysyłanie wstrzymane";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Odczytano";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Wiadomość odczytana";
 
 /* Status label for messages which are sending. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Wysyłanie";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Wysłano";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Wiadomość wysłana";
 
 /* Status label for messages which were skipped. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Pominięto";
@@ -4655,16 +4673,16 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Przesyłanie";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Wyświetlono";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Wiadomość wyświetlona";
 
 /* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
 "MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "Nigdy";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Odebrano";
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Odebrana";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Wysłano";
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Wysłana";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Nazwa pliku";
@@ -4820,7 +4838,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "Błąd";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "Częściowo wysłano. Dotknij, aby dowiedzieć się więcej";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "Wiadomość wysłana częściowo. Dotknij, aby dowiedzieć się więcej";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING" = "Wysyłanie wstrzymane";
@@ -6131,7 +6149,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Usuń relację niestandardową";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Czy na pewno chcesz usunąć relację „%1$@”? Wszelkie aktualizacje powiązane z tą relacją również zostaną usunięte.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Chcesz usunąć relację „%1$@”? Oznacza to usunięcie także wszystkiego, co zostało do niej dodane.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Usuń";
@@ -6638,7 +6656,7 @@
 "RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Szczegóły";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up %1$@ of space on this device to restore your media.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Aby przywrócić multimedia, zwolnij %1$@ miejsca na urządzeniu.";
 
 /* Title shown on chat list banner for restoring media from a backupis finished */
 "RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Przywracanie zakończone";
@@ -8168,7 +8186,7 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Włącz relacje";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "Wyświetlaj potwierdzenia";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Informacje o wyświetleniach";
 
 /* Footer for the 'view receipts' section of the stories settings */
 "STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Bądź na bieżąco z liczbą wyświetleń relacji i udostępniaj statystyki innym. Po wyłączeniu tej funkcji stracisz dostęp do informacji o wyświetleniach.";
@@ -8177,19 +8195,19 @@
 "STORIES_SHARE_STORY_ACTION" = "Udostępnij";
 
 /* Section title shown when sending to non-story conversations but failing to send the file to stories. */
-"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Wysłano";
+"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Udostępniono";
 
 /* Section title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
-"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "Nie wysłano";
+"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "Nie udostępniono";
 
 /* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
-"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Wysłano częściowo";
+"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Relacja udostępniona częściowo";
 
 /* Subtitle shown when failing to send an incompatible file to stories via the sharesheet. */
 "STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "Wybrany typ pliku nie jest obsługiwany.";
 
 /* Title shown when failing to send an incompatible file to stories via the sharesheet. */
-"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_TITLE" = "Nie udało się wysłać";
+"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_TITLE" = "Nie można udostępnić";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "Relacje";
@@ -8273,10 +8291,10 @@
 "STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Odpowiedz tej osobie: %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Nie udało się wysłać relacji. Sprawdź połączenie z internetem i spróbuj ponownie";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Nie udało się udostępnić relacji. Sprawdź połączenie z internetem i spróbuj ponownie";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Nie udało się wysłać relacji do niektórych osób. Sprawdź połączenie z internetem i spróbuj ponownie";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Nie udało się udostępnić relacji niektórym osobom. Sprawdź połączenie z internetem i spróbuj ponownie";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Udostępniaj tylko…";
@@ -8285,25 +8303,25 @@
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Wszyscy oprócz…";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED" = "Nie udało się wysłać";
+"STORY_SEND_FAILED" = "Nie udało się udostępnić";
 
 /* Body for notification shown when a story fails to send. */
-"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Nie udało się wysłać relacji";
+"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Nie udało się udostępnić relacji";
 
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "Spróbuj ponownie";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Nie udało się wysłać. Dotknij, aby spróbować ponownie";
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Nie udało się udostępnić. Dotknij, aby spróbować ponownie";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED" = "Wysłana częściowo";
+"STORY_SEND_PARTIALLY_FAILED" = "Udostępniona częściowo";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Wysłana częściowo. Dotknij, aby dowiedzieć się więcej";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Udostępniona częściowo. Dotknij, aby dowiedzieć się więcej";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "Wysyłanie…";
+"STORY_SENDING" = "Udostępnianie…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Został przez Ciebie rozpoczęty z nimi czat";
@@ -8315,10 +8333,10 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Masz te osoby w kontaktach telefonu";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Kontakty mogą wyświetlić Twoje imię, nazwisko i zdjęcie oraz wszystko, co udostępniasz w swoich relacjach – chyba że je przed tymi osobami ukryjesz.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Kontakty mogą wyświetlić Twoje imię, nazwisko i zdjęcie oraz to, co udostępniasz w swoich relacjach – chyba że je przed tymi osobami ukryjesz.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Kontakty Signal</bold> to osoby, które  zostały uznane za zaufane z jednego z tych powodów:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Kontakty Signal</bold> to osoby, które zostały uznane za zaufane z jednego z tych powodów:";
 
 /* Label for the stories section of the settings view */
 "STORY_SETTINGS_TITLE" = "Relacje";

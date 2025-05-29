@@ -106,9 +106,6 @@
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
 "ADD_TO_GROUP_ALREADY_A_MEMBER" = "Již je členem";
 
-/* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ je už členem %2$@";
-
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ přidán do %2$@";
 
@@ -562,6 +559,21 @@
 /* Footer for a menu section related to settings for when Backups are disabled. */
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Zálohování bylo vypnuto a vaše data byla odstraněna ze zabezpečeného úložiště služby Signal.";
 
+/* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+
+/* Header for a menu section related to settings for when disabling Backups encountered an unexpected error. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "An error occurred when deleting your data from Signal's secure storage service.";
+
+/* Title for a view indicating we failed to delete the user's Backup due to an unexpected error. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "Failed to Delete Backup";
+
+/* Description for a progress view tracking Backups being disabled. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "Deleting Backup...";
+
+/* Header for a menu section related to disabling Backups. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "Backups have been turned off and your data will be deleted from Signal's secure storage service.";
+
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Podrobnosti o zálohování";
 
@@ -571,14 +583,14 @@
 /* Title for a button allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Vypnout a odstranit zálohování";
 
-/* Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "Něco se pokazilo. Kontaktujte prosím podporu.";
+/* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "An error occurred when deleting your data from Signal's secure storage service.";
 
-/* Message shown in an action sheet when the user tries to disable Backups, but encountered a network error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "Něco se pokazilo. Zkontrolujte připojení k internetu a zkuste to znovu.";
+/* Title shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "Failed to Delete Backup";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "Pro vypnutí zálohování musíte být registrováni.";
+"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Denně";
@@ -2322,6 +2334,12 @@
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Vlastní čas";
+
+/* Title for a picker for the unit of time to use for disappearing messages. */
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "Unit";
+
+/* Title for a picker for the amount of time, in a given unit, to use for disappearing messages. */
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "Value";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "dny";
@@ -6638,7 +6656,7 @@
 "RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Podrobnosti";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up %1$@ of space on this device to restore your media.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Uvolněte %1$@ místa na tomto zařízení, abyste mohli obnovit svá média.";
 
 /* Title shown on chat list banner for restoring media from a backupis finished */
 "RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Obnovení dokončeno";

@@ -89,7 +89,7 @@
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "هل لديك الرغبة في مشاركة حسابك الشخصي مع هذه المجموعة؟";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "هل ترغبُ في إضافة هذا المستخدم إلى جهات اتصالك؟";
+"ADD_TO_CONTACTS_OFFER" = "هل ترغبُ في إضافة هذا المُستخدِم إلى جهات اتصالك؟";
 
 /* Label for button or row which allows users to add to another group. */
 "ADD_TO_GROUP" = "إضافة إلى مجموعة أُخرى";
@@ -106,9 +106,6 @@
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
 "ADD_TO_GROUP_ALREADY_A_MEMBER" = "بالفعل عضو";
 
-/* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ بالفعل عضو في %2$@";
-
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "تمَّت إضافة %1$@ إلى %2$@";
 
@@ -116,7 +113,7 @@
 "ADD_TO_GROUP_TITLE" = "إضافة إلى مجموعة";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "هل لديك الرغبة في مشاركة حسابك الشخصي مع هذا المستخدم ؟";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "هل لديك الرغبة في مشاركة حسابك الشخصي مع هذا المُستخدِم؟";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "تم";
@@ -562,6 +559,21 @@
 /* Footer for a menu section related to settings for when Backups are disabled. */
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "تمَّ إيقاف النُسخ الاحتياطية، وتمَّ حذف بياناتك من خدمة التخزين الآمنة الخاصة بسيجنال.";
 
+/* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+
+/* Header for a menu section related to settings for when disabling Backups encountered an unexpected error. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "An error occurred when deleting your data from Signal's secure storage service.";
+
+/* Title for a view indicating we failed to delete the user's Backup due to an unexpected error. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "Failed to Delete Backup";
+
+/* Description for a progress view tracking Backups being disabled. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "Deleting Backup...";
+
+/* Header for a menu section related to disabling Backups. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "Backups have been turned off and your data will be deleted from Signal's secure storage service.";
+
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "تفاصيل النسخ الاحتياطي";
 
@@ -571,14 +583,14 @@
 /* Title for a button allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "إيقاف وحذف النسخ الاحتياطية";
 
-/* Message shown in an action sheet when the user tries to disable Backups, but encountered a generic error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_GENERIC_ERROR" = "حدث خطأ ما. يُرجى التواصل مع فريق الدعم.";
+/* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "An error occurred when deleting your data from Signal's secure storage service.";
 
-/* Message shown in an action sheet when the user tries to disable Backups, but encountered a network error. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NETWORK_ERROR" = "حدث خطأ ما. تحقَّق من اتصالك بالشبكة ثم حاوِل مرّة أخرى.";
+/* Title shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "Failed to Delete Backup";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLE_ERROR_NOT_REGISTERED" = "يجب أن تكون مُسجلًا لتمكين النسخ الاحتياطية.";
+"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "يوميًا";
@@ -761,7 +773,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "تمَّ حظر %1$@.";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "المستخدم محظور";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "المُستخدِم محظور";
 
 /* The title of the 'group blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "المجموعة محظورة";
@@ -779,7 +791,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "يمكن للأعضاء الموجودين إضافتك للمجموعة مرّة أُخرى.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "لن يتمكن المستخدمون المحظورون من مكالمتك أو إرسال الرسائل إليك.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "لن يتمكن المُستخدِمون المحظورون من مكالمتك أو إرسال الرسائل إليك.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "جديد : قُم بتمويه الوجوه أو ارسم في أي مكان للتمويه.";
@@ -1694,7 +1706,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "دائمًا";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "يمكن فقط للمشرفين إرسال الرسائل إلى هذه المجموعة.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "يمكن فقط للمُشرِفين إرسال الرسائل إلى هذه المجموعة.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "المجموعات";
@@ -1937,7 +1949,7 @@
 "CREATE_CALL_LINK_LABEL" = "إنشاء رابط المكالمة";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "نُقدم لكم خصوصية رقم الهاتف وأسماء المُستخدمين الاختيارية والروابط.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "نُقدم لكم خصوصية رقم الهاتف وأسماء المُستخدِمين الاختيارية والروابط.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "طرق جديدة للاتصال";
@@ -2322,6 +2334,12 @@
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "وقت مُخصَّص";
+
+/* Title for a picker for the unit of time to use for disappearing messages. */
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "Unit";
+
+/* Title for a picker for the amount of time, in a given unit, to use for disappearing messages. */
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "Value";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "أيام";
@@ -2771,7 +2789,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "تعديل المجموعة";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "لا يُمكن إضافة هذا المستخدم إلى المجموعة حتى يُحدِّث سيجنال.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "لا يُمكن إضافة هذا المُستخدِم إلى المجموعة حتى يُحدِّث سيجنال.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "صورة غير صالحة";
@@ -2876,7 +2894,7 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "فشل تحميل السجلات.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "فشل التراسل لأنك حظرت المستخدم.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "فشل التراسُل لأنك حظرت المُستخدِم.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "فشل إرسال الرسالة لعدم وجود مستلمين صالحين.";
@@ -2894,7 +2912,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "خطأ في الخادم. يُرجى المحاولة مُجدَّدًا لاحقًا.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "يحتاج الخادم إلى التحقُّق من المستخدم قبل إرسال الرسالة.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "يحتاج الخادم إلى التحقُّق من المُستخدِم قبل إرسال الرسالة.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "حدث خطأ مجهول.";
@@ -3158,7 +3176,7 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "تمَّ حَظر %1$@";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "يمكنك للمشرفين على المجموعة فقط بدء المكالمات.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "يمكنك للمُشرِفين على المجموعة فقط بدء المكالمات.";
 
 /* Title for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "تعذَّر بدء المكالمة الجماعية";
@@ -3407,7 +3425,7 @@
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "لا يُمكن إضافة %1$@ تلقائيًا للمجموعة بواسطتك. تمَّت دعوته للانضمام، لكنه لن يرى أي رسالة من رسائل المجموعة حتى يقبل الدعوة.";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "لا يُمكن إضافة هؤلاء المُستخدمين تلقائيًا للمجموعة بواسطتك. تمَّت دعوتهم للانضمام، لكنهم لن يروا أي رسالة في المجموعة حتى يقبلوا الدعوة.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "لا يُمكن إضافة هؤلاء المُستخدِمين تلقائيًا للمجموعة بواسطتك. تمَّت دعوتهم للانضمام، لكنهم لن يروا أي رسالة في المجموعة حتى يقبلوا الدعوة.";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "تغيَّرت إعدادات المجموعة للسماح لجميع الأعضاء بإرسال الرسائل.";
@@ -3827,7 +3845,7 @@
 "GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "يمكن فقط لـ %1$@ إرسال الرسائل.";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "مراسلة أحد المشرفين";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "مراسلة أحد المُشرِفين";
 
 /* Label for button that lets the user block a request to join the group. */
 "GROUPS_BLOCK_REQUEST_BUTTON" = "حظر الطلب";
@@ -5012,7 +5030,7 @@
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "أضِف اسمًا للمجموعة";
 
 /* a title for the selected section of the 'recipient picker' view. */
-"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "مستخدمون آخرون";
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "مُستخدِمون آخرون";
 
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "حدِّد أعضاء";
@@ -6107,7 +6125,7 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "لم يجد سيجنال أي رقم أمان في حافظتك. هل نسخته بشكلٍ صحيح؟";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "كل زوج من مستخدمي سيجنال يتشاركان رقم أمان فريد. يُرجى التأكُّد أن %1$@ يعرض رقم الأمان الفريد الخاص بك.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "كل زوج من مُستخدِمي سيجنال يتشاركان رقم أمان فريد. يُرجى التأكُّد أن %1$@ يعرض رقم الأمان الفريد الخاص بك.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "أنت تستخدم إصدارًا قديمًا من سيجنال. تحتاج للتحديث لتتمكَّن من التحقُّق.";
@@ -6638,7 +6656,7 @@
 "RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "التفاصيل";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up %1$@ of space on this device to restore your media.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "حرِّر ما يصل إلى %1$@ من المساحة على هذا الجهاز لاستعادة وسائطك.";
 
 /* Title shown on chat list banner for restoring media from a backupis finished */
 "RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "اكتملَتْ عملية الاستعادة.";
@@ -8741,7 +8759,7 @@
 "USE_PROXY_EXPLANATION" = "استخدِم البروكسي فقط إذا تعذَّر عليك الاتصال بسيجنال عبر بيانات الجوّال أو عبر شبكة الواي فاي.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "أسماء المُستخدمين لها كودات QR فريدة يُمكنك مُشاركتُهما مع أصدقائك لكي يبدؤوا الدردشة معك.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "أسماء المُستخدِمين لها كودات QR فريدة يُمكنك مُشاركتُهما مع أصدقائك لكي يبدؤوا الدردشة معك.";
 
 /* Title for the username links and QR codes section on the username education sheet */
 "USERNAME_EDUCATION_LINK_TITLE" = "روابط وكودات الـ QR";
@@ -8759,10 +8777,10 @@
 "USERNAME_EDUCATION_TITLE" = "طرق جديدة للاتصال";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "يُمكن للناس مراسلتك الآن باستخدام اسم المُستخدم الاختياري الخاص بك حتى لا تضطر إلى إعطاء رقم هاتفك. أسماء المُستخدمين ليست مرئية على حسابك الشخصي.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "يُمكن للناس مراسلتك الآن باستخدام اسم المُستخدِم الاختياري الخاص بك حتى لا تضطر إلى إعطاء رقم هاتفك. أسماء المُستخدِمين ليست مرئية على حسابك الشخصي.";
 
 /* Title for usernames section on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_TITLE" = "أسماء المُستخدمين";
+"USERNAME_EDUCATION_USERNAME_TITLE" = "أسماء المُستخدِمين";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "اللون";
@@ -8855,7 +8873,7 @@
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "اختر اسم مُستخدِم خاص بك";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "يُمكن أن تحتوي أسماء المُستخدمين على حروف a-z، وأرقام 0-9 وشرطة سُفلية _ فقط.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "يُمكن أن تحتوي أسماء المُستخدِمين على حروف a-z، وأرقام 0-9 وشرطة سُفلية _ فقط.";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "اسم مُستخدِم غير صحيح. أدخِل رقمين على الأقل.";
@@ -8939,7 +8957,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "اسحب للإلغاء";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "signal";
+"VOICE_MESSAGE_FILE_NAME" = "سيجنال";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "اضغط مُطوَّلًا للتسجيل";
