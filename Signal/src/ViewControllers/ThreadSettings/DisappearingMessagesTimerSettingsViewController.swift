@@ -284,7 +284,7 @@ struct DisappearingMessagesTimerSettingsView: View {
                                 Spacer()
                             }
                         }
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Color.Signal.label)
                     }
                 }
 
@@ -305,7 +305,7 @@ struct DisappearingMessagesTimerSettingsView: View {
                                 Spacer()
                             }
                         }
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Color.Signal.label)
 
                         Spacer()
 
