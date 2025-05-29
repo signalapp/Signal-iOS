@@ -320,8 +320,10 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             scanLabel.text = NSLocalizedString("PRIVACY_TAP_TO_SCAN", comment: "Button that shows the 'scan with camera' view.")
             scanLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(13, 15))
             scanLabel.textColor = Theme.lightThemeSecondaryTextAndIconColor
+            scanLabel.numberOfLines = 0
+            scanLabel.textAlignment = .center
             containerView.addSubview(scanLabel)
-            scanLabel.autoHCenterInSuperview()
+            scanLabel.autoPinWidthToSuperviewMargins()
             scanLabel.autoPinEdge(.top, to: .bottom, of: fingerprintImageView, withOffset: 12)
             scanLabel.autoPinEdge(.bottom, to: .bottom, of: containerView, withOffset: -14)
 

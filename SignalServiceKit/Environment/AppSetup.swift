@@ -552,6 +552,7 @@ public class AppSetup {
             networkManager: networkManager,
             notificationPresenter: notificationPresenter,
             pniProtocolStore: pniProtocolStore,
+            profileManager: profileManager,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientIdFinder: recipientIdFinder,

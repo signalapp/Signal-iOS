@@ -202,6 +202,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     private let notificationPresenter: any NotificationPresenter
     private let ownIdentityKeyValueStore: KeyValueStore
     private let pniProtocolStore: SignalProtocolStore
+    private let profileManager: ProfileManager
     private let queuedVerificationStateSyncMessagesKeyValueStore: KeyValueStore
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
@@ -219,6 +220,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         networkManager: NetworkManager,
         notificationPresenter: any NotificationPresenter,
         pniProtocolStore: SignalProtocolStore,
+        profileManager: ProfileManager,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientIdFinder: RecipientIdFinder,
@@ -236,6 +238,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             collection: "TSStorageManagerIdentityKeyStoreCollection"
         )
         self.pniProtocolStore = pniProtocolStore
+        self.profileManager = profileManager
         self.queuedVerificationStateSyncMessagesKeyValueStore = KeyValueStore(
             collection: "OWSIdentityManager_QueuedVerificationStateSyncMessages"
         )
@@ -799,6 +802,21 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             break
         default:
             if isUserInitiatedChange {
+                switch verificationState {
+                case .verified:
+                    // If you mark someone as verified on this device, add them
+                    // to the profile whitelist so they become a "Signal
+                    // Connection". (Other devices will learn about this via
+                    // Storage Service like normal.)
+                    profileManager.addUser(
+                        toProfileWhitelist: recipient.address,
+                        userProfileWriter: .localUser,
+                        transaction: tx
+                    )
+                case .noLongerVerified, .implicit:
+                    break
+                }
+
                 saveChangeMessages(for: recipient, verificationState: verificationState, isLocalChange: true, tx: tx)
                 enqueueSyncMessage(for: recipientUniqueId, tx: tx)
             } else {
