@@ -316,7 +316,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         let footerLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
             text: footerText,
             font: .dynamicTypeCaption1Clamped,
-            learnMoreUrl: "https://support.signal.org/hc/en-us/articles/360057625692#payments_details")
+            learnMoreUrl: "https://support.signal.org/hc/articles/360057625692#payments_details")
         let footerStack = UIStackView(arrangedSubviews: [footerLabel])
         footerStack.axis = .vertical
         footerStack.alignment = .fill

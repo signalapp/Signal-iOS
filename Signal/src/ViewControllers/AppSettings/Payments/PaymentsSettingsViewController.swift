@@ -999,7 +999,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             style: .default,
             handler: { _ in
                 UIApplication.shared.open(
-                    URL(string: "https://support.signal.org/hc/en-us/articles/360057625692#payments_currency_conversion")!,
+                    URL(string: "https://support.signal.org/hc/articles/360057625692#payments_currency_conversion")!,
                     options: [:],
                     completionHandler: nil
                 )
@@ -1225,7 +1225,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     @objc
     private func didTapAboutMobileCoinCard() {
         UIApplication.shared.open(
-            URL(string: "https://support.signal.org/hc/en-us/articles/360057625692#payments_which_ones")!,
+            URL(string: "https://support.signal.org/hc/articles/360057625692#payments_which_ones")!,
             options: [:],
             completionHandler: nil
         )
@@ -1234,7 +1234,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     @objc
     private func didTapAddingToYourWalletCard() {
         UIApplication.shared.open(
-            URL(string: "https://support.signal.org/hc/en-us/articles/360057625692#payments_transfer_from_exchange")!,
+            URL(string: "https://support.signal.org/hc/articles/360057625692#payments_transfer_from_exchange")!,
             options: [:],
             completionHandler: nil
         )
@@ -1243,7 +1243,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     @objc
     private func didTapCashingOutCoinCard() {
         UIApplication.shared.open(
-            URL(string: "https://support.signal.org/hc/en-us/articles/360057625692#payments_transfer_to_exchange")!,
+            URL(string: "https://support.signal.org/hc/articles/360057625692#payments_transfer_to_exchange")!,
             options: [:],
             completionHandler: nil
         )

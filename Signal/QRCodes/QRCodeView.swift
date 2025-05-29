@@ -257,7 +257,7 @@ struct RotatingQRCodeView: View {
 #Preview {
     VStack {
         RotatingQRCodeView(model: .init(
-            urlDisplayMode: .loaded(URL(string: "https://support.signal.org/hc/en-us/articles/6712070553754-Phone-Number-Privacy-and-Usernames")!),
+            urlDisplayMode: .loaded(URL(string: "https://support.signal.org/hc/articles/6712070553754-Phone-Number-Privacy-and-Usernames")!),
             onRefreshButtonPressed: {}
         ))
 

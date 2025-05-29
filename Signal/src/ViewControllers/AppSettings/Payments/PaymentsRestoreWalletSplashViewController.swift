@@ -75,7 +75,7 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
             text: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION",
                                     comment: "Explanation of the 'restore payments wallet' process payments settings."),
             font: .dynamicTypeBody2Clamped,
-            learnMoreUrl: "https://support.signal.org/hc/en-us/articles/360057625692#payments_wallet_restore_passphrase")
+            learnMoreUrl: "https://support.signal.org/hc/articles/360057625692#payments_wallet_restore_passphrase")
         explanationLabel.textAlignment = .center
 
         let topStack = UIStackView(arrangedSubviews: [

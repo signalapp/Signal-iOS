@@ -103,7 +103,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
         useProxySection.footerAttributedTitle = .composed(of: [
             OWSLocalizedString("USE_PROXY_EXPLANATION", comment: "Explanation of when you should use a signal proxy"),
             " ",
-            CommonStrings.learnMore.styled(with: .link(URL(string: "https://support.signal.org/hc/en-us/articles/360056052052-Proxy-Support")!))
+            CommonStrings.learnMore.styled(with: .link(URL(string: "https://support.signal.org/hc/articles/360056052052-Proxy-Support")!))
         ]).styled(
             with: .font(.dynamicTypeCaption1Clamped),
             .color(Theme.secondaryTextAndIconColor)
