@@ -67,7 +67,10 @@ class BackupDisablingManager {
     }
 
     /// Disable Backups for the current user. Backups are immediately disabled
-    /// locally, and the returned `Task` tracks disabling them remotely.
+    /// locally, with disabling remotely kicked off asynchronously.
+    ///
+    /// Callers should call `currentDisableRemotelyState` after calling this
+    /// method to track the progress of disabling remotely.
     ///
     /// - Throws `NotRegisteredError` before disabling if the user is not registered.
     func disableBackups(tx: DBWriteTransaction) throws(NotRegisteredError) {
@@ -90,26 +93,26 @@ class BackupDisablingManager {
     /// Attempts to remotely disable Backups, if necessary. For example, a
     /// previous launch may have attempted but failed to remotely disable
     /// Backups.
-    func disableRemotelyIfNecessary() async {
-        // If we don't need to disable remotely, this will complete almost
-        // instantly and wipe itself.
-        try? await disableRemotelyIfNecessaryTask.run().value
+    func disableRemotelyIfNecessary() async throws {
+        // If we don't need to disable remotely, this will insta-complete.
+        try await disableRemotelyIfNecessaryTask.run().value
     }
 
     func currentDisableRemotelyState(tx: DBReadTransaction) -> DisableRemotelyState? {
         if let task = disableRemotelyIfNecessaryTask.isCurrentlyRunning() {
             return .inProgress(task)
-        } else if kvStore.hasValue(StoreKeys.remoteDisablingFailed, transaction: tx) {
-            return .previouslyFailed
-        } else {
-            return nil
         }
-    }
 
-    // MARK: -
+        switch backupSettingsStore.backupPlan(tx: tx) {
+        case .disabled:
+            if kvStore.hasValue(StoreKeys.remoteDisablingFailed, transaction: tx) {
+                return .previouslyFailed
+            }
+        case .free, .paid, .paidExpiringSoon:
+            break
+        }
 
-    func forgetAnyDisableRemotelyFailures(tx: DBWriteTransaction) {
-        kvStore.removeValue(forKey: StoreKeys.remoteDisablingFailed, transaction: tx)
+        return nil
     }
 
     // MARK: -
@@ -158,6 +161,7 @@ class BackupDisablingManager {
         )
 
         await db.awaitableWrite { tx in
+            kvStore.removeValue(forKey: StoreKeys.remoteDisablingFailed, transaction: tx)
             kvStore.removeValue(forKey: StoreKeys.attemptingDisableRemotely, transaction: tx)
         }
 

@@ -201,8 +201,8 @@ public class AppEnvironment: NSObject {
                 await deletedCallRecordCleanupManager.startCleanupIfNecessary()
             }
 
-            Task {
-                await self.backupDisablingManager.disableRemotelyIfNecessary()
+            Task { () async -> Void in
+                try? await self.backupDisablingManager.disableRemotelyIfNecessary()
             }
 
             Task {

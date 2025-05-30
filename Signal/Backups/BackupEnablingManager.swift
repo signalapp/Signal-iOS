@@ -69,13 +69,8 @@ class BackupEnablingManager {
             ) {
                 // This is a no-op unless we're also actively *disabling* Backups
                 // remotely. If we are, we don't wanna race, so we'll wait for
-                // it to finish. Notably, this API is non-failable.
-                await self.backupDisablingManager.disableRemotelyIfNecessary()
-
-                // Optimistically clear any past remote-disabling errors.
-                await self.db.awaitableWrite { tx in
-                    self.backupDisablingManager.forgetAnyDisableRemotelyFailures(tx: tx)
-                }
+                // it to finish.
+                try? await self.backupDisablingManager.disableRemotelyIfNecessary()
 
                 _ = try await self.backupIdManager.registerBackupId(
                     localIdentifiers: localIdentifiers,
