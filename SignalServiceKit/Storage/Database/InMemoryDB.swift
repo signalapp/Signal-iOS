@@ -14,11 +14,9 @@ public final class InMemoryDB: DB {
     }
 
     let databaseQueue: DatabaseQueue
-    private let schedulers: Schedulers
 
-    public init(schedulers: Schedulers = DispatchQueueSchedulers()) {
+    public init() {
         self.databaseQueue = DatabaseQueue()
-        self.schedulers = schedulers
 
         let schemaUrl: URL
         if
@@ -66,7 +64,7 @@ public final class InMemoryDB: DB {
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
-        schedulers.global().async {
+        DispatchQueue.global().async {
             let result: T = self.read(file: file, function: function, line: line, block: block)
             if let completion { completionQueue.async({ completion(result) }) }
         }
@@ -80,7 +78,7 @@ public final class InMemoryDB: DB {
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
-        schedulers.global().async {
+        DispatchQueue.global().async {
             let result = self.write(file: file, function: function, line: line, block: block)
             if let completion { completionQueue.async({ completion(result) }) }
         }
@@ -94,7 +92,7 @@ public final class InMemoryDB: DB {
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
-        schedulers.global().async {
+        DispatchQueue.global().async {
             let result = self.writeWithTxCompletion(file: file, function: function, line: line, block: block)
             if let completion { completionQueue.async({ completion(result) }) }
         }
