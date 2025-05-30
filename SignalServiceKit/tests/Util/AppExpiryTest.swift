@@ -11,7 +11,6 @@ final class AppExpiryTest: XCTestCase {
     private var date: Date!
     private var db: (any DB)!
     private var keyValueStore: KeyValueStore!
-    private var scheduler: TestScheduler!
 
     private var appExpiry: AppExpiryImpl!
 
@@ -21,7 +20,6 @@ final class AppExpiryTest: XCTestCase {
         let newAppExpiry = AppExpiryImpl(
             dateProvider: { self.date },
             appVersion: appVersion,
-            schedulers: TestSchedulers(scheduler: scheduler)
         )
         db.read { newAppExpiry.warmCaches(with: $0) }
         return newAppExpiry.expirationDate
@@ -29,8 +27,7 @@ final class AppExpiryTest: XCTestCase {
 
     override func setUp() {
         date = appVersion.buildDate
-        scheduler = TestScheduler()
-        db = InMemoryDB(schedulers: TestSchedulers(scheduler: scheduler))
+        db = InMemoryDB()
         keyValueStore = KeyValueStore(
             collection: AppExpiryImpl.keyValueCollection
         )
@@ -38,7 +35,6 @@ final class AppExpiryTest: XCTestCase {
         appExpiry = AppExpiryImpl(
             dateProvider: { self.date },
             appVersion: appVersion,
-            schedulers: TestSchedulers(scheduler: scheduler)
         )
     }
 
@@ -154,19 +150,17 @@ final class AppExpiryTest: XCTestCase {
         XCTAssertEqual(appExpiry.expirationDate, expirationDate)
     }
 
-    func testSetHasAppExpiredAtCurrentVersion() {
-        appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
+    func testSetHasAppExpiredAtCurrentVersion() async {
+        await appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
 
         XCTAssertEqual(appExpiry.expirationDate, .distantPast)
         XCTAssertTrue(appExpiry.isExpired)
 
-        scheduler.runUntilIdle()
-
         XCTAssertEqual(loadPersistedExpirationDate(), .distantPast)
     }
 
-    func testClearingExpirationDateForCurrentVersion() {
-        appExpiry.setExpirationDateForCurrentVersion(nil, db: db)
+    func testClearingExpirationDateForCurrentVersion() async {
+        await appExpiry.setExpirationDateForCurrentVersion(nil, db: db)
 
         XCTAssertEqual(appExpiry.expirationDate, defaultExpiry)
         XCTAssertFalse(appExpiry.isExpired)
@@ -174,14 +168,12 @@ final class AppExpiryTest: XCTestCase {
         XCTAssertEqual(loadPersistedExpirationDate(), defaultExpiry)
     }
 
-    func testSetHasExpirationDateForCurrentVersion() {
+    func testSetHasExpirationDateForCurrentVersion() async {
         let expirationDate = defaultExpiry.addingTimeInterval(-1234)
 
-        appExpiry.setExpirationDateForCurrentVersion(expirationDate, db: db)
+        await appExpiry.setExpirationDateForCurrentVersion(expirationDate, db: db)
 
         XCTAssertEqual(appExpiry.expirationDate, expirationDate)
-
-        scheduler.runUntilIdle()
 
         XCTAssertEqual(loadPersistedExpirationDate(), expirationDate)
     }

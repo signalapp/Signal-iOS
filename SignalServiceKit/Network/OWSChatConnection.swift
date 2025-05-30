@@ -525,7 +525,7 @@ public class OWSChatConnection {
         responseStatus: Int,
         responseHeaders: HttpHeaders,
         responseData: Data?
-    ) throws(OWSHTTPError) -> HTTPResponse {
+    ) async throws(OWSHTTPError) -> HTTPResponse {
         if (200...299).contains(responseStatus) {
             let response = HTTPResponseImpl(
                 requestUrl: requestUrl,
@@ -535,7 +535,7 @@ public class OWSChatConnection {
             )
             return response
         } else {
-            let error = HTTPUtils.preprocessMainServiceHTTPError(
+            let error = await HTTPUtils.preprocessMainServiceHTTPError(
                 requestUrl: requestUrl,
                 responseStatus: responseStatus,
                 responseHeaders: responseHeaders,
@@ -679,7 +679,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                 // (We could even skip updating state, since the disconnect action should have already set it to "closed",
                 // but just in case it's still on "connecting" we'll continue on to execute that cleanup.)
             } catch SignalError.appExpired(_) {
-                appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
+                await appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
             } catch SignalError.deviceDeregistered(_) {
                 serialQueue.async {
                     if self.connection.isCurrentlyConnecting(token) {
@@ -814,7 +814,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
         self.ensureBackgroundKeepAlive(.receiveResponse)
 
         let headers = HttpHeaders(httpHeaders: response.headers, overwriteOnConflict: false)
-        return try handleRequestResponse(
+        return try await handleRequestResponse(
             requestUrl: request.url,
             responseStatus: Int(response.status),
             responseHeaders: headers,

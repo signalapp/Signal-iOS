@@ -70,7 +70,7 @@ private class RESTSessionManager {
             return try await urlSession.performRequest(request)
         } catch let httpError as OWSHTTPError {
             // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
-            HTTPUtils.applyHTTPError(httpError)
+            await HTTPUtils.applyHTTPError(httpError)
 
             if httpError.httpStatusCode == 401, request.shouldCheckDeregisteredOn401 {
                 try await makeIsDeregisteredRequest()

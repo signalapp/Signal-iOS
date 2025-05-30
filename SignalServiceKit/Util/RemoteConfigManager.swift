@@ -905,8 +905,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             self.keyValueStore.setRemoteConfigValueFlags(valueFlags, transaction: transaction)
             self.keyValueStore.setRemoteConfigTimeGatedFlags(timeGatedFlags, transaction: transaction)
             self.keyValueStore.setLastFetched(Date(), transaction: transaction)
-
-            self.checkClientExpiration(valueFlags: valueFlags)
         }
 
         // As a special case, persist RingRTC field trials. See comments in
@@ -932,7 +930,8 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         let mergedConfig = self.updateCachedConfig { oldConfig in
             return (oldConfig ?? .emptyConfig).mergingHotSwappableFlags(from: newConfig)
         }
-        checkClientExpiration(valueFlags: mergedConfig.valueFlags)
+
+        await checkClientExpiration(valueFlag: mergedConfig.valueFlags[ValueFlag.clientExpiration.rawValue])
 
         newConfig.logFlags()
     }
@@ -1005,17 +1004,16 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         }
     }
 
-    private func checkClientExpiration(valueFlags: [String: String]) {
-        if let minimumVersions = parseClientExpiration(valueFlags: valueFlags) {
-            appExpiry.setExpirationDateForCurrentVersion(remoteExpirationDate(from: minimumVersions), db: db)
+    private func checkClientExpiration(valueFlag: String?) async {
+        if let minimumVersions = parseClientExpiration(valueFlag: valueFlag) {
+            await appExpiry.setExpirationDateForCurrentVersion(remoteExpirationDate(from: minimumVersions), db: db)
         } else {
             // If it's not valid, there's a typo in the config, err on the safe side
             // and leave it alone.
         }
     }
 
-    private func parseClientExpiration(valueFlags: [String: String]) -> [MinimumVersion]? {
-        let valueFlag = valueFlags[ValueFlag.clientExpiration.rawValue]
+    private func parseClientExpiration(valueFlag: String?) -> [MinimumVersion]? {
         guard let valueFlag = valueFlag?.nilIfEmpty else {
             return []
         }

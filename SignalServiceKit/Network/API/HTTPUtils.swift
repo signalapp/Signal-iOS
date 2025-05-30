@@ -118,7 +118,7 @@ public class HTTPUtils {
         responseStatus: Int,
         responseHeaders: HttpHeaders,
         responseData: Data?
-    ) -> OWSHTTPError {
+    ) async -> OWSHTTPError {
         let httpError = HTTPUtils.buildServiceError(
             requestUrl: requestUrl,
             responseStatus: responseStatus,
@@ -126,14 +126,14 @@ public class HTTPUtils {
             responseData: responseData
         )
 
-        applyHTTPError(httpError)
+        await applyHTTPError(httpError)
 
         return httpError
     }
 
     // This DRYs up handling of main service errors so that
     // REST and websocket errors are handled in the same way.
-    public static func applyHTTPError(_ httpError: OWSHTTPError) {
+    public static func applyHTTPError(_ httpError: OWSHTTPError) async {
 
         if httpError.isNetworkConnectivityError {
             OutageDetection.shared.reportConnectionFailure()
@@ -142,7 +142,7 @@ public class HTTPUtils {
         if httpError.responseStatusCode == AppExpiryImpl.appExpiredStatusCode {
             let appExpiry = DependenciesBridge.shared.appExpiry
             let db = DependenciesBridge.shared.db
-            appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
+            await appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
         }
     }
 

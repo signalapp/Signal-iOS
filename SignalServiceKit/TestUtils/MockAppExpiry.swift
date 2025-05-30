@@ -16,9 +16,9 @@ public class MockAppExpiry: AppExpiry {
 
     public func warmCaches(with: DBReadTransaction) {}
 
-    public func setHasAppExpiredAtCurrentVersion(db: any DB) {}
+    public func setHasAppExpiredAtCurrentVersion(db: any DB) async {}
 
-    public func setExpirationDateForCurrentVersion(_ newExpirationDate: Date?, db: any DB) {}
+    public func setExpirationDateForCurrentVersion(_ newExpirationDate: Date?, db: any DB) async {}
 
     public init() {}
 }

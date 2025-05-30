@@ -163,7 +163,6 @@ public class AppSetup {
         let appExpiry = AppExpiryImpl(
             dateProvider: dateProvider,
             appVersion: appVersion,
-            schedulers: schedulers
         )
 
         let db = databaseStorage
