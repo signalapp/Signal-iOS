@@ -12,7 +12,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
     protocol Delegate: AnyObject {
         func chooseBackupPlanViewController(
             _ chooseBackupPlanViewController: ChooseBackupPlanViewController,
-            didEnablePlan planSelection: PlanSelection
+            didConfirmPlanSelection planSelection: PlanSelection
         )
     }
 
@@ -42,7 +42,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
             backupSettingsStore: BackupSettingsStore(),
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
-            tsAccountManager: DependenciesBridge.shared.tsAccountManager
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
     }
 
@@ -53,7 +53,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.backupIdManager = backupIdManager
         self.backupSettingsStore = backupSettingsStore
@@ -76,130 +76,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
 
 extension ChooseBackupPlanViewController: ChooseBackupPlanViewModel.ActionsDelegate {
     fileprivate func confirmSelection(_ planSelection: PlanSelection) {
-        Task { await _confirmSelection(planSelection: planSelection) }
-    }
-
-    @MainActor
-    private func _confirmSelection(planSelection: PlanSelection) async {
-        func errorActionSheet(_ message: String) {
-            OWSActionSheets.showActionSheet(
-                message: message,
-                fromViewController: self
-            )
-        }
-
-        let networkErrorSheetMessage = OWSLocalizedString(
-            "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR",
-            comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error."
-        )
-
-        // First, reserve a Backup ID. We'll need this regardless of which plan
-        // the user chose, and we want to be sure it's succeeded before we
-        // attempt a potential purchase. (Redeeming a Backups subscription
-        // without this step will fail!)
-        do {
-            guard let localIdentifiers = db.read(block: { tx in
-                tsAccountManager.localIdentifiers(tx: tx)
-            }) else {
-                return errorActionSheet(OWSLocalizedString(
-                    "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED",
-                    comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered."
-                ))
-            }
-
-            try await ModalActivityIndicatorViewController.presentAndPropagateResult(
-                from: self
-            ) {
-                _ = try await self.backupIdManager.registerBackupId(
-                    localIdentifiers: localIdentifiers,
-                    auth: .implicit()
-                )
-            }
-        } catch where error.isNetworkFailureOrTimeout {
-            return errorActionSheet(networkErrorSheetMessage)
-        } catch {
-            owsFailDebug("Unexpectedly failed to register Backup ID! \(error)")
-            return errorActionSheet(OWSLocalizedString(
-                "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR",
-                comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error."
-            ))
-        }
-
-        switch planSelection {
-        case .free:
-            await db.awaitableWrite { tx in
-                backupSettingsStore.setBackupPlan(.free, tx: tx)
-            }
-
-            delegate?.chooseBackupPlanViewController(
-                self,
-                didEnablePlan: planSelection
-            )
-        case .paid:
-            let purchaseResult: BackupSubscription.PurchaseResult
-            do {
-                purchaseResult = try await backupSubscriptionManager.purchaseNewSubscription()
-            } catch StoreKitError.networkError {
-                return errorActionSheet(networkErrorSheetMessage)
-            } catch {
-                owsFailDebug("StoreKit purchase unexpectedly failed: \(error)")
-                return errorActionSheet(OWSLocalizedString(
-                    "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE",
-                    comment: "Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing."
-                ))
-            }
-
-            switch purchaseResult {
-            case .success:
-                // Enable Backups, so that the redemption can upgrade it to
-                // .paid below.
-                await db.awaitableWrite { tx in
-                    backupSettingsStore.setBackupPlan(.free, tx: tx)
-                }
-
-                do {
-                    try await ModalActivityIndicatorViewController.presentAndPropagateResult(
-                        from: self
-                    ) {
-                        // This upgrades BackupPlan to .paid if it succeeds.
-                        try await self.backupSubscriptionManager.redeemSubscriptionIfNecessary()
-                    }
-                } catch {
-                    owsFailDebug("Unexpectedly failed to redeem subscription! \(error)")
-                    return errorActionSheet(OWSLocalizedString(
-                        "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION",
-                        comment: "Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase."
-                    ))
-                }
-
-                // Since BackupPlan is set to .paid when redemption succeeds, we
-                // don't need to do anything here.
-
-                delegate?.chooseBackupPlanViewController(
-                    self,
-                    didEnablePlan: planSelection
-                )
-            case .pending:
-                // The subscription won't be redeemed until if/when the purchase
-                // is approved, but if/when that happens BackupPlan will get set
-                // set to .paid. For the time being, we can enable Backups as
-                // a free-tier user!
-                await db.awaitableWrite { tx in
-                    backupSettingsStore.setBackupPlan(.free, tx: tx)
-                }
-
-                delegate?.chooseBackupPlanViewController(
-                    self,
-                    didEnablePlan: planSelection
-                )
-            case .userCancelled:
-                // Do nothing – don't even dismiss "choose plan", to give
-                // the user the chance to try again. We've reserved a Backup
-                // ID at this point, but that's fine even if they don't end
-                // up enabling Backups at all.
-                break
-            }
-        }
+        delegate?.chooseBackupPlanViewController(self, didConfirmPlanSelection: planSelection)
     }
 }
 
