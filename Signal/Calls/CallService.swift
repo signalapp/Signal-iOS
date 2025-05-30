@@ -28,6 +28,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     private let appReadiness: AppReadiness
     private var audioSession: AudioSession { SUIEnvironment.shared.audioSessionRef }
     private var callLinkStore: any CallLinkRecordStore { DependenciesBridge.shared.callLinkStore }
+    private var chatConnectionManager: any ChatConnectionManager { DependenciesBridge.shared.chatConnectionManager }
     let authCredentialManager: any AuthCredentialManager
     private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
     private let db: any DB
@@ -193,6 +194,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     private let sleepBlockObject = DeviceSleepBlockObject(blockReason: "call")
 
+    private var connectionTokens = [OWSChatConnection.ConnectionToken]()
+
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         switch oldValue?.mode {
         case nil:
@@ -224,6 +227,11 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
 
         updateIsVideoEnabled()
+
+        // Keep the connection open while we have an active call.
+        let oldTokens = self.connectionTokens
+        self.connectionTokens = (newValue != nil) ? self.chatConnectionManager.requestConnections() : []
+        oldTokens.forEach { $0.releaseConnection() }
 
         // Prevent device from sleeping while we have an active call.
         if oldValue != nil {

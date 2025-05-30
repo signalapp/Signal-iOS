@@ -897,7 +897,6 @@ public class AppSetup {
             accountManager: tsAccountManager,
             appExpiry: appExpiry,
             appReadiness: appReadiness,
-            currentCallProvider: currentCallProvider,
             db: db,
             libsignalNet: libsignalNet,
             registrationStateChangeManager: registrationStateChangeManager,

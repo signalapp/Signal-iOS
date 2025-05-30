@@ -12,6 +12,7 @@ public protocol ChatConnectionManager {
     var hasEmptiedInitialQueue: Bool { get }
 
     func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool
+    func requestConnections() -> [OWSChatConnection.ConnectionToken]
     func makeRequest(_ request: TSRequest) async throws -> HTTPResponse
 
     func didReceivePush()
@@ -22,10 +23,10 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     private let connectionUnidentified: OWSChatConnection
     private var connections: [OWSChatConnection] { [ connectionIdentified, connectionUnidentified ]}
 
-    public init(accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, currentCallProvider: any CurrentCallProvider, db: any DB, libsignalNet: Net, registrationStateChangeManager: RegistrationStateChangeManager, userDefaults: UserDefaults) {
+    public init(accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB, libsignalNet: Net, registrationStateChangeManager: RegistrationStateChangeManager, userDefaults: UserDefaults) {
         AssertIsOnMainThread()
-        self.connectionIdentified = OWSAuthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
-        self.connectionUnidentified = OWSUnauthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
+        self.connectionIdentified = OWSAuthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager)
+        self.connectionUnidentified = OWSUnauthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager)
 
         SwiftSingletons.register(self)
     }
@@ -40,7 +41,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     }
 
     public func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool {
-        connection(ofType: connectionType).shouldSocketBeOpen
+        return connection(ofType: connectionType).canOpenWebSocket
     }
 
     public typealias RequestSuccess = OWSChatConnection.RequestSuccess
@@ -51,21 +52,8 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         try await self.connectionIdentified.waitForOpen()
     }
 
-    private func waitForSocketToOpenIfItShouldBeOpen(
-        connectionType: OWSChatConnectionType
-    ) async {
-        let connection = self.connection(ofType: connectionType)
-        guard connection.shouldSocketBeOpen else {
-            // The socket wants to be open, but isn't.
-            // Proceed even though we will probably fail.
-            return
-        }
-        // After 30 seconds, we try anyways. We'll probably fail.
-        let maxWaitInterval: TimeInterval = 30 * .second
-        _ = try? await withCooperativeTimeout(
-            seconds: maxWaitInterval,
-            operation: { try await connection.waitForOpen() }
-        )
+    public func requestConnections() -> [OWSChatConnection.ConnectionToken] {
+        return [connectionIdentified.requestConnection(), connectionUnidentified.requestConnection()]
     }
 
     // This method can be called from any thread.
@@ -73,11 +61,10 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         let connectionType = try request.auth.connectionType
 
         // Request that the websocket open to make this request, if necessary.
-        let unsubmittedRequestToken = connection(ofType: connectionType).makeUnsubmittedRequestToken()
+        let connectionToken = connection(ofType: connectionType).requestConnection()
+        defer { connectionToken.releaseConnection() }
 
-        await self.waitForSocketToOpenIfItShouldBeOpen(connectionType: connectionType)
-
-        return try await connection(ofType: connectionType).makeRequest(request, unsubmittedRequestToken: unsubmittedRequestToken)
+        return try await connection(ofType: connectionType).makeRequest(request)
     }
 
     // This method can be called from any thread.
@@ -113,6 +100,10 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
 
     public func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool {
         return shouldWaitForSocketToMakeRequestPerType[connectionType] ?? true
+    }
+
+    public func requestConnections() -> [OWSChatConnection.ConnectionToken] {
+        return []
     }
 
     public var requestHandler: (_ request: TSRequest) async throws -> HTTPResponse = { _ in

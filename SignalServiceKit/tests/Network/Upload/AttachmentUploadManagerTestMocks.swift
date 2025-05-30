@@ -91,6 +91,7 @@ class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager 
     var identifiedConnectionState: OWSChatConnectionState { .open }
     func waitForIdentifiedConnectionToOpen() async throws { }
     func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool { true }
+    func requestConnections() -> [OWSChatConnection.ConnectionToken] { [] }
     func makeRequest(_ request: TSRequest) async throws -> HTTPResponse { fatalError() }
     func didReceivePush() { }
 }
