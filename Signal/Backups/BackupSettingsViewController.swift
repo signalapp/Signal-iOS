@@ -1097,7 +1097,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Disabling Remotely Error") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .disabledLocallyButDisableRemotelyFailed(OWSGenericError("")),
+        backupEnabledState: .disabledLocallyButDisableRemotelyFailed,
         planLoadResult: .success(.free),
     ))
 }
