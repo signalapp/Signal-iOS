@@ -70,7 +70,7 @@ class BackupDisablingManager {
     /// locally, and the returned `Task` tracks disabling them remotely.
     ///
     /// - Throws `NotRegisteredError` before disabling if the user is not registered.
-    func disableBackups(tx: DBWriteTransaction) throws(NotRegisteredError) -> DisableRemotelyState {
+    func disableBackups(tx: DBWriteTransaction) throws(NotRegisteredError) {
         logger.info("Disabling Backups...")
 
         guard tsAccountManager.localIdentifiers(tx: tx) != nil else {
@@ -81,8 +81,10 @@ class BackupDisablingManager {
         backupSettingsStore.setBackupPlan(.disabled, tx: tx)
         kvStore.setBool(true, key: StoreKeys.attemptingDisableRemotely, transaction: tx)
 
-        logger.info("Disabled Backups locally. Disabling remotely...")
-        return .inProgress(disableRemotelyIfNecessaryTask.run())
+        tx.addSyncCompletion { [self] in
+            logger.info("Disabled Backups locally. Disabling remotely...")
+            _ = disableRemotelyIfNecessaryTask.run()
+        }
     }
 
     /// Attempts to remotely disable Backups, if necessary. For example, a
@@ -95,10 +97,10 @@ class BackupDisablingManager {
     }
 
     func currentDisableRemotelyState(tx: DBReadTransaction) -> DisableRemotelyState? {
-        if kvStore.hasValue(StoreKeys.remoteDisablingFailed, transaction: tx) {
-            return .previouslyFailed
-        } else if let task = disableRemotelyIfNecessaryTask.isCurrentlyRunning() {
+        if let task = disableRemotelyIfNecessaryTask.isCurrentlyRunning() {
             return .inProgress(task)
+        } else if kvStore.hasValue(StoreKeys.remoteDisablingFailed, transaction: tx) {
+            return .previouslyFailed
         } else {
             return nil
         }

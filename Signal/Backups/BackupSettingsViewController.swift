@@ -121,11 +121,13 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
         }
 
         do throws(BackupDisablingManager.NotRegisteredError) {
-            let disableRemotelyState = try db.write { tx throws(BackupDisablingManager.NotRegisteredError) in
-                return try self.backupDisablingManager.disableBackups(tx: tx)
+            try db.write { tx throws(BackupDisablingManager.NotRegisteredError) in
+                return try backupDisablingManager.disableBackups(tx: tx)
             }
 
-            viewModel.handleDisableBackupsRemoteState(disableRemotelyState)
+            if let disableRemotelyState = db.read(block: { backupDisablingManager.currentDisableRemotelyState(tx: $0) }) {
+                viewModel.handleDisableBackupsRemoteState(disableRemotelyState)
+            }
         } catch {
             errorActionSheet(OWSLocalizedString(
                 "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED",
