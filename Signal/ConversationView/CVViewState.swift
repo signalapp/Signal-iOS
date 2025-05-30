@@ -106,6 +106,7 @@ public class CVViewState: NSObject {
     public var isHidingScrollToNextMentionButton = false
     public var scrollUpdateTimer: Timer?
     public var isWaitingForDeceleration = false
+    public var highlightedMessageId: String?
 
     public var actionOnOpen: ConversationViewAction = .none
 

@@ -460,7 +460,9 @@ extension ConversationViewController {
         scrollingAnimationCompletionTimer = nil
 
         autoLoadMoreIfNecessary()
-    }
+
+        performMessageHighlightAnimationIfNeeded()
+   }
 
     func resetForSizeOrOrientationChange() {
         AssertIsOnMainThread()

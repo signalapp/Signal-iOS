@@ -38,6 +38,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
     private let gradientLayer = CAGradientLayer()
     private let shapeLayer = CAShapeLayer()
     private let maskLayer = CAShapeLayer()
+    private var dimmerLayer: CALayer?
 
     public var ensureSubviewsFillBounds = false
     public var animationsEnabled = false
@@ -94,6 +95,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
               let referenceView = self.referenceView else {
             self.backgroundColor = nil
             gradientLayer.removeFromSuperlayer()
+            dimmerLayer?.removeFromSuperlayer()
             return
         }
 
@@ -101,6 +103,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         case .transparent:
             backgroundColor = nil
             gradientLayer.removeFromSuperlayer()
+            dimmerLayer?.removeFromSuperlayer()
         case .solidColor(let color):
             backgroundColor = color
             gradientLayer.removeFromSuperlayer()
@@ -108,7 +111,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
             if gradientLayer.superlayer != self.layer {
                 gradientLayer.removeFromSuperlayer()
-                layer.addSublayer(gradientLayer)
+                layer.insertSublayer(gradientLayer, at: 0)
             }
 
             gradientLayer.frame = self.bounds
@@ -275,6 +278,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         self.hasPillRounding = false
         shapeLayer.removeFromSuperlayer()
         gradientLayer.removeFromSuperlayer()
+        dimmerLayer?.removeFromSuperlayer()
     }
 
     // MARK: - CALayerDelegate
@@ -287,6 +291,71 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
             return NSNull()
         }
 
+    }
+
+    // MARK: - DimmableView
+
+    // Layer is not created until it's needed so storing color in a variable is necessary.
+    var dimmingColor: UIColor? {
+        didSet {
+            dimmerLayer?.backgroundColor = dimmingColor?.cgColor
+        }
+    }
+
+    var dimmerDimsBackgroundOnly = true
+
+    private var sublayerIndexForDimmerLayer: UInt32 {
+        if dimmerDimsBackgroundOnly {
+            // As deep as possible but above the gradient layer.
+            if gradientLayer.superlayer == self.layer {
+                return 1
+            } else {
+                return 0
+            }
+        } else {
+            return UInt32(layer.sublayers?.count ?? 0)
+        }
+    }
+
+    func performDimmingAnimation(stepDuration: TimeInterval) {
+        guard let dimmingColor else { return }
+
+        var dimmerLayer: CALayer
+        if let existingDimmerLayer = self.dimmerLayer {
+            dimmerLayer = existingDimmerLayer
+        } else {
+            dimmerLayer = CALayer()
+            dimmerLayer.opacity = 0
+            dimmerLayer.backgroundColor = dimmingColor.cgColor
+            self.dimmerLayer = dimmerLayer
+        }
+
+        // Move dimmer layer to a correct z-index.
+        dimmerLayer.removeFromSuperlayer()
+        dimmerLayer.frame = layer.bounds
+        layer.insertSublayer(dimmerLayer, at: sublayerIndexForDimmerLayer)
+
+        dimmerLayer.removeAllAnimations()
+
+        // Animate fade-in.
+        let fadeIn = CABasicAnimation(keyPath: #keyPath(CALayer.opacity))
+        fadeIn.fromValue = 0
+        fadeIn.toValue = 1
+        fadeIn.duration = stepDuration
+        fadeIn.fillMode = .forwards
+        fadeIn.isRemovedOnCompletion = false
+        dimmerLayer.add(fadeIn, forKey: "fadeIn")
+
+        // Schedule fade-out after delay.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2 * stepDuration) {
+            let fadeOut = CABasicAnimation(keyPath: #keyPath(CALayer.opacity))
+            fadeOut.fromValue = 1
+            fadeOut.toValue = 0
+            fadeOut.duration = stepDuration
+            fadeOut.fillMode = .forwards
+            fadeOut.isRemovedOnCompletion = false
+            dimmerLayer.add(fadeOut, forKey: "fadeOut")
+        }
     }
 }
 

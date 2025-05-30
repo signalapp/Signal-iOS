@@ -88,6 +88,8 @@ extension ConversationViewController {
             break
         case .scrollTo(let interactionId, let onScreenPercentage, let alignment):
             if let indexPath = self.indexPath(forInteractionUniqueId: interactionId) {
+                viewState.highlightedMessageId = interactionId
+
                 // TODO: Set position and animated.
                 scrollToInteraction(
                     indexPath: indexPath,
@@ -233,11 +235,17 @@ extension ConversationViewController {
             && attributes.frame.maxY < currentMaximumVisibleOffset
 
         // If the collection view contents aren't scrollable, do nothing.
-        guard safeContentHeight > collectionViewHeightUnobscuredByBottomBar else { return }
+        guard safeContentHeight > collectionViewHeightUnobscuredByBottomBar else {
+            performMessageHighlightAnimationIfNeeded()
+            return
+        }
 
         // If the destination row is entirely visible AND the desired position
         // is only valid for when the view is not on screen, do nothing.
-        guard !alignment.scrollsOnlyIfNotEntirelyOnScreen || !rowIsEntirelyOnScreen else { return }
+        guard !alignment.scrollsOnlyIfNotEntirelyOnScreen || !rowIsEntirelyOnScreen else {
+            performMessageHighlightAnimationIfNeeded()
+            return
+        }
 
         guard indexPath != lastIndexPathInLoadedWindow || !onScreenPercentage.isEqual(to: 1) else {
             // If we're scrolling to the last index AND we want it entirely on screen,
@@ -335,10 +343,11 @@ extension ConversationViewController {
                                                         alignment: ScrollAlignment,
                                                         isAnimated: Bool = true) {
         if let indexPath = self.indexPath(forInteractionUniqueId: interactionId) {
-            self.scrollToInteraction(indexPath: indexPath,
-                                     onScreenPercentage: onScreenPercentage,
-                                     alignment: alignment,
-                                     animated: isAnimated)
+            viewState.highlightedMessageId = interactionId
+            scrollToInteraction(indexPath: indexPath,
+                                onScreenPercentage: onScreenPercentage,
+                                alignment: alignment,
+                                animated: isAnimated)
         } else {
             loadCoordinator.enqueueLoadAndScrollToInteraction(interactionId: interactionId,
                                                               onScreenPercentage: onScreenPercentage,
