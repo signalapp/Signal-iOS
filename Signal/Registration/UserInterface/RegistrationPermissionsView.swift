@@ -8,13 +8,13 @@ import SignalUI
 import SwiftUI
 
 @MainActor
-protocol RegistrationPermissionsPresenter {
+protocol RegistrationPermissionsPresenter: AnyObject {
     func requestPermissions() async
 }
 
 struct RegistrationPermissionsView: View {
     var requestingContactsAuthorization: Bool
-    var presenter: any RegistrationPermissionsPresenter
+    var permissionTask: (() async -> Void)
 
     @State private var hasAppeared = (notifications: false, contacts: false)
     @State private var requestPermissions: RequestPermissionsTask?
@@ -94,7 +94,9 @@ struct RegistrationPermissionsView: View {
                         .layoutPriority(-1)
 
                     Button(CommonStrings.continueButton) {
-                        requestPermissions = RequestPermissionsTask(presenter: presenter)
+                        requestPermissions = RequestPermissionsTask(task: {
+                            await permissionTask()
+                        })
                     }
                     .buttonStyle(Registration.UI.FilledButtonStyle())
                     .dynamicTypeSize(...DynamicTypeSize.accessibility2)
@@ -214,17 +216,17 @@ private extension RegistrationPermissionsView {
 
     struct RequestPermissionsTask: AsyncViewTask {
         let id = UUID()
-        let presenter: any RegistrationPermissionsPresenter
+        let task: (() async -> Void)
 
         func perform() async {
-            await presenter.requestPermissions()
+            await task()
         }
     }
 }
 
 final class RegistrationPermissionsViewController: OWSViewController, OWSNavigationChildController {
     let requestingContactsAuthorization: Bool
-    let presenter: any RegistrationPermissionsPresenter
+    weak var presenter: (any RegistrationPermissionsPresenter)?
 
     var prefersNavigationBarHidden: Bool { true }
 
@@ -241,7 +243,9 @@ final class RegistrationPermissionsViewController: OWSViewController, OWSNavigat
         let hostingController = HostingController(
             wrappedView: RegistrationPermissionsView(
                 requestingContactsAuthorization: requestingContactsAuthorization,
-                presenter: presenter
+                permissionTask: { [weak self] in
+                    await self?.presenter?.requestPermissions()
+                }
             )
         )
         addChild(hostingController)
@@ -257,19 +261,20 @@ final class RegistrationPermissionsViewController: OWSViewController, OWSNavigat
 }
 
 #if DEBUG
-private struct PreviewPermissionsPresenter: RegistrationPermissionsPresenter {
+private class PreviewPermissionsPresenter: RegistrationPermissionsPresenter {
     func requestPermissions() async {
         try? await Task.sleep(nanoseconds: NSEC_PER_SEC)
     }
 }
 
+private let presenter = PreviewPermissionsPresenter()
 @available(iOS 17, *)
 #Preview {
     NavigationPreviewController(
         animateFirstAppearance: true,
         viewController: RegistrationPermissionsViewController(
             requestingContactsAuthorization: true,
-            presenter: PreviewPermissionsPresenter()
+            presenter: presenter
         )
     )
 }
