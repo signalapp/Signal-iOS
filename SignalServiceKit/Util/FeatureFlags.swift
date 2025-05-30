@@ -60,8 +60,6 @@ public enum FeatureFlags {
     public static let runTSAttachmentMigrationBlockingOnLaunch = true
 
     public static let useNewConversationLoadIndex = true
-
-    public static let libsignalForChat = true
 }
 
 // MARK: -

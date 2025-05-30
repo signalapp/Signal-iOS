@@ -24,25 +24,8 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
 
     public init(accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, currentCallProvider: any CurrentCallProvider, db: any DB, libsignalNet: Net, registrationStateChangeManager: RegistrationStateChangeManager, userDefaults: UserDefaults) {
         AssertIsOnMainThread()
-        if userDefaults.bool(forKey: Self.shouldUseLibsignalForIdentifiedDefaultsKey) {
-            connectionIdentified = OWSAuthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
-        } else {
-            connectionIdentified = OWSChatConnectionUsingSSKWebSocket(
-                type: .identified,
-                accountManager: accountManager,
-                appExpiry: appExpiry,
-                appReadiness: appReadiness,
-                currentCallProvider: currentCallProvider,
-                db: db,
-                registrationStateChangeManager: registrationStateChangeManager
-            )
-        }
-
-        if userDefaults.bool(forKey: Self.shouldUseLibsignalForUnidentifiedDefaultsKey) {
-            connectionUnidentified = OWSUnauthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
-        } else {
-            connectionUnidentified = OWSChatConnectionUsingSSKWebSocket(type: .unidentified, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
-        }
+        self.connectionIdentified = OWSAuthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
+        self.connectionUnidentified = OWSUnauthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
 
         SwiftSingletons.register(self)
     }
@@ -110,38 +93,6 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
 
     public var hasEmptiedInitialQueue: Bool {
         connectionIdentified.hasEmptiedInitialQueue
-    }
-
-    // MARK: -
-
-    private static var shouldUseLibsignalForUnidentifiedDefaultsKey: String = "UseLibsignalForUnidentifiedWebsocket"
-
-    /// We cache this in UserDefaults because it's used too early to access the RemoteConfig object.
-    ///
-    /// It also makes it possible to override the setting in Xcode via the Scheme settings:
-    /// add the arguments "-UseLibsignalForUnidentifiedWebsocket YES" to the invocation of the app.
-    static func saveShouldUseLibsignalForUnidentifiedWebsocket(
-        _ shouldUseLibsignalForUnidentifiedWebsocket: Bool,
-        in defaults: UserDefaults
-    ) {
-        defaults.set(shouldUseLibsignalForUnidentifiedWebsocket, forKey: shouldUseLibsignalForUnidentifiedDefaultsKey)
-    }
-
-    private static var shouldUseLibsignalForIdentifiedDefaultsKey: String = "UseLibsignalForIdentifiedWebsocket"
-
-    static var shouldUseLibsignalForIdentifiedWebsocket: Bool {
-        CurrentAppContext().appUserDefaults().bool(forKey: shouldUseLibsignalForIdentifiedDefaultsKey)
-    }
-
-    /// We cache this in UserDefaults because it's used too early to access the RemoteConfig object.
-    ///
-    /// It also makes it possible to override the setting in Xcode via the Scheme settings:
-    /// add the arguments "-UseLibsignalForIdentifiedWebsocket YES" to the invocation of the app.
-    static func saveShouldUseLibsignalForIdentifiedWebsocket(
-        _ shouldUseLibsignalForIdentifiedWebsocket: Bool,
-        in defaults: UserDefaults
-    ) {
-        defaults.set(shouldUseLibsignalForIdentifiedWebsocket, forKey: shouldUseLibsignalForIdentifiedDefaultsKey)
     }
 }
 

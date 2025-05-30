@@ -438,7 +438,6 @@ private enum IsEnabledFlag: String, FlagType {
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
     case lazyDatabaseMigratorKillSwitch = "ios.lazyDatabaseMigratorKillSwitch"
-    case libsignalForChat = "ios.useLibsignalForChat"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
     case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
@@ -462,7 +461,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
         case .lazyDatabaseMigratorKillSwitch: false
-        case .libsignalForChat: false
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
@@ -487,7 +485,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
         case .lazyDatabaseMigratorKillSwitch: true
-        case .libsignalForChat: false
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
@@ -920,16 +917,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
                 let isKilled = isEnabledFlags[flag.rawValue] ?? false
                 return !isKilled
             }(),
-            in: CurrentAppContext().appUserDefaults()
-        )
-        // Similarly, persist the choice of libsignal for the chat websockets.
-        let shouldUseLibsignalForChatWebsocket = isEnabledFlags[IsEnabledFlag.libsignalForChat.rawValue] ?? FeatureFlags.libsignalForChat
-        ChatConnectionManagerImpl.saveShouldUseLibsignalForIdentifiedWebsocket(
-            shouldUseLibsignalForChatWebsocket,
-            in: CurrentAppContext().appUserDefaults()
-        )
-        ChatConnectionManagerImpl.saveShouldUseLibsignalForUnidentifiedWebsocket(
-            shouldUseLibsignalForChatWebsocket,
             in: CurrentAppContext().appUserDefaults()
         )
 
