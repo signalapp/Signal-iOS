@@ -42,11 +42,15 @@ extension TimeInterval {
     /// > Warning: These approximations should never be used for strict date/time calcuations.
     public static let year: TimeInterval = 365 * .day
 
-    /// The time interval as nanoseconds clamped to [0, UInt64.max].
+    /// The time interval as nanoseconds clamped to [0, Int64.max].
     ///
     /// If the value is NaN, 0 is returned.
     public var clampedNanoseconds: UInt64 {
-        return UInt64(exactly: floor(max(0, self) * TimeInterval(NSEC_PER_SEC))) ?? .max
+        let actualValue = UInt64(exactly: floor(max(0, self) * TimeInterval(NSEC_PER_SEC))) ?? .max
+        // Values larger than Int64.max are intereted as "don't sleep" by
+        // Task.sleep(nanoseconds:). (They are probably being coerced to Int64s and
+        // then interpreted as negative values.)
+        return min(actualValue, UInt64(Int64.max))
     }
 }
 

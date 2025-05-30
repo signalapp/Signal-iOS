@@ -10,7 +10,7 @@ import Testing
 
 struct TimeIntervalTest {
     @Test(arguments: [
-        (.infinity, UInt64.max),
+        (.infinity, UInt64(Int64.max)),
         (.nan, 0),
         (-1.5, 0),
         (0.5, 500_000_000),
