@@ -150,7 +150,7 @@ public class OWSChatConnection {
         NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
 
         // Enable the connection whenever it's allowed.
-        updateCanOpenWebSocketIfRequested()
+        updateCanOpenWebSocket()
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(registrationStateDidChange),
@@ -282,7 +282,7 @@ public class OWSChatConnection {
     /// Must be accessed on `serialQueue`.
     private var canOpenWebSocketError: OWSHTTPError? = .networkFailure(.genericFailure)
 
-    private func updateCanOpenWebSocketIfRequested() {
+    private func updateCanOpenWebSocket() {
         serialQueue.async(_updateCanOpenWebSocket)
     }
 
@@ -438,7 +438,7 @@ public class OWSChatConnection {
     fileprivate func registrationStateDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        updateCanOpenWebSocketIfRequested()
+        updateCanOpenWebSocket()
     }
 
     @objc
@@ -464,7 +464,7 @@ public class OWSChatConnection {
     private func appExpiryDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        updateCanOpenWebSocketIfRequested()
+        updateCanOpenWebSocket()
     }
 
     @objc
