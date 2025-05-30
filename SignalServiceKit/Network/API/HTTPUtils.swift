@@ -113,18 +113,13 @@ public class HTTPUtils {
     }
     #endif
 
-    // This DRYs up handling of main service errors
-    // so that REST and websocket errors are handled
-    // in the same way.
     public static func preprocessMainServiceHTTPError(
-        request: TSRequest,
         requestUrl: URL,
         responseStatus: Int,
         responseHeaders: HttpHeaders,
         responseData: Data?
     ) -> OWSHTTPError {
         let httpError = HTTPUtils.buildServiceError(
-            request: request,
             requestUrl: requestUrl,
             responseStatus: responseStatus,
             responseHeaders: responseHeaders,
@@ -132,10 +127,6 @@ public class HTTPUtils {
         )
 
         applyHTTPError(httpError)
-
-#if TESTABLE_BUILD
-        HTTPUtils.logCurl(for: request)
-#endif
 
         return httpError
     }
@@ -169,7 +160,6 @@ public class HTTPUtils {
     }
 
     private static func buildServiceError(
-        request: TSRequest,
         requestUrl: URL,
         responseStatus: Int,
         responseHeaders: HttpHeaders,
