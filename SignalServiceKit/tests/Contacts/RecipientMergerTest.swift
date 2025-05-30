@@ -15,10 +15,9 @@ private class MockStorageServiceManager: StorageServiceManager {
     func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool { false }
     func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) {}
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
-    func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {}
+    func recordPendingUpdates(updatedGroupV2MasterKeys: [GroupMasterKey]) {}
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
     func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) {}
-    func recordPendingUpdates(groupModel: TSGroupModel) {}
     func recordPendingLocalAccountUpdates() {}
     func backupPendingChanges(authedDevice: AuthedDevice) {}
     func resetLocalData(transaction: DBWriteTransaction) {}

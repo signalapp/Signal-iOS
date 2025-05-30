@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 
 struct AvatarDefaultColorStorageServiceMigrator {
@@ -44,7 +45,7 @@ struct AvatarDefaultColorStorageServiceMigrator {
                 recipientUniqueIds.append(recipient.uniqueId)
             }
 
-            var groupV2MasterKeys = [Data]()
+            var groupV2MasterKeys = [GroupMasterKey]()
             try threadStore.enumerateGroupThreads(tx: tx) { groupThread in
                 guard
                     let groupModelV2 = groupThread.groupModel as? TSGroupModelV2,
@@ -53,7 +54,7 @@ struct AvatarDefaultColorStorageServiceMigrator {
                     return true
                 }
 
-                groupV2MasterKeys.append(Data(groupMasterKey.serialize()))
+                groupV2MasterKeys.append(groupMasterKey)
                 return true
             }
 

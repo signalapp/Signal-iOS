@@ -6,6 +6,7 @@
 #if TESTABLE_BUILD
 
 import Foundation
+public import LibSignalClient
 public import SignalRingRTC
 
 public class FakeStorageServiceManager: StorageServiceManager {
@@ -16,7 +17,7 @@ public class FakeStorageServiceManager: StorageServiceManager {
 
     public func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) {}
     public func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
-    public func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {}
+    public func recordPendingUpdates(updatedGroupV2MasterKeys: [GroupMasterKey]) {}
     public func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
     public func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) {}
     public func recordPendingLocalAccountUpdates() {}

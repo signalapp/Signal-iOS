@@ -252,7 +252,7 @@ public class BlockingManager {
         owsAssertDebug(groupThread != nil, "Must have TSGroupThread in order to block it.")
 
         if blockMode.locallyInitiated, let masterKey = try? (groupThread?.groupModel as? TSGroupModelV2)?.masterKey() {
-            SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedGroupV2MasterKeys: [masterKey.serialize().asData])
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedGroupV2MasterKeys: [masterKey])
         }
 
         if let groupThread {
@@ -309,7 +309,7 @@ public class BlockingManager {
                 return nil
             }()
             if let masterKey {
-                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedGroupV2MasterKeys: [masterKey.serialize().asData])
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedGroupV2MasterKeys: [masterKey])
             }
         }
 

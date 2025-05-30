@@ -643,10 +643,9 @@ private class MockStorageServiceManager: StorageServiceManager {
     func resetLocalData(transaction: DBWriteTransaction) { owsFail("Not implemented!") }
     func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) { owsFail("Not implemented!") }
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) { owsFail("Not implemented!") }
-    func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) { owsFail("Not implemented!") }
+    func recordPendingUpdates(updatedGroupV2MasterKeys: [GroupMasterKey]) { owsFail("Not implemented!") }
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) { owsFail("Not implemented!") }
     func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) { owsFail("Not implemented!") }
-    func recordPendingUpdates(groupModel: TSGroupModel) { owsFail("Not implemented!") }
     func backupPendingChanges(authedDevice: AuthedDevice) { owsFail("Not implemented!") }
     func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice, masterKeySource: StorageService.MasterKeySource) -> Promise<Void> { owsFail("Not implemented!") }
     func rotateManifest(mode: ManifestRotationMode, authedDevice: AuthedDevice) async throws { owsFail("Not implemented!") }
