@@ -12,6 +12,7 @@ class BackupDisablingManager {
 
     private enum StoreKeys {
         static let attemptingDisableRemotely = "attemptingDisableRemotely"
+        static let remoteDisablingFailed = "remoteDisablingFailed"
     }
 
     private let backupIdManager: BackupIdManager
@@ -44,10 +45,14 @@ class BackupDisablingManager {
             guard let self else { return }
 
             do {
-                if try await _disableRemotelyIfNecessaryWithNetworkRetries() {
+                if try await _disableRemotelyIfNecessaryWithIndefiniteNetworkRetries() {
                     logger.info("Disabled Backups remotely.")
                 }
             } catch {
+                await db.awaitableWrite { tx in
+                    self.kvStore.setBool(true, key: StoreKeys.remoteDisablingFailed, transaction: tx)
+                }
+
                 logger.error("Failed to disable Backups remotely! \(error)")
                 throw error
             }
@@ -56,11 +61,16 @@ class BackupDisablingManager {
 
     // MARK: -
 
+    enum DisableRemotelyState {
+        case inProgress(Task<Void, Error>)
+        case previouslyFailed
+    }
+
     /// Disable Backups for the current user. Backups are immediately disabled
     /// locally, and the returned `Task` tracks disabling them remotely.
     ///
     /// - Throws `NotRegisteredError` before disabling if the user is not registered.
-    func disableBackups(tx: DBWriteTransaction) throws(NotRegisteredError) -> Task<Void, Error> {
+    func disableBackups(tx: DBWriteTransaction) throws(NotRegisteredError) -> DisableRemotelyState {
         logger.info("Disabling Backups...")
 
         guard tsAccountManager.localIdentifiers(tx: tx) != nil else {
@@ -72,7 +82,7 @@ class BackupDisablingManager {
         kvStore.setBool(true, key: StoreKeys.attemptingDisableRemotely, transaction: tx)
 
         logger.info("Disabled Backups locally. Disabling remotely...")
-        return disableRemotelyIfNecessaryTask.run()
+        return .inProgress(disableRemotelyIfNecessaryTask.run())
     }
 
     /// Attempts to remotely disable Backups, if necessary. For example, a
@@ -84,15 +94,25 @@ class BackupDisablingManager {
         try? await disableRemotelyIfNecessaryTask.run().value
     }
 
-    /// A `Task` tracking the process of disabling Backups remotely, if it is
-    /// ongoing.
-    func isDisablingRemotely() -> Task<Void, Error>? {
-        return disableRemotelyIfNecessaryTask.isCurrentlyRunning()
+    func currentDisableRemotelyState(tx: DBReadTransaction) -> DisableRemotelyState? {
+        if kvStore.hasValue(StoreKeys.remoteDisablingFailed, transaction: tx) {
+            return .previouslyFailed
+        } else if let task = disableRemotelyIfNecessaryTask.isCurrentlyRunning() {
+            return .inProgress(task)
+        } else {
+            return nil
+        }
     }
 
     // MARK: -
 
-    private func _disableRemotelyIfNecessaryWithNetworkRetries() async throws -> Bool {
+    func forgetAnyDisableRemotelyFailures(tx: DBWriteTransaction) {
+        kvStore.removeValue(forKey: StoreKeys.remoteDisablingFailed, transaction: tx)
+    }
+
+    // MARK: -
+
+    private func _disableRemotelyIfNecessaryWithIndefiniteNetworkRetries() async throws -> Bool {
         return try await Retry.performWithBackoff(
             maxAttempts: .max,
             maxAverageBackoff: 2 * .minute,

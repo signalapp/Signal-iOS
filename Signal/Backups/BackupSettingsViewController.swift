@@ -51,8 +51,8 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
                 shouldBackUpOnCellular: backupSettingsStore.shouldBackUpOnCellular(tx: tx)
             )
 
-            if let disableBackupsRemotelyTask = backupDisablingManager.isDisablingRemotely() {
-                viewModel.handleDisableBackupsRemoteTask(disableBackupsRemotelyTask)
+            if let disableBackupsRemotelyState = backupDisablingManager.currentDisableRemotelyState(tx: tx) {
+                viewModel.handleDisableBackupsRemoteState(disableBackupsRemotelyState)
             } else {
                 switch backupSettingsStore.backupPlan(tx: tx) {
                 case .disabled:
@@ -95,6 +95,12 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
             // check anyway to be sure that enabling/disabling don't race.
             await backupDisablingManager.disableRemotelyIfNecessary()
 
+            // The user is trying to re-enable. Optimistically clear any
+            // remote-disabling errors from the past.
+            await db.awaitableWrite { tx in
+                backupDisablingManager.forgetAnyDisableRemotelyFailures(tx: tx)
+            }
+
             modal.dismiss { [self] in
                 // TODO: [Backups] Show the rest of the onboarding flow
                 showChooseBackupPlan(initialPlanSelection: nil)
@@ -115,11 +121,11 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
         }
 
         do throws(BackupDisablingManager.NotRegisteredError) {
-            let disableRemotelyTask = try db.write { tx throws(BackupDisablingManager.NotRegisteredError) in
+            let disableRemotelyState = try db.write { tx throws(BackupDisablingManager.NotRegisteredError) in
                 return try self.backupDisablingManager.disableBackups(tx: tx)
             }
 
-            viewModel.handleDisableBackupsRemoteTask(disableRemotelyTask)
+            viewModel.handleDisableBackupsRemoteState(disableRemotelyState)
         } catch {
             errorActionSheet(OWSLocalizedString(
                 "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED",
@@ -358,7 +364,7 @@ private class BackupSettingsViewModel: ObservableObject {
         case enabled
         case disabled
         case disabledLocallyStillDisablingRemotely
-        case disabledLocallyButDisableRemotelyFailed(Error)
+        case disabledLocallyButDisableRemotelyFailed
     }
 
     @Published var backupPlanLoadingState: BackupPlanLoadingState
@@ -414,11 +420,23 @@ private class BackupSettingsViewModel: ObservableObject {
         actionsDelegate?.disableBackups()
     }
 
-    func handleDisableBackupsRemoteTask(
-        _ disableRemotelyTask: Task<Void, Error>
+    func handleDisableBackupsRemoteState(
+        _ disablingRemotelyState: BackupDisablingManager.DisableRemotelyState
     ) {
-        withAnimation {
-            backupEnabledState = .disabledLocallyStillDisablingRemotely
+        let disableRemotelyTask: Task<Void, Error>
+        switch disablingRemotelyState {
+        case .inProgress(let task):
+            withAnimation {
+                backupEnabledState = .disabledLocallyStillDisablingRemotely
+            }
+
+            disableRemotelyTask = task
+        case .previouslyFailed:
+            withAnimation {
+                backupEnabledState = .disabledLocallyButDisableRemotelyFailed
+            }
+
+            return
         }
 
         Task { @MainActor in
@@ -427,7 +445,7 @@ private class BackupSettingsViewModel: ObservableObject {
                 try await disableRemotelyTask.value
                 newBackupEnabledState = .disabled
             } catch {
-                newBackupEnabledState = .disabledLocallyButDisableRemotelyFailed(error)
+                newBackupEnabledState = .disabledLocallyButDisableRemotelyFailed
                 actionsDelegate?.showDisablingBackupsFailedSheet()
             }
 
