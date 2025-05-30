@@ -73,9 +73,22 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         )
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
+        registerNotificationObservers()
+
         viewModel.actionsDelegate = self
         // Run as soon as we've set the actionDelegate.
         viewModel.loadBackupPlan()
+    }
+
+    private func registerNotificationObservers() {
+        NotificationCenter.default.addObserver(
+            forName: BackupSettingsStore.Notifications.backupPlanChanged,
+            object: nil,
+            queue: nil
+        ) { [weak self] _ in
+            guard let self else { return }
+            viewModel.loadBackupPlan()
+        }
     }
 }
 
@@ -155,10 +168,8 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
         }
 
         navigationController.popToViewController(self, animated: true) {
-            // We know we're enabled now, and in addition we may have changed
-            // our BackupPlan.
+            // We know we're enabled now!
             self.viewModel.backupEnabledState = .enabled
-            self.viewModel.loadBackupPlan()
 
             let welcomeToBackupsSheet = HeroSheetViewController(
                 hero: .image(.backupsSubscribed),
@@ -246,6 +257,13 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
     // MARK: -
 
     fileprivate func loadBackupPlan() async throws -> BackupSettingsViewModel.BackupPlanLoadingState.LoadedBackupPlan {
+        switch db.read(block: { backupSettingsStore.backupPlan(tx: $0) }) {
+        case .free:
+            return .free
+        case .disabled, .paid, .paidExpiringSoon:
+            break
+        }
+
         guard
             let backupSubscription = try await backupSubscriptionManager
                 .fetchAndMaybeDowngradeSubscription()
@@ -262,7 +280,7 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
             // may recover, and show it as paid. If it fails, it'll
             // become `.canceled` instead.
             if backupSubscription.cancelAtEndOfPeriod {
-                return .paidButCanceled(expirationDate: endOfCurrentPeriod)
+                return .paidExpiringSoon(expirationDate: endOfCurrentPeriod)
             }
 
             return .paid(
@@ -377,7 +395,7 @@ private class BackupSettingsViewModel: ObservableObject {
         enum LoadedBackupPlan {
             case free
             case paid(price: FiatMoney, renewalDate: Date)
-            case paidButCanceled(expirationDate: Date)
+            case paidExpiringSoon(expirationDate: Date)
         }
 
         case loading
@@ -682,7 +700,7 @@ struct BackupSettingsView: View {
         case .loaded(.free), .genericError:
             // Let the reenable with anything.
             implicitPlanSelection = nil
-        case .loaded(.paid), .loaded(.paidButCanceled):
+        case .loaded(.paid), .loaded(.paidExpiringSoon):
             // Only let the user reenable with .paid, because they're already
             // paying.
             implicitPlanSelection = .paid
@@ -795,7 +813,7 @@ private struct BackupPlanView: View {
                             "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER",
                             comment: "Header describing what the free backup plan includes."
                         ))
-                    case .paid, .paidButCanceled:
+                    case .paid, .paidExpiringSoon:
                         Text(OWSLocalizedString(
                             "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER",
                             comment: "Header describing what the paid backup plan includes."
@@ -831,7 +849,7 @@ private struct BackupPlanView: View {
                         format: renewalStringFormat,
                         DateFormatter.localizedString(from: renewalDate, dateStyle: .medium, timeStyle: .none)
                     ))
-                case .paidButCanceled(let expirationDate):
+                case .paidExpiringSoon(let expirationDate):
                     let expirationDateFutureString = OWSLocalizedString(
                         "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT",
                         comment: "Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}."
@@ -856,7 +874,7 @@ private struct BackupPlanView: View {
                         viewModel.upgradeFromFreeToPaidPlan()
                     case .paid:
                         viewModel.manageOrCancelPaidPlan()
-                    case .paidButCanceled:
+                    case .paidExpiringSoon:
                         viewModel.resubscribeToPaidPlan()
                     }
                 } label: {
@@ -871,7 +889,7 @@ private struct BackupPlanView: View {
                             "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE",
                             comment: "Title for a button allowing users to manage or cancel their paid backup plan."
                         ))
-                    case .paidButCanceled:
+                    case .paidExpiringSoon:
                         Text(OWSLocalizedString(
                             "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE",
                             comment: "Title for a button allowing users to reenable a paid backup plan that has been canceled."
@@ -1080,7 +1098,7 @@ private extension BackupSettingsViewModel {
 #Preview("Expiring") {
     BackupSettingsView(viewModel: .forPreview(
         backupEnabledState: .enabled,
-        planLoadResult: .success(.paidButCanceled(
+        planLoadResult: .success(.paidExpiringSoon(
             expirationDate: Date().addingTimeInterval(.week)
         ))
     ))
