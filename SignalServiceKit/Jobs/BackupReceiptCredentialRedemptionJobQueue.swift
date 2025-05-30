@@ -164,9 +164,8 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
             await db.awaitableWrite { tx in
                 jobRecord.anyRemove(transaction: tx)
 
-                // By redeeming, we've got the server-side entitlement to get
-                // paid-tier Backup credentials. Correspondingly, upgrade our
-                // local BackupPlan to paid.
+                /// We're now a paid-tier Backups user according to the server.
+                /// If our local thinks we're free-tier, upgrade it.
                 switch backupSettingsStore.backupPlan(tx: tx) {
                 case .free:
                     // "Optimize Media" is off by default when you first upgrade.
@@ -175,13 +174,9 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                         tx: tx
                     )
                 case .disabled:
-                    // "Upgrade" assumes Backups is already enabled – don't
-                    // enable it if it's not. (It's a little weird to have
-                    // Backups disabled, but be paying for a subscription, but
-                    // it's allowed.)
+                    // Don't sneakily enable Backups!
                     break
                 case .paid, .paidExpiringSoon:
-                    // No need to change anything – we're already paid.
                     break
                 }
 

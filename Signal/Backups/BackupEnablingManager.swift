@@ -114,17 +114,10 @@ class BackupEnablingManager {
 
             switch purchaseResult {
             case .success:
-                // Enable Backups, so that the redemption can upgrade it to
-                // .paid below.
-                await db.awaitableWrite { tx in
-                    backupSettingsStore.setBackupPlan(.free, tx: tx)
-                }
-
                 do {
                     try await ModalActivityIndicatorViewController.presentAndPropagateResult(
                         from: fromViewController
                     ) {
-                        // This upgrades BackupPlan to .paid if it succeeds.
                         try await self.backupSubscriptionManager.redeemSubscriptionIfNecessary()
                     }
                 } catch {
@@ -135,8 +128,19 @@ class BackupEnablingManager {
                     ))
                 }
 
-                // Since BackupPlan is set to .paid when redemption succeeds, we
-                // don't need to do anything here.
+                await db.awaitableWrite { tx in
+                    let currentOptimizeLocalStorage = switch backupSettingsStore.backupPlan(tx: tx) {
+                    case .disabled, .free:
+                        false
+                    case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage):
+                        optimizeLocalStorage
+                    }
+
+                    backupSettingsStore.setBackupPlan(
+                        .paid(optimizeLocalStorage: currentOptimizeLocalStorage),
+                        tx: tx
+                    )
+                }
 
             case .pending:
                 // The subscription won't be redeemed until if/when the purchase

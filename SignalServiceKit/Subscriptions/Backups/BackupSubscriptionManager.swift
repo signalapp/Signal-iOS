@@ -319,6 +319,8 @@ public final class BackupSubscriptionManager {
         }()
 
         if let downgradedBackupPlan {
+            logger.info("Downgrading BackupPlan: \(currentBackupPlan) -> \(downgradedBackupPlan)")
+
             await db.awaitableWrite { tx in
                 backupSettingsStore.setBackupPlan(downgradedBackupPlan, tx: tx)
             }
