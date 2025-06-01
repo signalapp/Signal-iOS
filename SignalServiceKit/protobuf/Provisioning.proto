@@ -47,5 +47,6 @@ message ProvisionMessage {
   optional bytes ephemeralBackupKey = 14; // 32 bytes
   optional string accountEntropyPool = 15;
   optional bytes mediaRootBackupKey = 16;
-  // NEXT ID: 17
+  optional bytes peer_extra_public_key = 17;
+  // NEXT ID: 18
 }
