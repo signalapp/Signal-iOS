@@ -1702,6 +1702,69 @@ public class MessageSender {
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
+        // --- Molly Extra Lock: Key Derivation ---
+        var extraKeyForLock: Data?
+        // 1. Check if local user has Extra Lock enabled
+        if ExtraLockPassphraseStorage.isExtraLockGloballyEnabled() {
+            // 2. Check if recipient supports Extra Lock (placeholder - needs actual mechanism)
+            let recipientSupportsExtraLock = true // TODO: Replace with actual check
+            if recipientSupportsExtraLock {
+                Logger.info("[ExtraLock] Attempting to derive extraKey for \(serviceId.stringValue):\(deviceId.uint32Value)")
+                do {
+                    // 3. Get user passphrase
+                    guard let passphrase = try ExtraLockPassphraseStorage().loadPassphrase() else {
+                        Logger.warn("[ExtraLock] Passphrase not found, skipping extraKey derivation.")
+                        throw ExtraLockCipherError.passphraseNotFound // Or handle differently
+                    }
+
+                    // 4. Get rootKey for the current session (Placeholder)
+                    // TODO: Implement actual rootKey retrieval from session state
+                    let rootKey = try self.getRootKeyForSession(serviceId: serviceId, deviceId: deviceId, tx: transaction)
+                    Logger.debug("[ExtraLock] Got rootKey (placeholder: \(rootKey.count) bytes)")
+
+                    // 5. Get peer's extra public key (Placeholder)
+                    // TODO: Implement actual peerExtraPublicKey retrieval (e.g., from identity store)
+                    guard let remotePeerExtraPublicKey = try self.getPeerExtraPublicKey(serviceId: serviceId, deviceId: deviceId, tx: transaction) else {
+                        Logger.warn("[ExtraLock] Remote peerExtraPublicKey not found for \(serviceId.stringValue):\(deviceId.uint32Value). Skipping Extra-Lock.")
+                        throw ExtraLockCipherError.peerKeyNotFound // Or handle differently
+                    }
+                    Logger.debug("[ExtraLock] Got remotePeerExtraPublicKey (placeholder: \(remotePeerExtraPublicKey.count) bytes)")
+
+                    // 6. Derive local peerExtraPrivateKey (Placeholder)
+                    // TODO: Implement actual local peerExtraPrivateKey derivation (HKDF from ACI private key)
+                    let localPeerExtraPrivateKey = try self.getLocalPeerExtraPrivateKey(tx: transaction)
+                    Logger.debug("[ExtraLock] Got localPeerExtraPrivateKey (placeholder: \(localPeerExtraPrivateKey.count) bytes)")
+
+                    // 7. Perform ECDH (Placeholder)
+                    // TODO: Implement actual ECDH (e.g., libsodium crypto_scalarmult)
+                    let peerExtraECDHSecret = try self.performECDH(localPrivate: localPeerExtraPrivateKey, remotePublic: remotePeerExtraPublicKey)
+                    Logger.debug("[ExtraLock] Derived peerExtraECDHSecret (placeholder: \(peerExtraECDHSecret.count) bytes)")
+
+                    // 8. Derive the final extraKey
+                    extraKeyForLock = try ExtraLockCipher.deriveExtraKey(
+                        rootKey: rootKey,
+                        peerExtraECDHSecret: peerExtraECDHSecret,
+                        userPassphraseString: passphrase
+                    )
+                    Logger.info("[ExtraLock] Successfully derived extraKey for \(serviceId.stringValue):\(deviceId.uint32Value) (\(extraKeyForLock?.count ?? 0) bytes)")
+
+                    // The 'extraKeyForLock' would now be available to be used in a later step
+                    // for encrypting the actual message content with ExtraLockCipher.seal().
+                    // For this subtask, we just derive it and log.
+
+                } catch {
+                    Logger.error("[ExtraLock] Failed to derive extraKey for \(serviceId.stringValue):\(deviceId.uint32Value): \(error). Proceeding without Extra-Lock.")
+                    // Policy: If derivation fails, send message without Extra-Lock for now.
+                    extraKeyForLock = nil
+                }
+            } else {
+                Logger.info("[ExtraLock] Recipient \(serviceId.stringValue):\(deviceId.uint32Value) does not support Extra-Lock. Skipping.")
+            }
+        } else {
+            Logger.info("[ExtraLock] Local user has not enabled Extra-Lock. Skipping extraKey derivation.")
+        }
+        // --- End Molly Extra Lock ---
+
         guard try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction) else {
             throw MessageSendEncryptionError(serviceId: serviceId, deviceId: deviceId)
         }
@@ -1761,6 +1824,35 @@ public class MessageSender {
             serializedMessage = Data(result.serialize())
         }
 
+        var finalContentForDeviceMessage = serializedMessage
+        var finalMessageType = messageType
+
+        // --- Molly Extra Lock: Apply Outer Encryption ---
+        if let validExtraKey = extraKeyForLock {
+            Logger.info("[ExtraLock] Applying Extra-Lock seal to L1 ciphertext for \(serviceId.stringValue):\(deviceId.uint32Value). L1 size: \(serializedMessage.count)")
+            // TODO: Ensure ExtraLockCipher.seal() uses actual libsodium/crypto.
+            do {
+                let sealedLayer2Data = try ExtraLockCipher.seal(plaintext: serializedMessage, extraKey: validExtraKey)
+                finalContentForDeviceMessage = sealedLayer2Data
+                // The messageType in the DeviceMessage (which becomes Envelope.type) should remain
+                // based on the L1 content (e.g., .ciphertext or .prekeyBundle).
+                // The `extraLockRequired` flag on the Envelope (set in OWSRequestFactory) indicates L2 encryption.
+                Logger.info("[ExtraLock] Successfully sealed L1 ciphertext. L2 size: \(finalContentForDeviceMessage.count)")
+            } catch {
+                Logger.error("[ExtraLock] Failed to seal L1 ciphertext with extraKey: \(error). Sending L1 ciphertext only.")
+                // Fallback: Send L1 ciphertext.
+                // IMPORTANT: If this happens, the `extraLockRequired` flag on the Envelope (set in OWSRequestFactory)
+                // might be true, which would be inconsistent. A more robust solution would ensure the flag is
+                // only set if L2 sealing is successful, or unset it here, though that's complex.
+                // For now, per subtask, we log and send L1.
+                finalContentForDeviceMessage = serializedMessage
+                // The messageType remains the L1 type.
+            }
+        } else {
+            Logger.info("[ExtraLock] No extraKeyForLock available/derived. Sending L1 ciphertext as is for \(serviceId.stringValue):\(deviceId.uint32Value).")
+        }
+        // --- End Molly Extra Lock ---
+
         // We had better have a session after encrypting for this recipient!
         let session = try signalProtocolStore.sessionStore.loadSession(
             for: protocolAddress,
@@ -1768,12 +1860,86 @@ public class MessageSender {
         )!
 
         return DeviceMessage(
-            type: messageType,
+            type: finalMessageType, // This is the L1 type (e.g., .ciphertext, .prekeyBundle)
             destinationDeviceId: deviceId,
             destinationRegistrationId: try session.remoteRegistrationId(),
-            content: serializedMessage
+            content: finalContentForDeviceMessage // This is now potentially L2 encrypted
         )
     }
+
+    // MARK: - Molly Extra Lock Placeholder Helper Methods
+    // TODO: Move these to appropriate locations and implement fully.
+
+    // Conceptual function, needs to be part of ExtraLockPassphraseStorage or a similar utility.
+    // Added here temporarily to satisfy the logic flow in this subtask.
+    // (This is also defined in OWSRequestFactory modification, ideally it's a shared utility)
+    /*
+    private static func isExtraLockGloballyEnabled_placeholder() -> Bool {
+        let storage = ExtraLockPassphraseStorage()
+        do {
+            return (try storage.loadPassphrase()) != nil
+        } catch {
+            Logger.error("[ExtraLock] Error checking passphrase for global status: \(error)")
+            return false
+        }
+    }
+    */
+    // Using the one from ExtraLockPassphraseStorage directly.
+
+    private func getRootKeyForSession(serviceId: ServiceId, deviceId: DeviceId, tx: DBReadTransaction) throws -> Data {
+        // TODO: Placeholder - Actually retrieve root key from the libsignal session.
+        // This would involve calls like:
+        // let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci)
+        // let protocolAddress = ProtocolAddress(serviceId, deviceId: deviceId)
+        // guard let session = try signalProtocolStore.sessionStore.loadSession(for: protocolAddress, context: tx) else {
+        //     throw YourError.sessionNotFound
+        // }
+        // guard let sessionState = session.currentState() else { // Hypothetical API
+        //     throw YourError.sessionStateInvalid
+        // }
+        // return sessionState.rootKey // Hypothetical API
+        Logger.warn("[ExtraLock] Using placeholder rootKey.")
+        return Data(repeating: 0xAA, count: 32) // Dummy 32-byte key
+    }
+
+    private func getPeerExtraPublicKey(serviceId: ServiceId, deviceId: DeviceId, tx: DBReadTransaction) throws -> Data? {
+        // TODO: Placeholder - Actually retrieve peer's extra public key.
+        // This would involve:
+        // 1. Modifying IdentityStore/SignalProtocolStore to store this key.
+        // 2. Retrieving it here, e.g.:
+        // let identityManager = DependenciesBridge.shared.identityManager
+        // return try identityManager.libSignalStore(for: .aci, tx: tx).getPeerExtraPublicKey(for: ProtocolAddress(serviceId, deviceId: deviceId))
+        Logger.warn("[ExtraLock] Using placeholder peerExtraPublicKey.")
+        return Data(repeating: 0xBB, count: 32) // Dummy 32-byte public key
+    }
+
+    private func getLocalPeerExtraPrivateKey(tx: DBReadTransaction) throws -> Data {
+        // TODO: Placeholder - Actually derive local peerExtraPrivateKey on-demand.
+        // As documented in DESIGN_NOTES_MollyExtraLock.md: HKDF-SHA256 from ACI private key.
+        // 1. Get ACI private key from SignalProtocolStore.identityStore().getIdentityKeyPair(tx)
+        // 2. Perform HKDF.
+        // For now, using a dummy key. This needs to be a secure derivation.
+        // This might live in a new `LocalPeerExtraKeyManager.swift` or similar.
+        Logger.warn("[ExtraLock] Using placeholder localPeerExtraPrivateKey.")
+        return Data(repeating: 0xCC, count: 32) // Dummy 32-byte private key
+    }
+
+    private func performECDH(localPrivate: Data, remotePublic: Data) throws -> Data {
+        // TODO: Placeholder - Actual ECDH e.g. libsodium crypto_scalarmult
+        // var sharedSecret = Data(count: crypto_scalarmult_BYTES)
+        // let result = localPrivate.withUnsafeBytes { privBytes in
+        //     remotePublic.withUnsafeBytes { pubBytes in
+        //         sharedSecret.withUnsafeMutableBytes { secretBytes in
+        //             crypto_scalarmult(secretBytes.baseAddress, privBytes.baseAddress, pubBytes.baseAddress)
+        //         }
+        //     }
+        // }
+        // if result != 0 { throw SomeError.ecdhFailed }
+        // return sharedSecret
+        Logger.warn("[ExtraLock] Using placeholder ECDH shared secret.")
+        return Data(repeating: 0xDD, count: 32) // Dummy 32-byte shared secret
+    }
+    // --- End Molly Extra Lock Placeholder Helper Methods ---
 
     private func wrapPlaintextMessage(
         plaintextContent rawPlaintext: Data,

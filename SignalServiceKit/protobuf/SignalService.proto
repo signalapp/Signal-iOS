@@ -45,6 +45,7 @@ message Envelope {
   optional string updatedPni = 15;
   optional bool story = 16;
   optional bytes spamReportingToken = 17;
+  optional bool extra_lock_required = 18;
 }
 
 message TypingMessage {

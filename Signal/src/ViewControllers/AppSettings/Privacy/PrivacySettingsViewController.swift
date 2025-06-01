@@ -175,6 +175,15 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 }
             ))
         }
+
+        // Add Extra-Lock Settings row
+        appSecuritySection.add(.disclosureItem(
+            withText: NSLocalizedString("SETTINGS_EXTRALOCK_TITLE", comment: "Title for Extra-Lock settings row"), // Needs localization
+            actionBlock: { [weak self] in
+                let vc = ExtraLockSettingsViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        ))
         contents.add(appSecuritySection)
 
         // Payments

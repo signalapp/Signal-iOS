@@ -488,6 +488,18 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCodin
         return proto.hasMediaRootBackupKey
     }
 
+    @objc
+    public var peerExtraPublicKey: Data? {
+        guard hasPeerExtraPublicKey else {
+            return nil
+        }
+        return proto.peerExtraPublicKey
+    }
+    @objc
+    public var hasPeerExtraPublicKey: Bool {
+        return proto.hasPeerExtraPublicKey
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -638,6 +650,9 @@ extension ProvisioningProtoProvisionMessage {
         }
         if let _value = mediaRootBackupKey {
             builder.setMediaRootBackupKey(_value)
+        }
+        if let _value = peerExtraPublicKey {
+            builder.setPeerExtraPublicKey(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -828,6 +843,17 @@ public class ProvisioningProtoProvisionMessageBuilder: NSObject {
 
     public func setMediaRootBackupKey(_ valueParam: Data) {
         proto.mediaRootBackupKey = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPeerExtraPublicKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.peerExtraPublicKey = valueParam
+    }
+
+    public func setPeerExtraPublicKey(_ valueParam: Data) {
+        proto.peerExtraPublicKey = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

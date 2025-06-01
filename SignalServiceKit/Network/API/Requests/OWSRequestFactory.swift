@@ -618,5 +618,39 @@ extension DeviceMessage {
             "destinationRegistrationId": Int32(bitPattern: destinationRegistrationId),
             "content": content.base64EncodedString()
         ]
+
+        // Add extraLockRequired flag if the feature is enabled.
+        // This assumes ExtraLockPassphraseStorage.isExtraLockGloballyEnabled() is made available.
+        // For the purpose of this change, we'll call it directly.
+        // In a real scenario, this boolean check might come from a settings manager.
+        // Conceptual call:
+        // if ExtraLockPassphraseStorage.isExtraLockGloballyEnabled() {
+        //     Logger.debug("Setting extraLockRequired flag on outgoing message envelope parameters.")
+        //     params["extraLockRequired"] = true // Protobuf bools often map to JSON true/false
+        // }
+        // To make this compilable without actually modifying ExtraLockPassphraseStorage here,
+        // we'll use a temporary direct check. This should be refactored.
+        let isExtraLockEnabled: Bool = {
+            let storage = ExtraLockPassphraseStorage() // Assumes default initializer works
+            do {
+                return (try storage.loadPassphrase()) != nil
+            } catch {
+                // Logger.error is not available here directly without proper import or definition
+                print("[OWSRequestFactory] Error checking passphrase for extraLockRequired flag: \(error)")
+                return false
+            }
+        }()
+
+        if isExtraLockEnabled {
+            // Logger.debug is not available here.
+            print("[OWSRequestFactory] Setting extraLockRequired flag on outgoing message envelope parameters.")
+            // It's an NSDictionary, so use NSNumber for bool if not directly using Swift Bool.
+            // However, JSON serialization usually handles Swift Bool to true/false correctly.
+            var mutableParams = params as! [String: Any] // Cast to Swift dictionary to modify
+            mutableParams["extraLockRequired"] = true
+            return mutableParams as NSDictionary
+        }
+
+        return params
     }
 }
