@@ -160,7 +160,7 @@ public class OWSChatConnection {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appExpiryDidChange),
-            name: AppExpiryImpl.AppExpiryDidChange,
+            name: AppExpiry.AppExpiryDidChange,
             object: nil
         )
 
@@ -292,7 +292,7 @@ public class OWSChatConnection {
 
         let oldValue = (canOpenWebSocketError == nil)
         canOpenWebSocketError = {
-            guard !appExpiry.isExpired else {
+            guard !appExpiry.isExpired(now: Date()) else {
                 return .invalidAppState
             }
             guard Self.canAppUseSocketsToMakeRequests else {

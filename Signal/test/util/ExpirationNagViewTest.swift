@@ -11,12 +11,11 @@ final class ExpirationNagViewTest: XCTestCase {
     private var date: Date!
     private var dateProvider: DateProvider { { self.date } }
 
-    private var appExpiry: MockAppExpiry!
+    private var appExpiry: AppExpiry!
 
     override func setUp() {
         date = Date()
-        appExpiry = MockAppExpiry()
-        appExpiry.dateProvider = self.dateProvider
+        appExpiry = .forUnitTests()
     }
 
     func testNoNag() {
@@ -97,7 +96,7 @@ final class ExpirationNagViewTest: XCTestCase {
         ]
         for testCase in testCases {
             self.date = now.addingTimeInterval(TimeInterval(testCase.timeToCheck) * .day)
-            self.appExpiry.expirationDate = testCase.appExpiration
+            self.appExpiry = .forUnitTests(buildDate: testCase.appExpiration.addingTimeInterval(-AppExpiry.defaultExpirationInterval))
             let nag = ExpirationNagView(
                 dateProvider: dateProvider,
                 appExpiry: appExpiry,

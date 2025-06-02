@@ -51,7 +51,7 @@ extension ChatListViewController {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(appExpiryDidChange),
-                                               name: AppExpiryImpl.AppExpiryDidChange,
+                                               name: AppExpiry.AppExpiryDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(preferContactAvatarsPreferenceDidChange),

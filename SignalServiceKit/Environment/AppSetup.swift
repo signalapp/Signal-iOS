@@ -160,8 +160,7 @@ public class AppSetup {
 
         let schedulers = DispatchQueueSchedulers()
 
-        let appExpiry = AppExpiryImpl(
-            dateProvider: dateProvider,
+        let appExpiry = AppExpiry(
             appVersion: appVersion,
         )
 

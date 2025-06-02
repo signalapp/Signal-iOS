@@ -3060,7 +3060,6 @@
 		F90B731D2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */; };
 		F90B7BC02912B8E000F50A59 /* DonationUtilitiesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66B42912B8C8004FFFAA /* DonationUtilitiesTest.swift */; };
 		F90B7BC12912B90100F50A59 /* DonateViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66B22912B8B7004FFFAA /* DonateViewControllerTest.swift */; };
-		F90E4AAC29F0798C00F54191 /* MockAppExpiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90E4AAB29F0798C00F54191 /* MockAppExpiry.swift */; };
 		F915A76C29CB669800EB6F68 /* AccountDataReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F915A76B29CB669800EB6F68 /* AccountDataReport.swift */; };
 		F915A76E29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F915A76D29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift */; };
 		F915A77029CB6D4C00EB6F68 /* ShareActivityUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F915A76F29CB6D4C00EB6F68 /* ShareActivityUtil.swift */; };
@@ -7004,7 +7003,6 @@
 		F908C67A29F08E4E00C3EFC4 /* AppExpiryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppExpiryTest.swift; sourceTree = "<group>"; };
 		F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+PaymentInProgressView.swift"; sourceTree = "<group>"; };
 		F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+WaitForSubscriptionJob.swift"; sourceTree = "<group>"; };
-		F90E4AAB29F0798C00F54191 /* MockAppExpiry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAppExpiry.swift; sourceTree = "<group>"; };
 		F915A76B29CB669800EB6F68 /* AccountDataReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDataReport.swift; sourceTree = "<group>"; };
 		F915A76D29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDataReportRequestFactory.swift; sourceTree = "<group>"; };
 		F915A76F29CB6D4C00EB6F68 /* ShareActivityUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareActivityUtil.swift; sourceTree = "<group>"; };
@@ -14427,7 +14425,6 @@
 				F9C5CB90289453B200548EEE /* FakeContactsManager.swift */,
 				F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */,
 				F9C5CB84289453B200548EEE /* FakeStorageServiceManager.swift */,
-				F90E4AAB29F0798C00F54191 /* MockAppExpiry.swift */,
 				F9C5CB96289453B200548EEE /* MockKeychainStorage.swift */,
 				F9C57FAC28E5F1E2001D3596 /* MockSSKEnvironment.swift */,
 				F9C5CB88289453B200548EEE /* NoopPendingReadReceiptRecorder.swift */,
@@ -17960,7 +17957,6 @@
 				F9C5CD7B289453B300548EEE /* MobileCoinHelper.swift in Sources */,
 				72345D202B9A2035000237B3 /* MobileCoinHelperMinimal.swift in Sources */,
 				664657352AC370670099DE1C /* MockAccountAttributesUpdater.swift in Sources */,
-				F90E4AAC29F0798C00F54191 /* MockAppExpiry.swift in Sources */,
 				668B24182BBB663400EB60C4 /* MockAttachment.swift in Sources */,
 				663D02E12C06E2F400350632 /* MockAttachmentReference.swift in Sources */,
 				669572FE2C1A1E050092B755 /* MockAttachmentThumbnailService.swift in Sources */,

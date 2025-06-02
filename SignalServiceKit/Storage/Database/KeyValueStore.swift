@@ -445,14 +445,18 @@ public struct KeyValueStore {
         }
     }
 
-    public func getCodableValue<T: Decodable>(forKey key: String, transaction: DBReadTransaction) throws -> T? {
+    public func getCodableValue<T: Decodable>(forKey key: String, failDebugOnParseError: Bool = true, transaction: DBReadTransaction) throws -> T? {
         guard let data = getData(key, transaction: transaction) else {
             return nil
         }
         do {
             return try JSONDecoder().decode(T.self, from: data)
         } catch {
-            owsFailDebug("Failed to decode: \(error).")
+            if failDebugOnParseError {
+                owsFailDebug("Failed to decode: \(error).")
+            } else {
+                Logger.warn("Failed to decode: \(error).")
+            }
             throw error
         }
     }

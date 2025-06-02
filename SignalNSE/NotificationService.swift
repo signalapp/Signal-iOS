@@ -183,7 +183,7 @@ class NotificationService: UNNotificationServiceExtension {
 
     @MainActor
     private func fetchAndProcessMessages(logger: NSELogger) async -> UNNotificationContent {
-        if DependenciesBridge.shared.appExpiry.isExpired {
+        if DependenciesBridge.shared.appExpiry.isExpired(now: Date()) {
             Logger.warn("Not processing notifications for expired application.")
             return UNMutableNotificationContent()
         }

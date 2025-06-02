@@ -139,7 +139,7 @@ public class HTTPUtils {
             OutageDetection.shared.reportConnectionFailure()
         }
 
-        if httpError.responseStatusCode == AppExpiryImpl.appExpiredStatusCode {
+        if httpError.responseStatusCode == AppExpiry.appExpiredStatusCode {
             let appExpiry = DependenciesBridge.shared.appExpiry
             let db = DependenciesBridge.shared.db
             await appExpiry.setHasAppExpiredAtCurrentVersion(db: db)

@@ -176,7 +176,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
     }
 
     public func performRequest(request: URLRequest, ignoreAppExpiry: Bool) async throws -> any HTTPResponse {
-        if !ignoreAppExpiry && DependenciesBridge.shared.appExpiry.isExpired {
+        if !ignoreAppExpiry && DependenciesBridge.shared.appExpiry.isExpired(now: Date()) {
             throw OWSGenericError("App is expired.")
         }
 
@@ -358,7 +358,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
     }
 
     private func handleRemoteDeprecation(inResponse response: URLResponse?) async {
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == AppExpiryImpl.appExpiredStatusCode else {
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == AppExpiry.appExpiredStatusCode else {
             return
         }
 
@@ -403,7 +403,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
 
     public func performRequest(_ rawRequest: TSRequest) async throws -> any HTTPResponse {
         let appExpiry = DependenciesBridge.shared.appExpiry
-        guard !appExpiry.isExpired else {
+        guard !appExpiry.isExpired(now: Date()) else {
             Logger.warn("App is expired.")
             throw OWSHTTPError.invalidAppState
         }
@@ -477,7 +477,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
         progress: OWSProgressSource?,
         taskBlock: () -> URLSessionUploadTask
     ) async throws -> HTTPResponse {
-        if !ignoreAppExpiry && DependenciesBridge.shared.appExpiry.isExpired {
+        if !ignoreAppExpiry && DependenciesBridge.shared.appExpiry.isExpired(now: Date()) {
             throw OWSGenericError("App is expired.")
         }
 
@@ -507,7 +507,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
         taskBlock: () -> URLSessionDownloadTask
     ) async throws -> OWSUrlDownloadResponse {
         let appExpiry = DependenciesBridge.shared.appExpiry
-        if appExpiry.isExpired {
+        if appExpiry.isExpired(now: Date()) {
             throw OWSGenericError("App is expired.")
         }
 

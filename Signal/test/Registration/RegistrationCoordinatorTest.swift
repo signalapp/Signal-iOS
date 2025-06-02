@@ -17,7 +17,7 @@ public class RegistrationCoordinatorTest {
     private var date: Date { self.stubs.date }
     private var dateProvider: DateProvider!
 
-    private var appExpiryMock: MockAppExpiry!
+    private var appExpiry: AppExpiry!
     private var changeNumberPniManager: ChangePhoneNumberPniManagerMock!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
     private var db: (any DB)!
@@ -57,7 +57,7 @@ public class RegistrationCoordinatorTest {
 
         missingKeyGenerator = .init()
 
-        appExpiryMock = MockAppExpiry()
+        appExpiry = .forUnitTests()
         changeNumberPniManager = ChangePhoneNumberPniManagerMock(
             mockKyberStore: KyberPreKeyStoreImpl(for: .pni, dateProvider: dateProvider)
         )
@@ -103,7 +103,7 @@ public class RegistrationCoordinatorTest {
         scheduler = TestScheduler()
 
         let dependencies = RegistrationCoordinatorDependencies(
-            appExpiry: appExpiryMock,
+            appExpiry: appExpiry,
             backupArchiveErrorPresenter: NoOpBackupArchiveErrorPresenter(),
             backupArchiveManager: BackupArchiveManagerMock(),
             backupKeyMaterial: BackupKeyMaterialMock(),
@@ -263,7 +263,7 @@ public class RegistrationCoordinatorTest {
         // Don't care about timing, just start it.
         scheduler.start()
 
-        appExpiryMock.expirationDate = .distantPast
+        self.stubs.date = .distantFuture
 
         setupDefaultAccountAttributes()
 

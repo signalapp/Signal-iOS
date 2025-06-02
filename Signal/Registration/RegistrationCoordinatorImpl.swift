@@ -77,7 +77,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     public func nextStep() -> Guarantee<RegistrationStep> {
         AssertIsOnMainThread()
 
-        if deps.appExpiry.isExpired {
+        if deps.appExpiry.isExpired(now: deps.dateProvider()) {
             return .value(.appUpdateBanner)
         }
 

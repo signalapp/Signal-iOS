@@ -589,7 +589,7 @@ public class MessageSender {
         if !areAttachmentsUploadedWithSneakyTransaction(for: message) {
             throw OWSUnretryableMessageSenderError()
         }
-        if DependenciesBridge.shared.appExpiry.isExpired {
+        if DependenciesBridge.shared.appExpiry.isExpired(now: Date()) {
             throw AppExpiredError()
         }
         if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered.negated {
