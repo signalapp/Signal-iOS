@@ -434,7 +434,6 @@ private enum IsEnabledFlag: String, FlagType {
     case cardGiftDonationKillSwitch = "ios.cardGiftDonationKillSwitch"
     case cardMonthlyDonationKillSwitch = "ios.cardMonthlyDonationKillSwitch"
     case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
-    case deleteForMeSyncMessageSending = "ios.deleteForMeSyncMessage.sending"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
     case lazyDatabaseMigratorKillSwitch = "ios.lazyDatabaseMigratorKillSwitch"
@@ -457,7 +456,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .cardGiftDonationKillSwitch: false
         case .cardMonthlyDonationKillSwitch: false
         case .cardOneTimeDonationKillSwitch: false
-        case .deleteForMeSyncMessageSending: false
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
         case .lazyDatabaseMigratorKillSwitch: false
@@ -481,7 +479,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .cardGiftDonationKillSwitch: false
         case .cardMonthlyDonationKillSwitch: false
         case .cardOneTimeDonationKillSwitch: false
-        case .deleteForMeSyncMessageSending: false
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
         case .lazyDatabaseMigratorKillSwitch: true
