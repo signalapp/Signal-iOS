@@ -54,9 +54,9 @@ final class ExpirationNagViewTest: XCTestCase {
 
         // The text changes at different intervals.
         var texts = Set<String>()
-        for dayCount in [2, 1, -1] {
+        for dayCount in [1, 0, -1] {
             date = appExpiry.expirationDate.subtractingTimeInterval(
-                TimeInterval(dayCount) * .day
+                TimeInterval(dayCount) * .day + 1
             )
             nag.update()
             texts.insert(nag.text)
@@ -65,14 +65,11 @@ final class ExpirationNagViewTest: XCTestCase {
     }
 
     func testOsExpiry() {
-        let now = Date(timeIntervalSince1970: 1720000000)
         let osExpiration = Date(timeIntervalSince1970: 1727740800)
+
+        let now = osExpiration.addingTimeInterval(-90 * .day)
         let appExpiration1 = osExpiration.addingTimeInterval(-5 * .day)
         let appExpiration2 = osExpiration.addingTimeInterval(5 * .day)
-
-        func d(_ offset: Int) -> Date {
-            return now.addingTimeInterval(TimeInterval(offset) * .day)
-        }
 
         let testCases: [(
             appExpiration: Date,
@@ -82,15 +79,15 @@ final class ExpirationNagViewTest: XCTestCase {
             // The OS expires after the app.
             (appExpiration1, 10, .osWillExpireSoon(osExpiration, canUpgrade: true)),
             (appExpiration1, 80, .appWillExpireSoon(appExpiration1)),
-            (appExpiration1, 84, .appWillExpireToday),
-            (appExpiration1, 85, .appExpired),
+            (appExpiration1, 85, .appWillExpireToday),
+            (appExpiration1, 86, .appExpired),
             // If you wait long enough, the message will switch to OS expiration.
-            (appExpiration1, 90, .osExpired(canUpgrade: true)),
+            (appExpiration1, 91, .osExpired(canUpgrade: true)),
 
             // The OS expires before the app.
             (appExpiration2, 10, .osWillExpireSoon(osExpiration, canUpgrade: true)),
-            (appExpiration2, 89, .osWillExpireSoon(osExpiration, canUpgrade: true)),
-            (appExpiration2, 90, .osExpired(canUpgrade: true)),
+            (appExpiration2, 90, .osWillExpireSoon(osExpiration, canUpgrade: true)),
+            (appExpiration2, 91, .osExpired(canUpgrade: true)),
             (appExpiration2, 95, .osExpired(canUpgrade: true)),
             (appExpiration2, 99, .osExpired(canUpgrade: true)),
         ]

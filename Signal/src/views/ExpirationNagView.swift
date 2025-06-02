@@ -113,7 +113,7 @@ class ExpirationNagView: ReminderView {
             if appExpiry.expirationDate < now {
                 return .appExpired
             }
-            if daysUntilAppExpiry <= 1 {
+            if daysUntilAppExpiry <= 0 {
                 return .appWillExpireToday
             }
             if daysUntilAppExpiry <= 10 {
