@@ -1730,6 +1730,10 @@ extension AppSetup.FinalContinuation {
             self.dependenciesBridge.chatConnectionManager.updateCanOpenWebSocket()
         }
 
+        self.appReadiness.runNowOrWhenAppDidBecomeReadySync {
+            self.dependenciesBridge.appExpiry.refreshExpirationTimer()
+        }
+
         if self.didRunLaunchTasks {
             return
         }

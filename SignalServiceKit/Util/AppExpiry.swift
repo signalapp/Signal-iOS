@@ -113,10 +113,13 @@ public final class AppExpiry {
             }
         }
 
-        NotificationCenter.default.postOnMainThread(
-            name: Self.AppExpiryDidChange,
-            object: nil
-        )
+        await didUpdateExpirationState()
+    }
+
+    @MainActor
+    private func didUpdateExpirationState() {
+        _refreshExpirationTimerIfStarted()
+        NotificationCenter.default.post(name: Self.AppExpiryDidChange, object: nil)
     }
 
     public func setHasAppExpiredAtCurrentVersion(db: any DB) async {
@@ -172,5 +175,39 @@ public final class AppExpiry {
 
     private var defaultExpirationDate: Date {
         return buildDate.addingTimeInterval(Self.defaultExpirationInterval)
+    }
+
+    @MainActor
+    private var expirationWorkItem: DispatchWorkItem?
+
+    @MainActor
+    private func _refreshExpirationTimerIfStarted() {
+        if self.expirationWorkItem != nil {
+            self.refreshExpirationTimer()
+        }
+    }
+
+    @MainActor
+    public func refreshExpirationTimer() {
+        let now = Date()
+        let expirationDate = self.expirationDate
+
+        self.expirationWorkItem?.cancel()
+        self.expirationWorkItem = nil
+
+        guard now < expirationDate else {
+            return
+        }
+
+        let expirationDelay = self.expirationDate.timeIntervalSince(now)
+        let wallDeadline: DispatchWallTime = .now() + expirationDelay
+
+        // This is a DispatchWorkItem so that we can use the wall clock.
+        let expirationWorkItem = DispatchWorkItem(block: { [weak self] in
+            NotificationCenter.default.post(name: Self.AppExpiryDidChange, object: nil)
+            self?.refreshExpirationTimer()
+        })
+        self.expirationWorkItem = expirationWorkItem
+        DispatchQueue.main.asyncAfter(wallDeadline: wallDeadline, execute: expirationWorkItem)
     }
 }
