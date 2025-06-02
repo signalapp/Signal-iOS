@@ -54,6 +54,10 @@ extension ChatListViewController {
                                                name: AppExpiry.AppExpiryDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
+                                               selector: #selector(significantTimeChangeNotification),
+                                               name: UIApplication.significantTimeChangeNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
                                                selector: #selector(preferContactAvatarsPreferenceDidChange),
                                                name: SSKPreferences.preferContactAvatarsPreferenceDidChange,
                                                object: nil)
@@ -169,6 +173,14 @@ extension ChatListViewController {
     }
 
     @objc
+    private func significantTimeChangeNotification(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        updateExpirationReminderView()
+        loadCoordinator.loadIfNecessary()
+    }
+
+    @objc
     private func applicationWillEnterForeground(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
@@ -184,8 +196,6 @@ extension ChatListViewController {
         if !ExperienceUpgradeManager.presentNext(fromViewController: self) {
             presentGetStartedBannerIfNecessary()
         }
-
-        updateExpirationReminderView()
     }
 
     @objc
