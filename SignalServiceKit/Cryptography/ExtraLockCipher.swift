@@ -53,7 +53,7 @@ public class ExtraLockCipher {
         // Salt: passphraseData
         // IKM: sharedSecret_ECDH
         var pseudoRandomKey = Data(count: Int(crypto_auth_hmacsha256_BYTES))
-
+        
         let extractResult = pseudoRandomKey.withUnsafeMutableBytes { prkBytes in
             passphraseData.withUnsafeBytes { saltBytes in
                 sharedSecret_ECDH.withUnsafeBytes { ikmBytes in
@@ -102,7 +102,7 @@ public class ExtraLockCipher {
             print("Error: HKDF expand (crypto_kdf_hkdf_sha256_expand) failed.")
             throw ExtraLockCipherError.hkdfFailed(description: "HKDF expand phase failed.")
         }
-
+        
         guard derivedKey.count == keyOutputLength else {
             // This check should be redundant if libsodium call is correct.
             print("Error: Derived key length is incorrect after HKDF. Expected \(keyOutputLength), got \(derivedKey.count)")
@@ -140,7 +140,7 @@ public class ExtraLockCipher {
         nonce.withUnsafeMutableBytes { nbPtr in
             randombytes_buf(nbPtr.baseAddress, nonceLength)
         }
-
+        
         // Output buffer for ciphertext + tag. Libsodium's encrypt function places the tag at the end.
         var ciphertextAndTag = Data(count: plaintext.count + tagLength) // tagLength is crypto_aead_chacha20poly1305_ietf_ABYTES
 
@@ -170,7 +170,7 @@ public class ExtraLockCipher {
             print("Error: Libsodium encryption (crypto_aead_chacha20poly1305_ietf_encrypt) failed. Result: \(encryptionResult)")
             throw ExtraLockCipherError.encryptionFailed(description: "Libsodium encryption failed with result code \(encryptionResult).")
         }
-
+        
         // Ensure the reported length matches expected.
         guard actualCiphertextAndTagLength == ciphertextAndTag.count else {
             // This case should ideally not be hit if buffers are sized correctly.
@@ -202,12 +202,12 @@ public class ExtraLockCipher {
 
         let nonce = sealedData.subdata(in: 0..<nonceLength)
         let ciphertextAndTag = sealedData.subdata(in: nonceLength..<sealedData.count)
-
+        
         // Output buffer for plaintext. Max possible plaintext size is ciphertextAndTag.count - tagLength.
         // It's okay if ciphertextAndTag.count == tagLength (empty plaintext).
         let maxPlaintextLength = ciphertextAndTag.count - tagLength
         var plaintext = Data(count: maxPlaintextLength)
-
+        
         var actualPlaintextLength: UInt64 = 0
 
         let decryptionResult = plaintext.withUnsafeMutableBytes { ptPtr in
@@ -244,7 +244,7 @@ public class ExtraLockCipher {
             print("Error: Decrypted plaintext length (\(actualPlaintextLength)) is greater than allocated buffer (\(maxPlaintextLength)).")
             throw ExtraLockCipherError.decryptionFailed(description: "Decrypted plaintext length exceeds buffer.")
         }
-
+        
         print("Info: Sealed data opened successfully using ChaCha20-Poly1305 IETF.")
         return plaintext
     }
