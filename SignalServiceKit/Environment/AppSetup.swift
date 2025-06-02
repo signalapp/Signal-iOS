@@ -1726,6 +1726,10 @@ extension AppSetup.FinalContinuation {
         // NSE, or they are used but behave properly even if they're not reloaded.
         self.sskEnvironment.warmCaches(appReadiness: self.appReadiness)
 
+        self.appReadiness.runNowOrWhenAppDidBecomeReadySync {
+            self.dependenciesBridge.chatConnectionManager.updateCanOpenWebSocket()
+        }
+
         if self.didRunLaunchTasks {
             return
         }

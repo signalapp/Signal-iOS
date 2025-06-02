@@ -7,6 +7,7 @@ import Foundation
 public import LibSignalClient
 
 public protocol ChatConnectionManager {
+    func updateCanOpenWebSocket()
     func waitForIdentifiedConnectionToOpen() async throws
     var identifiedConnectionState: OWSChatConnectionState { get }
     var hasEmptiedInitialQueue: Bool { get }
@@ -37,6 +38,12 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
             return connectionIdentified
         case .unidentified:
             return connectionUnidentified
+        }
+    }
+
+    public func updateCanOpenWebSocket() {
+        for connection in connections {
+            connection.updateCanOpenWebSocket()
         }
     }
 
@@ -85,6 +92,9 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
 public class ChatConnectionManagerMock: ChatConnectionManager {
 
     public init() {}
+
+    public func updateCanOpenWebSocket() {
+    }
 
     public var hasEmptiedInitialQueue: Bool = false
 

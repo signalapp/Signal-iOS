@@ -87,6 +87,7 @@ public class _AttachmentUploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
 }
 
 class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager {
+    func updateCanOpenWebSocket() {}
     var hasEmptiedInitialQueue: Bool { true }
     var identifiedConnectionState: OWSChatConnectionState { .open }
     func waitForIdentifiedConnectionToOpen() async throws { }
