@@ -223,6 +223,19 @@ extension ConversationViewController: ConversationHeaderViewDelegate {
 // MARK: -
 
 extension ConversationViewController: ConversationInputTextViewDelegate {
+    
+    public func didAttemptToDropAttachments(_ attachments: [SignalAttachment]) {
+        //We only want one attachment (image for now)
+        if let firstAttachment = attachments.first {
+            if firstAttachment.isBorderless {
+                tryToSendAttachments([ firstAttachment ], messageBody: nil)
+            } else {
+                dismissKeyBoard()
+                showApprovalDialog(forAttachment: firstAttachment)
+            }
+        }
+    }
+    
     public func didAttemptAttachmentPaste() {
         ModalActivityIndicatorViewController.present(fromViewController: self) { modal in
             let attachment: SignalAttachment? = await SignalAttachment.attachmentFromPasteboard()
