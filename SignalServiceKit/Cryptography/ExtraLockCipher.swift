@@ -46,34 +46,56 @@ public class ExtraLockCipher {
         ikm.append(passphraseData)
 
         var derivedKey = Data(count: keyOutputLength)
+        var prk = Data(count: crypto_kdf_hkdf_sha256_KEYBYTES) // Pseudorandom key
 
-        // Placeholder for HKDF-SHA256 using libsodium or CommonCrypto
-        // In libsodium, this might involve crypto_kdf_hkdf_sha256_extract and crypto_kdf_hkdf_sha256_expand,
-        // or a higher-level HKDF function if available.
-        // For now, we'll represent the conceptual operation.
+        let ikmBytes = [UInt8](ikm)
+        let saltBytes = [UInt8](hkdfSalt)
+        let infoBytes = [UInt8](hkdfInfo)
 
-        // TODO: Call actual HKDF-SHA256 implementation (e.g., libsodium or CommonCrypto)
-        // Example conceptual call (actual libsodium API is more detailed):
-        // let result = crypto_hkdf_sha256(output: &derivedKey, ikm: ikm, salt: hkdfSalt, info: hkdfInfo, outputLength: keyOutputLength)
-        // if result != 0 {
-        //     throw ExtraLockCipherError.hkdfError
-        // }
-
-        // Simulating a successful derivation for structure purposes
-        // In a real scenario, this derivedKey would be filled by the HKDF function.
-        // For placeholder, let's create a dummy key if actual crypto isn't available.
-        // This is NOT cryptographically sound, just for structure.
-        if derivedKey.allSatisfy({ $0 == 0 }) { // If HKDF wasn't actually called
-             // Create a simple hash as a placeholder - REPLACE WITH REAL HKDF
-            let tempIkmHash = ikm.sha256() // Not a KDF!
-            derivedKey = tempIkmHash.subdata(in: 0..<keyOutputLength)
-            Logger.warn("deriveExtraKey: Using placeholder key derivation. Replace with actual HKDF.")
+        let extractResult = prk.withUnsafeMutableBytes { prkPtr in
+            hkdfSalt.withUnsafeBytes { saltPtr in
+                ikm.withUnsafeBytes { ikmPtr in
+                    crypto_kdf_hkdf_sha256_extract(
+                        prkPtr.baseAddress?.assumingMemoryBound(to: UInt8.self),
+                        saltPtr.baseAddress?.assumingMemoryBound(to: UInt8.self),
+                        hkdfSalt.count,
+                        ikmPtr.baseAddress?.assumingMemoryBound(to: UInt8.self),
+                        ikm.count
+                    )
+                }
+            }
         }
 
+        guard extractResult == 0 else {
+            Logger.error("deriveExtraKey: crypto_kdf_hkdf_sha256_extract failed.")
+            throw ExtraLockCipherError.hkdfError
+        }
+
+        let expandResult = derivedKey.withUnsafeMutableBytes { derivedKeyPtr in
+            prk.withUnsafeBytes { prkPtr in
+                hkdfInfo.withUnsafeBytes { infoPtr in
+                    crypto_kdf_hkdf_sha256_expand(
+                        derivedKeyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self),
+                        keyOutputLength,
+                        infoPtr.baseAddress?.assumingMemoryBound(to: UInt8.self),
+                        hkdfInfo.count,
+                        prkPtr.baseAddress?.assumingMemoryBound(to: UInt8.self)
+                    )
+                }
+            }
+        }
+
+        guard expandResult == 0 else {
+            Logger.error("deriveExtraKey: crypto_kdf_hkdf_sha256_expand failed.")
+            throw ExtraLockCipherError.hkdfError
+        }
+
+        // No longer need the placeholder warning or dummy derivation.
+        // The derivedKey is now populated by libsodium or an error is thrown.
 
         guard derivedKey.count == keyOutputLength else {
-            // This should not happen if HKDF is correctly implemented and fills the buffer.
-            Logger.error("deriveExtraKey: Derived key length is incorrect.")
+            // This check is still valid, though libsodium should ensure it.
+            Logger.error("deriveExtraKey: Derived key length is incorrect after HKDF.")
             throw ExtraLockCipherError.hkdfError
         }
 
@@ -94,46 +116,61 @@ public class ExtraLockCipher {
             throw ExtraLockCipherError.invalidInput // Key length incorrect
         }
 
-        // Generate a unique 12-byte nonce.
+        // Generate a unique 12-byte nonce using libsodium.
         var nonce = Data(count: nonceLength)
-        // TODO: Replace with actual random nonce generation (e.g., libsodium's randombytes_buf)
-        let randomResult = nonce.withUnsafeMutableBytes { SecRandomCopyBytes(kSecRandomDefault, nonceLength, $0.baseAddress!) }
-        if randomResult != errSecSuccess {
-            Logger.error("seal: Nonce generation failed with status: \(randomResult)")
-            throw ExtraLockCipherError.nonceCreationFailed
+        nonce.withUnsafeMutableBytes { noncePtr in
+            randombytes_buf(noncePtr.baseAddress, nonceLength)
+        }
+        // randombytes_buf doesn't have a return value to check for errors in the same way
+        // SecRandomCopyBytes does. It's generally assumed to succeed if libsodium is initialized.
+
+        var ciphertextAndTag = Data(count: plaintext.count + tagLength) // libsodium encrypt appends tag
+        var actualCiphertextAndTagLength: UInt64 = 0
+
+        let encryptResult = ciphertextAndTag.withUnsafeMutableBytes { ctPtr in
+            plaintext.withUnsafeBytes { ptPtr in
+                extraKey.withUnsafeBytes { keyPtr in
+                    nonce.withUnsafeBytes { noncePtr in
+                        crypto_aead_chacha20poly1305_ietf_encrypt(
+                            ctPtr.baseAddress?.assumingMemoryBound(to: UInt8.self),
+                            &actualCiphertextAndTagLength,
+                            ptPtr.baseAddress?.assumingMemoryBound(to: UInt8.self),
+                            UInt64(plaintext.count),
+                            nil, // No Additional Data (ad)
+                            0,   // adLen
+                            nil, // nsec - not used by this variant
+                            noncePtr.baseAddress?.assumingMemoryBound(to: UInt8.self),
+                            keyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self)
+                        )
+                    }
+                }
+            }
         }
 
-        var ciphertext = Data(count: plaintext.count + tagLength) // libsodium encrypt appends tag
-
-        // Placeholder for ChaCha20-Poly1305 encryption
-        // TODO: Call actual ChaCha20-Poly1305 encryption (e.g., libsodium or CommonCrypto)
-        // Example conceptual call (actual libsodium API is more detailed):
-        // var actualCiphertextLen: UInt64 = 0
-        // let result = crypto_aead_chacha20poly1305_ietf_encrypt(
-        //     output: &ciphertext, outputLen: &actualCiphertextLen,
-        //     message: plaintext, messageLen: UInt64(plaintext.count),
-        //     ad: nil, adLen: 0, // No Additional Data
-        //     nsec: nil, // Not used by this variant
-        //     nonce: nonce,
-        //     key: extraKey
-        // )
-        // if result != 0 {
-        //     throw ExtraLockCipherError.encryptionFailed
-        // }
-        // ciphertext = ciphertext.subdata(in: 0..<Int(actualCiphertextLen)) // Adjust to actual length
-
-        // Simulating a successful encryption for structure purposes
-        // This is NOT cryptographically sound.
-        if ciphertext.count == plaintext.count + tagLength && ciphertext.allSatisfy({$0 == 0}) { // If not actually encrypted
-            Logger.warn("seal: Using placeholder encryption. Replace with actual ChaCha20-Poly1305.")
-            // Dummy operation: XOR with first byte of key (totally insecure placeholder)
-            let keyByte = extraKey.first ?? 0
-            let dummyCiphertext = Data(plaintext.map { $0 ^ keyByte })
-            ciphertext = dummyCiphertext + Data(repeating: keyByte, count: tagLength) // Dummy tag
+        guard encryptResult == 0 else {
+            Logger.error("seal: crypto_aead_chacha20poly1305_ietf_encrypt failed.")
+            throw ExtraLockCipherError.encryptionFailed
         }
 
+        // Ensure the output length is what we expect.
+        // It should be plaintext.count + tagLength.
+        guard actualCiphertextAndTagLength == ciphertextAndTag.count else {
+            // This case should ideally not be reached if libsodium behaves as expected.
+            Logger.error("seal: Encrypted data length mismatch. Expected \(ciphertextAndTag.count), got \(actualCiphertextAndTagLength)")
+            // Truncate or adjust if necessary, though this indicates an unexpected issue.
+            // For safety, we'll use the actual length returned by libsodium if it's smaller,
+            // but it's better to throw an error if it's not what's expected.
+            // However, the API design suggests ciphertextAndTag should be preallocated to the correct size.
+            // If actualCiphertextAndTagLength > ciphertextAndTag.count, it's a buffer overflow.
+            // If actualCiphertextAndTagLength < ciphertextAndTag.count, we can truncate.
+            // Given the function signature, it's safest to error out if lengths don't match.
+            throw ExtraLockCipherError.encryptionFailed
+        }
+        // No need to truncate ciphertextAndTag as it was allocated to the correct size
+        // and libsodium filled it.
 
-        return nonce + ciphertext
+        // Removed placeholder warning and dummy encryption.
+        return nonce + ciphertextAndTag
     }
 
     /**
@@ -156,66 +193,65 @@ public class ExtraLockCipher {
         let nonce = sealedData.subdata(in: 0..<nonceLength)
         let ciphertextAndTag = sealedData.subdata(in: nonceLength..<sealedData.count)
 
-        var plaintext = Data(count: ciphertextAndTag.count - tagLength)
+        // Plaintext length will be ciphertextAndTag length minus the tag length.
+        // If ciphertextAndTag is shorter than tagLength, this will be negative,
+        // but Data(count: ...) will crash. The guard sealedData.count >= nonceLength + tagLength
+        // at the beginning of the function already protects against this.
+        let expectedPlaintextLength = ciphertextAndTag.count - tagLength
+        var plaintext = Data(count: expectedPlaintextLength)
+        var actualPlaintextLength: UInt64 = 0
 
-        // Placeholder for ChaCha20-Poly1305 decryption
-        // TODO: Call actual ChaCha20-Poly1305 decryption (e.g., libsodium or CommonCrypto)
-        // Example conceptual call (actual libsodium API is more detailed):
-        // var actualPlaintextLen: UInt64 = 0
-        // let result = crypto_aead_chacha20poly1305_ietf_decrypt(
-        //     output: &plaintext, outputLen: &actualPlaintextLen,
-        //     nsec: nil, // Not used by this variant
-        //     ciphertext: ciphertextAndTag, ciphertextLen: UInt64(ciphertextAndTag.count),
-        //     ad: nil, adLen: 0, // No Additional Data
-        //     nonce: nonce,
-        //     key: extraKey
-        // )
-        // if result != 0 {
-        //     throw ExtraLockCipherError.decryptionFailed // Bad MAC or other error
-        // }
-        // plaintext = plaintext.subdata(in: 0..<Int(actualPlaintextLen)) // Adjust to actual length
-
-        // Simulating a successful decryption for structure purposes
-        // This is NOT cryptographically sound.
-         if plaintext.count == ciphertextAndTag.count - tagLength && plaintext.allSatisfy({$0 == 0}) { // If not actually decrypted
-            Logger.warn("open: Using placeholder decryption. Replace with actual ChaCha20-Poly1305.")
-            // Dummy operation: XOR with first byte of key (totally insecure placeholder)
-            let keyByte = extraKey.first ?? 0
-            let encryptedPart = ciphertextAndTag.subdata(in: 0..<(ciphertextAndTag.count - tagLength))
-            // "Verify" dummy tag
-            let dummyTag = Data(repeating: keyByte, count: tagLength)
-            if ciphertextAndTag.subdata(in: (ciphertextAndTag.count - tagLength)..<ciphertextAndTag.count) != dummyTag {
-                 throw ExtraLockCipherError.decryptionFailed
+        let decryptResult = plaintext.withUnsafeMutableBytes { ptPtr in
+            ciphertextAndTag.withUnsafeBytes { ctPtr in
+                extraKey.withUnsafeBytes { keyPtr in
+                    nonce.withUnsafeBytes { noncePtr in
+                        crypto_aead_chacha20poly1305_ietf_decrypt(
+                            ptPtr.baseAddress?.assumingMemoryBound(to: UInt8.self),
+                            &actualPlaintextLength,
+                            nil, // nsec - not used by this variant
+                            ctPtr.baseAddress?.assumingMemoryBound(to: UInt8.self),
+                            UInt64(ciphertextAndTag.count),
+                            nil, // No Additional Data (ad)
+                            0,   // adLen
+                            noncePtr.baseAddress?.assumingMemoryBound(to: UInt8.self),
+                            keyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self)
+                        )
+                    }
+                }
             }
-            plaintext = Data(encryptedPart.map { $0 ^ keyByte })
         }
 
+        guard decryptResult == 0 else {
+            // This usually means authentication failed (bad MAC / ciphertext tampered / wrong key)
+            Logger.warn("open: crypto_aead_chacha20poly1305_ietf_decrypt failed. This may indicate a MAC check failure.")
+            throw ExtraLockCipherError.decryptionFailed
+        }
+
+        // On success, actualPlaintextLength should match expectedPlaintextLength.
+        // If libsodium behaves, actualPlaintextLength will be <= expectedPlaintextLength.
+        // If it's less, we should truncate the plaintext buffer.
+        if actualPlaintextLength != expectedPlaintextLength {
+            // This is unexpected if decryption succeeded and lengths were calculated correctly.
+            // However, to be safe, adjust plaintext to the actual decrypted length.
+            // If actualPlaintextLength > expectedPlaintextLength, it's a more serious issue (buffer overflow potential).
+            // But libsodium's decrypt function writes at most `mlen` (which is derived from `clen - ABYTES`).
+            Logger.warn("open: Decrypted data length mismatch. Expected \(expectedPlaintextLength), got \(actualPlaintextLength). Adjusting.")
+            if actualPlaintextLength > expectedPlaintextLength {
+                 // This shouldn't happen with a successful decrypt.
+                 throw ExtraLockCipherError.decryptionFailed
+            }
+            plaintext = plaintext.subdata(in: 0..<Int(actualPlaintextLength))
+        }
+
+        // Removed placeholder warning and dummy decryption.
         return plaintext
     }
 }
 
-// Helper extension for SHA256 (replace with proper crypto library for HKDF components if needed)
-extension Data {
-    func sha256() -> Data {
-        // This would ideally use CommonCrypto or libsodium's SHA256
-        // For placeholder, this is non-functional without a real SHA256 implementation.
-        // If CommonCrypto were available:
-        /*
-        var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
-        self.withUnsafeBytes {
-            _ = CC_SHA256($0.baseAddress, CC_LONG(self.count), &hash)
-        }
-        return Data(hash)
-        */
-        // Returning a fixed-size dummy hash for placeholder structure
-        Logger.warn("Data.sha256(): Using placeholder SHA256. Replace with actual implementation.")
-        return Data(repeating: 0, count: 32)
-    }
-}
-
 // Basic Logger placeholder - replace with actual project logger
-fileprivate class Logger {
-    static func error(_ message: String) { print("[ERROR] \(message)") }
-    static func warn(_ message: String) { print("[WARN] \(message)") }
-    static func info(_ message: String) { print("[INFO] \(message)") }
-}
+// The actual Logger is expected to be available from SignalServiceKit.Logging.Logger
+// If this file is compiled as part of SignalServiceKit, it should resolve.
+// If not, an import statement might be needed.
+// For now, we remove the placeholder, and the existing Logger.warn/error calls
+// will either resolve to the project's logger or cause a compile error if not found,
+// which is better than using a fake one.
