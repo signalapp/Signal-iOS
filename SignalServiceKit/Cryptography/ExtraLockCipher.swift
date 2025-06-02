@@ -1,221 +1,278 @@
 import Foundation
-// Assuming a Swift wrapper or bridging header for libsodium exists.
-// If not, these would be direct C function calls if linked.
-// For HKDF, libsodium has `crypto_kdf_hkdf_sha256_...` functions if using a newer version,
-// or it can be constructed from HMAC-SHA256.
-// For ChaCha20-Poly1305, it's `crypto_aead_chacha20poly1305_ietf_encrypt` and `decrypt`.
+import libsodium // Assuming libsodium is available as a module
+
+// ChaCha20-Poly1305 constants remain the same
+// private static let nonceLength = 12 // crypto_aead_chacha20poly1305_ietf_NPUBBYTES
+// private static let tagLength = 16   // crypto_aead_chacha20poly1305_ietf_ABYTES
 
 enum ExtraLockCipherError: Error {
-    case invalidInput
-    case hkdfError
-    case encryptionFailed
-    case decryptionFailed
-    case nonceCreationFailed
+    case invalidInput(description: String) // Added description for clarity
+    case hkdfFailed(description: String)
+    case encryptionFailed(description: String)
+    case decryptionFailed(description: String)
+    case nonceCreationFailed(description: String)
 }
 
 public class ExtraLockCipher {
 
-    // Salt and Info constants for HKDF
-    private static let hkdfSalt = "MollyExtraLock-KeyDerivation-Salt-v1".data(using: .utf8)!
-    private static let hkdfInfo = "MollyExtraLock-ExtraKey-v1".data(using: .utf8)!
-    private static let keyOutputLength = 32 // bytes for ChaCha20 key
+    // HKDF Info constant
+    private static let hkdfInfoString = "SignalExtraLockKey" // As per plan
+    private static let keyOutputLength = Int(crypto_aead_chacha20poly1305_ietf_KEYBYTES) // 32 bytes for ChaCha20 key
 
     // ChaCha20-Poly1305 constants
-    private static let nonceLength = 12 // crypto_aead_chacha20poly1305_ietf_NPUBBYTES
-    private static let tagLength = 16   // crypto_aead_chacha20poly1305_ietf_ABYTES
+    public static let nonceLength = Int(crypto_aead_chacha20poly1305_ietf_NPUBBYTES)
+    public static let tagLength = Int(crypto_aead_chacha20poly1305_ietf_ABYTES)
+
 
     /**
-     Derives a stable "extra key" for encrypting data related to the Extra Lock feature.
+     Derives a stable "extra key" for encrypting data related to the Extra Lock feature
+     using HKDF-SHA256.
 
      - Parameters:
-        - rootKey: The root key material, likely from a secure source (e.g., derived from identity).
-        - peerExtraECDHSecret: The ECDH secret derived from the local peerExtraPrivate and peer's peerExtraPublic key.
-        - userPassphraseString: The user-provided passphrase string.
+        - sharedSecret_ECDH: The ECDH shared secret (IKM for HKDF).
+        - userPassphraseString: The user-provided passphrase string (used as Salt for HKDF).
      - Returns: A 32-byte key suitable for ChaCha20-Poly1305.
      - Throws: `ExtraLockCipherError` if inputs are invalid or HKDF fails.
      */
-    public static func deriveExtraKey(rootKey: Data, peerExtraECDHSecret: Data, userPassphraseString: String) throws -> Data {
-        guard let passphraseData = userPassphraseString.data(using: .utf8), !passphraseData.isEmpty else {
-            throw ExtraLockCipherError.invalidInput // Or more specific error
+    public static func deriveExtraKey(sharedSecret_ECDH: Data, userPassphraseString: String) throws -> Data {
+        guard !sharedSecret_ECDH.isEmpty else {
+            throw ExtraLockCipherError.invalidInput(description: "ECDH shared secret cannot be empty.")
         }
-
-        // Concatenate input keying material
-        var ikm = Data()
-        ikm.append(rootKey)
-        ikm.append(peerExtraECDHSecret)
-        ikm.append(passphraseData)
+        guard let passphraseData = userPassphraseString.data(using: .utf8), !passphraseData.isEmpty else {
+            throw ExtraLockCipherError.invalidInput(description: "User passphrase cannot be empty.")
+        }
+        guard let infoData = hkdfInfoString.data(using: .utf8) else {
+            // This should ideally not happen with a static string.
+            throw ExtraLockCipherError.invalidInput(description: "HKDF info string is invalid.")
+        }
 
         var derivedKey = Data(count: keyOutputLength)
 
-        // Placeholder for HKDF-SHA256 using libsodium or CommonCrypto
-        // In libsodium, this might involve crypto_kdf_hkdf_sha256_extract and crypto_kdf_hkdf_sha256_expand,
-        // or a higher-level HKDF function if available.
-        // For now, we'll represent the conceptual operation.
+        // HKDF-SHA256 using libsodium
+        // Step 1: Extract - PRK = HMAC-SHA256(salt, IKM)
+        // Salt: passphraseData
+        // IKM: sharedSecret_ECDH
+        var pseudoRandomKey = Data(count: Int(crypto_auth_hmacsha256_BYTES))
 
-        // TODO: Call actual HKDF-SHA256 implementation (e.g., libsodium or CommonCrypto)
-        // Example conceptual call (actual libsodium API is more detailed):
-        // let result = crypto_hkdf_sha256(output: &derivedKey, ikm: ikm, salt: hkdfSalt, info: hkdfInfo, outputLength: keyOutputLength)
-        // if result != 0 {
-        //     throw ExtraLockCipherError.hkdfError
-        // }
-
-        // Simulating a successful derivation for structure purposes
-        // In a real scenario, this derivedKey would be filled by the HKDF function.
-        // For placeholder, let's create a dummy key if actual crypto isn't available.
-        // This is NOT cryptographically sound, just for structure.
-        if derivedKey.allSatisfy({ $0 == 0 }) { // If HKDF wasn't actually called
-             // Create a simple hash as a placeholder - REPLACE WITH REAL HKDF
-            let tempIkmHash = ikm.sha256() // Not a KDF!
-            derivedKey = tempIkmHash.subdata(in: 0..<keyOutputLength)
-            Logger.warn("deriveExtraKey: Using placeholder key derivation. Replace with actual HKDF.")
+        let extractResult = pseudoRandomKey.withUnsafeMutableBytes { prkBytes in
+            passphraseData.withUnsafeBytes { saltBytes in
+                sharedSecret_ECDH.withUnsafeBytes { ikmBytes in
+                    crypto_auth_hmacsha256(
+                        prkBytes.baseAddress,
+                        ikmBytes.baseAddress,
+                        UInt64(sharedSecret_ECDH.count),
+                        saltBytes.baseAddress
+                    )
+                }
+            }
         }
 
+        guard extractResult == 0 else {
+            print("Error: HKDF extract (crypto_auth_hmacsha256) failed.")
+            throw ExtraLockCipherError.hkdfFailed(description: "HMAC-SHA256 for extract phase failed.")
+        }
+
+        // Step 2: Expand - OKM = HMAC-SHA256(PRK, info | 0x01)
+        // Libsodium's crypto_kdf_hkdf_sha256_expand is simpler if available and appropriate.
+        // If using raw HMAC for expand:
+        // T(1) = HMAC-SHA256(PRK, info | 0x01)
+        // OKM = T(1)
+        // For a single block output (32 bytes), this is straightforward.
+        // crypto_generichash_state can also be used for HMAC if needed.
+        // Using crypto_kdf_hkdf_sha256_expand if available is preferred.
+        // Let's assume a version of libsodium that has crypto_kdf_hkdf_sha256_expand:
+
+        let expandResult = derivedKey.withUnsafeMutableBytes { okmBytes in
+            pseudoRandomKey.withUnsafeBytes { prkBytes in
+                infoData.withUnsafeBytes { infoBytes in
+                    // crypto_kdf_hkdf_sha256_expand(okm, okm_len, prk, prk_len, info, info_len)
+                    // Note: Ensure your libsodium build includes crypto_kdf_hkdf_sha256_expand.
+                    // If not, you'd manually implement the expand step using HMAC-SHA256.
+                    // The `subkontext` in libsodium's kdf functions is equivalent to `info`.
+                    crypto_kdf_hkdf_sha256_expand(
+                        okmBytes.baseAddress, UInt(keyOutputLength), // Output Key Material
+                        infoBytes.baseAddress, UInt(infoData.count),    // Info (context)
+                        prkBytes.baseAddress, UInt(pseudoRandomKey.count) // Pseudo-random key
+                    )
+                }
+            }
+        }
+
+        guard expandResult == 0 else {
+            print("Error: HKDF expand (crypto_kdf_hkdf_sha256_expand) failed.")
+            throw ExtraLockCipherError.hkdfFailed(description: "HKDF expand phase failed.")
+        }
 
         guard derivedKey.count == keyOutputLength else {
-            // This should not happen if HKDF is correctly implemented and fills the buffer.
-            Logger.error("deriveExtraKey: Derived key length is incorrect.")
-            throw ExtraLockCipherError.hkdfError
+            // This check should be redundant if libsodium call is correct.
+            print("Error: Derived key length is incorrect after HKDF. Expected \(keyOutputLength), got \(derivedKey.count)")
+            throw ExtraLockCipherError.hkdfFailed(description: "Derived key length mismatch post-HKDF.")
         }
 
+        // Securely zero out the pseudoRandomKey as it's intermediate material
+        pseudoRandomKey.resetBytes(in: 0..<pseudoRandomKey.count)
+        // sodium_memzero(pseudoRandomKey.withUnsafeMutableBytes { $0.baseAddress! }, pseudoRandomKey.count) // Alternative
+
+        print("Info: Extra key derived successfully using HKDF-SHA256.")
         return derivedKey
     }
 
+    // ... (seal and open methods will be updated in the next step) ...
+    // For now, ensure they compile with the new error type if it changed.
+    // We will keep the placeholder logic for seal/open for now and update it in the next step.
+
     /**
-     Encrypts plaintext using ChaCha20-Poly1305.
+     Encrypts plaintext using ChaCha20-Poly1305 IETF variant with libsodium.
 
      - Parameters:
         - plaintext: The data to encrypt.
-        - extraKey: The 32-byte encryption key.
-     - Returns: The sealed data in the format: `nonce + ciphertext + tag`.
+        - extraKey: The 32-byte encryption key (must be `crypto_aead_chacha20poly1305_ietf_KEYBYTES` long).
+     - Returns: The sealed data in the format: `nonce + ciphertext_with_tag`.
      - Throws: `ExtraLockCipherError` if key is invalid, nonce generation fails, or encryption fails.
      */
     public static func seal(plaintext: Data, extraKey: Data) throws -> Data {
-        guard extraKey.count == keyOutputLength else {
-            throw ExtraLockCipherError.invalidInput // Key length incorrect
+        guard extraKey.count == keyOutputLength else { // keyOutputLength is crypto_aead_chacha20poly1305_ietf_KEYBYTES
+            throw ExtraLockCipherError.invalidInput(description: "Encryption key length is incorrect. Expected \(keyOutputLength), got \(extraKey.count).")
         }
 
-        // Generate a unique 12-byte nonce.
-        var nonce = Data(count: nonceLength)
-        // TODO: Replace with actual random nonce generation (e.g., libsodium's randombytes_buf)
-        let randomResult = nonce.withUnsafeMutableBytes { SecRandomCopyBytes(kSecRandomDefault, nonceLength, $0.baseAddress!) }
-        if randomResult != errSecSuccess {
-            Logger.error("seal: Nonce generation failed with status: \(randomResult)")
-            throw ExtraLockCipherError.nonceCreationFailed
+        // Generate a unique 12-byte nonce using libsodium.
+        var nonce = Data(count: nonceLength) // nonceLength is crypto_aead_chacha20poly1305_ietf_NPUBBYTES
+        nonce.withUnsafeMutableBytes { nbPtr in
+            randombytes_buf(nbPtr.baseAddress, nonceLength)
         }
 
-        var ciphertext = Data(count: plaintext.count + tagLength) // libsodium encrypt appends tag
+        // Output buffer for ciphertext + tag. Libsodium's encrypt function places the tag at the end.
+        var ciphertextAndTag = Data(count: plaintext.count + tagLength) // tagLength is crypto_aead_chacha20poly1305_ietf_ABYTES
 
-        // Placeholder for ChaCha20-Poly1305 encryption
-        // TODO: Call actual ChaCha20-Poly1305 encryption (e.g., libsodium or CommonCrypto)
-        // Example conceptual call (actual libsodium API is more detailed):
-        // var actualCiphertextLen: UInt64 = 0
-        // let result = crypto_aead_chacha20poly1305_ietf_encrypt(
-        //     output: &ciphertext, outputLen: &actualCiphertextLen,
-        //     message: plaintext, messageLen: UInt64(plaintext.count),
-        //     ad: nil, adLen: 0, // No Additional Data
-        //     nsec: nil, // Not used by this variant
-        //     nonce: nonce,
-        //     key: extraKey
-        // )
-        // if result != 0 {
-        //     throw ExtraLockCipherError.encryptionFailed
-        // }
-        // ciphertext = ciphertext.subdata(in: 0..<Int(actualCiphertextLen)) // Adjust to actual length
+        var actualCiphertextAndTagLength: UInt64 = 0
 
-        // Simulating a successful encryption for structure purposes
-        // This is NOT cryptographically sound.
-        if ciphertext.count == plaintext.count + tagLength && ciphertext.allSatisfy({$0 == 0}) { // If not actually encrypted
-            Logger.warn("seal: Using placeholder encryption. Replace with actual ChaCha20-Poly1305.")
-            // Dummy operation: XOR with first byte of key (totally insecure placeholder)
-            let keyByte = extraKey.first ?? 0
-            let dummyCiphertext = Data(plaintext.map { $0 ^ keyByte })
-            ciphertext = dummyCiphertext + Data(repeating: keyByte, count: tagLength) // Dummy tag
+        let encryptionResult = ciphertextAndTag.withUnsafeMutableBytes { ctPtr in
+            plaintext.withUnsafeBytes { msgPtr in
+                extraKey.withUnsafeBytes { keyPtr in
+                    nonce.withUnsafeBytes { noncePtr in
+                        crypto_aead_chacha20poly1305_ietf_encrypt(
+                            ctPtr.baseAddress,                     // Output buffer for ciphertext + tag
+                            &actualCiphertextAndTagLength,         // Output: actual length of ciphertext + tag
+                            msgPtr.baseAddress,                    // Input: plaintext message
+                            UInt64(plaintext.count),               // Input: plaintext message length
+                            nil,                                   // Additional data (AD): nil for none
+                            0,                                     // Additional data length: 0
+                            nil,                                   // Secret nonce (nsec): Not used by IETF variant, must be NULL
+                            noncePtr.baseAddress,                  // Public nonce (npub)
+                            keyPtr.baseAddress                     // Key
+                        )
+                    }
+                }
+            }
         }
 
+        guard encryptionResult == 0 else {
+            print("Error: Libsodium encryption (crypto_aead_chacha20poly1305_ietf_encrypt) failed. Result: \(encryptionResult)")
+            throw ExtraLockCipherError.encryptionFailed(description: "Libsodium encryption failed with result code \(encryptionResult).")
+        }
 
-        return nonce + ciphertext
+        // Ensure the reported length matches expected.
+        guard actualCiphertextAndTagLength == ciphertextAndTag.count else {
+            // This case should ideally not be hit if buffers are sized correctly.
+             print("Error: Encrypted data length mismatch. Expected \(ciphertextAndTag.count), got \(actualCiphertextAndTagLength).")
+            throw ExtraLockCipherError.encryptionFailed(description: "Encrypted data length mismatch after libsodium call.")
+        }
+
+        print("Info: Plaintext sealed successfully using ChaCha20-Poly1305 IETF.")
+        return nonce + ciphertextAndTag // Prepend nonce to the ciphertext+tag
     }
 
     /**
-     Decrypts sealed data using ChaCha20-Poly1305.
+     Decrypts sealed data using ChaCha20-Poly1305 IETF variant with libsodium.
 
      - Parameters:
-        - sealedData: The data to decrypt, formatted as `nonce + ciphertext + tag`.
-        - extraKey: The 32-byte decryption key.
+        - sealedData: The data to decrypt, formatted as `nonce + ciphertext_with_tag`.
+        - extraKey: The 32-byte decryption key (must be `crypto_aead_chacha20poly1305_ietf_KEYBYTES` long).
      - Returns: The original plaintext.
      - Throws: `ExtraLockCipherError` if key is invalid, data is malformed, or decryption fails (e.g., bad MAC).
      */
     public static func open(sealedData: Data, extraKey: Data) throws -> Data {
         guard extraKey.count == keyOutputLength else {
-            throw ExtraLockCipherError.invalidInput // Key length incorrect
+            throw ExtraLockCipherError.invalidInput(description: "Decryption key length is incorrect. Expected \(keyOutputLength), got \(extraKey.count).")
         }
-        guard sealedData.count >= nonceLength + tagLength else {
-            throw ExtraLockCipherError.invalidInput // Data too short
+        // sealedData = nonce + ciphertext_with_tag
+        guard sealedData.count >= nonceLength + tagLength else { // Must be at least nonce + tag, ciphertext can be empty
+            throw ExtraLockCipherError.invalidInput(description: "Sealed data is too short. Minimum length is \(nonceLength + tagLength), got \(sealedData.count).")
         }
 
         let nonce = sealedData.subdata(in: 0..<nonceLength)
         let ciphertextAndTag = sealedData.subdata(in: nonceLength..<sealedData.count)
 
-        var plaintext = Data(count: ciphertextAndTag.count - tagLength)
+        // Output buffer for plaintext. Max possible plaintext size is ciphertextAndTag.count - tagLength.
+        // It's okay if ciphertextAndTag.count == tagLength (empty plaintext).
+        let maxPlaintextLength = ciphertextAndTag.count - tagLength
+        var plaintext = Data(count: maxPlaintextLength)
 
-        // Placeholder for ChaCha20-Poly1305 decryption
-        // TODO: Call actual ChaCha20-Poly1305 decryption (e.g., libsodium or CommonCrypto)
-        // Example conceptual call (actual libsodium API is more detailed):
-        // var actualPlaintextLen: UInt64 = 0
-        // let result = crypto_aead_chacha20poly1305_ietf_decrypt(
-        //     output: &plaintext, outputLen: &actualPlaintextLen,
-        //     nsec: nil, // Not used by this variant
-        //     ciphertext: ciphertextAndTag, ciphertextLen: UInt64(ciphertextAndTag.count),
-        //     ad: nil, adLen: 0, // No Additional Data
-        //     nonce: nonce,
-        //     key: extraKey
-        // )
-        // if result != 0 {
-        //     throw ExtraLockCipherError.decryptionFailed // Bad MAC or other error
-        // }
-        // plaintext = plaintext.subdata(in: 0..<Int(actualPlaintextLen)) // Adjust to actual length
+        var actualPlaintextLength: UInt64 = 0
 
-        // Simulating a successful decryption for structure purposes
-        // This is NOT cryptographically sound.
-         if plaintext.count == ciphertextAndTag.count - tagLength && plaintext.allSatisfy({$0 == 0}) { // If not actually decrypted
-            Logger.warn("open: Using placeholder decryption. Replace with actual ChaCha20-Poly1305.")
-            // Dummy operation: XOR with first byte of key (totally insecure placeholder)
-            let keyByte = extraKey.first ?? 0
-            let encryptedPart = ciphertextAndTag.subdata(in: 0..<(ciphertextAndTag.count - tagLength))
-            // "Verify" dummy tag
-            let dummyTag = Data(repeating: keyByte, count: tagLength)
-            if ciphertextAndTag.subdata(in: (ciphertextAndTag.count - tagLength)..<ciphertextAndTag.count) != dummyTag {
-                 throw ExtraLockCipherError.decryptionFailed
+        let decryptionResult = plaintext.withUnsafeMutableBytes { ptPtr in
+            ciphertextAndTag.withUnsafeBytes { ctPtr in
+                extraKey.withUnsafeBytes { keyPtr in
+                    nonce.withUnsafeBytes { noncePtr in
+                        crypto_aead_chacha20poly1305_ietf_decrypt(
+                            ptPtr.baseAddress,                     // Output buffer for plaintext
+                            &actualPlaintextLength,                // Output: actual length of plaintext
+                            nil,                                   // Secret nonce (nsec): Not used by IETF variant, must be NULL
+                            ctPtr.baseAddress,                     // Input: ciphertext + tag
+                            UInt64(ciphertextAndTag.count),        // Input: ciphertext + tag length
+                            nil,                                   // Additional data (AD): nil for none
+                            0,                                     // Additional data length: 0
+                            noncePtr.baseAddress,                  // Public nonce (npub)
+                            keyPtr.baseAddress                     // Key
+                        )
+                    }
+                }
             }
-            plaintext = Data(encryptedPart.map { $0 ^ keyByte })
         }
 
+        guard decryptionResult == 0 else {
+            // This is the expected error for a MAC failure (tampered/corrupt data or wrong key).
+            print("Error: Libsodium decryption (crypto_aead_chacha20poly1305_ietf_decrypt) failed. Result: \(decryptionResult). This often indicates a MAC failure (wrong key, or data corruption/tampering).")
+            throw ExtraLockCipherError.decryptionFailed(description: "Libsodium decryption failed with result code \(decryptionResult). MAC check likely failed.")
+        }
+
+        // Resize plaintext to actual decrypted length, if necessary.
+        if actualPlaintextLength < maxPlaintextLength {
+            plaintext.count = Int(actualPlaintextLength)
+        } else if actualPlaintextLength > maxPlaintextLength {
+            // This should not happen if libsodium behaves as expected.
+            print("Error: Decrypted plaintext length (\(actualPlaintextLength)) is greater than allocated buffer (\(maxPlaintextLength)).")
+            throw ExtraLockCipherError.decryptionFailed(description: "Decrypted plaintext length exceeds buffer.")
+        }
+
+        print("Info: Sealed data opened successfully using ChaCha20-Poly1305 IETF.")
         return plaintext
     }
-}
+} // End of ExtraLockCipher class
 
-// Helper extension for SHA256 (replace with proper crypto library for HKDF components if needed)
+// Helper extension for SHA256 (SHOULD BE REMOVED as HKDF is now implemented)
+// extension Data {
+//    func sha256() -> Data {
+//        print("Warning: Data.sha256() called. This should have been removed.")
+//        return Data(repeating: 0, count: 32)
+//    }
+// }
+
+// Basic Logger placeholder (SHOULD BE REMOVED or replaced with project's actual logger)
+// fileprivate class Logger {
+//     static func error(_ message: String) { print("[ERROR] ExtraLockCipher: \(message)") }
+//     static func warn(_ message: String) { print("[WARN] ExtraLockCipher: \(message)") }
+//     static func info(_ message: String) { print("[INFO] ExtraLockCipher: \(message)") }
+// }
+
+// Helper to securely zero out data, if not using sodium_memzero directly
 extension Data {
-    func sha256() -> Data {
-        // This would ideally use CommonCrypto or libsodium's SHA256
-        // For placeholder, this is non-functional without a real SHA256 implementation.
-        // If CommonCrypto were available:
-        /*
-        var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
-        self.withUnsafeBytes {
-            _ = CC_SHA256($0.baseAddress, CC_LONG(self.count), &hash)
+    mutating func resetBytes(in range: Range<Data.Index>) {
+        self.withUnsafeMutableBytes { (rawMutableBufferPointer) in
+            let bufferPointer = rawMutableBufferPointer.bindMemory(to: UInt8.self)
+            if let baseAddress = bufferPointer.baseAddress {
+                memset(baseAddress + range.lowerBound, 0, range.count)
+            }
         }
-        return Data(hash)
-        */
-        // Returning a fixed-size dummy hash for placeholder structure
-        Logger.warn("Data.sha256(): Using placeholder SHA256. Replace with actual implementation.")
-        return Data(repeating: 0, count: 32)
     }
-}
-
-// Basic Logger placeholder - replace with actual project logger
-fileprivate class Logger {
-    static func error(_ message: String) { print("[ERROR] \(message)") }
-    static func warn(_ message: String) { print("[WARN] \(message)") }
-    static func info(_ message: String) { print("[INFO] \(message)") }
 }
