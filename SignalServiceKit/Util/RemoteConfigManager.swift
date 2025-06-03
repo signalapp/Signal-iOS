@@ -437,6 +437,7 @@ private enum IsEnabledFlag: String, FlagType {
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
     case lazyDatabaseMigratorKillSwitch = "ios.lazyDatabaseMigratorKillSwitch"
+    case libsignalEnforceMinTlsVersion = "ios.libsignalEnforceMinTlsVersion"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
     case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
@@ -459,6 +460,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
         case .lazyDatabaseMigratorKillSwitch: false
+        case .libsignalEnforceMinTlsVersion: false
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
@@ -482,6 +484,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
         case .lazyDatabaseMigratorKillSwitch: true
+        case .libsignalEnforceMinTlsVersion: false
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
@@ -925,6 +928,10 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             in: CurrentAppContext().appUserDefaults()
         )
 
+        let libsignalEnforceMinTlsVersion = isEnabledFlags[IsEnabledFlag.libsignalEnforceMinTlsVersion.rawValue] ?? FeatureFlags.libsignalEnforceMinTlsVersion
+
+        LibsignalUserDefaults.saveShouldEnforceMinTlsVersion(libsignalEnforceMinTlsVersion, in: CurrentAppContext().appUserDefaults())
+
         // This has *all* the new values, even those that can't be hot-swapped.
         let newConfig = RemoteConfig(
             clockSkew: clockSkew,
@@ -1121,5 +1128,27 @@ private extension KeyValueStore {
 
     func setClockSkew(_ newValue: TimeInterval, transaction: DBWriteTransaction) {
         return setDouble(newValue, key: clockSkewKey, transaction: transaction)
+    }
+}
+
+// MARK: -
+
+enum LibsignalUserDefaults {
+
+    private static var shouldEnforceMinTlsVersionKey: String = "LibsignalEnforceMinTlsVersion"
+
+    /// We cache this in UserDefaults because it's used too early to access the RemoteConfig object.
+    ///
+    /// It also makes it possible to override the setting in Xcode via the Scheme settings:
+    /// add the arguments "-UseLibsignalForUnidentifiedWebsocket YES" to the invocation of the app.
+    static func saveShouldEnforceMinTlsVersion(
+        _ shouldEnforceMinTlsVersion: Bool,
+        in defaults: UserDefaults
+    ) {
+        defaults.set(shouldEnforceMinTlsVersion, forKey: shouldEnforceMinTlsVersionKey)
+    }
+
+    static func readShouldEnforceMinTlsVersion(from defaults: UserDefaults) -> Bool {
+        return defaults.bool(forKey: shouldEnforceMinTlsVersionKey)
     }
 }

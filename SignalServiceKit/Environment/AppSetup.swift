@@ -126,9 +126,16 @@ public class AppSetup {
 
         let tsConstants = TSConstants.shared
 
+        let remoteConfig: [String: String] = if LibsignalUserDefaults.readShouldEnforceMinTlsVersion(from: appContext.appUserDefaults()) {
+            // The actual value does not matter as long as the key is present
+            ["enforceMinimumTls": "true"]
+        } else {
+            [:]
+        }
         let libsignalNet = Net(
             env: TSConstants.isUsingProductionService ? .production : .staging,
-            userAgent: HttpHeaders.userAgentHeaderValueSignalIos
+            userAgent: HttpHeaders.userAgentHeaderValueSignalIos,
+            remoteConfig: remoteConfig
         )
 
         let recipientDatabaseTable = RecipientDatabaseTable()
