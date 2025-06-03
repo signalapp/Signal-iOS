@@ -676,6 +676,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                 // We've been asked to disconnect, no other action necessary.
                 // (We could even skip updating state, since the disconnect action should have already set it to "closed",
                 // but just in case it's still on "connecting" we'll continue on to execute that cleanup.)
+                return await connectionAttemptCompleted(.closed)
             } catch SignalError.appExpired(_) {
                 await appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
             } catch SignalError.deviceDeregistered(_) {
@@ -690,9 +691,9 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                 Logger.error("\(self.logPrefix): failed to connect: \(error)")
                 OutageDetection.shared.reportConnectionFailure()
             }
-
-            // Only failure cases get here.
-            return await connectionAttemptCompleted(.closed)
+            let result = await connectionAttemptCompleted(.closed)
+            self.reconnectAfterFailure()
+            return result
         })
     }
 
@@ -837,13 +838,15 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
             }
 
             connection = .closed
-
-            // Wait a few seconds before retrying to reduce server load.
-            self.serialQueue.asyncAfter(deadline: .now() + Self.socketReconnectDelay) { [weak self] in
-                self?._applyDesiredSocketState()
-            }
-
             OutageDetection.shared.reportConnectionFailure()
+            self.reconnectAfterFailure()
+        }
+    }
+
+    private func reconnectAfterFailure() {
+        // Wait a few seconds before retrying to reduce server load.
+        self.serialQueue.asyncAfter(deadline: .now() + Self.socketReconnectDelay) { [weak self] in
+            self?._applyDesiredSocketState()
         }
     }
 }
