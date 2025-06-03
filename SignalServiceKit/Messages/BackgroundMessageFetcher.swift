@@ -77,6 +77,10 @@ public actor BackgroundMessageFetcher {
         self.connectionTokens = []
     }
 
+    /// Waits until message processing has reached an "idle" state.
+    ///
+    /// - Throws: An error when canceled or if the connection closes and won't
+    /// immediately try to re-open.
     public func waitForFetchingProcessingAndSideEffects() async throws {
         try await withCooperativeRace(
             { try await self._waitForFetchingProcessingAndSideEffects() },
@@ -86,6 +90,24 @@ public actor BackgroundMessageFetcher {
                 throw OWSGenericError("Should be closed.")
             },
         )
+    }
+
+    /// Waits until `deadline`.
+    ///
+    /// - Throws: An error when canceled or if the connection closes and won't
+    /// immediately try to re-open.
+    public func waitUntil(deadline: MonotonicDate) async throws {
+        let now = MonotonicDate()
+        if now < deadline {
+            try await withCooperativeRace(
+                { try await Task.sleep(nanoseconds: deadline - now) },
+                {
+                    try await self.chatConnectionManager.waitUntilIdentifiedConnectionShouldBeClosed()
+                    // We wanted to wait until deadline, but we can't wait, so throw.
+                    throw OWSGenericError("Should be closed.")
+                },
+            )
+        }
     }
 
     private func _waitForFetchingProcessingAndSideEffects() async throws {

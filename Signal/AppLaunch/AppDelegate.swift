@@ -1335,13 +1335,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             let backgroundFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher()
             self.activeConnectionTokens = []
             self.backgroundFetchHandle?.interrupt()
+            let startDate = MonotonicDate()
             self.backgroundFetchHandle = UIApplication.shared.beginBackgroundTask(
                 backgroundBlock: {
                     do {
                         await backgroundFetcher.start()
                         oldActiveConnectionTokens.forEach { $0.releaseConnection() }
                         // This will usually be limited to 30 seconds rather than 3 minutes.
-                        try await Task.sleep(nanoseconds: 180.clampedNanoseconds)
+                        try await backgroundFetcher.waitUntil(deadline: startDate.adding(180))
                     } catch {
                         // We were canceled, either because we entered the foreground or our
                         // background execution time expired.
