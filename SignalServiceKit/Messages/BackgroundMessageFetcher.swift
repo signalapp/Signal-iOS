@@ -5,7 +5,7 @@
 
 import Foundation
 
-public actor BackgroundMessageFetcher {
+public struct BackgroundMessageFetcherFactory {
     private let chatConnectionManager: any ChatConnectionManager
     private let groupMessageProcessorManager: GroupMessageProcessorManager
     private let messageFetcherJob: MessageFetcherJob
@@ -14,6 +14,42 @@ public actor BackgroundMessageFetcher {
     private let receiptSender: ReceiptSender
 
     public init(
+        chatConnectionManager: any ChatConnectionManager,
+        groupMessageProcessorManager: GroupMessageProcessorManager,
+        messageFetcherJob: MessageFetcherJob,
+        messageProcessor: MessageProcessor,
+        messageSender: MessageSender,
+        receiptSender: ReceiptSender,
+    ) {
+        self.chatConnectionManager = chatConnectionManager
+        self.groupMessageProcessorManager = groupMessageProcessorManager
+        self.messageFetcherJob = messageFetcherJob
+        self.messageProcessor = messageProcessor
+        self.messageSender = messageSender
+        self.receiptSender = receiptSender
+    }
+
+    public func buildFetcher() -> BackgroundMessageFetcher {
+        return BackgroundMessageFetcher(
+            chatConnectionManager: self.chatConnectionManager,
+            groupMessageProcessorManager: self.groupMessageProcessorManager,
+            messageFetcherJob: self.messageFetcherJob,
+            messageProcessor: self.messageProcessor,
+            messageSender: self.messageSender,
+            receiptSender: self.receiptSender,
+        )
+    }
+}
+
+public actor BackgroundMessageFetcher {
+    private let chatConnectionManager: any ChatConnectionManager
+    private let groupMessageProcessorManager: GroupMessageProcessorManager
+    private let messageFetcherJob: MessageFetcherJob
+    private let messageProcessor: MessageProcessor
+    private let messageSender: MessageSender
+    private let receiptSender: ReceiptSender
+
+    fileprivate init(
         chatConnectionManager: any ChatConnectionManager,
         groupMessageProcessorManager: GroupMessageProcessorManager,
         messageFetcherJob: MessageFetcherJob,

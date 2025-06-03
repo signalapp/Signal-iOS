@@ -1332,14 +1332,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             self.backgroundFetchHandle?.interrupt()
             self.backgroundFetchHandle = nil
         } else {
-            let backgroundFetcher = BackgroundMessageFetcher(
-                chatConnectionManager: DependenciesBridge.shared.chatConnectionManager,
-                groupMessageProcessorManager: SSKEnvironment.shared.groupMessageProcessorManagerRef,
-                messageFetcherJob: SSKEnvironment.shared.messageFetcherJobRef,
-                messageProcessor: SSKEnvironment.shared.messageProcessorRef,
-                messageSender: SSKEnvironment.shared.messageSenderRef,
-                receiptSender: SSKEnvironment.shared.receiptSenderRef,
-            )
+            let backgroundFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher()
             self.activeConnectionTokens = []
             self.backgroundFetchHandle?.interrupt()
             self.backgroundFetchHandle = UIApplication.shared.beginBackgroundTask(
@@ -1460,15 +1453,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 Logger.info("Ignoring remote notification; user is not registered.")
                 return
             }
-            let backgroundMessageFetcher = BackgroundMessageFetcher(
-                chatConnectionManager: DependenciesBridge.shared.chatConnectionManager,
-                groupMessageProcessorManager: SSKEnvironment.shared.groupMessageProcessorManagerRef,
-                messageFetcherJob: SSKEnvironment.shared.messageFetcherJobRef,
-                messageProcessor: SSKEnvironment.shared.messageProcessorRef,
-                messageSender: SSKEnvironment.shared.messageSenderRef,
-                receiptSender: SSKEnvironment.shared.receiptSenderRef,
-            )
-
+            let backgroundMessageFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher()
             await backgroundMessageFetcher.start()
             let result = await Result(catching: {
                 // If the main app gets woken to process messages in the background, check

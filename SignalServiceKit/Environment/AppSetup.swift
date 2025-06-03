@@ -1330,6 +1330,24 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let groupMessageProcessorManager = GroupMessageProcessorManager()
+
+        let receiptSender = ReceiptSender(
+            appReadiness: appReadiness,
+            recipientDatabaseTable: recipientDatabaseTable
+        )
+
+        let messageFetcherJob = MessageFetcherJob(appReadiness: appReadiness)
+
+        let backgroundMessageFetcherFactory = BackgroundMessageFetcherFactory(
+            chatConnectionManager: chatConnectionManager,
+            groupMessageProcessorManager: groupMessageProcessorManager,
+            messageFetcherJob: messageFetcherJob,
+            messageProcessor: messageProcessor,
+            messageSender: messageSender,
+            receiptSender: receiptSender,
+        )
+
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
             adHocCallRecordManager: adHocCallRecordManager,
@@ -1347,6 +1365,7 @@ public class AppSetup {
             audioWaveformManager: audioWaveformManager,
             authorMergeHelper: authorMergeHelper,
             avatarDefaultColorManager: avatarDefaultColorManager,
+            backgroundMessageFetcherFactory: backgroundMessageFetcherFactory,
             backupArchiveErrorPresenter: backupArchiveErrorPresenter,
             backupArchiveManager: backupArchiveManager,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
@@ -1479,18 +1498,12 @@ public class AppSetup {
             )
         )
         let messageDecrypter = OWSMessageDecrypter(appReadiness: appReadiness)
-        let groupMessageProcessorManager = GroupMessageProcessorManager()
-        let receiptSender = ReceiptSender(
-            appReadiness: appReadiness,
-            recipientDatabaseTable: recipientDatabaseTable
-        )
         let stickerManager = StickerManager(
             appReadiness: appReadiness,
             dateProvider: dateProvider
         )
         let sskPreferences = SSKPreferences()
         let groupV2Updates = testDependencies.groupV2Updates ?? GroupV2UpdatesImpl(appReadiness: appReadiness)
-        let messageFetcherJob = MessageFetcherJob(appReadiness: appReadiness)
         let paymentsCurrencies = testDependencies.paymentsCurrencies ?? PaymentsCurrenciesImpl(appReadiness: appReadiness)
         let spamChallengeResolver = SpamChallengeResolver(appReadiness: appReadiness)
         let phoneNumberUtil = PhoneNumberUtil()

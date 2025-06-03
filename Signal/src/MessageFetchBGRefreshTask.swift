@@ -27,14 +27,9 @@ public class MessageFetchBGRefreshTask {
             return nil
         }
         let value = MessageFetchBGRefreshTask(
-            chatConnectionManager: DependenciesBridge.shared.chatConnectionManager,
+            backgroundMessageFetcherFactory: DependenciesBridge.shared.backgroundMessageFetcherFactory,
             dateProvider: { Date() },
-            groupMessageProcessorManager: SSKEnvironment.shared.groupMessageProcessorManagerRef,
-            messageFetcherJob: SSKEnvironment.shared.messageFetcherJobRef,
-            messageProcessor: SSKEnvironment.shared.messageProcessorRef,
-            messageSender: SSKEnvironment.shared.messageSenderRef,
             ows2FAManager: SSKEnvironment.shared.ows2FAManagerRef,
-            receiptSender: SSKEnvironment.shared.receiptSenderRef,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
         _shared = value
@@ -44,35 +39,20 @@ public class MessageFetchBGRefreshTask {
     // Must be kept in sync with the value in info.plist.
     private static let taskIdentifier = "MessageFetchBGRefreshTask"
 
-    private let chatConnectionManager: any ChatConnectionManager
+    private let backgroundMessageFetcherFactory: BackgroundMessageFetcherFactory
     private let dateProvider: DateProvider
-    private let groupMessageProcessorManager: GroupMessageProcessorManager
-    private let messageFetcherJob: MessageFetcherJob
-    private let messageProcessor: MessageProcessor
-    private let messageSender: MessageSender
     private let ows2FAManager: OWS2FAManager
-    private let receiptSender: ReceiptSender
     private let tsAccountManager: TSAccountManager
 
     private init(
-        chatConnectionManager: any ChatConnectionManager,
+        backgroundMessageFetcherFactory: BackgroundMessageFetcherFactory,
         dateProvider: @escaping DateProvider,
-        groupMessageProcessorManager: GroupMessageProcessorManager,
-        messageFetcherJob: MessageFetcherJob,
-        messageProcessor: MessageProcessor,
-        messageSender: MessageSender,
         ows2FAManager: OWS2FAManager,
-        receiptSender: ReceiptSender,
         tsAccountManager: TSAccountManager
     ) {
-        self.chatConnectionManager = chatConnectionManager
+        self.backgroundMessageFetcherFactory = backgroundMessageFetcherFactory
         self.dateProvider = dateProvider
-        self.groupMessageProcessorManager = groupMessageProcessorManager
-        self.messageFetcherJob = messageFetcherJob
-        self.messageProcessor = messageProcessor
-        self.messageSender = messageSender
         self.ows2FAManager = ows2FAManager
-        self.receiptSender = receiptSender
         self.tsAccountManager = tsAccountManager
     }
 
@@ -126,14 +106,7 @@ public class MessageFetchBGRefreshTask {
     private func performTask(_ task: BGTask) {
         Logger.info("performing background fetch")
         Task {
-            let backgroundMessageFetcher = BackgroundMessageFetcher(
-                chatConnectionManager: self.chatConnectionManager,
-                groupMessageProcessorManager: self.groupMessageProcessorManager,
-                messageFetcherJob: self.messageFetcherJob,
-                messageProcessor: self.messageProcessor,
-                messageSender: self.messageSender,
-                receiptSender: self.receiptSender,
-            )
+            let backgroundMessageFetcher = self.backgroundMessageFetcherFactory.buildFetcher()
             let result = await Result {
                 try await withCooperativeTimeout(seconds: 27) {
                     await backgroundMessageFetcher.start()
