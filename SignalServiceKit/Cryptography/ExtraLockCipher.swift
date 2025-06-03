@@ -11,6 +11,7 @@ enum ExtraLockCipherError: Error {
     case encryptionFailed(description: String)
     case decryptionFailed(description: String)
     case nonceCreationFailed(description: String)
+        case internalMemoryError(description: String)
 }
 
 public class ExtraLockCipher {
@@ -54,22 +55,31 @@ public class ExtraLockCipher {
         // IKM: sharedSecret_ECDH
         var pseudoRandomKey = Data(count: Int(crypto_auth_hmacsha256_BYTES))
         
-        let extractResult = pseudoRandomKey.withUnsafeMutableBytes { prkBytes in
-            passphraseData.withUnsafeBytes { saltBytes in
-                sharedSecret_ECDH.withUnsafeBytes { ikmBytes in
-                    crypto_auth_hmacsha256(
-                        prkBytes.baseAddress,
-                        ikmBytes.baseAddress,
+        let extractResultOuter = try pseudoRandomKey.withUnsafeMutableBytes { prkBytes throws -> Int32 in
+            try passphraseData.withUnsafeBytes { saltBytes throws -> Int32 in
+                try sharedSecret_ECDH.withUnsafeBytes { ikmBytes throws -> Int32 in
+                    guard let prkBase = prkBytes.baseAddress else {
+                        throw ExtraLockCipherError.internalMemoryError(description: "prkBytes.baseAddress was nil for crypto_auth_hmacsha256.")
+                    }
+                    guard let saltBase = saltBytes.baseAddress else {
+                        throw ExtraLockCipherError.internalMemoryError(description: "saltBytes.baseAddress was nil for crypto_auth_hmacsha256.")
+                    }
+                    guard let ikmBase = ikmBytes.baseAddress else {
+                        throw ExtraLockCipherError.internalMemoryError(description: "ikmBytes.baseAddress was nil for crypto_auth_hmacsha256.")
+                    }
+                    return crypto_auth_hmacsha256(
+                        prkBase,
+                        ikmBase,
                         UInt64(sharedSecret_ECDH.count),
-                        saltBytes.baseAddress
+                        saltBase
                     )
                 }
             }
         }
 
-        guard extractResult == 0 else {
-            print("Error: HKDF extract (crypto_auth_hmacsha256) failed.")
-            throw ExtraLockCipherError.hkdfFailed(description: "HMAC-SHA256 for extract phase failed.")
+        guard extractResultOuter == 0 else {
+            // Logger.error("HKDF extract (crypto_auth_hmacsha256) failed.") // Already Logger.error in current code
+            throw ExtraLockCipherError.hkdfFailed(description: "HMAC-SHA256 for extract phase failed with result \(extractResultOuter).")
         }
 
         // Step 2: Expand - OKM = HMAC-SHA256(PRK, info | 0x01)
@@ -82,30 +92,39 @@ public class ExtraLockCipher {
         // Using crypto_kdf_hkdf_sha256_expand if available is preferred.
         // Let's assume a version of libsodium that has crypto_kdf_hkdf_sha256_expand:
 
-        let expandResult = derivedKey.withUnsafeMutableBytes { okmBytes in
-            pseudoRandomKey.withUnsafeBytes { prkBytes in
-                infoData.withUnsafeBytes { infoBytes in
+        let expandResultOuter = try derivedKey.withUnsafeMutableBytes { okmBytes throws -> Int32 in
+            try pseudoRandomKey.withUnsafeBytes { prkBytes throws -> Int32 in
+                try infoData.withUnsafeBytes { infoBytes throws -> Int32 in
+                    guard let okmBase = okmBytes.baseAddress else {
+                        throw ExtraLockCipherError.internalMemoryError(description: "okmBytes.baseAddress was nil for crypto_kdf_hkdf_sha256_expand.")
+                    }
+                    guard let infoBase = infoBytes.baseAddress else {
+                        throw ExtraLockCipherError.internalMemoryError(description: "infoBytes.baseAddress was nil for crypto_kdf_hkdf_sha256_expand.")
+                    }
+                    guard let prkBase = prkBytes.baseAddress else {
+                        throw ExtraLockCipherError.internalMemoryError(description: "prkBytes.baseAddress was nil for crypto_kdf_hkdf_sha256_expand.")
+                    }
                     // crypto_kdf_hkdf_sha256_expand(okm, okm_len, prk, prk_len, info, info_len)
                     // Note: Ensure your libsodium build includes crypto_kdf_hkdf_sha256_expand.
                     // If not, you'd manually implement the expand step using HMAC-SHA256.
                     // The `subkontext` in libsodium's kdf functions is equivalent to `info`.
-                    crypto_kdf_hkdf_sha256_expand(
-                        okmBytes.baseAddress, UInt(keyOutputLength), // Output Key Material
-                        infoBytes.baseAddress, UInt(infoData.count),    // Info (context)
-                        prkBytes.baseAddress, UInt(pseudoRandomKey.count) // Pseudo-random key
+                    return crypto_kdf_hkdf_sha256_expand(
+                        okmBase, UInt(Self.keyOutputLength), // Output Key Material
+                        infoBase, UInt(infoData.count),    // Info (context)
+                        prkBase, UInt(pseudoRandomKey.count) // Pseudo-random key
                     )
                 }
             }
         }
 
-        guard expandResult == 0 else {
-            print("Error: HKDF expand (crypto_kdf_hkdf_sha256_expand) failed.")
-            throw ExtraLockCipherError.hkdfFailed(description: "HKDF expand phase failed.")
+        guard expandResultOuter == 0 else {
+            // Logger.error("HKDF expand (crypto_kdf_hkdf_sha256_expand) failed.") // Already Logger.error
+            throw ExtraLockCipherError.hkdfFailed(description: "HKDF expand phase failed with result \(expandResultOuter).")
         }
         
-        guard derivedKey.count == keyOutputLength else {
+        guard derivedKey.count == Self.keyOutputLength else {
             // This check should be redundant if libsodium call is correct.
-            print("Error: Derived key length is incorrect after HKDF. Expected \(keyOutputLength), got \(derivedKey.count)")
+            // Logger.error("Derived key length is incorrect after HKDF. Expected \(keyOutputLength), got \(derivedKey.count)") // Already Logger.error
             throw ExtraLockCipherError.hkdfFailed(description: "Derived key length mismatch post-HKDF.")
         }
 
@@ -113,7 +132,7 @@ public class ExtraLockCipher {
         pseudoRandomKey.resetBytes(in: 0..<pseudoRandomKey.count)
         // sodium_memzero(pseudoRandomKey.withUnsafeMutableBytes { $0.baseAddress! }, pseudoRandomKey.count) // Alternative
 
-        print("Info: Extra key derived successfully using HKDF-SHA256.")
+        // Logger.info("Extra key derived successfully using HKDF-SHA256.") // Already Logger.info
         return derivedKey
     }
 
@@ -136,9 +155,13 @@ public class ExtraLockCipher {
         }
 
         // Generate a unique 12-byte nonce using libsodium.
-        var nonce = Data(count: nonceLength) // nonceLength is crypto_aead_chacha20poly1305_ietf_NPUBBYTES
-        nonce.withUnsafeMutableBytes { nbPtr in
-            randombytes_buf(nbPtr.baseAddress, nonceLength)
+        var nonce = Data(count: Self.nonceLength) // nonceLength is crypto_aead_chacha20poly1305_ietf_NPUBBYTES
+        try nonce.withUnsafeMutableBytes { nbPtr throws -> Void in
+            guard let nbBase = nbPtr.baseAddress else {
+                // Logger.error("Nonce buffer baseAddress was nil before calling randombytes_buf.") // Already Logger.error
+                throw ExtraLockCipherError.nonceCreationFailed(description: "Failed to get base address for nonce buffer.")
+            }
+            randombytes_buf(nbBase, Self.nonceLength)
         }
         
         // Output buffer for ciphertext + tag. Libsodium's encrypt function places the tag at the end.
@@ -146,39 +169,49 @@ public class ExtraLockCipher {
 
         var actualCiphertextAndTagLength: UInt64 = 0
 
-        let encryptionResult = ciphertextAndTag.withUnsafeMutableBytes { ctPtr in
-            plaintext.withUnsafeBytes { msgPtr in
-                extraKey.withUnsafeBytes { keyPtr in
-                    nonce.withUnsafeBytes { noncePtr in
-                        crypto_aead_chacha20poly1305_ietf_encrypt(
-                            ctPtr.baseAddress,                     // Output buffer for ciphertext + tag
-                            &actualCiphertextAndTagLength,         // Output: actual length of ciphertext + tag
-                            msgPtr.baseAddress,                    // Input: plaintext message
-                            UInt64(plaintext.count),               // Input: plaintext message length
-                            nil,                                   // Additional data (AD): nil for none
-                            0,                                     // Additional data length: 0
-                            nil,                                   // Secret nonce (nsec): Not used by IETF variant, must be NULL
-                            noncePtr.baseAddress,                  // Public nonce (npub)
-                            keyPtr.baseAddress                     // Key
+        let encryptionResultOuter = try ciphertextAndTag.withUnsafeMutableBytes { ctPtr throws -> Int32 in
+            try plaintext.withUnsafeBytes { msgPtr throws -> Int32 in
+                try extraKey.withUnsafeBytes { keyPtr throws -> Int32 in
+                    try nonce.withUnsafeBytes { noncePtr throws -> Int32 in
+                        guard let ctBase = ctPtr.baseAddress else {
+                            throw ExtraLockCipherError.internalMemoryError(description: "ctPtr.baseAddress was nil for encrypt.")
+                        }
+                        guard let msgBase = msgPtr.baseAddress else {
+                            throw ExtraLockCipherError.internalMemoryError(description: "msgPtr.baseAddress was nil for encrypt.")
+                        }
+                        guard let keyBase = keyPtr.baseAddress else {
+                            throw ExtraLockCipherError.internalMemoryError(description: "keyPtr.baseAddress was nil for encrypt.")
+                        }
+                        guard let nonceBase = noncePtr.baseAddress else {
+                            throw ExtraLockCipherError.internalMemoryError(description: "noncePtr.baseAddress was nil for encrypt.")
+                        }
+                        return crypto_aead_chacha20poly1305_ietf_encrypt(
+                            ctBase,
+                            &actualCiphertextAndTagLength,
+                            msgBase,
+                            UInt64(plaintext.count),
+                            nil, 0, nil,
+                            nonceBase,
+                            keyBase
                         )
                     }
                 }
             }
         }
 
-        guard encryptionResult == 0 else {
-            print("Error: Libsodium encryption (crypto_aead_chacha20poly1305_ietf_encrypt) failed. Result: \(encryptionResult)")
-            throw ExtraLockCipherError.encryptionFailed(description: "Libsodium encryption failed with result code \(encryptionResult).")
+        guard encryptionResultOuter == 0 else {
+            // Logger.error("Libsodium encryption (crypto_aead_chacha20poly1305_ietf_encrypt) failed. Result: \(encryptionResultOuter)") // Already Logger.error
+            throw ExtraLockCipherError.encryptionFailed(description: "Libsodium encryption failed with result code \(encryptionResultOuter).")
         }
         
         // Ensure the reported length matches expected.
         guard actualCiphertextAndTagLength == ciphertextAndTag.count else {
             // This case should ideally not be hit if buffers are sized correctly.
-             print("Error: Encrypted data length mismatch. Expected \(ciphertextAndTag.count), got \(actualCiphertextAndTagLength).")
+            // Logger.error("Encrypted data length mismatch. Expected \(ciphertextAndTag.count), got \(actualCiphertextAndTagLength).") // Already Logger.error
             throw ExtraLockCipherError.encryptionFailed(description: "Encrypted data length mismatch after libsodium call.")
         }
 
-        print("Info: Plaintext sealed successfully using ChaCha20-Poly1305 IETF.")
+        // Logger.info("Plaintext sealed successfully using ChaCha20-Poly1305 IETF.") // Already Logger.info
         return nonce + ciphertextAndTag // Prepend nonce to the ciphertext+tag
     }
 
@@ -210,30 +243,41 @@ public class ExtraLockCipher {
         
         var actualPlaintextLength: UInt64 = 0
 
-        let decryptionResult = plaintext.withUnsafeMutableBytes { ptPtr in
-            ciphertextAndTag.withUnsafeBytes { ctPtr in
-                extraKey.withUnsafeBytes { keyPtr in
-                    nonce.withUnsafeBytes { noncePtr in
-                        crypto_aead_chacha20poly1305_ietf_decrypt(
-                            ptPtr.baseAddress,                     // Output buffer for plaintext
-                            &actualPlaintextLength,                // Output: actual length of plaintext
-                            nil,                                   // Secret nonce (nsec): Not used by IETF variant, must be NULL
-                            ctPtr.baseAddress,                     // Input: ciphertext + tag
-                            UInt64(ciphertextAndTag.count),        // Input: ciphertext + tag length
-                            nil,                                   // Additional data (AD): nil for none
-                            0,                                     // Additional data length: 0
-                            noncePtr.baseAddress,                  // Public nonce (npub)
-                            keyPtr.baseAddress                     // Key
+        let decryptionResultOuter = try plaintext.withUnsafeMutableBytes { ptPtr throws -> Int32 in
+            try ciphertextAndTag.withUnsafeBytes { ctPtr throws -> Int32 in
+                try extraKey.withUnsafeBytes { keyPtr throws -> Int32 in
+                    try nonce.withUnsafeBytes { noncePtr throws -> Int32 in
+                        guard let ptBase = ptPtr.baseAddress else {
+                            throw ExtraLockCipherError.internalMemoryError(description: "ptPtr.baseAddress was nil for decrypt.")
+                        }
+                        guard let ctBase = ctPtr.baseAddress else {
+                            throw ExtraLockCipherError.internalMemoryError(description: "ctPtr.baseAddress was nil for decrypt.")
+                        }
+                        guard let keyBase = keyPtr.baseAddress else {
+                            throw ExtraLockCipherError.internalMemoryError(description: "keyPtr.baseAddress was nil for decrypt.")
+                        }
+                        guard let nonceBase = noncePtr.baseAddress else {
+                            throw ExtraLockCipherError.internalMemoryError(description: "noncePtr.baseAddress was nil for decrypt.")
+                        }
+                        return crypto_aead_chacha20poly1305_ietf_decrypt(
+                            ptBase,
+                            &actualPlaintextLength,
+                            nil,
+                            ctBase,
+                            UInt64(ciphertextAndTag.count),
+                            nil, 0,
+                            nonceBase,
+                            keyBase
                         )
                     }
                 }
             }
         }
 
-        guard decryptionResult == 0 else {
+        guard decryptionResultOuter == 0 else {
             // This is the expected error for a MAC failure (tampered/corrupt data or wrong key).
-            print("Error: Libsodium decryption (crypto_aead_chacha20poly1305_ietf_decrypt) failed. Result: \(decryptionResult). This often indicates a MAC failure (wrong key, or data corruption/tampering).")
-            throw ExtraLockCipherError.decryptionFailed(description: "Libsodium decryption failed with result code \(decryptionResult). MAC check likely failed.")
+            // Logger.error("Libsodium decryption (crypto_aead_chacha20poly1305_ietf_decrypt) failed. Result: \(decryptionResultOuter). This often indicates a MAC failure (wrong key, or data corruption/tampering).") // Already Logger.error
+            throw ExtraLockCipherError.decryptionFailed(description: "Libsodium decryption failed with result code \(decryptionResultOuter). MAC check likely failed.")
         }
 
         // Resize plaintext to actual decrypted length, if necessary.
@@ -241,11 +285,11 @@ public class ExtraLockCipher {
             plaintext.count = Int(actualPlaintextLength)
         } else if actualPlaintextLength > maxPlaintextLength {
             // This should not happen if libsodium behaves as expected.
-            print("Error: Decrypted plaintext length (\(actualPlaintextLength)) is greater than allocated buffer (\(maxPlaintextLength)).")
+            // Logger.error("Decrypted plaintext length (\(actualPlaintextLength)) is greater than allocated buffer (\(maxPlaintextLength)).") // Already Logger.error
             throw ExtraLockCipherError.decryptionFailed(description: "Decrypted plaintext length exceeds buffer.")
         }
         
-        print("Info: Sealed data opened successfully using ChaCha20-Poly1305 IETF.")
+        // Logger.info("Sealed data opened successfully using ChaCha20-Poly1305 IETF.") // Already Logger.info
         return plaintext
     }
 } // End of ExtraLockCipher class
@@ -253,26 +297,70 @@ public class ExtraLockCipher {
 // Helper extension for SHA256 (SHOULD BE REMOVED as HKDF is now implemented)
 // extension Data {
 //    func sha256() -> Data {
-//        print("Warning: Data.sha256() called. This should have been removed.")
+//        Logger.warning("Data.sha256() called. This should have been removed.")
 //        return Data(repeating: 0, count: 32)
 //    }
 // }
 
 // Basic Logger placeholder (SHOULD BE REMOVED or replaced with project's actual logger)
 // fileprivate class Logger {
-//     static func error(_ message: String) { print("[ERROR] ExtraLockCipher: \(message)") }
-//     static func warn(_ message: String) { print("[WARN] ExtraLockCipher: \(message)") }
-//     static func info(_ message: String) { print("[INFO] ExtraLockCipher: \(message)") }
+//     static func error(_ message: String) { print("[ERROR] ExtraLockCipher: \(message)") } // Will be replaced by actual Logger
+//     static func warn(_ message: String) { print("[WARN] ExtraLockCipher: \(message)") }  // Will be replaced by actual Logger
+//     static func info(_ message: String) { print("[INFO] ExtraLockCipher: \(message)") }   // Will be replaced by actual Logger
 // }
 
 // Helper to securely zero out data, if not using sodium_memzero directly
 extension Data {
     mutating func resetBytes(in range: Range<Data.Index>) {
+        // If Data is empty, or the range is empty/invalid before clamping, there's nothing to do.
+        // An empty range has range.count == 0.
+        // A common check for an empty range is `range.isEmpty`.
+        guard !self.isEmpty, !range.isEmpty, range.lowerBound < range.upperBound else {
+            return
+        }
+
+        // Clamp the provided range to the valid indices of the Data instance.
+        // Data.startIndex is typically 0. Data.endIndex is count.
+        // So, a valid range for Data is `self.startIndex ..< self.endIndex`.
+        let validDataRange = self.startIndex ..< self.endIndex
+        let clampedRange = range.clamped(to: validDataRange)
+
+        // If the clamped range is empty or invalid (e.g., original range was completely outside),
+        // there's nothing to zero out.
+        guard !clampedRange.isEmpty, clampedRange.lowerBound < clampedRange.upperBound else {
+            // Optionally print a warning if the original range was problematic and resulted in an empty clamped range.
+            // For example: if range.lowerBound >= self.endIndex or range.upperBound <= self.startIndex
+            // Logger.warning("resetBytes original range \(range) was outside data bounds \(validDataRange).")
+            return
+        }
+
         self.withUnsafeMutableBytes { (rawMutableBufferPointer) in
+            // Since we checked !self.isEmpty, rawMutableBufferPointer.baseAddress should be valid
+            // unless the Data instance itself is malformed (e.g., count > 0 but no buffer).
+            // The bindMemory call is standard.
             let bufferPointer = rawMutableBufferPointer.bindMemory(to: UInt8.self)
-            if let baseAddress = bufferPointer.baseAddress {
-                memset(baseAddress + range.lowerBound, 0, range.count)
+
+            guard let baseAddress = bufferPointer.baseAddress else {
+                // This case should ideally not be reached if self is not empty.
+                // If it is, it implies an issue with the Data object's internal state or
+                // how withUnsafeMutableBytes handles it.
+                // Logger.warning("Could not get base address for non-empty Data in resetBytes. Data count: \(self.count)")
+                return
             }
+
+            // Calculate the starting pointer for memset using the clamped range's lower bound.
+            // The lowerBound of Data.Index is an offset from the start of the buffer.
+            let startOffset = clampedRange.lowerBound
+
+            // Calculate the number of bytes to zero out using the count of the clamped range.
+            let bytesToZero = clampedRange.count
+
+            // Ensure that the operation stays within the buffer.
+            // This should be guaranteed by `clamped(to:)` and the subsequent checks,
+            // but an extra assertion or guard can be added for safety if desired.
+            // e.g., guard startOffset + bytesToZero <= self.count else { return }
+
+            memset(baseAddress + startOffset, 0, bytesToZero)
         }
     }
 }
