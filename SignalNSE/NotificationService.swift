@@ -198,6 +198,8 @@ class NotificationService: UNNotificationServiceExtension {
             try await SSKEnvironment.shared.messageFetcherJobRef.fetchViaRest()
 
             let backgroundMessageFetcher = BackgroundMessageFetcher(
+                chatConnectionManager: DependenciesBridge.shared.chatConnectionManager,
+                groupMessageProcessorManager: SSKEnvironment.shared.groupMessageProcessorManagerRef,
                 messageFetcherJob: SSKEnvironment.shared.messageFetcherJobRef,
                 messageProcessor: SSKEnvironment.shared.messageProcessorRef,
                 messageSender: SSKEnvironment.shared.messageSenderRef,

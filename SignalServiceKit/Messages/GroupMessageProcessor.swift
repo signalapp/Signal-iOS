@@ -558,9 +558,7 @@ public class GroupMessageProcessorManager {
     private let state = AtomicValue(State(), lock: .init())
 
     /// Starts a processor for every groupId with pending work.
-    func startAllProcessors() {
-        owsAssertDebug(!Thread.isMainThread)
-
+    public func startAllProcessors() async {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             return
         }

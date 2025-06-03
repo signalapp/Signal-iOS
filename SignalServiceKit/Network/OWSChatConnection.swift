@@ -68,41 +68,6 @@ public class OWSChatConnection {
         false
     }
 
-    // MARK: - BackgroundKeepAlive
-
-    fileprivate enum BackgroundKeepAliveRequestType {
-        case didReceivePush
-        case receiveMessage
-        case receiveResponse
-
-        var keepAliveDuration: TimeInterval {
-            // If the app is in the background, it should keep the
-            // websocket open if:
-            switch self {
-            case .didReceivePush:
-                // Received a push notification in the last N seconds.
-                return 20
-            case .receiveMessage:
-                // It has received a message over the socket in the last N seconds.
-                return 15
-            case .receiveResponse:
-                // It has just received the response to a request.
-                return 5
-            }
-        }
-    }
-
-    // This method is thread-safe.
-    fileprivate func ensureBackgroundKeepAlive(_ requestType: BackgroundKeepAliveRequestType) {
-        let connectionToken = requestConnection()
-        let backgroundTask = OWSBackgroundTask(label: "connectionKeepAlive") { _ in
-            connectionToken.releaseConnection()
-        }
-        DispatchQueue.global().asyncAfter(deadline: .now() + requestType.keepAliveDuration) {
-            backgroundTask.end()
-        }
-    }
-
     fileprivate var logPrefix: String {
         "[\(type)]"
     }
@@ -159,23 +124,6 @@ public class OWSChatConnection {
             self,
             selector: #selector(appExpiryDidChange),
             name: AppExpiry.AppExpiryDidChange,
-            object: nil
-        )
-
-        // Request it whenever the app's active.
-        if CurrentAppContext().isMainAppAndActive {
-            self.appActiveConnectionToken = self.requestConnection()
-        }
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(applicationDidBecomeActive),
-            name: .OWSApplicationDidBecomeActive,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(applicationWillResignActive),
-            name: .OWSApplicationWillResignActive,
             object: nil
         )
     }
@@ -365,13 +313,6 @@ public class OWSChatConnection {
         return didRelease
     }
 
-    // This method is thread-safe.
-    public func didReceivePush() {
-        owsAssertDebug(appReadiness.isAppReady)
-
-        self.ensureBackgroundKeepAlive(.didReceivePush)
-    }
-
     // This method aligns the socket state with the "desired" socket state.
     //
     // This method is thread-safe.
@@ -413,24 +354,6 @@ public class OWSChatConnection {
     }
 
     // MARK: - Notifications
-
-    private var appActiveConnectionToken: ConnectionToken?
-
-    @objc
-    private func applicationDidBecomeActive(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        appActiveConnectionToken?.releaseConnection()
-        appActiveConnectionToken = requestConnection()
-    }
-
-    @objc
-    private func applicationWillResignActive(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        appActiveConnectionToken?.releaseConnection()
-        appActiveConnectionToken = nil
-    }
 
     @objc
     fileprivate func registrationStateDidChange(_ notification: NSNotification) {
@@ -810,8 +733,6 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
         }
 #endif
 
-        self.ensureBackgroundKeepAlive(.receiveResponse)
-
         let headers = HttpHeaders(httpHeaders: response.headers, overwriteOnConflict: false)
         return try await handleRequestResponse(
             requestUrl: request.url,
@@ -989,7 +910,6 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
     }
 
     func chatConnection(_ chat: AuthenticatedChatConnection, didReceiveIncomingMessage envelope: Data, serverDeliveryTimestamp: UInt64, sendAck: @escaping () throws -> Void) {
-        ensureBackgroundKeepAlive(.receiveMessage)
         let backgroundTask = OWSBackgroundTask(label: "handleIncomingMessage")
 
         Self.messageProcessingQueue.async {

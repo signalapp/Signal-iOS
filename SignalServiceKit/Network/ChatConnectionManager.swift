@@ -15,8 +15,6 @@ public protocol ChatConnectionManager {
     func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool
     func requestConnections() -> [OWSChatConnection.ConnectionToken]
     func makeRequest(_ request: TSRequest) async throws -> HTTPResponse
-
-    func didReceivePush()
 }
 
 public class ChatConnectionManagerImpl: ChatConnectionManager {
@@ -64,18 +62,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     public func makeRequest(_ request: TSRequest) async throws -> HTTPResponse {
         let connectionType = try request.auth.connectionType
 
-        // Request that the websocket open to make this request, if necessary.
-        let connectionToken = connection(ofType: connectionType).requestConnection()
-        defer { connectionToken.releaseConnection() }
-
         return try await connection(ofType: connectionType).makeRequest(request)
-    }
-
-    // This method can be called from any thread.
-    public func didReceivePush() {
-        for connection in connections {
-            connection.didReceivePush()
-        }
     }
 
     public var identifiedConnectionState: OWSChatConnectionState {
@@ -119,10 +106,6 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
 
     public func makeRequest(_ request: TSRequest) async throws -> HTTPResponse {
         return try await requestHandler(request)
-    }
-
-    public func didReceivePush() {
-        // Do nothing
     }
 }
 

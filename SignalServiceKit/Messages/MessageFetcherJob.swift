@@ -22,16 +22,6 @@ public class MessageFetcherJob {
 
     // MARK: -
 
-    public func startFetchingViaWebSocket() async {
-        owsPrecondition(CurrentAppContext().shouldProcessIncomingMessages)
-        owsPrecondition(self.appReadiness.isAppReady)
-        owsPrecondition(self.shouldUseWebSocket)
-        owsAssertDebug(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered)
-
-        DependenciesBridge.shared.chatConnectionManager.didReceivePush()
-        await self.startGroupMessageProcessorsIfNeeded()
-    }
-
     public func fetchViaRest() async throws {
         owsPrecondition(CurrentAppContext().shouldProcessIncomingMessages)
         owsPrecondition(CurrentAppContext().isNSE)
@@ -44,7 +34,7 @@ public class MessageFetcherJob {
     }
 
     private func startGroupMessageProcessorsIfNeeded() async {
-        SSKEnvironment.shared.groupMessageProcessorManagerRef.startAllProcessors()
+        await SSKEnvironment.shared.groupMessageProcessorManagerRef.startAllProcessors()
     }
 
     private var shouldUseWebSocket: Bool {

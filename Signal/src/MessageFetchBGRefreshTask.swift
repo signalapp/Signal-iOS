@@ -27,9 +27,14 @@ public class MessageFetchBGRefreshTask {
             return nil
         }
         let value = MessageFetchBGRefreshTask(
+            chatConnectionManager: DependenciesBridge.shared.chatConnectionManager,
             dateProvider: { Date() },
+            groupMessageProcessorManager: SSKEnvironment.shared.groupMessageProcessorManagerRef,
             messageFetcherJob: SSKEnvironment.shared.messageFetcherJobRef,
+            messageProcessor: SSKEnvironment.shared.messageProcessorRef,
+            messageSender: SSKEnvironment.shared.messageSenderRef,
             ows2FAManager: SSKEnvironment.shared.ows2FAManagerRef,
+            receiptSender: SSKEnvironment.shared.receiptSenderRef,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
         _shared = value
@@ -39,20 +44,35 @@ public class MessageFetchBGRefreshTask {
     // Must be kept in sync with the value in info.plist.
     private static let taskIdentifier = "MessageFetchBGRefreshTask"
 
+    private let chatConnectionManager: any ChatConnectionManager
     private let dateProvider: DateProvider
+    private let groupMessageProcessorManager: GroupMessageProcessorManager
     private let messageFetcherJob: MessageFetcherJob
+    private let messageProcessor: MessageProcessor
+    private let messageSender: MessageSender
     private let ows2FAManager: OWS2FAManager
+    private let receiptSender: ReceiptSender
     private let tsAccountManager: TSAccountManager
 
     private init(
+        chatConnectionManager: any ChatConnectionManager,
         dateProvider: @escaping DateProvider,
+        groupMessageProcessorManager: GroupMessageProcessorManager,
         messageFetcherJob: MessageFetcherJob,
+        messageProcessor: MessageProcessor,
+        messageSender: MessageSender,
         ows2FAManager: OWS2FAManager,
+        receiptSender: ReceiptSender,
         tsAccountManager: TSAccountManager
     ) {
+        self.chatConnectionManager = chatConnectionManager
         self.dateProvider = dateProvider
+        self.groupMessageProcessorManager = groupMessageProcessorManager
         self.messageFetcherJob = messageFetcherJob
+        self.messageProcessor = messageProcessor
+        self.messageSender = messageSender
         self.ows2FAManager = ows2FAManager
+        self.receiptSender = receiptSender
         self.tsAccountManager = tsAccountManager
     }
 
@@ -62,7 +82,7 @@ public class MessageFetchBGRefreshTask {
             using: nil,
             launchHandler: { task in
                 appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-                    Self.getShared(appReadiness: appReadiness)!.performTask(task, appReadiness: appReadiness)
+                    Self.getShared(appReadiness: appReadiness)!.performTask(task)
                 }
             }
         )
@@ -103,26 +123,26 @@ public class MessageFetchBGRefreshTask {
         }
     }
 
-    private func performTask(_ task: BGTask, appReadiness: AppReadiness) {
+    private func performTask(_ task: BGTask) {
         Logger.info("performing background fetch")
         Task {
+            let backgroundMessageFetcher = BackgroundMessageFetcher(
+                chatConnectionManager: self.chatConnectionManager,
+                groupMessageProcessorManager: self.groupMessageProcessorManager,
+                messageFetcherJob: self.messageFetcherJob,
+                messageProcessor: self.messageProcessor,
+                messageSender: self.messageSender,
+                receiptSender: self.receiptSender,
+            )
             let result = await Result {
                 try await withCooperativeTimeout(seconds: 27) {
-                    try await appReadiness.waitForAppReady()
-                    await self.messageFetcherJob.startFetchingViaWebSocket()
-                    let backgroundMessageFetcher = BackgroundMessageFetcher(
-                        messageFetcherJob: SSKEnvironment.shared.messageFetcherJobRef,
-                        messageProcessor: SSKEnvironment.shared.messageProcessorRef,
-                        messageSender: SSKEnvironment.shared.messageSenderRef,
-                        receiptSender: SSKEnvironment.shared.receiptSenderRef,
-                    )
+                    await backgroundMessageFetcher.start()
                     try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
                 }
             }
-            if appReadiness.isAppReady {
-                // Schedule the next run now.
-                self.scheduleTask()
-            }
+            await backgroundMessageFetcher.reset()
+            // Schedule the next run now.
+            self.scheduleTask()
             do {
                 try result.get()
                 Logger.info("success")

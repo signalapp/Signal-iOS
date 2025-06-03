@@ -5,22 +5,40 @@
 
 import Foundation
 
-public class BackgroundMessageFetcher {
+public actor BackgroundMessageFetcher {
+    private let chatConnectionManager: any ChatConnectionManager
+    private let groupMessageProcessorManager: GroupMessageProcessorManager
     private let messageFetcherJob: MessageFetcherJob
     private let messageProcessor: MessageProcessor
     private let messageSender: MessageSender
     private let receiptSender: ReceiptSender
 
     public init(
+        chatConnectionManager: any ChatConnectionManager,
+        groupMessageProcessorManager: GroupMessageProcessorManager,
         messageFetcherJob: MessageFetcherJob,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
         receiptSender: ReceiptSender,
     ) {
+        self.chatConnectionManager = chatConnectionManager
+        self.groupMessageProcessorManager = groupMessageProcessorManager
         self.messageFetcherJob = messageFetcherJob
         self.messageProcessor = messageProcessor
         self.messageSender = messageSender
         self.receiptSender = receiptSender
+    }
+
+    private var connectionTokens = [OWSChatConnection.ConnectionToken]()
+
+    public func start() async {
+        self.connectionTokens = chatConnectionManager.requestConnections()
+        await self.groupMessageProcessorManager.startAllProcessors()
+    }
+
+    public func reset() {
+        self.connectionTokens.forEach { $0.releaseConnection() }
+        self.connectionTokens = []
     }
 
     public func waitForFetchingProcessingAndSideEffects() async throws {
