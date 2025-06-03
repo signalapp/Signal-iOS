@@ -761,7 +761,17 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             // If we're not registered or haven't saved one, use an empty one.
             remoteConfig = .emptyConfig
         }
-        updateCachedConfig { _ in remoteConfig }
+        updateCachedConfig { oldConfig in
+            if let oldConfig {
+                // If we're calling warmCaches for the second or later time, we can only
+                // update the flags that are hot-swappable.
+                return oldConfig.mergingHotSwappableFlags(from: remoteConfig)
+            } else {
+                // If we're calling warmCaches for first time, we can set hot swappable and
+                // non-hot swappable flags.
+                return remoteConfig
+            }
+        }
     }
 
     private static let refreshInterval: TimeInterval = 2 * .hour
