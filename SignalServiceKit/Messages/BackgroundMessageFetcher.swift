@@ -100,7 +100,7 @@ public actor BackgroundMessageFetcher {
         let now = MonotonicDate()
         if now < deadline {
             try await withCooperativeRace(
-                { try await Task.sleep(nanoseconds: deadline - now) },
+                { try await Task.sleep(nanoseconds: (deadline - now).nanoseconds) },
                 {
                     try await self.chatConnectionManager.waitUntilIdentifiedConnectionShouldBeClosed()
                     // We wanted to wait until deadline, but we can't wait, so throw.

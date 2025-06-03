@@ -157,7 +157,7 @@ extension BackupArchive {
         ) rethrows -> T {
             let startDate = dateProvider()
             let result = try block()
-            let durationMs = dateProvider().millisSince(startDate)
+            let durationMs = (dateProvider() - startDate).milliseconds
 
             var metrics = self[keyPath: actionMetricsKeyPath][action] ?? Metrics()
             metrics.frameCount += 1
@@ -172,9 +172,9 @@ extension BackupArchive {
             private let dateProvider: DateProviderMonotonic
             private let dbFileSizeProvider: DBFileSizeProvider
 #if DEBUG
-            private let secondsBetweenLogs: UInt64 = 2
+            private let secondsBetweenLogs: TimeInterval = 2
 #else
-            private let secondsBetweenLogs: UInt64 = 15
+            private let secondsBetweenLogs: TimeInterval = 15
 #endif
 
             /// The last time we logged.
@@ -193,7 +193,7 @@ extension BackupArchive {
             func logIfNecessary(totalFramesProcessed: UInt64) {
                 if
                     let lastLogDate,
-                    dateProvider().millisSince(lastLogDate) < secondsBetweenLogs * MSEC_PER_SEC
+                    dateProvider() - lastLogDate < MonotonicDuration(clampingSeconds: secondsBetweenLogs)
                 {
                     // Bail if we logged recently.
                     return
@@ -244,7 +244,7 @@ extension BackupArchive {
                 return
             }
 
-            let durationMs = dateProvider().millisSince(frameBencher.startDate)
+            let durationMs = (dateProvider() - frameBencher.startDate).milliseconds
             totalFramesProcessed += 1
 
             var metrics = frameProcessingMetrics[frameType] ?? Metrics()
@@ -303,8 +303,8 @@ extension BackupArchive {
                 bencher.frameBencherDidProcessFrame(
                     self,
                     frame: frame,
-                    frameProcessingDurationMs: dateProvider().millisSince(startDate),
-                    enumerationStepDurationMs: enumerationStepStartDate.map { startDate.millisSince($0) }
+                    frameProcessingDurationMs: (dateProvider() - startDate).milliseconds,
+                    enumerationStepDurationMs: enumerationStepStartDate.map { (startDate - $0).milliseconds }
                 )
             }
         }
@@ -313,7 +313,7 @@ extension BackupArchive {
 
         func logResults() {
             let totalFrameCount = frameProcessingMetrics.reduce(0, { $0 + $1.value.frameCount })
-            Logger.info("Processed \(loggableCountString(totalFrameCount)) frames in \(dateProvider().millisSince(startDate))ms")
+            Logger.info("Processed \(loggableCountString(totalFrameCount)) frames in \((dateProvider() - startDate).milliseconds)ms")
 
             Logger.info("Frame Processing Metrics:")
             for (frameType, metrics) in self.frameProcessingMetrics.sorted(by: { $0.value.totalDurationMs > $1.value.totalDurationMs }) {

@@ -1266,7 +1266,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 // Skip any that have been updated in the past 5 minutes.
                 if
                     let peekDate = callLinkPeekDates[rootKey.deriveRoomId()],
-                    (MonotonicDate() - peekDate) < 300 * NSEC_PER_SEC
+                    MonotonicDate() - peekDate < MonotonicDuration(clampingSeconds: 300)
                 {
                     continue
                 }

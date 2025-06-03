@@ -45,7 +45,7 @@ class CommonCallState {
             owsFailDebug("Called connectionDuration before connected.")
             return 0
         }
-        return TimeInterval(MonotonicDate() - connectedDate) / TimeInterval(NSEC_PER_SEC)
+        return (MonotonicDate() - connectedDate).seconds
     }
 
     // MARK: - System OS Interop

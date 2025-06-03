@@ -119,7 +119,7 @@ private class RESTSessionManager {
 // Concurrent requests can interfere with each other. Therefore we use a pool
 // do not re-use a session manager until its request succeeds or fails.
 private class OWSSessionManagerPool {
-    private let maxSessionManagerAge = 5 * 60 * NSEC_PER_SEC
+    private let maxSessionManagerAge: TimeInterval = 5 * .minute
 
     private let pool = AtomicValue<[RESTSessionManager]>([], lock: .init())
 
@@ -182,6 +182,6 @@ private class OWSSessionManagerPool {
         if let lastDiscardDate, sessionManager.createdDate < lastDiscardDate {
             return true
         }
-        return (MonotonicDate() - sessionManager.createdDate) > maxSessionManagerAge
+        return MonotonicDate() - sessionManager.createdDate > MonotonicDuration(clampingSeconds: maxSessionManagerAge)
     }
 }

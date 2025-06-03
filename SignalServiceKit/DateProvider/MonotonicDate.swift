@@ -56,17 +56,50 @@ public struct MonotonicDate: Comparable {
         return lhs.rawValue < rhs.rawValue
     }
 
-    public static func - (lhs: MonotonicDate, rhs: MonotonicDate) -> UInt64 {
-        return lhs.rawValue - rhs.rawValue
-    }
-
-    // MARK: -
-
-    /// Milliseconds elapsed since the given date.
-    ///
     /// - Important
     /// The given date must not be after this date!
-    public func millisSince(_ other: MonotonicDate) -> UInt64 {
-        return (self - other) / NSEC_PER_MSEC
+    public static func - (lhs: MonotonicDate, rhs: MonotonicDate) -> MonotonicDuration {
+        return MonotonicDuration(nanoseconds: lhs.rawValue - rhs.rawValue)
+    }
+}
+
+public struct MonotonicDuration: Comparable, CustomDebugStringConvertible {
+    public let nanoseconds: UInt64
+
+    public init(nanoseconds: UInt64) {
+        self.nanoseconds = nanoseconds
+    }
+
+    public init(milliseconds: UInt64) {
+        self.nanoseconds = milliseconds * NSEC_PER_MSEC
+    }
+
+    public init(clampingSeconds seconds: TimeInterval) {
+        self.nanoseconds = seconds.clampedNanoseconds
+    }
+
+    /// The duration as milliseconds.
+    ///
+    /// - Warning: The value is rounded down to the nearest millisecond, so
+    /// nanoseconds greater than 0 but less than 1ms will return 0. (Therefore,
+    /// it is plausible that `a != b` but `(a - b).milliseconds == 0`.)
+    public var milliseconds: UInt64 {
+        return self.nanoseconds / NSEC_PER_MSEC
+    }
+
+    /// The duration as seconds.
+    public var seconds: TimeInterval {
+        return TimeInterval(self.nanoseconds) / TimeInterval(NSEC_PER_SEC)
+    }
+
+    public static func < (lhs: MonotonicDuration, rhs: MonotonicDuration) -> Bool {
+        return lhs.nanoseconds < rhs.nanoseconds
+    }
+
+    public var debugDescription: String {
+        if self.nanoseconds < NSEC_PER_MSEC {
+            return "\(self.nanoseconds)ns"
+        }
+        return "\(self.milliseconds)ms"
     }
 }

@@ -133,7 +133,7 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
 
                 do {
                     while let interaction = try cursor.next() {
-                        let durationMs = dateProvider().millisSince(startTime)
+                        let durationMs = (dateProvider() - startTime).milliseconds
                         if durationMs > Constants.batchDurationMs {
                             Logger.info("Bailing on batch after \(processedCount) interactions")
                             finalizeBatch(tx: tx)

@@ -307,7 +307,7 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         self.scheduledOpportunisticDate = [now, minimumDate].compacted().max()!
 
         if let minimumDate, now < minimumDate {
-            try await Task.sleep(nanoseconds: minimumDate - now)
+            try await Task.sleep(nanoseconds: (minimumDate - now).nanoseconds)
         }
     }
 

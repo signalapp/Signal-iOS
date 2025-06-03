@@ -161,7 +161,7 @@ private class DebouncedEventFirstLast: DebouncedEvent {
             let now = MonotonicDate()
             let earliestAllowedDate = lastNotificationDate?.adding(self.maxFrequencySeconds)
             if let earliestAllowedDate, now < earliestAllowedDate {
-                self.queue.asyncAfter(deadline: DispatchTime.now() + .nanoseconds(Int(earliestAllowedDate - now))) {
+                self.queue.asyncAfter(deadline: DispatchTime.now() + .nanoseconds(Int((earliestAllowedDate - now).nanoseconds))) {
                     self.fireDelayedNotification()
                 }
             } else {

@@ -618,6 +618,7 @@
 		505347F92DA08548004AF0B5 /* DeviceSleepManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505347F82DA08548004AF0B5 /* DeviceSleepManagerImpl.swift */; };
 		50552C2A2BAB8E7D00815474 /* AuthCredentialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C292BAB8E7D00815474 /* AuthCredentialManager.swift */; };
 		50552C2C2BAB8E8500815474 /* AuthCredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C2B2BAB8E8500815474 /* AuthCredentialStore.swift */; };
+		5056B3BF2DEED72800F55320 /* MonotonicDateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5056B3BE2DEED72800F55320 /* MonotonicDateTest.swift */; };
 		50597BBA2B97C38C004681E1 /* SignalAccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50597BB92B97C38C004681E1 /* SignalAccountStore.swift */; };
 		50597BBC2B97C449004681E1 /* UsernameLookupRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50597BBB2B97C449004681E1 /* UsernameLookupRecordStore.swift */; };
 		50597BBF2B97D629004681E1 /* SearchableNameFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50597BBE2B97D629004681E1 /* SearchableNameFinder.swift */; };
@@ -4530,6 +4531,7 @@
 		50552C2B2BAB8E8500815474 /* AuthCredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthCredentialStore.swift; sourceTree = "<group>"; };
 		50552C2D2BAC066A00815474 /* CallLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLink.swift; sourceTree = "<group>"; };
 		50552C302BAC079A00815474 /* CallLinkTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkTest.swift; sourceTree = "<group>"; };
+		5056B3BE2DEED72800F55320 /* MonotonicDateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonotonicDateTest.swift; sourceTree = "<group>"; };
 		50597BB92B97C38C004681E1 /* SignalAccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAccountStore.swift; sourceTree = "<group>"; };
 		50597BBB2B97C449004681E1 /* UsernameLookupRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupRecordStore.swift; sourceTree = "<group>"; };
 		50597BBE2B97D629004681E1 /* SearchableNameFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchableNameFinder.swift; sourceTree = "<group>"; };
@@ -8941,6 +8943,14 @@
 				F5C80FA12BE3F29F0028F76D /* RTCIceServerFetcherTest.swift */,
 			);
 			path = Calls;
+			sourceTree = "<group>";
+		};
+		5056B3BD2DEED70F00F55320 /* DateProvider */ = {
+			isa = PBXGroup;
+			children = (
+				5056B3BE2DEED72800F55320 /* MonotonicDateTest.swift */,
+			);
+			path = DateProvider;
 			sourceTree = "<group>";
 		};
 		50597BBD2B97D624004681E1 /* Search */ = {
@@ -13475,6 +13485,7 @@
 				50E0198E2CC2491A0063EA48 /* Concurrency */,
 				F9426205289B1B5500460798 /* Contacts */,
 				501AD1C22AF17A0B001B796A /* Curve25519 */,
+				5056B3BD2DEED70F00F55320 /* DateProvider */,
 				F94261C7289B1B5300460798 /* Devices */,
 				F908AA7B28CE628700472E68 /* Fixtures */,
 				5075C21529CA1ED500A260D2 /* GroupMembers */,
@@ -18732,6 +18743,7 @@
 				6633B3932BACF3EB003AFF60 /* MessageStickerSerializationTest.swift in Sources */,
 				500BAD822C519F3600B4CD7F /* MessageTimestampGeneratorTest.swift in Sources */,
 				F942624C289B1B5500460798 /* ModelReadCacheTest.swift in Sources */,
+				5056B3BF2DEED72800F55320 /* MonotonicDateTest.swift in Sources */,
 				5079F3C22DA47554008430EC /* NotificationPreconditionTest.swift in Sources */,
 				F9426256289B1B5500460798 /* NSData+ImageTest.swift in Sources */,
 				D979CC3A2AD3964E006AAC49 /* Numbers+Random.swift in Sources */,

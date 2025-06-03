@@ -1272,8 +1272,8 @@ final class IndividualCallService: CallServiceStateObserver {
             return
         }
 
-        let kMaxViewPresentationDelay: UInt64 = 5
-        guard MonotonicDate() - connectedDate > kMaxViewPresentationDelay*NSEC_PER_SEC else {
+        let kMaxViewPresentationDelay: TimeInterval = 5
+        guard MonotonicDate() - connectedDate > MonotonicDuration(clampingSeconds: kMaxViewPresentationDelay) else {
             // Ignore; call connected recently.
             return
         }
