@@ -258,4 +258,119 @@ class ExtraLockCipherTests: XCTestCase {
             XCTAssertEqual(error as? ExtraLockCipherError, .decryptionFailed, "Expected .decryptionFailed when using a different decryption key.")
         }
     }
+
+    // MARK: - Data.resetBytes Tests
+
+    func testResetBytes_FullRange() {
+        var data = Data([1, 2, 3, 4, 5])
+        let fullRange = 0..<data.count
+        data.resetBytes(in: fullRange)
+        XCTAssertEqual(data, Data([0, 0, 0, 0, 0]), "Full range reset failed.")
+    }
+
+    func testResetBytes_PartialRange_Middle() {
+        var data = Data([1, 2, 3, 4, 5])
+        data.resetBytes(in: 1..<4) // Zero out 2, 3, 4
+        XCTAssertEqual(data, Data([1, 0, 0, 0, 5]), "Partial middle range reset failed.")
+    }
+
+    func testResetBytes_PartialRange_Start() {
+        var data = Data([1, 2, 3, 4, 5])
+        data.resetBytes(in: 0..<2) // Zero out 1, 2
+        XCTAssertEqual(data, Data([0, 0, 3, 4, 5]), "Partial start range reset failed.")
+    }
+
+    func testResetBytes_PartialRange_End() {
+        var data = Data([1, 2, 3, 4, 5])
+        data.resetBytes(in: 3..<data.count) // Zero out 4, 5
+        XCTAssertEqual(data, Data([1, 2, 3, 0, 0]), "Partial end range reset failed.")
+    }
+
+    func testResetBytes_RangeEqualsData() {
+        var data = Data([1, 2, 3, 4, 5])
+        data.resetBytes(in: data.startIndex..<data.endIndex)
+        XCTAssertEqual(data, Data([0, 0, 0, 0, 0]), "Range equal to data bounds reset failed.")
+    }
+
+    func testResetBytes_EmptyData() {
+        var data = Data()
+        data.resetBytes(in: 0..<0)
+        XCTAssertEqual(data, Data(), "ResetBytes on empty data should do nothing and not crash.")
+
+        // Also test with a non-empty range on empty data
+        data.resetBytes(in: 0..<5)
+        XCTAssertEqual(data, Data(), "ResetBytes with non-empty range on empty data should do nothing.")
+    }
+
+    func testResetBytes_EmptyRange() {
+        var data = Data([1, 2, 3])
+        let originalData = data
+        data.resetBytes(in: 1..<1) // Empty range
+        XCTAssertEqual(data, originalData, "ResetBytes with empty range should not modify data.")
+    }
+
+    func testResetBytes_RangeCompletelyBeforeStart() {
+        var data = Data([1, 2, 3, 4, 5])
+        let originalData = data
+        // Assuming Data.Index is Int, this range is valid but outside positive indices.
+        // The clamping logic should result in an empty effective range.
+        data.resetBytes(in: -5 ..< -1)
+        XCTAssertEqual(data, originalData, "Range completely before start should not modify data.")
+    }
+
+    func testResetBytes_RangeCompletelyAfterEnd() {
+        var data = Data([1, 2, 3, 4, 5])
+        let originalData = data
+        data.resetBytes(in: 5..<10) // data.count is 5, so indices are 0..4
+        XCTAssertEqual(data, originalData, "Range completely after end should not modify data.")
+    }
+
+    func testResetBytes_RangePartiallyBeforeStart() {
+        var data = Data([1, 2, 3, 4, 5]) // count = 5, indices 0..4
+        // Range is -2..<3. Clamped should be 0..<3.
+        data.resetBytes(in: -2..<3)
+        XCTAssertEqual(data, Data([0, 0, 0, 4, 5]), "Range partially before start, clamped reset failed.")
+    }
+
+    func testResetBytes_RangePartiallyAfterEnd() {
+        var data = Data([1, 2, 3, 4, 5]) // count = 5, indices 0..4
+        // Range is 3..<8. Clamped should be 3..<5.
+        data.resetBytes(in: 3..<8)
+        XCTAssertEqual(data, Data([1, 2, 3, 0, 0]), "Range partially after end, clamped reset failed.")
+    }
+
+    func testResetBytes_RangeIncludesAllAndMore() {
+        var data = Data([1, 2, 3, 4, 5]) // count = 5, indices 0..4
+        // Range is -2..<7. Clamped should be 0..<5.
+        data.resetBytes(in: -2..<7)
+        XCTAssertEqual(data, Data([0, 0, 0, 0, 0]), "Range including all and more, clamped reset failed.")
+    }
+
+    func testResetBytes_InvalidRange_LowerBoundGreaterThanUpperBound() {
+        var data = Data([1, 2, 3, 4, 5])
+        let originalData = data
+        data.resetBytes(in: 3..<1) // Invalid range
+        XCTAssertEqual(data, originalData, "Invalid range (lower > upper) should not modify data.")
+    }
+
+    func testResetBytes_SingleElementRange() {
+        var data = Data([1, 2, 3, 4, 5])
+        data.resetBytes(in: 2..<3) // Zero out element at index 2 (value 3)
+        XCTAssertEqual(data, Data([1, 2, 0, 4, 5]), "Single element range reset failed.")
+    }
+
+    func testResetBytes_OnLargeData() {
+        // Test with a larger data set to ensure performance is acceptable (though this isn't a perf test)
+        // and that clamping works correctly with larger indices.
+        let size = 1024
+        var data = Data(repeating: 0xFF, count: size)
+        let rangeToZero = 100..<200
+        data.resetBytes(in: rangeToZero)
+
+        var expectedData = Data(repeating: 0xFF, count: size)
+        for i in rangeToZero {
+            expectedData[i] = 0x00
+        }
+        XCTAssertEqual(data, expectedData, "Reset on larger data segment failed.")
+    }
 }
