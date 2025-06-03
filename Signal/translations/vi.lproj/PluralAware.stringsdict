@@ -1333,7 +1333,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld khác</string>
+			<string>%1$ld người khác</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

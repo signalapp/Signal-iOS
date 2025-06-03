@@ -560,19 +560,19 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "백업을 사용하지 않도록 설정했으며, Signal의 안전한 저장소 서비스에서 데이터를 삭제했습니다.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "오류가 발생했습니다. 고객 지원팀에 문의하세요.";
 
 /* Header for a menu section related to settings for when disabling Backups encountered an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "An error occurred when deleting your data from Signal's secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "Signal의 안전한 저장소 서비스에서 데이터를 삭제하는 도중 오류가 발생했습니다.";
 
 /* Title for a view indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "Failed to Delete Backup";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "백업 삭제 실패";
 
 /* Description for a progress view tracking Backups being disabled. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "Deleting Backup...";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "백업을 삭제하는 중...";
 
 /* Header for a menu section related to disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "Backups have been turned off and your data will be deleted from Signal's secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "백업을 사용하지 않도록 설정했으며, Signal의 안전한 저장소 서비스에서 데이터가 삭제됩니다.";
 
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "백업 세부 정보";
@@ -584,13 +584,13 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "백업 끄기 및 삭제";
 
 /* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "An error occurred when deleting your data from Signal's secure storage service.";
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "Signal의 안전한 저장소 서비스에서 데이터를 삭제하는 도중 오류가 발생했습니다.";
 
 /* Title shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "Failed to Delete Backup";
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "백업 삭제 실패";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "백업을 비활성화하려면 먼저 등록해야 합니다.";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "매일";
@@ -2336,10 +2336,10 @@
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "지역 시간";
 
 /* Title for a picker for the unit of time to use for disappearing messages. */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "Unit";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "단위";
 
 /* Title for a picker for the amount of time, in a given unit, to use for disappearing messages. */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "Value";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "값";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "일";

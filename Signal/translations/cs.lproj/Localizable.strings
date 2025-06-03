@@ -560,19 +560,19 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Zálohování bylo vypnuto a vaše data byla odstraněna ze zabezpečeného úložiště služby Signal.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Vyskytla se chyba. Kontaktujte prosím podporu.";
 
 /* Header for a menu section related to settings for when disabling Backups encountered an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "An error occurred when deleting your data from Signal's secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "Při odstraňování vašich dat ze zabezpečeného úložiště Signal se vyskytla chyba.";
 
 /* Title for a view indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "Failed to Delete Backup";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "Nepodařilo se odstranit zálohu";
 
 /* Description for a progress view tracking Backups being disabled. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "Deleting Backup...";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "Odstraňování zálohy…";
 
 /* Header for a menu section related to disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "Backups have been turned off and your data will be deleted from Signal's secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "Zálohování bylo vypnuto a vaše data budou odstraněna ze zabezpečeného úložiště služby Signal.";
 
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Podrobnosti o zálohování";
@@ -584,13 +584,13 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Vypnout a odstranit zálohování";
 
 /* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "An error occurred when deleting your data from Signal's secure storage service.";
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "Při odstraňování vašich dat ze zabezpečeného úložiště Signal se vyskytla chyba.";
 
 /* Title shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "Failed to Delete Backup";
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "Nepodařilo se odstranit zálohu";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "Pro vypnutí zálohování musíte být registrováni.";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Denně";
@@ -2336,10 +2336,10 @@
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Vlastní čas";
 
 /* Title for a picker for the unit of time to use for disappearing messages. */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "Unit";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "Jednotka";
 
 /* Title for a picker for the amount of time, in a given unit, to use for disappearing messages. */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "Value";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "Hodnota";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "dny";

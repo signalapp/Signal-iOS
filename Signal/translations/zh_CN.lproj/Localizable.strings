@@ -560,19 +560,19 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "备份已关闭，您的数据已从 Signal 的安全存储服务中删除。";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "出现了一个错误。请联系支持团队。";
 
 /* Header for a menu section related to settings for when disabling Backups encountered an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "An error occurred when deleting your data from Signal's secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "从 Signal 的安全存储服务器中删除您的数据时发生了错误。";
 
 /* Title for a view indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "Failed to Delete Backup";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "无法删除备份";
 
 /* Description for a progress view tracking Backups being disabled. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "Deleting Backup...";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "正在删除备份…";
 
 /* Header for a menu section related to disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "Backups have been turned off and your data will be deleted from Signal's secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "备份已关闭，您的数据将会从 Signal 的安全存储服务器中删除。";
 
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "备份详情";
@@ -584,13 +584,13 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "关闭并删除备份";
 
 /* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "An error occurred when deleting your data from Signal's secure storage service.";
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "从 Signal 的安全存储服务器中删除您的数据时发生了错误。";
 
 /* Title shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "Failed to Delete Backup";
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "无法删除备份";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "您必须注册才能禁用备份。";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "每日";
@@ -2336,10 +2336,10 @@
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "自定义时间";
 
 /* Title for a picker for the unit of time to use for disappearing messages. */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "Unit";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "单位";
 
 /* Title for a picker for the amount of time, in a given unit, to use for disappearing messages. */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "Value";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "值";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "天";

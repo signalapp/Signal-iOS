@@ -560,19 +560,19 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "S'han desactivat les còpies de seguretat i s'han eliminat les teves dades del servei d'emmagatzematge segur de Signal.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "S'ha produït un error. Posa't en contacte amb el servei d'assistència.";
 
 /* Header for a menu section related to settings for when disabling Backups encountered an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "An error occurred when deleting your data from Signal's secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "S'ha produït un error en eliminar les dades del servei d'emmagatzematge segur de Signal.";
 
 /* Title for a view indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "Failed to Delete Backup";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "No s'ha pogut eliminar la còpia de seguretat";
 
 /* Description for a progress view tracking Backups being disabled. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "Deleting Backup...";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "Eliminant la còpia de seguretat…";
 
 /* Header for a menu section related to disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "Backups have been turned off and your data will be deleted from Signal's secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "S'han desactivat les còpies de seguretat i s'eliminaran les teves dades del servei d'emmagatzematge segur de Signal.";
 
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Detalls de la còpia de seguretat";
@@ -584,13 +584,13 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Desactivar i eliminar les còpies de seguretat";
 
 /* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "An error occurred when deleting your data from Signal's secure storage service.";
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "S'ha produït un error en eliminar les dades del servei d'emmagatzematge segur de Signal.";
 
 /* Title shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "Failed to Delete Backup";
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "No s'ha pogut eliminar la còpia de seguretat";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "Has d'estar registrat per desactivar les còpies de seguretat.";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Diàriament";
@@ -2336,10 +2336,10 @@
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Hora personalitzada";
 
 /* Title for a picker for the unit of time to use for disappearing messages. */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "Unit";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "Unitat";
 
 /* Title for a picker for the amount of time, in a given unit, to use for disappearing messages. */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "Value";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "Valor";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "dies";

@@ -485,7 +485,7 @@
 			<key>one</key>
 			<string>Diese Nachricht kann nur %1$d Mal bearbeitet werden.</string>
 			<key>other</key>
-			<string>Diese Nachricht kann nur %1$d Male bearbeitet werden.</string>
+			<string>Diese Nachricht kann nur %1$d Mal bearbeitet werden.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>

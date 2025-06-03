@@ -560,19 +560,19 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Tá cúltacaí casta as agus scriosadh do shonraí ó sheirbhís stórála shlán Signal.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Tharla earráid. Déan teagmháil leis an bhfoireann tacaíochta.";
 
 /* Header for a menu section related to settings for when disabling Backups encountered an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "An error occurred when deleting your data from Signal's secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "Tharla earráid agus do shonraí á scriosadh ó sheirbhís stórála sláine Signal.";
 
 /* Title for a view indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "Failed to Delete Backup";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "Theip ar Scriosadh Cúltaca";
 
 /* Description for a progress view tracking Backups being disabled. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "Deleting Backup...";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "Cúltaca á Scriosadh...";
 
 /* Header for a menu section related to disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "Backups have been turned off and your data will be deleted from Signal's secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "Tá cúltacaí casta as agus scriosfar do shonraí ó sheirbhís stórála sláine Signal.";
 
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Sonraí Cúltaca";
@@ -584,13 +584,13 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Cas As agus Scrios Cúltacaí";
 
 /* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "An error occurred when deleting your data from Signal's secure storage service.";
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "Tharla earráid agus do shonraí á scriosadh ó sheirbhís stórála sláine Signal.";
 
 /* Title shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "Failed to Delete Backup";
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "Theip ar Scriosadh Cúltaca";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
+"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "Ní mór duit a bheith cláraithe chun Cúltacaí a dhíchumasú.";
 
 /* Text describing that a user's backup will be automatically performed daily. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Gach lá";
@@ -2336,10 +2336,10 @@
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
 
 /* Title for a picker for the unit of time to use for disappearing messages. */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "Unit";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "Aonad";
 
 /* Title for a picker for the amount of time, in a given unit, to use for disappearing messages. */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "Value";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER" = "Luach";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "lá";
