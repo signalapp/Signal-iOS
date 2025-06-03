@@ -145,4 +145,31 @@ extension BGProcessingTaskRunner {
         }
         logger.info("Finished after \(batchCount) batches")
     }
+
+    func runWithChatConnection<T>(
+        backgroundMessageFetcherFactory: BackgroundMessageFetcherFactory,
+        operation: () async throws -> T,
+    ) async throws -> T {
+        let backgroundMessageFetcher = backgroundMessageFetcherFactory.buildFetcher()
+
+        // We want a chat connection, and if we get a chat connection, we're also
+        // going to need to deal with message processing.
+        await backgroundMessageFetcher.start()
+
+        // Run the operation that matters. This may throw an error or be canceled.
+        let result = await Result(catching: { try await operation() })
+
+        // We don't care about the result of this -- we just want to try and wait
+        // for any incoming messages so that we can tear down gracefully.
+        try? await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
+
+        // Wrap the cleanup of message processing in a new Task, so if we're
+        // canceled, that method doesn't inherit our cancellation.
+        await Task {
+            await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
+        }.value
+
+        // Pass the result of operation() to the caller.
+        return try result.get()
+    }
 }

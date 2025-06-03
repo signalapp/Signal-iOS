@@ -320,6 +320,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         attachmentValidationRunner.registerBGProcessingTask(appReadiness: appReadiness)
 
         let databaseMigratorRunner = LazyDatabaseMigratorRunner(
+            backgroundMessageFetcherFactory: { DependenciesBridge.shared.backgroundMessageFetcherFactory },
             databaseStorage: databaseStorage,
             remoteConfigManager: { SSKEnvironment.shared.remoteConfigManagerRef },
             tsAccountManager: { DependenciesBridge.shared.tsAccountManager }

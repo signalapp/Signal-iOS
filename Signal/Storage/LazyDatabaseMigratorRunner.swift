@@ -7,15 +7,18 @@ import Foundation
 import SignalServiceKit
 
 class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
+    private let backgroundMessageFetcherFactory: () -> BackgroundMessageFetcherFactory
     private let databaseStorage: SDSDatabaseStorage
     private let remoteConfigManager: () -> any RemoteConfigManager
     private let tsAccountManager: () -> any TSAccountManager
 
     init(
+        backgroundMessageFetcherFactory: @escaping () -> BackgroundMessageFetcherFactory,
         databaseStorage: SDSDatabaseStorage,
         remoteConfigManager: @escaping () -> any RemoteConfigManager,
         tsAccountManager: @escaping () -> any TSAccountManager
     ) {
+        self.backgroundMessageFetcherFactory = backgroundMessageFetcherFactory
         self.databaseStorage = databaseStorage
         self.remoteConfigManager = remoteConfigManager
         self.tsAccountManager = tsAccountManager
@@ -71,11 +74,18 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
         }
     }
 
+    func run() async throws {
+        try await runWithChatConnection(
+            backgroundMessageFetcherFactory: backgroundMessageFetcherFactory(),
+            operation: { try await _run() },
+        )
+    }
+
     /// Run the migrations.
     ///
     /// If you encounter an error in this method, you can update
     /// `simulatePriorCancellation` to return true and run on a simulator.
-    func run() async throws {
+    private func _run() async throws {
         // Must be idempotent.
 
         guard tsAccountManager().registrationStateWithMaybeSneakyTransaction.isRegistered else {
