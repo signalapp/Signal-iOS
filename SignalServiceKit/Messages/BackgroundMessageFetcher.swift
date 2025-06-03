@@ -64,4 +64,17 @@ public actor BackgroundMessageFetcher {
         // Finally, wait for any notifications to finish posting
         try await NotificationPresenterImpl.waitForPendingNotifications()
     }
+
+    public func stopAndWaitBeforeSuspending() async {
+        // Release the connections and wait for them to close.
+        self.reset()
+        await chatConnectionManager.waitForDisconnectIfClosed()
+
+        // Wait for notifications that are already scheduled to be posted.
+        do {
+            try await NotificationPresenterImpl.waitForPendingNotifications()
+        } catch {
+            owsFailDebug("\(error)")
+        }
+    }
 }

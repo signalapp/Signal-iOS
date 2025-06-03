@@ -204,6 +204,10 @@ public class OWSChatConnection {
         )
     }
 
+    func waitForDisconnectIfClosed() async {
+        owsFail("Subclasses must provide an implementation.")
+    }
+
     // MARK: - Socket LifeCycle
 
     public static var canAppUseSocketsToMakeRequests: Bool {
@@ -477,7 +481,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
     fileprivate let libsignalNet: Net
 
     fileprivate enum ConnectionState {
-        case closed
+        case closed(task: Task<Void, Never>?)
         case connecting(token: NSObject, task: Task<Connection?, Never>)
         case open(Connection)
 
@@ -518,7 +522,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
         }
     }
 
-    private var _connection: ConnectionState = .closed
+    private var _connection: ConnectionState = .closed(task: nil)
     fileprivate var connection: ConnectionState {
         get {
             assertOnQueue(serialQueue)
@@ -557,13 +561,13 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
             // The most recent transition was attempting to connect, and we have not yet observed a failure.
             // That's as good as we're going to get.
             return
-        case .closed:
+        case .closed(_):
             break
         }
 
         // Unique while live.
         let token = NSObject()
-        connection = .connecting(token: token, task: Task { [token] in
+        connection = .connecting(token: token, task: Task { [token] () -> Connection? in
             func connectionAttemptCompleted(_ state: ConnectionState) async -> Connection? {
                 // We're not done until self.connection has been updated.
                 // (Otherwise, we might try to send requests before calling start(listener:).)
@@ -599,7 +603,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                 // We've been asked to disconnect, no other action necessary.
                 // (We could even skip updating state, since the disconnect action should have already set it to "closed",
                 // but just in case it's still on "connecting" we'll continue on to execute that cleanup.)
-                return await connectionAttemptCompleted(.closed)
+                return await connectionAttemptCompleted(.closed(task: nil))
             } catch SignalError.appExpired(_) {
                 await appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
             } catch SignalError.deviceDeregistered(_) {
@@ -614,7 +618,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                 Logger.error("\(self.logPrefix): failed to connect: \(error)")
                 OutageDetection.shared.reportConnectionFailure()
             }
-            let result = await connectionAttemptCompleted(.closed)
+            let result = await connectionAttemptCompleted(.closed(task: nil))
             self.reconnectAfterFailure()
             return result
         })
@@ -634,15 +638,25 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
             // or we were never connected to begin with.
             return
         }
-        connection = .closed
-
         // Spin off a background task to disconnect the previous connection.
-        _ = Task {
+        connection = .closed(task: Task {
             do {
                 try await previousConnection.waitToFinishConnecting(cancel: true)?.disconnect()
             } catch {
                 Logger.warn("\(self.logPrefix): error while disconnecting: \(error)")
             }
+        })
+    }
+
+    override func waitForDisconnectIfClosed() async {
+        let connection = await withCheckedContinuation { continuation in
+            serialQueue.async { continuation.resume(returning: self.connection) }
+        }
+        switch connection {
+        case .open(_), .connecting(_, _):
+            break
+        case .closed(let disconnectTask):
+            await disconnectTask?.value
         }
     }
 
@@ -758,7 +772,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                 owsFailDebug("\(logPrefix) libsignal disconnected us without being asked")
             }
 
-            connection = .closed
+            connection = .closed(task: nil)
             OutageDetection.shared.reportConnectionFailure()
             self.reconnectAfterFailure()
         }

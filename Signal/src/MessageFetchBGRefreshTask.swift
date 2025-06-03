@@ -140,7 +140,7 @@ public class MessageFetchBGRefreshTask {
                     try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
                 }
             }
-            await backgroundMessageFetcher.reset()
+            await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
             // Schedule the next run now.
             self.scheduleTask()
             do {

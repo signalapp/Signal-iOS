@@ -1354,9 +1354,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         // background execution time expired.
                     }
                 },
-                completionHandler: { _ in
-                    // TODO: Tear down more gracefully to avoid 0xdead10cc.
-                    await backgroundFetcher.reset()
+                completionHandler: { result in
+                    switch result {
+                    case .finished, .interrupted:
+                        await backgroundFetcher.reset()
+                    case .expired:
+                        await backgroundFetcher.stopAndWaitBeforeSuspending()
+                    }
                 },
             )
         }
@@ -1473,7 +1477,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
                 try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
             })
-            await backgroundMessageFetcher.reset()
+            await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
             try result.get()
         }
     }

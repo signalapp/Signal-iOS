@@ -14,6 +14,7 @@ public protocol ChatConnectionManager {
 
     func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool
     func requestConnections() -> [OWSChatConnection.ConnectionToken]
+    func waitForDisconnectIfClosed() async
     func makeRequest(_ request: TSRequest) async throws -> HTTPResponse
 }
 
@@ -58,6 +59,15 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         return [connectionIdentified.requestConnection(), connectionUnidentified.requestConnection()]
     }
 
+    public func waitForDisconnectIfClosed() async {
+        await withTaskGroup { taskGroup in
+            for connection in connections {
+                taskGroup.addTask { await connection.waitForDisconnectIfClosed() }
+            }
+            await taskGroup.waitForAll()
+        }
+    }
+
     // This method can be called from any thread.
     public func makeRequest(_ request: TSRequest) async throws -> HTTPResponse {
         let connectionType = try request.auth.connectionType
@@ -98,6 +108,9 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
 
     public func requestConnections() -> [OWSChatConnection.ConnectionToken] {
         return []
+    }
+
+    public func waitForDisconnectIfClosed() async {
     }
 
     public var requestHandler: (_ request: TSRequest) async throws -> HTTPResponse = { _ in
