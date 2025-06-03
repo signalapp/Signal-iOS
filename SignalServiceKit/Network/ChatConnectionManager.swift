@@ -9,6 +9,13 @@ public import LibSignalClient
 public protocol ChatConnectionManager {
     func updateCanOpenWebSocket()
     func waitForIdentifiedConnectionToOpen() async throws
+    /// Waits until we're no longer trying to open a web socket.
+    ///
+    /// - Note: If an existing socket gets interrupted but we'll try to
+    /// re-connect, this will keep waiting. In other words, this waits until we
+    /// are no longer capable of opening a socket (e.g., we are deregistered,
+    /// all connection tokens are released).
+    func waitUntilIdentifiedConnectionShouldBeClosed() async throws
     var identifiedConnectionState: OWSChatConnectionState { get }
     var hasEmptiedInitialQueue: Bool { get }
 
@@ -55,6 +62,11 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         try await self.connectionIdentified.waitForOpen()
     }
 
+    public func waitUntilIdentifiedConnectionShouldBeClosed() async throws {
+        owsAssertBeta(OWSChatConnection.canAppUseSocketsToMakeRequests)
+        try await self.connectionIdentified.waitUntilSocketShouldBeClosed()
+    }
+
     public func requestConnections() -> [OWSChatConnection.ConnectionToken] {
         return [connectionIdentified.requestConnection(), connectionUnidentified.requestConnection()]
     }
@@ -96,6 +108,9 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
     public var hasEmptiedInitialQueue: Bool = false
 
     public func waitForIdentifiedConnectionToOpen() async throws {
+    }
+
+    public func waitUntilIdentifiedConnectionShouldBeClosed() async throws {
     }
 
     public var identifiedConnectionState: OWSChatConnectionState = .closed

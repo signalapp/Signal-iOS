@@ -208,6 +208,31 @@ public class OWSChatConnection {
         owsFail("Subclasses must provide an implementation.")
     }
 
+    // Access on serialQueue.
+    private var onSocketShouldBeClosed = [NSObject: CancellableContinuation<Void>]()
+
+    func waitUntilSocketShouldBeClosed() async throws {
+        let cancellationToken = NSObject()
+        let cancellableContinuation = CancellableContinuation<Void>()
+        serialQueue.async {
+            if self.shouldSocketBeOpen() {
+                self.onSocketShouldBeClosed[cancellationToken] = cancellableContinuation
+            } else {
+                cancellableContinuation.resume(with: .success(()))
+            }
+        }
+        try await withTaskCancellationHandler(
+            operation: cancellableContinuation.wait,
+            onCancel: {
+                // Don't cancel because CancellableContinuation does that.
+                // We just clean up the state so that we don't leak memory.
+                self.serialQueue.async {
+                    self.onSocketShouldBeClosed.removeValue(forKey: cancellationToken)
+                }
+            }
+        )
+    }
+
     // MARK: - Socket LifeCycle
 
     public static var canAppUseSocketsToMakeRequests: Bool {
@@ -324,18 +349,35 @@ public class OWSChatConnection {
         serialQueue.async(self._applyDesiredSocketState)
     }
 
-    fileprivate final func _applyDesiredSocketState() {
+    private func shouldSocketBeOpen() -> Bool {
         assertOnQueue(serialQueue)
 
-        let shouldSocketBeOpen: Bool = (
+        return (
             (canOpenWebSocketError == nil)
             && connectionTokenState.update { !$0.activeTokenIds.isEmpty }
         )
-        if shouldSocketBeOpen {
+    }
+
+    fileprivate final func _applyDesiredSocketState() {
+        assertOnQueue(serialQueue)
+
+        if shouldSocketBeOpen() {
             owsPrecondition(appReadiness.isAppReady)
             ensureWebsocketExists()
         } else {
             disconnectIfNeeded()
+            notifySocketShouldBeClosed()
+        }
+    }
+
+    private func notifySocketShouldBeClosed() {
+        assertOnQueue(serialQueue)
+
+        // Notify any listeners that we're no longer trying to connect.
+        let continuationsToResume = self.onSocketShouldBeClosed
+        self.onSocketShouldBeClosed = [:]
+        for (_, continuationToResume) in continuationsToResume {
+            continuationToResume.resume(with: .success(()))
         }
     }
 

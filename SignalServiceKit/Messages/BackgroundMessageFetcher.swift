@@ -78,6 +78,17 @@ public actor BackgroundMessageFetcher {
     }
 
     public func waitForFetchingProcessingAndSideEffects() async throws {
+        try await withCooperativeRace(
+            { try await self._waitForFetchingProcessingAndSideEffects() },
+            {
+                try await self.chatConnectionManager.waitUntilIdentifiedConnectionShouldBeClosed()
+                // We wanted to wait for things to happen, but we can't wait, so throw.
+                throw OWSGenericError("Should be closed.")
+            },
+        )
+    }
+
+    private func _waitForFetchingProcessingAndSideEffects() async throws {
         try await messageProcessor.waitForFetchingAndProcessing()
 
         // Wait for these in parallel.
