@@ -1,4 +1,5 @@
 import Foundation
+import SignalServiceKit
 import libsodium // Assuming libsodium is available as a module
 
 // ChaCha20-Poly1305 constants remain the same
@@ -68,7 +69,7 @@ public class ExtraLockCipher {
         }
 
         guard extractResult == 0 else {
-            print("Error: HKDF extract (crypto_auth_hmacsha256) failed.")
+            Logger.error("HKDF extract (crypto_auth_hmacsha256) failed.")
             throw ExtraLockCipherError.hkdfFailed(description: "HMAC-SHA256 for extract phase failed.")
         }
 
@@ -99,13 +100,13 @@ public class ExtraLockCipher {
         }
 
         guard expandResult == 0 else {
-            print("Error: HKDF expand (crypto_kdf_hkdf_sha256_expand) failed.")
+            Logger.error("HKDF expand (crypto_kdf_hkdf_sha256_expand) failed.")
             throw ExtraLockCipherError.hkdfFailed(description: "HKDF expand phase failed.")
         }
         
         guard derivedKey.count == keyOutputLength else {
             // This check should be redundant if libsodium call is correct.
-            print("Error: Derived key length is incorrect after HKDF. Expected \(keyOutputLength), got \(derivedKey.count)")
+            Logger.error("Derived key length is incorrect after HKDF. Expected \(keyOutputLength), got \(derivedKey.count)")
             throw ExtraLockCipherError.hkdfFailed(description: "Derived key length mismatch post-HKDF.")
         }
 
@@ -113,7 +114,7 @@ public class ExtraLockCipher {
         pseudoRandomKey.resetBytes(in: 0..<pseudoRandomKey.count)
         // sodium_memzero(pseudoRandomKey.withUnsafeMutableBytes { $0.baseAddress! }, pseudoRandomKey.count) // Alternative
 
-        print("Info: Extra key derived successfully using HKDF-SHA256.")
+        Logger.error("Info: Extra key derived successfully using HKDF-SHA256.")
         return derivedKey
     }
 
@@ -167,18 +168,18 @@ public class ExtraLockCipher {
         }
 
         guard encryptionResult == 0 else {
-            print("Error: Libsodium encryption (crypto_aead_chacha20poly1305_ietf_encrypt) failed. Result: \(encryptionResult)")
+            Logger.error("Libsodium encryption (crypto_aead_chacha20poly1305_ietf_encrypt) failed. Result: \(encryptionResult)")
             throw ExtraLockCipherError.encryptionFailed(description: "Libsodium encryption failed with result code \(encryptionResult).")
         }
         
         // Ensure the reported length matches expected.
         guard actualCiphertextAndTagLength == ciphertextAndTag.count else {
             // This case should ideally not be hit if buffers are sized correctly.
-             print("Error: Encrypted data length mismatch. Expected \(ciphertextAndTag.count), got \(actualCiphertextAndTagLength).")
+             Logger.error("Encrypted data length mismatch. Expected \(ciphertextAndTag.count), got \(actualCiphertextAndTagLength).")
             throw ExtraLockCipherError.encryptionFailed(description: "Encrypted data length mismatch after libsodium call.")
         }
 
-        print("Info: Plaintext sealed successfully using ChaCha20-Poly1305 IETF.")
+        Logger.error("Info: Plaintext sealed successfully using ChaCha20-Poly1305 IETF.")
         return nonce + ciphertextAndTag // Prepend nonce to the ciphertext+tag
     }
 
@@ -232,7 +233,7 @@ public class ExtraLockCipher {
 
         guard decryptionResult == 0 else {
             // This is the expected error for a MAC failure (tampered/corrupt data or wrong key).
-            print("Error: Libsodium decryption (crypto_aead_chacha20poly1305_ietf_decrypt) failed. Result: \(decryptionResult). This often indicates a MAC failure (wrong key, or data corruption/tampering).")
+            Logger.error("Libsodium decryption (crypto_aead_chacha20poly1305_ietf_decrypt) failed. Result: \(decryptionResult). This often indicates a MAC failure (wrong key, or data corruption/tampering).")
             throw ExtraLockCipherError.decryptionFailed(description: "Libsodium decryption failed with result code \(decryptionResult). MAC check likely failed.")
         }
 
@@ -241,11 +242,11 @@ public class ExtraLockCipher {
             plaintext.count = Int(actualPlaintextLength)
         } else if actualPlaintextLength > maxPlaintextLength {
             // This should not happen if libsodium behaves as expected.
-            print("Error: Decrypted plaintext length (\(actualPlaintextLength)) is greater than allocated buffer (\(maxPlaintextLength)).")
+            Logger.error("Decrypted plaintext length (\(actualPlaintextLength)) is greater than allocated buffer (\(maxPlaintextLength)).")
             throw ExtraLockCipherError.decryptionFailed(description: "Decrypted plaintext length exceeds buffer.")
         }
         
-        print("Info: Sealed data opened successfully using ChaCha20-Poly1305 IETF.")
+        Logger.error("Info: Sealed data opened successfully using ChaCha20-Poly1305 IETF.")
         return plaintext
     }
 } // End of ExtraLockCipher class
@@ -253,18 +254,10 @@ public class ExtraLockCipher {
 // Helper extension for SHA256 (SHOULD BE REMOVED as HKDF is now implemented)
 // extension Data {
 //    func sha256() -> Data {
-//        print("Warning: Data.sha256() called. This should have been removed.")
+//        Logger.error("Warning: Data.sha256() called. This should have been removed.")
 //        return Data(repeating: 0, count: 32)
 //    }
 // }
-
-// Basic Logger placeholder (SHOULD BE REMOVED or replaced with project's actual logger)
-// fileprivate class Logger {
-//     static func error(_ message: String) { print("[ERROR] ExtraLockCipher: \(message)") }
-//     static func warn(_ message: String) { print("[WARN] ExtraLockCipher: \(message)") }
-//     static func info(_ message: String) { print("[INFO] ExtraLockCipher: \(message)") }
-// }
-
 // Helper to securely zero out data, if not using sodium_memzero directly
 extension Data {
     mutating func resetBytes(in range: Range<Data.Index>) {

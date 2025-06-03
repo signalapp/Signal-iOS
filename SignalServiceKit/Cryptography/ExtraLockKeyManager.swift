@@ -1,4 +1,5 @@
 import Foundation
+import SignalServiceKit
 import libsodium // Assuming libsodium is available as a module
 import Security // Import for Keychain services
 
@@ -46,7 +47,7 @@ public class ExtraLockKeyManager {
                 guard pkBytes.count == crypto_kx_PUBLICKEYBYTES, skBytes.count == crypto_kx_SECRETKEYBYTES else {
                     // This check is more for conceptual clarity, as Data(count:) initializes correctly.
                     // However, if inputs were from elsewhere, validation would be critical.
-                    print("Error: Key buffer sizes are incorrect for crypto_kx_keypair.")
+                    Logger.error("Error: Key buffer sizes are incorrect for crypto_kx_keypair.")
                     // Consider a more specific error here if this check was strictly necessary.
                     return -1 // Indicate failure if we were to handle this more granularly
                 }
@@ -55,7 +56,7 @@ public class ExtraLockKeyManager {
         }
 
         if result != 0 {
-            print("Error generating key pair: libsodium crypto_kx_keypair failed with result \(result)")
+            Logger.error("Error generating key pair: libsodium crypto_kx_keypair failed with result \(result)")
             throw ExtraLockKeyManagerError.keyGenerationFailed
         }
 
@@ -71,7 +72,7 @@ public class ExtraLockKeyManager {
     public static func savePrivateKey(_ privateKey: Data) throws {
         // Ensure private key is of correct length before saving
         guard privateKey.count == privateKeyLength else {
-            print("Error: Private key length is invalid for saving.")
+            Logger.error("Error: Private key length is invalid for saving.")
             throw ExtraLockKeyManagerError.invalidKeyLength
         }
 
@@ -85,12 +86,12 @@ public class ExtraLockKeyManager {
 
         let deleteStatus = SecItemDelete(query as CFDictionary)
         if deleteStatus != errSecSuccess && deleteStatus != errSecItemNotFound {
-            print("Warning: Failed to delete existing private key from Keychain before saving. Status: \(deleteStatus)")
+            Logger.error("Warning: Failed to delete existing private key from Keychain before saving. Status: \(deleteStatus)")
         }
 
         let addStatus = SecItemAdd(query as CFDictionary, nil)
         guard addStatus == errSecSuccess else {
-            print("Error: Failed to save private key to Keychain. Status: \(addStatus)")
+            Logger.error("Error: Failed to save private key to Keychain. Status: \(addStatus)")
             throw ExtraLockKeyManagerError.keychainSaveFailed(status: addStatus)
         }
         print("Info: Private key saved to Keychain successfully.")
@@ -119,11 +120,11 @@ public class ExtraLockKeyManager {
         switch status {
         case errSecSuccess:
             guard let keyData = item as? Data else {
-                print("Error: Failed to convert Keychain data to Data.")
+                Logger.error("Error: Failed to convert Keychain data to Data.")
                 throw ExtraLockKeyManagerError.keyDataConversionError
             }
             guard keyData.count == privateKeyLength else {
-                print("Error: Retrieved private key from Keychain has invalid length \(keyData.count), expected \(privateKeyLength).")
+                Logger.error("Error: Retrieved private key from Keychain has invalid length \(keyData.count), expected \(privateKeyLength).")
                 // It's crucial to also delete the invalid key to prevent repeated load failures.
                 // Best effort deletion, ignore error if it fails as we're already in an error state.
                 try? deletePrivateKeyFromKeychain()
@@ -135,7 +136,7 @@ public class ExtraLockKeyManager {
             print("Info: Private key not found in Keychain.")
             return nil
         default:
-            print("Error: Failed to retrieve private key from Keychain. Status: \(status)")
+            Logger.error("Error: Failed to retrieve private key from Keychain. Status: \(status)")
             throw ExtraLockKeyManagerError.keychainLoadFailed(status: status)
         }
     }
@@ -156,7 +157,7 @@ public class ExtraLockKeyManager {
 
         let status = SecItemDelete(query as CFDictionary)
         if status != errSecSuccess && status != errSecItemNotFound {
-            print("Error: Failed to delete private key from Keychain. Status: \(status)")
+            Logger.error("Error: Failed to delete private key from Keychain. Status: \(status)")
             throw ExtraLockKeyManagerError.keychainDeleteFailed(status: status)
         }
          print("Info: Private key deleted from Keychain (or was not found).")
@@ -179,11 +180,11 @@ public class ExtraLockKeyManager {
      */
     public static func calculateSharedSecret(localPrivateKey: Data, remotePublicKey: Data) throws -> Data {
         guard localPrivateKey.count == privateKeyLength else { // crypto_scalarmult_SCALARBYTES
-            print("Error: Local private key has invalid length for ECDH: \(localPrivateKey.count), expected \(privateKeyLength)")
+            Logger.error("Error: Local private key has invalid length for ECDH: \(localPrivateKey.count), expected \(privateKeyLength)")
             throw ExtraLockKeyManagerError.invalidKeyLength
         }
         guard remotePublicKey.count == publicKeyLength else { // crypto_scalarmult_BYTES
-            print("Error: Remote public key has invalid length for ECDH: \(remotePublicKey.count), expected \(publicKeyLength)")
+            Logger.error("Error: Remote public key has invalid length for ECDH: \(remotePublicKey.count), expected \(publicKeyLength)")
             throw ExtraLockKeyManagerError.invalidKeyLength
         }
 
@@ -202,16 +203,16 @@ public class ExtraLockKeyManager {
         }
 
         if result != 0 {
-            print("Error: libsodium crypto_scalarmult failed with result \(result)")
+            Logger.error("Error: libsodium crypto_scalarmult failed with result \(result)")
             throw ExtraLockKeyManagerError.ecdhSharedSecretCalculationFailed
         }
 
         // Verify that the shared secret is not the "all-zero" value, which can indicate an issue
         // with a low-order public key (though less of a concern with Curve25519's design if keys are validated).
         // Libsodium's crypto_scalarmult for Curve25519 should clear the cofactor, mitigating some of these risks.
-        // However, a check for all zeros is a good practice for sanity.
+        // Hhowever, a check for all zeros is a good practice for sanity.
         if sharedSecret.allSatisfy({ $0 == 0 }) {
-            print("Error: ECDH resulted in an all-zero shared secret. This may indicate an issue with the remote public key.")
+            Logger.error("Error: ECDH resulted in an all-zero shared secret. This may indicate an issue with the remote public key.")
             throw ExtraLockKeyManagerError.ecdhSharedSecretCalculationFailed // Or a more specific error
         }
 
