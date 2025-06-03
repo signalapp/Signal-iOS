@@ -235,7 +235,7 @@ public class RegistrationCoordinatorTest {
 
     @MainActor
     @Test(arguments: Self.testCases())
-    func testOpeningPath_splash(testCase: TestCase) {
+    func testOpeningPath_splash(testCase: TestCase) async {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
 
@@ -247,17 +247,17 @@ public class RegistrationCoordinatorTest {
         switch mode {
         case .registering:
             // With no state set up, should show the splash.
-            #expect(coordinator.nextStep().value == .registrationSplash)
+            #expect(await coordinator.nextStep().awaitable() == .registrationSplash)
             // Once we show it, don't show it again.
-            #expect(coordinator.continueFromSplash().value != .registrationSplash)
+            #expect(await coordinator.continueFromSplash().awaitable() != .registrationSplash)
         case .reRegistering, .changingNumber:
-            #expect(coordinator.nextStep().value != .registrationSplash)
+            #expect(await coordinator.nextStep().awaitable() != .registrationSplash)
         }
     }
 
     @MainActor
     @Test(arguments: Self.testCases())
-    func testOpeningPath_appExpired(testCase: TestCase) {
+    func testOpeningPath_appExpired(testCase: TestCase) async {
         let coordinator = setupTest(testCase)
 
         // Don't care about timing, just start it.
@@ -268,12 +268,12 @@ public class RegistrationCoordinatorTest {
         setupDefaultAccountAttributes()
 
         // We should start with the banner.
-        #expect(coordinator.nextStep().value == .appUpdateBanner)
+        #expect(await coordinator.nextStep().awaitable() == .appUpdateBanner)
     }
 
     @MainActor
     @Test(arguments: Self.testCases())
-    func testOpeningPath_permissions(testCase: TestCase) {
+    func testOpeningPath_permissions(testCase: TestCase) async {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
 
@@ -285,34 +285,33 @@ public class RegistrationCoordinatorTest {
         contactsStore.doesNeedContactsAuthorization = true
         pushRegistrationManagerMock.doesNeedNotificationAuthorization = true
 
-        var nextStep: Guarantee<RegistrationStep>
+        var nextStep: RegistrationStep
         switch mode {
         case .registering:
             // Gotta get the splash out of the way.
-            #expect(coordinator.nextStep().value == .registrationSplash)
-            nextStep = coordinator.continueFromSplash()
+            #expect(await coordinator.nextStep().awaitable() == .registrationSplash)
+            nextStep = await coordinator.continueFromSplash().awaitable()
         case .reRegistering, .changingNumber:
             // No splash for these.
-            nextStep = coordinator.nextStep()
+            nextStep = await coordinator.nextStep().awaitable()
         }
 
         // Now we should show the permissions.
-        #expect(nextStep.value == .permissions)
+        #expect(nextStep == .permissions)
         // Doesn't change even if we try and proceed.
-        #expect(coordinator.nextStep().value == .permissions)
+        #expect(await coordinator.nextStep().awaitable() == .permissions)
 
         // Once the state is updated we can proceed.
-        nextStep = coordinator.requestPermissions()
-        #expect(nextStep.value != nil)
-        #expect(nextStep.value != .registrationSplash)
-        #expect(nextStep.value != .permissions)
+        nextStep = await coordinator.requestPermissions().awaitable()
+        #expect(nextStep != .registrationSplash)
+        #expect(nextStep != .permissions)
     }
 
     // MARK: - Reg Recovery Password Path
 
     @MainActor
     @Test(arguments: Self.testCases(), [true, false])
-    func runRegRecoverPwPathTestHappyPath(testCase: TestCase, wasReglockEnabled: Bool) throws {
+    func runRegRecoverPwPathTestHappyPath(testCase: TestCase, wasReglockEnabled: Bool) async throws {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
 
@@ -334,10 +333,10 @@ public class RegistrationCoordinatorTest {
         // a previously registered device, and we can skip intros.
 
         // We haven't set a phone number so it should ask for that.
-        #expect(coordinator.nextStep().value == .phoneNumberEntry(self.stubs.phoneNumberEntryState(mode: mode)))
+        #expect(await coordinator.nextStep().awaitable() == .phoneNumberEntry(self.stubs.phoneNumberEntryState(mode: mode)))
 
         // Give it a phone number, which should show the PIN entry step.
-        var nextStep = coordinator.submitE164(Stubs.e164).value
+        var nextStep = await coordinator.submitE164(Stubs.e164).awaitable()
         // Now it should ask for the PIN to confirm the user knows it.
         #expect(nextStep == .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)))
 
@@ -466,7 +465,7 @@ public class RegistrationCoordinatorTest {
             statusCode: 200
         )
 
-        nextStep = coordinator.submitPINCode(Stubs.pinCode).value
+        nextStep = await coordinator.submitPINCode(Stubs.pinCode).awaitable()
         #expect(nextStep == .done)
 
         // Since we set profile info, we should have scheduled a reupload.
@@ -475,7 +474,7 @@ public class RegistrationCoordinatorTest {
 
     @MainActor
     @Test(arguments: Self.testCases())
-    func testRegRecoveryPwPath_wrongPIN(testCase: TestCase) throws {
+    func testRegRecoveryPwPath_wrongPIN(testCase: TestCase) async throws {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
 
@@ -496,15 +495,15 @@ public class RegistrationCoordinatorTest {
         // a previously registered device, and we can skip intros.
 
         // We haven't set a phone number so it should ask for that.
-        #expect(coordinator.nextStep().value == .phoneNumberEntry(self.stubs.phoneNumberEntryState(mode: mode)))
+        #expect(await coordinator.nextStep().awaitable() == .phoneNumberEntry(self.stubs.phoneNumberEntryState(mode: mode)))
 
         // Give it a phone number, which should show the PIN entry step.
-        var nextStep = coordinator.submitE164(Stubs.e164).value
+        var nextStep = await coordinator.submitE164(Stubs.e164).awaitable()
         // Now it should ask for the PIN to confirm the user knows it.
         #expect(nextStep == .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)))
 
         // Give it the wrong PIN, it should reject and give us the same step again.
-        nextStep = coordinator.submitPINCode(wrongPinCode).value
+        nextStep = await coordinator.submitPINCode(wrongPinCode).awaitable()
         #expect(
             nextStep == .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(
                 mode: mode,
@@ -613,7 +612,7 @@ public class RegistrationCoordinatorTest {
             statusCode: 200
         )
 
-        nextStep = coordinator.submitPINCode(Stubs.pinCode).value
+        nextStep = await coordinator.submitPINCode(Stubs.pinCode).awaitable()
         #expect(nextStep == .done)
 
         // Since we set profile info, we should have scheduled a reupload.
@@ -1854,7 +1853,6 @@ public class RegistrationCoordinatorTest {
         // Run the scheduler for a bit; we don't care about timing these bits.
         scheduler.start()
 
-        // Don't care about timing, just start it.
         setupDefaultAccountAttributes()
 
         // Set profile info so we skip those steps.
@@ -2127,7 +2125,7 @@ public class RegistrationCoordinatorTest {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
 
-        // Don't care about timing, just start it.
+        // Run the scheduler for a bit; we don't care about timing these bits.
         scheduler.start()
 
         // Set profile info so we skip those steps.
@@ -2221,7 +2219,7 @@ public class RegistrationCoordinatorTest {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
 
-        // Don't care about timing, just start it.
+        // Run the scheduler for a bit; we don't care about timing these bits.
         scheduler.start()
 
         // Set profile info so we skip those steps.
