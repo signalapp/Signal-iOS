@@ -138,6 +138,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         self.dataSource = self
         self.delegate = self
 
+        // Bottom Bar
+        self.galleryRailView.delegate = self
+        self.bottomToolView.attachmentTextToolbarDelegate = self
         self.attachmentTextToolbar.mentionTextViewDelegate = self
 
         // This fixes an issue with keyboard flashing white while being dismissed.
@@ -224,9 +227,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         // avoid an unpleasant "bounce" which doesn't make sense in the context of a single item.
         pagerScrollView?.isScrollEnabled = attachmentApprovalItems.count > 1
 
-        // Bottom Toolbar
-        galleryRailView.delegate = self
-
         // Navigation
         navigationItem.title = nil
 
@@ -248,9 +248,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             topBar.layoutIfNeeded()
         }
         topBar.install(in: view)
-
-        // Bottom Bar
-        bottomToolView.attachmentTextToolbarDelegate = self
 
         bottomToolView.buttonAddMedia.addTarget(self, action: #selector(didTapAddMedia), for: .touchUpInside)
         bottomToolView.buttonViewOnce.addTarget(self, action: #selector(didToggleViewOnce), for: .touchUpInside)
