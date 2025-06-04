@@ -55,7 +55,7 @@ public class BaseGroupMemberViewController: BaseMemberViewController {
     private func showGroupFullAlert_HardLimit() {
         let format = OWSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d", tableName: "PluralAware",
                                        comment: "Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}.")
-        let message = String.localizedStringWithFormat(format, GroupManager.groupsV2MaxGroupSizeHardLimit)
+        let message = String.localizedStringWithFormat(format, RemoteConfig.current.maxGroupSizeHardLimit)
         OWSActionSheets.showErrorAlert(message: message)
     }
 
@@ -66,7 +66,7 @@ public class BaseGroupMemberViewController: BaseMemberViewController {
                                       comment: "Title for alert warning the user that they've reached the recommended limit on how many members can be in a group.")
         let messageFormat = OWSLocalizedString("GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d", tableName: "PluralAware",
                                               comment: "Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}.")
-        var message = String.localizedStringWithFormat(messageFormat, GroupManager.groupsV2MaxGroupSizeRecommended)
+        var message = String.localizedStringWithFormat(messageFormat, RemoteConfig.current.maxGroupSizeRecommended)
 
         if groupMemberViewDelegate.isNewGroup {
             let actionSheet = ActionSheetController(title: title, message: message)

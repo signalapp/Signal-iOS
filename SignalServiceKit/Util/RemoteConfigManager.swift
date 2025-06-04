@@ -80,16 +80,16 @@ public class RemoteConfig {
         )
     }
 
-    public var groupsV2MaxGroupSizeRecommended: UInt {
-        getUIntValue(forFlag: .groupsV2MaxGroupSizeRecommended, defaultValue: 151)
+    public var maxGroupSizeRecommended: UInt {
+        getUIntValue(forFlag: .maxGroupSizeRecommended, defaultValue: 151)
     }
 
-    public var groupsV2MaxGroupSizeHardLimit: UInt {
-        getUIntValue(forFlag: .groupsV2MaxGroupSizeHardLimit, defaultValue: 1001)
+    public var maxGroupSizeHardLimit: UInt {
+        getUIntValue(forFlag: .maxGroupSizeHardLimit, defaultValue: 1001)
     }
 
-    public var groupsV2MaxBannedMembers: UInt {
-        groupsV2MaxGroupSizeHardLimit
+    public var maxGroupSizeBannedMembers: UInt {
+        maxGroupSizeHardLimit
     }
 
     public var cdsSyncInterval: TimeInterval {
@@ -445,8 +445,8 @@ private enum IsEnabledFlag: String, FlagType {
     case paypalOneTimeDonationKillSwitch = "ios.paypalOneTimeDonationKillSwitch"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
-    case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
+    case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
 
     var isSticky: Bool {
         switch self {
@@ -468,8 +468,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalOneTimeDonationKillSwitch: false
         case .ringrtcNwPathMonitorTrialKillSwitch: false
         case .serviceExtensionFailureKillSwitch: false
-        case .tsAttachmentMigrationMainAppBackgroundKillSwitch: false
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: false
+        case .tsAttachmentMigrationMainAppBackgroundKillSwitch: false
         }
     }
     var isHotSwappable: Bool {
@@ -492,8 +492,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalOneTimeDonationKillSwitch: false
         case .ringrtcNwPathMonitorTrialKillSwitch: false
         case .serviceExtensionFailureKillSwitch: true
-        case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true
+        case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true
         }
     }
 }
@@ -505,13 +505,14 @@ private enum ValueFlag: String, FlagType {
     case cdsSyncInterval = "cds.syncInterval.seconds"
     case clientExpiration = "ios.clientExpiration"
     case creditAndDebitCardDisabledRegions = "global.donations.ccDisabledRegions"
-    case groupsV2MaxGroupSizeHardLimit = "global.groupsv2.groupSizeHardLimit"
-    case groupsV2MaxGroupSizeRecommended = "global.groupsv2.maxGroupSize"
     case idealEnabledRegions = "global.donations.idealEnabledRegions"
     case maxAttachmentDownloadSizeBytes = "global.attachments.maxBytes"
     case maxGroupCallRingSize = "global.calling.maxGroupCallRingSize"
+    case maxGroupSizeHardLimit = "global.groupsv2.groupSizeHardLimit"
+    case maxGroupSizeRecommended = "global.groupsv2.maxGroupSize"
     case maxNicknameLength = "global.nicknames.max"
     case maxSenderKeyAge = "ios.maxSenderKeyAge"
+    case mediaTierFallbackCdnNumber = "global.backups.mediaTierFallbackCdnNumber"
     case messageQueueTimeInSeconds = "global.messageQueueTimeInSeconds"
     case messageSendLogEntryLifetime = "ios.messageSendLogEntryLifetime"
     case minNicknameLength = "global.nicknames.min"
@@ -522,7 +523,6 @@ private enum ValueFlag: String, FlagType {
     case sepaEnabledRegions = "global.donations.sepaEnabledRegions"
     case standardMediaQualityLevel = "ios.standardMediaQualityLevel"
     case tsAttachmentMigrationBatchDelayMs = "ios.tsAttachmentMigrationBatchDelayMs"
-    case mediaTierFallbackCdnNumber = "global.backups.mediaTierFallbackCdnNumber"
 
     var isSticky: Bool {
         switch self {
@@ -532,13 +532,14 @@ private enum ValueFlag: String, FlagType {
         case .cdsSyncInterval: false
         case .clientExpiration: false
         case .creditAndDebitCardDisabledRegions: false
-        case .groupsV2MaxGroupSizeHardLimit: true
-        case .groupsV2MaxGroupSizeRecommended: true
         case .idealEnabledRegions: false
         case .maxAttachmentDownloadSizeBytes: false
         case .maxGroupCallRingSize: false
+        case .maxGroupSizeHardLimit: true
+        case .maxGroupSizeRecommended: true
         case .maxNicknameLength: false
         case .maxSenderKeyAge: false
+        case .mediaTierFallbackCdnNumber: false
         case .messageQueueTimeInSeconds: false
         case .messageSendLogEntryLifetime: false
         case .minNicknameLength: false
@@ -549,7 +550,6 @@ private enum ValueFlag: String, FlagType {
         case .sepaEnabledRegions: false
         case .standardMediaQualityLevel: false
         case .tsAttachmentMigrationBatchDelayMs: false
-        case .mediaTierFallbackCdnNumber: false
         }
     }
 
@@ -561,13 +561,14 @@ private enum ValueFlag: String, FlagType {
         case .cdsSyncInterval: false
         case .clientExpiration: true
         case .creditAndDebitCardDisabledRegions: true
-        case .groupsV2MaxGroupSizeHardLimit: true
-        case .groupsV2MaxGroupSizeRecommended: true
         case .idealEnabledRegions: true
         case .maxAttachmentDownloadSizeBytes: false
         case .maxGroupCallRingSize: true
+        case .maxGroupSizeHardLimit: true
+        case .maxGroupSizeRecommended: true
         case .maxNicknameLength: false
         case .maxSenderKeyAge: true
+        case .mediaTierFallbackCdnNumber: true
         case .messageQueueTimeInSeconds: false
         case .messageSendLogEntryLifetime: false
         case .minNicknameLength: false
@@ -578,7 +579,6 @@ private enum ValueFlag: String, FlagType {
         case .sepaEnabledRegions: true
         case .standardMediaQualityLevel: false
         case .tsAttachmentMigrationBatchDelayMs: true
-        case .mediaTierFallbackCdnNumber: true
         }
     }
 }

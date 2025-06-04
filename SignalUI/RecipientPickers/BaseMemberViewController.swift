@@ -127,7 +127,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
         let memberCount = memberViewDelegate.memberViewMemberCountForDisplay()
 
         memberCountLabel.text = String.localizedStringWithFormat(format, memberCount)
-        if memberCount >= GroupManager.groupsV2MaxGroupSizeRecommended {
+        if memberCount >= RemoteConfig.current.maxGroupSizeRecommended {
             memberCountLabel.textColor = .ows_accentRed
         } else {
             memberCountLabel.textColor = Theme.primaryTextColor

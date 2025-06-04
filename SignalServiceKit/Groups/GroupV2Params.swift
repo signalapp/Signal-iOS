@@ -98,13 +98,9 @@ public extension GroupV2Params {
         return aci
     }
 
-    private static var maxGroupSize: Int {
-        return Int(RemoteConfig.current.groupsV2MaxGroupSizeHardLimit)
-    }
-
     private static let decryptedServiceIdCache = LRUCache<Data, ServiceId>(
-        maxSize: Self.maxGroupSize,
-        nseMaxSize: Self.maxGroupSize
+        maxSize: Int(RemoteConfig.current.maxGroupSizeHardLimit),
+        nseMaxSize: Int(RemoteConfig.current.maxGroupSizeHardLimit),
     )
 
     func serviceId(for uuidCiphertext: UuidCiphertext) throws -> ServiceId {
@@ -131,8 +127,10 @@ public extension GroupV2Params {
         return userId
     }
 
-    private static let decryptedProfileKeyCache = LRUCache<Data, Data>(maxSize: Self.maxGroupSize,
-                                                                       nseMaxSize: Self.maxGroupSize)
+    private static let decryptedProfileKeyCache = LRUCache<Data, Data>(
+        maxSize: Int(RemoteConfig.current.maxGroupSizeHardLimit),
+        nseMaxSize: Int(RemoteConfig.current.maxGroupSizeHardLimit),
+    )
 
     func profileKey(forProfileKeyCiphertext profileKeyCiphertext: ProfileKeyCiphertext, aci: Aci) throws -> Data {
         let cacheKey = (profileKeyCiphertext.serialize().asData + aci.serviceIdBinary + groupSecretParamsData)

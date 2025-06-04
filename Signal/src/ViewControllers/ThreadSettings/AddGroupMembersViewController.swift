@@ -173,11 +173,11 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewIsGroupFull_HardLimit() -> Bool {
-        groupMemberViewGroupMemberCountForDisplay() >= GroupManager.groupsV2MaxGroupSizeHardLimit
+        groupMemberViewGroupMemberCountForDisplay() >= RemoteConfig.current.maxGroupSizeHardLimit
     }
 
     func groupMemberViewIsGroupFull_RecommendedLimit() -> Bool {
-        groupMemberViewGroupMemberCountForDisplay() >= GroupManager.groupsV2MaxGroupSizeRecommended
+        groupMemberViewGroupMemberCountForDisplay() >= RemoteConfig.current.maxGroupSizeRecommended
     }
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient,

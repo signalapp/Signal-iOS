@@ -436,7 +436,7 @@ public class GroupsV2OutgoingChanges {
                 // Another user has already invited this member. They may have been added
                 // with a different role. We don't treat that as a conflict.
             } else {
-                guard membersOfAnyKind.count <= GroupManager.groupsV2MaxGroupSizeHardLimit else {
+                guard membersOfAnyKind.count <= RemoteConfig.current.maxGroupSizeHardLimit else {
                     throw GroupsV2Error.cannotBuildGroupChangeProto_tooManyMembers
                 }
                 var actionBuilder = GroupsProtoGroupChangeActionsAddPendingMemberAction.builder()
@@ -502,7 +502,7 @@ public class GroupsV2OutgoingChanges {
             // If we will overrun the max number of banned members, unban currently
             // banned members until we have enough room, beginning with the
             // least-recently banned.
-            let maxNumBannableIds = RemoteConfig.current.groupsV2MaxBannedMembers
+            let maxNumBannableIds = RemoteConfig.current.maxGroupSizeBannedMembers
             let netNumIdsToBan = acisToBan.count - acisToUnban.count
             let nOldMembersToUnban = currentBannedMembers.count + netNumIdsToBan - Int(maxNumBannableIds)
 
