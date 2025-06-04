@@ -138,6 +138,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         self.dataSource = self
         self.delegate = self
 
+        self.attachmentTextToolbar.mentionTextViewDelegate = self
+
         // This fixes an issue with keyboard flashing white while being dismissed.
         overrideUserInterfaceStyle = .dark
 
@@ -249,7 +251,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         // Bottom Bar
         bottomToolView.attachmentTextToolbarDelegate = self
-        attachmentTextToolbar.mentionTextViewDelegate = self
 
         bottomToolView.buttonAddMedia.addTarget(self, action: #selector(didTapAddMedia), for: .touchUpInside)
         bottomToolView.buttonViewOnce.addTarget(self, action: #selector(didToggleViewOnce), for: .touchUpInside)
