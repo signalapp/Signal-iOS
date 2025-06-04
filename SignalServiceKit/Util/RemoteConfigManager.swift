@@ -448,30 +448,6 @@ private enum IsEnabledFlag: String, FlagType {
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
     case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
 
-    var isSticky: Bool {
-        switch self {
-        case .applePayGiftDonationKillSwitch: false
-        case .applePayMonthlyDonationKillSwitch: false
-        case .applePayOneTimeDonationKillSwitch: false
-        case .automaticSessionResetKillSwitch: false
-        case .cardGiftDonationKillSwitch: false
-        case .cardMonthlyDonationKillSwitch: false
-        case .cardOneTimeDonationKillSwitch: false
-        case .enableAutoAPNSRotation: false
-        case .enableGifSearch: false
-        case .lazyDatabaseMigratorKillSwitch: false
-        case .libsignalEnforceMinTlsVersion: false
-        case .messageResendKillSwitch: false
-        case .paymentsResetKillSwitch: false
-        case .paypalGiftDonationKillSwitch: false
-        case .paypalMonthlyDonationKillSwitch: false
-        case .paypalOneTimeDonationKillSwitch: false
-        case .ringrtcNwPathMonitorTrialKillSwitch: false
-        case .serviceExtensionFailureKillSwitch: false
-        case .tsAttachmentMigrationBGProcessingTaskKillSwitch: false
-        case .tsAttachmentMigrationMainAppBackgroundKillSwitch: false
-        }
-    }
     var isHotSwappable: Bool {
         switch self {
         case .applePayGiftDonationKillSwitch: false
@@ -524,35 +500,6 @@ private enum ValueFlag: String, FlagType {
     case standardMediaQualityLevel = "ios.standardMediaQualityLevel"
     case tsAttachmentMigrationBatchDelayMs = "ios.tsAttachmentMigrationBatchDelayMs"
 
-    var isSticky: Bool {
-        switch self {
-        case .applePayDisabledRegions: false
-        case .automaticSessionResetAttemptInterval: false
-        case .backgroundRefreshInterval: false
-        case .cdsSyncInterval: false
-        case .clientExpiration: false
-        case .creditAndDebitCardDisabledRegions: false
-        case .idealEnabledRegions: false
-        case .maxAttachmentDownloadSizeBytes: false
-        case .maxGroupCallRingSize: false
-        case .maxGroupSizeHardLimit: true
-        case .maxGroupSizeRecommended: true
-        case .maxNicknameLength: false
-        case .maxSenderKeyAge: false
-        case .mediaTierFallbackCdnNumber: false
-        case .messageQueueTimeInSeconds: false
-        case .messageSendLogEntryLifetime: false
-        case .minNicknameLength: false
-        case .paymentsDisabledRegions: false
-        case .paypalDisabledRegions: false
-        case .reactiveProfileKeyAttemptInterval: false
-        case .replaceableInteractionExpiration: false
-        case .sepaEnabledRegions: false
-        case .standardMediaQualityLevel: false
-        case .tsAttachmentMigrationBatchDelayMs: false
-        }
-    }
-
     var isHotSwappable: Bool {
         switch self {
         case .applePayDisabledRegions: true
@@ -586,12 +533,6 @@ private enum ValueFlag: String, FlagType {
 private enum TimeGatedFlag: String, FlagType {
     case __none
 
-    var isSticky: Bool {
-        switch self {
-        case .__none: false
-        }
-    }
-
     var isHotSwappable: Bool {
         // These flags are time-gated. This means they are hot-swappable by
         // default. Even if we don't fetch a fresh remote config, we may cross the
@@ -604,10 +545,6 @@ private enum TimeGatedFlag: String, FlagType {
 // MARK: -
 
 private protocol FlagType: CaseIterable {
-    // Values defined in this array remain set once they are set regardless of
-    // the remote state.
-    var isSticky: Bool { get }
-
     // Values defined in this array will update while the app is running, as
     // soon as we fetch an update to the remote config. They will not wait for
     // an app restart.
@@ -882,34 +819,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         // Persist all flags in the database to be applied on next launch.
 
         await self.db.awaitableWrite { transaction in
-            // Preserve any sticky flags.
-            if let existingConfig = self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: transaction) {
-                existingConfig.forEach { (key: String, value: Bool) in
-                    // Preserve "is enabled" flags if they are sticky and already set.
-                    if let flag = IsEnabledFlag(rawValue: key), flag.isSticky, value == true {
-                        isEnabledFlags[key] = value
-                    }
-                }
-            }
-            if let existingConfig = self.keyValueStore.getRemoteConfigValueFlags(transaction: transaction) {
-                existingConfig.forEach { (key: String, value: String) in
-                    // Preserve "value" flags if they are sticky and already set and missing
-                    // from the fetched config.
-                    if let flag = ValueFlag(rawValue: key), flag.isSticky, valueFlags[key] == nil {
-                        valueFlags[key] = value
-                    }
-                }
-            }
-            if let existingConfig = self.keyValueStore.getRemoteConfigTimeGatedFlags(transaction: transaction) {
-                existingConfig.forEach { (key: String, value: Date) in
-                    // Preserve "time gated" flags if they are sticky and already set and
-                    // missing from the fetched config.
-                    if let flag = TimeGatedFlag(rawValue: key), flag.isSticky, timeGatedFlags[key] == nil {
-                        timeGatedFlags[key] = value
-                    }
-                }
-            }
-
             self.keyValueStore.setClockSkew(clockSkew, transaction: transaction)
             self.keyValueStore.setRemoteConfigIsEnabledFlags(isEnabledFlags, transaction: transaction)
             self.keyValueStore.setRemoteConfigValueFlags(valueFlags, transaction: transaction)
