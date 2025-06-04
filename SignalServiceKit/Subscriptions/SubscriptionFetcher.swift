@@ -5,15 +5,26 @@
 
 public struct SubscriptionFetcher {
     private let networkManager: NetworkManager
+    private let retryPolicy: NetworkManager.RetryPolicy
 
-    public init(networkManager: NetworkManager) {
+    public init(
+        networkManager: NetworkManager,
+        retryPolicy: NetworkManager.RetryPolicy = .dont,
+    ) {
         self.networkManager = networkManager
+        self.retryPolicy = retryPolicy
     }
 
     public func fetch(subscriberID: Data) async throws -> Subscription? {
-        let response = try await networkManager.asyncRequest(
-            .fetchSubscription(subscriberID: subscriberID)
-        )
+        let response: HTTPResponse
+        do {
+            response = try await networkManager.asyncRequest(
+                .fetchSubscription(subscriberID: subscriberID),
+                retryPolicy: retryPolicy
+            )
+        } catch where error.httpStatusCode == 404 {
+            return nil
+        }
 
         switch response.responseStatusCode {
         case 200:
@@ -34,8 +45,6 @@ public struct SubscriptionFetcher {
                 subscriptionDict: subscriptionDict,
                 chargeFailureDict: chargeFailureDict
             )
-        case 404:
-            return nil
         default:
             throw OWSAssertionError("Got bad response code! \(response.responseStatusCode)")
         }

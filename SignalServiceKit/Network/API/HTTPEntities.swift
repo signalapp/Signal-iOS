@@ -33,6 +33,13 @@ public struct HTTPErrorServiceResponse {
     let customRetryAfterDate: Date?
     let customLocalizedDescription: String?
     let customLocalizedRecoverySuggestion: String?
+
+    var is5xx: Bool {
+        switch responseStatus {
+        case 500..<600: true
+        default: false
+        }
+    }
 }
 
 // MARK: -
@@ -160,14 +167,7 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
         case .networkFailure:
             return true
         case .serviceResponse(let serviceResponse):
-            // TODO: We might eventually special-case 429 Rate Limited errors.
-            let responseStatus = serviceResponse.responseStatus
-            // We retry 5xx.
-            if responseStatus >= 400, responseStatus <= 499 {
-                return false
-            } else {
-                return true
-            }
+            return serviceResponse.is5xx
         }
     }
 }
@@ -250,15 +250,8 @@ extension OWSHTTPError {
             return false
         case .networkFailure:
             return true
-        case .serviceResponse:
-            if 0 == self.responseStatusCode {
-                // statusCode should now be nil, not zero, in this
-                // case, but there might be some legacy code that is
-                // still using zero.
-                owsFailDebug("Unexpected status code.")
-                return true
-            }
-            if let responseError = responseError {
+        case .serviceResponse(let serviceResponse):
+            if let responseError = serviceResponse.responseError {
                 return responseError.isNetworkFailureOrTimeout
             }
             return false

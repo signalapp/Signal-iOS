@@ -126,7 +126,10 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
 
         guard let (subscriberId, subscription) = try await fetchSubscriptionBlock(
             db,
-            SubscriptionFetcher(networkManager: networkManager)
+            SubscriptionFetcher(
+                networkManager: networkManager,
+                retryPolicy: .hopefullyRecoverable
+            )
         ) else {
             logger.info("Not redeeming, subscription missing!")
 

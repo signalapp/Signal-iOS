@@ -21,7 +21,8 @@ public extension Paypal {
             cancelUrl: Self.webAuthCancelUrl
         )
 
-        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(createBoostRequest)
+        let response = try await SSKEnvironment.shared.networkManagerRef
+            .asyncRequest(createBoostRequest, retryPolicy: .hopefullyRecoverable)
 
         guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
             throw OWSAssertionError("[Donations] Failed to decode JSON response")
@@ -54,7 +55,8 @@ public extension Paypal {
             paymentToken: approvalParams.paymentToken
         )
 
-        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(confirmOneTimePaymentRequest)
+        let response = try await SSKEnvironment.shared.networkManagerRef
+            .asyncRequest(confirmOneTimePaymentRequest, retryPolicy: .hopefullyRecoverable)
 
         guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
             throw OWSAssertionError("[Donations] Failed to decode JSON response")
@@ -90,7 +92,8 @@ public extension Paypal {
             cancelURL: Self.webAuthCancelUrl
         )
 
-        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+        let response = try await SSKEnvironment.shared.networkManagerRef
+            .asyncRequest(request, retryPolicy: .hopefullyRecoverable)
 
         guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
             throw OWSAssertionError("[Donations] Missing or invalid response.")

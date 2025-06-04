@@ -14,7 +14,8 @@ extension Stripe {
     public static func createSignalPaymentMethodForSubscription(subscriberId: Data) async throws -> String {
         let request = OWSRequestFactory.subscriptionCreateStripePaymentMethodRequest(subscriberID: subscriberId)
 
-        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+        let response = try await SSKEnvironment.shared.networkManagerRef
+            .asyncRequest(request, retryPolicy: .hopefullyRecoverable)
 
         let statusCode = response.responseStatusCode
 

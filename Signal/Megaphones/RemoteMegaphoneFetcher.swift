@@ -172,7 +172,7 @@ private extension RemoteMegaphoneFetcher {
     private func fetchManifests() async throws -> [RemoteMegaphoneModel.Manifest] {
         return try await Retry.performWithBackoff(
             maxAttempts: 3,
-            isRetryable: { $0.isNetworkFailureOrTimeout || ($0 as? OWSHTTPError)?.isRetryable == true },
+            isRetryable: { $0.isNetworkFailureOrTimeout || $0.is5xxServiceResponse },
             block: {
                 let response = try await getUrlSession().performRequest(
                     .manifestUrlPath,
@@ -224,7 +224,7 @@ private extension RemoteMegaphoneFetcher {
     ) async throws -> RemoteMegaphoneModel.Translation {
         return try await Retry.performWithBackoff(
             maxAttempts: 3,
-            isRetryable: { $0.isNetworkFailureOrTimeout || ($0 as? OWSHTTPError)?.isRetryable == true },
+            isRetryable: { $0.isNetworkFailureOrTimeout || $0.is5xxServiceResponse },
             block: {
                 guard let translationUrlPath: String = .translationUrlPath(
                     forManifest: manifest,
@@ -256,7 +256,7 @@ private extension RemoteMegaphoneFetcher {
 
         return try await Retry.performWithBackoff(
             maxAttempts: 3,
-            isRetryable: { $0.isNetworkFailureOrTimeout || ($0 as? OWSHTTPError)?.isRetryable == true },
+            isRetryable: { $0.isNetworkFailureOrTimeout || $0.is5xxServiceResponse },
             block: {
                 do {
                     if !FileManager.default.fileExists(atPath: imageFileUrl.path) {

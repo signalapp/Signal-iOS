@@ -318,7 +318,7 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                         .paymentNotFound:
                     return .redemptionUnsuccessful
                 }
-            } catch where error.isNetworkFailureOrTimeout || (error as? OWSHTTPError)?.isRetryable == true {
+            } catch where error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {
                 return .networkError
             } catch let error {
                 owsFailDebug(
@@ -357,9 +357,10 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                 response = try await networkManager.asyncRequest(
                     .backupRedeemReceiptCredential(
                         receiptCredentialPresentation: presentation
-                    )
+                    ),
+                    retryPolicy: .hopefullyRecoverable
                 )
-            } catch where error.isNetworkFailureOrTimeout || (error as? OWSHTTPError)?.isRetryable == true {
+            } catch where error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {
                 return .networkError
             } catch where error.httpStatusCode == 400 {
                 /// This indicates that our receipt credential presentation has

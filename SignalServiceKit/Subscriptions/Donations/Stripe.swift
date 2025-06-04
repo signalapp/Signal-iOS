@@ -62,7 +62,8 @@ public struct Stripe {
             paymentMethod: paymentMethod
         )
 
-        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+        let response = try await SSKEnvironment.shared.networkManagerRef
+            .asyncRequest(request, retryPolicy: .hopefullyRecoverable)
         guard let json = response.responseBodyJson else {
             throw OWSAssertionError("Missing or invalid JSON")
         }

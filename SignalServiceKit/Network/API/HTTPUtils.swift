@@ -238,6 +238,15 @@ public extension Error {
         HTTPUtils.isNetworkFailureOrTimeout(forError: self)
     }
 
+    var is5xxServiceResponse: Bool {
+        switch self as? OWSHTTPError {
+        case .serviceResponse(let serviceResponse):
+            return serviceResponse.is5xx
+        case nil, .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
+            return false
+        }
+    }
+
     func hasFatalHttpStatusCode() -> Bool {
         guard let statusCode = self.httpStatusCode else {
             return false

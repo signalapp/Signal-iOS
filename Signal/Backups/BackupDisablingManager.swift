@@ -121,7 +121,7 @@ class BackupDisablingManager {
         return try await Retry.performWithBackoff(
             maxAttempts: .max,
             maxAverageBackoff: 2 * .minute,
-            isRetryable: { $0.isNetworkFailureOrTimeout || ($0 as? OWSHTTPError)?.isRetryable == true },
+            isRetryable: { $0.isNetworkFailureOrTimeout || $0.is5xxServiceResponse },
         ) {
             return try await taskQueue.run {
                 try await _disableRemotelyIfNecessary()

@@ -11,6 +11,10 @@ public class NetworkManager {
     private let restNetworkManager = RESTNetworkManager()
     private let appReadiness: AppReadiness
     private let reachabilityDidChangeObserver: Task<Void, Never>?
+    private var chatConnectionManager: ChatConnectionManager {
+        DependenciesBridge.shared.chatConnectionManager
+    }
+
     public let libsignalNet: Net?
 
     public init(appReadiness: AppReadiness, libsignalNet: Net?) {
@@ -48,6 +52,8 @@ public class NetworkManager {
         }
     }
 
+    // MARK: -
+
     func resetLibsignalNetProxySettings() {
         guard let libsignalNet else {
             // In tests without a libsignal Net instance, no action is needed.
@@ -74,31 +80,92 @@ public class NetworkManager {
         libsignalNet.clearProxy()
     }
 
-    public func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool = true) async throws -> HTTPResponse {
+    // MARK: -
+
+    public struct RetryPolicy {
+        public struct RetryOn: OptionSet {
+            public let rawValue: Int
+
+            public init(rawValue: Int) {
+                self.rawValue = rawValue
+            }
+
+            static let fiveXXResponse: RetryOn = .init(rawValue: 1 << 0)
+            static let networkFailureOrTimeout: RetryOn = .init(rawValue: 1 << 1)
+        }
+
+        public let retryOn: [RetryOn]
+        public let maxAttempts: Int
+
+        public init(
+            retryOn: [RetryOn],
+            maxAttempts: Int
+        ) {
+            self.retryOn = retryOn
+            self.maxAttempts = maxAttempts
+        }
+
+        public static let dont: RetryPolicy = RetryPolicy(
+            retryOn: [],
+            maxAttempts: 1,
+        )
+
+        public static let hopefullyRecoverable: RetryPolicy = RetryPolicy(
+            retryOn: [.fiveXXResponse, .networkFailureOrTimeout],
+            maxAttempts: 3,
+        )
+    }
+
+    public func asyncRequest(
+        _ request: TSRequest,
+        canUseWebSocket: Bool = true,
+        retryPolicy: RetryPolicy = .dont
+    ) async throws -> HTTPResponse {
+        return try await Retry.performWithBackoff(
+            maxAttempts: retryPolicy.maxAttempts,
+            isRetryable: { error -> Bool in
+                if
+                    error.isNetworkFailureOrTimeout,
+                    retryPolicy.retryOn.contains(.networkFailureOrTimeout)
+                {
+                    return true
+                } else if
+                    error.is5xxServiceResponse,
+                    retryPolicy.retryOn.contains(.fiveXXResponse)
+                {
+                    return true
+                }
+
+                return false
+            },
+            block: { try await _asyncRequest(request, canUseWebSocket: canUseWebSocket) }
+        )
+    }
+
+    private func _asyncRequest(
+        _ request: TSRequest,
+        canUseWebSocket: Bool,
+    ) async throws -> HTTPResponse {
         if canUseWebSocket && OWSChatConnection.canAppUseSocketsToMakeRequests {
-            return try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
+            return try await chatConnectionManager.makeRequest(request)
         } else {
             return try await restNetworkManager.asyncRequest(request)
         }
     }
 
-    /// Deprecated. Please use ``asyncRequest(_:canUseWebSocket:)``.
+    /// Deprecated. Please use ``asyncRequest`` instead.
     public func makePromise(request: TSRequest, canUseWebSocket: Bool = true) -> Promise<HTTPResponse> {
-        // Try the web socket first if it's allowed for this request.
-        let useWebSocket = canUseWebSocket && OWSChatConnection.canAppUseSocketsToMakeRequests
-        return useWebSocket ? websocketRequestPromise(request: request) : restRequestPromise(request: request)
-    }
-
-    private func restRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
-        restNetworkManager.makePromise(request: request)
-    }
-
-    private func websocketRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
-        Promise.wrapAsync {
-            try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
+        if canUseWebSocket && OWSChatConnection.canAppUseSocketsToMakeRequests {
+            return Promise.wrapAsync { [chatConnectionManager] in
+                try await chatConnectionManager.makeRequest(request)
+            }
+        } else {
+            return restNetworkManager.makePromise(request: request)
         }
     }
 }
+
+// MARK: -
 
 private struct ProxyConfig {
     var scheme: String
@@ -174,7 +241,11 @@ private struct ProxyConfig {
 
 public class OWSFakeNetworkManager: NetworkManager {
 
-    public override func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool) async throws -> any HTTPResponse {
+    public override func asyncRequest(
+        _ request: TSRequest,
+        canUseWebSocket: Bool,
+        retryPolicy: RetryPolicy,
+    ) async throws -> any HTTPResponse {
         Logger.info("Ignoring request: \(request)")
         // Never resolve.
         return try await withUnsafeThrowingContinuation { (_ continuation: UnsafeContinuation<any HTTPResponse, any Error>) -> Void in }
