@@ -84,11 +84,7 @@ public actor BackgroundMessageFetcher {
     public func waitForFetchingProcessingAndSideEffects() async throws {
         try await withCooperativeRace(
             { try await self._waitForFetchingProcessingAndSideEffects() },
-            {
-                try await self.chatConnectionManager.waitUntilIdentifiedConnectionShouldBeClosed()
-                // We wanted to wait for things to happen, but we can't wait, so throw.
-                throw OWSGenericError("Should be closed.")
-            },
+            { try await self.waitUntilSocketShouldBeClosedIfCanUseSockets() },
         )
     }
 
@@ -101,12 +97,20 @@ public actor BackgroundMessageFetcher {
         if now < deadline {
             try await withCooperativeRace(
                 { try await Task.sleep(nanoseconds: (deadline - now).nanoseconds) },
-                {
-                    try await self.chatConnectionManager.waitUntilIdentifiedConnectionShouldBeClosed()
-                    // We wanted to wait until deadline, but we can't wait, so throw.
-                    throw OWSGenericError("Should be closed.")
-                },
+                { try await self.waitUntilSocketShouldBeClosedIfCanUseSockets() },
             )
+        }
+    }
+
+    private func waitUntilSocketShouldBeClosedIfCanUseSockets() async throws {
+        if OWSChatConnection.canAppUseSocketsToMakeRequests {
+            try await self.chatConnectionManager.waitUntilIdentifiedConnectionShouldBeClosed()
+            // We wanted to wait for things to happen, but we can't wait, so throw.
+            throw OWSGenericError("Should be closed.")
+        } else {
+            // Just wait until this is canceled -- the socket will always be closed.
+            let continuation = CancellableContinuation<Void>()
+            return try await continuation.wait()
         }
     }
 
