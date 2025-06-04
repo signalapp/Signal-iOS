@@ -1,1 +1,2 @@
-• Det er altid okay at skifte mening, så vi har rettet en fejl, der fik billedvælgeren til at åbne sig, efter man havde indsat en vedhæftet fil i en chat og derefter besluttet ikke at sende den.
+• In ancient times, quotes were printed on scrolls and nothing would happen if you tapped on the parchment. In modern times, you can tap on a quoted reply and now the original message is highlighted after it scrolls.
+• We also updated the “Note to Self” chat so that it’s always included in the list of available recipients without having to search for your own name. Self-discovery can be hard, but finding yourself in Signal has never been easier.

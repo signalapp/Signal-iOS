@@ -1,1 +1,2 @@
-• 改變主意當然沒問題，因此我們修復了一個錯誤，以後在聊天中貼上附件之後決定不傳送時，圖片選擇器就不會再打開。
+• In ancient times, quotes were printed on scrolls and nothing would happen if you tapped on the parchment. In modern times, you can tap on a quoted reply and now the original message is highlighted after it scrolls.
+• We also updated the “Note to Self” chat so that it’s always included in the list of available recipients without having to search for your own name. Self-discovery can be hard, but finding yourself in Signal has never been easier.

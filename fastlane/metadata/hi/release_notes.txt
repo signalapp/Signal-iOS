@@ -1,1 +1,2 @@
-• मन कभी भी बदल सकता है, इसलिए हमने उस गड़बड़ी को ठीक कर दिया है जिसकी वजह से चैट में अटैचमेंट पेस्ट करने और उसे भेजने का फ़ैसला न करने के बाद इमेज पिकर खुल जाता था।
+• In ancient times, quotes were printed on scrolls and nothing would happen if you tapped on the parchment. In modern times, you can tap on a quoted reply and now the original message is highlighted after it scrolls.
+• We also updated the “Note to Self” chat so that it’s always included in the list of available recipients without having to search for your own name. Self-discovery can be hard, but finding yourself in Signal has never been easier.
