@@ -29,7 +29,7 @@ public struct BackgroundMessageFetcherFactory {
         self.receiptSender = receiptSender
     }
 
-    public func buildFetcher() -> BackgroundMessageFetcher {
+    public func buildFetcher(useWebSocket: Bool) -> BackgroundMessageFetcher {
         return BackgroundMessageFetcher(
             chatConnectionManager: self.chatConnectionManager,
             groupMessageProcessorManager: self.groupMessageProcessorManager,
@@ -37,6 +37,7 @@ public struct BackgroundMessageFetcherFactory {
             messageProcessor: self.messageProcessor,
             messageSender: self.messageSender,
             receiptSender: self.receiptSender,
+            useWebSocket: useWebSocket,
         )
     }
 }
@@ -48,6 +49,7 @@ public actor BackgroundMessageFetcher {
     private let messageProcessor: MessageProcessor
     private let messageSender: MessageSender
     private let receiptSender: ReceiptSender
+    private let useWebSocket: Bool
 
     fileprivate init(
         chatConnectionManager: any ChatConnectionManager,
@@ -56,6 +58,7 @@ public actor BackgroundMessageFetcher {
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
         receiptSender: ReceiptSender,
+        useWebSocket: Bool,
     ) {
         self.chatConnectionManager = chatConnectionManager
         self.groupMessageProcessorManager = groupMessageProcessorManager
@@ -63,6 +66,7 @@ public actor BackgroundMessageFetcher {
         self.messageProcessor = messageProcessor
         self.messageSender = messageSender
         self.receiptSender = receiptSender
+        self.useWebSocket = useWebSocket
     }
 
     private var connectionTokens = [OWSChatConnection.ConnectionToken]()
@@ -105,7 +109,7 @@ public actor BackgroundMessageFetcher {
     }
 
     private func waitUntilSocketShouldBeClosedIfCanUseSockets() async throws {
-        if OWSChatConnection.canAppUseSocketsToMakeRequests {
+        if self.useWebSocket {
             try await self.chatConnectionManager.waitUntilIdentifiedConnectionShouldBeClosed()
             // We wanted to wait for things to happen, but we can't wait, so throw.
             throw OWSGenericError("Should be closed.")

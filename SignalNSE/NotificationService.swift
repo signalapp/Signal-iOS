@@ -144,14 +144,19 @@ class NotificationService: UNNotificationServiceExtension {
             APNSRotationStore.didReceiveAPNSPush(transaction: transaction)
         }
 
+        let useWebSocket: Bool = OWSChatConnection.canAppUseSocketsToMakeRequests
+
+        // Do this unconditionally to ensure the flag gets reset when useWebSocket's value changes.
         SSKEnvironment.shared.messageFetcherJobRef.prepareToFetchViaREST()
 
-        if await globalEnvironment.askMainAppToHandleReceipt(logger: logger) {
-            logger.info("Received notification handled by main application, memoryUsage: \(LocalDevice.memoryUsageString).")
-            return UNMutableNotificationContent()
+        if !useWebSocket {
+            if await globalEnvironment.askMainAppToHandleReceipt(logger: logger) {
+                logger.info("Received notification handled by main application, memoryUsage: \(LocalDevice.memoryUsageString).")
+                return UNMutableNotificationContent()
+            }
         }
 
-        let result = await self.fetchAndProcessMessages(logger: logger)
+        let result = await self.fetchAndProcessMessages(useWebSocket: useWebSocket, logger: logger)
         await didMarkApnsReceived
         return result
     }
@@ -182,7 +187,7 @@ class NotificationService: UNNotificationServiceExtension {
     }
 
     @MainActor
-    private func fetchAndProcessMessages(logger: NSELogger) async -> UNNotificationContent {
+    private func fetchAndProcessMessages(useWebSocket: Bool, logger: NSELogger) async -> UNNotificationContent {
         if DependenciesBridge.shared.appExpiry.isExpired(now: Date()) {
             Logger.warn("Not processing notifications for expired application.")
             return UNMutableNotificationContent()
@@ -192,14 +197,34 @@ class NotificationService: UNNotificationServiceExtension {
             try await startProxyIfEnabled()
             defer { SignalProxy.stopRelayServer() }
 
-            globalEnvironment.processingMessageCounter.increment()
-            defer { globalEnvironment.processingMessageCounter.decrement() }
+            if !useWebSocket {
+                globalEnvironment.processingMessageCounter.increment()
+            }
+            defer {
+                if !useWebSocket {
+                    globalEnvironment.processingMessageCounter.decrement()
+                }
+            }
 
-            try await SSKEnvironment.shared.messageFetcherJobRef.fetchViaRest()
+            let backgroundMessageFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher(useWebSocket: useWebSocket)
 
-            let backgroundMessageFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher()
+            let fetchResult = await Result(catching: {
+                if useWebSocket {
+                    await backgroundMessageFetcher.start()
+                } else {
+                    try await SSKEnvironment.shared.messageFetcherJobRef.fetchViaRest()
+                }
 
-            try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
+                try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
+            })
+            if useWebSocket {
+                // Wrap the cleanup of message processing in a new Task, so if we're
+                // canceled, that method doesn't inherit our cancellation.
+                await Task {
+                    await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
+                }.value
+            }
+            try fetchResult.get()
         } catch is CancellationError {
             Logger.warn("Message fetching & processing canceled.")
             return UNMutableNotificationContent()

@@ -1333,7 +1333,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             self.backgroundFetchHandle?.interrupt()
             self.backgroundFetchHandle = nil
         } else {
-            let backgroundFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher()
+            let backgroundFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher(useWebSocket: true)
             self.activeConnectionTokens = []
             self.backgroundFetchHandle?.interrupt()
             let startDate = MonotonicDate()
@@ -1455,7 +1455,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 Logger.info("Ignoring remote notification; user is not registered.")
                 return
             }
-            let backgroundMessageFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher()
+            let backgroundMessageFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher(useWebSocket: true)
             await backgroundMessageFetcher.start()
             let result = await Result(catching: {
                 // If the main app gets woken to process messages in the background, check

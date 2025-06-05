@@ -253,6 +253,10 @@ public class RemoteConfig {
         return !isEnabled(.lazyDatabaseMigratorKillSwitch)
     }
 
+    public var isNotificationServiceWebSocketEnabled: Bool {
+        return !isEnabled(.notificationServiceWebSocketKillSwitch)
+    }
+
     // MARK: UInt values
 
     private func getUIntValue(
@@ -439,6 +443,7 @@ private enum IsEnabledFlag: String, FlagType {
     case lazyDatabaseMigratorKillSwitch = "ios.lazyDatabaseMigratorKillSwitch"
     case libsignalEnforceMinTlsVersion = "ios.libsignalEnforceMinTlsVersion"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
+    case notificationServiceWebSocketKillSwitch = "ios.notificationServiceWebSocketKillSwitch"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
     case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
     case paypalMonthlyDonationKillSwitch = "ios.paypalMonthlyDonationKillSwitch"
@@ -462,6 +467,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .lazyDatabaseMigratorKillSwitch: true
         case .libsignalEnforceMinTlsVersion: false
         case .messageResendKillSwitch: false
+        case .notificationServiceWebSocketKillSwitch: true
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
         case .paypalMonthlyDonationKillSwitch: false

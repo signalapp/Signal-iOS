@@ -236,8 +236,26 @@ public class OWSChatConnection {
 
     // MARK: - Socket LifeCycle
 
+    public static var mustAppUseSocketsToMakeRequests: Bool {
+        switch CurrentAppContext().type {
+        case .main:
+            return true
+        case .nse:
+            return false // because there is a kill switch
+        case .share:
+            return false
+        }
+    }
+
     public static var canAppUseSocketsToMakeRequests: Bool {
-        return CurrentAppContext().isMainApp
+        switch CurrentAppContext().type {
+        case .main:
+            return true
+        case .nse:
+            return FeatureFlags.notificationServiceWebSocket && RemoteConfig.current.isNotificationServiceWebSocketEnabled
+        case .share:
+            return false
+        }
     }
 
     public var canOpenWebSocket: Bool {
