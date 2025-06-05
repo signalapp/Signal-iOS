@@ -20,7 +20,7 @@ public protocol ChatConnectionManager {
     var hasEmptiedInitialQueue: Bool { get }
 
     func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool
-    func requestConnections() -> [OWSChatConnection.ConnectionToken]
+    func requestConnections(shouldReconnectIfConnectedElsewhere: Bool) -> [OWSChatConnection.ConnectionToken]
     func waitForDisconnectIfClosed() async
     func makeRequest(_ request: TSRequest) async throws -> HTTPResponse
 }
@@ -67,8 +67,11 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         try await self.connectionIdentified.waitUntilSocketShouldBeClosed()
     }
 
-    public func requestConnections() -> [OWSChatConnection.ConnectionToken] {
-        return [connectionIdentified.requestConnection(), connectionUnidentified.requestConnection()]
+    public func requestConnections(shouldReconnectIfConnectedElsewhere: Bool) -> [OWSChatConnection.ConnectionToken] {
+        return [
+            connectionIdentified.requestConnection(shouldReconnectIfConnectedElsewhere: shouldReconnectIfConnectedElsewhere),
+            connectionUnidentified.requestConnection(shouldReconnectIfConnectedElsewhere: shouldReconnectIfConnectedElsewhere),
+        ]
     }
 
     public func waitForDisconnectIfClosed() async {
@@ -121,7 +124,7 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
         return shouldWaitForSocketToMakeRequestPerType[connectionType] ?? true
     }
 
-    public func requestConnections() -> [OWSChatConnection.ConnectionToken] {
+    public func requestConnections(shouldReconnectIfConnectedElsewhere: Bool) -> [OWSChatConnection.ConnectionToken] {
         return []
     }
 

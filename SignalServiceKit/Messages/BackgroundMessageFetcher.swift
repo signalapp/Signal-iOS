@@ -68,7 +68,9 @@ public actor BackgroundMessageFetcher {
     private var connectionTokens = [OWSChatConnection.ConnectionToken]()
 
     public func start() async {
-        self.connectionTokens = chatConnectionManager.requestConnections()
+        self.connectionTokens = chatConnectionManager.requestConnections(
+            shouldReconnectIfConnectedElsewhere: false,
+        )
         await self.groupMessageProcessorManager.startAllProcessors()
     }
 

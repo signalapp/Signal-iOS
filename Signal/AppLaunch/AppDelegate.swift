@@ -1325,7 +1325,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let oldActiveConnectionTokens = self.activeConnectionTokens
         if isAppActive {
             // If we're active, open a connection.
-            self.activeConnectionTokens = chatConnectionManager.requestConnections()
+            self.activeConnectionTokens = chatConnectionManager.requestConnections(shouldReconnectIfConnectedElsewhere: true)
             oldActiveConnectionTokens.forEach { $0.releaseConnection() }
 
             // We're back in the foreground. We've passed off connection management to

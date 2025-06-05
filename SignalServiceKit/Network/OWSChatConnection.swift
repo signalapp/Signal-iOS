@@ -312,16 +312,35 @@ public class OWSChatConnection {
 
     struct ConnectionTokenState {
         var tokenId = 0
-        var activeTokenIds = Set<Int>()
+
+        /// Maps token IDs to how many "connected elsewhere" events can occur before
+        /// the token ID is implicitly released. (Note: The owner of the token is
+        /// still responsible for calling relaseConnection.)
+        var activeTokenIds = [Int: Int]()
+
+        func shouldSocketBeOpen() -> Bool {
+            return self.activeTokenIds.contains(where: { $0.value > 0 })
+        }
     }
 
     private let connectionTokenState = AtomicValue(ConnectionTokenState(), lock: .init())
 
-    public func requestConnection() -> ConnectionToken {
+    /// If another process opens a connection, should this one reconnect and
+    /// reclaim the connection?
+    ///
+    /// The Notification Service shouldn't be launched while the Main App is
+    /// running -- the Main App should always have an open web socket that's
+    /// being informed of new messages. Therefore, if the Notification Service
+    /// claims the connection, the Main App should take it back. The
+    /// Notification Service will allow this to happen and won't try to
+    /// reconnect until it receives a new notification.
+    public func requestConnection(shouldReconnectIfConnectedElsewhere: Bool) -> ConnectionToken {
         let (connectionToken, shouldConnect) = connectionTokenState.update {
             $0.tokenId += 1
             let shouldConnect = $0.activeTokenIds.isEmpty
-            $0.activeTokenIds.insert($0.tokenId)
+            // If we want to reconnect, set the number of retries to "Int.max" (aka
+            // "infinity"). If we shouldn't reconnect, set the number of retries to 1.
+            $0.activeTokenIds[$0.tokenId] = shouldReconnectIfConnectedElsewhere ? Int.max : 1
             let connectionToken = ConnectionToken(tokenId: $0.tokenId, chatConnection: self)
             return (connectionToken, shouldConnect)
         }
@@ -333,13 +352,28 @@ public class OWSChatConnection {
 
     private func releaseConnection(_ tokenId: Int) -> Bool {
         let (didRelease, shouldDisconnect) = connectionTokenState.update {
-            let didRelease = $0.activeTokenIds.remove(tokenId) != nil
+            let didRelease = $0.activeTokenIds.removeValue(forKey: tokenId) != nil
             return (didRelease, $0.activeTokenIds.isEmpty)
         }
         if shouldDisconnect {
             applyDesiredSocketState()
         }
         return didRelease
+    }
+
+    fileprivate final func didConnectElsewhere() {
+        assertOnQueue(serialQueue)
+
+        // Decrement the number of retries for every token. Don't delete them
+        // because the callers are still responsible for releasing them.
+        connectionTokenState.update {
+            $0.activeTokenIds = $0.activeTokenIds.mapValues { $0 - 1 }
+        }
+
+        // If the socket shouldn't be open, notify anybody who's waiting.
+        if !shouldSocketBeOpen() {
+            notifySocketShouldBeClosed()
+        }
     }
 
     // This method aligns the socket state with the "desired" socket state.
@@ -354,7 +388,7 @@ public class OWSChatConnection {
 
         return (
             (canOpenWebSocketError == nil)
-            && connectionTokenState.update { !$0.activeTokenIds.isEmpty }
+            && connectionTokenState.update { $0.shouldSocketBeOpen() }
         )
     }
 
@@ -808,8 +842,11 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                 return
             }
 
-            if let error {
-                Logger.error("\(logPrefix) disconnected: \(error)")
+            if case SignalError.connectedElsewhere(_)? = error {
+                Logger.info("We were disconnected because another process connected.")
+                didConnectElsewhere()
+            } else if let error {
+                Logger.warn("\(logPrefix) disconnected: \(error)")
             } else {
                 owsFailDebug("\(logPrefix) libsignal disconnected us without being asked")
             }
