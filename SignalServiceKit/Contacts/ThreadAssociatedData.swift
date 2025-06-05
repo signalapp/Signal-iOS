@@ -144,16 +144,6 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
             return owsFailDebug("You must set one value")
         }
 
-        var isMarkedUnread = isMarkedUnread
-
-        // If we're archiving and we have an existing thread record,
-        // also mark that thread record as read.
-        if isArchived == true {
-            // Also clear marked unread if we're not explicitly setting it.
-            if isMarkedUnread == nil { isMarkedUnread = false }
-            markThreadAsReadIfExists(transaction: transaction)
-        }
-
         updateWith(updateStorageService: updateStorageService, transaction: transaction) { associatedData in
             if let isArchived = isArchived {
                 associatedData.isArchived = isArchived
@@ -246,11 +236,6 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
                 owsFailDebug("Unexpected thread type")
             }
         }
-    }
-
-    fileprivate func markThreadAsReadIfExists(transaction: DBWriteTransaction) {
-        guard let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction) else { return }
-        thread.markAllAsRead(transaction: transaction)
     }
 }
 
