@@ -397,6 +397,9 @@ message ContactDetails {
   optional bytes    profileKey  = 6;
   optional bool     blocked     = 7;
   optional uint32   expireTimer = 8;
+  // New fields for peer's extra public key and timestamp
+  optional bytes    peerExtraPublicKey          = 10;
+  optional int64    peerExtraPublicKeyTimestamp = 11;
 }
 
 message GroupDetails {
