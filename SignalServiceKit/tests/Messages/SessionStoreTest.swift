@@ -101,7 +101,8 @@ class SessionStoreTest2: XCTestCase {
             sessionStore: alice_store,
             identityStore: alice_store,
             now: Date(timeIntervalSinceReferenceDate: 0),
-            context: NullContext()
+            context: NullContext(),
+            usePqRatchet: false
         )
 
         // If these assertions fail, it likely means that

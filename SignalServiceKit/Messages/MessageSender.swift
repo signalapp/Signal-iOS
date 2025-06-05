@@ -231,7 +231,8 @@ public class MessageSender {
                 for: protocolAddress,
                 sessionStore: DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore,
                 identityStore: identityManager.libSignalStore(for: .aci, tx: transaction),
-                context: transaction
+                context: transaction,
+                usePqRatchet: false
             )
         } catch SignalError.untrustedIdentity(_), IdentityManagerError.identityKeyMismatchForOutgoingMessage {
             Logger.warn("Found untrusted identity for \(serviceId)")
