@@ -180,15 +180,28 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
+    @MainActor
+    private var shouldRebuildCallUIAdapter = false
+
     /**
      * Choose whether to use CallKit or a Notification backed interface for calling.
      */
+    @MainActor
     public func rebuildCallUIAdapter() {
         if let currentCall = callServiceState.currentCall {
-            Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
-            callServiceState.terminateCall(currentCall)
+            Logger.warn("Ending current call because the user toggled a CallKit preference during a call.")
+            self.callUIAdapter.localHangupCall(currentCall)
         }
+        self.shouldRebuildCallUIAdapter = true
+        self.rebuildCallUIAdapterIfNeeded()
+    }
 
+    @MainActor
+    private func rebuildCallUIAdapterIfNeeded() {
+        guard self.shouldRebuildCallUIAdapter else {
+            return
+        }
+        self.shouldRebuildCallUIAdapter = false
         self.callUIAdapter = CallUIAdapter()
     }
 
@@ -247,6 +260,12 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             }
             if newValue != nil {
                 UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+            }
+        }
+
+        if newValue == nil {
+            MainActor.assumeIsolated {
+                self.rebuildCallUIAdapterIfNeeded()
             }
         }
 

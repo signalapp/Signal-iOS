@@ -36,6 +36,11 @@ class CallServiceState {
     func setCurrentCall(_ currentCall: SignalCall?) {
         let oldValue = _currentCall.swap(currentCall)
 
+        // Some didUpdateCall observers don't support transitioning directly from
+        // one call to another. We don't currently do that, and we almost certainly
+        // won't in the future.
+        owsAssertDebug(oldValue == nil || currentCall == nil)
+
         guard currentCall !== oldValue else {
             return
         }
