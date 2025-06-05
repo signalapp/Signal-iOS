@@ -495,6 +495,11 @@ public final class ConversationViewController: OWSViewController {
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
+        // Title view sometimes disappears when orientation changes.
+        // Reset it here as a workaround.
+        navigationItem.titleView = nil
+        navigationItem.titleView = headerView
+
         guard hasViewWillAppearEverBegun else {
             return
         }
