@@ -17,7 +17,7 @@ public protocol ChatConnectionManager {
     /// all connection tokens are released).
     func waitUntilIdentifiedConnectionShouldBeClosed() async throws
     var identifiedConnectionState: OWSChatConnectionState { get }
-    var hasEmptiedInitialQueue: Bool { get }
+    var hasEmptiedInitialQueue: Bool { get async }
 
     func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool
     func requestConnections(shouldReconnectIfConnectedElsewhere: Bool) -> [OWSChatConnection.ConnectionToken]
@@ -95,7 +95,9 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     }
 
     public var hasEmptiedInitialQueue: Bool {
-        connectionIdentified.hasEmptiedInitialQueue
+        get async {
+            return await connectionIdentified.hasEmptiedInitialQueue
+        }
     }
 }
 

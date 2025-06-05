@@ -63,9 +63,10 @@ public class OWSChatConnection {
         return .closed
     }
 
-    // This var must be thread-safe.
     public var hasEmptiedInitialQueue: Bool {
-        false
+        get async {
+            return false
+        }
     }
 
     fileprivate var logPrefix: String {
@@ -884,9 +885,15 @@ internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSigna
 }
 
 internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<AuthenticatedChatConnection>, ChatConnectionListener {
-    private let _hasEmptiedInitialQueue = AtomicBool(false, lock: .sharedGlobal)
+    private var _hasEmptiedInitialQueue = false
     override var hasEmptiedInitialQueue: Bool {
-        _hasEmptiedInitialQueue.get()
+        get async {
+            return await withCheckedContinuation { continuation in
+                serialQueue.async {
+                    continuation.resume(returning: self._hasEmptiedInitialQueue)
+                }
+            }
+        }
     }
 
     private var _keepaliveSenderTask: Task<Void, Never>?
@@ -931,13 +938,8 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
                 }
                 keepaliveSenderTask = makeKeepaliveTask(service)
             case .closed:
-                // While _hasEmptiedInitialQueue is atomic, that's not sufficient to guarantee the
-                // *order* of writes. We do that by making sure we only set it on the serial queue,
-                // and then make sure libsignal's serialized callbacks result in scheduling on the
-                // serial queue.
                 keepaliveSenderTask = nil
-                _hasEmptiedInitialQueue.set(false)
-                Logger.debug("Reset _hasEmptiedInitialQueue")
+                _hasEmptiedInitialQueue = false
             }
         }
     }
@@ -1036,8 +1038,8 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
                     // We have since disconnected from the chat service instance that reported the empty queue.
                     return
                 }
-                let alreadyEmptied = self._hasEmptiedInitialQueue.swap(true)
-                Logger.debug("Initial queue emptied")
+                let alreadyEmptied = self._hasEmptiedInitialQueue
+                self._hasEmptiedInitialQueue = true
 
                 if !alreadyEmptied {
                     // This notification is used to wake up anything waiting for hasEmptiedInitialQueue.

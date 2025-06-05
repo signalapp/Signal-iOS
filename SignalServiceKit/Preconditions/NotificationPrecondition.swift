@@ -8,25 +8,35 @@ import Foundation
 /// Waits until `isSatisfied()` returns true. Checks the initial result and
 /// then re-checks the result each time notificationName fires.
 public struct NotificationPrecondition: Precondition, Sendable {
-    private let notificationName: Notification.Name
-    private let isSatisfied: @Sendable () -> Bool
+    private let notificationNames: [Notification.Name]
+    private let isSatisfied: @Sendable () async -> Bool
 
-    public init(notificationName: Notification.Name, isSatisfied: @escaping @Sendable () -> Bool) {
-        self.notificationName = notificationName
+    public init(notificationName: Notification.Name, isSatisfied: @escaping @Sendable () async -> Bool) {
+        self.init(notificationNames: [notificationName], isSatisfied: isSatisfied)
+    }
+
+    public init(notificationNames: [Notification.Name], isSatisfied: @escaping @Sendable () async -> Bool) {
+        self.notificationNames = notificationNames
         self.isSatisfied = isSatisfied
     }
 
     public func waitUntilSatisfied() async -> WaitResult {
         let result = CancellableContinuation<Void>()
-        let observer = NotificationCenter.default.addObserver(forName: notificationName, object: nil, queue: nil, using: { _ in
-            if self.isSatisfied() {
-                return result.resume(with: .success(()))
-            }
-        })
-        defer {
-            NotificationCenter.default.removeObserver(observer)
+        let observers = self.notificationNames.map {
+            return NotificationCenter.default.addObserver(forName: $0, object: nil, queue: nil, using: { _ in
+                Task {
+                    if await self.isSatisfied() {
+                        result.resume(with: .success(()))
+                    }
+                }
+            })
         }
-        if isSatisfied() {
+        defer {
+            for observer in observers {
+                NotificationCenter.default.removeObserver(observer)
+            }
+        }
+        if await isSatisfied() {
             return .satisfiedImmediately
         }
         do {

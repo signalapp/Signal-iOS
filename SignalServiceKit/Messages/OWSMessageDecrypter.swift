@@ -7,7 +7,8 @@ import LibSignalClient
 
 public class OWSMessageDecrypter {
 
-    private var senderIdsResetDuringCurrentBatch = NSMutableSet()
+    private let senderIdsResetDuringCurrentBatch = AtomicValue<Set<String>>(Set(), lock: .init())
+
     private var placeholderCleanupTimer: Timer? {
         didSet { oldValue?.invalidate() }
     }
@@ -31,15 +32,16 @@ public class OWSMessageDecrypter {
 
     @objc
     func messageProcessorDidDrainQueue() {
-        // We don't want to send additional resets until we
-        // have received the "empty" response from the WebSocket
-        // or finished at least one REST fetch.
-        guard SSKEnvironment.shared.messageFetcherJobRef.hasCompletedInitialFetch else { return }
+        Task {
+            // We don't want to send additional resets until we have received the
+            // "empty" response from the WebSocket or finished at least one REST fetch.
+            guard await SSKEnvironment.shared.messageFetcherJobRef.hasCompletedInitialFetch else { return }
 
-        // We clear all recently reset sender ids any time the
-        // decryption queue has drained, so that any new messages
-        // that fail to decrypt will reset the session again.
-        senderIdsResetDuringCurrentBatch.removeAllObjects()
+            // We clear all recently reset sender ids any time the decryption queue has
+            // drained, so that any new messages that fail to decrypt will reset the
+            // session again.
+            senderIdsResetDuringCurrentBatch.update { $0.removeAll() }
+        }
     }
 
     private func trySendNullMessage(
@@ -354,9 +356,7 @@ public class OWSMessageDecrypter {
         // resets. When the message decrypt queue is drained, the list of recently
         // reset IDs is cleared.
         let senderId = "\(sourceAci).\(sourceDeviceId)"
-        if !senderIdsResetDuringCurrentBatch.contains(senderId) {
-            senderIdsResetDuringCurrentBatch.add(senderId)
-
+        if senderIdsResetDuringCurrentBatch.update(block: { $0.insert(senderId).inserted }) {
             // We don't reset sessions for messages sent to our PNI because those are
             // receive-only & we don't send retries FROM our PNI back to the sender.
 

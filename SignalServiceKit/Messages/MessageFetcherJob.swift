@@ -26,7 +26,6 @@ public class MessageFetcherJob {
         owsPrecondition(CurrentAppContext().shouldProcessIncomingMessages)
         owsPrecondition(CurrentAppContext().isNSE)
         owsPrecondition(self.appReadiness.isAppReady)
-        owsPrecondition(!self.shouldUseWebSocket)
         owsAssertDebug(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered)
 
         await self.startGroupMessageProcessorsIfNeeded()
@@ -37,25 +36,17 @@ public class MessageFetcherJob {
         await SSKEnvironment.shared.groupMessageProcessorManagerRef.startAllProcessors()
     }
 
-    private var shouldUseWebSocket: Bool {
-        return OWSChatConnection.canAppUseSocketsToMakeRequests
-    }
-
     public var hasCompletedInitialFetch: Bool {
-        if shouldUseWebSocket {
-            return (
-                DependenciesBridge.shared.chatConnectionManager.identifiedConnectionState == .open &&
-                DependenciesBridge.shared.chatConnectionManager.hasEmptiedInitialQueue
-            )
-        } else {
-            return self.didFinishFetchingViaREST.get()
+        get async {
+            let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager
+            return await chatConnectionManager.hasEmptiedInitialQueue || self.didFinishFetchingViaREST.get()
         }
     }
 
     func preconditionForFetchingComplete() -> some Precondition {
         return NotificationPrecondition(
-            notificationName: shouldUseWebSocket ? OWSChatConnection.chatConnectionStateDidChange : Self.didChangeStateNotificationName,
-            isSatisfied: { self.hasCompletedInitialFetch }
+            notificationNames: [OWSChatConnection.chatConnectionStateDidChange, Self.didChangeStateNotificationName],
+            isSatisfied: { await self.hasCompletedInitialFetch }
         )
     }
 
