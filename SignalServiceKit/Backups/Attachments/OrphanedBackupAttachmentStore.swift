@@ -14,9 +14,20 @@ public protocol OrphanedBackupAttachmentStore {
     /// Returns an empty array if the table is empty.
     func peek(count: UInt, tx: DBReadTransaction) throws -> [OrphanedBackupAttachment]
 
-    /// Remove any tasks with the given media name
-    func remove(
+    /// Remove any tasks for deleting a fullsize media tier upload with
+    /// the given media name and/or derived media id.
+    func removeThumbnail(
+        fullsizeMediaName: String,
+        thumbnailMediaId: Data,
+        tx: DBWriteTransaction
+    ) throws
+
+    /// Remove any tasks for deleting a fullsize media tier upload with
+    /// the given media name (fullsize, not the thumbnail media name)
+    /// and/or derived thumbnail media id.
+    func removeFullsize(
         mediaName: String,
+        fullsizeMediaId: Data,
         tx: DBWriteTransaction
     ) throws
 
@@ -52,12 +63,36 @@ public class OrphanedBackupAttachmentStoreImpl: OrphanedBackupAttachmentStore {
             .fetchAll(db)
     }
 
-    public func remove(
+    public func removeThumbnail(
+        fullsizeMediaName: String,
+        thumbnailMediaId: Data,
+        tx: DBWriteTransaction
+    ) throws {
+        try OrphanedBackupAttachment
+            // Records for thumbnails are enqueued with the fullsize's media name
+            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == fullsizeMediaName)
+            .filter(Column(OrphanedBackupAttachment.CodingKeys.type)
+                    == OrphanedBackupAttachment.SizeType.thumbnail.rawValue)
+            .deleteAll(tx.database)
+        try OrphanedBackupAttachment
+            // No need to filter by type; matching the mediaId is sufficient
+            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == thumbnailMediaId)
+            .deleteAll(tx.database)
+    }
+
+    public func removeFullsize(
         mediaName: String,
+        fullsizeMediaId: Data,
         tx: DBWriteTransaction
     ) throws {
         try OrphanedBackupAttachment
             .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
+            .filter(Column(OrphanedBackupAttachment.CodingKeys.type)
+                    == OrphanedBackupAttachment.SizeType.fullsize.rawValue)
+            .deleteAll(tx.database)
+        try OrphanedBackupAttachment
+        // No need to filter by type; matching the mediaId is sufficient
+            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == fullsizeMediaId)
             .deleteAll(tx.database)
     }
 

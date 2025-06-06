@@ -100,9 +100,6 @@ extension BackupArchive {
             /// We only support backing up 1:1 story replies.
             case storyReplyInGroupThread
 
-            /// An attachment failed to be enqueued for upload, and will not be uploaded to the media tier.
-            case failedToEnqueueAttachmentForUpload
-
             /// A reaction has an invalid or missing author address information, causing the
             /// reaction to be skipped.
             case invalidReactionAddress
@@ -304,7 +301,6 @@ extension BackupArchive {
                     .storyReplyAuthorMissingAci,
                     .storyReplyEmptyContents,
                     .storyReplyInGroupThread,
-                    .failedToEnqueueAttachmentForUpload,
                     .invalidReactionAddress,
                     .invalidReactionTimestamp,
                     .emptyGroupUpdate,
@@ -369,7 +365,6 @@ extension BackupArchive {
                     .storyReplyAuthorMissingAci,
                     .storyReplyEmptyContents,
                     .storyReplyInGroupThread,
-                    .failedToEnqueueAttachmentForUpload,
                     .invalidReactionAddress,
                     .invalidReactionTimestamp,
                     .emptyGroupUpdate,

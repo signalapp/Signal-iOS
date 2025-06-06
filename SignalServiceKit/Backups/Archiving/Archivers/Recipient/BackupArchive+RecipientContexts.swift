@@ -132,7 +132,6 @@ extension BackupArchive {
         private let callLinkIdMap = SharedMap<CallLinkRecordId, RecipientId>()
 
         init(
-            backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: BackupArchive.ArchiveBencher,
             currentBackupAttachmentUploadEra: String,
             currentBackupPlan: BackupPlan,
@@ -159,7 +158,6 @@ extension BackupArchive {
             }
 
             super.init(
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 currentBackupPlan: currentBackupPlan,

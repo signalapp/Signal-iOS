@@ -1731,26 +1731,6 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "BackupAttachmentUploadQueue" (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT
-            ,"attachmentRowId" INTEGER NOT NULL UNIQUE REFERENCES "Attachment"("id"
-        )
-            ON DELETE
-                CASCADE
-                ,"sourceType" INTEGER NOT NULL
-                ,"timestamp" INTEGER
-)
-;
-
-CREATE
-    INDEX "index_BackupAttachmentUploadQueue_on_sourceType_timestamp"
-        ON "BackupAttachmentUploadQueue"("sourceType"
-    ,"timestamp"
-)
-;
-
-CREATE
-    TABLE
         IF NOT EXISTS "BackupStickerPackDownloadQueue" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT
             ,"packId" BLOB NOT NULL
@@ -2316,5 +2296,32 @@ CREATE
 CREATE
     INDEX "StoryRecipient_on_recipientId"
         ON "StoryRecipient"("recipientId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "BackupAttachmentUploadQueue" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            ,"attachmentRowId" INTEGER NOT NULL REFERENCES "Attachment"("id"
+        )
+            ON DELETE
+                CASCADE
+                ,"maxOwnerTimestamp" INTEGER
+                ,"estimatedByteCount" INTEGER NOT NULL
+                ,"isFullsize" BOOLEAN NOT NULL
+)
+;
+
+CREATE
+    INDEX "index_BackupAttachmentUploadQueue_on_attachmentRowId"
+        ON "BackupAttachmentUploadQueue"("attachmentRowId"
+)
+;
+
+CREATE
+    INDEX "index_BackupAttachmentUploadQueue_on_maxOwnerTimestamp_isFullsize"
+        ON "BackupAttachmentUploadQueue"("maxOwnerTimestamp"
+    ,"isFullsize"
 )
 ;

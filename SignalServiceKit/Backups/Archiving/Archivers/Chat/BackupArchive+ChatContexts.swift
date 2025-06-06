@@ -105,7 +105,6 @@ extension BackupArchive {
         private let threadCache = SharedMap<ChatId, CachedThreadInfo>()
 
         init(
-            backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: BackupArchive.ArchiveBencher,
             currentBackupAttachmentUploadEra: String,
             currentBackupPlan: BackupPlan,
@@ -118,7 +117,6 @@ extension BackupArchive {
             self.customChatColorContext = customChatColorContext
             self.recipientContext = recipientContext
             super.init(
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 currentBackupPlan: currentBackupPlan,
@@ -344,7 +342,6 @@ extension BackupArchive {
         private let map = SharedMap<CustomChatColor.Key, CustomChatColorId>()
 
         override init(
-            backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: BackupArchive.ArchiveBencher,
             currentBackupAttachmentUploadEra: String,
             currentBackupPlan: BackupPlan,
@@ -353,7 +350,6 @@ extension BackupArchive {
             tx: DBWriteTransaction
         ) {
             super.init(
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 currentBackupPlan: currentBackupPlan,

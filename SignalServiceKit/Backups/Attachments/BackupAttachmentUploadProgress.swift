@@ -76,14 +76,12 @@ public actor BackupAttachmentUploadProgress {
     /// Create an OWSProgressSink for a single attachment to be uploaded.
     /// Should be called prior to uploading any backup attachment.
     internal func willBeginUploadingAttachment(
-        attachmentId id: Attachment.IDType,
-        queuedUploadRowId: QueuedBackupAttachmentUpload.IDType
+        uploadRecord: QueuedBackupAttachmentUpload
     ) async -> OWSProgressSink {
         let sink = OWSProgress.createSink { [weak self] progress in
             Task {
                 await self?.didUpdateProgressForActiveUpload(
-                    attachmentId: id,
-                    queuedUploadRowId: queuedUploadRowId,
+                    uploadRecord: uploadRecord,
                     completedByteCount: progress.completedUnitCount,
                     totalByteCount: progress.totalUnitCount
                 )
@@ -97,15 +95,12 @@ public actor BackupAttachmentUploadProgress {
     /// finishing without reporting any progress updates. This method ensures we always mark
     /// attachments as finished in all cases.
     internal func didFinishUploadOfAttachment(
-        attachmentId id: Attachment.IDType,
-        queuedUploadRowId: QueuedBackupAttachmentUpload.IDType,
-        byteCount: UInt64
+        uploadRecord: QueuedBackupAttachmentUpload
     ) {
         didUpdateProgressForActiveUpload(
-            attachmentId: id,
-            queuedUploadRowId: queuedUploadRowId,
-            completedByteCount: byteCount,
-            totalByteCount: byteCount
+            uploadRecord: uploadRecord,
+            completedByteCount: UInt64(uploadRecord.estimatedByteCount),
+            totalByteCount: UInt64(uploadRecord.estimatedByteCount)
         )
     }
 
@@ -144,6 +139,7 @@ public actor BackupAttachmentUploadProgress {
     private struct PerObserverUploadId: Hashable {
         let observerId: UUID
         let attachmentId: Attachment.IDType
+        let isFullsize: Bool
     }
 
     /// Currently active uploads for which we update progress byte-by-byte.
@@ -157,8 +153,7 @@ public actor BackupAttachmentUploadProgress {
     private var recentlyCompletedUploads = LRUCache<PerObserverUploadId, Void>(maxSize: 100)
 
     private func didUpdateProgressForActiveUpload(
-        attachmentId id: Attachment.IDType,
-        queuedUploadRowId: QueuedBackupAttachmentUpload.IDType,
+        uploadRecord: QueuedBackupAttachmentUpload,
         completedByteCount: UInt64,
         totalByteCount: UInt64
     ) {
@@ -171,23 +166,27 @@ public actor BackupAttachmentUploadProgress {
         observers.elements.forEach { observer in
             guard
                 let maxRowId = observer.queueSnapshot.maxRowId,
-                maxRowId >= queuedUploadRowId
+                maxRowId >= uploadRecord.id ?? 0
             else {
                 return
             }
             let uploadId = PerObserverUploadId(
                 observerId: observer.id,
-                attachmentId: id
+                attachmentId: uploadRecord.attachmentRowId,
+                isFullsize: uploadRecord.isFullsize
             )
             let prevByteCount = activeUploadByteCounts[uploadId] ?? 0
             let source = observer.source
-            let diff = min(max(completedByteCount, prevByteCount) - prevByteCount, source.totalUnitCount - source.completedUnitCount)
-            if diff > 0 {
-                source.incrementCompletedUnitCount(by: diff)
-            }
             if completedByteCount >= totalByteCount {
+                if source.completedUnitCount < source.totalUnitCount {
+                    source.incrementCompletedUnitCount(by: source.totalUnitCount - source.completedUnitCount)
+                }
                 recentlyCompletedUploads.set(key: uploadId, value: ())
             } else {
+                let diff = min(max(completedByteCount, prevByteCount) - prevByteCount, source.totalUnitCount - source.completedUnitCount)
+                if diff > 0 {
+                    source.incrementCompletedUnitCount(by: diff)
+                }
                 activeUploadByteCounts[uploadId] = completedByteCount
             }
         }
@@ -207,41 +206,19 @@ public actor BackupAttachmentUploadProgress {
 
     private nonisolated func computeRemainingUnuploadedByteCount() throws -> UploadQueueSnapshot {
         return try db.read { tx in
-            let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
-
             var totalByteCount: UInt64 = 0
             var maxRowId: Int64?
 
-            struct JoinedRecord: Decodable, FetchableRecord {
-                var QueuedBackupAttachmentUpload: QueuedBackupAttachmentUpload
-                var Attachment: Attachment.Record
-            }
-
             let cursor = try QueuedBackupAttachmentUpload
-                .including(required: QueuedBackupAttachmentUpload.attachment.self)
-                .asRequest(of: JoinedRecord.self)
                 .fetchCursor(tx.database)
 
-            while let joinedRecord = try cursor.next() {
-                guard let attachment = try? Attachment(record: joinedRecord.Attachment) else {
-                    continue
+            while let uploadRecord = try cursor.next() {
+                totalByteCount += UInt64(uploadRecord.estimatedByteCount)
+                if let existingMaxRowId = maxRowId {
+                    maxRowId = max(existingMaxRowId, uploadRecord.id!)
+                } else {
+                    maxRowId = uploadRecord.id
                 }
-                if
-                    let stream = attachment.asStream(),
-                    stream.needsMediaTierUpload(currentUploadEra: currentUploadEra)
-                {
-                    let attachmentByteCount: UInt = Cryptography.paddedSize(
-                        unpaddedSize: UInt(stream.encryptedByteCount)
-                    )
-                    totalByteCount += UInt64(attachmentByteCount)
-                    if let existingMaxRowId = maxRowId {
-                        maxRowId = max(existingMaxRowId, joinedRecord.QueuedBackupAttachmentUpload.id!)
-                    } else {
-                        maxRowId = joinedRecord.QueuedBackupAttachmentUpload.id
-                    }
-                }
-                // We don't count thumbnail uploads towards the total
-                // upload count we track the progress of.
             }
 
             return UploadQueueSnapshot(totalByteCount: totalByteCount, maxRowId: maxRowId)

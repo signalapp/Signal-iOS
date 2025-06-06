@@ -327,6 +327,7 @@ public class GRDBSchemaMigrator {
         case populateAvatarDefaultColorTable
         case addStoryRecipient
         case addAttachmentLastFullscreenViewTimestamp
+        case addByteCountAndIsFullsizeToBackupAttachmentUpload
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -390,7 +391,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 112
+    public static let grdbSchemaVersionLatest: UInt = 113
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3957,6 +3958,39 @@ public class GRDBSchemaMigrator {
             try tx.database.alter(table: "Attachment") { table in
                 table.add(column: "lastFullscreenViewTimestamp", .integer)
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addByteCountAndIsFullsizeToBackupAttachmentUpload) { tx in
+            // At the time of this migration, no user could have backups
+            // and therefore its fine to just drop the table and recreate.
+            try tx.database.drop(table: "BackupAttachmentUploadQueue")
+
+            try tx.database.create(table: "BackupAttachmentUploadQueue") { table in
+                table.autoIncrementedPrimaryKey("id")
+                table.column("attachmentRowId", .integer)
+                    .references("Attachment", column: "id", onDelete: .cascade)
+                    .notNull()
+                table.column("maxOwnerTimestamp", .integer)
+                table.column("estimatedByteCount", .integer)
+                    .notNull()
+                table.column("isFullsize", .boolean)
+                    .notNull()
+            }
+
+            // For efficient cascade deletes and lookups
+            try tx.database.create(
+                index: "index_BackupAttachmentUploadQueue_on_attachmentRowId",
+                on: "BackupAttachmentUploadQueue",
+                columns: ["attachmentRowId"]
+            )
+            // For efficient sorting by timestamp
+            try tx.database.create(
+                index: "index_BackupAttachmentUploadQueue_on_maxOwnerTimestamp_isFullsize",
+                on: "BackupAttachmentUploadQueue",
+                columns: ["maxOwnerTimestamp", "isFullsize"]
+            )
+
             return .success(())
         }
 

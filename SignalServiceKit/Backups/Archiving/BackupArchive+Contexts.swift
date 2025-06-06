@@ -52,11 +52,9 @@ extension BackupArchive {
 
         /// Always set even if BackupPlan is free
         let currentBackupAttachmentUploadEra: String
-        private let currentBackupPlan: BackupPlan
-        private let backupAttachmentUploadManager: BackupAttachmentUploadManager
+        let currentBackupPlan: BackupPlan
 
         init(
-            backupAttachmentUploadManager: BackupAttachmentUploadManager,
             bencher: BackupArchive.ArchiveBencher,
             currentBackupAttachmentUploadEra: String,
             currentBackupPlan: BackupPlan,
@@ -65,27 +63,11 @@ extension BackupArchive {
             tx: DBWriteTransaction
         ) {
             self.bencher = bencher
-            self.backupAttachmentUploadManager = backupAttachmentUploadManager
             self.currentBackupAttachmentUploadEra = currentBackupAttachmentUploadEra
             self.currentBackupPlan = currentBackupPlan
             self.includedContentFilter = includedContentFilter
             self.startTimestampMs = startTimestampMs
             self._tx = tx
-        }
-
-        func enqueueAttachmentForUploadIfNeeded(_ referencedAttachment: ReferencedAttachment) throws {
-            switch currentBackupPlan {
-            case .disabled, .free:
-                return
-            case .paid, .paidExpiringSoon:
-                break
-            }
-            try backupAttachmentUploadManager.enqueueIfNeeded(
-                referencedAttachment,
-                currentUploadEra: currentBackupAttachmentUploadEra,
-                currentBackupPlan: currentBackupPlan,
-                tx: _tx
-            )
         }
     }
 

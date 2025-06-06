@@ -2015,6 +2015,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                             // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
                             self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+
+                            try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+                                existingAttachment,
+                                tx: tx
+                            )
                         }
                     } else {
                         throw error
@@ -2149,6 +2154,18 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             withMediaName: mediaName,
                             tx: tx
                         )
+
+                        if
+                            let attachment = attachmentStore.fetchAttachment(
+                                mediaName: mediaName,
+                                tx: tx
+                            )
+                        {
+                            try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+                                attachment,
+                                tx: tx
+                            )
+                        }
                     }
 
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
@@ -2184,6 +2201,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                             // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
                             self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+
+                            try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+                                existingAttachment,
+                                tx: tx
+                            )
                         }
                     } else {
                         throw error
@@ -2323,6 +2345,18 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             withMediaName: mediaName,
                             tx: tx
                         )
+
+                        if
+                            let attachment = attachmentStore.fetchAttachment(
+                                mediaName: mediaName,
+                                tx: tx
+                            )
+                        {
+                            try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+                                attachment,
+                                tx: tx
+                            )
+                        }
                     }
 
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
@@ -2359,6 +2393,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
                             self.orphanedAttachmentCleaner.releasePendingAttachment(
                                 withId: pendingThumbnailAttachment.orphanRecordId,
+                                tx: tx
+                            )
+
+                            try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+                                existingAttachment,
                                 tx: tx
                             )
                         }

@@ -417,7 +417,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             let currentBackupAttachmentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
 
             let customChatColorContext = BackupArchive.CustomChatColorArchivingContext(
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 currentBackupPlan: currentBackupPlan,
@@ -459,7 +458,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             }
 
             let recipientArchivingContext = BackupArchive.RecipientArchivingContext(
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 currentBackupPlan: currentBackupPlan,
@@ -537,7 +535,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             }
 
             let chatArchivingContext = BackupArchive.ChatArchivingContext(
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 currentBackupPlan: currentBackupPlan,
@@ -576,7 +573,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             }
 
             let archivingContext = BackupArchive.ArchivingContext(
-                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 currentBackupPlan: currentBackupPlan,
@@ -616,8 +612,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
             tx.addSyncCompletion { [backupAttachmentUploadManager] in
                 Task {
-                    // TODO: [Backups] this needs to talk to the banner at the top of the chat
-                    // list to show progress.
                     try await backupAttachmentUploadManager.backUpAllAttachments()
                 }
             }

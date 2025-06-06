@@ -31,7 +31,7 @@ extension Attachment {
             // We only offload stuff we have locally, duh.
             return false
         }
-        if stream.needsMediaTierUpload(currentUploadEra: currentUploadEra) {
+        if BackupAttachmentUploadEligibility(stream, currentUploadEra: currentUploadEra).needsUploadFullsize {
             // Don't offload until we've backed up to media tier.
             return false
         }

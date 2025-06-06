@@ -82,6 +82,20 @@ public extension Cryptography {
         return UInt(max(541, floor(pow(1.05, ceil(log(Double(unpaddedSize)) / log(1.05))))))
     }
 
+    /// Given an unencrypted, unpadded byte count, returns the *estimated* byte count of the final padded, encrypted blob.
+    /// (In other words, the size we'd upload to or download from the CDN.)
+    /// IMPORTANT: this should *only* be used as an estimate. In particular, we control the padding if the local
+    /// client does the upload, but:
+    /// 1. It may be a different client uploading with a differing padding scheme (or a bug with its padding scheme)
+    /// 2. Our padding scheme may change between when this is checked and when we upload(ed).
+    static func estimatedPaddedAndEncryptedSize(unpaddedSize: UInt32) -> UInt32 {
+        return UInt32(
+            UInt(Constants.aescbcIVLength)
+            + Self.paddedSize(unpaddedSize: UInt(unpaddedSize))
+            + UInt(Constants.hmac256OutputLength)
+        )
+    }
+
     static func randomAttachmentEncryptionKey() -> Data {
         // The metadata "key" is actually a concatentation of the
         // encryption key and the hmac key.

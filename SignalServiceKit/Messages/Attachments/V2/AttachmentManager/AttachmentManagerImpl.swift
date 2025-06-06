@@ -972,6 +972,11 @@ public class AttachmentManagerImpl: AttachmentManager {
                                 tx: tx
                             )
                         }
+
+                        try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+                            existingAttachment,
+                            tx: tx
+                        )
                     }
                 } else {
                     throw error

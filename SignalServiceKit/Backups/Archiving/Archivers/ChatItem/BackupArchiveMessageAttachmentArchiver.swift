@@ -100,26 +100,7 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
             pointers.append(attachmentProto)
         }
 
-        var attachmentFailures: [BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>] = []
-
-        for referencedAttachment in referencedAttachments {
-            do {
-                try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
-            } catch {
-                // If some attachment fails, thats ~mostly~ fine. Everything else
-                // can still go through, the one attachment just won't upload.
-                attachmentFailures.append(.archiveFrameError(
-                    .failedToEnqueueAttachmentForUpload,
-                    messageId
-                ))
-            }
-        }
-
-        if attachmentFailures.isEmpty {
-            return .success(pointers)
-        } else {
-            return .partialFailure(pointers, attachmentFailures)
-        }
+        return .success(pointers)
     }
 
     public func archiveOversizeTextAttachment(
@@ -171,17 +152,6 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
         attachmentProto.flag = referencedAttachment.reference.renderingFlag.asBackupProtoFlag
         attachmentProto.wasDownloaded = referencedAttachment.attachment.asStream() != nil
         // NOTE: clientUuid is unecessary for quoted reply attachments.
-
-        do {
-            try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
-        } catch {
-            // If some attachment fails, thats ~mostly~ fine. Everything else
-            // can still go through, the one attachment just won't upload.
-            return .partialFailure(attachmentProto, [.archiveFrameError(
-                .failedToEnqueueAttachmentForUpload,
-                messageId
-            )])
-        }
 
         return .success(attachmentProto)
     }
@@ -445,19 +415,6 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
         let result = referencedAttachment.asBackupFilePointer(
             currentBackupAttachmentUploadEra: context.currentBackupAttachmentUploadEra
         )
-
-        do {
-            try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
-        } catch {
-            // If some attachment fails, thats ~mostly~ fine. Everything else
-            // can still go through, the one attachment just won't upload.
-            return .partialFailure(
-                result, [.archiveFrameError(
-                    .failedToEnqueueAttachmentForUpload,
-                    messageId
-                )]
-            )
-        }
 
         return .success(result)
     }

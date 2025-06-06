@@ -15,7 +15,6 @@ public protocol BackupAttachmentUploadManager {
     func enqueueIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         currentUploadEra: String,
-        currentBackupPlan: BackupPlan,
         tx: DBWriteTransaction
     ) throws
 
@@ -33,10 +32,6 @@ public protocol BackupAttachmentUploadManager {
         tx: DBWriteTransaction
     ) throws
 
-    /// Enqueue all attachments than are elibile to be uploaded to media tier.
-    /// Call this when enabling paid backups to begin backing up all attachments.
-    func enqueueAllEligibleAttachments(tx: DBWriteTransaction) throws
-
     /// Backs up all pending attachments in the BackupAttachmentUploadQueue.
     ///
     /// Will keep backing up attachments until there are none left, then returns.
@@ -51,10 +46,6 @@ public protocol BackupAttachmentUploadManager {
     ///
     /// Throws an error IFF something would prevent all attachments from backing up (e.g. network issue).
     func backUpAllAttachments() async throws
-
-    /// Cancel any pending attachment uploads, e.g. when backups are disabled.
-    /// Removes all enqueued uploads and attempts to cancel in progress ones.
-    func cancelPendingUploads() async throws
 }
 
 public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
@@ -76,6 +67,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         attachmentStore: AttachmentStore,
         attachmentUploadManager: AttachmentUploadManager,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
+        backupKeyMaterial: BackupKeyMaterial,
         backupListMediaManager: BackupListMediaManager,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
@@ -101,6 +93,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
+            backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             backupSubscriptionManager: backupSubscriptionManager,
@@ -129,35 +122,16 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     ) throws {
         let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
 
-        // Its okay if our local subscription state is outdated.
-        // If we think we're free but we're paid, we'll recover by scheduling any unuploaded
-        // attachments when we next back up.
-        // If we think we're paid but we're free, the upload will fail gracefully.
-        let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
-
-        try enqueueUsingHighestPriorityOwnerIfNeeded(
-            attachment,
-            currentUploadEra: currentUploadEra,
-            currentBackupPlan: currentBackupPlan,
-            tx: tx
-        )
-    }
-
-    private func enqueueUsingHighestPriorityOwnerIfNeeded(
-        _ attachment: Attachment,
-        currentUploadEra: String,
-        currentBackupPlan: BackupPlan,
-        tx: DBWriteTransaction
-    ) throws {
         // Before we fetch references, check if the attachment is
         // eligible to begin with.
-        guard
-            shouldEnqueue(
-                attachment,
-                currentUploadEra: currentUploadEra,
-                currentBackupPlan: currentBackupPlan
-            )
-        else {
+        guard let stream = attachment.asStream() else {
+            return
+        }
+        let eligibility = BackupAttachmentUploadEligibility(
+            stream,
+            currentUploadEra: currentUploadEra
+        )
+        guard eligibility.needsUploadFullsize || eligibility.needsUploadFullsize else {
             return
         }
 
@@ -168,10 +142,10 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             toAttachmentId: attachment.id,
             tx: tx
         ) { reference, _ in
-            guard let sourceType = reference.owner.asUploadSourceType() else {
+            guard let ownerType = reference.owner.asUploadOwnerType() else {
                 return
             }
-            if referenceToUse?.owner.asUploadSourceType()?.isHigherPriority(than: sourceType) != true {
+            if referenceToUse?.owner.asUploadOwnerType()?.isHigherPriority(than: ownerType) != true {
                 referenceToUse = reference
             }
         }
@@ -179,7 +153,6 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             try self.enqueueIfNeeded(
                 ReferencedAttachment(reference: referenceToUse, attachment: attachment),
                 currentUploadEra: currentUploadEra,
-                currentBackupPlan: currentBackupPlan,
                 tx: tx
             )
         }
@@ -191,16 +164,9 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     ) throws {
         let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
 
-        // Its okay if our local subscription state is outdated.
-        // If we think we're free but we're paid, we'll recover by scheduling any unuploaded
-        // attachments when we next back up.
-        // If we think we're paid but we're free, the upload will fail gracefully.
-        let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
-
         try enqueueIfNeeded(
             referencedAttachment,
             currentUploadEra: currentUploadEra,
-            currentBackupPlan: currentBackupPlan,
             tx: tx
         )
     }
@@ -208,19 +174,8 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     public func enqueueIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         currentUploadEra: String,
-        currentBackupPlan: BackupPlan,
         tx: DBWriteTransaction
     ) throws {
-        guard
-            shouldEnqueue(
-                referencedAttachment.attachment,
-                currentUploadEra: currentUploadEra,
-                currentBackupPlan: currentBackupPlan
-            )
-        else {
-            return
-        }
-
         switch referencedAttachment.reference.owner {
         case .message, .thread:
             // We back these up (if other conditions are met)
@@ -231,75 +186,28 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         }
 
         guard let referencedStream = referencedAttachment.asReferencedStream else {
-            return
-        }
-
-        try backupAttachmentUploadStore.enqueue(
-            referencedStream,
-            tx: tx
-        )
-    }
-
-    private func shouldEnqueue(
-        _ attachment: Attachment,
-        currentUploadEra: String,
-        currentBackupPlan: BackupPlan
-    ) -> Bool {
-        guard FeatureFlags.Backups.fileAlpha else {
-            return false
-        }
-        switch currentBackupPlan {
-        case .disabled, .free:
-            return false
-        case .paid, .paidExpiringSoon:
-            break
-        }
-        guard let stream = attachment.asStream() else {
             // We can only upload streams, duh
-            return false
-        }
-        guard
-            stream.needsMediaTierUpload(currentUploadEra: currentUploadEra)
-            || stream.needsMediaTierThumbnailUpload(currentUploadEra: currentUploadEra)
-        else {
-            // If we don't need fullsize or thumbnail upload, dont bother enqueuing.
-            return false
-        }
-        return true
-    }
-
-    public func enqueueAllEligibleAttachments(tx: DBWriteTransaction) throws {
-        guard FeatureFlags.Backups.remoteExportAlpha else {
             return
         }
 
-        let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
-        let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
+        let eligibility = BackupAttachmentUploadEligibility(
+            referencedStream.attachmentStream,
+            currentUploadEra: currentUploadEra
+        )
 
-        switch currentBackupPlan {
-        case .disabled, .free:
-            return
-        case .paid, .paidExpiringSoon:
-            break
-        }
-
-        // Go ahead and dequeue everything; we'll just requeue
-        // from scratch.
-        try self.backupAttachmentUploadStore.removeAll(tx: tx)
-
-        try attachmentStore.enumerateAllAttachmentsWithMediaName(tx: tx) { attachment in
-            try enqueueUsingHighestPriorityOwnerIfNeeded(
-                attachment,
-                currentUploadEra: currentUploadEra,
-                currentBackupPlan: currentBackupPlan,
+        if eligibility.needsUploadFullsize {
+            try backupAttachmentUploadStore.enqueue(
+                referencedStream,
+                fullsize: true,
                 tx: tx
             )
         }
-        // Kick off uploads when the tx finishes.
-        tx.addSyncCompletion {
-            Task {
-                try await self.backUpAllAttachments()
-            }
+        if eligibility.needsUploadThumbnail {
+            try backupAttachmentUploadStore.enqueue(
+                referencedStream,
+                fullsize: false,
+                tx: tx
+            )
         }
     }
 
@@ -307,14 +215,15 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         guard FeatureFlags.Backups.remoteExportAlpha else {
             return
         }
-        let (localAci, backupPlan) = db.read { tx in
+        let (isPrimary, localAci, backupPlan) = db.read { tx in
             (
+                self.tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? false,
                 self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
                 backupSettingsStore.backupPlan(tx: tx)
             )
         }
 
-        guard let localAci else {
+        guard isPrimary, let localAci else {
             return
         }
 
@@ -352,10 +261,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         case .free:
             owsFailDebug("Local backupPlan is paid but credential is free")
             // If our force refreshed credential is free tier, we definitely
-            // aren't uploading anything, so may as well wipe the queue.
-            await db.awaitableWrite { tx in
-                try? backupAttachmentUploadStore.removeAll(tx: tx)
-            }
+            // aren't uploading anything, so may as well stop the queue.
             try? await taskQueue.stop()
             return
         case .paid:
@@ -367,15 +273,6 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         }
 
         try await taskQueue.loadAndRunTasks()
-    }
-
-    public func cancelPendingUploads() async throws {
-        try await taskQueue.stop()
-        try await self.db.awaitableWrite { tx in
-            try self.backupAttachmentUploadStore.removeAll(tx: tx)
-        }
-        // Kill status observation
-        await statusManager.didEmptyQueue(type: .upload)
     }
 
     // MARK: - Observation
@@ -405,6 +302,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         private let attachmentStore: AttachmentStore
         private let attachmentUploadManager: AttachmentUploadManager
         private let backupAttachmentUploadStore: BackupAttachmentUploadStore
+        private let backupKeyMaterial: BackupKeyMaterial
         private let backupRequestManager: BackupRequestManager
         private let backupSettingsStore: BackupSettingsStore
         private let backupSubscriptionManager: BackupSubscriptionManager
@@ -421,6 +319,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             attachmentStore: AttachmentStore,
             attachmentUploadManager: AttachmentUploadManager,
             backupAttachmentUploadStore: BackupAttachmentUploadStore,
+            backupKeyMaterial: BackupKeyMaterial,
             backupRequestManager: BackupRequestManager,
             backupSettingsStore: BackupSettingsStore,
             backupSubscriptionManager: BackupSubscriptionManager,
@@ -434,6 +333,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             self.attachmentStore = attachmentStore
             self.attachmentUploadManager = attachmentUploadManager
             self.backupAttachmentUploadStore = backupAttachmentUploadStore
+            self.backupKeyMaterial = backupKeyMaterial
             self.backupRequestManager = backupRequestManager
             self.backupSettingsStore = backupSettingsStore
             self.backupSubscriptionManager = backupSubscriptionManager
@@ -460,7 +360,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         private let errorCounts = ErrorCounts()
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
-            guard FeatureFlags.Backups.fileAlpha else {
+            guard FeatureFlags.Backups.remoteExportAlpha else {
                 return .cancelled
             }
             let (attachment, backupPlan, currentUploadEra) = db.read { tx in
@@ -480,19 +380,46 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                 return .cancelled
             }
 
+            // We're about to upload; ensure we aren't also enqueuing a media tier delete.
+            // This is only defensive as we should be cancelling any deletes any time we
+            // create an attachmenr stream and enqueue an upload to begin with.
+            do {
+                try await db.awaitableWrite { tx in
+                    if record.record.isFullsize {
+                        let mediaId = try backupKeyMaterial.mediaEncryptionMetadata(
+                            mediaName: mediaName,
+                            type: .attachment,
+                            tx: tx
+                        ).mediaId
+                        try orphanedBackupAttachmentStore.removeFullsize(
+                            mediaName: mediaName,
+                            fullsizeMediaId: mediaId,
+                            tx: tx
+                        )
+                    } else {
+                        let mediaId = try backupKeyMaterial.mediaEncryptionMetadata(
+                            mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
+                            type: .thumbnail,
+                            tx: tx
+                        ).mediaId
+                        try orphanedBackupAttachmentStore.removeThumbnail(
+                            fullsizeMediaName: mediaName,
+                            thumbnailMediaId: mediaId,
+                            tx: tx
+                        )
+                    }
+                }
+            } catch {
+                owsFailDebug("Unable to delete orphan row. Proceeding anyway.")
+            }
+
+            struct IsFreeTierError: Error {}
             switch backupPlan {
             case .disabled, .free:
                 try? await loader.stop()
-                return .cancelled
+                return .retryableError(IsFreeTierError())
             case .paid, .paidExpiringSoon:
                 break
-            }
-
-            let needsMediaTierUpload = stream.needsMediaTierUpload(currentUploadEra: currentUploadEra)
-            let needsThumbnailUpload = stream.needsMediaTierThumbnailUpload(currentUploadEra: currentUploadEra)
-
-            guard needsMediaTierUpload || needsThumbnailUpload else {
-                return .success
             }
 
             let localAci = db.read { tx in
@@ -501,7 +428,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             guard let localAci else {
                 let error = OWSAssertionError("Not registered!")
                 try? await loader.stop(reason: error)
-                return .unretryableError(error)
+                return .retryableError(error)
             }
 
             let backupAuth: BackupServiceAuth
@@ -519,7 +446,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                 )
             } catch let error {
                 try? await loader.stop(reason: error)
-                return .unretryableError(error)
+                return .retryableError(error)
             }
 
             switch backupAuth.backupLevel {
@@ -527,18 +454,48 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                 break
             case .free:
                 // If we find ourselves with a free tier credential,
-                // all uploads will fail. Dequeue them all and quit.
+                // all uploads will fail. Just quit.
                 try? await loader.stop()
-                await db.awaitableWrite { tx in
-                    try? backupAttachmentUploadStore.removeAll(tx: tx)
-                }
-                return .cancelled
+                return .retryableError(IsFreeTierError())
             }
 
-            func handleUploadError(
-                error: Error,
-                isThumbnailUpload: Bool
-            ) async -> TaskRecordResult {
+            let progressSink = await progress.willBeginUploadingAttachment(
+                uploadRecord: record.record
+            )
+
+            let eligibility = BackupAttachmentUploadEligibility(
+                stream,
+                currentUploadEra: currentUploadEra
+            )
+            if
+                (record.record.isFullsize && !eligibility.needsUploadFullsize)
+                || (!record.record.isFullsize && !eligibility.needsUploadThumbnail)
+            {
+                await progress.didFinishUploadOfAttachment(
+                    uploadRecord: record.record
+                )
+                // Not eligible anymore, count as success.
+                return .success
+            }
+
+            do {
+                if record.record.isFullsize {
+                    try await attachmentUploadManager.uploadMediaTierAttachment(
+                        attachmentId: attachment.id,
+                        uploadEra: currentUploadEra,
+                        localAci: localAci,
+                        auth: backupAuth,
+                        progress: progressSink
+                    )
+                } else {
+                    try await attachmentUploadManager.uploadMediaTierThumbnailAttachment(
+                        attachmentId: attachment.id,
+                        uploadEra: currentUploadEra,
+                        localAci: localAci,
+                        auth: backupAuth
+                    )
+                }
+            } catch let error {
                 switch await statusManager.jobDidExperienceError(type: .upload, error) {
                 case nil:
                     // No state change, keep going.
@@ -574,17 +531,14 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                     switch credential?.backupLevel {
                     case .free, nil:
                         try? await loader.stop()
-                        await db.awaitableWrite { tx in
-                            try? backupAttachmentUploadStore.removeAll(tx: tx)
-                        }
-                        return .cancelled
+                        return .retryableError(IsFreeTierError())
                     case .paid:
                         break
                     }
                     fallthrough
                 default:
                     // All other errors should be treated as per normal.
-                    if !isThumbnailUpload || error.isNetworkFailureOrTimeout {
+                    if record.record.isFullsize || error.isNetworkFailureOrTimeout {
                         let errorCount = await errorCounts.updateCount(record.id)
                         if error.isRetryable, errorCount < Constants.maxRetryableErrorCount {
                             return .retryableError(error)
@@ -595,80 +549,17 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                         // Ignore the error if we e.g. fail to generate a thumbnail;
                         // just upload the fullsize.
                         Logger.error("Failed to upload thumbnail; proceeding")
+                        await progress.didFinishUploadOfAttachment(
+                            uploadRecord: record.record
+                        )
                         return .success
                     }
                 }
             }
 
-            // Upload thumbnail first
-            if needsThumbnailUpload {
-                do {
-                    // See comment on fullsize if branch below
-                    try await db.awaitableWrite { tx in
-                        try orphanedBackupAttachmentStore.remove(
-                            mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
-                            tx: tx
-                        )
-                    }
-                } catch {
-                    owsFailDebug("Unable to delete orphan row. Proceeding anyway.")
-                }
-                do {
-                    try await attachmentUploadManager.uploadMediaTierThumbnailAttachment(
-                        attachmentId: attachment.id,
-                        uploadEra: currentUploadEra,
-                        localAci: localAci,
-                        auth: backupAuth
-                    )
-                } catch let error {
-                    return await handleUploadError(error: error, isThumbnailUpload: true)
-                }
-            }
-
-            // Upload fullsize next
-            if needsMediaTierUpload {
-                // We're about to upload; ensure we aren't also enqueuing a media tier delete.
-                // This is mostly defensive as in practice the only place we delete is if we
-                // discover a listed mediaName we don't have locally. To then later have it
-                // for upload means someone forwarded the same attachment with the same
-                // encryption key. Unlikely, but more important in the future mediaName
-                // might change to NOT include encryptionKey as input which makes this
-                // quite a bit more likely, so its good hygiene to be defensive.
-                do {
-                    try await db.awaitableWrite { tx in
-                        try orphanedBackupAttachmentStore.remove(
-                            mediaName: mediaName,
-                            tx: tx
-                        )
-                    }
-                } catch {
-                    owsFailDebug("Unable to delete orphan row. Proceeding anyway.")
-                }
-                do {
-                    let progressSink = await progress.willBeginUploadingAttachment(
-                        attachmentId: attachment.id,
-                        queuedUploadRowId: record.record.id!
-                    )
-                    try await attachmentUploadManager.uploadMediaTierAttachment(
-                        attachmentId: attachment.id,
-                        uploadEra: currentUploadEra,
-                        localAci: localAci,
-                        auth: backupAuth,
-                        progress: progressSink
-                    )
-                    if let byteCount = attachment.streamInfo?.encryptedByteCount {
-                        await progress.didFinishUploadOfAttachment(
-                            attachmentId: attachment.id,
-                            queuedUploadRowId: record.record.id!,
-                            byteCount: UInt64(Cryptography.paddedSize(unpaddedSize: UInt(byteCount)))
-                        )
-                    } else {
-                        owsFailDebug("Uploaded a non stream?")
-                    }
-                } catch let error {
-                    return await handleUploadError(error: error, isThumbnailUpload: false)
-                }
-            }
+            await progress.didFinishUploadOfAttachment(
+                uploadRecord: record.record
+            )
 
             return .success
         }
@@ -712,8 +603,12 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             }
         }
 
-        func removeRecord(_ record: Record, tx: DBWriteTransaction) throws {
-            try backupAttachmentUploadStore.removeQueuedUpload(for: record.record.attachmentRowId, tx: tx)
+        func removeRecord(_ record: TaskRecord, tx: DBWriteTransaction) throws {
+            try backupAttachmentUploadStore.removeQueuedUpload(
+                for: record.record.attachmentRowId,
+                fullsize: record.record.isFullsize,
+                tx: tx
+            )
         }
     }
 
@@ -725,23 +620,30 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     }
 }
 
-extension AttachmentStream {
+public struct BackupAttachmentUploadEligibility {
+    let needsUploadFullsize: Bool
+    let needsUploadThumbnail: Bool
 
-    func needsMediaTierUpload(currentUploadEra: String) -> Bool {
-        if let mediaTierInfo = attachment.mediaTierInfo {
-            return mediaTierInfo.uploadEra != currentUploadEra
-                || mediaTierInfo.cdnNumber == nil
-        } else {
-            return true
-        }
-    }
-
-    func needsMediaTierThumbnailUpload(currentUploadEra: String) -> Bool {
-        if let thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo {
-            return thumbnailMediaTierInfo.uploadEra != currentUploadEra
-        } else {
-            return AttachmentBackupThumbnail.canBeThumbnailed(self.attachment)
-        }
+    init(
+        _ attachment: AttachmentStream,
+        currentUploadEra: String
+    ) {
+        self.needsUploadFullsize = {
+            if let mediaTierInfo = attachment.attachment.mediaTierInfo {
+                return mediaTierInfo.uploadEra != currentUploadEra
+                    || mediaTierInfo.cdnNumber == nil
+            } else {
+                return true
+            }
+        }()
+        self.needsUploadThumbnail = {
+            if let thumbnailMediaTierInfo = attachment.attachment.thumbnailMediaTierInfo {
+                return thumbnailMediaTierInfo.uploadEra != currentUploadEra
+                    || thumbnailMediaTierInfo.cdnNumber == nil
+            } else {
+                return AttachmentBackupThumbnail.canBeThumbnailed(attachment.attachment)
+            }
+        }()
     }
 }
 
@@ -754,7 +656,6 @@ open class BackupAttachmentUploadManagerMock: BackupAttachmentUploadManager {
     public func enqueueIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         currentUploadEra: String,
-        currentBackupPlan: BackupPlan,
         tx: DBWriteTransaction
     ) throws {
         // Do nothing
@@ -774,15 +675,7 @@ open class BackupAttachmentUploadManagerMock: BackupAttachmentUploadManager {
         // Do nothing
     }
 
-    public func enqueueAllEligibleAttachments(tx: DBWriteTransaction) {
-        // Do nothing
-    }
-
     public func backUpAllAttachments() async throws {
-        // Do nothing
-    }
-
-    public func cancelPendingUploads() async throws {
         // Do nothing
     }
 }

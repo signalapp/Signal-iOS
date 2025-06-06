@@ -42,6 +42,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                     reference: reference,
                     attachmentStream: Attachment(record: attachmentRecord).asStream()!
                 ),
+                fullsize: true,
                 tx: tx
             )
 
@@ -49,7 +50,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             let row = try QueuedBackupAttachmentUpload.fetchOne(tx.database)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
-            switch row!.sourceType {
+            switch row!.highestPriorityOwnerType {
             case .threadWallpaper:
                 XCTFail("unexpected type")
             case .message(let timestamp):
@@ -71,13 +72,14 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                     reference: reference,
                     attachmentStream: Attachment(record: attachmentRecord).asStream()!
                 ),
+                fullsize: true,
                 tx: tx
             )
 
             let row = try QueuedBackupAttachmentUpload.fetchOne(tx.database)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
-            switch row!.sourceType {
+            switch row!.highestPriorityOwnerType {
             case .threadWallpaper:
                 XCTFail("unexpected type")
             case .message(let timestamp):
@@ -99,13 +101,14 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                     reference: AttachmentReference(record: referenceRecord),
                     attachmentStream: Attachment(record: attachmentRecord).asStream()!
                 ),
+                fullsize: true,
                 tx: tx
             )
 
             let row = try QueuedBackupAttachmentUpload.fetchOne(tx.database)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
-            switch row!.sourceType {
+            switch row!.highestPriorityOwnerType {
             case .threadWallpaper:
                 break
             case .message:
@@ -127,6 +130,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                     reference: reference,
                     attachmentStream: Attachment(record: attachmentRecord).asStream()!
                 ),
+                fullsize: true,
                 tx: tx
             )
 
@@ -134,7 +138,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
             // should not have overriden the nil timestamp
-            switch row!.sourceType {
+            switch row!.highestPriorityOwnerType {
             case .threadWallpaper:
                 break
             case .message:
@@ -178,6 +182,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                         reference: reference,
                         attachmentStream: Attachment(record: attachmentRecord).asStream()!
                     ),
+                    fullsize: true,
                     tx: tx
                 )
             }
@@ -197,7 +202,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         }
 
         let dequeuedTimestamps: [UInt64?] = dequeuedRecords.map {
-            switch $0.sourceType {
+            switch $0.highestPriorityOwnerType {
             case .threadWallpaper: return nil
             case .message(let timestamp): return timestamp
             }
@@ -213,6 +218,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             try dequeuedRecords.forEach { record in
                 try store.removeQueuedUpload(
                     for: record.attachmentRowId,
+                    fullsize: true,
                     tx: tx
                 )
             }
@@ -222,6 +228,94 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             // all rows but one should be deleted.
             XCTAssertEqual(
                 1,
+                try QueuedBackupAttachmentUpload.fetchCount(tx.database)
+            )
+        }
+    }
+
+    func testDequeue_thumbnail() throws {
+        let timestamps: [UInt64] = [1111, 4444, 3333, 2222]
+        for timestamp in timestamps {
+            var attachmentRecord = Attachment.Record(params: .mockStream())
+            let (threadRowId, messageRowId) = insertThreadAndInteraction()
+
+            try db.write { tx in
+                try attachmentRecord.insert(
+                    tx.database
+                )
+                let reference: AttachmentReference = try insertMessageAttachmentReferenceRecord(
+                    attachmentRowId: attachmentRecord.sqliteId!,
+                    messageRowId: messageRowId,
+                    threadRowId: threadRowId,
+                    timestamp: timestamp,
+                    tx: tx
+                )
+                // Enqueue both fullsize and thumbnail
+                try store.enqueue(
+                    .init(
+                        reference: reference,
+                        attachmentStream: Attachment(record: attachmentRecord).asStream()!
+                    ),
+                    fullsize: true,
+                    tx: tx
+                )
+                try store.enqueue(
+                    .init(
+                        reference: reference,
+                        attachmentStream: Attachment(record: attachmentRecord).asStream()!
+                    ),
+                    fullsize: false,
+                    tx: tx
+                )
+            }
+        }
+
+        var dequeuedRecords = [QueuedBackupAttachmentUpload]()
+        try db.read { tx in
+            XCTAssertEqual(
+                timestamps.count * 2,
+                try QueuedBackupAttachmentUpload.fetchCount(tx.database)
+            )
+
+            dequeuedRecords = try store.fetchNextUploads(
+                count: UInt(timestamps.count * 2),
+                tx: tx
+            )
+        }
+
+        // We should get results in DESC order with thumbnails first.
+        var index = 0
+        for timestamp in timestamps.sorted().reversed() {
+            XCTAssertEqual(dequeuedRecords[index].isFullsize, false)
+            switch dequeuedRecords[index].highestPriorityOwnerType {
+            case .threadWallpaper: XCTFail("Unexpected type")
+            case .message(let recordTimestamp):
+                XCTAssertEqual(timestamp, recordTimestamp)
+            }
+            index += 1
+            XCTAssertEqual(dequeuedRecords[index].isFullsize, true)
+            switch dequeuedRecords[index].highestPriorityOwnerType {
+            case .threadWallpaper: XCTFail("Unexpected type")
+            case .message(let recordTimestamp):
+                XCTAssertEqual(timestamp, recordTimestamp)
+            }
+            index += 1
+        }
+
+        try db.write { tx in
+            try dequeuedRecords.forEach { record in
+                try store.removeQueuedUpload(
+                    for: record.attachmentRowId,
+                    fullsize: record.isFullsize,
+                    tx: tx
+                )
+            }
+        }
+
+        try db.read { tx in
+            // all rows should be deleted.
+            XCTAssertEqual(
+                0,
                 try QueuedBackupAttachmentUpload.fetchCount(tx.database)
             )
         }

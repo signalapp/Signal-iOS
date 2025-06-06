@@ -20,6 +20,8 @@ public struct OrphanedBackupAttachment: Codable, FetchableRecord, MutablePersist
     /// The media name of the attachment (used to derive the cdn url).
     /// Set when the attachment was orphaned locally, where we know
     /// the mediaName.
+    /// ALWAYS set to the fullsize mediaName, even for instances
+    /// that refer to the thumbnail.
     public let mediaName: String?
     /// The mediaID of the attachment (derived from the mediaName).
     /// Set when the attachment was orphaned by discovering it on the
@@ -36,6 +38,8 @@ public struct OrphanedBackupAttachment: Codable, FetchableRecord, MutablePersist
         case fullsize = 0
         case thumbnail = 1
     }
+
+    typealias SizeType = `Type`
 
     private init(
         id: Int64? = nil,

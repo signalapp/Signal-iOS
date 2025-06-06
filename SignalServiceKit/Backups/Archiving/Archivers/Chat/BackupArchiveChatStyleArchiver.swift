@@ -454,20 +454,6 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
             return .success(nil)
         }
 
-        do {
-            try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
-        } catch {
-            // Just log these errors, but count as success and proceed.
-            // The wallpaper just won't upload.
-            BackupArchive.collapse([.init(
-                error: BackupArchive.ArchiveFrameError<IDType>.archiveFrameError(
-                    .failedToEnqueueAttachmentForUpload,
-                    errorId
-                ),
-                wasFrameDropped: false
-            )]).forEach { $0.log() }
-        }
-
         return .success(referencedAttachment.asBackupFilePointer(
             currentBackupAttachmentUploadEra: context.currentBackupAttachmentUploadEra
         ))
