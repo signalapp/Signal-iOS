@@ -2032,7 +2032,6 @@ extension GroupCallViewController: CallControlsDelegate {
     }
 
     func didPressHangup() {
-        didHangupCall()
     }
 
     func didPressMore() {
