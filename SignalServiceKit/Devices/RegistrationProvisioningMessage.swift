@@ -24,7 +24,7 @@ public struct RegistrationProvisioningMessage {
         case ios
         case android
     }
-    public enum BackupTier {
+    public enum BackupTier: Equatable {
         case free
         case paid
     }

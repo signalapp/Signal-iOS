@@ -333,6 +333,14 @@ public class RegistrationNavigationController: OWSNavigationController {
                 },
                 update: nil
             )
+        case .confirmRestoreFromBackup(let state):
+            return Controller(
+                type: RegistrationRestoreFromBackupConfirmationViewController.self,
+                make: { presenter in
+                    return RegistrationRestoreFromBackupConfirmationViewController(state: state, presenter: presenter)
+                },
+                update: nil
+            )
         case .deviceTransfer(let state):
             return Controller(
                 type: RegistrationTransferStatusViewController.self,
@@ -687,6 +695,13 @@ extension RegistrationNavigationController: RegistrationQuickRestoreQRCodePresen
 extension RegistrationNavigationController: RegistrationTransferStatusPresenter {
     func cancelTransfer() {
         let guarantee = coordinator.resetRestoreMethodChoice()
+        pushNextController(guarantee)
+    }
+}
+
+extension RegistrationNavigationController: RegistrationRestoreFromBackupConfirmationPresenter {
+    func restoreFromBackupConfirmed() {
+        let guarantee = coordinator.confirmRestoreFromBackup()
         pushNextController(guarantee)
     }
 }

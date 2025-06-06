@@ -12,28 +12,41 @@ protocol RegistrationRestoreFromBackupConfirmationPresenter: AnyObject {
     func restoreFromBackupConfirmed()
 }
 
-class RegistrationRestoreFromBackupConfirmationState: ObservableObject {
-    let tier: RegistrationProvisioningMessage.BackupTier
-    let backupTimestamp: UInt64
+public class RegistrationRestoreFromBackupConfirmationState: ObservableObject, Equatable {
+    public static func == (
+        lhs: RegistrationRestoreFromBackupConfirmationState,
+        rhs: RegistrationRestoreFromBackupConfirmationState
+    ) -> Bool {
+        lhs.tier == rhs.tier &&
+        lhs.lastBackupDate == rhs.lastBackupDate &&
+        lhs.lastBackupSizeBytes == rhs.lastBackupSizeBytes
+    }
 
-    init(tier: RegistrationProvisioningMessage.BackupTier, backupTimestamp: UInt64) {
+    let tier: RegistrationProvisioningMessage.BackupTier
+    let lastBackupDate: Date?
+    let lastBackupSizeBytes: UInt?
+
+    init(tier: RegistrationProvisioningMessage.BackupTier, lastBackupDate: Date?, lastBackupSizeBytes: UInt?) {
         self.tier = tier
-        self.backupTimestamp = backupTimestamp
+        self.lastBackupDate = lastBackupDate
+        self.lastBackupSizeBytes = lastBackupSizeBytes
     }
 }
 
 class RegistrationRestoreFromBackupConfirmationViewController: HostingController<RegistrationRestoreFromBackupConfirmationView> {
-    fileprivate init(
-        presenter: RegistrationRestoreFromBackupConfirmationPresenter,
-        state: RegistrationRestoreFromBackupConfirmationState
+    init(
+        state: RegistrationRestoreFromBackupConfirmationState,
+        presenter: RegistrationRestoreFromBackupConfirmationPresenter
     ) {
         super.init(
             wrappedView: RegistrationRestoreFromBackupConfirmationView(
-                presenter: presenter,
-                state: state
+                state: state,
+                presenter: presenter
             )
         )
     }
+
+    override var prefersNavigationBarHidden: Bool { true }
 }
 
 struct RegistrationRestoreFromBackupConfirmationView: View {
@@ -41,11 +54,11 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
     weak var presenter: (any RegistrationRestoreFromBackupConfirmationPresenter)?
 
     fileprivate init(
-        presenter: RegistrationRestoreFromBackupConfirmationPresenter,
-        state: RegistrationRestoreFromBackupConfirmationState
+        state: RegistrationRestoreFromBackupConfirmationState,
+        presenter: RegistrationRestoreFromBackupConfirmationPresenter
     ) {
-        self.presenter = presenter
         self.state = state
+        self.presenter = presenter
     }
 
     var body: some View {
@@ -136,14 +149,16 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
             comment: "Description for form confirming restore from backup."
         )
         if
-            case let date = Date(millisecondsSince1970: state.backupTimestamp),
+            let date = state.lastBackupDate,
+            let size = state.lastBackupSizeBytes,
             let formattedDate = DateUtil.dateFormatter.string(for: date),
             let formattedTime = DateUtil.timeFormatter.string(for: date)
         {
-            formattedString = String(format: formattedString, formattedDate, formattedTime)
+            formattedString = String(format: formattedString, formattedDate, formattedTime, OWSFormat.formatFileSize(size))
+            return Text(formattedString)
+        } else {
+            return Text("")
         }
-
-        return Text(try! AttributedString(markdown: formattedString))
     }
 
     private struct BulletPoint: View {
@@ -174,11 +189,12 @@ private let presenter = PreviewRegistrationRestoreFromBackupConfirmationPresente
 #Preview("Free") {
     let state = RegistrationRestoreFromBackupConfirmationState(
         tier: .free,
-        backupTimestamp: Date().ows_millisecondsSince1970
+        lastBackupDate: Date(),
+        lastBackupSizeBytes: 1234
     )
     RegistrationRestoreFromBackupConfirmationViewController(
-        presenter: presenter,
-        state: state
+        state: state,
+        presenter: presenter
     )
 }
 
@@ -186,11 +202,12 @@ private let presenter = PreviewRegistrationRestoreFromBackupConfirmationPresente
 #Preview("Paid") {
     let state = RegistrationRestoreFromBackupConfirmationState(
         tier: .paid,
-        backupTimestamp: Date().ows_millisecondsSince1970
+        lastBackupDate: Date(),
+        lastBackupSizeBytes: 1234
     )
     RegistrationRestoreFromBackupConfirmationViewController(
-        presenter: presenter,
-        state: state
+        state: state,
+        presenter: presenter
     )
 }
 

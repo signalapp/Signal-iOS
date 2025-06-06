@@ -51,6 +51,7 @@ public class AppEnvironment: NSObject {
     }
 
     func setUp(appReadiness: AppReadiness, callService: CallService) {
+        let backupSettingsStore = BackupSettingsStore()
         let backupDisablingManager = BackupDisablingManager(
             backupIdManager: DependenciesBridge.shared.backupIdManager,
             backupSettingsStore: BackupSettingsStore(),
@@ -100,6 +101,7 @@ public class AppEnvironment: NSObject {
         )
         self.quickRestoreManager = QuickRestoreManager(
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
+            backupSettingsStore: backupSettingsStore,
             db: DependenciesBridge.shared.db,
             deviceProvisioningService: deviceProvisioningService,
             identityManager: DependenciesBridge.shared.identityManager,

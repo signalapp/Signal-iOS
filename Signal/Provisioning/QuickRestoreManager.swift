@@ -18,6 +18,7 @@ public class QuickRestoreManager {
     }
 
     private let accountKeyStore: AccountKeyStore
+    private let backupSettingsStore: BackupSettingsStore
     private let db: any DB
     private let deviceProvisioningService: DeviceProvisioningService
     private let identityManager: OWSIdentityManager
@@ -26,6 +27,7 @@ public class QuickRestoreManager {
 
     init(
         accountKeyStore: AccountKeyStore,
+        backupSettingsStore: BackupSettingsStore,
         db: any DB,
         deviceProvisioningService: DeviceProvisioningService,
         identityManager: OWSIdentityManager,
@@ -33,6 +35,7 @@ public class QuickRestoreManager {
         tsAccountManager: TSAccountManager
     ) {
         self.accountKeyStore = accountKeyStore
+        self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.deviceProvisioningService = deviceProvisioningService
         self.identityManager = identityManager
@@ -46,7 +49,10 @@ public class QuickRestoreManager {
             accountEntropyPool,
             aciIdentityKeyPair,
             pniIdentityKeyPair,
-            pinCode
+            pinCode,
+            backupTier,
+            lastBackupDate,
+            lastBackupSizeBytes
         ) = try db.read { tx in
             guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
                 owsFailDebug("Can't quick restore without local identifiers")
@@ -67,12 +73,25 @@ public class QuickRestoreManager {
                 throw Error.missingRestoreInformation
             }
             let pinCode = SSKEnvironment.shared.ows2FAManagerRef.pinCode(transaction: tx)
+
+            let backupTier: RegistrationProvisioningMessage.BackupTier? = switch backupSettingsStore.backupPlan(tx: tx) {
+            case .free: .free
+            case .paid, .paidExpiringSoon: .paid
+            case .disabled: nil
+            }
+
+            let lastBackupTime = backupSettingsStore.lastBackupDate(tx: tx)?.ows_millisecondsSince1970
+            let lastBackupSizeBytes = backupSettingsStore.lastBackupSizeBytes(tx: tx)
+
             return (
                 localIdentifiers,
                 accountEntropyPool,
                 aciIdentityKeyPair,
                 pniIdentityKeyPair,
-                pinCode
+                pinCode,
+                backupTier,
+                lastBackupTime,
+                lastBackupSizeBytes
             )
         }
 
@@ -84,7 +103,6 @@ public class QuickRestoreManager {
 
         let restoreMethodToken = UUID().uuidString
 
-        // TODO: [Backups] Source existing backup information
         let registrationMessage = RegistrationProvisioningMessage(
             accountEntropyPool: accountEntropyPool,
             aci: myAci,
@@ -92,9 +110,9 @@ public class QuickRestoreManager {
             pniIdentityKeyPair: pniIdentityKeyPair.identityKeyPair,
             phoneNumber: myPhoneNumber,
             pin: pinCode,
-            tier: nil,
-            backupTimestamp: nil,
-            backupSizeBytes: nil,
+            tier: backupTier,
+            backupTimestamp: lastBackupDate,
+            backupSizeBytes: lastBackupSizeBytes,
             restoreMethodToken: restoreMethodToken
         )
 

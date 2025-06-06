@@ -539,12 +539,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     public func resetRestoreMethodChoice() -> Guarantee<RegistrationStep> {
         inMemoryState.restoreMethod = nil
         inMemoryState.needsToAskForDeviceTransfer = true
+        inMemoryState.hasConfirmedRestoreFromBackup = false
         deps.db.write { tx in
             updatePersistedState(tx) {
                 $0.hasDeclinedTransfer = false
             }
         }
         return returnToSplash()
+    }
+
+    public func confirmRestoreFromBackup() -> Guarantee<RegistrationStep> {
+        inMemoryState.hasConfirmedRestoreFromBackup = true
+        return nextStep()
     }
 
     private func restoreFromMessageBackup(
@@ -733,6 +739,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var shouldBackUpToSVR: Bool {
             return hasBackedUpToSVR.negated && didSkipSVRBackup.negated
         }
+        var hasConfirmedRestoreFromBackup = false
 
         // OWS2FAManager state
         // If we are re-registering or changing number and
@@ -801,6 +808,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case .localBackup(let url): return .local(url)
                 case .remoteBackup: return .remote
                 case .declined, .deviceTransfer: return nil
+                }
+            }
+
+            var isBackup: Bool {
+                switch self {
+                case .localBackup, .remoteBackup: return true
+                case .declined, .deviceTransfer: return false
                 }
             }
         }
@@ -1243,6 +1257,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 persistRegistrationState(tx)
             }
+
+            if let step = fetchBackupCdnInfo(accountIdentity: accountIdentity) {
+                return step
+            }
+
             return restoreBackupIfNecessary()
                 .then {
                     self.db.write { tx in
@@ -1278,6 +1297,33 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             } else {
                 return updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
             }
+        }
+    }
+
+    private func fetchBackupCdnInfo(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep>? {
+        guard
+            inMemoryState.restoreMethod?.backupType == nil,
+            inMemoryState.hasConfirmedRestoreFromBackup
+        else {
+            return nil
+        }
+
+        // For manual restore, fetch the backup info
+        return Promise.wrapAsync { () -> AttachmentDownloads.CdnInfo? in
+            try await self.deps.backupArchiveManager.backupCdnInfo(
+                localIdentifiers: accountIdentity.localIdentifiers,
+                auth: accountIdentity.chatServiceAuth
+            )
+        }.recover { error in
+            Logger.error("Can't fetch backup info: \(error.localizedDescription)")
+            return .value(nil)
+        }.map { cdnInfo -> RegistrationStep in
+            return .confirmRestoreFromBackup(
+                RegistrationRestoreFromBackupConfirmationState(
+                    tier: .free,
+                    lastBackupDate: cdnInfo?.lastModified,
+                    lastBackupSizeBytes: cdnInfo?.contentLength
+                ))
         }
     }
 
@@ -1385,6 +1431,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 if inMemoryState.restoreMethod == nil {
                     return .quickRestore
                 } else if case .deviceTransfer = inMemoryState.restoreMethod {
+                    return .quickRestore
+                } else if
+                    inMemoryState.restoreMethod?.isBackup == true,
+                    !inMemoryState.hasConfirmedRestoreFromBackup
+                {
                     return .quickRestore
                 }
             } else {
@@ -1500,7 +1551,21 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return .value(.scanQuickRegistrationQrCode)
             }
         }
-        return .value(.chooseRestoreMethod)
+
+        if
+            inMemoryState.restoreMethod?.isBackup == true,
+            let registrationMessage = inMemoryState.registrationMessage
+        {
+            // if backup, show the confirmation screen
+            return .value(.confirmRestoreFromBackup(
+                RegistrationRestoreFromBackupConfirmationState(
+                    tier: registrationMessage.tier ?? .free,
+                    lastBackupDate: registrationMessage.backupTimestamp.map(Date.init(millisecondsSince1970:)),
+                    lastBackupSizeBytes: registrationMessage.backupSizeBytes.map(UInt.init)
+                )))
+        } else {
+            return .value(.chooseRestoreMethod)
+        }
     }
 
     private func splashStepToShow() -> RegistrationStep? {
@@ -1562,7 +1627,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return .value(.transferSelection)
             }
         } else if
-            inMemoryState.restoreMethod?.backupType != nil,
+            inMemoryState.restoreMethod?.isBackup == true,
             inMemoryState.accountEntropyPool == nil
         {
             // If the user chose 'restore from backup', ask them
@@ -3102,7 +3167,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if inMemoryState.accountEntropyPool == nil {
-            if inMemoryState.restoreMethod?.backupType != nil {
+            if inMemoryState.restoreMethod?.isBackup == true {
                 // If the user want's to restore from backup, ask for the key
                 return .value(.enterBackupKey)
             } else {

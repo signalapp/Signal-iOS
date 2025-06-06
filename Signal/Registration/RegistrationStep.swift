@@ -67,6 +67,9 @@ public enum RegistrationStep: Equatable {
     /// Prompt the user to choose from the available restore methods
     case chooseRestoreMethod
 
+    /// Prompt the user to confirm restoring from backup
+    case confirmRestoreFromBackup(RegistrationRestoreFromBackupConfirmationState)
+
     case deviceTransfer(RegistrationTransferStatusState)
 
     /// If the account has not set whether its phone number should be
@@ -142,6 +145,7 @@ public enum RegistrationStep: Equatable {
         case .reglockTimeout: return "reglockTimeout"
         case .enterBackupKey: return "enterBackupKey"
         case .chooseRestoreMethod: return "chooseRestoreMethod"
+        case .confirmRestoreFromBackup: return "confirmRestoreFromBackup"
         case .phoneNumberDiscoverability: return "phoneNumberDiscoverability"
         case .setupProfile: return "setupProfile"
         case .showErrorSheet: return "showErrorSheet"
