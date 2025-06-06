@@ -48,6 +48,7 @@ class QRCodeView: UIView {
 
         addSubview(qrCodeImageView)
         qrCodeImageView.autoPinEdgesToSuperviewMargins()
+        qrCodeImageView.contentMode = .scaleAspectFit
 
         addSubview(errorImageView)
         errorImageView.autoSetDimensions(to: .square(40))
