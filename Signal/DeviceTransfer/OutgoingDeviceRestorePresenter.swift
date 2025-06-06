@@ -79,7 +79,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
     }
 
     @MainActor
-    private func displayComplete(presentingViewController: UIViewController) async {
+    private func displayTransferComplete(presentingViewController: UIViewController) async {
         let sheet = HeroSheetViewController(
             hero: .image(UIImage(resource: .checkCircle)),
             // TODO: [Backups] - Localize
@@ -92,13 +92,32 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
     }
 
     @MainActor
-    private func displayStartedRestore() {
-        // TODO: [Backups] - Show the 'Restore complete'
-    }
+    private func displayRestoreMessage(isBackup: Bool, presentingViewController: UIViewController) async {
 
-    @MainActor
-    private func displaySkippedRestore() {
-        // TODO: [Backups] - Show the 'Registration finished complete'
+        // TODO: [Backups] - Localize
+        let (title, body) = if isBackup {
+            (
+                LocalizationNotNeeded("Restore complete"),
+                LocalizationNotNeeded("Your Signal account and messages have started transferring to your other device. Signal is now inactive on this device.")
+            )
+        } else {
+            (
+                LocalizationNotNeeded("Registration complete"),
+                LocalizationNotNeeded("Your Signal account has been activated on your other device. Signal is now inactive on this device.")
+            )
+        }
+
+        let sheet = HeroSheetViewController(
+            hero: .image(UIImage(resource: .checkCircle)),
+            title: title,
+            body: body,
+            primaryButton: .init(title: CommonStrings.okayButton, action: { _ in
+                presentingViewController.dismiss(animated: false)
+            })
+        )
+        sheet.modalPresentationStyle = .formSheet
+        await presentingViewController.presentedViewController?.awaitableDismiss(animated: true)
+        await internalNavigationController.awaitablePresent(sheet, animated: true)
     }
 
     func didTapTransfer() async {
@@ -119,14 +138,18 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
 
             // Show a sheet while fetching the transfer data
             await presentSheet()
-            let connectionData = try await viewModel.waitForConnectionData()
+            let restoreMethodData = try await viewModel.waitForRestoreMethodResponse()
 
-            switch connectionData.restoreMethod {
+            switch restoreMethodData.restoreMethod {
             case .remoteBackup, .localBackup:
-                await displayStartedRestore()
+                await displayRestoreMessage(isBackup: true, presentingViewController: presentingViewController)
             case .decline:
-                await displaySkippedRestore()
+                await displayRestoreMessage(isBackup: false, presentingViewController: presentingViewController)
             case .deviceTransfer:
+                guard let peerConnectionData = restoreMethodData.peerConnectionData else {
+                    // TODO: [Backups] - Display an error
+                    throw OWSAssertionError("Missing transfer connection data")
+                }
 
                 // Push the status sheet if this is a transfer
                 await pushProgressViewController(
@@ -134,17 +157,17 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                     presentingViewController: presentingViewController
                 )
 
-                await viewModel.waitForDeviceConnection(connectionData: connectionData)
+                await viewModel.waitForDeviceConnection(peerConnectionData: peerConnectionData)
                 Task { @MainActor in
                     // TODO: [Backups] - DeviceTransferService does a db.write
                     // internally, and this should be updated to an actor/async aware
                     // in a followup piece of work (and possibly once the old device transfer
                     // flow is removed)
-                    try viewModel.startTransfer(connectionData: connectionData)
+                    try viewModel.startTransfer(peerConnectionData: peerConnectionData)
                 }
                 await viewModel.waitForTransferCompletion()
 
-                await displayComplete(presentingViewController: presentingViewController)
+                await displayTransferComplete(presentingViewController: presentingViewController)
             }
         } catch {
             // TODO: [Backups] - Display an error

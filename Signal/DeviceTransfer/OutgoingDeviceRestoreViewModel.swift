@@ -9,15 +9,18 @@ import MultipeerConnectivity
 
 class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObserver {
 
-    struct PeerConnectionData {
-        fileprivate var peerId: MCPeerID
-        fileprivate var certificateHash: Data
-        public let restoreMethod: QuickRestoreManager.RestoreMethodType
+    struct RestoreMethodData {
+        struct PeerConnectionData {
+            var peerId: MCPeerID
+            var certificateHash: Data
+        }
 
-        fileprivate init(peerId: MCPeerID, certificateHash: Data, restoreMethod: QuickRestoreManager.RestoreMethodType) {
-            self.peerId = peerId
-            self.certificateHash = certificateHash
+        public let restoreMethod: QuickRestoreManager.RestoreMethodType
+        public let peerConnectionData: PeerConnectionData?
+
+        fileprivate init(restoreMethod: QuickRestoreManager.RestoreMethodType, peerConnectionData: PeerConnectionData?) {
             self.restoreMethod = restoreMethod
+            self.peerConnectionData = peerConnectionData
         }
     }
 
@@ -28,7 +31,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
 
     private var deviceConnectedContinuation: AtomicValue<(
         continuation: CheckedContinuation<Void, Never>,
-        connectionData: PeerConnectionData
+        peerConnectionData: RestoreMethodData.PeerConnectionData
     )?> = AtomicValue(nil, lock: .init())
 
     private var finishTransferContinuation: AtomicValue<
@@ -54,11 +57,11 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
     /// 2. Outgoing device will wait for the restore method choice from the other device.
     /// 3. Confirm the returned choice is 'device transfer' or fail.
     /// 4. Parse out the MPC connection information returned in the restore method choice, and return this connection data
-    func waitForConnectionData() async throws -> PeerConnectionData {
+    func waitForRestoreMethodResponse() async throws -> RestoreMethodData {
         let restoreMethodToken = try await quickRestoreManager.register(deviceProvisioningUrl: provisioningURL)
         let restoreMethod = try await quickRestoreManager.waitForRestoreMethodChoice(restoreMethodToken: restoreMethodToken)
         guard case let .deviceTransfer(transferData) = restoreMethod else {
-            throw OWSAssertionError("Attempting to restore using a method other than device transfer")
+            return RestoreMethodData(restoreMethod: restoreMethod, peerConnectionData: nil)
         }
         guard
             let stringData = Data(base64EncodedWithoutPadding: transferData),
@@ -69,8 +72,14 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
         }
 
         do {
-            let (peerId, certificateHash)  = try deviceTransferService.parseTransferURL(transferURL)
-            return PeerConnectionData(peerId: peerId, certificateHash: certificateHash, restoreMethod: restoreMethod)
+            let (peerId, certificateHash) = try deviceTransferService.parseTransferURL(transferURL)
+            return RestoreMethodData(
+                restoreMethod: restoreMethod,
+                peerConnectionData: RestoreMethodData.PeerConnectionData(
+                    peerId: peerId,
+                    certificateHash: certificateHash
+                )
+            )
         } catch {
             Logger.error("Failed to register device via URL: \(error)")
             throw error
@@ -79,7 +88,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
 
     /// Take the `PeerConnectionData` returned by `waitForConnectionData` and
     /// begin listening for the connection described in `PeerConnectionData`.
-    func waitForDeviceConnection(connectionData: PeerConnectionData) async {
+    func waitForDeviceConnection(peerConnectionData: RestoreMethodData.PeerConnectionData) async {
         // If in any state but .idle, return
         guard case .idle = transferStatusViewModel.state else {
             return
@@ -88,7 +97,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
             // Update with "Waiting to connect to new iPhone" message
             deviceConnectedContinuation.update { existingContinuation in
                 transferStatusViewModel.state = .starting
-                existingContinuation = (continuation, connectionData)
+                existingContinuation = (continuation, peerConnectionData)
             }
 
             deviceTransferService.startListeningForNewDevices()
@@ -98,11 +107,11 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
 
     /// Once connected to the device described in `PeerConnectionData`
     /// begin a device transfer.
-    func startTransfer(connectionData: PeerConnectionData) throws {
+    func startTransfer(peerConnectionData: RestoreMethodData.PeerConnectionData) throws {
         do {
             try deviceTransferService.transferAccountToNewDevice(
-                with: connectionData.peerId,
-                certificateHash: connectionData.certificateHash
+                with: peerConnectionData.peerId,
+                certificateHash: peerConnectionData.certificateHash
             )
         } catch {
             stopListeningForTransfer()
@@ -134,7 +143,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
 
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?) {
         deviceConnectedContinuation.update { existingContinuation in
-            guard peerId == existingContinuation?.connectionData.peerId else {
+            guard peerId == existingContinuation?.peerConnectionData.peerId else {
                 // Don't resume the continuation if we got a notification for a different peerId
                 return
             }

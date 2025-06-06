@@ -120,7 +120,8 @@ public class QuickRestoreManager {
             case .localBackup: self = .localBackup
             case .remoteBackup: self = .remoteBackup
             case .deviceTransfer:
-                self = .deviceTransfer(response.deviceTransferBootstrap)
+                guard let bootstrapData = response.deviceTransferBootstrap else { return nil }
+                self = .deviceTransfer(bootstrapData)
             }
         }
     }
@@ -213,7 +214,7 @@ public class QuickRestoreManager {
                 /// The method of restore chosen by the new device
                 let method: RestoreMethod
                 /// Additional data used to bootstrap device transfer
-                let deviceTransferBootstrap: String
+                let deviceTransferBootstrap: String?
             }
 
             static func buildRequest(token: RestoreMethodToken) -> TSRequest {

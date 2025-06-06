@@ -3831,15 +3831,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     isManualMessageFetchEnabled: isManualMessageFetchEnabled,
                     twoFAMode: twoFAMode
                 )
-                return self.makeCreateAccountRequestAndFinalizePreKeys(
-                    method: method,
-                    e164: e164,
-                    authPassword: authToken,
-                    accountAttributes: accountAttributes,
-                    skipDeviceTransfer: self.shouldSkipDeviceTransfer(),
-                    apnRegistrationId: apnRegistrationId,
-                    responseHandler: responseHandler
-                )
+
+                return sendRestoreMethodIfNecessary()
+                    .then {
+                        self.makeCreateAccountRequestAndFinalizePreKeys(
+                            method: method,
+                            e164: e164,
+                            authPassword: authToken,
+                            accountAttributes: accountAttributes,
+                            skipDeviceTransfer: self.shouldSkipDeviceTransfer(),
+                            apnRegistrationId: apnRegistrationId,
+                            responseHandler: responseHandler
+                        )
+                    }
             }
 
         case .changingNumber(let changeNumberState):
@@ -3898,6 +3902,34 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         }
     }
+
+    /// Send the restore method back to the other device in non-transfer restore scenarios.
+    /// Device transfer is handled outside the registration flow, so sending that
+    /// method is intentionally skipped here.
+    private func sendRestoreMethodIfNecessary() -> Guarantee<Void> {
+        let restoreMethod: QuickRestoreManager.RestoreMethodType? = switch inMemoryState.restoreMethod {
+        case .declined: .decline
+        case .localBackup: .localBackup
+        case .remoteBackup: .remoteBackup
+        case .deviceTransfer: nil
+        case .none: nil
+        }
+
+        if
+            let restoreMethod,
+            let restoreMethodToken = self.inMemoryState.registrationMessage?.restoreMethodToken
+        {
+            return Guarantee.wrapAsync({
+                try? await self.deps.quickRestoreManager.reportRestoreMethodChoice(
+                    method: restoreMethod,
+                    restoreMethodToken: restoreMethodToken
+                )
+            })
+        } else {
+            return .value(())
+        }
+    }
+
     private func persistRegistrationMessage(_ registrationMessage: RegistrationProvisioningMessage) {
         db.write { tx in
             deps.identityManager.setIdentityKeyPair(
