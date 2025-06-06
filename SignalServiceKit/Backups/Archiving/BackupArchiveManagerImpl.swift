@@ -166,6 +166,19 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         return tmpFileUrl
     }
 
+    public func backupCdnInfo(
+        localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth
+    ) async throws -> AttachmentDownloads.CdnInfo {
+        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
+            for: .messages,
+            localAci: localIdentifiers.aci,
+            auth: auth
+        )
+        let metadata = try await backupRequestManager.fetchBackupRequestMetadata(auth: backupAuth)
+        return try await attachmentDownloadManager.backupCdnInfo(metadata: metadata)
+    }
+
     public func uploadEncryptedBackup(
         metadata: Upload.EncryptedBackupUploadMetadata,
         registeredBackupIDToken: BackupIdManager.RegisteredBackupIDToken,

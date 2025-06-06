@@ -141,6 +141,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
     }
 
+    public func backupCdnInfo(
+        metadata: BackupReadCredential
+    ) async throws -> AttachmentDownloads.CdnInfo {
+        let uuid = UUID()
+        let downloadState = DownloadState(type: .backup(metadata: metadata, uuid: uuid))
+        return try await self.downloadQueue.performHeadRequest(downloadState: downloadState)
+    }
+
     public func downloadTransientAttachment(
         metadata: AttachmentDownloads.DownloadMetadata,
         progress: OWSProgressSink?
@@ -1397,6 +1405,41 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
 
+        fileprivate func performHeadRequest(
+            downloadState: DownloadState
+        ) async throws -> AttachmentDownloads.CdnInfo {
+            let urlSession = self.signalService.urlSessionForCdn(
+                cdnNumber: downloadState.cdnNumber(),
+                maxResponseSize: BackupArchive.Constants.maxDownloadSizeBytes
+            )
+            let urlPath = try downloadState.urlPath()
+            var headers = downloadState.additionalHeaders()
+            headers["Content-Type"] = MimeType.applicationOctetStream.rawValue
+
+            // Perform a HEAD request to get the byte length & last modified date from cdn.
+            let request = try urlSession.endpoint.buildRequest(urlPath, method: .head, headers: headers)
+            let response = try await urlSession.performRequest(request: request, ignoreAppExpiry: true)
+            guard
+                let contentLengthRaw = response.headers["Content-Length"],
+                let contentLengthBytes = UInt(contentLengthRaw)
+            else {
+                Logger.error("Missing content length from cdn")
+                throw OWSUnretryableError()
+            }
+
+            guard
+                let lastModifiedRaw = response.headers["Last-Modified"],
+                let lastModifiedDate = Date.ows_parseFromHTTPDateString(lastModifiedRaw)
+            else {
+                Logger.error("Missing last modified from cdn")
+                throw OWSUnretryableError()
+            }
+            return AttachmentDownloads.CdnInfo(
+                contentLength: contentLengthBytes,
+                lastModified: lastModifiedDate
+            )
+        }
+
         func enqueueDownload(
             downloadState: DownloadState,
             maxDownloadSizeBytes: UInt,
@@ -1491,20 +1534,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     }
                 } else {
                     // Perform a HEAD request just to get the byte length from cdn.
-                    let request = try urlSession.endpoint.buildRequest(urlPath, method: .head, headers: headers)
-                    let response = try await urlSession.performRequest(request: request, ignoreAppExpiry: true)
-                    guard
-                        let contentLengthRaw = response.headers["Content-Length"],
-                        let contentLengthBytes = UInt(contentLengthRaw)
-                    else {
-                        Logger.error("Missing content length from cdn")
-                        throw OWSUnretryableError()
-                    }
-                    expectedDownloadSizeBytes = contentLengthBytes
+                    let downloadInfo = try await performHeadRequest(downloadState: downloadState)
+                    expectedDownloadSizeBytes = downloadInfo.contentLength
                     for progress in progresses {
                         progressSources.append(await progress.addSource(
                             withLabel: AttachmentDownloads.downloadProgressLabel,
-                            unitCount: UInt64(contentLengthBytes)
+                            unitCount: UInt64(downloadInfo.contentLength)
                         ))
                     }
                 }

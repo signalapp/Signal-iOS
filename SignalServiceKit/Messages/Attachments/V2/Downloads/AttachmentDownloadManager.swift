@@ -103,9 +103,18 @@ public enum AttachmentDownloads {
     public enum Error: Swift.Error {
         case expiredCredentials
     }
+
+    public struct CdnInfo {
+        public let contentLength: UInt
+        public let lastModified: Date
+    }
 }
 
 public protocol AttachmentDownloadManager {
+
+    func backupCdnInfo(
+        metadata: BackupReadCredential
+    ) async throws -> AttachmentDownloads.CdnInfo
 
     func downloadBackup(
         metadata: BackupReadCredential,

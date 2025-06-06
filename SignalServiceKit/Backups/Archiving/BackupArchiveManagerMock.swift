@@ -9,6 +9,13 @@ import Foundation
 public import LibSignalClient
 
 open class BackupArchiveManagerMock: BackupArchiveManager {
+    public func backupCdnInfo(
+        localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth
+    ) async throws -> AttachmentDownloads.CdnInfo {
+        return AttachmentDownloads.CdnInfo(contentLength: 0, lastModified: Date())
+    }
+
     public func downloadEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
