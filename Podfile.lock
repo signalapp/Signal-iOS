@@ -53,8 +53,8 @@ DEPENDENCIES:
   - GRDB.swift/SQLCipher
   - LibMobileCoin/CoreHTTP (from `https://github.com/signalapp/libmobilecoin-ios-artifacts`, tag `signal/6.0.2`)
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
-  - LibSignalClient (from `https://github.com/signalapp/libsignal.git`, tag `v0.69.1`)
-  - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal.git`, tag `v0.69.1`)
+  - LibSignalClient (from `/Users/daoducdat/Documents/workplace/libsignal`)
+  - LibSignalClient/Tests (from `/Users/daoducdat/Documents/workplace/libsignal`)
   - libwebp (from `./ThirdParty/libwebp.podspec.json`)
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
@@ -89,8 +89,7 @@ EXTERNAL SOURCES:
     :branch: signal-master
     :git: https://github.com/signalapp/libPhoneNumber-iOS
   LibSignalClient:
-    :git: https://github.com/signalapp/libsignal.git
-    :tag: v0.69.1
+    :path: "/Users/daoducdat/Documents/workplace/libsignal"
   libwebp:
     :podspec: "./ThirdParty/libwebp.podspec.json"
   Mantle:
@@ -119,9 +118,6 @@ CHECKOUT OPTIONS:
   libPhoneNumber-iOS:
     :commit: 60482f7c0341e7c13e037ae1edbe8b359de7e6f3
     :git: https://github.com/signalapp/libPhoneNumber-iOS
-  LibSignalClient:
-    :git: https://github.com/signalapp/libsignal.git
-    :tag: v0.69.1
   Mantle:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
     :git: https://github.com/signalapp/Mantle
@@ -145,7 +141,7 @@ SPEC CHECKSUMS:
   GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
   LibMobileCoin: 8503f567fa32184a5be7bc038fbd727747dd9991
   libPhoneNumber-iOS: 1a34106b49dc6e12a7f37eb9aee7c64011509547
-  LibSignalClient: cac315ec5fea263737ef8d74bf8fd95187444c9b
+  LibSignalClient: b320fb4c413f1c37140d0a06d196d77e88a2a3e6
   libwebp: 1b5562124e3ca3336fb7506e76501bed7758963a
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: fcb5e73e17ba4c983140b7d21095c834b3087418
@@ -158,6 +154,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b7aa08087e2ab6d162862d143020091254095f69
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 0456805d85749c48ef9bace908bca0db0c002bed
+PODFILE CHECKSUM: 5f71940e0f1c240db40fa9348ec0765755fc3698
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

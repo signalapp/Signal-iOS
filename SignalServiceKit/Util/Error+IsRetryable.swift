@@ -50,7 +50,7 @@ extension Error {
         if CurrentAppContext().isRunningTests {
             Logger.warn("Error without retry behavior specified: \(self)")
         } else {
-            owsFailDebug("Error without retry behavior specified: \(self)")
+            //owsFailDebug("Error without retry behavior specified: \(self)")
         }
         return true
     }

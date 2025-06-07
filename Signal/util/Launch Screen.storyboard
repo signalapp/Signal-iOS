@@ -20,7 +20,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="signal-logo-128-launch-screen" translatesAutoresizingMaskIntoConstraints="NO" id="b92-yg-YYQ">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="0-you-sh-40" translatesAutoresizingMaskIntoConstraints="NO" id="b92-yg-YYQ">
                                 <rect key="frame" x="132.66666666666666" y="362" width="127.99999999999997" height="128"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="128" id="Xkq-NE-BxQ"/>
@@ -41,7 +41,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="signal-logo-128-launch-screen" width="128" height="128"/>
+        <image name="0-you-sh-40" width="128" height="128"/>ß
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

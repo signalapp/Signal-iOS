@@ -33,12 +33,12 @@ open class ScreenLockViewController: UIViewController {
 
     // MARK: - UI
 
-    private lazy var imageViewLogo = UIImageView(image: UIImage(named: "signal-logo-128-launch-screen"))
+    private lazy var imageViewLogo = UIImageView(image: UIImage(named: "4-icon-logo"))
     private static var buttonHeight: CGFloat { 40 }
     private lazy var buttonUnlockUI = OWSFlatButton.button(
         title: OWSLocalizedString(
-            "SCREEN_LOCK_UNLOCK_SIGNAL",
-            comment: "Label for button on lock screen that lets users unlock Signal."
+            "SCREEN_LOCK_UNLOCK_YOUSH",
+            comment: "Label for button on lock screen that lets users unlock Yoush."
         ),
         font: OWSFlatButton.fontForHeight(ScreenLockViewController.buttonHeight),
         titleColor: UIColor.Signal.label,

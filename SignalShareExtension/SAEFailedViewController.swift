@@ -39,11 +39,11 @@ class SAEFailedViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
             self?.cancelPressed()
         }
-        self.navigationItem.title = "Signal"
+        self.navigationItem.title = "Yoush"
 
         self.view.backgroundColor = Theme.launchScreenBackgroundColor
 
-        let logoImage = UIImage(named: "signal-logo-128-launch-screen")
+        let logoImage = UIImage(named: "4-icon-logo")
         let logoImageView = UIImageView(image: logoImage)
         self.view.addSubview(logoImageView)
         logoImageView.autoCenterInSuperview()

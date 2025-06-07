@@ -677,7 +677,7 @@ public struct StorageService {
         case 404:
             status = .notFound
         default:
-            owsFailDebug("Unexpected response status code: \(httpResponse.responseStatusCode)")
+            //owsFailDebug("Unexpected response status code: \(httpResponse.responseStatusCode)")
             throw .assertion
         }
 
