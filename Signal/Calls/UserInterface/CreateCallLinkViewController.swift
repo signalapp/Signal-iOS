@@ -70,6 +70,7 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
     static func createCallLinkOnServerAndPresent(from viewController: UIViewController) {
         ModalActivityIndicatorViewController.present(
             fromViewController: viewController,
+            canCancel: true,
             presentationDelay: 0.25,
             asyncBlock: { modal in
                 do {
