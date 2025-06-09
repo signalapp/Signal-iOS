@@ -469,13 +469,7 @@ public class GroupManager: NSObject {
         try await updateGroupV2(groupModel: groupModel, description: "Remove from group or revoke invite") { groupChangeSet in
             for serviceId in serviceIds {
                 owsAssertDebug(!groupModel.groupMembership.isRequestingMember(serviceId))
-
                 groupChangeSet.removeMember(serviceId)
-
-                // Do not ban when revoking an invite
-                if let aci = serviceId as? Aci, !groupModel.groupMembership.isInvitedMember(serviceId) {
-                    groupChangeSet.addBannedMember(aci)
-                }
             }
         }
     }
@@ -581,7 +575,6 @@ public class GroupManager: NSObject {
                 groupChangeSet.addMember(aci)
             } else {
                 groupChangeSet.removeMember(aci)
-                groupChangeSet.addBannedMember(aci)
             }
         }
     }

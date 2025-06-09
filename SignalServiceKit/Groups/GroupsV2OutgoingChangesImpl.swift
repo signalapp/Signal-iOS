@@ -69,9 +69,6 @@ public class GroupsV2OutgoingChanges {
     private var membersToChangeRole = [Aci: TSGroupMemberRole]()
     private var invalidInvitesToRemove = [Data: InvalidInvite]()
 
-    // Banning
-    private var membersToBan = [Aci]()
-
     // These access properties should only be set if the value is changing.
     private var accessForMembers: GroupV2Access?
     private var accessForAttributes: GroupV2Access?
@@ -138,11 +135,6 @@ public class GroupsV2OutgoingChanges {
     public func removeMember(_ serviceId: ServiceId) {
         owsAssertDebug(!membersToRemove.contains(serviceId))
         membersToRemove.append(serviceId)
-    }
-
-    public func addBannedMember(_ aci: Aci) {
-        owsAssertDebug(!membersToBan.contains(aci))
-        membersToBan.append(aci)
     }
 
     public func changeRoleForMember(_ aci: Aci, role: TSGroupMemberRole) {
@@ -455,6 +447,8 @@ public class GroupsV2OutgoingChanges {
             }
         }
 
+        var membersToBan = [Aci]()
+
         for serviceId in self.membersToRemove {
             if let aci = serviceId as? Aci, currentGroupMembership.isFullMember(aci) {
                 var actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
@@ -462,6 +456,7 @@ public class GroupsV2OutgoingChanges {
                 actionBuilder.setDeletedUserID(userId)
                 actionsBuilder.addDeleteMembers(actionBuilder.buildInfallibly())
                 didChange = true
+                membersToBan.append(aci)
 
                 fullMembers.remove(aci)
                 if currentGroupMembership.isFullMemberAndAdministrator(aci) {
@@ -473,12 +468,14 @@ public class GroupsV2OutgoingChanges {
                 actionBuilder.setDeletedUserID(userId)
                 actionsBuilder.addDeletePendingMembers(actionBuilder.buildInfallibly())
                 didChange = true
+                // Don't ban invited members.
             } else if let aci = serviceId as? Aci, currentGroupMembership.isRequestingMember(aci) {
                 var actionBuilder = GroupsProtoGroupChangeActionsDeleteRequestingMemberAction.builder()
                 let userId = try groupV2Params.userId(for: aci)
                 actionBuilder.setDeletedUserID(userId)
                 actionsBuilder.addDeleteRequestingMembers(actionBuilder.buildInfallibly())
                 didChange = true
+                membersToBan.append(aci)
             } else {
                 // Another user has already removed this member or revoked their
                 // invitation.
