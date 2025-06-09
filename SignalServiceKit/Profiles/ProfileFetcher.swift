@@ -322,7 +322,7 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         } else {
             switch fetchResult.outcome {
             case .success:
-                retryDelay = 2 * .minute
+                retryDelay = 5 * .minute
             case .networkFailure:
                 retryDelay = 1 * .minute
             case .requestFailure(.notAuthorized):
