@@ -1533,6 +1533,18 @@ public class GroupsV2Impl: GroupsV2 {
         //   accept that invite rather than request to join).
         // * The invite link may have been rescinded.
 
+        // Fetch a preview before refreshing the group. If somebody adds us while
+        // we're trying to join, this ensures that we run into an HTTP 409 Conflict
+        // rather than an HTTP 400. If we fetch a preview after trying to join via
+        // "alternate means", then it's possible for us to be added after we try to
+        // refresh the group but before we fetch the invite link preview (and, more
+        // specifically, its revision). In this case, we may submit a request to
+        // join a group that we've already joined.
+        let inviteLinkPreview = try await fetchGroupInviteLinkPreview(
+            inviteLinkPassword: inviteLinkPassword,
+            groupSecretParams: secretParams
+        )
+
         do {
             // Check if...
             //
@@ -1541,15 +1553,12 @@ public class GroupsV2Impl: GroupsV2 {
             //
             // Note: this will typically fail.
             try await joinGroupViaInviteLinkUsingAlternateMeans(
-                inviteLinkPassword: inviteLinkPassword,
                 secretParams: secretParams,
                 localIdentifiers: localIdentifiers
             )
-        } catch where error.isNetworkFailureOrTimeout {
-            throw error
-        } catch {
-            Logger.warn("Error: \(error)")
+        } catch GroupsV2Error.localUserNotInGroup {
             try await self.joinGroupViaInviteLinkUsingPatch(
+                inviteLinkPreview: inviteLinkPreview,
                 inviteLinkPassword: inviteLinkPassword,
                 secretParams: secretParams,
                 localIdentifiers: localIdentifiers,
@@ -1559,7 +1568,6 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     private func joinGroupViaInviteLinkUsingAlternateMeans(
-        inviteLinkPassword: Data,
         secretParams: GroupSecretParams,
         localIdentifiers: LocalIdentifiers
     ) async throws {
@@ -1599,17 +1607,13 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     private func joinGroupViaInviteLinkUsingPatch(
+        inviteLinkPreview: GroupInviteLinkPreview,
         inviteLinkPassword: Data,
         secretParams: GroupSecretParams,
         localIdentifiers: LocalIdentifiers,
         downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?
     ) async throws {
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
-
-        let inviteLinkPreview = try await fetchGroupInviteLinkPreview(
-            inviteLinkPassword: inviteLinkPassword,
-            groupSecretParams: secretParams
-        )
 
         let revisionForPlaceholderModel: UInt32
         if inviteLinkPreview.isLocalUserRequestingMember {
