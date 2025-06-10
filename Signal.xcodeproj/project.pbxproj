@@ -2678,6 +2678,7 @@
 		D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */; };
 		D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */; };
 		D99840CE2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840CD2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift */; };
+		D999345A2DE97BBC002C9196 /* BackupOnboardingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99934592DE97BB6002C9196 /* BackupOnboardingCoordinator.swift */; };
 		D99A0F5829F1ABBB002E02E3 /* TSGroupMemberRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */; };
 		D99A0F6029F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A0F5F29F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift */; };
 		D99A0F6229F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A0F6129F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift */; };
@@ -2757,6 +2758,8 @@
 		D9DCFDA52A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */; };
 		D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */; };
 		D9DCFDB02A3BC4A400C73C0B /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAF2A3BC4A400C73C0B /* QRCodeGenerator.swift */; };
+		D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroductionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroductionViewController.swift */; };
+		D9DE35012DF0B89E005099D7 /* ScrollableContentPinnedFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DE35002DF0B886005099D7 /* ScrollableContentPinnedFooterView.swift */; };
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
 		D9E43AF62CC193D70001536E /* BackupSubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43AF32CC193D70001536E /* BackupSubscriptionManager.swift */; };
 		D9E43BE22CC194140001536E /* CallButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B932CC194140001536E /* CallButton.swift */; };
@@ -6607,6 +6610,7 @@
 		D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+ParsedUsername.swift"; sourceTree = "<group>"; };
 		D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsernameSelectionViewController+HeaderView.swift"; sourceTree = "<group>"; };
 		D99840CD2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkShareSheetViewController.swift; sourceTree = "<group>"; };
+		D99934592DE97BB6002C9196 /* BackupOnboardingCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOnboardingCoordinator.swift; sourceTree = "<group>"; };
 		D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupMemberRole.swift; sourceTree = "<group>"; };
 		D99A0F5F29F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupUpdateInfoMessageInserter.swift; sourceTree = "<group>"; };
 		D99A0F6129F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift"; sourceTree = "<group>"; };
@@ -6697,6 +6701,8 @@
 		D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkPresentQRCodeViewController.swift; sourceTree = "<group>"; };
 		D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHeaderButton.swift; sourceTree = "<group>"; };
 		D9DCFDAF2A3BC4A400C73C0B /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
+		D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroductionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOnboardingIntroductionViewController.swift; sourceTree = "<group>"; };
+		D9DE35002DF0B886005099D7 /* ScrollableContentPinnedFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollableContentPinnedFooterView.swift; sourceTree = "<group>"; };
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
 		D9E43AF32CC193D70001536E /* BackupSubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionManager.swift; sourceTree = "<group>"; };
 		D9E43B932CC194140001536E /* CallButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallButton.swift; sourceTree = "<group>"; };
@@ -11122,6 +11128,7 @@
 				05104E392C8B540C00F8851F /* AccessibleLayoutMetric.swift */,
 				05104D172C8A151100F8851F /* AsyncViewTask.swift */,
 				05594CCF2C98A00200CCBFF6 /* HostingController.swift */,
+				D9DE35002DF0B886005099D7 /* ScrollableContentPinnedFooterView.swift */,
 				05594CCD2C989F1900CCBFF6 /* ScrollableWhenCompact.swift */,
 				0510F69D2C91EB2800FA3FDE /* ScrollBounceBehaviorIfAvailable.swift */,
 				B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */,
@@ -12437,6 +12444,7 @@
 		D951F52F2D9B233300C5EBF3 /* Backups */ = {
 			isa = PBXGroup;
 			children = (
+				D9DE34FB2DEE76E6005099D7 /* Onboarding */,
 				D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */,
 				D93FA5BE2DE77E440013879E /* BackupEnablingManager.swift */,
 				D951F5302D9B236100C5EBF3 /* BackupSettingsViewController.swift */,
@@ -12813,6 +12821,15 @@
 				D9BF53352D08149D00EC3DF0 /* QRCodeView.swift */,
 			);
 			path = QRCodes;
+			sourceTree = "<group>";
+		};
+		D9DE34FB2DEE76E6005099D7 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				D99934592DE97BB6002C9196 /* BackupOnboardingCoordinator.swift */,
+				D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroductionViewController.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		D9E335A52993269E00825677 /* Mocks */ = {
@@ -16526,6 +16543,7 @@
 				88B987022880890800F8C74D /* SafetyNumberConfirmationSheet.swift in Sources */,
 				88B9870928808A8A00F8C74D /* ScanQRCodeViewController.swift in Sources */,
 				7677E41129F7A60500AC6A75 /* ScreenLockViewController.swift in Sources */,
+				D9DE35012DF0B89E005099D7 /* ScrollableContentPinnedFooterView.swift in Sources */,
 				05594CCE2C989F1900CCBFF6 /* ScrollableWhenCompact.swift in Sources */,
 				0510F69E2C91EB3000FA3FDE /* ScrollBounceBehaviorIfAvailable.swift in Sources */,
 				B9488E752CDED27200C1294B /* ScrollOffset.swift in Sources */,
@@ -16690,6 +16708,8 @@
 				66485EB02CCC515A00B8613F /* BackupArchiveInternalErrorViewController.swift in Sources */,
 				D97C9FF22DD3FB7E00191CE2 /* BackupDisablingManager.swift in Sources */,
 				D93FA5BF2DE77E470013879E /* BackupEnablingManager.swift in Sources */,
+				D999345A2DE97BBC002C9196 /* BackupOnboardingCoordinator.swift in Sources */,
+				D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroductionViewController.swift in Sources */,
 				D951F5312D9B236700C5EBF3 /* BackupSettingsViewController.swift in Sources */,
 				32E035242739059C0081EE11 /* BadgeCollectionView.swift in Sources */,
 				32E03522273901710081EE11 /* BadgeConfigurationViewController.swift in Sources */,

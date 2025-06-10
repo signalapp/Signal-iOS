@@ -248,20 +248,15 @@ class AppSettingsViewController: OWSTableViewController2 {
                     let backupSettingsStore = BackupSettingsStore()
                     let db = DependenciesBridge.shared.db
 
-                    func pushBackupsSettings() {
-                        let vc = BackupSettingsViewController()
-                        navigationController?.pushViewController(vc, animated: true)
-                    }
-
                     let haveBackupsEverBeenEnabled = db.read { tx in
                         backupSettingsStore.haveBackupsEverBeenEnabled(tx: tx)
                     }
 
                     if haveBackupsEverBeenEnabled {
-                        pushBackupsSettings()
+                        let vc = BackupSettingsViewController(onLoadAction: .none)
+                        navigationController?.pushViewController(vc, animated: true)
                     } else {
-                        // TODO: [Backups] Show the onboarding flow.
-                        pushBackupsSettings()
+                        BackupOnboardingCoordinator().present(fromViewController: self)
                     }
                 }
             ))
