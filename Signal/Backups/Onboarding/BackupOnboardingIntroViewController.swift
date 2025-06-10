@@ -7,21 +7,23 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-class BackupOnboardingIntroductionViewController: HostingController<BackupOnboardingIntroductionView> {
+class BackupOnboardingIntroViewController: HostingController<BackupOnboardingIntroView> {
     init(
         onContinue: @escaping () -> Void,
         onNotNow: @escaping () -> Void,
     ) {
-        super.init(wrappedView: BackupOnboardingIntroductionView(
+        super.init(wrappedView: BackupOnboardingIntroView(
             onContinue: onContinue,
             onNotNow: onNotNow
         ))
+
+        OWSTableViewController2.removeBackButtonText(viewController: self)
     }
 }
 
 // MARK: -
 
-struct BackupOnboardingIntroductionView: View {
+struct BackupOnboardingIntroView: View {
     private struct BulletPoint: Identifiable {
         let image: UIImage
         let text: String
@@ -138,7 +140,7 @@ struct BackupOnboardingIntroductionView: View {
 #if DEBUG
 
 #Preview {
-    BackupOnboardingIntroductionView(
+    BackupOnboardingIntroView(
         onContinue: { print("Continuing...!") },
         onNotNow: { print("Not now...!") }
     )

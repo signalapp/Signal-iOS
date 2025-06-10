@@ -2662,6 +2662,7 @@
 		D985D86629B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */; };
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
 		D98CA2B12DF238EA0060370E /* LocalDeviceAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98CA2AF2DF171110060370E /* LocalDeviceAuthentication.swift */; };
+		D98CA2AD2DF14A890060370E /* BackupOnboardingKeyIntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98CA2AC2DF14A830060370E /* BackupOnboardingKeyIntroViewController.swift */; };
 		D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */; };
 		D990CAC72B4CCB34000A99A2 /* MockUsernameApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D990CABD2B4CC8FD000A99A2 /* MockUsernameApiClient.swift */; };
 		D990CAC82B4CCB8F000A99A2 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
@@ -2758,7 +2759,7 @@
 		D9DCFDA52A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */; };
 		D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */; };
 		D9DCFDB02A3BC4A400C73C0B /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAF2A3BC4A400C73C0B /* QRCodeGenerator.swift */; };
-		D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroductionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroductionViewController.swift */; };
+		D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroViewController.swift */; };
 		D9DE35012DF0B89E005099D7 /* ScrollableContentPinnedFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DE35002DF0B886005099D7 /* ScrollableContentPinnedFooterView.swift */; };
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
 		D9E43AF62CC193D70001536E /* BackupSubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43AF32CC193D70001536E /* BackupSubscriptionManager.swift */; };
@@ -6592,6 +6593,7 @@
 		D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerTest.swift; sourceTree = "<group>"; };
 		D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChangePhoneNumberPniManager+Shims.swift"; sourceTree = "<group>"; };
 		D98CA2AF2DF171110060370E /* LocalDeviceAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDeviceAuthentication.swift; sourceTree = "<group>"; };
+		D98CA2AC2DF14A830060370E /* BackupOnboardingKeyIntroViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOnboardingKeyIntroViewController.swift; sourceTree = "<group>"; };
 		D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneFetcher.swift; sourceTree = "<group>"; };
 		D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneModel.swift; sourceTree = "<group>"; };
 		D990CABD2B4CC8FD000A99A2 /* MockUsernameApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameApiClient.swift; sourceTree = "<group>"; };
@@ -6701,7 +6703,7 @@
 		D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkPresentQRCodeViewController.swift; sourceTree = "<group>"; };
 		D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHeaderButton.swift; sourceTree = "<group>"; };
 		D9DCFDAF2A3BC4A400C73C0B /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
-		D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroductionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOnboardingIntroductionViewController.swift; sourceTree = "<group>"; };
+		D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOnboardingIntroViewController.swift; sourceTree = "<group>"; };
 		D9DE35002DF0B886005099D7 /* ScrollableContentPinnedFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollableContentPinnedFooterView.swift; sourceTree = "<group>"; };
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
 		D9E43AF32CC193D70001536E /* BackupSubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionManager.swift; sourceTree = "<group>"; };
@@ -12827,7 +12829,8 @@
 			isa = PBXGroup;
 			children = (
 				D99934592DE97BB6002C9196 /* BackupOnboardingCoordinator.swift */,
-				D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroductionViewController.swift */,
+				D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroViewController.swift */,
+				D98CA2AC2DF14A830060370E /* BackupOnboardingKeyIntroViewController.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -16709,7 +16712,8 @@
 				D97C9FF22DD3FB7E00191CE2 /* BackupDisablingManager.swift in Sources */,
 				D93FA5BF2DE77E470013879E /* BackupEnablingManager.swift in Sources */,
 				D999345A2DE97BBC002C9196 /* BackupOnboardingCoordinator.swift in Sources */,
-				D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroductionViewController.swift in Sources */,
+				D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroViewController.swift in Sources */,
+				D98CA2AD2DF14A890060370E /* BackupOnboardingKeyIntroViewController.swift in Sources */,
 				D951F5312D9B236700C5EBF3 /* BackupSettingsViewController.swift in Sources */,
 				32E035242739059C0081EE11 /* BadgeCollectionView.swift in Sources */,
 				32E03522273901710081EE11 /* BadgeConfigurationViewController.swift in Sources */,

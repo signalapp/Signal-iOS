@@ -31,11 +31,9 @@ class BackupOnboardingCoordinator {
         self.onboardingNavController = UINavigationController()
 
         onboardingNavController.viewControllers = [
-            BackupOnboardingIntroductionViewController(
+            BackupOnboardingIntroViewController(
                 onContinue: { [self] in
-                    Task {
-                        await showChooseBackupPlan()
-                    }
+                    showBackupKeyIntro()
                 },
                 onNotNow: { [self] in
                     onboardingNavController.dismiss(animated: true)
@@ -46,6 +44,21 @@ class BackupOnboardingCoordinator {
 
     func present(fromViewController: UIViewController) {
         fromViewController.present(onboardingNavController, animated: true)
+    }
+
+    // MARK: -
+
+    private func showBackupKeyIntro() {
+        onboardingNavController.pushViewController(
+            BackupOnboardingKeyIntroViewController(onDeviceAuthSucceeded: { [weak self] in
+                Task { [weak self] in
+                    guard let self else { return }
+
+                    await showChooseBackupPlan()
+                }
+            }),
+            animated: true
+        )
     }
 
     // MARK: -
