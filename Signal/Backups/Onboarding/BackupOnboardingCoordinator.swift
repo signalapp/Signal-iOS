@@ -71,6 +71,8 @@ class BackupOnboardingCoordinator {
         )
     }
 
+    // MARK: -
+
     private func showRecordBackupKey() {
         guard
             let onboardingNavController,
@@ -81,9 +83,28 @@ class BackupOnboardingCoordinator {
             BackupRecordKeyViewController(
                 aep: aep,
                 onContinue: { [weak self] in
+                    self?.showConfirmBackupKey(aep: aep)
+                },
+            ),
+            animated: true
+        )
+    }
+
+    // MARK: -
+
+    private func showConfirmBackupKey(aep: AccountEntropyPool) {
+        guard let onboardingNavController else { return }
+
+        onboardingNavController.pushViewController(
+            BackupOnboardingConfirmKeyViewController(
+                aep: aep,
+                onContinue: { [weak self] in
                     Task { [weak self] in
                         await self?.showChooseBackupPlan()
                     }
+                },
+                onSeeKeyAgain: {
+                    onboardingNavController.popViewController(animated: true)
                 }
             ),
             animated: true

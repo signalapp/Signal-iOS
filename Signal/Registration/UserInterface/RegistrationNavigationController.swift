@@ -369,9 +369,9 @@ public class RegistrationNavigationController: OWSNavigationController {
             )
         case .enterBackupKey:
             return Controller(
-                type: RegistrationEnterBackupKeyViewController.self,
+                type: RegistrationEnterAccountEntropyPoolViewController.self,
                 make: { presenter in
-                    return RegistrationEnterBackupKeyViewController(presenter: presenter)
+                    return RegistrationEnterAccountEntropyPoolViewController(presenter: presenter)
                 },
                 // No state to update.
                 update: nil
@@ -661,7 +661,7 @@ extension RegistrationNavigationController: RegistrationReglockTimeoutPresenter 
     }
 }
 
-extension RegistrationNavigationController: RegistrationEnterBackupKeyPresenter {
+extension RegistrationNavigationController: RegistrationEnterAccountEntropyPoolPresenter {
     func next(accountEntropyPool: AccountEntropyPool) {
         let guarantee = coordinator.updateAccountEntropyPool(accountEntropyPool)
         pushNextController(guarantee)
