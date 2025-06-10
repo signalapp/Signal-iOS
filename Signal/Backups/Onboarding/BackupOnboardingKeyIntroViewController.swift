@@ -47,7 +47,7 @@ class BackupOnboardingKeyIntroViewController: HostingController<BackupOnboarding
 // MARK: -
 
 extension BackupOnboardingKeyIntroViewController: BackupsOnboardingKeyIntroViewModel.ActionsDelegate {
-    func onContinue() {
+    fileprivate func onContinue() {
         _ = debouncedBiometricAuthTask.run()
     }
 }

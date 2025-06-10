@@ -9,7 +9,7 @@ public import LibSignalClient
 public struct AccountEntropyPool: Codable {
 
     public enum Constants {
-        public static let byteLength: UInt = 64 /* bytes */
+        public static let byteLength: Int = 64 /* bytes */
     }
 
     private let key: String
