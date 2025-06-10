@@ -3446,7 +3446,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ изменил(-а) настройки группы, чтобы отправлять сообщения могли только администраторы.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you. Contact an admin to be added back to the group.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Вы не можете присоединиться к этой группе по ссылке, потому что администратор удалил вас из неё. Свяжитесь с администратором, чтобы вас снова добавили в группу.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Невозможно присоединиться к группе";
@@ -8867,7 +8867,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "При изменении имени пользователя ваши существующие QR-код и ссылка будут сброшены. Вы уверены?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Именам пользователей всегда придан набор цифр. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Именам пользователей всегда присвоен набор цифр. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Выберите ваше имя пользователя";

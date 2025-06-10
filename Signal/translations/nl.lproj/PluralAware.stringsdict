@@ -184,9 +184,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>+ %1$ld verzoek</string>
+			<string>+%1$ld verzoek</string>
 			<key>other</key>
-			<string>+ %1$ld verzoeken</string>
+			<string>+%1$ld verzoeken</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_MULTI_SUCCESS</key>
@@ -595,9 +595,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>+ %1$ld ander</string>
+			<string>+%1$ld ander</string>
 			<key>other</key>
-			<string>+ %1$ld anderen</string>
+			<string>+%1$ld anderen</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>

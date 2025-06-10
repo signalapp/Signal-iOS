@@ -3446,7 +3446,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "फक्त प्रशासकांना संदेश पाठवण्याची अनुमती देण्यासाठी %1$@ ने गट सेटिंग बदलल्या.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you. Contact an admin to be added back to the group.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "ॲडमिन ने आपल्याला काढून टाकले असल्यामुळे आपण ग्रुप लिंकद्वारे या ग्रुपमध्ये सामील होऊ शकत नाही. ग्रूपमध्ये पुन्हा सामील होण्यासाठी एखाद्या ॲडमिन शी संंपर्क साधा.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "गटात सामील होऊ शकत नाही";
@@ -6359,40 +6359,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "सर्व · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "आपल्या संदेशाला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या संदेशाला दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "आपल्या अल्बमला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या अल्बमला दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "आपल्या ऑडिओला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या ऑडिओला दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "आपल्या संपर्क सामायिकरणावर %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुम्ही शेअर केलेल्या संपर्कावर दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "आपल्या फाइलवर %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या फाईलवर दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "आपल्या GIF ला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या GIF ला दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "आपल्या फोटोला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या फोटोला दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "आपल्या स्टिकरला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या स्टिकरला दिली";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "\"%2$@\" :ला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया \"%2$@\"ला दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "आपल्या व्हिडिओवर %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या व्हिडिओवर दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "आपल्या एकदा-बघा व्हिडिओवर %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या एकदा-बघा मीडियावर दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "आपल्या व्हॉईस संदेशाला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या व्हॉईस संदेशाला दिली";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "वाचले";
@@ -8258,16 +8258,16 @@
 "STORY_PRIVACY_TITLE" = "स्टोरीची गोपनीयता";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "%1$@ नी आपल्या स्टोरी वर प्रतिक्रिया दिली";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या स्टोरीवर दिली";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "एका स्टोरी वर %1$@ नी प्रतिक्रिया दिली";
+"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "%1$@ अशी प्रतिक्रिया एका स्टोरीवर दिली";
 
 /* quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "एका स्टोरी वर %1$@ नी प्रतिक्रिया दिली";
+"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "%1$@ अशी प्रतिक्रिया एका स्टोरीवर दिली";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ च्या स्टोरीवर %1$@ प्रतिक्रिया दिली";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%1$@ अशी प्रतिक्रिया %2$@च्या स्टोरीवर दिली";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "प्रत्युत्तर द्या";

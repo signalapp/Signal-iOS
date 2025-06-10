@@ -1,2 +1,2 @@
-• In ancient times, quotes were printed on scrolls and nothing would happen if you tapped on the parchment. In modern times, you can tap on a quoted reply and now the original message is highlighted after it scrolls.
-• We also updated the “Note to Self” chat so that it’s always included in the list of available recipients without having to search for your own name. Self-discovery can be hard, but finding yourself in Signal has never been easier.
+• पुराने ज़माने में, कही गई बातों को स्क्रोल पर प्रिंट किया जाता था और अगर आप चर्मपत्र पर टैप करते, तो कुछ नहीं होता। नए ज़माने में, आप क्वोट किए गए जवाब पर टैप कर सकते हैं और अब इसके स्क्रोल होने पर असली संदेश हाइलाइट हो जाता है।
+• हमने “खुद के लिए नोट” चैट को भी अपडेट किया है, ताकि इसे हमेशा संदेश पाने वाले उपलब्ध लोगों की सूची में शामिल किया जाए और आपको अपना नाम खोजना न पड़े। खुद को खोजना मुश्किल हो सकता है, लेकिन Signal पर खुद को ढूँढना कभी इतना आसान नहीं था।

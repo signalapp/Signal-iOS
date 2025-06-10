@@ -3446,7 +3446,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "غيَّر العضو %1$@ إعدادات المجموعة للسماح للمُشرِفين فقط بإرسال الرسائل.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you. Contact an admin to be added back to the group.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "لا يُمكنك الانضمام لهذه المجموعة من خلال رابط المجموعة لأن أحد المُشرفِين قام بإزالتك. تواصَل مع أحد المُشرِفين ليُضيفك إلى المجموعة من جديد.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "يتعذَّر الانضمام للمجموعة";

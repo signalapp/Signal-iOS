@@ -1,2 +1,2 @@
-• In ancient times, quotes were printed on scrolls and nothing would happen if you tapped on the parchment. In modern times, you can tap on a quoted reply and now the original message is highlighted after it scrolls.
-• We also updated the “Note to Self” chat so that it’s always included in the list of available recipients without having to search for your own name. Self-discovery can be hard, but finding yourself in Signal has never been easier.
+• Nell'antichità, le citazioni venivano scritte sulle pergamene e non succedeva nulla quando le prendevi in mano. Nei tempi moderni, puoi toccare su una risposta citata da una persona e da ora il messaggio originale verrà messo in evidenza per maggiore visibilità.
+• Abbiamo anche aggiornato la chat per le "Note personali" così che sia sempre inclusa nell'elenco dei destinatari disponibili senza dover cercare il tuo nome. La ricerca dell'io può richiedere del tempo, ma almeno ora trovarsi su Signal è molto più semplice.

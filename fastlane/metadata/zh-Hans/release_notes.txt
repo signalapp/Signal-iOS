@@ -1,2 +1,2 @@
-• In ancient times, quotes were printed on scrolls and nothing would happen if you tapped on the parchment. In modern times, you can tap on a quoted reply and now the original message is highlighted after it scrolls.
-• We also updated the “Note to Self” chat so that it’s always included in the list of available recipients without having to search for your own name. Self-discovery can be hard, but finding yourself in Signal has never been easier.
+• 现在当您轻触引用的回复时，原消息会高亮显示，以方便查看。
+• 我们还更新了“备忘录”聊天，让它始终包含在可用接收人列表中，为您省去搜索自己名称的麻烦。

@@ -1,2 +1,2 @@
-• In ancient times, quotes were printed on scrolls and nothing would happen if you tapped on the parchment. In modern times, you can tap on a quoted reply and now the original message is highlighted after it scrolls.
-• We also updated the “Note to Self” chat so that it’s always included in the list of available recipients without having to search for your own name. Self-discovery can be hard, but finding yourself in Signal has never been easier.
+• في العصور القديمة، كانت الاقتباسات تُطبع على لفائف ولا شيء كان يحدث إذا نقرت عليها. في العصر الحديث، يمكنك النقر على رد مقتبس ويتم تمييز الرسالة الأصلية بعد تمريرها.
+• قمنا أيضًا بتحديث دردشة "الملاحظات الشخصية" لكي يتم تضمينها دائمًا في قائمة المُستلِمين دون الحاجة إلى البحث على اسمك. رحلة البحث عن الذات قد تكون صعبة، لكن العثور على نفسك في سيجنال لم يكن أسهل من أي وقتٍ مضى.

@@ -1,2 +1,2 @@
-• In ancient times, quotes were printed on scrolls and nothing would happen if you tapped on the parchment. In modern times, you can tap on a quoted reply and now the original message is highlighted after it scrolls.
-• We also updated the “Note to Self” chat so that it’s always included in the list of available recipients without having to search for your own name. Self-discovery can be hard, but finding yourself in Signal has never been easier.
+• În vremurile străvechi, citatele erau tipărite pe suluri și nu se întâmpla nimic dacă atingeai pergamentul. În timpurile moderne, poți apăsa pe un răspuns citat, iar acum mesajul original este evidențiat după ce acesta se derulează.
+• De asemenea, am actualizat chatul „Notă pentru mine”, astfel încât să fie întotdeauna inclus în lista de destinatari disponibili, fără a fi nevoie să-ți cauți propriul nume. Poate că nu e ușor să te autodescoperi, dar să te găsești pe Signal nu a fost niciodată mai ușor.

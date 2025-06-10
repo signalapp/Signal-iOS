@@ -1,2 +1,2 @@
-• In ancient times, quotes were printed on scrolls and nothing would happen if you tapped on the parchment. In modern times, you can tap on a quoted reply and now the original message is highlighted after it scrolls.
-• We also updated the “Note to Self” chat so that it’s always included in the list of available recipients without having to search for your own name. Self-discovery can be hard, but finding yourself in Signal has never been easier.
+• В древние времена цитаты писали на свитках, и сколько не нажимай на пергамент, ничего не происходило. В наше время вы можете нажать на процитированный ответ — и исходное сообщение выделится после прокрутки.
+• Мы также обновили чат «Заметка для себя», чтобы он всегда был включён в список доступных получателей и не нужно было искать своё имя. Самопознание — дело непростое, но найти себя в Signal ещё никогда не было так просто.

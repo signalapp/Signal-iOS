@@ -1,2 +1,2 @@
-• In ancient times, quotes were printed on scrolls and nothing would happen if you tapped on the parchment. In modern times, you can tap on a quoted reply and now the original message is highlighted after it scrolls.
-• We also updated the “Note to Self” chat so that it’s always included in the list of available recipients without having to search for your own name. Self-discovery can be hard, but finding yourself in Signal has never been easier.
+בעבר הרחוק, ציטוטים הודפסו על מגילות, ושום דבר לא היה קורה אם היית נוגע בקלף. בימינו, ניתן להקיש על תגובה שמצטטת הודעה קודמת, המסך יגלול אוטומטית אל ההודעה המקורית ויציג אותה בצורה בולטת.
+• עדכנו גם את הצ׳אט ״הערות לעצמי״ כדי שהוא תמיד ייכלל ברשימת הנמענים הזמינים מבלי שיהיה עליך לחפש את השם של עצמך. המסע לגילוי עצמי אולי לא פשוט, אבל למצוא את עצמך ב-Signal – מעולם לא היה קל יותר.
