@@ -2661,6 +2661,7 @@
 		D984F7242C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */; };
 		D985D86629B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */; };
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
+		D98CA2B12DF238EA0060370E /* LocalDeviceAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98CA2AF2DF171110060370E /* LocalDeviceAuthentication.swift */; };
 		D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */; };
 		D990CAC72B4CCB34000A99A2 /* MockUsernameApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D990CABD2B4CC8FD000A99A2 /* MockUsernameApiClient.swift */; };
 		D990CAC82B4CCB8F000A99A2 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
@@ -6587,6 +6588,7 @@
 		D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageTest.swift; sourceTree = "<group>"; };
 		D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerTest.swift; sourceTree = "<group>"; };
 		D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChangePhoneNumberPniManager+Shims.swift"; sourceTree = "<group>"; };
+		D98CA2AF2DF171110060370E /* LocalDeviceAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDeviceAuthentication.swift; sourceTree = "<group>"; };
 		D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneFetcher.swift; sourceTree = "<group>"; };
 		D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneModel.swift; sourceTree = "<group>"; };
 		D990CABD2B4CC8FD000A99A2 /* MockUsernameApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameApiClient.swift; sourceTree = "<group>"; };
@@ -12600,6 +12602,14 @@
 			path = Backups;
 			sourceTree = "<group>";
 		};
+		D98CA2AE2DF170FE0060370E /* LocalDeviceAuth */ = {
+			isa = PBXGroup;
+			children = (
+				D98CA2AF2DF171110060370E /* LocalDeviceAuthentication.swift */,
+			);
+			path = LocalDeviceAuth;
+			sourceTree = "<group>";
+		};
 		D990CAC42B4CCA69000A99A2 /* Usernames */ = {
 			isa = PBXGroup;
 			children = (
@@ -13433,6 +13443,7 @@
 				506695ED29C5337700B6D8D0 /* GroupMembers */,
 				F9C5CBA3289453B200548EEE /* Groups */,
 				D9668B30291B033800665298 /* Jobs */,
+				D98CA2AE2DF170FE0060370E /* LocalDeviceAuth */,
 				668A00E52C2B5F49007B8808 /* Locking */,
 				668A01032C2B5FD2007B8808 /* Logging */,
 				D920487D28EB8201003F5371 /* Megaphones */,
@@ -17921,6 +17932,7 @@
 				5073EAC72C4F0F7A001FBB3E /* LinkPreviewSettingStore.swift in Sources */,
 				50D5E2412980AD6F00899660 /* LinkValidator.swift in Sources */,
 				F9C5CE33289453B400548EEE /* LocalDevice.swift in Sources */,
+				D98CA2B12DF238EA0060370E /* LocalDeviceAuthentication.swift in Sources */,
 				F9C5CDE7289453B400548EEE /* Locale+SSK.swift in Sources */,
 				5033D46729D76BD0007FEADA /* LocalIdentifiers.swift in Sources */,
 				50159CDD2B4EF75600D344D4 /* LocalProfileChecker.swift in Sources */,
