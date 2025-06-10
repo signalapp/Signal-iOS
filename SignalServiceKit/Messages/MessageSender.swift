@@ -382,11 +382,19 @@ public class MessageSender {
     // MARK: - Constructing Message Sends
 
     public func sendMessage(_ preparedOutgoingMessage: PreparedOutgoingMessage) async throws {
+        do {
+            Logger.info("Sending \(preparedOutgoingMessage)")
+            try await _sendMessage(preparedOutgoingMessage)
+        } catch {
+            Logger.warn("Couldn't send \(preparedOutgoingMessage); there may also be individual send failures, but the overall failure is: \(error)")
+            throw error
+        }
+    }
+
+    private func _sendMessage(_ preparedOutgoingMessage: PreparedOutgoingMessage) async throws {
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             preparedOutgoingMessage.updateAllUnsentRecipientsAsSending(tx: tx)
         }
-
-        Logger.info("Sending \(preparedOutgoingMessage)")
 
         // We create a PendingTask so we can block on flushing all current message sends.
         let pendingTask = pendingTasks.buildPendingTask()
