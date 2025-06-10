@@ -706,7 +706,7 @@ public class GroupManager: NSObject {
 
     // MARK: - Messages
 
-    public static func sendGroupUpdateMessage(groupId: GroupIdentifier, groupChangeProtoData: Data? = nil) async {
+    public static func sendGroupUpdateMessage(groupId: GroupIdentifier, isUrgent: Bool = false, groupChangeProtoData: Data? = nil) async {
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
 
@@ -721,6 +721,7 @@ public class GroupManager: NSObject {
                 expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: transaction),
                 groupChangeProtoData: groupChangeProtoData,
                 additionalRecipients: Self.invitedMembers(in: thread),
+                isUrgent: isUrgent,
                 transaction: transaction
             )
             // "changeActionsProtoData" is _not_ an attachment, it is just put on
@@ -745,6 +746,7 @@ public class GroupManager: NSObject {
                 groupMetaMessage: .new,
                 expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx),
                 additionalRecipients: Self.invitedMembers(in: thread),
+                isUrgent: true,
                 transaction: tx
             )
             // "changeActionsProtoData" is _not_ an attachment, it is just put on

@@ -63,7 +63,7 @@ public class GroupsV2OutgoingChanges {
     public private(set) var newAvatarUrlPath: String?
     private var shouldUpdateAvatar = false
 
-    private var membersToAdd = [ServiceId]()
+    public private(set) var membersToAdd = [ServiceId]()
     // Full, pending profile key or pending request members to remove.
     private var membersToRemove = [ServiceId]()
     private var membersToChangeRole = [Aci: TSGroupMemberRole]()

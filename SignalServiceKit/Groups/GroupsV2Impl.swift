@@ -199,6 +199,7 @@ public class GroupsV2Impl: GroupsV2 {
         let justUploadedAvatars = GroupAvatarStateMap.from(changes: changes)
         let groupId = changes.groupId
         let groupV2Params = try GroupV2Params(groupSecretParams: changes.groupSecretParams)
+        let isAddingOrInviting = changes.membersToAdd.count > 0
 
         let messageBehavior: GroupUpdateMessageBehavior
         let httpResponse: HTTPResponse
@@ -247,6 +248,7 @@ public class GroupsV2Impl: GroupsV2 {
             changeResponse: changeResponse,
             messageBehavior: messageBehavior,
             justUploadedAvatars: justUploadedAvatars,
+            isUrgent: isAddingOrInviting,
             groupId: groupId,
             groupV2Params: groupV2Params
         )
@@ -321,6 +323,7 @@ public class GroupsV2Impl: GroupsV2 {
         changeResponse: GroupsProtoGroupChangeResponse,
         messageBehavior: GroupUpdateMessageBehavior,
         justUploadedAvatars: GroupAvatarStateMap,
+        isUrgent: Bool,
         groupId: Data,
         groupV2Params: GroupV2Params
     ) async throws {
@@ -357,6 +360,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         await GroupManager.sendGroupUpdateMessage(
             groupId: groupId,
+            isUrgent: isUrgent,
             groupChangeProtoData: groupChangeProtoData
         )
 

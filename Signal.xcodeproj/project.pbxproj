@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		041C24ED2DF782AF0065B685 /* OutgoingGroupUpdateMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */; };
 		05104D182C8A151100F8851F /* AsyncViewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05104D172C8A151100F8851F /* AsyncViewTask.swift */; };
 		05104E3A2C8B541000F8851F /* AccessibleLayoutMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05104E392C8B540C00F8851F /* AccessibleLayoutMetric.swift */; };
 		0510F69E2C91EB3000FA3FDE /* ScrollBounceBehaviorIfAvailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0510F69D2C91EB2800FA3FDE /* ScrollBounceBehaviorIfAvailable.swift */; };
@@ -18751,6 +18752,7 @@
 				D9AA37A02A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift in Sources */,
 				D925C7BB2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift in Sources */,
 				D9D3216A2A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift in Sources */,
+				041C24ED2DF782AF0065B685 /* OutgoingGroupUpdateMessageTest.swift in Sources */,
 				F96BB60729A528BD001C18DF /* OWS2FAManagerTest.swift in Sources */,
 				667BBAD92BAA5F84006AB9DE /* OWSAttachmentInfoSerializationTest.swift in Sources */,
 				666072622BAB58A20084B3D2 /* OWSContactSerializationTest.swift in Sources */,
