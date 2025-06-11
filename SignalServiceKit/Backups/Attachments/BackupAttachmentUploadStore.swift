@@ -54,21 +54,21 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
             throw OWSAssertionError("Enqueuing attachment that shouldn't be uploaded")
         }
 
-        let unpaddedSize: UInt32
+        let unencryptedSize: UInt32
         if fullsize {
-            unpaddedSize = referencedAttachment.attachmentStream.unencryptedByteCount
+            unencryptedSize = referencedAttachment.attachmentStream.unencryptedByteCount
         } else {
             // We don't (easily) know the thumbnail size; just estimate as the max size
             // (which is small anyway) and run with it.
-            unpaddedSize = AttachmentThumbnailQuality.estimatedMaxBackupThumbnailFilesize
+            unencryptedSize = AttachmentThumbnailQuality.estimatedMaxBackupThumbnailFilesize
         }
 
         var newRecord = QueuedBackupAttachmentUpload(
             attachmentRowId: referencedAttachment.attachment.id,
             highestPriorityOwnerType: ownerType,
             isFullsize: fullsize,
-            estimatedByteCount: Cryptography.estimatedPaddedAndEncryptedSize(
-                unpaddedSize: unpaddedSize
+            estimatedByteCount: Cryptography.estimatedMediaTierCDNSize(
+                unencryptedSize: unencryptedSize
             )
         )
 

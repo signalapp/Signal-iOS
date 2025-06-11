@@ -82,18 +82,30 @@ public extension Cryptography {
         return UInt(max(541, floor(pow(1.05, ceil(log(Double(unpaddedSize)) / log(1.05))))))
     }
 
-    /// Given an unencrypted, unpadded byte count, returns the *estimated* byte count of the final padded, encrypted blob.
-    /// (In other words, the size we'd upload to or download from the CDN.)
+    private static func aesPaddedSize(unpaddedSize: UInt32) -> UInt32 {
+        // AES output is always in blocks of size 16 bytes.
+        // If the input is not a multiple of 16, it fills the remainder
+        // with padding (the value of which is the number of remainder bytes).
+        // If the input is exactly a multiple of 16, the output contains one
+        // more 16 byte block made entirely of padding.
+        let numBlocks = unpaddedSize / 16
+        return (numBlocks + 1) * 16
+    }
+
+    /// Given an unencrypted, unpadded byte count, returns the *estimated* byte count of the final padded, encrypted blob
+    /// as would be uploaded to the media tier CDN.
+    /// (Which has _two_ layers of encryption and overhead.)
     /// IMPORTANT: this should *only* be used as an estimate. In particular, we control the padding if the local
     /// client does the upload, but:
     /// 1. It may be a different client uploading with a differing padding scheme (or a bug with its padding scheme)
     /// 2. Our padding scheme may change between when this is checked and when we upload(ed).
-    static func estimatedPaddedAndEncryptedSize(unpaddedSize: UInt32) -> UInt32 {
-        return UInt32(
-            UInt(Constants.aescbcIVLength)
-            + Self.paddedSize(unpaddedSize: UInt(unpaddedSize))
-            + UInt(Constants.hmac256OutputLength)
-        )
+    static func estimatedMediaTierCDNSize(unencryptedSize: UInt32) -> UInt32 {
+        let paddedSize = UInt32(Self.paddedSize(unpaddedSize: UInt(unencryptedSize)))
+        let ivLength = UInt32(Constants.aescbcIVLength)
+        let hmacLength = UInt32(Constants.hmac256OutputLength)
+        let innerSize = ivLength + aesPaddedSize(unpaddedSize: paddedSize) + hmacLength
+        let outerSize = ivLength + aesPaddedSize(unpaddedSize: innerSize) + hmacLength
+        return outerSize
     }
 
     static func randomAttachmentEncryptionKey() -> Data {
