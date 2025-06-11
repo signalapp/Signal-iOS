@@ -242,6 +242,7 @@ public class GroupLinkViewController: OWSTableViewController2 {
 
 public class GroupLinkViewUtils {
 
+    @MainActor
     static func updateLinkMode(
         groupModelV2: TSGroupModelV2,
         linkMode: GroupsV2LinkMode,

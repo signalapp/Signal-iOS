@@ -170,6 +170,7 @@ public class BlockListUIUtils {
         )
     }
 
+    @MainActor
     private static func blockGroup(
         _ groupThread: TSGroupThread,
         from viewController: UIViewController,

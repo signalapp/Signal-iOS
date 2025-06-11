@@ -48,6 +48,7 @@ public struct DebugLogDumper {
 
 enum DebugLogs {
 
+    @MainActor
     static func submitLogs(supportTag: String? = nil, dumper: DebugLogDumper, completion: (() -> Void)? = nil) {
         let submitLogsCompletion = {
             if let completion {
@@ -132,6 +133,7 @@ enum DebugLogs {
         }
     }
 
+    @MainActor
     private static func uploadLogsUsingViewController(_ viewController: UIViewController, dumper: DebugLogDumper, completion: @escaping (URL) -> Void) {
         AssertIsOnMainThread()
 

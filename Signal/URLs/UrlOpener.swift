@@ -121,6 +121,7 @@ class UrlOpener {
 
     // MARK: - Opening URLs
 
+    @MainActor
     func openUrl(_ parsedUrl: ParsedUrl, in window: UIWindow) {
         guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return owsFailDebug("Ignoring URL; not registered.")
@@ -144,6 +145,7 @@ class UrlOpener {
         }
     }
 
+    @MainActor
     private func openUrlAfterDismissing(_ openableUrl: OpenableUrl, rootViewController: UIViewController) {
         switch openableUrl {
         case .phoneNumberLink(let url):

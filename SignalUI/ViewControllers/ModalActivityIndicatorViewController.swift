@@ -32,6 +32,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     // MARK: -
 
+    @MainActor
     public class func present(
         fromViewController: UIViewController,
         canCancel: Bool,
@@ -49,6 +50,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         )
     }
 
+    @MainActor
     public class func presentAsInvisible(
         fromViewController: UIViewController,
         backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
@@ -63,6 +65,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         )
     }
 
+    @MainActor
     private class func present(
         fromViewController: UIViewController,
         canCancel: Bool,
@@ -97,6 +100,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     /// behavior, or if you want a cancellable modal.
     ///
     /// - SeeAlso ``presentAndPropagateResult(from:presentationDelay:wrappedAsyncBlock:)``
+    @MainActor
     public class func present(
         fromViewController: UIViewController,
         canCancel: Bool = false,
@@ -124,6 +128,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     /// async block.
     ///
     /// - SeeAlso ``present(fromViewController:canCancel:presentationDelay:isInvisible:asyncBlock:)``.
+    @MainActor
     public class func presentAndPropagateResult<T>(
         from viewController: UIViewController,
         presentationDelay: TimeInterval = Constants.defaultPresentationDelay,
@@ -143,6 +148,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         }
     }
 
+    @MainActor
     private func present(from viewController: UIViewController, asyncBlock: @escaping @MainActor (ModalActivityIndicatorViewController) async -> Void) {
         // Present this modal _over_ the current view contents.
         self.modalPresentationStyle = .overFullScreen

@@ -119,6 +119,7 @@ class ProvisioningController: NSObject {
     }
 
     @objc
+    @MainActor
     private func submitLogs() {
         DebugLogs.submitLogs(supportTag: "Onboarding", dumper: .fromGlobals())
     }
@@ -368,6 +369,7 @@ class ProvisioningController: NSObject {
         popAndThenAwaitProvisioning()
     }
 
+    @MainActor
     private func performCoordinatorTaskWithModal(
         task: Task<Void, Error>,
         viewController: ProvisioningQRCodeViewController,

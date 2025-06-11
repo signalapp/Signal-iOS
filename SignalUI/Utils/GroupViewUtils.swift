@@ -16,6 +16,7 @@ public class GroupViewUtils {
         return String.localizedStringWithFormat(format, memberCount)
     }
 
+    @MainActor
     public static func updateGroupWithActivityIndicator(
         fromViewController: UIViewController,
         updateBlock: @escaping () async throws -> Void,

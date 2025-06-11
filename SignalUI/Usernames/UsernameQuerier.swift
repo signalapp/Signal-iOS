@@ -69,6 +69,7 @@ public struct UsernameQuerier {
         self.usernameLookupManager = usernameLookupManager
     }
 
+    @MainActor
     public func queryForUsernameLink(
         link: Usernames.UsernameLink,
         fromViewController: UIViewController,
@@ -132,6 +133,7 @@ public struct UsernameQuerier {
     /// - Parameter onSuccess
     /// A callback invoked if the queried username resolves to an ACI.
     /// Guaranteed to be called on the main thread.
+    @MainActor
     public func queryForUsername(
         username: String,
         fromViewController: UIViewController,

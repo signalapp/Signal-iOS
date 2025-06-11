@@ -273,6 +273,7 @@ class GroupAttributesEditorHelper: NSObject {
 
     // MARK: - update
 
+    @MainActor
     func updateGroupIfNecessary(fromViewController: UIViewController, completion: @escaping () -> Void) {
         nameTextField.acceptAutocorrectSuggestion()
         descriptionTextView.acceptAutocorrectSuggestion()

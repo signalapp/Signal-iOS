@@ -15,6 +15,7 @@ class SignalDotMePhoneNumberLink {
         pattern.hasMatch(input: url.absoluteString.lowercased())
     }
 
+    @MainActor
     static func openChat(url: URL, fromViewController: UIViewController) {
         open(url: url, fromViewController: fromViewController) { address in
             AssertIsOnMainThread()
@@ -22,6 +23,7 @@ class SignalDotMePhoneNumberLink {
         }
     }
 
+    @MainActor
     private static func open(url: URL, fromViewController: UIViewController, block: @escaping (SignalServiceAddress) -> Void) {
         guard let phoneNumber = pattern.parseFirstMatch(inText: url.absoluteString.lowercased()) else { return }
 
