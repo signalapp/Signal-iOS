@@ -37,7 +37,20 @@ extension ConversationViewController {
         // hidden.
         dismissKeyBoard()
 
-        BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self, completion: completion)
+        BlockListUIUtils.showUnblockThreadActionSheet(
+            thread,
+            from: CurrentAppContext().frontmostViewController() ?? self,
+            completion: completion
+        )
+    }
+
+    @MainActor
+    func showUnblockConversationUI() async -> Bool {
+        await withCheckedContinuation { continuation in
+            self.showUnblockConversationUI { isBlocked in
+                continuation.resume(returning: isBlocked)
+            }
+        }
     }
 
     // MARK: - Identity
@@ -58,6 +71,23 @@ extension ConversationViewController {
             confirmationText: confirmationText,
             untrustedThreshold: untrustedThreshold,
             completion: completion
+        )
+    }
+
+    /// Shows confirmation dialog if at least one of the recipient id's is not confirmed.
+    /// - Returns: `true` if all recipients are confirmed.
+    /// `false` if the alert was shown and the identity was left unconfirmed.
+    @MainActor
+    func showSafetyNumberConfirmationIfNecessary(
+        from viewController: UIViewController,
+        confirmationText: String,
+        untrustedThreshold: Date?
+    ) async -> Bool {
+        await SafetyNumberConfirmationSheet.presentRepeatedlyAsNecessary(
+            for: { thread.recipientAddressesWithSneakyTransaction },
+            from: viewController,
+            confirmationText: confirmationText,
+            untrustedThreshold: untrustedThreshold
         )
     }
 

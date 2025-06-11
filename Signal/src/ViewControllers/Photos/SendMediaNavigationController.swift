@@ -179,11 +179,6 @@ class SendMediaNavigationController: OWSNavigationController {
         (topViewController as? AttachmentApprovalViewController)?.currentPageViewController?.canSaveMedia ?? false
     }
 
-    private enum ApprovalPushStyle {
-        case fade
-        case replace
-    }
-
     private func showApprovalViewController(
         attachmentApprovalItems: [AttachmentApprovalItem]
     ) {

@@ -362,78 +362,86 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         return false
     }
 
-    public func tryToSendAttachments(_ attachments: [SignalAttachment], messageBody: MessageBody?) {
-        tryToSendAttachments(
+    @MainActor
+    func tryToSendAttachments(
+        _ attachments: [SignalAttachment],
+        from viewController: UIViewController,
+        messageBody: MessageBody?
+    ) async throws(SendAttachmentError) {
+        try await tryToSendAttachments(
             attachments,
+            from: viewController,
             messageBody: messageBody,
             untrustedThreshold: Date().addingTimeInterval(-OWSIdentityManagerImpl.Constants.defaultUntrustedInterval)
         )
     }
 
-    private func tryToSendAttachments(_ attachments: [SignalAttachment], messageBody: MessageBody?, untrustedThreshold: Date) {
+    enum SendAttachmentError: Error {
+        case inputToolbarNotReady
+        case inputToolbarMissing
+        case conversationBlocked
+        case untrustedContacts
+        case invalidAttachment(SignalAttachment)
+    }
+
+    @MainActor
+    private func tryToSendAttachments(
+        _ attachments: [SignalAttachment],
+        from viewController: UIViewController,
+        messageBody: MessageBody?,
+        untrustedThreshold: Date
+    ) async throws(SendAttachmentError) {
         AssertIsOnMainThread()
 
         guard hasViewWillAppearEverBegun else {
-            owsFailDebug("InputToolbar not yet ready.")
-            return
+            throw .inputToolbarNotReady
         }
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
-            return
+            throw .inputToolbarMissing
         }
 
-        DispatchMainThreadSafe {
-            if self.isBlockedConversation() {
-                self.showUnblockConversationUI { [weak self] isBlocked in
-                    if !isBlocked {
-                        self?.tryToSendAttachments(attachments, messageBody: messageBody, untrustedThreshold: untrustedThreshold)
-                    }
-                }
-                return
+        if self.isBlockedConversation() {
+            let isBlocked = await self.showUnblockConversationUI()
+            guard !isBlocked else {
+                throw .conversationBlocked
             }
-
-            let newUntrustedThreshold = Date()
-            let didShowSNAlert = self.showSafetyNumberConfirmationIfNecessary(
-                confirmationText: SafetyNumberStrings.confirmSendButton,
-                untrustedThreshold: untrustedThreshold
-            ) { [weak self] didConfirmIdentity in
-                if didConfirmIdentity {
-                    self?.tryToSendAttachments(attachments, messageBody: messageBody, untrustedThreshold: newUntrustedThreshold)
-                }
-            }
-            if didShowSNAlert {
-                return
-            }
-
-            for attachment in attachments {
-                if attachment.hasError {
-                    Logger.warn("Invalid attachment: \(attachment.errorName ?? "Missing data").")
-                    self.showErrorAlert(forAttachment: attachment)
-                    return
-                }
-            }
-
-            let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
-
-            ThreadUtil.enqueueMessage(
-                body: messageBody,
-                mediaAttachments: attachments,
-                thread: self.thread,
-                quotedReplyDraft: inputToolbar.quotedReplyDraft,
-                persistenceCompletionHandler: {
-                    AssertIsOnMainThread()
-                    self.loadCoordinator.enqueueReload()
-                }
-            )
-
-            self.messageWasSent()
-
-            if didAddToProfileWhitelist {
-                self.ensureBannerState()
-            }
-
-            NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
         }
+
+        let newUntrustedThreshold = Date()
+        let identityIsConfirmed = await self.showSafetyNumberConfirmationIfNecessary(
+            from: viewController,
+            confirmationText: SafetyNumberStrings.confirmSendButton,
+            untrustedThreshold: newUntrustedThreshold
+        )
+
+        guard identityIsConfirmed else {
+            throw .untrustedContacts
+        }
+
+        if let attachment = attachments.first(where: \.hasError) {
+            throw .invalidAttachment(attachment)
+        }
+
+        let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
+
+        ThreadUtil.enqueueMessage(
+            body: messageBody,
+            mediaAttachments: attachments,
+            thread: self.thread,
+            quotedReplyDraft: inputToolbar.quotedReplyDraft,
+            persistenceCompletionHandler: {
+                AssertIsOnMainThread()
+                self.loadCoordinator.enqueueReload()
+            }
+        )
+
+        self.messageWasSent()
+
+        if didAddToProfileWhitelist {
+            self.ensureBannerState()
+        }
+
+        NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
 
     // MARK: - Accessory View
@@ -882,15 +890,52 @@ extension ConversationViewController: SendMediaNavDelegate {
         self.openAttachmentKeyboard()
     }
 
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController,
-                      didApproveAttachments attachments: [SignalAttachment],
-                      messageBody: MessageBody?) {
-        tryToSendAttachments(attachments, messageBody: messageBody)
-        inputToolbar?.clearTextMessage(animated: false)
-        // we want to already be at the bottom when the user returns, rather than have to watch
-        // the new message scroll into view.
-        scrollToBottomOfConversation(animated: true)
-        self.dismiss(animated: true, completion: nil)
+    func sendMediaNav(
+        _ sendMediaNavigationController: SendMediaNavigationController,
+        didApproveAttachments attachments: [SignalAttachment],
+        messageBody: MessageBody?
+    ) {
+        Task { @MainActor in
+            await self.sendAttachments(
+                attachments,
+                from: sendMediaNavigationController,
+                messageBody: messageBody
+            )
+        }
+    }
+
+    /// Attempts to send attachments. Handles prompting to unblock or un-verify safety numbers, as well as showing failure states.
+    @MainActor
+    func sendAttachments(
+        _ attachments: [SignalAttachment],
+        from viewController: UIViewController,
+        messageBody: MessageBody?
+    ) async {
+        do throws(SendAttachmentError) {
+            try await tryToSendAttachments(
+                attachments,
+                from: viewController,
+                messageBody: messageBody
+            )
+            inputToolbar?.clearTextMessage(animated: false)
+            // we want to already be at the bottom when the user returns, rather than have to watch
+            // the new message scroll into view.
+            scrollToBottomOfConversation(animated: true)
+            self.dismiss(animated: true)
+        } catch {
+            switch error {
+            case .inputToolbarNotReady:
+                owsFailDebug("InputToolbar not yet ready.")
+            case .inputToolbarMissing:
+                owsFailDebug("Missing inputToolbar.")
+            case .conversationBlocked, .untrustedContacts:
+                // User was prompted but chose not to make changes. Stop here.
+                break
+            case .invalidAttachment(let attachment):
+                Logger.warn("Invalid attachment: \(attachment.errorName ?? "Missing data").")
+                self.showErrorAlert(forAttachment: attachment)
+            }
+        }
     }
 
     func sendMediaNav(_ sendMediaNavifationController: SendMediaNavigationController,

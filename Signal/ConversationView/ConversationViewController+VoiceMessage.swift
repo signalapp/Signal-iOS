@@ -106,8 +106,11 @@ extension ConversationViewController {
         inputToolbar?.hideVoiceMemoUI(animated: true)
 
         do {
-            tryToSendAttachments([try voiceMemoDraft.prepareAttachment()], messageBody: nil)
-            clearVoiceMessageDraft()
+            let attachment = try voiceMemoDraft.prepareAttachment()
+            Task { @MainActor in
+                await self.sendAttachments([attachment], from: self, messageBody: nil)
+                clearVoiceMessageDraft()
+            }
         } catch {
             owsFailDebug("Failed to send prepare voice message for sending \(error)")
         }
