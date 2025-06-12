@@ -15,6 +15,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         case presentWelcomeToBackupsSheet
     }
 
+    private let accountKeyStore: AccountKeyStore
     private let backupDisablingManager: BackupDisablingManager
     private let backupEnablingManager: BackupEnablingManager
     private let backupSettingsStore: BackupSettingsStore
@@ -29,6 +30,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
     ) {
         self.init(
             onLoadAction: onLoadAction,
+            accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             backupDisablingManager: AppEnvironment.shared.backupDisablingManager,
             backupEnablingManager: AppEnvironment.shared.backupEnablingManager,
             backupSettingsStore: BackupSettingsStore(),
@@ -39,12 +41,14 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
 
     init(
         onLoadAction: OnLoadAction,
+        accountKeyStore: AccountKeyStore,
         backupDisablingManager: BackupDisablingManager,
         backupEnablingManager: BackupEnablingManager,
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
     ) {
+        self.accountKeyStore = accountKeyStore
         self.backupDisablingManager = backupDisablingManager
         self.backupEnablingManager = backupEnablingManager
         self.backupSettingsStore = backupSettingsStore
@@ -367,7 +371,74 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
             backupSettingsStore.setShouldBackUpOnCellular(newShouldBackUpOnCellular, tx: tx)
         }
     }
-}
+
+    // MARK: -
+
+    fileprivate func showViewBackupKey() {
+        Task { await _showViewBackupKey() }
+    }
+
+    @MainActor
+    private func _showViewBackupKey() async {
+        guard let aep = db.read(block: { accountKeyStore.getAccountEntropyPool(tx: $0) }) else {
+            return
+        }
+
+        guard await LocalDeviceAuthentication().performBiometricAuth() else {
+            return
+        }
+
+        navigationController?.pushViewController(
+            BackupRecordKeyViewController(
+                aep: aep,
+                isOnboardingFlow: false,
+                onCompletion: { [weak self] recordKeyViewController in
+                    self?.showKeyRecordedConfirmationSheet(
+                        fromViewController: recordKeyViewController
+                    )
+                }
+            ),
+            animated: true
+        )
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+    }
+
+    private func showKeyRecordedConfirmationSheet(fromViewController: BackupRecordKeyViewController) {
+        let sheet = HeroSheetViewController(
+            hero: .image(.backupsKey),
+            title: OWSLocalizedString(
+                "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_TITLE",
+                comment: "Title for a sheet warning users to their 'Backup Key' safe."
+            ),
+            body: OWSLocalizedString(
+                "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY",
+                comment: "Body for a sheet warning users to their 'Backup Key' safe."
+            ),
+            primary: .button(HeroSheetViewController.Button(
+                title: OWSLocalizedString(
+                    "BUTTON_CONTINUE",
+                    comment: "Label for 'continue' button."
+                ),
+                action: { [weak self] _ in
+                    self?.dismiss(animated: true)
+                    self?.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            )),
+            secondary: .button(HeroSheetViewController.Button(
+                title: OWSLocalizedString(
+                    "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE",
+                    comment: "Title for a button offering to let users see their 'Backup Key'."
+                ),
+                style: .secondary,
+                action: .custom({ [weak self] _ in
+                    self?.dismiss(animated: true)
+                    self?.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+                })
+            ))
+        )
+        fromViewController.present(sheet, animated: true)
+    }}
 
 // MARK: -
 
@@ -386,6 +457,8 @@ private class BackupSettingsViewModel: ObservableObject {
         func performManualBackup()
         func setBackupFrequency(_ newBackupFrequency: BackupFrequency)
         func setShouldBackUpOnCellular(_ newShouldBackUpOnCellular: Bool)
+
+        func showViewBackupKey()
     }
 
     enum BackupPlanLoadingState {
@@ -535,7 +608,15 @@ private class BackupSettingsViewModel: ObservableObject {
         shouldBackUpOnCellular = newShouldBackUpOnCellular
         actionsDelegate?.setShouldBackUpOnCellular(newShouldBackUpOnCellular)
     }
+
+    // MARK: -
+
+    func showViewBackupKey() {
+        actionsDelegate?.showViewBackupKey()
+    }
 }
+
+// MARK: -
 
 struct BackupSettingsView: View {
     @ObservedObject private var viewModel: BackupSettingsViewModel
@@ -579,18 +660,7 @@ struct BackupSettingsView: View {
                 }
 
                 SignalSection {
-                    BackupEnabledView(
-                        lastBackupDate: viewModel.lastBackupDate,
-                        lastBackupSizeBytes: viewModel.lastBackupSizeBytes,
-                        backupFrequency: Binding(
-                            get: { viewModel.backupFrequency },
-                            set: { viewModel.setBackupFrequency($0) }
-                        ),
-                        shouldBackUpOnCellular: Binding(
-                            get: { viewModel.shouldBackUpOnCellular },
-                            set: { viewModel.setShouldBackUpOnCellular($0) }
-                        )
-                    )
+                    BackupEnabledView(viewModel: viewModel)
                 }
 
                 SignalSection {
@@ -912,15 +982,12 @@ private struct BackupPlanView: View {
 // MARK: -
 
 private struct BackupEnabledView: View {
-    let lastBackupDate: Date?
-    let lastBackupSizeBytes: UInt64?
-    @Binding var backupFrequency: BackupFrequency
-    @Binding var shouldBackUpOnCellular: Bool
+    let viewModel: BackupSettingsViewModel
 
     var body: some View {
         HStack {
             let lastBackupMessage: String? = {
-                guard let lastBackupDate else {
+                guard let lastBackupDate = viewModel.lastBackupDate else {
                     return nil
                 }
 
@@ -968,7 +1035,7 @@ private struct BackupEnabledView: View {
                 comment: "Label for a menu item explaining the size of the user's backup."
             ))
             Spacer()
-            if let lastBackupSizeBytes {
+            if let lastBackupSizeBytes = viewModel.lastBackupSizeBytes {
                 Text(lastBackupSizeBytes.formatted(.byteCount(style: .decimal)))
                     .foregroundStyle(Color.Signal.secondaryLabel)
             }
@@ -979,7 +1046,10 @@ private struct BackupEnabledView: View {
                 "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL",
                 comment: "Label for a menu item explaining the frequency of automatic backups."
             ),
-            selection: $backupFrequency
+            selection: Binding(
+                get: { viewModel.backupFrequency },
+                set: { viewModel.setBackupFrequency($0) }
+            )
         ) {
             ForEach(BackupFrequency.allCases) { frequency in
                 let localizedString: String = switch frequency {
@@ -1011,18 +1081,28 @@ private struct BackupEnabledView: View {
                     "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL",
                     comment: "Label for a toggleable menu item describing whether to make backups on cellular data."
                 ),
-                isOn: $shouldBackUpOnCellular
+                isOn: Binding(
+                    get: { viewModel.shouldBackUpOnCellular },
+                    set: { viewModel.setShouldBackUpOnCellular($0) }
+                )
             )
         }
 
-        NavigationLink {
-            Text(LocalizationNotNeeded("Coming soon!"))
+        Button {
+            viewModel.showViewBackupKey()
         } label: {
-            Text(OWSLocalizedString(
-                "BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL",
-                comment: "Label for a menu item offering to show the user their backup key."
-            ))
+            HStack {
+                Text(OWSLocalizedString(
+                    "BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL",
+                    comment: "Label for a menu item offering to show the user their backup key."
+                ))
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(Color.Signal.secondaryLabel)
+            }
         }
+        .foregroundStyle(Color.Signal.label)
+
     }
 }
 
@@ -1056,6 +1136,8 @@ private extension BackupSettingsViewModel {
             func performManualBackup() { print("Manually backing up!") }
             func setBackupFrequency(_ newBackupFrequency: BackupFrequency) { print("Frequency: \(newBackupFrequency)") }
             func setShouldBackUpOnCellular(_ newShouldBackUpOnCellular: Bool) { print("Cellular: \(newShouldBackUpOnCellular)") }
+
+            func showViewBackupKey() { print("Showing View Backup Key!") }
         }
 
         let viewModel = BackupSettingsViewModel(

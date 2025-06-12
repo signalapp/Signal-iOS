@@ -16,31 +16,13 @@ class BackupOnboardingKeyIntroViewController: HostingController<BackupOnboarding
 
         super.init(wrappedView: BackupOnboardingKeyIntroView(viewModel: viewModel))
 
-        debouncedBiometricAuthTask = DebouncedTask { [weak self] in
-            guard let self else { return }
-
-            if await performBiometricAuth() {
+        debouncedBiometricAuthTask = DebouncedTask {
+            if await LocalDeviceAuthentication().performBiometricAuth() {
                 onDeviceAuthSucceeded()
             }
         }
 
         viewModel.actionsDelegate = self
-    }
-
-    private func performBiometricAuth() async -> Bool {
-        let localDeviceAuth = LocalDeviceAuthentication()
-        let localDeviceAuthAttemptToken: LocalDeviceAuthentication.AttemptToken
-
-        switch localDeviceAuth.checkCanAttempt() {
-        case .success(let attemptToken): localDeviceAuthAttemptToken = attemptToken
-        case .failure(.notRequired): return true
-        case .failure(.canceled), .failure(.genericError): return false
-        }
-
-        switch await localDeviceAuth.attempt(token: localDeviceAuthAttemptToken) {
-        case .success, .failure(.notRequired): return true
-        case .failure(.canceled), .failure(.genericError): return false
-        }
     }
 }
 

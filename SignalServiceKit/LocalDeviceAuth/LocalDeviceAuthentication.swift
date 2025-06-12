@@ -22,6 +22,21 @@ public struct LocalDeviceAuthentication {
 
     // MARK: -
 
+    public func performBiometricAuth() async -> Bool {
+        let localDeviceAuthAttemptToken: AttemptToken
+
+        switch self.checkCanAttempt() {
+        case .success(let attemptToken): localDeviceAuthAttemptToken = attemptToken
+        case .failure(.notRequired): return true
+        case .failure(.canceled), .failure(.genericError): return false
+        }
+
+        switch await self.attempt(token: localDeviceAuthAttemptToken) {
+        case .success, .failure(.notRequired): return true
+        case .failure(.canceled), .failure(.genericError): return false
+        }
+    }
+
     /// Returns whether checking local device auth is possible. Must be called
     /// prior to calling ``attempt(token:)``.
     public func checkCanAttempt() -> Result<AttemptToken, AuthError> {

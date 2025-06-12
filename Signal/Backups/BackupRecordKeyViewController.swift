@@ -8,29 +8,66 @@ import SignalUI
 import SwiftUI
 
 class BackupRecordKeyViewController: HostingController<BackupRecordKeyView> {
+    private let onCompletion: (BackupRecordKeyViewController) -> Void
+    private let viewModel: BackupRecordKeyViewModel
+    private let isOnboardingFlow: Bool
+
     init(
         aep: AccountEntropyPool,
-        onContinue: @escaping () -> Void
+        isOnboardingFlow: Bool,
+        onCompletion: @escaping (BackupRecordKeyViewController) -> Void,
     ) {
-        super.init(wrappedView: BackupRecordKeyView(
-            aep: aep,
-            onContinue: onContinue,
-            onCopyToClipboard: {
-                UIPasteboard.general.setItems(
-                    [[UIPasteboard.typeAutomatic: aep.rawData]],
-                    options: [.expirationDate: Date().addingTimeInterval(60)]
-                )
-            }
-        ))
+        self.onCompletion = onCompletion
+        self.isOnboardingFlow = isOnboardingFlow
+        self.viewModel = BackupRecordKeyViewModel(aep: aep, isOnboardingFlow: isOnboardingFlow)
+
+        super.init(wrappedView: BackupRecordKeyView(viewModel: viewModel))
+
+        viewModel.actionsDelegate = self
+    }
+}
+
+extension BackupRecordKeyViewController: BackupRecordKeyViewModel.ActionsDelegate {
+    func copyToClipboard(_ aep: AccountEntropyPool) {
+        UIPasteboard.general.setItems(
+            [[UIPasteboard.typeAutomatic: aep.rawData]],
+            options: [.expirationDate: Date().addingTimeInterval(60)]
+        )
+    }
+
+    func complete() {
+        onCompletion(self)
     }
 }
 
 // MARK: -
 
+private class BackupRecordKeyViewModel: ObservableObject {
+    protocol ActionsDelegate: AnyObject {
+        func copyToClipboard(_ aep: AccountEntropyPool)
+        func complete()
+    }
+
+    weak var actionsDelegate: ActionsDelegate?
+    let aep: AccountEntropyPool
+    let isOnboardingFlow: Bool
+
+    init(aep: AccountEntropyPool, isOnboardingFlow: Bool) {
+        self.aep = aep
+        self.isOnboardingFlow = isOnboardingFlow
+    }
+
+    func copyToClipboard() {
+        actionsDelegate?.copyToClipboard(aep)
+    }
+
+    func complete() {
+        actionsDelegate?.complete()
+    }
+}
+
 struct BackupRecordKeyView: View {
-    fileprivate let aep: AccountEntropyPool
-    fileprivate let onContinue: () -> Void
-    fileprivate let onCopyToClipboard: () -> Void
+    fileprivate let viewModel: BackupRecordKeyViewModel
 
     var body: some View {
         ScrollableContentPinnedFooterView {
@@ -63,12 +100,12 @@ struct BackupRecordKeyView: View {
 
                 Spacer().frame(height: 32)
 
-                DisplayAccountEntropyPoolView(aep: aep)
+                DisplayAccountEntropyPoolView(aep: viewModel.aep)
 
                 Spacer().frame(height: 32)
 
                 Button {
-                    onCopyToClipboard()
+                    viewModel.copyToClipboard()
                 } label: {
                     Text(OWSLocalizedString(
                         "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE",
@@ -87,22 +124,37 @@ struct BackupRecordKeyView: View {
             }
             .padding(.horizontal, 12)
         } pinnedFooter: {
-            Button {
-                onContinue()
-            } label: {
-                Text(CommonStrings.continueButton)
-                    .foregroundStyle(.white)
-                    .font(.headline)
-                    .padding(.vertical, 14)
+            // Only add "continue" button if we're in the onboarding flow.
+            if viewModel.isOnboardingFlow {
+                Button {
+                    viewModel.complete()
+                } label: {
+                    Text(CommonStrings.continueButton)
+                        .foregroundStyle(.white)
+                        .font(.headline)
+                        .padding(.vertical, 14)
+                }
+                .buttonStyle(.plain)
+                .frame(maxWidth: .infinity)
+                .background(Color.Signal.ultramarine)
+                .cornerRadius(12)
+                .padding(.horizontal, 40)
             }
-            .buttonStyle(.plain)
-            .frame(maxWidth: .infinity)
-            .background(Color.Signal.ultramarine)
-            .cornerRadius(12)
-            .padding(.horizontal, 40)
         }
         .multilineTextAlignment(.center)
         .background(Color.Signal.groupedBackground)
+        .navigationBarBackButtonHidden(!viewModel.isOnboardingFlow)
+        .navigationBarItems(leading: viewModel.isOnboardingFlow ? nil : doneButton)
+    }
+
+    private var doneButton: some View {
+        Button(action: {
+            viewModel.complete()
+        }) {
+            Text(OWSLocalizedString("BUTTON_DONE", comment: "Label for generic done button."))
+                .buttonStyle(.plain)
+                .foregroundStyle(Color.Signal.label)
+        }
     }
 }
 
@@ -168,18 +220,27 @@ private struct DisplayAccountEntropyPoolView: View {
 
 #if DEBUG
 
-#Preview {
-    let aep = AccountEntropyPool()
+private extension BackupRecordKeyViewModel {
+    static func forPreview() -> BackupRecordKeyViewModel {
+        class PreviewActionsDelegate: ActionsDelegate {
+            func copyToClipboard(_ aep: AccountEntropyPool) {
+                print("Copying \(aep.rawData) to clipboard...!")
+            }
 
-    BackupRecordKeyView(
-        aep: aep,
-        onContinue: {
-            print("Continuing...!")
-        },
-        onCopyToClipboard: {
-            print("Copying \(aep.rawData) to clipboard...!")
+            func complete() {
+                print("Continuing...!")
+            }
         }
-    )
+
+        let viewModel = BackupRecordKeyViewModel(aep: AccountEntropyPool(), isOnboardingFlow: true)
+        let actionsDelegate = PreviewActionsDelegate()
+        ObjectRetainer.retainObject(actionsDelegate, forLifetimeOf: viewModel)
+        return viewModel
+    }
+}
+
+#Preview {
+    BackupRecordKeyView(viewModel: .forPreview())
 }
 
 #endif

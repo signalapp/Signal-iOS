@@ -82,7 +82,8 @@ class BackupOnboardingCoordinator {
         onboardingNavController.pushViewController(
             BackupRecordKeyViewController(
                 aep: aep,
-                onContinue: { [weak self] in
+                isOnboardingFlow: true,
+                onCompletion: { [weak self] _ in
                     self?.showConfirmBackupKey(aep: aep)
                 },
             ),
