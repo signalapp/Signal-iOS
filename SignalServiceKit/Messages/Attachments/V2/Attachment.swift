@@ -409,7 +409,6 @@ private extension Attachment.TransitTierInfo {
             let cdnKey,
             let uploadTimestamp,
             let encryptionKey,
-            let unencryptedByteCount,
             let digestSHA256Ciphertext
         else {
             owsAssertDebug(

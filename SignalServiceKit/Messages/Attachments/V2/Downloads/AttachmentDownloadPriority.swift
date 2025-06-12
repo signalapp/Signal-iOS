@@ -15,11 +15,8 @@ import Foundation
 ///
 public enum AttachmentDownloadPriority: Int, Codable {
 
-    /// Backups enqueue downloads at two priority levels; this is the lower.
-    case backupRestoreLow = 20
-    /// Backups enqueue downloads at two priority levels; this is the lower.
-    /// It is still lower priority than `default` (below new incoming attachments).
-    case backupRestoreHigh = 25
+    /// Backups enqueue downloads at priority lower than default.
+    case backupRestore = 20
 
     case `default` = 50
 
@@ -37,4 +34,24 @@ public enum AttachmentDownloadPriority: Int, Codable {
     /// than user initiated) but the actual "download" exclusively uses the local source
     /// and, if that fails, re-enqueues at lower default priority.
     case localClone = 200
+
+    public init?(rawValue: Int) {
+        switch rawValue {
+        case Self.backupRestore.rawValue:
+            self = .backupRestore
+        case Self.default.rawValue:
+            self = .default
+        case Self.userInitiated.rawValue:
+            self = .userInitiated
+        case Self.localClone.rawValue:
+            self = .localClone
+        case 25:
+            // legacy case that used to represent a "higher"
+            // priority of `backupRestore`, which we now collapse
+            // into `backupRestore`.
+            self = .backupRestore
+        default:
+            return nil
+        }
+    }
 }

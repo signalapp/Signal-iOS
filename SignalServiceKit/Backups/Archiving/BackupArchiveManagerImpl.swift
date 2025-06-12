@@ -660,6 +660,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     public func importEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
+        isPrimaryDevice: Bool,
         backupKey: BackupKey,
         backupPurpose: MessageBackupPurpose,
         progress progressSink: OWSProgressSink?
@@ -667,6 +668,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         try await _importBackup(
             fileUrl: fileUrl,
             localIdentifiers: localIdentifiers,
+            isPrimaryDevice: isPrimaryDevice,
             progressSink: progressSink,
             benchTitle: "Import encrypted Backup",
             backupPurpose: backupPurpose,
@@ -685,6 +687,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     public func importPlaintextBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
+        isPrimaryDevice: Bool,
         backupPurpose: MessageBackupPurpose,
         progress progressSink: OWSProgressSink?
     ) async throws {
@@ -696,6 +699,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         try await _importBackup(
             fileUrl: fileUrl,
             localIdentifiers: localIdentifiers,
+            isPrimaryDevice: isPrimaryDevice,
             progressSink: progressSink,
             benchTitle: "Import plaintext Backup",
             backupPurpose: backupPurpose,
@@ -711,6 +715,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private func _importBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
+        isPrimaryDevice: Bool,
         progressSink: OWSProgressSink?,
         benchTitle: String,
         backupPurpose: MessageBackupPurpose,
@@ -777,6 +782,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                         return try self._importBackup(
                             inputStream: inputStream,
                             localIdentifiers: localIdentifiers,
+                            isPrimaryDevice: isPrimaryDevice,
                             backupPurpose: backupPurpose,
                             recreateIndexesProgress: recreateIndexesProgress,
                             memorySampler: memorySampler,
@@ -802,6 +808,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private func _importBackup(
         inputStream stream: BackupArchiveProtoInputStream,
         localIdentifiers: LocalIdentifiers,
+        isPrimaryDevice: Bool,
         backupPurpose: MessageBackupPurpose,
         recreateIndexesProgress: BackupArchiveImportRecreateIndexesProgress?,
         memorySampler: MemorySampler,
@@ -897,40 +904,47 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 init(
                     localIdentifiers: LocalIdentifiers,
                     startTimestampMs: UInt64,
+                    isPrimaryDevice: Bool,
                     currentRemoteConfig: RemoteConfig,
                     backupPurpose: MessageBackupPurpose,
                     tx: DBWriteTransaction
                 ) {
                     accountData = BackupArchive.AccountDataRestoringContext(
                         startTimestampMs: startTimestampMs,
+                        isPrimaryDevice: isPrimaryDevice,
                         currentRemoteConfig: currentRemoteConfig,
                         backupPurpose: backupPurpose,
                         tx: tx
                     )
                     customChatColor = BackupArchive.CustomChatColorRestoringContext(
                         startTimestampMs: startTimestampMs,
+                        isPrimaryDevice: isPrimaryDevice,
                         accountDataContext: accountData,
                         tx: tx
                     )
                     recipient = BackupArchive.RecipientRestoringContext(
                         localIdentifiers: localIdentifiers,
                         startTimestampMs: startTimestampMs,
+                        isPrimaryDevice: isPrimaryDevice,
                         tx: tx
                     )
                     chat = BackupArchive.ChatRestoringContext(
                         customChatColorContext: customChatColor,
                         recipientContext: recipient,
                         startTimestampMs: startTimestampMs,
+                        isPrimaryDevice: isPrimaryDevice,
                         tx: tx
                     )
                     chatItem = BackupArchive.ChatItemRestoringContext(
                         chatContext: chat,
                         recipientContext: recipient,
                         startTimestampMs: startTimestampMs,
+                        isPrimaryDevice: isPrimaryDevice,
                         tx: tx
                     )
                     stickerPack = BackupArchive.RestoringContext(
                         startTimestampMs: startTimestampMs,
+                        isPrimaryDevice: isPrimaryDevice,
                         tx: tx
                     )
                 }
@@ -938,6 +952,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             let contexts = Contexts(
                 localIdentifiers: localIdentifiers,
                 startTimestampMs: startTimestampMs,
+                isPrimaryDevice: isPrimaryDevice,
                 currentRemoteConfig: currentRemoteConfig,
                 backupPurpose: backupPurpose,
                 tx: tx

@@ -527,6 +527,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
                     restoreStartTimestampMs: context.startTimestampMs,
                     backupPlan: backupPlan,
                     remoteConfig: context.accountDataContext.currentRemoteConfig,
+                    isPrimaryDevice: context.isPrimaryDevice,
                     tx: context.tx
                 )
             }

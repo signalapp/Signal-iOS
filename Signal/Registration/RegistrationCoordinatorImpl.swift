@@ -590,6 +590,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             try await self.deps.backupArchiveManager.importEncryptedBackup(
                 fileUrl: fileUrl,
                 localIdentifiers: identity.localIdentifiers,
+                isPrimaryDevice: true,
                 backupKey: backupKey,
                 backupPurpose: .remoteBackup,
                 progress: nil

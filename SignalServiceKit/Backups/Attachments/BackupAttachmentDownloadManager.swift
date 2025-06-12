@@ -21,6 +21,7 @@ public protocol BackupAttachmentDownloadManager {
         restoreStartTimestampMs: UInt64,
         backupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
+        isPrimaryDevice: Bool,
         tx: DBWriteTransaction
     ) throws
 
@@ -37,28 +38,20 @@ public protocol BackupAttachmentDownloadManager {
     /// Throws an error IFF something would prevent all attachments from restoring (e.g. network issue).
     func restoreAttachmentsIfNeeded() async throws
 
-    /// Cancel any pending attachment downloads, e.g. when backups are disabled.
-    /// Removes all enqueued downloads and attempts to cancel in progress ones.
-    func cancelPendingDownloads() async throws
+    /// Respond to a change in backup plan by modifying the download queue as appropriate.
+    /// Depending on the state change, may wipe the queue, add things to it, remove only some
+    /// things, etc.
+    func backupPlanDidChange(
+        from oldPlan: BackupPlan,
+        to newPlan: BackupPlan,
+        tx: DBWriteTransaction
+    ) throws
 
-    /// Cancel pending attachment downloads for old media, when "optimize media" is enabled.
-    /// Removes all necessary enqueued downloads and attempts to cancel in progress ones.
-    func cancelOldPendingDownloads() async throws
-
-    /// Schedule a download from media tier for _every_ attachment for which this is
-    /// currently possible (has media tier CDN info).
-    /// There are only 3 situations where we want to schedule all media tier downloads:
-    /// 1. We just restored a backup
-    /// 2. Disabling "optimize media"
-    /// 3. After downgrading from paid to free backups and triggering downloads
-    ///
-    /// The first case is handled by backup restore code, which itself schedules all
-    /// restored attachments for download as appropriate.
-    /// Case 2 (and 2s, which is equivalent) requires we restore all previously-offloaded
-    /// attachmnets, and thus should use this method to schedule all those downloads.
-    ///
-    /// Note: this does a relatively expensive SQL query so use with caution.
-    func scheduleAllMediaTierDownloads(tx: DBWriteTransaction) throws
+    /// Call this method regardless of the current ``BackupPlan`` state,
+    /// before disabling backups.
+    /// After calling this method, callers can wait on downloads by calling
+    /// `restoreAttachmentsIfNeeded`, or skip downloads by calling `backupPlanDidChange`.
+    func prepareToDisableBackups(currentBackupPlan: BackupPlan, tx: DBWriteTransaction) throws
 }
 
 public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManager {
@@ -147,6 +140,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         restoreStartTimestampMs: UInt64,
         backupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
+        isPrimaryDevice: Bool,
         tx: DBWriteTransaction
     ) throws {
         let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
@@ -154,27 +148,34 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             reference: referencedAttachment.reference,
             currentTimestamp: restoreStartTimestampMs,
             backupPlan: backupPlan,
-            remoteConfig: remoteConfig
+            remoteConfig: remoteConfig,
+            isPrimaryDevice: isPrimaryDevice
         )
 
-        guard eligibility.canBeDownloadedAtAll else {
-            return
-        }
-
-        let wasPreviouslyEnqueued = try backupAttachmentDownloadStore.enqueue(
-            referencedAttachment.reference,
-            tx: tx
-        )
-
-        // As we go enqueuing attachments, increment the total byte count we
-        // need to download.
         if
-            !wasPreviouslyEnqueued,
-            let byteCount = referencedAttachment.attachment.anyPointerFullsizeUnencryptedByteCount
+            let state = eligibility.thumbnailMediaTierState,
+            state != .done
         {
-            let totalPendingByteCount = backupAttachmentDownloadStore.getTotalPendingDownloadByteCount(tx: tx) ?? 0
-            backupAttachmentDownloadStore.setTotalPendingDownloadByteCount(
-                totalPendingByteCount + UInt64(Cryptography.paddedSize(unpaddedSize: UInt(byteCount))),
+            try backupAttachmentDownloadStore.enqueue(
+                referencedAttachment,
+                thumbnail: true,
+                // Thumbnails are always media tier
+                canDownloadFromMediaTier: true,
+                state: state,
+                currentTimestamp: restoreStartTimestampMs,
+                tx: tx
+            )
+        }
+        if
+            let state = eligibility.fullsizeState,
+            state != .done
+        {
+            try backupAttachmentDownloadStore.enqueue(
+                referencedAttachment,
+                thumbnail: false,
+                canDownloadFromMediaTier: eligibility.canDownloadMediaTierFullsize,
+                state: state,
+                currentTimestamp: restoreStartTimestampMs,
                 tx: tx
             )
         }
@@ -194,6 +195,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         switch await statusManager.beginObservingIfNeeded(type: .download) {
         case .running:
             break
+        case .suspended:
+            // The queue will stop on its own if suspended
+            return
         case .empty:
             // The queue will stop on its own if empty.
             return
@@ -221,136 +225,155 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         try await taskQueue.loadAndRunTasks()
     }
 
-    public func cancelPendingDownloads() async throws {
-        try await taskQueue.stop()
-        try await db.awaitableWrite { tx in
-            try self.backupAttachmentDownloadStore.removeAll(tx: tx)
-            backupAttachmentDownloadStore.setTotalPendingDownloadByteCount(nil, tx: tx)
-            backupAttachmentDownloadStore.setCachedRemainingPendingDownloadByteCount(nil, tx: tx)
+    public func backupPlanDidChange(
+        from oldPlan: BackupPlan,
+        to newPlan: BackupPlan,
+        tx: DBWriteTransaction
+    ) throws {
+        // Linked devices don't care about state changes; they keep downloading
+        // whatever got enqueued at link'n'sync time.
+        // (They also don't support storage optimization so that's moot.)
+        guard tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice else {
+            return
         }
-        // Reset progress calculation
-        try? await progress.beginObserving()
-        // Kill status observation
-        await statusManager.didEmptyQueue(type: .download)
-    }
 
-    public func cancelOldPendingDownloads() async throws {
-        // Stop current downloads
-        try await taskQueue.stop()
-        try await db.awaitableWrite { tx in
-            // Downloads are already tagged with the latest timestamp of
-            // owning message(s); just dequeue any with timestamps older
-            // than the offloading threshold.
-            // Anything older than that threshold should be offloaded.
-            // unless viewed recently, but you can't view undownloaded
-            // attachments so that't moot.
-            try self.backupAttachmentDownloadStore.removeAll(
-                olderThan: dateProvider().ows_millisecondsSince1970 - Attachment.offloadingThresholdMs,
-                tx: tx
-            )
-
-            // Count the total bytes to download from scratch for the
-            // remaining enqueued downloads.
-            var totalRemainingByteCount: UInt64 = 0
-            let cursor = try QueuedBackupAttachmentDownload
-                .fetchCursor(tx.database)
-            while let download = try cursor.next() {
-                guard
-                    let attachment = attachmentStore.fetch(id: download.attachmentRowId, tx: tx),
-                    let unencryptedByteCount = attachment.mediaTierInfo?.unencryptedByteCount
-                        ?? attachment.transitTierInfo?.unencryptedByteCount
-                else {
-                    continue
-                }
-                totalRemainingByteCount += UInt64(Cryptography.paddedSize(
-                    unpaddedSize: UInt(unencryptedByteCount))
-                )
-            }
-
-            backupAttachmentDownloadStore.setTotalPendingDownloadByteCount(totalRemainingByteCount, tx: tx)
-            backupAttachmentDownloadStore.setCachedRemainingPendingDownloadByteCount(totalRemainingByteCount, tx: tx)
+        // Stop the queue; we dont _have_ to do this, but we're about to
+        // make changes so may as well stop in progress stuff.
+        let stopQueueTask = Task {
+            try await taskQueue.stop()
         }
-        // Kick the tires again to resume downloads.
-        try await restoreAttachmentsIfNeeded()
-    }
-
-    public func scheduleAllMediaTierDownloads(tx: DBWriteTransaction) throws {
-        // Kick off downloads once the transaction commits.
-        tx.addSyncCompletion { [weak self] in
+        tx.addSyncCompletion {
+            // Restart the queue when we're done
             Task {
-                try await self?.restoreAttachmentsIfNeeded()
+                try? await stopQueueTask.value
+                try await self.restoreAttachmentsIfNeeded()
             }
         }
 
-        let currentDate = dateProvider()
-        let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
-        let backupPlan = backupSettingsStore.backupPlan(tx: tx)
-        let remoteConfig = remoteConfigProvider.currentConfig()
+        switch (oldPlan, newPlan) {
+        case (.disabled, .disabled), (.free, .free):
+            // No change.
+            return
+        case (_, .disabled):
+            // When we disable, we mark everything ineligible and delete all
+            // done rows. If we ever re-enable, we will mark those rows
+            // ready again.
+            try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
+            try backupAttachmentDownloadStore.markAllReadyIneligible(tx: tx)
+            // This doesn't _really_ do anything, since we don't run the queue
+            // when disabled anyway, but may as well suspend.
+            backupAttachmentDownloadStore.setIsQueueSuspended(true, tx: tx)
 
-        let cursor = try Attachment.Record
-            // Ignore stuff already downloaded, duh
-            .filter(Column(Attachment.Record.CodingKeys.localRelativeFilePath) == nil)
-            // We need a mediaName to download
-            .filter(Column(Attachment.Record.CodingKeys.mediaName) != nil)
-            // Only download stuff in the current upload era; other stuff we don't expect
-            // to be available for download.
-            .filter(Column(Attachment.Record.CodingKeys.mediaTierUploadEra) == currentUploadEra)
-            .fetchCursor(tx.database)
+        case (.disabled, .free):
+            try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
+            // Suspend the queue so the user has to explicitly opt-in to download.
+            backupAttachmentDownloadStore.setIsQueueSuspended(true, tx: tx)
 
-        var totalPendingByteCount = backupAttachmentDownloadStore.getTotalPendingDownloadByteCount(tx: tx) ?? 0
-
-        while let attachment = try cursor.next() {
-            let attachment = try Attachment(record: attachment)
-
-            var cachedReferenceWithMostRecentTimestamp: AttachmentReference?
-            let getReferenceWithMostRecentTimestamp = {
-                if let cachedReferenceWithMostRecentTimestamp {
-                    return cachedReferenceWithMostRecentTimestamp
-                }
-                let reference = try self.attachmentStore.fetchMostRecentReference(
-                    toAttachmentId: attachment.id,
-                    tx: tx
-                )
-                cachedReferenceWithMostRecentTimestamp = reference
-                return reference
+        case
+                let (.disabled, .paid(optimizeStorage)),
+                let (.disabled, .paidExpiringSoon(optimizeStorage)):
+            try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
+            // Suspend the queue so the user has to explicitly opt-in to download.
+            backupAttachmentDownloadStore.setIsQueueSuspended(true, tx: tx)
+            if optimizeStorage {
+                // Unclear how you would go straight from disabled to optimize
+                // enabled, but just go through the motions of both state changes
+                // as if they'd happened independently.
+                try didEnableOptimizeStorage(tx: tx)
             }
 
-            let eligibility = try BackupAttachmentDownloadEligibility.forAttachment(
-                attachment,
-                reference: getReferenceWithMostRecentTimestamp(),
-                currentTimestamp: currentDate.ows_millisecondsSince1970,
-                backupPlan: backupPlan,
-                remoteConfig: remoteConfig
-            )
-
-            guard eligibility.canBeDownloadedAtAll else {
-                continue
+        case
+                (.paid(let wasOptimizeLocalStorageEnabled), .free),
+                (.paidExpiringSoon(let wasOptimizeLocalStorageEnabled), .free):
+            // We explicitly do nothing going from paid to free; we want to continue
+            // any downloads that were already running (so we take advantage of the
+            // media tier cdn TTL being longer than paid subscription lifetime) but
+            // also not schedule (or un-suspend) if we weren't already downloading.
+            // But if optimization was on, its now implicitly off, so handle that.
+            if wasOptimizeLocalStorageEnabled {
+                try didDisableOptimizeStorage(backupPlan: newPlan, tx: tx)
             }
 
-            let wasPreviouslyEnqueued = try backupAttachmentDownloadStore.enqueue(
-                try getReferenceWithMostRecentTimestamp(),
-                tx: tx
-            )
+        case
+                let (.free, .paid(optimizeStorage)),
+                let (.free, .paidExpiringSoon(optimizeStorage)):
+            // We explicitly do nothing when going from free to paid; any state
+            // changes that will happen will be triggered by list media request
+            // handling which will always run at the start of a new upload era.
+            // But if we somehow went straight from free to optimize enabled,
+            // handle that state transition.
+            if optimizeStorage {
+                owsFailDebug("Going from free or disabled directly to optimize enabled shouldn't be allowed?")
+                try didEnableOptimizeStorage(tx: tx)
+            }
 
-            // As we go enqueuing attachments, increment the total byte count we
-            // need to download.
-            if
-                !wasPreviouslyEnqueued,
-                let byteCount = attachment.anyPointerFullsizeUnencryptedByteCount
-            {
-                totalPendingByteCount += UInt64(Cryptography.paddedSize(unpaddedSize: UInt(byteCount)))
+        case
+                // Downloads don't care if expiring soon or not
+                let (.paid(oldOptimize), .paid(newOptimize)),
+                let (.paid(oldOptimize), .paidExpiringSoon(newOptimize)),
+                let (.paidExpiringSoon(oldOptimize), .paid(newOptimize)),
+                let (.paidExpiringSoon(oldOptimize), .paidExpiringSoon(newOptimize)):
+            if oldOptimize == newOptimize {
+                // Nothing changed.
+                break
+            } else if newOptimize {
+                try didEnableOptimizeStorage(tx: tx)
+            } else {
+                try didDisableOptimizeStorage(backupPlan: newPlan, tx: tx)
             }
         }
+    }
 
-        backupAttachmentDownloadStore.setTotalPendingDownloadByteCount(
-            totalPendingByteCount,
+    public func prepareToDisableBackups(currentBackupPlan: BackupPlan, tx: DBWriteTransaction) throws {
+        switch currentBackupPlan {
+        case .disabled:
+            // huh?
+            owsFailDebug("Already disabled")
+            return
+        case .free:
+            // While in free tier, we may have been continuing downloads
+            // from when you were previously paid tier. But that was nice
+            // to have; now that we're disabling backups cancel them all.
+            try backupAttachmentDownloadStore.markAllReadyIneligible(tx: tx)
+            try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
+        case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage):
+            try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
+            // Unsuspend; this is the user opt-in to trigger downloads.
+            backupAttachmentDownloadStore.setIsQueueSuspended(false, tx: tx)
+            if optimizeLocalStorage {
+                // If we had optimize enabled, make anything ineligible (offloaded
+                // attachments) now eligible.
+                try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
+            }
+        }
+    }
+
+    private func didEnableOptimizeStorage(tx: DBWriteTransaction) throws {
+        // When we turn on optimization, make all media tier fullsize downloads
+        // from the queue that are past the optimization threshold ineligible.
+        // If we downloaded them we'd offload them immediately anyway.
+        // This isn't 100% necessary; after all something 29 days old today will be
+        // 30 days old tomorrow, so the queue runner will gracefully handle old
+        // downloads at run-time anyway. But its more efficient to do in bulk.
+        let threshold = dateProvider().ows_millisecondsSince1970 - Attachment.offloadingThresholdMs
+        try backupAttachmentDownloadStore.markAllMediaTierFullsizeDownloadsIneligible(
+            olderThan: threshold,
             tx: tx
         )
+        // Un-suspend; when optimization is enabled we always auto-download
+        // the stuff that is eligible (newer attachments).
+        backupAttachmentDownloadStore.setIsQueueSuspended(false, tx: tx)
+        // Reset the progress counter.
+        try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
+    }
 
-        // We want to list media before we go doing any downloads, to ensure we have the latest
-        // CDN information. To that end, wipe the most recent list media upload era so that
-        // we will query again.
-        listMediaManager.setNeedsQueryListMedia(tx: tx)
+    private func didDisableOptimizeStorage(backupPlan: BackupPlan, tx: DBWriteTransaction) throws {
+        // When we turn _off_ optimization, we want to make ready all the media tier downloads,
+        // but suspend the queue so we don't immediately start downloading.
+        try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
+        // Suspend the queue; the user has to explicitly opt in to downloads
+        // after optimization is disabled.
+        backupAttachmentDownloadStore.setIsQueueSuspended(true, tx: tx)
     }
 
     // MARK: - Queue status observation
@@ -421,10 +444,14 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.statusManager = statusManager
             self.tsAccountManager = tsAccountManager
 
-            self.store = TaskStore(backupAttachmentDownloadStore: backupAttachmentDownloadStore)
+            self.store = TaskStore(
+                backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+                dateProvider: dateProvider
+            )
         }
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
+            struct SuspendedError: Error {}
             struct NeedsDiskSpaceError: Error {}
             struct NeedsBatteryError: Error {}
             struct NeedsWifiError: Error {}
@@ -434,6 +461,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             case nil:
                 // No state change, keep going.
                 break
+            case .suspended:
+                try? await loader.stop()
+                return .retryableError(SuspendedError())
             case .running:
                 break
             case .empty:
@@ -453,115 +483,123 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 return .retryableError(NeedsToBeRegisteredError())
             }
 
-            let (attachment, eligibility) = db.read { tx -> (Attachment?, BackupAttachmentDownloadEligibility?) in
-                let nowMs = dateProvider().ows_millisecondsSince1970
-                let backupPlan = backupSettingsStore.backupPlan(tx: tx)
-                let remoteConfig = remoteConfigProvider.currentConfig()
-
-                return attachmentStore
-                    .fetch(id: record.record.attachmentRowId, tx: tx)
-                    .map { attachment in
-                        let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
-                            attachment,
-                            downloadRecord: record.record,
-                            currentTimestamp: nowMs,
-                            backupPlan: backupPlan,
-                            remoteConfig: remoteConfig
-                        )
-                        return (attachment, eligibility)
-                    } ?? (nil, nil)
+            let (
+                attachment,
+                backupPlan,
+                registrationState
+            ) = db.read { (tx) -> (Attachment?, BackupPlan, TSRegistrationState) in
+                return (
+                    attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx),
+                    backupSettingsStore.backupPlan(tx: tx),
+                    tsAccountManager.registrationState(tx: tx)
+                )
             }
-            guard let attachment, let eligibility, eligibility.canBeDownloadedAtAll else {
+
+            guard let attachment else {
                 return .cancelled
             }
 
-            /// Media and transit tier byte counts should be interchangeable.
-            /// Still, we shouldn't rely on this for anything other that progress tracking,
-            /// where its just a UI glitch if it turns out they are not.
-            let fullsizeByteCountForProgress = UInt64(
-                Cryptography.paddedSize(
-                    unpaddedSize: UInt(attachment.anyPointerFullsizeUnencryptedByteCount ?? 0)
-                )
+            let progressSink = await progress.willBeginDownloadingAttachment(
+                withId: record.record.attachmentRowId,
+                isThumbnail: record.record.isThumbnail
             )
 
-            // Separately from "eligibility" on a per-download basis, we check
-            // network state level eligibility (require wifi). If not capable,
-            // return a retryable error but stop running now. We will resume
-            // when reconnected.
-            let downlodableSources = mediaBandwidthPreferenceStore.downloadableSources()
-            guard
-                downlodableSources.contains(.mediaTierFullsize)
-                || downlodableSources.contains(.mediaTierThumbnail)
-            else {
-                let error = NeedsWifiError()
-                try? await loader.stop(reason: error)
-                // Retryable because we don't want to delete the enqueued record,
-                // just stop for now.
-                return .retryableError(error)
-            }
+            let nowMs = dateProvider().ows_millisecondsSince1970
+            let remoteConfig = remoteConfigProvider.currentConfig()
+            let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
+                attachment,
+                downloadRecord: record.record,
+                currentTimestamp: nowMs,
+                backupPlan: backupPlan,
+                remoteConfig: remoteConfig,
+                isPrimaryDevice: registrationState.isRegisteredPrimaryDevice
+            )
 
-            var didDownloadFullsize = false
-            // Set to the earliest error we encounter. If anything succeeds
-            // we'll suppress the error; if everything fails we'll throw it.
-            var downloadError: Error?
-
-            // Try media tier fullsize first.
-            if eligibility.canDownloadMediaTierFullsize {
-                do {
-                    let progressSink = await progress.willBeginDownloadingAttachment(withId: record.record.attachmentRowId)
-                    try await self.attachmentDownloadManager.downloadAttachment(
-                        id: record.record.attachmentRowId,
-                        priority: eligibility.downloadPriority,
-                        source: .mediaTierFullsize,
-                        progress: progressSink
-                    )
-                    await progress.didFinishDownloadOfAttachment(
-                        withId: record.record.attachmentRowId,
-                        byteCount: fullsizeByteCountForProgress
-                    )
-                    didDownloadFullsize = true
-                } catch let error {
-                    downloadError = downloadError ?? error
+            struct NoLongerEligibleError: Error {}
+            let relevantEligibilityState: QueuedBackupAttachmentDownload.State? = {
+                if record.record.isThumbnail {
+                    return eligibility.thumbnailMediaTierState
+                } else {
+                    return eligibility.fullsizeState
                 }
-            }
-
-            // If we didn't download media tier (either because we weren't eligible
-            // or because the download failed), try transit tier fullsize next.
-            if !didDownloadFullsize, eligibility.canDownloadTransitTierFullsize {
-                do {
-                    let progressSink = await progress.willBeginDownloadingAttachment(withId: record.record.attachmentRowId)
-                    try await self.attachmentDownloadManager.downloadAttachment(
-                        id: record.record.attachmentRowId,
-                        priority: eligibility.downloadPriority,
-                        source: .transitTier,
-                        progress: progressSink
+            }()
+            switch relevantEligibilityState {
+            case .ready:
+                break
+            case nil:
+                // No longer at all eligible to download from this source.
+                // count this as having completed the download for progress tracking purposes.
+                await progress.didFinishDownloadOfAttachment(
+                    withId: record.record.attachmentRowId,
+                    isThumbnail: record.record.isThumbnail,
+                    byteCount: UInt64(record.record.estimatedByteCount)
+                )
+                return .cancelled
+            case .ineligible:
+                // Current state prevents running this row; unclear how we
+                // got here but mark it ineligible in the queue now and return
+                // a a "retryable" error so we don't wipe this row from the queue.
+                // Since its now ineligible it will be skipped going forward.
+                try? await db.awaitableWrite { tx in
+                    try backupAttachmentDownloadStore.markIneligible(
+                        attachmentId: attachment.id,
+                        thumbnail: record.record.isThumbnail,
+                        tx: tx
                     )
-                    await progress.didFinishDownloadOfAttachment(
-                        withId: record.record.attachmentRowId,
-                        byteCount: fullsizeByteCountForProgress
-                    )
-                    didDownloadFullsize = true
-                } catch let error {
-                    downloadError = downloadError ?? error
                 }
-            }
-
-            // If we didn't download fullsize (either because we weren't eligible
-            // or because the download(s) failed), try thumbnail.
-            if !didDownloadFullsize, eligibility.canDownloadThumbnail {
-                do {
-                    try await self.attachmentDownloadManager.downloadAttachment(
-                        id: record.record.attachmentRowId,
-                        priority: eligibility.downloadPriority,
-                        source: .mediaTierThumbnail
+                return .retryableError(NoLongerEligibleError())
+            case .done:
+                // All done! Mark done and treat it as a "retryable" error
+                // so we don't wipe this row from the queue. Since its now
+                // done it will be skipped going forward.
+                try? await db.awaitableWrite { tx in
+                    try backupAttachmentDownloadStore.markDone(
+                        attachmentId: attachment.id,
+                        thumbnail: record.record.isThumbnail,
+                        tx: tx
                     )
-                } catch let error {
-                    downloadError = downloadError ?? error
                 }
+                // count this as having completed the download.
+                await progress.didFinishDownloadOfAttachment(
+                    withId: record.record.attachmentRowId,
+                    isThumbnail: record.record.isThumbnail,
+                    byteCount: UInt64(record.record.estimatedByteCount)
+                )
+                return .retryableError(NoLongerEligibleError())
             }
 
-            if let downloadError {
-                switch await statusManager.jobDidExperienceError(type: .download, downloadError) {
+            let source: QueuedAttachmentDownloadRecord.SourceType = {
+                if record.record.isThumbnail {
+                    return .mediaTierThumbnail
+                }
+                if
+                    eligibility.fullsizeMediaTierState == .ready,
+                    // Try media tier once first if available
+                    record.record.numRetries == 0
+                {
+                    return .mediaTierFullsize
+                } else if
+                    eligibility.fullsizeMediaTierState != .ready
+                        || record.record.numRetries == 1,
+                    eligibility.fullsizeTransitTierState == .ready
+                {
+                    // Otherwise try transit tier if media tier has failed once before.
+                    return .transitTier
+                } else {
+                    // And then fall back to media tier.
+                    return .mediaTierFullsize
+                }
+            }()
+
+            do {
+                try await self.attachmentDownloadManager.downloadAttachment(
+                    id: record.record.attachmentRowId,
+                    priority: .backupRestore,
+                    source: source,
+                    progress: progressSink
+                )
+            } catch let error {
+                switch await statusManager.jobDidExperienceError(type: .download, error) {
                 case nil:
                     // No state change, keep going.
                     break
@@ -570,31 +608,174 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 case .empty:
                     // The queue will stop on its own, finish this task.
                     break
-                case .lowDiskSpace, .lowBattery, .noWifiReachability, .notRegisteredAndReady:
+                case .suspended, .lowDiskSpace, .lowBattery, .noWifiReachability, .notRegisteredAndReady:
                     // Stop the queue now proactively.
                     try? await taskQueueLoader?.stop()
                 }
-                return .unretryableError(downloadError)
+                // We only retry fullsize media tier 404s.
+                // Retries work one of two ways: we first fall back to transit tier
+                // if possible with no backoff, then only if we're on a linked device
+                // we retry media tier with some delay. The latter retry is because the
+                // primary might still be working on uploading the attachment to media tier.
+                if
+                    error.httpStatusCode == 404,
+                    !record.record.isThumbnail,
+                    record.record.canDownloadFromMediaTier
+                {
+                    if
+                        record.record.numRetries == 0,
+                        eligibility.fullsizeTransitTierState == .ready,
+                        source == .mediaTierFullsize
+                    {
+                        return .retryableError(RetryAsTransitTierError())
+                    } else if
+                        db.read(block: { tx in
+                        guard tsAccountManager.registrationState(tx: tx).isPrimaryDevice == false else {
+                                return false
+                            }
+                            switch backupSettingsStore.backupPlan(tx: tx) {
+                            case .disabled, .free:
+                                // The primary would only be uploading if were paid tier.
+                                // (this is inexact but the user can always tap to download)
+                                return false
+                            case .paid, .paidExpiringSoon:
+                                break
+                            }
+                            guard let attachment = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx) else {
+                                return false
+                            }
+                            return attachment.mediaTierInfo != nil
+                                // If we had a cdn number, that came from the primary, and the
+                                // primary therefore _thinks_ its uploaded, and won't upload again.
+                                // That or we discovered this via list media and its gone now.
+                                && attachment.mediaTierInfo?.cdnNumber == nil
+                        }),
+                        let nextRetryTimestamp = { () -> UInt64? in
+                            guard record.record.numRetries < 32 else {
+                                owsFailDebug("risk of integer overflow")
+                                return nil
+                            }
+                            // Exponential backoff, starting at 1 day for the first two retries.
+                            let initialDelay = UInt64.dayInMs
+                            let delay = UInt64(pow(2.0, max(0, Double(record.record.numRetries) - 1))) * initialDelay
+                            if delay > UInt64.dayInMs * 30 {
+                                // Don't go more than 30 days; stop retrying.
+                                Logger.info("Giving up retrying attachment download")
+                                return nil
+                            }
+                            return delay
+                        }()
+                    {
+                        return .retryableError(RetryMediaTierError(nextRetryTimestamp: nextRetryTimestamp))
+                    }
+                }
+                if error.httpStatusCode == 404 {
+                    return .unretryableError(Unretryable404Error(source: source))
+                }
+                return .unretryableError(error)
             }
+
+            await progress.didFinishDownloadOfAttachment(
+                withId: record.record.attachmentRowId,
+                isThumbnail: record.record.isThumbnail,
+                byteCount: UInt64(record.record.estimatedByteCount)
+            )
 
             return .success
         }
 
         func didSucceed(record: Store.Record, tx: DBWriteTransaction) throws {
             Logger.info("Finished restoring attachment \(record.id)")
+            // Mark the record done when we succeed; this will filter it out
+            // from future queue pop/peek operations.
+            try backupAttachmentDownloadStore.markDone(
+                attachmentId: record.record.attachmentRowId,
+                thumbnail: record.record.isThumbnail,
+                tx: tx
+            )
+        }
+
+        private struct RetryMediaTierError: Error {
+            let nextRetryTimestamp: UInt64
+        }
+
+        private struct RetryAsTransitTierError: Error {}
+
+        private struct Unretryable404Error: Error {
+            let source: QueuedAttachmentDownloadRecord.SourceType
         }
 
         func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
             Logger.warn("Failed restoring attachment \(record.id), isRetryable: \(isRetryable), error: \(error)")
+
+            if
+                isRetryable,
+                let error = error as? RetryMediaTierError
+            {
+                var downloadRecord = record.record
+                downloadRecord.minRetryTimestamp = error.nextRetryTimestamp
+                downloadRecord.numRetries += 1
+                try downloadRecord.update(tx.database)
+            } else if
+                isRetryable,
+                error is RetryAsTransitTierError
+            {
+                // Just increment the retry count by 1 but don't update
+                // the retry timestamp so we retry immediately as transit tier.
+                var downloadRecord = record.record
+                downloadRecord.numRetries += 1
+                try downloadRecord.update(tx.database)
+            } else if !isRetryable {
+                try backupAttachmentDownloadStore.remove(
+                    attachmentId: record.record.attachmentRowId,
+                    thumbnail: record.record.isThumbnail,
+                    tx: tx
+                )
+                // For non-retryable 404 errors, go ahead and wipe the relevant cdn
+                // info from the attachment, as download failed.
+                if let error = error as? Unretryable404Error {
+                    switch error.source {
+                    case .mediaTierThumbnail:
+                        try attachmentStore.removeThumbnailMediaTierInfo(
+                            forAttachmentId: record.record.attachmentRowId,
+                            tx: tx
+                        )
+                    case .mediaTierFullsize:
+                        try attachmentStore.removeMediaTierInfo(
+                            forAttachmentId: record.record.attachmentRowId,
+                            tx: tx
+                        )
+                    case .transitTier:
+                        try attachmentStore.removeTransitTierInfo(
+                            forAttachmentId: record.record.attachmentRowId,
+                            tx: tx
+                        )
+                    }
+                }
+            } else {
+                // Do nothing for other retryable errors.
+            }
         }
 
         func didCancel(record: Store.Record, tx: DBWriteTransaction) throws {
             Logger.warn("Cancelled restoring attachment \(record.id)")
+            try backupAttachmentDownloadStore.remove(
+                attachmentId: record.record.attachmentRowId,
+                thumbnail: record.record.isThumbnail,
+                tx: tx
+            )
         }
 
         func didDrainQueue() async {
             await progress.didEmptyDownloadQueue()
             await statusManager.didEmptyQueue(type: .download)
+            await db.awaitableWrite { tx in
+                // Go ahead and delete all done rows to reset the byte count.
+                // This isn't load-bearing, but its nice to do just in case
+                // some new download gets added it can just count up to its own
+                    // total.
+                try? backupAttachmentDownloadStore.deleteAllDone(tx: tx)
+            }
         }
     }
 
@@ -603,24 +784,40 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     struct TaskRecord: SignalServiceKit.TaskRecord {
         let id: QueuedBackupAttachmentDownload.IDType
         let record: QueuedBackupAttachmentDownload
+        let nextRetryTimestamp: UInt64?
     }
 
     class TaskStore: TaskRecordStore {
 
         private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+        private let dateProvider: DateProvider
 
-        init(backupAttachmentDownloadStore: BackupAttachmentDownloadStore) {
+        init(
+            backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+            dateProvider: @escaping DateProvider,
+        ) {
             self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+            self.dateProvider = dateProvider
         }
 
         func peek(count: UInt, tx: DBReadTransaction) throws -> [TaskRecord] {
-            return try backupAttachmentDownloadStore.peek(count: count, tx: tx).map { record in
-                return TaskRecord(id: record.id!, record: record)
+            return try backupAttachmentDownloadStore.peek(
+                count: count,
+                currentTimestamp: dateProvider().ows_millisecondsSince1970,
+                tx: tx
+            ).map { record in
+                return TaskRecord(
+                    id: record.id!,
+                    record: record,
+                    nextRetryTimestamp: record.minRetryTimestamp
+                )
             }
         }
 
         func removeRecord(_ record: TaskRecord, tx: DBWriteTransaction) throws {
-            try backupAttachmentDownloadStore.removeQueuedDownload(attachmentId: record.id, tx: tx)
+            // Rather than remove when we finish running a record, we mark it done
+            // instead in the success callback, and delete it in failure callbacks.
+            // So we do nothing here on purpose.
         }
     }
 
@@ -642,6 +839,7 @@ open class BackupAttachmentDownloadManagerMock: BackupAttachmentDownloadManager 
         restoreStartTimestampMs: UInt64,
         backupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
+        isPrimaryDevice: Bool,
         tx: DBWriteTransaction
     ) throws {
         // Do nothing
@@ -651,15 +849,15 @@ open class BackupAttachmentDownloadManagerMock: BackupAttachmentDownloadManager 
         // Do nothing
     }
 
-    public func cancelPendingDownloads() async throws {
+    public func backupPlanDidChange(
+        from oldPlan: BackupPlan,
+        to newPlan: BackupPlan,
+        tx: DBWriteTransaction
+    ) throws {
         // Do nothing
     }
 
-    public  func cancelOldPendingDownloads() async throws {
-        // Do nothing
-    }
-
-    public func scheduleAllMediaTierDownloads(tx: DBWriteTransaction) throws {
+    public func prepareToDisableBackups(currentBackupPlan: BackupPlan, tx: DBWriteTransaction) throws {
         // Do nothing
     }
 }

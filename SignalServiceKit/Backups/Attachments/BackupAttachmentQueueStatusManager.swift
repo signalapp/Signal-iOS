@@ -14,6 +14,9 @@ public enum BackupAttachmentQueueStatus: Equatable {
     /// Running and up-/down- loading attachments off the queue
     case running
 
+    /// The user has not yet opted to begin downloads.
+    case suspended
+
     /// There's nothing to up-/down- load!
     case empty
 
@@ -145,6 +148,7 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
     private let backupSettingsStore: BackupSettingsStore
+    private let dateProvider: DateProvider
     private let db: DB
     private let deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?
     private let reachabilityManager: SSKReachabilityManager
@@ -157,6 +161,7 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
         backupSettingsStore: BackupSettingsStore,
+        dateProvider: @escaping DateProvider,
         db: DB,
         deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?,
         reachabilityManager: SSKReachabilityManager,
@@ -168,6 +173,7 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
         self.backupSettingsStore = backupSettingsStore
+        self.dateProvider = dateProvider
         self.db = db
         self.deviceBatteryLevelManager = deviceBatteryLevelManager
         self.reachabilityManager = reachabilityManager
@@ -189,6 +195,7 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
         var isMainApp: Bool
         var isAppReady = false
         var isRegistered: Bool?
+        var areDownloadsSuspended: Bool?
         var shouldBackUpOnCellular: Bool?
         var isWifiReachable: Bool?
         // Value from 0 to 1
@@ -217,6 +224,15 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
                 isRegistered == true
             else {
                 return .notRegisteredAndReady
+            }
+
+            switch type {
+            case .download:
+                if areDownloadsSuspended == true {
+                    return .suspended
+                }
+            case .upload:
+                break
             }
 
             if downloadDidExperienceOutOfSpaceError {
@@ -267,7 +283,15 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
     // MARK: State Observation
 
     private func observeDeviceAndLocalStatesIfNeeded() {
-        let (isUploadQueueEmpty, isDownloadQueueEmpty) = self.areQueuesEmpty()
+        let (isUploadQueueEmpty, isDownloadQueueEmpty, areDownloadsSuspended) = db.read { tx in
+            return (
+                ((try? backupAttachmentUploadStore.fetchNextUploads(count: 1, tx: tx)) ?? []).isEmpty,
+                (try? backupAttachmentDownloadStore.hasAnyReadyDownloads(tx: tx))?.negated ?? true,
+                backupAttachmentDownloadStore.isQueueSuspended(tx: tx)
+            )
+
+        }
+        state.areDownloadsSuspended = areDownloadsSuspended
         defer {
             state.isUploadQueueEmpty = isUploadQueueEmpty
             state.isDownloadQueueEmpty = isDownloadQueueEmpty
@@ -303,6 +327,7 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
             (UIDevice.batteryLevelDidChangeNotification, #selector(batteryLevelDidChange)),
             (Notification.Name.NSProcessInfoPowerStateDidChange, #selector(lowPowerModeDidChange)),
             (.OWSApplicationWillEnterForeground, #selector(willEnterForeground)),
+            (.backupAttachmentDownloadQueueSuspensionStatusDidChange, #selector(suspensionStatusDidChange)),
         ]
         for (name, selector) in notificationsToObserve {
             NotificationCenter.default.addObserver(
@@ -339,15 +364,6 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
 
     // MARK: Per state changes
 
-    private func areQueuesEmpty() -> (upload: Bool, download: Bool) {
-        return db.read { tx in
-            return (
-                ((try? backupAttachmentUploadStore.fetchNextUploads(count: 1, tx: tx)) ?? []).isEmpty,
-                ((try? backupAttachmentDownloadStore.peek(count: 1, tx: tx)) ?? []).isEmpty
-            )
-        }
-    }
-
     private func appReadinessDidChange() {
         self.state.isAppReady = appReadiness.isAppReady
     }
@@ -379,6 +395,11 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
     @objc
     private func lowPowerModeDidChange() {
         self.state.isLowPowerMode = deviceBatteryLevelManager?.isLowPowerModeEnabled
+    }
+
+    @objc
+    private func suspensionStatusDidChange() {
+        self.state.areDownloadsSuspended = db.read(block: backupAttachmentDownloadStore.isQueueSuspended(tx:))
     }
 
     private nonisolated func getAvailableDiskSpace() -> UInt64? {

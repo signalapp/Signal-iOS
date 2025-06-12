@@ -74,6 +74,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
     public func importEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
+        isPrimaryDevice: Bool,
         backupKey: BackupKey,
         backupPurpose: MessageBackupPurpose,
         progress: OWSProgressSink?
@@ -84,6 +85,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
     public func importPlaintextBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
+        isPrimaryDevice: Bool,
         backupPurpose: MessageBackupPurpose,
         progress: OWSProgressSink?
     ) async throws {

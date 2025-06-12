@@ -56,19 +56,17 @@ public actor BackupAttachmentDownloadProgress {
     internal func beginObserving() async throws {
         await initializeProgress()
 
-        let pendingByteCount: UInt64 = try computeRemainingUndownloadedByteCount()
-
-        let totalByteCount: UInt64 = db.read { tx in
-            backupAttachmentDownloadStore.getTotalPendingDownloadByteCount(tx: tx) ?? pendingByteCount
+        let pendingByteCount: UInt64
+        let finishedByteCount: UInt64
+        (pendingByteCount, finishedByteCount) = db.read { tx -> (UInt64, UInt64) in
+            return (
+                (try? backupAttachmentDownloadStore.computeEstimatedRemainingByteCount(tx: tx)) ?? 0,
+                (try? backupAttachmentDownloadStore.computeEstimatedFinishedByteCount(tx: tx)) ?? 0
+            )
         }
+        let totalByteCount = pendingByteCount + finishedByteCount
 
         if pendingByteCount == 0 {
-            await db.awaitableWrite { tx in
-                backupAttachmentDownloadStore.setCachedRemainingPendingDownloadByteCount(
-                    pendingByteCount,
-                    tx: tx
-                )
-            }
             updateObservers(OWSProgress(
                 completedUnitCount: totalByteCount,
                 totalUnitCount: totalByteCount,
@@ -95,10 +93,13 @@ public actor BackupAttachmentDownloadProgress {
 
     /// Create an OWSProgressSink for a single attachment to be downloaded.
     /// Should be called prior to downloading any backup attachment.
-    internal func willBeginDownloadingAttachment(withId id: Attachment.IDType) async -> OWSProgressSink {
+    internal func willBeginDownloadingAttachment(
+        withId id: Attachment.IDType,
+        isThumbnail: Bool,
+    ) async -> OWSProgressSink {
         let sink = OWSProgress.createSink { [weak self] progress in
             Task { await self?.didUpdateProgressForActiveDownload(
-                id: id,
+                id: .init(atachmentId: id, isThumbnail: isThumbnail),
                 completedByteCount: progress.completedUnitCount,
                 totalByteCount: progress.totalUnitCount
             )
@@ -113,10 +114,11 @@ public actor BackupAttachmentDownloadProgress {
     /// attachments as finished in all cases.
     internal func didFinishDownloadOfAttachment(
         withId id: Attachment.IDType,
+        isThumbnail: Bool,
         byteCount: UInt64
     ) {
         didUpdateProgressForActiveDownload(
-            id: id,
+            id: .init(atachmentId: id, isThumbnail: isThumbnail),
             completedByteCount: byteCount,
             totalByteCount: byteCount
         )
@@ -134,7 +136,6 @@ public actor BackupAttachmentDownloadProgress {
             if source.totalUnitCount > 0, source.totalUnitCount > source.completedUnitCount {
                 source.incrementCompletedUnitCount(by: source.totalUnitCount - source.completedUnitCount)
             }
-            await self.updateCache()
         }
     }
 
@@ -187,15 +188,18 @@ public actor BackupAttachmentDownloadProgress {
         if latestProgress != nil { return }
         // Initialize the `latestProgress` value using the on-disk cached values.
         // Later we will (expensively) recompute the remaining byte count.
-        let (totalByteCount, remainingByteCount) = db.read { tx in
+        let pendingByteCount: UInt64
+        let finishedByteCount: UInt64
+        (pendingByteCount, finishedByteCount) = db.read { tx -> (UInt64, UInt64) in
             return (
-                backupAttachmentDownloadStore.getTotalPendingDownloadByteCount(tx: tx),
-                backupAttachmentDownloadStore.getCachedRemainingPendingDownloadByteCount(tx: tx)
+                (try? backupAttachmentDownloadStore.computeEstimatedRemainingByteCount(tx: tx)) ?? 0,
+                (try? backupAttachmentDownloadStore.computeEstimatedFinishedByteCount(tx: tx)) ?? 0
             )
         }
-        if let totalByteCount {
+        let totalByteCount = pendingByteCount + finishedByteCount
+        if totalByteCount > 0 {
             updateObservers(OWSProgress(
-                completedUnitCount: min(totalByteCount, totalByteCount - (remainingByteCount ?? totalByteCount)),
+                completedUnitCount: finishedByteCount,
                 totalUnitCount: totalByteCount,
                 sourceProgresses: [:]
             ))
@@ -212,18 +216,23 @@ public actor BackupAttachmentDownloadProgress {
     private var sink: OWSProgressSink?
     private var source: OWSProgressSource?
 
+    private struct DownloadId: Equatable, Hashable {
+        let atachmentId: Attachment.IDType
+        let isThumbnail: Bool
+    }
+
     /// Currently active downloads for which we update progress byte-by-byte.
-    private var activeDownloadByteCounts = [Attachment.IDType: UInt64]()
+    private var activeDownloadByteCounts = [DownloadId: UInt64]()
     /// There is a race between receiving the final OWSProgress update for a given attachment
     /// and being told the attachment finished downloading by BackupAttachmentDownloadManager.
     /// To resolve this race, track recently completed downloads so we know not to double count.
     /// There could be tens of thousands of attachments, so to minimize memory usage only keep
     /// an LRUCache. In practice that will catch all races. Even if it doesn't, the downside
     /// is we misreport progress until we hit 100%, big whoop.
-    private var recentlyCompletedDownloads = LRUCache<Attachment.IDType, Void>(maxSize: 100)
+    private var recentlyCompletedDownloads = LRUCache<DownloadId, Void>(maxSize: 100)
 
     private func didUpdateProgressForActiveDownload(
-        id: Attachment.IDType,
+        id: DownloadId,
         completedByteCount: UInt64,
         totalByteCount: UInt64
     ) {
@@ -243,10 +252,6 @@ public actor BackupAttachmentDownloadProgress {
         }
         if completedByteCount >= totalByteCount {
             recentlyCompletedDownloads.set(key: id, value: ())
-            // When some download completes, update the cache.
-            Task { [weak self] in
-                await self?.updateCache()
-            }
         } else {
             activeDownloadByteCounts[id] = completedByteCount
         }
@@ -259,73 +264,6 @@ public actor BackupAttachmentDownloadProgress {
 
     func removeObserver(_ id: UUID) {
         observers.removeAll(where: { $0.id == id })
-    }
-
-    private nonisolated func computeRemainingUndownloadedByteCount() throws -> UInt64 {
-        let remoteConfig = remoteConfigProvider.currentConfig()
-        let now = dateProvider().ows_millisecondsSince1970
-
-        return try db.read { tx in
-            let backupPlan = backupSettingsStore.backupPlan(tx: tx)
-
-            var totalByteCount: UInt64 = 0
-
-            struct JoinedRecord: Decodable, FetchableRecord {
-                var QueuedBackupAttachmentDownload: QueuedBackupAttachmentDownload
-                var Attachment: Attachment.Record
-            }
-
-            let cursor = try QueuedBackupAttachmentDownload
-                .including(required: QueuedBackupAttachmentDownload.attachment.self)
-                .asRequest(of: JoinedRecord.self)
-                .fetchCursor(tx.database)
-
-            while let joinedRecord = try cursor.next() {
-                guard let attachment = try? Attachment(record: joinedRecord.Attachment) else {
-                    continue
-                }
-                let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
-                    attachment,
-                    downloadRecord: joinedRecord.QueuedBackupAttachmentDownload,
-                    currentTimestamp: now,
-                    backupPlan: backupPlan,
-                    remoteConfig: remoteConfig
-                )
-                if
-                    eligibility.canDownloadMediaTierFullsize,
-                    let byteCount = attachment.mediaTierInfo?.unencryptedByteCount
-                {
-                    totalByteCount += UInt64(Cryptography.paddedSize(unpaddedSize: UInt(byteCount)))
-                } else if
-                    eligibility.canDownloadTransitTierFullsize,
-                    let byteCount = attachment.transitTierInfo?.unencryptedByteCount
-                {
-                    totalByteCount += UInt64(Cryptography.paddedSize(unpaddedSize: UInt(byteCount)))
-                }
-                // We don't count thumbnail downloads towards the total
-                // download count we track the progress of.
-            }
-            return totalByteCount
-        }
-    }
-
-    private nonisolated func updateCache() async {
-        guard
-            // Ensure we've started observing
-            await self.sink != nil,
-            let latestProgress = await self.latestProgress
-        else {
-            return
-        }
-        let pendingByteCount = max(
-            latestProgress.totalUnitCount, latestProgress.completedUnitCount
-        ) - latestProgress.completedUnitCount
-        await db.awaitableWrite { tx in
-            backupAttachmentDownloadStore.setCachedRemainingPendingDownloadByteCount(
-                pendingByteCount,
-                tx: tx
-            )
-        }
     }
 }
 

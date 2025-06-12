@@ -328,6 +328,7 @@ public class GRDBSchemaMigrator {
         case addStoryRecipient
         case addAttachmentLastFullscreenViewTimestamp
         case addByteCountAndIsFullsizeToBackupAttachmentUpload
+        case refactorBackupAttachmentDownload
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -391,7 +392,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 113
+    public static let grdbSchemaVersionLatest: UInt = 114
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3990,6 +3991,95 @@ public class GRDBSchemaMigrator {
                 on: "BackupAttachmentUploadQueue",
                 columns: ["maxOwnerTimestamp", "isFullsize"]
             )
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.refactorBackupAttachmentDownload) { tx in
+            // We want to migrate existing rows but the alterations we want to make aren't
+            // allowed (removing UNIQUE constraint) so keep both tables then copy.
+            try tx.database.rename(table: "BackupAttachmentDownloadQueue", to: "tmp_BackupAttachmentDownloadQueue")
+
+            try tx.database.create(table: "BackupAttachmentDownloadQueue") { table in
+                table.autoIncrementedPrimaryKey("id")
+                table.column("attachmentRowId", .integer)
+                    .notNull()
+                    .references("Attachment", column: "id", onDelete: .cascade)
+                table.column("isThumbnail", .boolean).notNull()
+                table.column("maxOwnerTimestamp", .integer)
+                table.column("canDownloadFromMediaTier", .boolean).notNull()
+                table.column("minRetryTimestamp", .integer).notNull()
+                table.column("numRetries", .integer).notNull().defaults(to: 0)
+                table.column("state", .integer)
+                table.column("estimatedByteCount", .integer).notNull()
+            }
+            // For efficient cascade deletes and lookups
+            try tx.database.create(
+                index: "index_BackupAttachmentDownloadQueue_on_attachmentRowId",
+                on: "BackupAttachmentDownloadQueue",
+                columns: ["attachmentRowId"]
+            )
+            // For efficient sorting when downloading and popping off the queue,
+            // which only applies to those in the Ready state.
+            // We download recent thumbnails first, then recent fullsize, then
+            // old thumbnails, then old fullsize.
+            try tx.database.create(
+                index: "index_BackupAttachmentDownloadQueue_on_state_isThumbnail_minRetryTimestamp",
+                on: "BackupAttachmentDownloadQueue",
+                columns: ["state", "isThumbnail", "minRetryTimestamp"]
+            )
+            // When we enable storage optimization with paid backups, we want to mark
+            // ineligible any fullsize rows which are on the media tier and are old
+            // enough that they'd be offloaded if we did download them; we mark these
+            // ineligible up front in an UPDATE so they're evicted from the byte count.
+            try tx.database.create(
+                index: "index_BackupAttachmentDownloadQueue_on_isThumbnail_canDownloadFromMediaTier_state_maxOwnerTimestamp",
+                on: "BackupAttachmentDownloadQueue",
+                columns: ["isThumbnail", "canDownloadFromMediaTier", "state", "maxOwnerTimestamp"]
+            )
+            // This lets us quickly sum total estimated byte count per-state, so we can count
+            // remaining bytes vs already-downloaded bytes.
+            try tx.database.create(
+                index: "index_BackupAttachmentDownloadQueue_on_state_estimatedByteCount",
+                on: "BackupAttachmentDownloadQueue",
+                columns: ["state", "estimatedByteCount"]
+            )
+
+            let nowMs = Date().ows_millisecondsSince1970
+
+            // Now copy over from the old table to the new table.
+            // At time of writing backups is not launched so the only
+            // rows in this table are fullsize transit tier downloads enqueued
+            // from a link'n'sync, which were removed when done so they're all
+            // in the ready state.
+            try tx.database.execute(
+                sql: """
+                    INSERT INTO BackupAttachmentDownloadQueue (
+                        attachmentRowId,
+                        isThumbnail,
+                        maxOwnerTimestamp,
+                        canDownloadFromMediaTier,
+                        minRetryTimestamp,
+                        state,
+                        estimatedByteCount
+                    )
+                    SELECT
+                        attachmentRowId,
+                        0, -- no thumbnails; see comment above
+                        timestamp,
+                        0, -- no media tier downloads; see comment above
+                        CASE WHEN timestamp IS NULL
+                            THEN 0             -- NULL timestamps first
+                            ELSE ? - timestamp -- then newest first
+                        END,
+                        1, -- ready; see comment above
+                        0  -- just set estimated byte count to 0; existing link'n'syncs won't get progress.
+                    FROM tmp_BackupAttachmentDownloadQueue;
+                    """,
+                arguments: [nowMs]
+            )
+
+            try tx.database.drop(table: "tmp_BackupAttachmentDownloadQueue")
 
             return .success(())
         }

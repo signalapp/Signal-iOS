@@ -342,6 +342,7 @@ class BackupArchiveIntegrationTests: XCTestCase {
         try await deps.backupArchiveManager.importPlaintextBackup(
             fileUrl: testCaseFileUrl,
             localIdentifiers: localIdentifiers,
+            isPrimaryDevice: true,
             backupPurpose: .remoteBackup,
             progress: nil
         )

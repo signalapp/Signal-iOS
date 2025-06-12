@@ -160,10 +160,17 @@ extension ConversationViewController: CVComponentDelegate {
                     // Otherwise use presence in the backup download queue to indicate
                     // downloadability; this just functionally bumps the priority so the
                     // download happens immediately and unconditionally.
-                    return try backupAttachmentDownloadStore.hasEnqueuedDownload(
+                    let enqueuedDownload = try backupAttachmentDownloadStore.getEnqueuedDownload(
                         attachmentRowId: referencedAttachment.attachment.id,
+                        thumbnail: false,
                         tx: tx
                     )
+                    switch enqueuedDownload?.state {
+                    case nil, .done:
+                        return false
+                    case .ineligible, .ready:
+                        return true
+                    }
                 }
             }
 

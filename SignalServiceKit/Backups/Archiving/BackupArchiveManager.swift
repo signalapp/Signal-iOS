@@ -62,6 +62,7 @@ public protocol BackupArchiveManager {
     func importEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
+        isPrimaryDevice: Bool,
         backupKey: BackupKey,
         backupPurpose: MessageBackupPurpose,
         progress: OWSProgressSink?
@@ -71,6 +72,7 @@ public protocol BackupArchiveManager {
     func importPlaintextBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
+        isPrimaryDevice: Bool,
         backupPurpose: MessageBackupPurpose,
         progress: OWSProgressSink?
     ) async throws

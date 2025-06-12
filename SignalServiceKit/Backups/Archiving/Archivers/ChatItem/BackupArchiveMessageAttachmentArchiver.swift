@@ -488,6 +488,7 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
                     restoreStartTimestampMs: context.startTimestampMs,
                     backupPlan: backupPlan,
                     remoteConfig: accountDataContext.currentRemoteConfig,
+                    isPrimaryDevice: context.isPrimaryDevice,
                     tx: context.tx
                 )
             }

@@ -247,6 +247,42 @@ extension Attachment {
             )
         }
 
+        public static func forRemovingMediaTierInfo(
+            attachment: Attachment
+        ) -> ConstructionParams {
+            return .init(
+                blurHash: attachment.blurHash,
+                mimeType: attachment.mimeType,
+                encryptionKey: attachment.encryptionKey,
+                streamInfo: attachment.streamInfo,
+                transitTierInfo: attachment.transitTierInfo,
+                mediaName: attachment.mediaName,
+                mediaTierInfo: nil,
+                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: attachment.lastFullscreenViewTimestamp,
+            )
+        }
+
+        public static func forRemovingThumbnailMediaTierInfo(
+            attachment: Attachment
+        ) -> ConstructionParams {
+            return .init(
+                blurHash: attachment.blurHash,
+                mimeType: attachment.mimeType,
+                encryptionKey: attachment.encryptionKey,
+                streamInfo: attachment.streamInfo,
+                transitTierInfo: attachment.transitTierInfo,
+                mediaName: attachment.mediaName,
+                mediaTierInfo: attachment.mediaTierInfo,
+                thumbnailMediaTierInfo: nil,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                lastFullscreenViewTimestamp: attachment.lastFullscreenViewTimestamp,
+            )
+        }
+
         public static func forUpdatingAsDownlodedFromMediaTier(
             attachment: Attachment,
             validatedMimeType: String,

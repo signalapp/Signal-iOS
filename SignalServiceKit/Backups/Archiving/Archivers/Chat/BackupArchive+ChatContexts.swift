@@ -176,12 +176,14 @@ extension BackupArchive {
             customChatColorContext: CustomChatColorRestoringContext,
             recipientContext: RecipientRestoringContext,
             startTimestampMs: UInt64,
+            isPrimaryDevice: Bool,
             tx: DBWriteTransaction
         ) {
             self.customChatColorContext = customChatColorContext
             self.recipientContext = recipientContext
             super.init(
                 startTimestampMs: startTimestampMs,
+                isPrimaryDevice: isPrimaryDevice,
                 tx: tx
             )
         }
@@ -381,12 +383,14 @@ extension BackupArchive {
 
         init(
             startTimestampMs: UInt64,
+            isPrimaryDevice: Bool,
             accountDataContext: AccountDataRestoringContext,
             tx: DBWriteTransaction
         ) {
             self.accountDataContext = accountDataContext
             super.init(
                 startTimestampMs: startTimestampMs,
+                isPrimaryDevice: isPrimaryDevice,
                 tx: tx
             )
         }

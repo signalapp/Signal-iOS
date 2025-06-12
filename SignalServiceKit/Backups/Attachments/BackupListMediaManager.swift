@@ -15,11 +15,13 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
     private let attachmentStore: AttachmentStore
     private let attachmentUploadStore: AttachmentUploadStore
+    private let backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
     private let backupKeyMaterial: BackupKeyMaterial
     private let backupRequestManager: BackupRequestManager
+    private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let dateProvider: DateProvider
     private let db: any DB
@@ -32,11 +34,13 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     public init(
         attachmentStore: AttachmentStore,
         attachmentUploadStore: AttachmentUploadStore,
+        backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
         backupKeyMaterial: BackupKeyMaterial,
         backupRequestManager: BackupRequestManager,
+        backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
@@ -46,11 +50,13 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     ) {
         self.attachmentStore = attachmentStore
         self.attachmentUploadStore = attachmentUploadStore
-        self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
+        self.backupAttachmentDownloadProgress = backupAttachmentDownloadProgress
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
         self.backupKeyMaterial = backupKeyMaterial
         self.backupRequestManager = backupRequestManager
+        self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.dateProvider = dateProvider
         self.db = db
@@ -118,9 +124,17 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             throw error
         }
 
+        let remoteConfig = remoteConfigManager.currentConfig()
+
         // We go popping entries off this map as we process them.
         // By the end, anything left in here was not in the list response.
-        var mediaIdMap = try db.read { tx in try self.buildMediaIdMap(backupKey: backupKey, tx: tx) }
+        var mediaIdMap = try db.read { tx in
+            try self.buildMediaIdMap(
+                backupKey: backupKey,
+                remoteConfig: remoteConfig,
+                tx: tx
+            )
+        }
 
         // If we have no backupAuth here, we have no backup at all, so
         // proceed as if we got no results from list media.
@@ -135,11 +149,15 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
                 try await result.storedMediaObjects.forEachChunk(chunkSize: 100) { chunk in
                     try await db.awaitableWrite { tx in
+                        let backupPlan = backupSettingsStore.backupPlan(tx: tx)
+                        let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
                         for storedMediaObject in chunk {
                             try self.handleListedMedia(
                                 storedMediaObject,
                                 mediaIdMap: &mediaIdMap,
                                 uploadEra: currentUploadEra,
+                                backupPlan: backupPlan,
+                                remoteConfig: remoteConfig,
                                 isPrimaryDevice: isPrimaryDevice,
                                 tx: tx
                             )
@@ -199,8 +217,16 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         if remainingLocalAttachments.isEmpty.negated {
             try await remainingLocalAttachments.forEachChunk(chunkSize: 100) { chunk in
                 try await db.awaitableWrite { tx in
+                    let backupPlan = backupSettingsStore.backupPlan(tx: tx)
                     try chunk.forEach { localAttachment in
-                        try self.markMediaTierUploadExpired(localAttachment, currentUploadEra: currentUploadEra, tx: tx)
+                        try self.markMediaTierUploadExpired(
+                            localAttachment,
+                            currentUploadEra: currentUploadEra,
+                            backupPlan: backupPlan,
+                            remoteConfig: remoteConfig,
+                            isPrimaryDevice: isPrimaryDevice,
+                            tx: tx
+                        )
                     }
                     if chunk.endIndex == remainingLocalAttachments.endIndex {
                         self.didQueryListMedia(uploadEraAtStartOfRequest: currentUploadEra, tx: tx)
@@ -218,6 +244,8 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         _ listedMedia: BackupArchive.Response.StoredMedia,
         mediaIdMap: inout [Data: LocalAttachment],
         uploadEra: String,
+        backupPlan: BackupPlan,
+        remoteConfig: RemoteConfig,
         isPrimaryDevice: Bool,
         tx: DBWriteTransaction
     ) throws {
@@ -240,6 +268,8 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 listedMedia: listedMedia,
                 mediaId: mediaId,
                 uploadEra: uploadEra,
+                backupPlan: backupPlan,
+                remoteConfig: remoteConfig,
                 tx: tx
             )
             return
@@ -261,6 +291,8 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 listedMedia: listedMedia,
                 mediaId: mediaId,
                 uploadEra: uploadEra,
+                backupPlan: backupPlan,
+                remoteConfig: remoteConfig,
                 tx: tx
             )
             return
@@ -290,11 +322,14 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         listedMedia: BackupArchive.Response.StoredMedia,
         mediaId: Data,
         uploadEra: String,
+        backupPlan: BackupPlan,
+        remoteConfig: RemoteConfig,
         tx: DBWriteTransaction
     ) throws {
         guard let attachment = attachmentStore.fetch(id: localAttachment.id, tx: tx) else {
             return
         }
+        let didSetCdnInfo: Bool
         if localAttachment.isThumbnail {
             try attachmentUploadStore.markThumbnailUploadedToMediaTier(
                 attachment: attachment,
@@ -305,6 +340,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 ),
                 tx: tx
             )
+            didSetCdnInfo = true
         } else {
             // In order for the attachment to be downloadable, we need some metadata.
             // We might have this either from a local stream (if we matched against
@@ -328,6 +364,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                     ),
                     tx: tx
                 )
+                didSetCdnInfo = true
             } else {
                 // We have a matching local attachment but we don't have
                 // sufficient metadata from either a backup or local stream
@@ -337,6 +374,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 // other info?
                 owsFailDebug("Missing media tier metadata but have media name somehow")
                 try enqueueListedMediaForDeletion(listedMedia, mediaId: mediaId, tx: tx)
+                didSetCdnInfo = false
             }
         }
 
@@ -351,6 +389,81 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         {
             Task {
                 await backupAttachmentUploadProgress.didFinishUploadOfAttachment(uploadRecord: removedRecord)
+            }
+        }
+
+        let currentTimestamp = dateProvider().ows_millisecondsSince1970
+
+        // We only want to fetch if we need to (since its expensive) but if we do
+        // fetch ensure we only do so once (even though there are multiple usage sites).
+        var cachedMostRecentReference: AttachmentReference?
+        func fetchMostRecentReference() throws -> AttachmentReference {
+            if let cachedMostRecentReference { return cachedMostRecentReference }
+            let reference = try self.attachmentStore.fetchMostRecentReference(toAttachmentId: attachment.id, tx: tx)
+            cachedMostRecentReference = reference
+            return reference
+        }
+
+        func eligibleDownloadState() throws -> QueuedBackupAttachmentDownload.State? {
+            if localAttachment.isThumbnail {
+                return BackupAttachmentDownloadEligibility.mediaTierThumbnailState(
+                    attachment: attachment,
+                    backupPlan: backupPlan
+                )
+            } else {
+                // We check only media tier eligibility, as that's what may have changed
+                // as a result of list media. The attachment may already have been eligible
+                // for transit tier download; we will just overwrite the already enqueued download.
+                return try BackupAttachmentDownloadEligibility.mediaTierFullsizeState(
+                    attachment: attachment,
+                    attachmentTimestamp: {
+                        switch try fetchMostRecentReference().owner {
+                        case .message(let messageSource):
+                            return messageSource.receivedAtTimestamp
+                        case .storyMessage, .thread:
+                            return nil
+                        }
+                    }(),
+                    currentTimestamp: currentTimestamp,
+                    backupPlan: backupPlan
+                )
+            }
+        }
+
+        // If its eligible, go ahead and add to the download queue.
+        if
+            didSetCdnInfo,
+            let state = try eligibleDownloadState()
+        {
+            switch state {
+            case .done:
+                // Don't bother enqueueing if already done.
+                break
+            case .ineligible:
+                // Its ineligible now due to backupPlan state, but we should
+                // still enqueue it (as ineligible) so it can become ready later
+                // if backupPlan state changes.
+                fallthrough
+            case .ready:
+                // Dequeue any existing download first; this will reset the retry counter
+                try backupAttachmentDownloadStore.remove(
+                    attachmentId: attachment.id,
+                    thumbnail: localAttachment.isThumbnail,
+                    tx: tx
+                )
+                _ = try backupAttachmentDownloadStore.enqueue(
+                    ReferencedAttachment(
+                        reference: try fetchMostRecentReference(),
+                        attachment: attachment
+                    ),
+                    thumbnail: localAttachment.isThumbnail,
+                    // We got here because we discovered we can download
+                    // from media tier, that's the whole point.
+                    canDownloadFromMediaTier: true,
+                    state: state,
+                    currentTimestamp: currentTimestamp,
+                    tx: tx
+                )
             }
         }
 
@@ -372,6 +485,9 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     private func markMediaTierUploadExpired(
         _ localAttachment: LocalAttachment,
         currentUploadEra: String,
+        backupPlan: BackupPlan,
+        remoteConfig: RemoteConfig,
+        isPrimaryDevice: Bool,
         tx: DBWriteTransaction
     ) throws {
         guard
@@ -397,7 +513,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             }
         }
 
-        func getHighestPriorityReference() throws -> AttachmentReference? {
+        func getHighestPriorityUploadReference() throws -> AttachmentReference? {
             var referenceToUse: AttachmentReference?
             try attachmentStore.enumerateAllReferences(
                 toAttachmentId: attachment.id,
@@ -418,7 +534,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             if
                 (localAttachment.isThumbnail && eligibility.needsUploadThumbnail)
                     || (!localAttachment.isThumbnail && eligibility.needsUploadFullsize),
-                let reference = try getHighestPriorityReference()
+                let reference = try getHighestPriorityUploadReference()
             {
                 try backupAttachmentUploadStore.enqueue(
                     ReferencedAttachmentStream(reference: reference, attachmentStream: stream),
@@ -428,11 +544,52 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             }
         }
 
-        if !localAttachment.isEligibleForTransitTierDownload {
-            // If not eligible for transit tier download, go ahead and dequeue
-            // the download record. (If we are eligible for transit tier download,
-            // we may still want to download).
-            try backupAttachmentDownloadStore.removeQueuedDownload(attachmentId: localAttachment.id, tx: tx)
+        if
+            var existingDownload = try backupAttachmentDownloadStore.getEnqueuedDownload(
+                attachmentRowId: localAttachment.id,
+                thumbnail: localAttachment.isThumbnail,
+                tx: tx
+            )
+        {
+            try backupAttachmentDownloadStore.remove(
+                attachmentId: localAttachment.id,
+                thumbnail: true,
+                tx: tx
+            )
+            if
+                !localAttachment.isThumbnail,
+                let transitTierEligibilityState = BackupAttachmentDownloadEligibility.transitTierFullsizeState(
+                    attachment: attachment,
+                    attachmentTimestamp: existingDownload.maxOwnerTimestamp,
+                    currentTimestamp: dateProvider().ows_millisecondsSince1970,
+                    remoteConfig: remoteConfig,
+                    backupPlan: backupPlan,
+                    isPrimaryDevice: isPrimaryDevice
+                )
+            {
+                // We just found we can't download from media tier, but
+                // fullsize downloads can also come from transit tier (and
+                // are represented by the same download row). If indeed eligible,
+                // re-enqueue as just a transit tier download.
+                existingDownload.id = nil
+                existingDownload.canDownloadFromMediaTier = false
+                existingDownload.state = transitTierEligibilityState
+                try existingDownload.insert(tx.database)
+            }
+            tx.addSyncCompletion {
+                Task {
+                    await self.backupAttachmentDownloadProgress.didFinishDownloadOfAttachment(
+                        withId: localAttachment.id,
+                        isThumbnail: localAttachment.isThumbnail,
+                        byteCount: UInt64(QueuedBackupAttachmentDownload.estimatedByteCount(
+                            attachment: attachment,
+                            reference: nil,
+                            isThumbnail: localAttachment.isThumbnail,
+                            canDownloadFromMediaTier: true
+                        ))
+                    )
+                }
+            }
         }
     }
 
@@ -441,7 +598,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     private struct LocalAttachment {
         let id: Attachment.IDType
         let isThumbnail: Bool
-        let isEligibleForTransitTierDownload: Bool
         // These are UInt32 in our protocol, but they're actually very small
         // so we fit them in UInt8 here to save space.
         let cdnNumber: UInt8?
@@ -450,13 +606,11 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         init(
             attachment: Attachment,
             isThumbnail: Bool,
-            isEligibleForTransitTierDownload: Bool,
             cdnNumber: UInt32?,
             hadMediaTierInfo: Bool
         ) {
             self.id = attachment.id
             self.isThumbnail = isThumbnail
-            self.isEligibleForTransitTierDownload = isEligibleForTransitTierDownload
             self.hadMediaTierInfo = hadMediaTierInfo
             if let cdnNumber {
                 if let uint8 = UInt8(exactly: cdnNumber) {
@@ -484,12 +638,9 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     /// a problem, we can write it to an ephemeral sqlite table with a UNIQUE mediaId column.
     private func buildMediaIdMap(
         backupKey: BackupKey,
+        remoteConfig: RemoteConfig,
         tx: DBReadTransaction
     ) throws -> [Data: LocalAttachment] {
-
-        let currentTimestamp = dateProvider().ows_millisecondsSince1970
-        let remoteConfig = remoteConfigManager.currentConfig()
-
         var map = [Data: LocalAttachment]()
         try self.attachmentStore.enumerateAllAttachmentsWithMediaName(tx: tx) { attachment in
             guard let mediaName = attachment.mediaName else {
@@ -498,18 +649,9 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             }
             let fullsizeMediaId = Data(try backupKey.deriveMediaId(mediaName))
 
-            let isEligibleForTransitTierDownload = BackupAttachmentDownloadEligibility.canDownloadTransitTierFullsize(
-                attachment: attachment,
-                // Use transit tier upload timestamp for this metric; it doesn't have to be precise.
-                attachmentTimestamp: attachment.transitTierInfo?.uploadTimestamp,
-                currentTimestamp: currentTimestamp,
-                remoteConfig: remoteConfig
-            )
-
             map[fullsizeMediaId] = LocalAttachment(
                 attachment: attachment,
                 isThumbnail: false,
-                isEligibleForTransitTierDownload: isEligibleForTransitTierDownload,
                 cdnNumber: attachment.mediaTierInfo?.cdnNumber,
                 hadMediaTierInfo: attachment.mediaTierInfo != nil
             )
@@ -524,8 +666,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 map[thumbnailMediaId] = LocalAttachment(
                     attachment: attachment,
                     isThumbnail: true,
-                    // We don't do thumbnails from transit tier.
-                    isEligibleForTransitTierDownload: false,
                     cdnNumber: attachment.thumbnailMediaTierInfo?.cdnNumber,
                     hadMediaTierInfo: attachment.thumbnailMediaTierInfo != nil
                 )

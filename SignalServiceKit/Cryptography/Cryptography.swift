@@ -100,12 +100,25 @@ public extension Cryptography {
     /// 1. It may be a different client uploading with a differing padding scheme (or a bug with its padding scheme)
     /// 2. Our padding scheme may change between when this is checked and when we upload(ed).
     static func estimatedMediaTierCDNSize(unencryptedSize: UInt32) -> UInt32 {
+        let ivLength = UInt32(Constants.aescbcIVLength)
+        let hmacLength = UInt32(Constants.hmac256OutputLength)
+        let innerSize = estimatedTransitTierCDNSize(unencryptedSize: unencryptedSize)
+        let outerSize = ivLength + aesPaddedSize(unpaddedSize: innerSize) + hmacLength
+        return outerSize
+    }
+
+    /// Given an unencrypted, unpadded byte count, returns the *estimated* byte count of the final padded, encrypted blob
+    /// as would be uploaded to the transit tier CDN.
+    /// (Including bucketing-padding and encryption overhead)
+    /// IMPORTANT: this should *only* be used as an estimate. In particular, we control the padding if the local
+    /// client does the upload, but:
+    /// 1. It may be a different client uploading with a differing padding scheme (or a bug with its padding scheme)
+    /// 2. Our padding scheme may change between when this is checked and when we upload(ed).
+    static func estimatedTransitTierCDNSize(unencryptedSize: UInt32) -> UInt32 {
         let paddedSize = UInt32(Self.paddedSize(unpaddedSize: UInt(unencryptedSize)))
         let ivLength = UInt32(Constants.aescbcIVLength)
         let hmacLength = UInt32(Constants.hmac256OutputLength)
-        let innerSize = ivLength + aesPaddedSize(unpaddedSize: paddedSize) + hmacLength
-        let outerSize = ivLength + aesPaddedSize(unpaddedSize: innerSize) + hmacLength
-        return outerSize
+        return ivLength + aesPaddedSize(unpaddedSize: paddedSize) + hmacLength
     }
 
     static func randomAttachmentEncryptionKey() -> Data {

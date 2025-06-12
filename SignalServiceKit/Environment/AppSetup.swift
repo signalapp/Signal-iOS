@@ -416,6 +416,7 @@ public class AppSetup {
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupSettingsStore: backupSettingsStore,
+            dateProvider: dateProvider,
             db: db,
             deviceBatteryLevelManager: deviceBatteryLevelManager,
             reachabilityManager: reachabilityManager,
@@ -445,14 +446,26 @@ public class AppSetup {
             db: db
         )
 
+        let backupAttachmentDownloadProgress = BackupAttachmentDownloadProgress(
+            appContext: appContext,
+            appReadiness: appReadiness,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupSettingsStore: backupSettingsStore,
+            dateProvider: dateProvider,
+            db: db,
+            remoteConfigProvider: remoteConfigManager
+        )
+
         let backupListMediaManager = BackupListMediaManagerImpl(
             attachmentStore: attachmentStore,
             attachmentUploadStore: attachmentUploadStore,
+            backupAttachmentDownloadProgress: backupAttachmentDownloadProgress,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
+            backupSettingsStore: backupSettingsStore,
             backupSubscriptionManager: backupSubscriptionManager,
             dateProvider: dateProvider,
             db: db,
@@ -1029,16 +1042,6 @@ public class AppSetup {
             storageServiceManager: storageServiceManager,
             threadRemover: threadRemover,
             threadStore: threadStore
-        )
-
-        let backupAttachmentDownloadProgress = BackupAttachmentDownloadProgress(
-            appContext: appContext,
-            appReadiness: appReadiness,
-            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-            backupSettingsStore: backupSettingsStore,
-            dateProvider: dateProvider,
-            db: db,
-            remoteConfigProvider: remoteConfigManager
         )
 
         let backupAttachmentDownloadManager = testDependencies.backupAttachmentDownloadManager

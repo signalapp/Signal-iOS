@@ -254,11 +254,13 @@ extension BackupArchive {
         init(
             localIdentifiers: LocalIdentifiers,
             startTimestampMs: UInt64,
+            isPrimaryDevice: Bool,
             tx: DBWriteTransaction
         ) {
             self.localIdentifiers = localIdentifiers
             super.init(
                 startTimestampMs: startTimestampMs,
+                isPrimaryDevice: isPrimaryDevice,
                 tx: tx
             )
         }

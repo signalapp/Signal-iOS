@@ -20,7 +20,7 @@ extension Attachment {
         shouldOptimizeLocalStorage: Bool,
         currentUploadEra: String,
         currentTimestamp: UInt64,
-        attachmentStore: AttachmentStore,
+        mostRecentReference: @autoclosure () throws -> AttachmentReference,
         tx: DBReadTransaction
     ) throws -> Bool {
         guard shouldOptimizeLocalStorage else {
@@ -45,7 +45,7 @@ extension Attachment {
 
         // Lastly find the most recent owner and use its timestamp to determine
         // eligibility to offload.
-        switch try attachmentStore.fetchMostRecentReference(toAttachmentId: self.id, tx: tx).owner {
+        switch try mostRecentReference().owner {
         case .message(let messageSource):
             return messageSource.receivedAtTimestamp + Self.offloadingThresholdMs > currentTimestamp
         case .storyMessage:
@@ -74,29 +74,32 @@ public protocol AttachmentOffloadingManager {
 public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
 
     private let attachmentStore: AttachmentStore
-    private let dateProvider: DateProvider
-    private let db: DB
+    private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
+    private let dateProvider: DateProvider
+    private let db: DB
     private let listMediaManager: BackupListMediaManager
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private let orphanedAttachmentStore: OrphanedAttachmentStore
 
     public init(
         attachmentStore: AttachmentStore,
-        dateProvider: @escaping DateProvider,
-        db: DB,
+        backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
+        dateProvider: @escaping DateProvider,
+        db: DB,
         listMediaManager: BackupListMediaManager,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
     ) {
         self.attachmentStore = attachmentStore
-        self.dateProvider = dateProvider
-        self.db = db
+        self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
+        self.dateProvider = dateProvider
+        self.db = db
         self.listMediaManager = listMediaManager
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.orphanedAttachmentStore = orphanedAttachmentStore
@@ -168,12 +171,20 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
             let attachment = try Attachment(record: attachment)
             lastAttachmentId = attachment.id
 
+            var cachedMostRecentReference: AttachmentReference?
+            func fetchMostRecentReference() throws -> AttachmentReference {
+                if let cachedMostRecentReference { return cachedMostRecentReference }
+                let reference = try attachmentStore.fetchMostRecentReference(toAttachmentId: attachment.id, tx: tx)
+                cachedMostRecentReference = reference
+                return reference
+            }
+
             if
                 try attachment.shouldBeOffloaded(
                     shouldOptimizeLocalStorage: true,
                     currentUploadEra: currentUploadEra,
                     currentTimestamp: startTimeMs,
-                    attachmentStore: attachmentStore,
+                    mostRecentReference: fetchMostRecentReference(),
                     tx: tx
                 )
             {
@@ -204,6 +215,22 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                 newRecord.sqliteId = attachment.id
                 try newRecord.update(tx.database)
                 numAttachmentsDeleted += 1
+
+                // Enqueue a download for the attachment we just offloaded, in the `ineligible` state,
+                // so that if we ever disable offloading again it will redownload.
+                try backupAttachmentDownloadStore.enqueue(
+                    ReferencedAttachment(
+                        reference: fetchMostRecentReference(),
+                        attachment: try Attachment(record: newRecord)
+                    ),
+                    // Only re-enqueue the fullsize attachment for download
+                    thumbnail: false,
+                    // We're only here because we offloaded to media tier
+                    canDownloadFromMediaTier: true,
+                    state: .ineligible,
+                    currentTimestamp: dateProvider().ows_millisecondsSince1970,
+                    tx: tx
+                )
             }
             numAttachmentsChecked += 1
             if

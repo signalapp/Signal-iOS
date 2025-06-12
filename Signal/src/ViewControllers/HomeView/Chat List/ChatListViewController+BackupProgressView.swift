@@ -27,8 +27,9 @@ public class CLVBackupProgressView {
             self.backupPlan = BackupSettingsStore().backupPlan(tx: tx)
             self.didDismissDownloadCompleteBanner = backupAttachmentDownloadStore
                 .getDidDismissDownloadCompleteBanner(tx: tx)
-            self.totalPendingBackupAttachmentDownloadByteCount = backupAttachmentDownloadStore
-                .getTotalPendingDownloadByteCount(tx: tx)
+            self.totalPendingBackupAttachmentDownloadByteCount =
+                try? backupAttachmentDownloadStore.computeEstimatedRemainingByteCount(tx: tx)
+
         }
     }
 
@@ -132,7 +133,7 @@ public class CLVBackupProgressView {
             break
         }
         switch viewState.downloadQueueStatus {
-        case .none, .notRegisteredAndReady:
+        case .none, .notRegisteredAndReady, .suspended:
             return nil
         case .lowBattery:
             return .paused(reason: .lowBattery)
@@ -739,7 +740,9 @@ public class BackupAttachmentDownloadProgressView: UIView {
                     // Wipe this proactively so we don't briefly flash the completed state.
                     self?.chatListViewController?.viewState.backupProgressViewState
                         .totalPendingBackupAttachmentDownloadByteCount = nil
-                    try? await self?.backupAttachmentDownloadManager.cancelPendingDownloads()
+                    await self?.db.awaitableWrite { tx in
+                        self?.backupAttachmentDownloadStore.setIsQueueSuspended(true, tx: tx)
+                    }
                     if let chatListViewController = self?.chatListViewController {
                         self?.db.read { tx in
                             chatListViewController.viewState.backupProgressViewState.refetchDBState(tx: tx)

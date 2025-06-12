@@ -743,6 +743,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             try await backupArchiveManager.importEncryptedBackup(
                 fileUrl: fileUrl,
                 localIdentifiers: localIdentifiers,
+                isPrimaryDevice: false,
                 backupKey: ephemeralBackupKey,
                 // "Device transfer" is libsignal's name for link'n'sync
                 backupPurpose: .deviceTransfer,

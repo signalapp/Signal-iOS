@@ -511,6 +511,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 let shouldReEnqueueAsTransitTier =
                     record.sourceType == .mediaTierFullsize
                     && attachment?.transitTierInfo != nil
+                    // Backup restore download queue does its own fallbacks
+                    && record.priority != .backupRestore
 
                 // Not retrying; just delete the enqueued download
                 try? self.attachmentDownloadStore.removeAttachmentFromQueue(
@@ -524,7 +526,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         forAttachmentId: record.attachmentId,
                         tx: tx
                     )
-                } else {
+                } else if record.priority != .backupRestore {
+                    // Backup restore doenload queue does its own marking of failed state.
                     try? self.attachmentStore.updateAttachmentAsFailedToDownload(
                         from: record.sourceType,
                         id: record.attachmentId,
@@ -610,29 +613,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 // We don't do persistent retries fromt the transit tier.
                 return nil
             case .mediaTierFullsize, .mediaTierThumbnail:
-                switch record.priority {
-                case .default, .backupRestoreLow, .backupRestoreHigh:
-                    guard record.retryAttempts < 32 else {
-                        owsFailDebug("risk of integer overflow")
-                        return nil
-                    }
-                    // Exponential backoff, starting at 1 day.
-                    let initialDelay = UInt64.dayInMs
-                    let delay = UInt64(pow(2.0, Double(record.retryAttempts))) * initialDelay
-                    if delay > UInt64.dayInMs * 30 {
-                        // Don't go more than 30 days; stop retrying.
-                        Logger.info("Giving up retrying attachment download")
-                        return nil
-                    }
-                    return delay
-                case .userInitiated:
-                    // Don't _persist_ a retry for this; let the error
-                    // bubble up to the user, they can tap to retry.
-                    return nil
-                case .localClone:
-                    owsFailDebug("Trying to retry a local clone? Shouldn't happen")
-                    return nil
-                }
+                // User initiated downloads aren't retried,
+                // and backups-initiated downloads get retried
+                // at the backup manager level.
+                return nil
             }
         }
 
@@ -749,7 +733,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .mediaTierThumbnail:
                 let cdnNumber = attachment.thumbnailMediaTierInfo?.cdnNumber ?? remoteConfigManager.currentConfig().mediaTierFallbackCdnNumber
                 guard
-                    attachment.thumbnailMediaTierInfo != nil,
+                    attachment.thumbnailMediaTierInfo != nil || MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.mimeType),
                     let mediaName = attachment.mediaName,
                     // This is the outer encryption
                     let outerEncryptionMetadata = buildCdnEncryptionMetadata(
@@ -1013,7 +997,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .userInitiated, .localClone:
                 // Always download at these priorities.
                 return .downloadable
-            case .default, .backupRestoreHigh, .backupRestoreLow:
+            case .default, .backupRestore:
                 break
             }
             return db.read { tx in
@@ -1097,7 +1081,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .userInitiated, .localClone:
                 // Always download at these priorities.
                 return false
-            case .default, .backupRestoreLow, .backupRestoreHigh:
+            case .default, .backupRestore:
                 break
             }
 
@@ -1124,7 +1108,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .userInitiated, .localClone:
                 // Always download at these priorities.
                 return false
-            case .default, .backupRestoreLow, .backupRestoreHigh:
+            case .default, .backupRestore:
                 break
             }
 
@@ -1175,7 +1159,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return false
             case .default:
                 break
-            case .backupRestoreLow, .backupRestoreHigh:
+            case .backupRestore:
                 // Despite being lower priority than default,
                 // these actually should download despite the setting.
                 return false

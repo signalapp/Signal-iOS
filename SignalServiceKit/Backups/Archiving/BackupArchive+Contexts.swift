@@ -77,13 +77,17 @@ extension BackupArchive {
         /// The timestamp at which we began restoring.
         public let startTimestampMs: UInt64
 
+        public let isPrimaryDevice: Bool
+
         public let tx: DBWriteTransaction
 
         init(
             startTimestampMs: UInt64,
+            isPrimaryDevice: Bool,
             tx: DBWriteTransaction
         ) {
             self.startTimestampMs = startTimestampMs
+            self.isPrimaryDevice = isPrimaryDevice
             self.tx = tx
         }
     }

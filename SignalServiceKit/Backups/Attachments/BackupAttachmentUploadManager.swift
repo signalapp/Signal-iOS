@@ -500,6 +500,8 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                 case nil:
                     // No state change, keep going.
                     break
+                case .suspended:
+                    try? await loader.stop()
                 case .running:
                     break
                 case .empty:

@@ -14,12 +14,14 @@ extension BackupArchive {
             chatContext: ChatRestoringContext,
             recipientContext: RecipientRestoringContext,
             startTimestampMs: UInt64,
+            isPrimaryDevice: Bool,
             tx: DBWriteTransaction
         ) {
             self.recipientContext = recipientContext
             self.chatContext = chatContext
             super.init(
                 startTimestampMs: startTimestampMs,
+                isPrimaryDevice: isPrimaryDevice,
                 tx: tx
             )
         }

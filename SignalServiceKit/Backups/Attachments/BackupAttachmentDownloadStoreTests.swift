@@ -30,6 +30,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
             try attachmentRecord.insert(
                 tx.database
             )
+            let attachment = try Attachment(record: attachmentRecord)
             let reference = try insertMessageAttachmentReferenceRecord(
                 attachmentRowId: attachmentRecord.sqliteId!,
                 messageRowId: messageRowId,
@@ -37,17 +38,25 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 timestamp: 1234,
                 tx: tx
             )
-            _ = try store.enqueue(reference, tx: tx)
+            try store.enqueue(
+                ReferencedAttachment(reference: reference, attachment: attachment),
+                thumbnail: false,
+                canDownloadFromMediaTier: true,
+                state: .ready,
+                currentTimestamp: Date().ows_millisecondsSince1970,
+                tx: tx
+            )
 
             // Ensure the row exists.
             let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
-            XCTAssertEqual(row?.timestamp, 1234)
+            XCTAssertEqual(row?.maxOwnerTimestamp, 1234)
         }
 
         // Re enqueue at a higher timestamp.
         try db.write { tx in
+            let attachment = try Attachment(record: attachmentRecord)
             let reference = try insertMessageAttachmentReferenceRecord(
                 attachmentRowId: attachmentRecord.sqliteId!,
                 messageRowId: messageRowId,
@@ -55,14 +64,19 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 timestamp: 5678,
                 tx: tx
             )
-            let didReEnqueue = try store.enqueue(reference, tx: tx)
-
-            XCTAssert(didReEnqueue)
+            try store.enqueue(
+                ReferencedAttachment(reference: reference, attachment: attachment),
+                thumbnail: false,
+                canDownloadFromMediaTier: true,
+                state: .ready,
+                currentTimestamp: Date().ows_millisecondsSince1970,
+                tx: tx
+            )
 
             let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
-            XCTAssertEqual(row?.timestamp, 5678)
+            XCTAssertEqual(row?.maxOwnerTimestamp, 5678)
         }
 
         // Re enqueue with a nil timestamp
@@ -74,21 +88,28 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 threadSource: .globalThreadWallpaperImage(creationTimestamp: 1)
             )
             try referenceRecord.insert(tx.database)
-            let didReEnqueue = try store.enqueue(
-                try AttachmentReference(record: referenceRecord),
+
+            let attachment = try Attachment(record: attachmentRecord)
+            let reference = try AttachmentReference(record: referenceRecord)
+
+            try store.enqueue(
+                ReferencedAttachment(reference: reference, attachment: attachment),
+                thumbnail: false,
+                canDownloadFromMediaTier: true,
+                state: .ready,
+                currentTimestamp: Date().ows_millisecondsSince1970,
                 tx: tx
             )
-
-            XCTAssert(didReEnqueue)
 
             let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
-            XCTAssertNil(row?.timestamp)
+            XCTAssertNil(row?.maxOwnerTimestamp)
         }
 
         // Re enqueue at an even higher timestamp.
         try db.write { tx in
+            let attachment = try Attachment(record: attachmentRecord)
             let reference = try insertMessageAttachmentReferenceRecord(
                 attachmentRowId: attachmentRecord.sqliteId!,
                 messageRowId: messageRowId,
@@ -96,63 +117,124 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 timestamp: 9999,
                 tx: tx
             )
-            let didReEnqueue = try store.enqueue(reference, tx: tx)
 
-            XCTAssert(didReEnqueue)
+            try store.enqueue(
+                ReferencedAttachment(reference: reference, attachment: attachment),
+                thumbnail: false,
+                canDownloadFromMediaTier: true,
+                state: .ready,
+                currentTimestamp: Date().ows_millisecondsSince1970,
+                tx: tx
+            )
 
             let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
             // should not have overriden the nil timestamp
-            XCTAssertNil(row?.timestamp)
+            XCTAssertNil(row?.maxOwnerTimestamp)
         }
     }
 
     func testPeek() throws {
-        let timestamps: [UInt64] = [1111, 4444, 3333, 2222]
-        for timestamp in timestamps {
+        let nowTimestamp = Date().ows_millisecondsSince1970
+        let recencyThreshold = nowTimestamp - BackupAttachmentDownloadStoreImpl.dequeueRecencyThresholdMs
+
+        let thumbnailTimestamps: [UInt64] = [
+            recencyThreshold - 4,
+            recencyThreshold - 2,
+            recencyThreshold + 2,
+            recencyThreshold + 4
+        ]
+        let fullsizeTimestamps: [UInt64] = [
+            recencyThreshold - 3,
+            recencyThreshold - 1,
+            recencyThreshold + 1,
+            recencyThreshold + 3
+        ]
+        for (isThumbnail, timestamps) in [(true, thumbnailTimestamps), (false, fullsizeTimestamps)] {
+            for timestamp in timestamps {
+                var attachmentRecord = Attachment.Record(params: .mockPointer())
+                let (threadRowId, messageRowId) = insertThreadAndInteraction()
+
+                try db.write { tx in
+                    try attachmentRecord.insert(
+                        tx.database
+                    )
+                    let attachment = try Attachment(record: attachmentRecord)
+                    let reference = try insertMessageAttachmentReferenceRecord(
+                        attachmentRowId: attachmentRecord.sqliteId!,
+                        messageRowId: messageRowId,
+                        threadRowId: threadRowId,
+                        timestamp: timestamp,
+                        tx: tx
+                    )
+                    try store.enqueue(
+                        ReferencedAttachment(reference: reference, attachment: attachment),
+                        thumbnail: isThumbnail,
+                        canDownloadFromMediaTier: true,
+                        state: .ready,
+                        currentTimestamp: nowTimestamp,
+                        tx: tx
+                    )
+                }
+            }
+        }
+
+        // Add a bunch of very recent ineligible and done rows
+        // that should be skipped in peek.
+        for i: UInt64 in 1...10 {
             var attachmentRecord = Attachment.Record(params: .mockPointer())
             let (threadRowId, messageRowId) = insertThreadAndInteraction()
-
             try db.write { tx in
                 try attachmentRecord.insert(
                     tx.database
                 )
+                let attachment = try Attachment(record: attachmentRecord)
                 let reference = try insertMessageAttachmentReferenceRecord(
                     attachmentRowId: attachmentRecord.sqliteId!,
                     messageRowId: messageRowId,
                     threadRowId: threadRowId,
-                    timestamp: timestamp,
+                    timestamp: nowTimestamp - i,
                     tx: tx
                 )
-                _ = try store.enqueue(reference, tx: tx)
+                try store.enqueue(
+                    ReferencedAttachment(reference: reference, attachment: attachment),
+                    thumbnail: i % 2 == 0,
+                    canDownloadFromMediaTier: true,
+                    state: i % 3 == 1 ? .ineligible : .done,
+                    currentTimestamp: nowTimestamp,
+                    tx: tx
+                )
             }
         }
 
         try db.read { tx in
             XCTAssertEqual(
-                timestamps.count,
+                thumbnailTimestamps.count + fullsizeTimestamps.count + 10,
                 try QueuedBackupAttachmentDownload.fetchCount(tx.database)
             )
         }
 
-        var dequeuedTimestamps = [UInt64]()
-        try db.write { tx in
-            var lastRecordId = Int64.max
-            let records = try store.peek(
-                count: UInt(timestamps.count - 1),
+        let records = try db.read { tx in
+            try store.peek(
+                count: 7,
+                currentTimestamp: nowTimestamp,
                 tx: tx
             )
-            for record in records {
-                XCTAssert(record.id! < lastRecordId)
-                lastRecordId = record.id!
-                dequeuedTimestamps.append(record.timestamp!)
-            }
         }
 
-        // We should have gotten entries in reverse order to insertion order,
-        // regardless of timestamps.
-        XCTAssertEqual(dequeuedTimestamps, Array(timestamps.reversed().prefix(timestamps.count - 1)))
+        // Should get the 2 recent thumbnails, then 2 recent fullsize,
+        // then 2 old thumbnails, then 1 old fullsize.
+        XCTAssertEqual(records.map(\.isThumbnail), [true, true, false, false, true, true, false])
+        XCTAssertEqual(records.map(\.maxOwnerTimestamp), [
+            thumbnailTimestamps[3],
+            thumbnailTimestamps[2],
+            fullsizeTimestamps[3],
+            fullsizeTimestamps[2],
+            thumbnailTimestamps[1],
+            thumbnailTimestamps[0],
+            fullsizeTimestamps[1],
+        ])
     }
 
     // MARK: - Helpers
