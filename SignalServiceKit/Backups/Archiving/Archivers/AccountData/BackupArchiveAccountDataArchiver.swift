@@ -330,9 +330,9 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             typealias IAPSubscriptionID = BackupSubscriptionManager.IAPSubscriberData.IAPSubscriptionId
             let iapSubscriptionID: IAPSubscriptionID = switch protoIapSubscriberID {
             case .purchaseToken(let value):
-                .purchaseToken(value)
+                    .purchaseToken(value)
             case .originalTransactionID(let value):
-                .originalTransactionId(value)
+                    .originalTransactionId(value)
             }
 
             backupSubscriptionManager.restoreIAPSubscriberData(
@@ -360,9 +360,19 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             // Querying the list endpoint will bring us up to date on the upload status
             // within this "era" otherwise.
             uploadEra = backupSubscriptionManager.getUploadEra(tx: context.tx)
-            backupPlan = .free
+            switch context.backupPurpose {
+            case .remoteBackup:
+                // If this came from a remote backup, assume
+                // backups is enabled and free if not otherwise specified.
+                backupPlan = .free
+            case .deviceTransfer:
+                // Do not assume backups aren't disabled if link'n'syncing.
+                // TODO: [Backups] We probably want to communicate if backups
+                // is disabled or not in link'n'sync.
+                backupPlan = .disabled
+            }
 
-            // TODO[LocalBackups]: if restoring a local backup file don't set remote backup plan.
+            // TODO: [LocalBackups] if restoring a local backup file don't set remote backup plan.
             backupSettingsStore.setBackupPlan(backupPlan, tx: context.tx)
         }
 

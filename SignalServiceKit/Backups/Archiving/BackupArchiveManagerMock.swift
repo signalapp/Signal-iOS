@@ -75,6 +75,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
         backupKey: BackupKey,
+        backupPurpose: MessageBackupPurpose,
         progress: OWSProgressSink?
     ) async throws {
         let source = await progress?.addSource(withLabel: "", unitCount: 1)
@@ -83,6 +84,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
     public func importPlaintextBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
+        backupPurpose: MessageBackupPurpose,
         progress: OWSProgressSink?
     ) async throws {
         let source = await progress?.addSource(withLabel: "", unitCount: 1)

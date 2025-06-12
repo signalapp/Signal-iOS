@@ -874,7 +874,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         case .noteToSelfThread:
             // See comment on skippable update enum case.
             return .skippableInteraction(.directStoryReplyInNoteToSelf)
-        case .contactThread(let contactAddress):
+        case .contactThread:
             break
         }
 

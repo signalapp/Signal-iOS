@@ -12,6 +12,8 @@ extension BackupArchive {
 
         let currentRemoteConfig: RemoteConfig
 
+        let backupPurpose: MessageBackupPurpose
+
         /// Will only be nil if there was no earier AccountData frame to set it, which
         /// should be treated as an error at read time when processing all subsequent frames.
         var backupPlan: BackupPlan?
@@ -23,9 +25,11 @@ extension BackupArchive {
         init(
             startTimestampMs: UInt64,
             currentRemoteConfig: RemoteConfig,
+            backupPurpose: MessageBackupPurpose,
             tx: DBWriteTransaction
         ) {
             self.currentRemoteConfig = currentRemoteConfig
+            self.backupPurpose = backupPurpose
             super.init(
                 startTimestampMs: startTimestampMs,
                 tx: tx

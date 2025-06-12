@@ -52,8 +52,8 @@ public struct BackupSettingsStore {
     }
 
     private enum Keys {
-        static let haveEverBeenEnabled = "haveEverBeenEnabled"
-        static let plan = "plan"
+        static let haveEverBeenEnabled = "haveEverBeenEnabledKey"
+        static let plan = "planKey"
         static let lastBackupDate = "lastBackupDate"
         static let lastBackupSizeBytes = "lastBackupSizeBytes"
         static let backupFrequency = "backupFrequency"

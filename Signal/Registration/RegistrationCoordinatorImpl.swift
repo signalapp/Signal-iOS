@@ -591,6 +591,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 fileUrl: fileUrl,
                 localIdentifiers: identity.localIdentifiers,
                 backupKey: backupKey,
+                backupPurpose: .remoteBackup,
                 progress: nil
             )
             self.inMemoryState.hasRestoredFromLocalMessageBackup = true

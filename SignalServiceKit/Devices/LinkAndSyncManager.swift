@@ -744,6 +744,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 fileUrl: fileUrl,
                 localIdentifiers: localIdentifiers,
                 backupKey: ephemeralBackupKey,
+                // "Device transfer" is libsignal's name for link'n'sync
+                backupPurpose: .deviceTransfer,
                 progress: progress
             )
         } catch {
