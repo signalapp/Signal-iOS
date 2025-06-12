@@ -514,6 +514,51 @@
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "बॅकअप की";
 
+/* Body for a sheet warning users to their 'Backup Key' safe. */
+"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "Signal will not be able to help you restore your backup if you lose your key. Store it somewhere safe and secure, and do not share it with others.";
+
+/* Title for a sheet warning users to their 'Backup Key' safe. */
+"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_TITLE" = "Keep Your Key Safe";
+
+/* Title for a button offering to let users see their 'Backup Key'. */
+"BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "See Key Again";
+
+/* Subtitle for a view asking users to confirm their 'Backup Key'. */
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the backup key you just recorded";
+
+/* Title for a view asking users to confirm their 'Backup Key'. */
+"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Confirm Your Backup Key";
+
+/* Bullet point on a view introducing Backups during an onboarding flow. */
+"BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";
+
+/* Bullet point on a view introducing Backups during an onboarding flow. */
+"BACKUP_ONBOARDING_INTRO_BULLET_2" = "Optional, always";
+
+/* Bullet point on a view introducing Backups during an onboarding flow. */
+"BACKUP_ONBOARDING_INTRO_BULLET_3" = "Delete your backup anytime";
+
+/* Subtitle for a view introducing Backups during an onboarding flow. */
+"BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages and media using Signal's secure, end-to-end encrypted storage service. Never lose a message when you get a new phone or reinstall Signal.";
+
+/* Title for a view introducing Backups during an onboarding flow. */
+"BACKUP_ONBOARDING_INTRO_TITLE" = "Signal Backups";
+
+/* Subtitle for a view introducing the 'Backup Key' during an onboarding flow. */
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your backup key is a 64-digit code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
+
+/* Title for a view introducing the 'Backup Key' during an onboarding flow. */
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Your Backup Key";
+
+/* Title for a button allowing users to copy their 'Backup Key' to the clipboard. */
+"BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Copy to Clipboard";
+
+/* Subtitle for a view allowing users to record their 'Backup Key'. */
+"BACKUP_RECORD_KEY_SUBTITLE" = "This key is required to recover your account and data. Store this key somewhere safe. If you lose it, you won’t be able to recover your account.";
+
+/* Title for a view allowing users to record their 'Backup Key'. */
+"BACKUP_RECORD_KEY_TITLE" = "Record Your Backup Key";
+
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "श्रेणीसुधारणा करा";
 
@@ -2869,6 +2914,12 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "कॉल अयशस्वी झाला";
 
+/* Label explaining that an entered 'Backup Key' is incorrect. */
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Incorrect backup key";
+
+/* Label explaining that an entered 'Backup Key' is malformed. */
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Invalid backup key";
+
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "संदेश अग्रेषित करू शकलो नाही.";
 
@@ -3446,7 +3497,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "फक्त प्रशासकांना संदेश पाठवण्याची अनुमती देण्यासाठी %1$@ ने गट सेटिंग बदलल्या.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you. Contact an admin to be added back to the group.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "ॲडमिन ने आपल्याला काढून टाकले असल्यामुळे आपण ग्रुप लिंकद्वारे या ग्रुपमध्ये सामील होऊ शकत नाही. ग्रूपमध्ये पुन्हा सामील होण्यासाठी एखाद्या ॲडमिन शी संंपर्क साधा.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "गटात सामील होऊ शकत नाही";
@@ -5258,7 +5309,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "बॅकअप पुनर्स्थापित करा";
 
 /* Description for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "आपला शेवटचा बॅकअप %1$@ रोजी %2$@ वाजता घेतला होता. तुमच्याकडे तुमचा जुना डिव्हाईस असेल तर तुम्ही नवीन बॅकअप तयार करू शकता. [कसा ते पाहा](https://signal.org)";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Your last backup was made on %1$@ at %2$@. Your backup size is %3$@";
 
 /* Text for action button to explore other options. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "अधिक पर्याय";
@@ -6359,40 +6410,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "सर्व · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "आपल्या संदेशाला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या संदेशाला दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "आपल्या अल्बमला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या अल्बमला दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "आपल्या ऑडिओला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या ऑडिओला दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "आपल्या संपर्क सामायिकरणावर %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुम्ही शेअर केलेल्या संपर्कावर दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "आपल्या फाइलवर %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या फाईलवर दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "आपल्या GIF ला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या GIF ला दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "आपल्या फोटोला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या फोटोला दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "आपल्या स्टिकरला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या स्टिकरला दिली";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "\"%2$@\" :ला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया \"%2$@\"ला दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "आपल्या व्हिडिओवर %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या व्हिडिओवर दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "आपल्या एकदा-बघा व्हिडिओवर %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या एकदा-बघा मीडियावर दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "आपल्या व्हॉईस संदेशाला %1$@ प्रतिक्रिया दिली";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या व्हॉईस संदेशाला दिली";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "वाचले";
@@ -8258,16 +8309,16 @@
 "STORY_PRIVACY_TITLE" = "स्टोरीची गोपनीयता";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "%1$@ नी आपल्या स्टोरी वर प्रतिक्रिया दिली";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "%1$@ अशी प्रतिक्रिया तुमच्या स्टोरीवर दिली";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "एका स्टोरी वर %1$@ नी प्रतिक्रिया दिली";
+"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "%1$@ अशी प्रतिक्रिया एका स्टोरीवर दिली";
 
 /* quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "एका स्टोरी वर %1$@ नी प्रतिक्रिया दिली";
+"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "%1$@ अशी प्रतिक्रिया एका स्टोरीवर दिली";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ च्या स्टोरीवर %1$@ प्रतिक्रिया दिली";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%1$@ अशी प्रतिक्रिया %2$@च्या स्टोरीवर दिली";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "प्रत्युत्तर द्या";
