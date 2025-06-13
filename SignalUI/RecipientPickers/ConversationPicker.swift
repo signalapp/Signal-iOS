@@ -1474,12 +1474,15 @@ public class ConversationPickerSelection {
             return thread.recipientAddresses(with: transaction).compactMap { $0.serviceId }
         }
 
-        Logger.info("Batch updating identity keys for \(recipients.count) selected recipients.")
-        let identityManager = DependenciesBridge.shared.identityManager
-        identityManager.batchUpdateIdentityKeys(for: recipients).done {
-            Logger.info("Successfully batch updated identity keys.")
-        }.catch { error in
-            owsFailDebug("Failed to batch update identity keys: \(error)")
+        Task {
+            do {
+                Logger.info("Batch updating identity keys for \(recipients.count) recipients")
+                let identityManager = DependenciesBridge.shared.identityManager
+                try await identityManager.batchUpdateIdentityKeys(for: recipients)
+                Logger.info("Successfully batch updated identity keys for \(recipients.count) recipients")
+            } catch {
+                Logger.warn("Failed to batch update identity keys: \(error)")
+            }
         }
     }
 

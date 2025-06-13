@@ -59,7 +59,7 @@ public protocol OWSIdentityManager {
     func clearShouldSharePhoneNumber(with recipient: Aci, tx: DBWriteTransaction)
     func clearShouldSharePhoneNumberForEveryone(tx: DBWriteTransaction)
 
-    func batchUpdateIdentityKeys(for serviceIds: [ServiceId]) -> Promise<Void>
+    func batchUpdateIdentityKeys(for serviceIds: [ServiceId]) async throws
 }
 
 extension OWSIdentityManager {
@@ -996,15 +996,15 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     // MARK: - Batch Identity Lookup
 
-    public func batchUpdateIdentityKeys(for serviceIds: [ServiceId]) -> Promise<Void> {
-        if serviceIds.isEmpty { return .value(()) }
+    public func batchUpdateIdentityKeys(for serviceIds: [ServiceId]) async throws {
+        let serviceIds = Array(Set(serviceIds))
+        var remainingServiceIds = serviceIds[...]
 
-        let serviceIds = Set(serviceIds)
-        let batchServiceIds = serviceIds.prefix(OWSRequestFactory.batchIdentityCheckElementsLimit)
-        let remainingServiceIds = Array(serviceIds.subtracting(batchServiceIds))
+        while !remainingServiceIds.isEmpty {
+            let batchServiceIds = remainingServiceIds.prefix(OWSRequestFactory.batchIdentityCheckElementsLimit)
+            remainingServiceIds = remainingServiceIds.dropFirst(OWSRequestFactory.batchIdentityCheckElementsLimit)
 
-        return firstly(on: schedulers.global()) { () -> Promise<HTTPResponse> in
-            Logger.info("Performing batch identity key lookup for \(batchServiceIds.count) addresses. \(remainingServiceIds.count) remaining.")
+            Logger.info("Performing batch identity key lookup for \(batchServiceIds.count) recipients. \(remainingServiceIds.count) remaining.")
 
             let elements = self.db.read { tx in
                 batchServiceIds.compactMap { serviceId -> [String: String]? in
@@ -1019,8 +1019,8 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
             let request = OWSRequestFactory.batchIdentityCheckRequest(elements: elements)
 
-            return self.networkManager.makePromise(request: request)
-        }.done(on: schedulers.global()) { response in
+            let response = try await self.networkManager.asyncRequest(request)
+
             guard response.responseStatusCode == 200 else {
                 throw OWSAssertionError("Unexpected response from batch identity request \(response.responseStatusCode)")
             }
@@ -1030,12 +1030,12 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             }
 
             guard let responseElements = responseDictionary["elements"] as? [[String: String]], !responseElements.isEmpty else {
-                return // No safety number changes
+                continue // No safety number changes
             }
 
             Logger.info("Detected \(responseElements.count) identity key changes via batch request")
 
-            self.db.write { tx in
+            await self.db.awaitableWrite { tx in
                 for element in responseElements {
                     guard
                         let serviceIdString = element["uuid"],
@@ -1057,10 +1057,6 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                     self.saveIdentityKey(identityKey, for: serviceId, tx: tx)
                 }
             }
-        }.then { () -> Promise<Void> in
-            return self.batchUpdateIdentityKeys(for: remainingServiceIds)
-        }.catch { error in
-            owsFailDebug("Batch identity key update failed with error \(error)")
         }
     }
 }

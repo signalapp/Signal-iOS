@@ -83,7 +83,7 @@ open class MockIdentityManager: OWSIdentityManager {
     open func setShouldSharePhoneNumber(with recipient: Aci, tx: DBWriteTransaction) { fatalError() }
     open func clearShouldSharePhoneNumber(with recipient: Aci, tx: DBWriteTransaction) { fatalError() }
     open func clearShouldSharePhoneNumberForEveryone(tx: DBWriteTransaction) { fatalError() }
-    open func batchUpdateIdentityKeys(for serviceIds: [ServiceId]) -> Promise<Void> { fatalError() }
+    open func batchUpdateIdentityKeys(for serviceIds: [ServiceId]) async throws { fatalError() }
 }
 
 #endif
