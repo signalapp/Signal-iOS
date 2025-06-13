@@ -198,11 +198,16 @@ public class OWSChatConnection {
         )
     }
 
-    private func waitForOpen(timeout: TimeInterval) async {
-        _ = try? await withCooperativeTimeout(
-            seconds: timeout,
-            operation: { try await self.waitForOpen() }
-        )
+    /// Only throws on cancellation or after timeout.
+    private func waitForOpen(timeout: TimeInterval) async throws {
+        do {
+            _ = try await withCooperativeTimeout(
+                seconds: timeout,
+                operation: { try await self.waitForOpen() }
+            )
+        } catch is CooperativeTimeoutError {
+            throw OWSHTTPError.networkFailure(.genericFailure)
+        }
     }
 
     func waitForDisconnectIfClosed() async {
@@ -512,8 +517,7 @@ public class OWSChatConnection {
                 }
             }
 
-            // After 30 seconds, we try anyways. We'll probably fail.
-            await waitForOpen(timeout: 30)
+            try await waitForOpen(timeout: 30)
 
             Logger.info("Sending… -> \(requestDescription)")
 
@@ -536,7 +540,7 @@ public class OWSChatConnection {
         }
     }
 
-    fileprivate func makeRequestInternal(_ request: TSRequest, requestId: UInt64) async throws(OWSHTTPError) -> any HTTPResponse {
+    fileprivate func makeRequestInternal(_ request: TSRequest, requestId: UInt64) async throws -> any HTTPResponse {
         owsFail("must be using a concrete subclass")
     }
 
@@ -765,7 +769,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
         "[\(type): libsignal]"
     }
 
-    fileprivate override func makeRequestInternal(_ request: TSRequest, requestId: UInt64) async throws(OWSHTTPError) -> any HTTPResponse {
+    fileprivate override func makeRequestInternal(_ request: TSRequest, requestId: UInt64) async throws -> any HTTPResponse {
         var httpHeaders = request.headers
         httpHeaders.addDefaultHeaders()
         request.applyAuth(to: &httpHeaders, willSendViaWebSocket: true)
@@ -780,7 +784,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                 body = try TSRequest.Body.encodedParameters(bodyParameters)
             } catch {
                 owsFailDebug("[\(requestId)]: \(error).")
-                throw .invalidRequest
+                throw OWSHTTPError.invalidRequest
             }
 
             // If we're going to use the json serialized parameters as our body, we should overwrite
@@ -794,7 +798,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
         owsAssertDebug(!requestUrl.path.hasPrefix("/"))
 
         guard let httpMethod = request.method.nilIfEmpty else {
-            throw .invalidRequest
+            throw OWSHTTPError.invalidRequest
         }
 
         let libsignalRequest = ChatConnection.Request(method: httpMethod, pathAndQuery: "/\(requestUrl.relativeString)", headers: httpHeaders.headers, body: body, timeout: request.timeoutInterval)
@@ -802,7 +806,20 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
         let connection = await withCheckedContinuation { continuation in
             self.serialQueue.async { continuation.resume(returning: self.connection) }
         }
-        let chatService = await connection.waitToFinishConnecting()
+
+        // There is a race condition where we cycle the socket between
+        // `waitForOpen` returning (see caller) and the code that runs here. If we
+        // win the race, the request we send will be almost immediately canceled.
+        // If we lose the race, we won't send the request at all. These outcomes
+        // are essentially equivalent, and it's not necessary to support this race
+        // condition where the socket cycles immediately after it opens.
+        let chatService: Connection?
+        switch connection {
+        case .closed(task: _), .connecting(token: _, task: _):
+            chatService = nil
+        case .open(let _chatService):
+            chatService = _chatService
+        }
 
         let connectionInfo: ConnectionInfo
         let response: ChatConnection.Response
@@ -814,8 +831,8 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
             connectionInfo = chatService.info()
             response = try await chatService.send(libsignalRequest)
         } catch {
-            switch error as? SignalError {
-            case .connectionTimeoutError(_), .requestTimeoutError(_):
+            switch error {
+            case SignalError.connectionTimeoutError(_), SignalError.requestTimeoutError(_):
                 // cycleSocket(), but only if the chatService we just used is the one that's still connected.
                 self.serialQueue.async { [weak chatService] in
                     if let chatService, self.connection.isActive(chatService) {
@@ -823,12 +840,14 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                     }
                 }
                 applyDesiredSocketState()
-                throw .networkFailure(.genericTimeout)
-            case .webSocketError(_), .connectionFailed(_):
-                throw .networkFailure(.genericFailure)
+                throw OWSHTTPError.networkFailure(.genericTimeout)
+            case SignalError.webSocketError(_), SignalError.connectionFailed(_):
+                throw OWSHTTPError.networkFailure(.genericFailure)
+            case is CancellationError:
+                throw error
             default:
                 owsFailDebug("[\(requestId)] failed with an unexpected error: \(error)")
-                throw .networkFailure(.genericFailure)
+                throw OWSHTTPError.networkFailure(.genericFailure)
             }
         }
 
