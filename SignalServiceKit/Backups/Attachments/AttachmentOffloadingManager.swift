@@ -12,7 +12,7 @@ extension Attachment {
 
     /// How long we keep attachment files locally after viewing them when "optimize local storage"
     /// is enabled.
-    private static let offloadingViewThresholdMs: UInt64 = .dayInMs
+    private static let offloadingViewThresholdMs: UInt64 = .dayInMs * 7
 
     /// Returns true if the given attachment should be offloaded (have its local file(s) deleted)
     /// because it has met the criteria to be stored exclusively in the backup media tier.
