@@ -64,8 +64,18 @@ public enum RegistrationStep: Equatable {
 
     // MARK: - Post-Registration
 
+    /// The path taken to get to the restore options screen
+    public enum RestorePath {
+        /// Restore backup, transfer from old device, small skip button
+        case quickRestore
+        /// Restore backup, prominent skip button
+        case manualRestore
+        /// Transfer from device, restore backup, prominent skip button
+        case unspecified
+    }
+
     /// Prompt the user to choose from the available restore methods
-    case chooseRestoreMethod
+    case chooseRestoreMethod(RestorePath)
 
     /// Prompt the user to confirm restoring from backup
     case confirmRestoreFromBackup(RegistrationRestoreFromBackupConfirmationState)

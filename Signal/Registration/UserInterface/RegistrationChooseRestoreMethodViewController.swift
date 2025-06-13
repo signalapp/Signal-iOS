@@ -21,9 +21,14 @@ public enum RegistrationRestoreMethod {
 class RegistrationChooseRestoreMethodViewController: OWSViewController {
 
     private weak var presenter: RegistrationChooseRestoreMethodPresenter?
+    private let restorePath: RegistrationStep.RestorePath
 
-    public init(presenter: RegistrationChooseRestoreMethodPresenter) {
+    public init(
+        presenter: RegistrationChooseRestoreMethodPresenter,
+        restorePath: RegistrationStep.RestorePath
+    ) {
         self.presenter = presenter
+        self.restorePath = restorePath
         super.init()
     }
 
@@ -88,7 +93,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         selector: #selector(didSelectDeviceTransfer)
     )
 
-    private lazy var skipRestoreButton = choiceButton(
+    private lazy var prominentSkipRestoreButton = choiceButton(
         title: OWSLocalizedString(
             "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE",
             comment: "The title for the skip restore 'choice' option"
@@ -100,6 +105,19 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         iconName: Theme.iconName(.register),
         selector: #selector(didSkipRestore)
     )
+
+    private lazy var smallSkipRestoreButton: UIButton = {
+        var config = UIButton.Configuration.plain()
+        config.title = OWSLocalizedString(
+            "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE",
+            comment: "The title for a less-prominent skip restore 'choice' option"
+        )
+        config.baseForegroundColor = UIColor.Signal.accent
+        config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBody.semibold())
+        return UIButton(configuration: config, primaryAction: UIAction { [weak self] _ in
+            self?.didSkipRestore()
+        })
+    }()
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -118,18 +136,33 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         view.addSubview(scrollView)
         scrollView.autoPinEdgesToSuperviewEdges()
 
-        // TODO: [Backups]: Check for list of available restore options
-        // and build list based on that.
-        // This should also check if this is a QuickRestore or not
-        // to change the position of the 'Skip Restore' button
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
             explanationLabel,
-            transferButton,
-            restoreFromBackupButton,
-            skipRestoreButton,
-            UIView.vStretchingSpacer()
         ])
+        switch self.restorePath {
+        case .quickRestore:
+            stackView.addArrangedSubviews([
+                restoreFromBackupButton,
+                transferButton,
+            ])
+
+            view.addSubview(smallSkipRestoreButton)
+            smallSkipRestoreButton.autoHCenterInSuperview()
+            smallSkipRestoreButton.autoPinBottomToSuperviewMargin(withInset: 14)
+        case .manualRestore:
+            stackView.addArrangedSubviews([
+                restoreFromBackupButton,
+                prominentSkipRestoreButton,
+            ])
+        case .unspecified:
+            stackView.addArrangedSubviews([
+                transferButton,
+                restoreFromBackupButton,
+                prominentSkipRestoreButton,
+            ])
+        }
+        stackView.addArrangedSubviews([])
         stackView.axis = .vertical
         stackView.distribution = .fill
         stackView.spacing = 16
@@ -207,10 +240,34 @@ private class PreviewRegistrationChooseRestoreMethodPresenter: RegistrationChoos
 
 // Need to hold a reference to this since it's held weakly by the VC
 private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
+
 @available(iOS 17, *)
-#Preview {
+#Preview("Quick Restore") {
     OWSNavigationController(
-        rootViewController: RegistrationChooseRestoreMethodViewController(presenter: presenter)
+        rootViewController: RegistrationChooseRestoreMethodViewController(
+            presenter: presenter,
+            restorePath: .quickRestore,
+        )
+    )
+}
+
+@available(iOS 17, *)
+#Preview("Manual Restore") {
+    OWSNavigationController(
+        rootViewController: RegistrationChooseRestoreMethodViewController(
+            presenter: presenter,
+            restorePath: .manualRestore,
+        )
+    )
+}
+
+@available(iOS 17, *)
+#Preview("Unspecified") {
+    OWSNavigationController(
+        rootViewController: RegistrationChooseRestoreMethodViewController(
+            presenter: presenter,
+            restorePath: .unspecified,
+        )
     )
 }
 #endif

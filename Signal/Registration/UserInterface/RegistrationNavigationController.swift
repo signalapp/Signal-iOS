@@ -325,11 +325,14 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
-        case .chooseRestoreMethod:
+        case .chooseRestoreMethod(let restorePath):
             return Controller(
                 type: RegistrationChooseRestoreMethodViewController.self,
                 make: { presenter in
-                    return RegistrationChooseRestoreMethodViewController(presenter: presenter)
+                    return RegistrationChooseRestoreMethodViewController(
+                        presenter: presenter,
+                        restorePath: restorePath,
+                    )
                 },
                 update: nil
             )

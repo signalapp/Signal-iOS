@@ -1605,7 +1605,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     lastBackupSizeBytes: registrationMessage.backupSizeBytes.map(UInt.init)
                 )))
         } else {
-            return .value(.chooseRestoreMethod)
+            return .value(.chooseRestoreMethod(.quickRestore))
         }
     }
 
@@ -1614,7 +1614,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .manualRestore = persistedState.restoreMode,
             inMemoryState.restoreMethod == nil
         {
-            return .value(.chooseRestoreMethod)
+            return .value(.chooseRestoreMethod(.manualRestore))
         }
 
         // We need a phone number to proceed; ask the user if unavailable.
@@ -1659,7 +1659,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
             if deps.featureFlags.backupFileAlphaRegistrationFlow {
-                return .value(.chooseRestoreMethod)
+                return .value(.chooseRestoreMethod(.unspecified))
             } else {
                 return .value(.transferSelection)
             }
@@ -2165,7 +2165,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
             if deps.featureFlags.backupFileAlphaRegistrationFlow {
-                return .value(.chooseRestoreMethod)
+                return .value(.chooseRestoreMethod(.unspecified))
             } else {
                 return .value(.transferSelection)
             }
@@ -2490,7 +2490,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .deviceTransferPossible:
             inMemoryState.needsToAskForDeviceTransfer = true
             if deps.featureFlags.backupFileAlphaRegistrationFlow {
-                return .value(.chooseRestoreMethod)
+                return .value(.chooseRestoreMethod(.unspecified))
             } else {
                 return .value(.transferSelection)
             }
