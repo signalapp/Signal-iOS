@@ -362,23 +362,6 @@ public class MessageSender {
         return true
     }
 
-    // MARK: - Sending Attachments
-
-    public func sendTransientContactSyncAttachment(
-        dataSource: DataSource,
-        localThread: TSContactThread
-    ) async throws {
-        let uploadResult = try await DependenciesBridge.shared.attachmentUploadManager.uploadTransientAttachment(
-            dataSource: dataSource
-        )
-        let message = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return OWSSyncContactsMessage(uploadedAttachment: uploadResult, localThread: localThread, tx: tx)
-        }
-        let preparedMessage = PreparedOutgoingMessage.preprepared(contactSyncMessage: message)
-        let result = await Result { try await sendMessage(preparedMessage) }
-        try result.get()
-    }
-
     // MARK: - Constructing Message Sends
 
     public func sendMessage(_ preparedOutgoingMessage: PreparedOutgoingMessage) async throws {

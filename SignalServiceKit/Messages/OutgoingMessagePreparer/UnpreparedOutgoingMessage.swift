@@ -63,12 +63,6 @@ public class UnpreparedOutgoingMessage {
         )))
     }
 
-    public static func forContactSync(
-        _ contactSyncMessage: OWSSyncContactsMessage
-    ) -> UnpreparedOutgoingMessage {
-        return .init(messageType: .contactSync(contactSyncMessage))
-    }
-
     public static func forOutgoingStoryMessage(
         _ message: OutgoingStoryMessage,
         storyMessageRowId: Int64
@@ -97,8 +91,6 @@ public class UnpreparedOutgoingMessage {
             return message.edits.timestamp.unwrapChange(
                 orKeepValue: message.targetMessage.timestamp
             )
-        case .contactSync(let message):
-            return message.timestamp
         case .story(let story):
             return story.message.timestamp
         case .transient(let message):
@@ -116,17 +108,14 @@ public class UnpreparedOutgoingMessage {
         /// An edit for an existing message; persisted to the Interaction table, but as an edit.
         case editMessage(EditMessage)
 
-        /// A contact sync message that is not inserted into the Interactions table.
-        /// It has an attachment, but that attachment is never persisted as an Attachment
-        /// in the database; it is simply in memory and already uploaded.
-        case contactSync(OWSSyncContactsMessage)
-
         /// An OutgoingStoryMessage: a TSMessage subclass we use for sending a ``StoryMessage``
         /// The StoryMessage is persisted to the StoryMessages table and is the owner for any attachments;
         /// the OutgoingStoryMessage is _not_ persisted to the Interactions table.
         case story(Story)
 
-        /// Catch-all for messages not persisted to the Interactions table. NOT allowed to have attachments.
+        /// Catch-all for messages not persisted to the Interactions table. The
+        /// MessageSender will not upload any attachments contained within these
+        /// messages; callers are responsible for uploading them.
         case transient(TSOutgoingMessage)
 
         struct Persistable {
@@ -175,8 +164,6 @@ public class UnpreparedOutgoingMessage {
             }
         case .editMessage(let message):
             preparedMessageType = try prepareEditMessage(message, tx: tx)
-        case .contactSync(let message):
-            preparedMessageType = prepareContactSyncMessage(message)
         case .story(let story):
             preparedMessageType = prepareStoryMessage(story)
         case .transient(let message):
@@ -374,12 +361,6 @@ public class UnpreparedOutgoingMessage {
         ))
     }
 
-    private func prepareContactSyncMessage(
-        _ message: OWSSyncContactsMessage
-    ) -> PreparedOutgoingMessage.MessageType {
-        return .contactSync(message)
-    }
-
     private func prepareStoryMessage(
         _ story: MessageType.Story
     ) -> PreparedOutgoingMessage.MessageType {
@@ -398,7 +379,7 @@ public class UnpreparedOutgoingMessage {
 
     internal static func assertIsAllowedTransientMessage(_ message: TSOutgoingMessage) {
         owsAssertDebug(
-            message.shouldBeSaved.negated
+            !message.shouldBeSaved
             && !(message is OWSSyncContactsMessage)
             && !(message is OutgoingStoryMessage)
             && !(message is OutgoingEditMessage),

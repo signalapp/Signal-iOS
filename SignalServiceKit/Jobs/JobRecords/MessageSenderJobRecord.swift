@@ -149,9 +149,8 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         isHighPriority: Bool
     ) {
         owsPrecondition(
-            transientMessage.shouldBeSaved.negated
-            && !(transientMessage is OutgoingStoryMessage)
-            && !(transientMessage is OWSSyncContactsMessage),
+            !transientMessage.shouldBeSaved
+            && !(transientMessage is OutgoingStoryMessage),
             "Invalid transient message type!"
         )
         let messageType = MessageType.transient(transientMessage)

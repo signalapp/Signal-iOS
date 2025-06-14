@@ -44,8 +44,7 @@ public class PreparedOutgoingMessage {
     public static func preprepared(
         contactSyncMessage: OWSSyncContactsMessage
     ) -> PreparedOutgoingMessage {
-        let messageType = MessageType.contactSync(contactSyncMessage)
-        return PreparedOutgoingMessage(messageType: messageType)
+        return _preprepared(transientMessage: contactSyncMessage)
     }
 
     /// Use this _only_ to "prepare" messages that are:
@@ -57,7 +56,17 @@ public class PreparedOutgoingMessage {
         transientMessageWithoutAttachments: TSOutgoingMessage
     ) -> PreparedOutgoingMessage {
         UnpreparedOutgoingMessage.assertIsAllowedTransientMessage(transientMessageWithoutAttachments)
-        let messageType = MessageType.transient(transientMessageWithoutAttachments)
+        return _preprepared(transientMessage: transientMessageWithoutAttachments)
+    }
+
+    /// Use this _only_ to "prepare" messages that are:
+    /// (1) not saved to the interactions table
+    /// (2) don't have any attachments that need to be uploaded
+    /// Instantly prepares because...these messages don't need any preparing.
+    private static func _preprepared(
+        transientMessage: TSOutgoingMessage
+    ) -> PreparedOutgoingMessage {
+        let messageType = MessageType.transient(transientMessage)
         return PreparedOutgoingMessage(messageType: messageType)
     }
 
@@ -117,17 +126,14 @@ public class PreparedOutgoingMessage {
         /// An edit for an existing message; the original is (already was) persisted to the Interaction table, but is now edited.
         case editMessage(EditMessage)
 
-        /// A contact sync message that is not inserted into the Interactions table.
-        /// It has an attachment, but that attachment is never persisted as an Attachment
-        /// in the database; it is simply in memory and already uploaded.
-        case contactSync(OWSSyncContactsMessage)
-
         /// An OutgoingStoryMessage: a TSMessage subclass we use for sending a ``StoryMessage``
         /// The StoryMessage is persisted to the StoryMessages table and is the owner for any attachments;
         /// the OutgoingStoryMessage is _not_ persisted to the Interactions table.
         case story(Story)
 
-        /// Catch-all for messages not persisted to the Interactions table. NOT allowed to have attachments.
+        /// Catch-all for messages not persisted to the Interactions table. The
+        /// MessageSender will not upload any attachments contained within these
+        /// messages; callers are responsible for uploading them.
         case transient(TSOutgoingMessage)
 
         public struct Persisted {
@@ -171,9 +177,6 @@ public class PreparedOutgoingMessage {
                 forMessageWithRowId: editMessage.editedMessageRowId,
                 tx: tx
             ).map(\.attachmentRowId)
-        case .contactSync:
-            // These are pre-uploaded.
-            return []
         case .story(let story):
             guard let storyMessage = StoryMessage.anyFetch(uniqueId: story.message.storyMessageId, transaction: tx) else {
                 return []
@@ -206,7 +209,7 @@ public class PreparedOutgoingMessage {
         case .editMessage, .story:
             // Always have renderable content; send at normal priority.
             return true
-        case .transient, .contactSync:
+        case .transient:
             return false
         }
     }
@@ -225,8 +228,6 @@ public class PreparedOutgoingMessage {
         case .editMessage(let editMessage):
             // Edited messages were always renderable.
             return editMessage.editedMessage
-        case .contactSync:
-            return nil
         case .story:
             // We don't donate story message intents.
             return nil
@@ -282,8 +283,6 @@ public class PreparedOutgoingMessage {
             return try .init(persistedMessage: persisted, isHighPriority: isHighPriority, transaction: tx)
         case .editMessage(let edit):
             return try .init(editMessage: edit, isHighPriority: isHighPriority, transaction: tx)
-        case .contactSync:
-            throw OWSAssertionError("Cannot create a job record for contact syncs; they can't be persisted!")
         case .story(let story):
             return .init(storyMessage: story, isHighPriority: isHighPriority)
         case .transient(let message):
@@ -304,14 +303,12 @@ public class PreparedOutgoingMessage {
     private init(messageType: MessageType) {
         self.messageType = messageType
 
-        let body: String? = {
+        let body = { () -> String? in
             switch messageType {
             case .persisted(let message):
                 return message.message.body
             case .editMessage(let message):
                 return message.editedMessage.body
-            case .contactSync:
-                return nil
             case .story:
                 return nil
             case .transient(let message):
@@ -332,8 +329,6 @@ public class PreparedOutgoingMessage {
             return message.message
         case .editMessage(let message):
             return message.messageForSending
-        case .contactSync(let message):
-            return message
         case .story(let storyMessage):
             return storyMessage.message
         case .transient(let message):
@@ -350,8 +345,6 @@ public class PreparedOutgoingMessage {
         case .editMessage(let message):
             // We update the send state on the _original_ edited message.
             return message.editedMessage
-        case .contactSync(let message):
-            return message
         case .story(let storyMessage):
             return storyMessage.message
         case .transient(let message):
@@ -374,7 +367,7 @@ extension Array where Element == PreparedOutgoingMessage {
         var storyMessages = [PreparedOutgoingMessage]()
         for preparedMessage in self {
             switch preparedMessage.messageType {
-            case .persisted, .editMessage, .contactSync, .transient:
+            case .persisted, .editMessage, .transient:
                 return preparedMessage.attachmentIdsForUpload(tx: tx)
             case .story:
                 storyMessages.append(preparedMessage)
@@ -398,30 +391,5 @@ extension PreparedOutgoingMessage: CustomStringConvertible {
 extension PreparedOutgoingMessage: Equatable {
     public static func == (lhs: PreparedOutgoingMessage, rhs: PreparedOutgoingMessage) -> Bool {
         return lhs.messageForSending.uniqueId == rhs.messageForSending.uniqueId
-    }
-}
-
-// TODO: remove these methods when we remove multisend; they need to exposed only
-// for that use case.
-extension PreparedOutgoingMessage {
-
-    public static func preprepared(
-        forMultisendOf message: TSOutgoingMessage,
-        messageRowId: Int64
-    ) -> PreparedOutgoingMessage {
-        let messageType = MessageType.persisted(MessageType.Persisted(
-            rowId: messageRowId,
-            message: message
-        ))
-        return PreparedOutgoingMessage(messageType: messageType)
-    }
-
-    public var storyMessage: OutgoingStoryMessage? {
-        switch messageType {
-        case .persisted, .editMessage, .contactSync, .transient:
-            return nil
-        case .story(let storyMessage):
-            return storyMessage.message
-        }
     }
 }

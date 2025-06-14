@@ -23,13 +23,6 @@ class FakeMessageSender: MessageSender {
         }
         if let stubbedFailingError = stubbedFailingErrors.removeFirst() { throw stubbedFailingError }
     }
-
-    override func sendTransientContactSyncAttachment(
-        dataSource: DataSource,
-        localThread: TSContactThread
-    ) async throws {
-        if let stubbedFailingError = stubbedFailingErrors.removeFirst() { throw stubbedFailingError }
-    }
 }
 
 #endif

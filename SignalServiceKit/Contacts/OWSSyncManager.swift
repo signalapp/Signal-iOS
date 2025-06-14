@@ -499,7 +499,21 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
         let dataSource = try DataSourcePath(fileUrl: result.syncFileUrl, shouldDeleteOnDeallocation: true)
 
-        try await SSKEnvironment.shared.messageSenderRef.sendTransientContactSyncAttachment(dataSource: dataSource, localThread: thread)
+        let uploadResult = try await DependenciesBridge.shared.attachmentUploadManager.uploadTransientAttachment(dataSource: dataSource)
+        let message = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return OWSSyncContactsMessage(uploadedAttachment: uploadResult, localThread: thread, tx: tx)
+        }
+
+        let preparedMessage = PreparedOutgoingMessage.preprepared(contactSyncMessage: message)
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            return SSKEnvironment.shared.messageSenderJobQueueRef.add(
+                .promise,
+                message: preparedMessage,
+                limitToCurrentProcessLifetime: true,
+                transaction: tx,
+            )
+        }.awaitable()
+
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             Self.keyValueStore.setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx)
             self.clearFullSyncRequestId(ifMatches: result.fullSyncRequestId, tx: tx)

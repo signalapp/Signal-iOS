@@ -18,6 +18,10 @@ public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
         super.init(localThread: localThread, transaction: tx)
     }
 
+    public override func encode(with coder: NSCoder!) {
+        owsFail("Doesn't support serialization.")
+    }
+
     required init?(coder: NSCoder) {
         // Doesn't support serialization.
         return nil
