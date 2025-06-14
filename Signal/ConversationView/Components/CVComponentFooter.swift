@@ -52,6 +52,9 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     public var timestampText: String {
         footerState.timestampText
     }
+    public var footerAccessibilityLabel: String? {
+        footerState.accessibilityLabel
+    }
     private var statusIndicator: StatusIndicator? {
         footerState.statusIndicator
     }
