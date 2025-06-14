@@ -213,8 +213,15 @@ public class MessageSenderJobQueue {
     private struct State {
         var isLoaded = false
         var pendingJobs = [Job]()
+        var isTransferringPendingJobs = false
         var queueStates = [QueueKey: QueueState]()
         var jobFutures = [String: Future<Void>]()
+
+        /// Resumed when `isDone` is true.
+        var onDone = [NSObject: Monitor.Continuation]()
+        var isDone: Bool {
+            return isLoaded && pendingJobs.isEmpty && !isTransferringPendingJobs && queueStates.isEmpty
+        }
     }
 
     private struct QueueKey: Hashable {
@@ -269,7 +276,13 @@ public class MessageSenderJobQueue {
                     $0.pendingJobs = []
                     return result
                 }
+                $0.isTransferringPendingJobs = true
                 return []
+            }
+            defer {
+                self.updateStateAndNotify {
+                    $0.isTransferringPendingJobs = false
+                }
             }
             if !pendingJobs.isEmpty {
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
@@ -354,7 +367,7 @@ public class MessageSenderJobQueue {
             }
 
             // No matter what, mark it as loaded. This keeps things semi-functional.
-            self.state.update { $0.isLoaded = true }
+            self.updateStateAndNotify { $0.isLoaded = true }
             startPendingJobRecordsIfPossible()
         }
     }
@@ -370,7 +383,7 @@ public class MessageSenderJobQueue {
     }
 
     private func startNextJobIfNeeded(queueKey: QueueKey) {
-        self.state.update {
+        self.updateStateAndNotify {
             var queueState = $0.queueStates[queueKey, default: QueueState()]
 
             // If nothing is running, start *any* operation that needs to be started.
@@ -473,5 +486,24 @@ public class MessageSenderJobQueue {
                 )
             }
         }
+    }
+
+    // MARK: - Notifications
+
+    private let doneCondition = Monitor.Condition<State>(
+        isSatisfied: \.isDone,
+        waiters: \.onDone,
+    )
+
+    private func updateStateAndNotify<T>(_ block: (inout State) -> T) -> T {
+        return Monitor.updateAndNotify(
+            in: state,
+            block: block,
+            conditions: doneCondition,
+        )
+    }
+
+    public func waitUntilDone() async throws(CancellationError) {
+        return try await Monitor.waitForCondition(doneCondition, in: state)
     }
 }

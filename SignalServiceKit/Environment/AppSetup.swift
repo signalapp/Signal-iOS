@@ -1350,7 +1350,7 @@ public class AppSetup {
             groupMessageProcessorManager: groupMessageProcessorManager,
             messageFetcherJob: messageFetcherJob,
             messageProcessor: messageProcessor,
-            messageSender: messageSender,
+            messageSenderJobQueue: messageSenderJobQueue,
             receiptSender: receiptSender,
         )
 

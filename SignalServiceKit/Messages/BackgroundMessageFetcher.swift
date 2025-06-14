@@ -10,7 +10,7 @@ public struct BackgroundMessageFetcherFactory {
     private let groupMessageProcessorManager: GroupMessageProcessorManager
     private let messageFetcherJob: MessageFetcherJob
     private let messageProcessor: MessageProcessor
-    private let messageSender: MessageSender
+    private let messageSenderJobQueue: MessageSenderJobQueue
     private let receiptSender: ReceiptSender
 
     public init(
@@ -18,14 +18,14 @@ public struct BackgroundMessageFetcherFactory {
         groupMessageProcessorManager: GroupMessageProcessorManager,
         messageFetcherJob: MessageFetcherJob,
         messageProcessor: MessageProcessor,
-        messageSender: MessageSender,
+        messageSenderJobQueue: MessageSenderJobQueue,
         receiptSender: ReceiptSender,
     ) {
         self.chatConnectionManager = chatConnectionManager
         self.groupMessageProcessorManager = groupMessageProcessorManager
         self.messageFetcherJob = messageFetcherJob
         self.messageProcessor = messageProcessor
-        self.messageSender = messageSender
+        self.messageSenderJobQueue = messageSenderJobQueue
         self.receiptSender = receiptSender
     }
 
@@ -35,7 +35,7 @@ public struct BackgroundMessageFetcherFactory {
             groupMessageProcessorManager: self.groupMessageProcessorManager,
             messageFetcherJob: self.messageFetcherJob,
             messageProcessor: self.messageProcessor,
-            messageSender: self.messageSender,
+            messageSenderJobQueue: self.messageSenderJobQueue,
             receiptSender: self.receiptSender,
             useWebSocket: useWebSocket,
         )
@@ -47,7 +47,7 @@ public actor BackgroundMessageFetcher {
     private let groupMessageProcessorManager: GroupMessageProcessorManager
     private let messageFetcherJob: MessageFetcherJob
     private let messageProcessor: MessageProcessor
-    private let messageSender: MessageSender
+    private let messageSenderJobQueue: MessageSenderJobQueue
     private let receiptSender: ReceiptSender
     private let useWebSocket: Bool
 
@@ -56,7 +56,7 @@ public actor BackgroundMessageFetcher {
         groupMessageProcessorManager: GroupMessageProcessorManager,
         messageFetcherJob: MessageFetcherJob,
         messageProcessor: MessageProcessor,
-        messageSender: MessageSender,
+        messageSenderJobQueue: MessageSenderJobQueue,
         receiptSender: ReceiptSender,
         useWebSocket: Bool,
     ) {
@@ -64,7 +64,7 @@ public actor BackgroundMessageFetcher {
         self.groupMessageProcessorManager = groupMessageProcessorManager
         self.messageFetcherJob = messageFetcherJob
         self.messageProcessor = messageProcessor
-        self.messageSender = messageSender
+        self.messageSenderJobQueue = messageSenderJobQueue
         self.receiptSender = receiptSender
         self.useWebSocket = useWebSocket
     }
@@ -130,7 +130,7 @@ public actor BackgroundMessageFetcher {
             // Wait until all outgoing receipt sends are complete.
             async let pendingReceipts: Void = self.receiptSender.waitForPendingReceipts()
             // Wait until all outgoing messages are sent.
-            async let pendingMessages: Void = self.messageSender.waitForPendingMessages()
+            async let pendingMessages: Void = self.messageSenderJobQueue.waitUntilDone()
             // Wait until all sync requests are fulfilled.
             async let pendingOps: Void = MessageReceiver.waitForPendingTasks()
 

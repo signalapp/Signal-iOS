@@ -41,12 +41,6 @@ public class MessageSender {
         SwiftSingletons.register(self)
     }
 
-    private let pendingTasks = PendingTasks()
-
-    public func waitForPendingMessages() async throws {
-        try await pendingTasks.waitForPendingTasks()
-    }
-
     // MARK: - Creating Signal Protocol Sessions
 
     private func containsValidSession(for serviceId: ServiceId, deviceId: DeviceId, tx: DBReadTransaction) throws -> Bool {
@@ -378,10 +372,6 @@ public class MessageSender {
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             preparedOutgoingMessage.updateAllUnsentRecipientsAsSending(tx: tx)
         }
-
-        // We create a PendingTask so we can block on flushing all current message sends.
-        let pendingTask = pendingTasks.buildPendingTask()
-        defer { pendingTask.complete() }
 
         try await withThrowingTaskGroup(of: Void.self) { taskGroup in
             let uploadOperations = SSKEnvironment.shared.databaseStorageRef.read { tx in
