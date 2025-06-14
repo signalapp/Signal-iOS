@@ -133,7 +133,7 @@ public class OWSChatConnection {
 
     private struct StateObservation {
         var currentState: OWSChatConnectionState
-        var onOpen: [NSObject: CancellableContinuation<Void>]
+        var onOpen: [NSObject: Monitor.Continuation]
     }
 
     /// This lock is sometimes waited on within an async context; make sure *all* uses release the lock quickly.
@@ -142,33 +142,28 @@ public class OWSChatConnection {
         lock: .init()
     )
 
+    private let openCondition = Monitor.Condition<StateObservation>(
+        isSatisfied: { $0.currentState == .open },
+        waiters: \.onOpen,
+    )
+
     fileprivate func notifyStatusChange(newState: OWSChatConnectionState) {
         // Technically this would be safe to call from anywhere,
         // but requiring it to be on the serial queue means it's less likely
         // for a caller to check a condition that's immediately out of date (a race).
         assertOnQueue(serialQueue)
 
-        let (oldState, continuationsToResolve): (OWSChatConnectionState, [NSObject: CancellableContinuation<Void>])
-        (oldState, continuationsToResolve) = stateObservation.update {
-            let oldState = $0.currentState
-            if newState == oldState {
-                return (oldState, [:])
-            }
-            $0.currentState = newState
-
-            var continuationsToResolve: [NSObject: CancellableContinuation<Void>] = [:]
-            if case .open = newState {
-                continuationsToResolve = $0.onOpen
-                $0.onOpen = [:]
-            }
-
-            return (oldState, continuationsToResolve)
-        }
+        let oldState = Monitor.updateAndNotify(
+            in: stateObservation,
+            block: {
+                let oldState = $0.currentState
+                $0.currentState = newState
+                return oldState
+            },
+            conditions: openCondition,
+        )
         if newState != oldState {
             Logger.info("\(logPrefix): \(oldState) -> \(newState)")
-        }
-        for (_, waiter) in continuationsToResolve {
-            waiter.resume(with: .success(()))
         }
         NotificationCenter.default.postOnMainThread(name: Self.chatConnectionStateDidChange, object: nil)
     }
@@ -177,25 +172,8 @@ public class OWSChatConnection {
         stateObservation.get().currentState
     }
 
-    /// Only throws on cancellation.
-    func waitForOpen() async throws {
-        let cancellationToken = NSObject()
-        let cancellableContinuation = CancellableContinuation<Void>()
-        stateObservation.update {
-            if $0.currentState == .open {
-                cancellableContinuation.resume(with: .success(()))
-            } else {
-                $0.onOpen[cancellationToken] = cancellableContinuation
-            }
-        }
-        try await withTaskCancellationHandler(
-            operation: cancellableContinuation.wait,
-            onCancel: {
-                // Don't cancel because CancellableContinuation does that.
-                // We just clean up the state so that we don't leak memory.
-                stateObservation.update { _ = $0.onOpen.removeValue(forKey: cancellationToken) }
-            }
-        )
+    func waitForOpen() async throws(CancellationError) {
+        try await Monitor.waitForCondition(openCondition, in: stateObservation)
     }
 
     /// Only throws on cancellation or after timeout.
