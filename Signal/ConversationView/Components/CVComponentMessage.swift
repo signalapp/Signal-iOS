@@ -1303,11 +1303,15 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         elements.append(contents.joined(separator: ", "))
 
+        if let footerAccessibilityLabel = standaloneFooter?.footerAccessibilityLabel {
+            elements.append(footerAccessibilityLabel)
+        }
+
         // NOTE: In the interest of keeping the accessibility label short,
         // we do not include information that is usually presented in the
         // following components:
         //
-        // * footer (message send status, disappearing message status).
+        // * footer (disappearing message status).
         //   We _do_ include time but not date. Dates are in the date headers.
         // * senderName
         // * senderAvatar
