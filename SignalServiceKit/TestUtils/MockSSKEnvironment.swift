@@ -86,6 +86,9 @@ public class MockSSKEnvironment {
         // Wait for all pending readers/writers to finish.
         SSKEnvironment.shared.databaseStorageRef.grdbStorage.pool.barrierWriteWithoutTransaction { _ in }
 
+        // Wait for the MessageProcessor to finish.
+        SSKEnvironment.shared.messageProcessorRef.serialQueueForTests.sync {}
+
         // Wait for the main queue *again* in case more work was scheduled.
         waitForMainQueue()
     }
@@ -94,8 +97,10 @@ public class MockSSKEnvironment {
         await withCheckedContinuation { continuation in
             DispatchQueue.main.async {
                 SSKEnvironment.shared.databaseStorageRef.grdbStorage.pool.barrierWriteWithoutTransaction { _ in }
-                DispatchQueue.main.async {
-                    continuation.resume()
+                SSKEnvironment.shared.messageProcessorRef.serialQueueForTests.async {
+                    DispatchQueue.main.async {
+                        continuation.resume()
+                    }
                 }
             }
         }

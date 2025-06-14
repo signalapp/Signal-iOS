@@ -16,12 +16,14 @@ public class OWSMessageDecrypter {
     public init(appReadiness: AppReadiness) {
         SwiftSingletons.register(self)
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(messageProcessorDidDrainQueue),
-            name: MessageProcessor.messageProcessorDidDrainQueue,
-            object: nil
-        )
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(self.messageProcessorDidDrainQueue),
+                name: MessageProcessor.messageProcessorDidDrainQueue,
+                object: nil
+            )
+        }
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
             guard let self = self else { return }

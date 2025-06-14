@@ -134,6 +134,10 @@ public class MessageProcessor {
         autoreleaseFrequency: .workItem
     )
 
+    #if TESTABLE_BUILD
+    var serialQueueForTests: DispatchQueue { serialQueue }
+    #endif
+
     private var pendingEnvelopes = PendingEnvelopes()
 
     private let isDrainingPendingEnvelopes = AtomicBool(false, lock: .init())
