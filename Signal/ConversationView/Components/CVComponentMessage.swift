@@ -1300,12 +1300,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             )
         }
         contents.append(timestampText)
-
-        elements.append(contents.joined(separator: ", "))
-
+        
         if let footerAccessibilityLabel = standaloneFooter?.footerAccessibilityLabel {
-            elements.append(footerAccessibilityLabel)
+            contents.append(footerAccessibilityLabel)
         }
+        
+        elements.append(contents.joined(separator: ", "))
 
         // NOTE: In the interest of keeping the accessibility label short,
         // we do not include information that is usually presented in the
