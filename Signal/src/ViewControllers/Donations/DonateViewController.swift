@@ -87,7 +87,9 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
         render(oldState: nil)
-        loadAndUpdateState()
+        Task {
+            await loadAndUpdateState()
+        }
 
         scrollView.addSubview(stackView)
         stackView.autoPinWidth(toWidthOf: scrollView)
@@ -652,25 +654,28 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             owsFail("[Donations] No subscriber ID to cancel")
         }
 
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-            Promise.wrapAsync {
-                try await DonationSubscriptionManager.cancelSubscription(for: subscriberID)
-            }.done(on: DispatchQueue.main) { [weak self] in
-                modal.dismiss { [weak self] in
-                    guard let self = self else { return }
-                    self.onFinished(.monthlySubscriptionCancelled(
-                        donateSheet: self,
-                        toastText: OWSLocalizedString(
-                            "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED",
-                            comment: "Toast indicating that the subscription has been cancelled"
-                        )
-                    ))
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false,
+            asyncBlock: { modal in
+                do {
+                    try await DonationSubscriptionManager.cancelSubscription(for: subscriberID)
+                    modal.dismiss { [weak self] in
+                        guard let self = self else { return }
+                        self.onFinished(.monthlySubscriptionCancelled(
+                            donateSheet: self,
+                            toastText: OWSLocalizedString(
+                                "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED",
+                                comment: "Toast indicating that the subscription has been cancelled"
+                            )
+                        ))
+                    }
+                } catch {
+                    modal.dismiss()
+                    owsFailDebug("[Donations] Failed to cancel subscription \(error)")
                 }
-            }.catch { error in
-                modal.dismiss()
-                owsFailDebug("[Donations] Failed to cancel subscription \(error)")
             }
-        }
+        )
     }
 
     private func showError(title: String? = nil, _ message: String) {
@@ -721,7 +726,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             // Then, we'll show the error.
 
             navigationController?.popToViewController(self, animated: true) {
-                self.loadAndUpdateState().done { [weak self] in
+                Task { [weak self] in
+                    await self?.loadAndUpdateState()
                     guard let self else { return }
                     DonationViewsUtil.presentErrorSheet(
                         from: self,
@@ -745,25 +751,19 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
     // MARK: - Loading data
 
-    @discardableResult
-    private func loadAndUpdateState() -> Guarantee<Void> {
-        switch state.loadState {
-        case .loading: return .value(())
-        default: break
+    private func loadAndUpdateState() async {
+        if case .loading = state.loadState {
+            return
         }
-
         state = state.loading()
-
-        return loadStateWithSneakyTransaction(currentState: state).done { [weak self] newState in
-            self?.state = newState
-        }
+        state = await loadState(currentState: state)
     }
 
     /// Try to load the data we need and put it into a new state.
     ///
     /// Requests one-time and monthly badges and preset amounts from the
     /// service, prepares badge assets, and loads local state as appropriate.
-    private func loadStateWithSneakyTransaction(currentState: State) -> Guarantee<State> {
+    private func loadState(currentState: State) async -> State {
         typealias DonationConfiguration = DonationSubscriptionManager.DonationConfiguration
 
         let (
@@ -789,37 +789,33 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
 
         // Start fetching the donation configuration.
-        let fetchDonationConfigPromise: Promise<DonationConfiguration> = Promise.wrapAsync {
-            try await DonationSubscriptionManager.fetchDonationConfiguration()
-        }.then(on: DispatchQueue.sharedUserInitiated) { donationConfiguration -> Promise<DonationConfiguration> in
+        async let donationConfiguration = { () async throws -> DonationConfiguration in
+            let donationConfiguration = try await DonationSubscriptionManager.fetchDonationConfiguration()
+
             let boostBadge = donationConfiguration.boost.badge
             let subscriptionBadges = donationConfiguration.subscription.levels.map { $0.badge }
 
-            let badgePromises = ([boostBadge] + subscriptionBadges).map { badge in
-                Promise.wrapAsync { try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(badge) }
+            try await withThrowingTaskGroup { taskGroup in
+                for badge in [boostBadge] + subscriptionBadges {
+                    taskGroup.addTask {
+                        try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(badge)
+                    }
+                }
+                try await taskGroup.waitForAll()
             }
 
-            return Promise.when(fulfilled: badgePromises).map(on: DispatchQueue.sharedUserInitiated) { donationConfiguration }
-        }
+            return donationConfiguration
+        }()
 
         // Start loading the current subscription.
-        let loadCurrentSubscriptionPromise: Promise<Subscription?> = Promise.wrapAsync {
-            try await DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
-        }
+        async let currentSubscription = DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
 
-        return firstly { () -> Promise<(DonationConfiguration, Subscription?)> in
-            // Compose the configuration and subscription.
-            fetchDonationConfigPromise.then(on: DispatchQueue.sharedUserInitiated) { donationConfiguration in
-                loadCurrentSubscriptionPromise.map(on: DispatchQueue.sharedUserInitiated) { subscription in
-                    (donationConfiguration, subscription)
-                }
-            }
-        }.then(on: DispatchQueue.sharedUserInitiated) { (configuration, currentSubscription) -> Guarantee<State> in
-            let loadedState = currentState.loaded(
-                oneTimeConfig: configuration.boost,
-                monthlyConfig: configuration.subscription,
-                paymentMethodsConfig: configuration.paymentMethods,
-                currentMonthlySubscription: currentSubscription,
+        do {
+            return currentState.loaded(
+                oneTimeConfig: try await donationConfiguration.boost,
+                monthlyConfig: try await donationConfiguration.subscription,
+                paymentMethodsConfig: try await donationConfiguration.paymentMethods,
+                currentMonthlySubscription: try await currentSubscription,
                 subscriberID: subscriberID,
                 previousMonthlySubscriptionCurrencyCode: previousSubscriberCurrencyCode,
                 previousMonthlySubscriptionPaymentMethod: previousSubscriberPaymentMethod,
@@ -830,12 +826,10 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 locale: Locale.current,
                 localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
             )
-
-            return .value(loadedState)
-        }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Guarantee<State> in
+        } catch {
             Logger.warn("[Donations] \(error)")
             owsFailDebugUnlessNetworkFailure(error)
-            return Guarantee.value(currentState.loadFailed())
+            return currentState.loadFailed()
         }
     }
 
