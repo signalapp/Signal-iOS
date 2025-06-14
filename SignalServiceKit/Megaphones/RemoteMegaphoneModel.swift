@@ -412,6 +412,11 @@ extension RemoteMegaphoneModel.Manifest {
 // MARK: - Translation
 
 extension RemoteMegaphoneModel {
+    public static let imagesDirectory: URL = {
+        let imagesSubdirectory: String = "MegaphoneImages"
+        return OWSFileSystem.appSharedDataDirectoryURL().appendingPathComponent(imagesSubdirectory)
+    }()
+
     /// Represents a localized, user-presentable description of this megaphone.
     public struct Translation: Codable {
         /// A unique ID for the megaphone this translation corresponds to.
@@ -428,8 +433,9 @@ extension RemoteMegaphoneModel {
         /// Path to a remote image asset for this megaphone.
         public let imageRemoteUrlPath: String?
 
-        /// File URL to a locally-stored image asset for this megaphone.
-        public private(set) var imageLocalUrl: URL?
+        /// Whether or not this megaphone has a locally-stored image asset.
+        public private(set) var hasImage: Bool
+        public var imageLocalRelativePath: String { id }
 
         /// Localized text to display on the "primary" call-to-action when this
         /// megaphone is presented.
@@ -444,7 +450,7 @@ extension RemoteMegaphoneModel {
             title: String,
             body: String,
             imageRemoteUrlPath: String?,
-            imageLocalUrl: URL?,
+            hasImage: Bool,
             primaryActionText: String?,
             secondaryActionText: String?
         ) {
@@ -452,13 +458,13 @@ extension RemoteMegaphoneModel {
             self.title = title
             self.body = body
             self.imageRemoteUrlPath = imageRemoteUrlPath
-            self.imageLocalUrl = imageLocalUrl
+            self.hasImage = hasImage
             self.primaryActionText = primaryActionText
             self.secondaryActionText = secondaryActionText
         }
 
-        public mutating func setImageLocalUrl(_ url: URL) {
-            imageLocalUrl = url
+        public mutating func setHasImage(_ hasImage: Bool) {
+            self.hasImage = hasImage
         }
 
         // MARK: Factories
@@ -476,7 +482,7 @@ extension RemoteMegaphoneModel {
                 title: title,
                 body: body,
                 imageRemoteUrlPath: imageRemoteUrlPath,
-                imageLocalUrl: nil,
+                hasImage: false,
                 primaryActionText: primaryActionText,
                 secondaryActionText: secondaryActionText
             )
@@ -489,6 +495,7 @@ extension RemoteMegaphoneModel {
             case title
             case body
             case imageRemoteUrlPath
+            case hasImage
             case imageLocalUrl
             case primaryActionText
             case secondaryActionText
@@ -502,7 +509,7 @@ extension RemoteMegaphoneModel {
             body = try container.decode(String.self, forKey: .body)
 
             imageRemoteUrlPath = try container.decodeIfPresent(String.self, forKey: .imageRemoteUrlPath)
-            imageLocalUrl = try container.decodeIfPresent(URL.self, forKey: .imageLocalUrl)
+            hasImage = try container.decodeIfPresent(Bool.self, forKey: .hasImage) ?? (try container.decodeIfPresent(URL.self, forKey: .imageLocalUrl) != nil)
             primaryActionText = try container.decodeIfPresent(String.self, forKey: .primaryActionText)
             secondaryActionText = try container.decodeIfPresent(String.self, forKey: .secondaryActionText)
         }
@@ -518,9 +525,7 @@ extension RemoteMegaphoneModel {
                 try container.encode(imageRemoteUrlPath, forKey: .imageRemoteUrlPath)
             }
 
-            if let imageLocalUrl = imageLocalUrl {
-                try container.encode(imageLocalUrl, forKey: .imageLocalUrl)
-            }
+            try container.encode(hasImage, forKey: .hasImage)
 
             if let primaryActionText = primaryActionText {
                 try container.encode(primaryActionText, forKey: .primaryActionText)

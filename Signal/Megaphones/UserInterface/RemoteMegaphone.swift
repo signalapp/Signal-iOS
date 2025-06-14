@@ -21,7 +21,8 @@ class RemoteMegaphone: MegaphoneView {
         titleText = megaphoneModel.translation.title
         bodyText = megaphoneModel.translation.body
 
-        if let imageLocalUrl = megaphoneModel.translation.imageLocalUrl {
+        if megaphoneModel.translation.hasImage {
+            let imageLocalUrl = RemoteMegaphoneModel.imagesDirectory.appendingPathComponent(megaphoneModel.translation.imageLocalRelativePath)
             if let image = UIImage(contentsOfFile: imageLocalUrl.path) {
                 self.image = image
             } else {

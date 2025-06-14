@@ -174,6 +174,7 @@ private extension RemoteMegaphoneFetcher {
             maxAttempts: 3,
             isRetryable: { $0.isNetworkFailureOrTimeout || $0.is5xxServiceResponse },
             block: {
+                Logger.info("Fetching remote megaphone manifests")
                 let response = try await getUrlSession().performRequest(
                     .manifestUrlPath,
                     method: .get
@@ -199,9 +200,7 @@ private extension RemoteMegaphoneFetcher {
         for (index, localeString) in localeStrings.enumerated() {
             do {
                 var translation = try await fetchTranslation(forMegaphoneManifest: manifest, withLocaleString: localeString)
-                if let url = try await self.downloadImageIfNecessary(forTranslation: translation) {
-                    translation.setImageLocalUrl(url)
-                }
+                translation.setHasImage(try await self.downloadImageIfNecessary(forTranslation: translation))
                 return translation
             } catch let error as OWSHTTPError where error.responseStatusCode == 404 && (index + 1) != localeStrings.endIndex {
                 // If this isn't the last locale & it's not found, try the next one.
@@ -232,6 +231,7 @@ private extension RemoteMegaphoneFetcher {
                 ) else {
                     throw OWSAssertionError("Failed to create translation URL path for manifest \(manifest.id)")
                 }
+                Logger.info("Fetching remote megaphone translation")
                 let response = try await getUrlSession().performRequest(translationUrlPath, method: .get)
                 guard let responseJson = response.responseBodyJson else {
                     throw OWSAssertionError("Missing body JSON for translation!")
@@ -241,13 +241,18 @@ private extension RemoteMegaphoneFetcher {
         )
     }
 
-    /// Get a path to the local image file for this translation. Fetches the
-    /// image if necessary. Returns ``nil`` if this translation has no image.
+    /// Downloads the image if necessary.
+    ///
+    /// Doesn't perform any network requests if the image has already been
+    /// downloaded.
+    ///
+    /// - Throws: If the image should be downloaded but can't be downloaded.
+    /// - Returns: Whether or not `translation` has an image.
     private func downloadImageIfNecessary(
         forTranslation translation: RemoteMegaphoneModel.Translation,
-    ) async throws -> URL? {
+    ) async throws -> Bool {
         guard let imageRemoteUrlPath = translation.imageRemoteUrlPath else {
-            return nil
+            return false
         }
 
         guard let imageFileUrl: URL = .imageFilePath(forFetchedTranslation: translation) else {
@@ -260,6 +265,7 @@ private extension RemoteMegaphoneFetcher {
             block: {
                 do {
                     if !FileManager.default.fileExists(atPath: imageFileUrl.path) {
+                        Logger.info("Fetching remote megaphone image")
                         let response = try await getUrlSession().performDownload(
                             imageRemoteUrlPath,
                             method: .get
@@ -274,10 +280,10 @@ private extension RemoteMegaphoneFetcher {
                             throw OWSAssertionError("Failed to move downloaded image! \(error)")
                         }
                     }
-                    return imageFileUrl
+                    return true
                 } catch where error.httpStatusCode == 404 {
                     owsFailDebug("Unexpectedly got 404 while fetching remote megaphone image for ID \(translation.id)!")
-                    return nil
+                    return false
                 } catch let error as OWSHTTPError {
                     owsFailDebug("Unexpectedly got error status code \(error.responseStatusCode) while fetching remote megaphone image for ID \(translation.id)!")
                     throw error
@@ -290,17 +296,14 @@ private extension RemoteMegaphoneFetcher {
 // MARK: URLs
 
 private extension URL {
-    private static let imagesSubdirectory: String = "MegaphoneImages"
-
     static func imageFilePath(forFetchedTranslation translation: RemoteMegaphoneModel.Translation) -> URL? {
-        let dirUrl = OWSFileSystem.appSharedDataDirectoryURL()
-            .appendingPathComponent(Self.imagesSubdirectory)
+        let dirUrl = RemoteMegaphoneModel.imagesDirectory
 
         guard OWSFileSystem.ensureDirectoryExists(dirUrl.path) else {
             return nil
         }
 
-        return dirUrl.appendingPathComponent(translation.id)
+        return dirUrl.appendingPathComponent(translation.imageLocalRelativePath)
     }
 }
 
