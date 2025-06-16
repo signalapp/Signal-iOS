@@ -892,7 +892,10 @@ public class AttachmentManagerImpl: AttachmentManager {
                 mimeType: pendingAttachment.mimeType,
                 encryptionKey: pendingAttachment.encryptionKey,
                 streamInfo: streamInfo,
-                mediaName: Attachment.mediaName(digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext)
+                mediaName: Attachment.mediaName(
+                    sha256ContentHash: pendingAttachment.sha256ContentHash,
+                    encryptionKey: pendingAttachment.encryptionKey
+                )
             )
 
             let hasOrphanRecord = orphanedAttachmentStore.orphanAttachmentExists(

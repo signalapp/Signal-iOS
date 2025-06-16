@@ -1926,7 +1926,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
 
                     self.orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
-                        withMediaName: Attachment.mediaName(digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext),
+                        withMediaName: Attachment.mediaName(
+                            sha256ContentHash: pendingAttachment.sha256ContentHash,
+                            encryptionKey: pendingAttachment.encryptionKey
+                        ),
                         tx: tx
                     )
 
@@ -2124,7 +2127,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         mimeType: pendingAttachment.mimeType,
                         encryptionKey: pendingAttachment.encryptionKey,
                         streamInfo: streamInfo,
-                        mediaName: Attachment.mediaName(digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext)
+                        mediaName: Attachment.mediaName(
+                            sha256ContentHash: pendingAttachment.sha256ContentHash,
+                            encryptionKey: pendingAttachment.encryptionKey
+                        )
                     )
 
                     try self.attachmentStore.insert(
@@ -2315,7 +2321,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         mimeType: pendingThumbnailAttachment.mimeType,
                         encryptionKey: pendingThumbnailAttachment.encryptionKey,
                         streamInfo: streamInfo,
-                        mediaName: Attachment.mediaName(digestSHA256Ciphertext: pendingThumbnailAttachment.digestSHA256Ciphertext)
+                        mediaName: Attachment.mediaName(
+                            sha256ContentHash: pendingThumbnailAttachment.sha256ContentHash,
+                            encryptionKey: pendingThumbnailAttachment.encryptionKey
+                        ),
                     )
 
                     try self.attachmentStore.insert(

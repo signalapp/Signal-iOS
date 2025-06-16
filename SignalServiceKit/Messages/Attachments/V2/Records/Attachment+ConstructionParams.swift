@@ -348,8 +348,7 @@ extension Attachment {
         public static func forUpdatingAsDownlodedThumbnailFromMediaTier(
             attachment: Attachment,
             validatedMimeType: String,
-            streamInfo: Attachment.StreamInfo,
-            mediaName: String
+            streamInfo: Attachment.StreamInfo
         ) -> ConstructionParams {
             let thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo.map {
                 return Attachment.ThumbnailMediaTierInfo(

@@ -278,11 +278,14 @@ public class Attachment {
         return AttachmentBackupThumbnail(attachment: self)
     }
 
-    public static func mediaName(digestSHA256Ciphertext: Data) -> String {
-        // We use the hexadecimal-encoded digest as the media name.
+    public static func mediaName(sha256ContentHash: Data, encryptionKey: Data) -> String {
+        // We use the hexadecimal-encoded [plaintext hash | encryptionKey] as the media name.
         // This ensures media name collisions occur only between the
         // same attachment contents encrypted with the same key.
-        return digestSHA256Ciphertext.hexadecimalString
+        var mediaName = Data()
+        mediaName.append(sha256ContentHash)
+        mediaName.append(encryptionKey)
+        return mediaName.hexadecimalString
     }
 
     /// Unencrypted byte count on CDN of the fullsize attachment _before_ encryption and padding,

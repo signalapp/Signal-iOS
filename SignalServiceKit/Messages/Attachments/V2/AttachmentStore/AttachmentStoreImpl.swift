@@ -366,7 +366,10 @@ public class AttachmentStoreImpl: AttachmentStore {
 
         // Find if there is already an attachment with the same media name.
         let existingMediaNameRecord = try fetchAttachmentThrows(
-            mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext),
+            mediaName: Attachment.mediaName(
+                sha256ContentHash: streamInfo.sha256ContentHash,
+                encryptionKey: existingAttachment.encryptionKey
+            ),
             tx: tx
         )
         if let existingMediaNameRecord, existingMediaNameRecord.id != id {
@@ -390,7 +393,10 @@ public class AttachmentStoreImpl: AttachmentStore {
                     attachment: existingAttachment,
                     validatedMimeType: validatedMimeType,
                     streamInfo: streamInfo,
-                    mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext),
+                    mediaName: Attachment.mediaName(
+                        sha256ContentHash: streamInfo.sha256ContentHash,
+                        encryptionKey: existingAttachment.encryptionKey
+                    ),
                     lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
                 )
             )
@@ -400,7 +406,10 @@ public class AttachmentStoreImpl: AttachmentStore {
                     attachment: existingAttachment,
                     validatedMimeType: validatedMimeType,
                     streamInfo: streamInfo,
-                    mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext),
+                    mediaName: Attachment.mediaName(
+                        sha256ContentHash: streamInfo.sha256ContentHash,
+                        encryptionKey: existingAttachment.encryptionKey
+                    ),
                     lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
                 )
             )
@@ -409,8 +418,7 @@ public class AttachmentStoreImpl: AttachmentStore {
                 params: .forUpdatingAsDownlodedThumbnailFromMediaTier(
                     attachment: existingAttachment,
                     validatedMimeType: validatedMimeType,
-                    streamInfo: streamInfo,
-                    mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext)
+                    streamInfo: streamInfo
                 )
             )
         }
