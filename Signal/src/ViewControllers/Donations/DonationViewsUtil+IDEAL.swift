@@ -139,15 +139,17 @@ extension DonationViewsUtil {
         firstly(on: DispatchQueue.sharedUserInitiated) {
             return Self.loadBadgeForDonation(type: donationType, databaseStorage: databaseStorage)
         }.then(on: DispatchQueue.main) { badge in
-            DonationViewsUtil.wrapPromiseInProgressView(
-                from: donationsVC,
-                promise: Promise.wrapAsync {
-                    try await DonationViewsUtil.completeIDEALDonation(
-                        donationType: donationType,
-                        databaseStorage: databaseStorage
-                    )
-                }
-            ).done(on: DispatchQueue.main) {
+            Promise.wrapAsync {
+                try await DonationViewsUtil.wrapInProgressView(
+                    from: donationsVC,
+                    operation: {
+                        try await DonationViewsUtil.completeIDEALDonation(
+                            donationType: donationType,
+                            databaseStorage: databaseStorage
+                        )
+                    }
+                )
+            }.done(on: DispatchQueue.main) {
                 // Do this after the `wrapPromiseInProgressView` completes
                 // to dismiss the progress spinner.  Then display the
                 // result of the donation.

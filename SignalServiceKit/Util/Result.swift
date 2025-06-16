@@ -5,9 +5,9 @@
 
 import Foundation
 
-extension Result where Failure == Error {
-    public init(catching block: () async throws -> Success) async {
-        do {
+extension Result {
+    public init(catching block: () async throws(Failure) -> Success) async {
+        do throws(Failure) {
             self = .success(try await block())
         } catch {
             self = .failure(error)
@@ -16,8 +16,7 @@ extension Result where Failure == Error {
 }
 
 extension Result {
-
-    var isSuccess: Bool {
+    public var isSuccess: Bool {
         switch self {
         case .success:
             return true

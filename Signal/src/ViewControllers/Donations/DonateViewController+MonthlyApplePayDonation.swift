@@ -91,10 +91,14 @@ extension DonateViewController {
                 )
             }
 
-            DonationViewsUtil.wrapPromiseInProgressView(
-                from: self,
-                promise: DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: .applePay)
-            ).done(on: DispatchQueue.main) {
+            let waitForRedemptionPromise = DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: .applePay)
+
+            Promise.wrapAsync {
+                try await DonationViewsUtil.wrapInProgressView(
+                    from: self,
+                    operation: waitForRedemptionPromise.awaitable,
+                )
+            }.done(on: DispatchQueue.main) {
                 Logger.info("[Donations] Monthly card donation finished")
 
                 self.didCompleteDonation(

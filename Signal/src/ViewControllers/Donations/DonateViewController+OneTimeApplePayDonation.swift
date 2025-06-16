@@ -53,10 +53,12 @@ extension DonateViewController {
                 )
             }
 
-            DonationViewsUtil.wrapPromiseInProgressView(
-                from: self,
-                promise: DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: .applePay)
-            ).done(on: DispatchQueue.main) {
+            Promise.wrapAsync {
+                try await DonationViewsUtil.wrapInProgressView(
+                    from: self,
+                    operation: DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: .applePay).awaitable
+                )
+            }.done(on: DispatchQueue.main) {
                 self.didCompleteDonation(
                     receiptCredentialSuccessMode: .oneTimeBoost
                 )

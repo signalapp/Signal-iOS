@@ -7,18 +7,15 @@ public import SignalServiceKit
 import SignalUI
 
 extension DonationViewsUtil {
-    public static func wrapPromiseInProgressView<T>(
+    @MainActor
+    public static func wrapInProgressView<T, E>(
         from viewController: UIViewController,
-        promise wrappedPromise: Promise<T>
-    ) -> Promise<T> {
-        guard let view = viewController.view else {
-            owsFail("Cannot wrap promise in progress view when the view doesn't exist")
-        }
-
+        operation: () async throws(E) -> T,
+    ) async throws(E) -> T {
         let backdropView = UIView()
         backdropView.backgroundColor = Theme.backdropColor
         backdropView.alpha = 0
-        view.addSubview(backdropView)
+        viewController.view.addSubview(backdropView)
         backdropView.autoPinEdgesToSuperviewEdges()
 
         let progressViewContainer = UIView()
@@ -31,7 +28,7 @@ extension DonationViewsUtil {
             "SUSTAINER_VIEW_PROCESSING_PAYMENT",
             comment: "Loading indicator on the sustainer view"
         ))
-        view.addSubview(progressView)
+        viewController.view.addSubview(progressView)
         progressView.autoCenterInSuperview()
         progressViewContainer.autoMatch(.width, to: .width, of: progressView, withOffset: 32)
         progressViewContainer.autoMatch(.height, to: .height, of: progressView, withOffset: 32)
@@ -40,28 +37,20 @@ extension DonationViewsUtil {
             backdropView.alpha = 1
         }
 
-        let (promise, future) = Promise<T>.pending()
+        let result = await Result(catching: { () async throws(E) in
+            try await operation()
+        })
 
-        wrappedPromise.done(on: DispatchQueue.main) { result in
-            progressView.stopAnimating(success: true) {
+        await withCheckedContinuation { continuation in
+            progressView.stopAnimating(success: result.isSuccess) {
                 backdropView.alpha = 0
             } completion: {
                 backdropView.removeFromSuperview()
                 progressView.removeFromSuperview()
-
-                future.resolve(result)
-            }
-        }.catch(on: DispatchQueue.main) { error in
-            progressView.stopAnimating(success: false) {
-                backdropView.alpha = 0
-            } completion: {
-                backdropView.removeFromSuperview()
-                progressView.removeFromSuperview()
-
-                future.reject(error)
+                continuation.resume()
             }
         }
 
-        return promise
+        return try result.get()
     }
 }

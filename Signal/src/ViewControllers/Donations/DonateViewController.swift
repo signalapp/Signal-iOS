@@ -524,37 +524,39 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             let currentSubscription = monthly.currentSubscription,
             currentSubscription.chargeFailure == nil
         {
-            DonationViewsUtil.wrapPromiseInProgressView(
-                from: self,
-                promise: Promise.wrapAsync {
-                    try await DonationSubscriptionManager.updateSubscriptionLevel(
-                        for: subscriberID,
-                        to: selectedSubscriptionLevel,
-                        currencyCode: monthly.selectedCurrencyCode
-                    )
-                }.then(on: DispatchQueue.sharedUserInitiated) { subscription throws -> Promise<Void> in
-                    guard let donationPaymentProcessor = subscription.donationPaymentProcessor else {
-                        throw OWSAssertionError("Missing donation payment processor while updating monthly donation!")
-                    }
-
-                    // Treat updates like new subscriptions
-                    let redemptionPromise = Promise.wrapAsync {
-                        try await DonationSubscriptionManager.requestAndRedeemReceipt(
-                            subscriberId: subscriberID,
-                            subscriptionLevel: selectedSubscriptionLevel.level,
-                            priorSubscriptionLevel: subscription.level,
-                            paymentProcessor: donationPaymentProcessor,
-                            paymentMethod: subscription.donationPaymentMethod,
-                            isNewSubscription: true
+            Promise.wrapAsync {
+                try await DonationViewsUtil.wrapInProgressView(
+                    from: self,
+                    operation: Promise.wrapAsync {
+                        try await DonationSubscriptionManager.updateSubscriptionLevel(
+                            for: subscriberID,
+                            to: selectedSubscriptionLevel,
+                            currencyCode: monthly.selectedCurrencyCode
                         )
-                    }
+                    }.then(on: DispatchQueue.sharedUserInitiated) { subscription throws -> Promise<Void> in
+                        guard let donationPaymentProcessor = subscription.donationPaymentProcessor else {
+                            throw OWSAssertionError("Missing donation payment processor while updating monthly donation!")
+                        }
 
-                    return DonationViewsUtil.waitForRedemptionJob(
-                        redemptionPromise,
-                        paymentMethod: subscription.donationPaymentMethod
-                    )
-                }
-            ).done(on: DispatchQueue.main) {
+                        // Treat updates like new subscriptions
+                        let redemptionPromise = Promise.wrapAsync {
+                            try await DonationSubscriptionManager.requestAndRedeemReceipt(
+                                subscriberId: subscriberID,
+                                subscriptionLevel: selectedSubscriptionLevel.level,
+                                priorSubscriptionLevel: subscription.level,
+                                paymentProcessor: donationPaymentProcessor,
+                                paymentMethod: subscription.donationPaymentMethod,
+                                isNewSubscription: true
+                            )
+                        }
+
+                        return DonationViewsUtil.waitForRedemptionJob(
+                            redemptionPromise,
+                            paymentMethod: subscription.donationPaymentMethod
+                        )
+                    }.awaitable
+                )
+            }.done(on: DispatchQueue.main) {
                 self.didCompleteDonation(
                     receiptCredentialSuccessMode: .recurringSubscriptionInitiation
                 )

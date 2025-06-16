@@ -38,17 +38,17 @@ extension BadgeGiftingConfirmationViewController {
                     break
                 }
                 mightHaveBeenCharged = true
-                try await DonationViewsUtil.wrapPromiseInProgressView(
+                try await DonationViewsUtil.wrapInProgressView(
                     from: self,
-                    promise: DonationViewsUtil.Gifts.startJob(
+                    operation: DonationViewsUtil.Gifts.startJob(
                         amount: self.price,
                         preparedPayment: preparedPayment,
                         thread: self.thread,
                         messageText: self.messageText,
                         databaseStorage: SSKEnvironment.shared.databaseStorageRef,
                         blockingManager: SSKEnvironment.shared.blockingManagerRef
-                    )
-                ).awaitable()
+                    ).awaitable
+                )
 
                 Logger.info("[Gifting] Gifting PayPal donation finished")
                 await self.didCompleteDonation()

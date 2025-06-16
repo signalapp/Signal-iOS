@@ -165,9 +165,11 @@ extension DonateViewController {
             return DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: .paypal)
         }
 
-        return DonationViewsUtil.wrapPromiseInProgressView(
-            from: self,
-            promise: finalizePromise
-        )
+        return Promise.wrapAsync {
+            return try await DonationViewsUtil.wrapInProgressView(
+                from: self,
+                operation: finalizePromise.awaitable
+            )
+        }
     }
 }

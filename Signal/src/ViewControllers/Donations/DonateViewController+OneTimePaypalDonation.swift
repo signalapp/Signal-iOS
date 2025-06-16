@@ -36,16 +36,16 @@ extension DonateViewController {
             )
 
             Logger.info("[Donations] Creating and redeeming one-time boost receipt for PayPal donation")
-            try await DonationViewsUtil.wrapPromiseInProgressView(
+            try await DonationViewsUtil.wrapInProgressView(
                 from: self,
-                promise: Promise.wrapAsync {
+                operation: {
                     try await self.confirmPaypalPaymentAndRedeemBoost(
                         amount: amount,
                         paymentId: paymentId,
                         approvalParams: approvalParams
                     )
                 }
-            ).awaitable()
+            )
 
             Logger.info("[Donations] One-time PayPal donation finished")
             self.didCompleteDonation(

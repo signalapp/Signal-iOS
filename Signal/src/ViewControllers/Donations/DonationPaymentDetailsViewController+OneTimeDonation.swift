@@ -16,53 +16,55 @@ extension DonationPaymentDetailsViewController {
 
         let amount = self.donationAmount
 
-        DonationViewsUtil.wrapPromiseInProgressView(
-            from: self,
-            promise: Promise.wrapAsync {
-                try await Stripe.boost(
-                    amount: amount,
-                    level: .boostBadge,
-                    for: validForm.stripePaymentMethod
-                )
-            }.then(on: DispatchQueue.main) { confirmedIntent in
-                if let redirectUrl = confirmedIntent.redirectToUrl {
-                    if case .ideal = validForm.donationPaymentMethod {
-                        Logger.info("[Donations] One-time iDEAL donation requires authentication. Presenting...")
-                        let donation = PendingOneTimeIDEALDonation(
-                            paymentIntentId: confirmedIntent.paymentIntentId,
-                            amount: amount
-                        )
-                        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                            do {
-                                try DependenciesBridge.shared.externalPendingIDEALDonationStore.setPendingOneTimeDonation(
-                                    donation: donation,
-                                    tx: transaction
-                                )
-                            } catch {
-                                owsFailDebug("[Donations] Failed to persist pending One-time iDEAL donation")
-                            }
-                        }
-                    } else {
-                        Logger.info("[Donations] One-time donation needed 3DS. Presenting...")
-                    }
-                    return self.show3DS(for: redirectUrl)
-                } else {
-                    Logger.info("[Donations] One-time donation did not need 3DS. Continuing")
-                    return Promise.value(confirmedIntent.paymentIntentId)
-                }
-            }.then(on: DispatchQueue.sharedUserInitiated) { intentId in
-                Logger.info("[Donations] Creating and redeeming one-time boost receipt")
-
-                return Promise.wrapAsync {
-                    try await DonationViewsUtil.completeOneTimeDonation(
-                        paymentIntentId: intentId,
+        Promise.wrapAsync {
+            try await DonationViewsUtil.wrapInProgressView(
+                from: self,
+                operation: Promise.wrapAsync {
+                    try await Stripe.boost(
                         amount: amount,
-                        paymentMethod: validForm.donationPaymentMethod,
-                        databaseStorage: SSKEnvironment.shared.databaseStorageRef
+                        level: .boostBadge,
+                        for: validForm.stripePaymentMethod
                     )
-                }
-            }
-        ).done(on: DispatchQueue.main) { [weak self] in
+                }.then(on: DispatchQueue.main) { confirmedIntent in
+                    if let redirectUrl = confirmedIntent.redirectToUrl {
+                        if case .ideal = validForm.donationPaymentMethod {
+                            Logger.info("[Donations] One-time iDEAL donation requires authentication. Presenting...")
+                            let donation = PendingOneTimeIDEALDonation(
+                                paymentIntentId: confirmedIntent.paymentIntentId,
+                                amount: amount
+                            )
+                            SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                                do {
+                                    try DependenciesBridge.shared.externalPendingIDEALDonationStore.setPendingOneTimeDonation(
+                                        donation: donation,
+                                        tx: transaction
+                                    )
+                                } catch {
+                                    owsFailDebug("[Donations] Failed to persist pending One-time iDEAL donation")
+                                }
+                            }
+                        } else {
+                            Logger.info("[Donations] One-time donation needed 3DS. Presenting...")
+                        }
+                        return self.show3DS(for: redirectUrl)
+                    } else {
+                        Logger.info("[Donations] One-time donation did not need 3DS. Continuing")
+                        return Promise.value(confirmedIntent.paymentIntentId)
+                    }
+                }.then(on: DispatchQueue.sharedUserInitiated) { intentId in
+                    Logger.info("[Donations] Creating and redeeming one-time boost receipt")
+
+                    return Promise.wrapAsync {
+                        try await DonationViewsUtil.completeOneTimeDonation(
+                            paymentIntentId: intentId,
+                            amount: amount,
+                            paymentMethod: validForm.donationPaymentMethod,
+                            databaseStorage: SSKEnvironment.shared.databaseStorageRef
+                        )
+                    }
+                }.awaitable
+            )
+        }.done(on: DispatchQueue.main) { [weak self] in
             Logger.info("[Donations] One-time donation finished")
             self?.onFinished(nil)
         }.catch(on: DispatchQueue.main) { [weak self] error in
