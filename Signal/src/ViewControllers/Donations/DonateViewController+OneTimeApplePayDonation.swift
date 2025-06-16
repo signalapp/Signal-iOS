@@ -17,62 +17,55 @@ extension DonateViewController {
         didAuthorizePayment payment: PKPayment,
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
-        var hasCalledCompletion = false
-        func wrappedCompletion(_ result: PKPaymentAuthorizationResult) {
-            guard !hasCalledCompletion else { return }
-            hasCalledCompletion = true
-            completion(result)
-        }
-
         guard let oneTime = state.oneTime, let amount = oneTime.amount else {
             owsFail("Amount or currency code are missing")
         }
 
         let boostBadge = oneTime.profileBadge
 
-        Promise.wrapAsync {
-            try await Stripe.boost(
-                amount: amount,
-                level: .boostBadge,
-                for: .applePay(payment: payment)
-            )
-        }.done(on: DispatchQueue.main) { confirmedIntent -> Void in
-            owsPrecondition(
-                confirmedIntent.redirectToUrl == nil,
-                "[Donations] There shouldn't be a 3DS redirect for Apple Pay"
-            )
-
-            wrappedCompletion(.init(status: .success, errors: nil))
-
-            let redemptionPromise = Promise.wrapAsync {
-                try await DonationSubscriptionManager.requestAndRedeemReceipt(
-                    boostPaymentIntentId: confirmedIntent.paymentIntentId,
+        Task {
+            let confirmedIntent: Stripe.ConfirmedPaymentIntent
+            do {
+                confirmedIntent = try await Stripe.boost(
                     amount: amount,
-                    paymentProcessor: .stripe,
-                    paymentMethod: .applePay
+                    level: .boostBadge,
+                    for: .applePay(payment: payment)
                 )
+                owsPrecondition(
+                    confirmedIntent.redirectToUrl == nil,
+                    "[Donations] There shouldn't be a 3DS redirect for Apple Pay"
+                )
+                completion(.init(status: .success, errors: nil))
+            } catch {
+                completion(.init(status: .failure, errors: [error]))
+                owsFailDebugUnlessNetworkFailure(error)
+                return
             }
 
-            Promise.wrapAsync {
+            do {
                 try await DonationViewsUtil.wrapInProgressView(
                     from: self,
-                    operation: DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: .applePay).awaitable
+                    operation: {
+                        try await DonationViewsUtil.waitForRedemption(paymentMethod: .applePay) {
+                            try await DonationSubscriptionManager.requestAndRedeemReceipt(
+                                boostPaymentIntentId: confirmedIntent.paymentIntentId,
+                                amount: amount,
+                                paymentProcessor: .stripe,
+                                paymentMethod: .applePay
+                            )
+                        }
+                    }
                 )
-            }.done(on: DispatchQueue.main) {
-                self.didCompleteDonation(
-                    receiptCredentialSuccessMode: .oneTimeBoost
-                )
-            }.catch(on: DispatchQueue.main) { [weak self] error in
-                self?.didFailDonation(
+                self.didCompleteDonation(receiptCredentialSuccessMode: .oneTimeBoost)
+            } catch {
+                owsFailDebugUnlessNetworkFailure(error)
+                self.didFailDonation(
                     error: error,
                     mode: .oneTime,
                     badge: boostBadge,
                     paymentMethod: .applePay
                 )
             }
-        }.catch(on: DispatchQueue.main) { error in
-            wrappedCompletion(.init(status: .failure, errors: [error]))
-            owsFailDebugUnlessNetworkFailure(error)
         }
     }
 }
