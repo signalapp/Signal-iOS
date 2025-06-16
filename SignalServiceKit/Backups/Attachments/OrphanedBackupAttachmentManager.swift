@@ -25,6 +25,16 @@ public protocol OrphanedBackupAttachmentManager {
         tx: DBWriteTransaction
     )
 
+    /// Orphan all existing media tier uploads for an attachment, marking them for
+    /// deletion from the media tier CDN.
+    /// Do this before wiping media tier info on an attachment. Note that this doesn't
+    /// need to be done when deleting an attachment, as a SQLite trigger handles
+    /// deletion automatically.
+    func orphanExistingMediaTierUploads(
+        of attachment: Attachment,
+        tx: DBWriteTransaction
+    ) throws
+
     /// Run all remote deletions, returning when finished. Supports cooperative cancellation.
     /// Should only be run after backup uploads have finished to avoid races.
     func runIfNeeded() async throws
@@ -109,6 +119,41 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
                 }
             }
 
+        }
+    }
+
+    public func orphanExistingMediaTierUploads(
+        of attachment: Attachment,
+        tx: DBWriteTransaction
+    ) throws {
+        guard let mediaName = attachment.mediaName else {
+            // If we didn't have a mediaName assigned,
+            // there's no uploads to orphan (that we know of locally).
+            return
+        }
+        if
+            let mediaTierInfo = attachment.mediaTierInfo,
+            let cdnNumber = mediaTierInfo.cdnNumber
+        {
+            var fullsizeOrphanRecord = OrphanedBackupAttachment.locallyOrphaned(
+                cdnNumber: cdnNumber,
+                mediaName: mediaName,
+                type: .fullsize
+            )
+            try orphanedBackupAttachmentStore.insert(&fullsizeOrphanRecord, tx: tx)
+        }
+        if
+            let thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo,
+            let cdnNumber = thumbnailMediaTierInfo.cdnNumber
+        {
+            var fullsizeOrphanRecord = OrphanedBackupAttachment.locallyOrphaned(
+                cdnNumber: cdnNumber,
+                mediaName: AttachmentBackupThumbnail.thumbnailMediaName(
+                    fullsizeMediaName: mediaName
+                ),
+                type: .thumbnail
+            )
+            try orphanedBackupAttachmentStore.insert(&fullsizeOrphanRecord, tx: tx)
         }
     }
 
@@ -380,6 +425,13 @@ open class OrphanedBackupAttachmentManagerMock: OrphanedBackupAttachmentManager 
         withMediaName mediaName: String,
         tx: DBWriteTransaction
     ) {
+        // Do nothing
+    }
+
+    open func orphanExistingMediaTierUploads(
+        of attachment: Attachment,
+        tx: DBWriteTransaction
+    ) throws {
         // Do nothing
     }
 

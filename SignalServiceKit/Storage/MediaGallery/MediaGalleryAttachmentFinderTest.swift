@@ -275,7 +275,26 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         orderInOwner: UInt32,
         idInOwner: UUID? = nil
     ) throws -> Attachment.IDType {
-        let attachmentParams = Attachment.ConstructionParams.mockStream()
+        let attachmentParams = Attachment.ConstructionParams.mockStream(
+            streamInfo: .mock(
+                contentType: {
+                    switch contentType {
+                    case .invalid:
+                        return .invalid
+                    case .animatedImage:
+                        return .animatedImage(pixelSize: .square(100))
+                    case .audio:
+                        return .audio(duration: 1, waveformRelativeFilePath: nil)
+                    case .file:
+                        return .file
+                    case .image:
+                        return .image(pixelSize: .square(100))
+                    case .video:
+                        return .video(duration: 1, pixelSize: .square(100), stillFrameRelativeFilePath: nil)
+                    }
+                }()
+            )
+        )
         let referenceParams = AttachmentReference.ConstructionParams.mock(
             owner: .message(.bodyAttachment(.init(
                 messageRowId: messageRowId,
@@ -292,7 +311,6 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         )
 
         var attachmentRecord = Attachment.Record(params: attachmentParams)
-        attachmentRecord.contentType = UInt32(contentType.rawValue)
 
         try db.write { tx in
             try attachmentRecord.insert(tx.database)

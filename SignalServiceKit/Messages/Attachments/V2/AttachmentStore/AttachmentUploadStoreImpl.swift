@@ -20,14 +20,12 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         info transitTierInfo: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
     ) throws {
-        var record = Attachment.Record(attachment: attachmentStream.attachment)
-        record.transitCdnKey = transitTierInfo.cdnKey
-        record.transitCdnNumber = transitTierInfo.cdnNumber
-        record.transitEncryptionKey = transitTierInfo.encryptionKey
-        record.transitUploadTimestamp = transitTierInfo.uploadTimestamp
-        record.transitUnencryptedByteCount = transitTierInfo.unencryptedByteCount
-        record.transitDigestSHA256Ciphertext = transitTierInfo.digestSHA256Ciphertext
-        record.lastTransitDownloadAttemptTimestamp = transitTierInfo.lastDownloadAttemptTimestamp
+        let params = Attachment.ConstructionParams.forUpdatingAsUploadedToTransitTier(
+            attachment: attachmentStream,
+            transitTierInfo: transitTierInfo
+        )
+        var record = Attachment.Record(params: params)
+        record.sqliteId = attachmentStream.id
         try record.update(tx.database)
     }
 
@@ -45,30 +43,25 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
             return
         }
 
-        var record = Attachment.Record(attachment: attachment)
-        record.transitCdnKey = nil
-        record.transitCdnNumber = nil
-        record.transitEncryptionKey = nil
-        record.transitUploadTimestamp = nil
-        record.transitUnencryptedByteCount = nil
-        record.transitDigestSHA256Ciphertext = nil
-        record.lastTransitDownloadAttemptTimestamp = nil
+        let params = Attachment.ConstructionParams.forRemovingTransitTierInfo(attachment: refetchedAttachment)
+        var record = Attachment.Record(params: params)
+        record.sqliteId = attachment.id
         try record.update(tx.database)
     }
 
     public func markUploadedToMediaTier(
         attachment: Attachment,
         mediaTierInfo: Attachment.MediaTierInfo,
+        mediaName: String,
         tx: DBWriteTransaction
     ) throws {
-        var record = Attachment.Record(attachment: attachment)
-        record.mediaTierCdnNumber = mediaTierInfo.cdnNumber
-        record.mediaTierUploadEra = mediaTierInfo.uploadEra
-        record.mediaTierUnencryptedByteCount = mediaTierInfo.unencryptedByteCount
-        record.mediaTierDigestSHA256Ciphertext = mediaTierInfo.digestSHA256Ciphertext
-        record.mediaTierIncrementalMac = mediaTierInfo.incrementalMacInfo?.mac
-        record.mediaTierIncrementalMacChunkSize = mediaTierInfo.incrementalMacInfo?.chunkSize
-        record.lastMediaTierDownloadAttemptTimestamp = mediaTierInfo.lastDownloadAttemptTimestamp
+        let params = Attachment.ConstructionParams.forUpdatingAsUploadedToMediaTier(
+            attachment: attachment,
+            mediaTierInfo: mediaTierInfo,
+            mediaName: mediaName
+        )
+        var record = Attachment.Record(params: params)
+        record.sqliteId = attachment.id
         try record.update(tx.database)
     }
 
@@ -76,26 +69,25 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         attachment: Attachment,
         tx: DBWriteTransaction
     ) throws {
-        var record = Attachment.Record(attachment: attachment)
-        record.mediaTierCdnNumber = nil
-        record.mediaTierUploadEra = nil
-        record.mediaTierUnencryptedByteCount = nil
-        record.mediaTierDigestSHA256Ciphertext = nil
-        record.mediaTierIncrementalMac = nil
-        record.mediaTierIncrementalMacChunkSize = nil
-        record.lastMediaTierDownloadAttemptTimestamp = nil
+        let params = Attachment.ConstructionParams.forRemovingMediaTierInfo(attachment: attachment)
+        var record = Attachment.Record(params: params)
+        record.sqliteId = attachment.id
         try record.update(tx.database)
     }
 
     public func markThumbnailUploadedToMediaTier(
         attachment: Attachment,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
+        mediaName: String,
         tx: DBWriteTransaction
     ) throws {
-        var record = Attachment.Record(attachment: attachment)
-        record.thumbnailCdnNumber = thumbnailMediaTierInfo.cdnNumber
-        record.thumbnailUploadEra = thumbnailMediaTierInfo.uploadEra
-        record.lastThumbnailDownloadAttemptTimestamp = thumbnailMediaTierInfo.lastDownloadAttemptTimestamp
+        let params = Attachment.ConstructionParams.forUpdatingAsUploadedThumbnailToMediaTier(
+            attachment: attachment,
+            thumbnailMediaTierInfo: thumbnailMediaTierInfo,
+            mediaName: mediaName
+        )
+        var record = Attachment.Record(params: params)
+        record.sqliteId = attachment.id
         try record.update(tx.database)
     }
 
@@ -103,10 +95,9 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         attachment: Attachment,
         tx: DBWriteTransaction
     ) throws {
-        var record = Attachment.Record(attachment: attachment)
-        record.thumbnailCdnNumber = nil
-        record.thumbnailUploadEra = nil
-        record.lastThumbnailDownloadAttemptTimestamp = nil
+        let params = Attachment.ConstructionParams.forRemovingThumbnailMediaTierInfo(attachment: attachment)
+        var record = Attachment.Record(params: params)
+        record.sqliteId = attachment.id
         try record.update(tx.database)
     }
 

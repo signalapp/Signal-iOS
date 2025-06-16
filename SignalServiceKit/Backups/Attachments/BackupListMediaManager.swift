@@ -330,38 +330,59 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             return
         }
         let didSetCdnInfo: Bool
+
+        // In order for the attachment to be downloadable, we need some metadata.
+        // We might have this either from a local stream (if we matched against
+        // the media name/id we generated locally) or from a restored backup (if
+        // we matched against the media name/id we pulled off the backup proto).
+        let mediaName = attachment.mediaName
+        let fullsizeUnencryptedByteCount = attachment.mediaTierInfo?.unencryptedByteCount
+            ?? attachment.streamInfo?.unencryptedByteCount
+        let fullsizeDigestSHA256Ciphertext = attachment.mediaTierInfo?.digestSHA256Ciphertext
+            ?? attachment.streamInfo?.digestSHA256Ciphertext
+
         if localAttachment.isThumbnail {
-            try attachmentUploadStore.markThumbnailUploadedToMediaTier(
-                attachment: attachment,
-                thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo(
-                    cdnNumber: listedMedia.cdn,
-                    uploadEra: uploadEra,
-                    lastDownloadAttemptTimestamp: nil
-                ),
-                tx: tx
-            )
-            didSetCdnInfo = true
+            if let mediaName {
+                try attachmentUploadStore.markThumbnailUploadedToMediaTier(
+                    attachment: attachment,
+                    thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo(
+                        cdnNumber: listedMedia.cdn,
+                        uploadEra: uploadEra,
+                        lastDownloadAttemptTimestamp: nil
+                    ),
+                    mediaName: mediaName,
+                    tx: tx
+                )
+                didSetCdnInfo = true
+            } else {
+                // We have a matching local attachment but we don't have
+                // sufficient metadata from either a backup or local stream
+                // to be able to download, anyway. Schedule the upload for
+                // deletion, its unuseable. This should never happen, because
+                // how would we have a media id to match against but lack the
+                // media name?
+                owsFailDebug("Missing media name but have media id somehow")
+                try enqueueListedMediaForDeletion(listedMedia, mediaId: mediaId, tx: tx)
+                didSetCdnInfo = false
+            }
         } else {
-            // In order for the attachment to be downloadable, we need some metadata.
-            // We might have this either from a local stream (if we matched against
-            // the media name/id we generated locally) or from a restored backup (if
-            // we matched against the media name/id we pulled off the backup proto).
+
             if
-                let unencryptedByteCount = attachment.mediaTierInfo?.unencryptedByteCount
-                    ?? attachment.streamInfo?.unencryptedByteCount,
-                let digestSHA256Ciphertext = attachment.mediaTierInfo?.digestSHA256Ciphertext
-                    ?? attachment.streamInfo?.digestSHA256Ciphertext
+                let mediaName,
+                let fullsizeUnencryptedByteCount,
+                let fullsizeDigestSHA256Ciphertext
             {
                 try attachmentUploadStore.markUploadedToMediaTier(
                     attachment: attachment,
                     mediaTierInfo: Attachment.MediaTierInfo(
                         cdnNumber: listedMedia.cdn,
-                        unencryptedByteCount: unencryptedByteCount,
-                        digestSHA256Ciphertext: digestSHA256Ciphertext,
+                        unencryptedByteCount: fullsizeUnencryptedByteCount,
+                        digestSHA256Ciphertext: fullsizeDigestSHA256Ciphertext,
                         incrementalMacInfo: attachment.mediaTierInfo?.incrementalMacInfo,
                         uploadEra: uploadEra,
                         lastDownloadAttemptTimestamp: nil
                     ),
+                    mediaName: mediaName,
                     tx: tx
                 )
                 didSetCdnInfo = true
@@ -372,7 +393,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 // deletion, its unuseable. This should never happen, because
                 // how would we have a media id to match against but lack the
                 // other info?
-                owsFailDebug("Missing media tier metadata but have media name somehow")
+                owsFailDebug("Missing media tier metadata but matched by media id somehow")
                 try enqueueListedMediaForDeletion(listedMedia, mediaId: mediaId, tx: tx)
                 didSetCdnInfo = false
             }

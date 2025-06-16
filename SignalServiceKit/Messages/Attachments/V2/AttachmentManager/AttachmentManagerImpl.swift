@@ -492,6 +492,8 @@ public class AttachmentManagerImpl: AttachmentManager {
                         mimeType: mimeType,
                         encryptionKey: encryptionKey,
                         transitTierInfo: transitTierInfo,
+                        // TODO: [Backups] restore this from proto if present
+                        sha256ContentHash: nil,
                         mediaName: mediaName,
                         mediaTierInfo: .init(
                             cdnNumber: mediaTierCdnNumber,
@@ -511,11 +513,16 @@ public class AttachmentManagerImpl: AttachmentManager {
                         )
                     )
                 } else if let transitTierInfo {
-                    attachmentParams = .fromPointer(
+                    attachmentParams = .fromBackup(
                         blurHash: proto.blurHash.nilIfEmpty,
                         mimeType: mimeType,
                         encryptionKey: encryptionKey,
-                        transitTierInfo: transitTierInfo
+                        transitTierInfo: transitTierInfo,
+                        // TODO: [Backups] restore this from proto if present
+                        sha256ContentHash: nil,
+                        mediaName: nil,
+                        mediaTierInfo: nil,
+                        thumbnailMediaTierInfo: nil
                     )
                 } else {
                     attachmentParams = .forInvalidBackupAttachment(
@@ -557,6 +564,8 @@ public class AttachmentManagerImpl: AttachmentManager {
                     mimeType: mimeType,
                     encryptionKey: encryptionKey,
                     transitTierInfo: transitTierInfo,
+                    // Legacy locator protos will never have plaintext hash
+                    sha256ContentHash: nil,
                     mediaName: mediaName,
                     mediaTierInfo: .init(
                         cdnNumber: mediaTierCdnNumber,
@@ -879,8 +888,13 @@ public class AttachmentManagerImpl: AttachmentManager {
                 sourceUnencryptedByteCount: pendingAttachment.unencryptedByteCount,
                 sourceMediaSizePixels: mediaSizePixels
             )
+            let mediaName = Attachment.mediaName(
+                sha256ContentHash: pendingAttachment.sha256ContentHash,
+                encryptionKey: pendingAttachment.encryptionKey
+            )
             let streamInfo = Attachment.StreamInfo(
                 sha256ContentHash: pendingAttachment.sha256ContentHash,
+                mediaName: mediaName,
                 encryptedByteCount: pendingAttachment.encryptedByteCount,
                 unencryptedByteCount: pendingAttachment.unencryptedByteCount,
                 contentType: pendingAttachment.validatedContentType,
@@ -892,10 +906,8 @@ public class AttachmentManagerImpl: AttachmentManager {
                 mimeType: pendingAttachment.mimeType,
                 encryptionKey: pendingAttachment.encryptionKey,
                 streamInfo: streamInfo,
-                mediaName: Attachment.mediaName(
-                    sha256ContentHash: pendingAttachment.sha256ContentHash,
-                    encryptionKey: pendingAttachment.encryptionKey
-                )
+                sha256ContentHash: pendingAttachment.sha256ContentHash,
+                mediaName: mediaName
             )
 
             let hasOrphanRecord = orphanedAttachmentStore.orphanAttachmentExists(
@@ -949,38 +961,20 @@ public class AttachmentManagerImpl: AttachmentManager {
                 }
             } catch let error {
                 let existingAttachmentId: Attachment.IDType
-                if case let AttachmentInsertError.duplicatePlaintextHash(id) = error {
-                    existingAttachmentId = id
-                    // DO NOT remove the pending attachment's orphan table row, so the pending copy gets cleaned up.
-                } else if case let AttachmentInsertError.duplicateMediaName(id) = error {
-                    existingAttachmentId = id
-
-                    guard let existingAttachment = self.attachmentStore.fetch(id: id, tx: tx) else {
-                        throw OWSAssertionError("Matched attachment missing")
-                    }
-
-                    if existingAttachment.asStream() == nil {
-                        // Set the stream info on the existing attachment, if needed.
-                        try self.attachmentStore.merge(
-                            streamInfo: streamInfo,
-                            into: existingAttachment,
-                            validatedMimeType: pendingAttachment.mimeType,
-                            tx: tx
-                        )
-
-                        if hasOrphanRecord {
-                            // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
-                            self.orphanedAttachmentCleaner.releasePendingAttachment(
-                                withId: pendingAttachment.orphanRecordId,
-                                tx: tx
-                            )
-                        }
-
-                        try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
-                            existingAttachment,
-                            tx: tx
-                        )
-                    }
+                if let error = error as? AttachmentInsertError {
+                    existingAttachmentId = try Self.handleAttachmentInsertError(
+                        error,
+                        pendingAttachmentStreamInfo: streamInfo,
+                        pendingAttachmentEncryptionKey: pendingAttachment.encryptionKey,
+                        pendingAttachmentMimeType: pendingAttachment.mimeType,
+                        pendingAttachmentOrphanRecordId: hasOrphanRecord ? pendingAttachment.orphanRecordId : nil,
+                        attachmentStore: attachmentStore,
+                        orphanedAttachmentCleaner: orphanedAttachmentCleaner,
+                        orphanedAttachmentStore: orphanedAttachmentStore,
+                        backupAttachmentUploadManager: backupAttachmentUploadManager,
+                        orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
+                        tx: tx
+                    )
                 } else {
                     throw error
                 }
@@ -996,6 +990,118 @@ public class AttachmentManagerImpl: AttachmentManager {
                 return
             }
         }
+    }
+
+    /// When inserting an attachment stream (or updating an existing attachment to a stream),
+    /// handle errors due to collisions with existing attachments' mediaName or plaintext hash.
+    /// Returns the collided attachment's id, which should be used as the attachment id thereafter.
+    internal static func handleAttachmentInsertError(
+        _ error: AttachmentInsertError,
+        pendingAttachmentStreamInfo: Attachment.StreamInfo,
+        pendingAttachmentEncryptionKey: Data,
+        pendingAttachmentMimeType: String,
+        pendingAttachmentOrphanRecordId: OrphanedAttachmentRecord.IDType?,
+        attachmentStore: AttachmentStore,
+        orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
+        orphanedAttachmentStore: OrphanedAttachmentStore,
+        backupAttachmentUploadManager: BackupAttachmentUploadManager,
+        orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
+        tx: DBWriteTransaction
+    ) throws -> Attachment.IDType {
+        let existingAttachmentId: Attachment.IDType
+        switch error {
+        case
+                .duplicatePlaintextHash(let id),
+                .duplicateMediaName(let id):
+            existingAttachmentId = id
+        }
+
+        guard let existingAttachment = attachmentStore.fetch(id: existingAttachmentId, tx: tx) else {
+            throw OWSAssertionError("Matched attachment missing")
+        }
+
+        guard existingAttachment.asStream() == nil else {
+            // If we already have a stream, we should leave it untouched,
+            // and leave the orphan record around for the new pending
+            // attachment so that its files get deleted.
+            return existingAttachmentId
+        }
+
+        // If we have a mediaName match, then we can keep the existing media tier
+        // info. Otherwise we had a plaintext hash collision but with a different
+        // encryption key. Because the new copy has a downloaded file and the old
+        // copy does not, we prefer the new copy even though that means we will
+        // now orphan the old media tier upload.
+        // Note the same doesn't apply to transit tier and we always keep the existing
+        // transit tier upload information. Unlike media tier uploads, transit tier
+        // uploads are not required to use the same stable encryption key as the
+        // local stream metadata, so its okay if we swap out the local encryption key.
+        let mediaTierInfo: Attachment.MediaTierInfo?
+        let thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?
+        if pendingAttachmentStreamInfo.mediaName == existingAttachment.mediaName {
+            mediaTierInfo = existingAttachment.mediaTierInfo
+            thumbnailMediaTierInfo = existingAttachment.thumbnailMediaTierInfo
+        } else {
+            mediaTierInfo = nil
+            thumbnailMediaTierInfo = nil
+
+            // Orphan the existing remote upload, both fullsize and thumbnail.
+            // We're using a new encryption key now which means a new mediaName.
+            try orphanedBackupAttachmentManager.orphanExistingMediaTierUploads(
+                of: existingAttachment,
+                tx: tx
+            )
+
+            // Orphan the local thumbnail file, if the attachment had one, since
+            // we now use a different encryption key and we don't keep thumbnails
+            // when we have a stream, anyway.
+            if let thumbnailRelativeFilePath = existingAttachment.localRelativeFilePathThumbnail {
+                var thumbnailOrphanRecord = OrphanedAttachmentRecord(
+                    localRelativeFilePath: nil,
+                    localRelativeFilePathThumbnail: thumbnailRelativeFilePath,
+                    localRelativeFilePathAudioWaveform: nil,
+                    localRelativeFilePathVideoStillFrame: nil
+                )
+                try orphanedAttachmentStore.insert(&thumbnailOrphanRecord, tx: tx)
+            }
+        }
+
+        // Set the stream info on the existing attachment, if needed.
+        try attachmentStore.merge(
+            streamInfo: pendingAttachmentStreamInfo,
+            into: existingAttachment,
+            encryptionKey: pendingAttachmentEncryptionKey,
+            validatedMimeType: pendingAttachmentMimeType,
+            mediaTierInfo: mediaTierInfo,
+            thumbnailMediaTierInfo: thumbnailMediaTierInfo,
+            tx: tx
+        )
+
+        if let pendingAttachmentOrphanRecordId {
+            // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
+            orphanedAttachmentCleaner.releasePendingAttachment(
+                withId: pendingAttachmentOrphanRecordId,
+                tx: tx
+            )
+        }
+
+        // Make sure to clear out any orphaning jobs for the newly assigned
+        // mediaName, in case it collides with an attachment that was
+        // deleted recently.
+        orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+            withMediaName: pendingAttachmentStreamInfo.mediaName,
+            tx: tx
+        )
+
+        // Anything that _can_ be uploaded, _should_ be enqueued for upload
+        // immediately. Let the queue decide if enqeuing is needing and when
+        // and whether to actually upload, but let it know about every new
+        // stream created.
+        try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+            existingAttachment,
+            tx: tx
+        )
+        return existingAttachmentId
     }
 
     // MARK: Quoted Replies

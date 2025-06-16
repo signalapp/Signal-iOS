@@ -464,6 +464,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             try self.attachmentUploadStore.markUploadedToMediaTier(
                 attachment: attachmentStream.attachment,
                 mediaTierInfo: mediaTierInfo,
+                mediaName: attachmentStream.info.mediaName,
                 tx: tx
             )
 
@@ -519,6 +520,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             try self.attachmentUploadStore.markThumbnailUploadedToMediaTier(
                 attachment: attachmentStream.attachment,
                 thumbnailMediaTierInfo: thumbnailInfo,
+                mediaName: attachmentStream.info.mediaName,
                 tx: tx
             )
 

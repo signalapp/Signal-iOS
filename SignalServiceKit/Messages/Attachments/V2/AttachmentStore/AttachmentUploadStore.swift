@@ -26,6 +26,7 @@ public protocol AttachmentUploadStore {
     func markUploadedToMediaTier(
         attachment: Attachment,
         mediaTierInfo: Attachment.MediaTierInfo,
+        mediaName: String,
         tx: DBWriteTransaction
     ) throws
 
@@ -40,6 +41,7 @@ public protocol AttachmentUploadStore {
     func markThumbnailUploadedToMediaTier(
         attachment: Attachment,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
+        mediaName: String,
         tx: DBWriteTransaction
     ) throws
 

@@ -211,6 +211,7 @@ class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
     override func markUploadedToMediaTier(
         attachment: Attachment,
         mediaTierInfo: Attachment.MediaTierInfo,
+        mediaName: String,
         tx: DBWriteTransaction
     ) throws {}
 
@@ -222,6 +223,7 @@ class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
     override func markThumbnailUploadedToMediaTier(
         attachment: Attachment,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
+        mediaName: String,
         tx: DBWriteTransaction
     ) throws {}
 

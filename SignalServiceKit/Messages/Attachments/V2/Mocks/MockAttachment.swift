@@ -24,6 +24,7 @@ extension Attachment.IncrementalMacInfo {
 extension Attachment.StreamInfo {
     public static func mock(
         sha256ContentHash: Data? = nil,
+        mediaName: String? = nil,
         encryptedByteCount: UInt32? = nil,
         unencryptedByteCount: UInt32? = nil,
         contentType: Attachment.ContentType? = nil,
@@ -32,6 +33,7 @@ extension Attachment.StreamInfo {
     ) -> Attachment.StreamInfo {
         return Attachment.StreamInfo(
             sha256ContentHash: sha256ContentHash ?? UInt64.random(in: 0..<(.max)).bigEndianData,
+            mediaName: mediaName ?? UUID().uuidString,
             encryptedByteCount: encryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
             unencryptedByteCount: unencryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
             contentType: contentType ?? .file,
@@ -121,7 +123,8 @@ extension Attachment.ConstructionParams {
         blurHash: String? = UUID().uuidString,
         mimeType: String = MimeType.imageJpeg.rawValue,
         encryptionKey: Data = UUID().data,
-        mediaName: String = UUID().uuidString,
+        sha256ContentHash: Data? = nil,
+        mediaName: String? = nil,
         streamInfo: Attachment.StreamInfo = .mock()
     ) -> Attachment.ConstructionParams {
         return Attachment.ConstructionParams.fromStream(
@@ -129,7 +132,8 @@ extension Attachment.ConstructionParams {
             mimeType: mimeType,
             encryptionKey: encryptionKey,
             streamInfo: streamInfo,
-            mediaName: mediaName
+            sha256ContentHash: sha256ContentHash ?? streamInfo.sha256ContentHash,
+            mediaName: mediaName ?? streamInfo.mediaName
         )
     }
 }
@@ -142,6 +146,7 @@ public class MockAttachment: Attachment {
         blurHash: String? = nil,
         mimeType: String? = nil,
         encryptionKey: Data? = nil,
+        sha256ContentHash: Data? = nil,
         mediaName: String? = nil,
         streamInfo: Attachment.StreamInfo? = nil,
         transitTierInfo: Attachment.TransitTierInfo? = nil,
@@ -156,7 +161,8 @@ public class MockAttachment: Attachment {
            blurHash: blurHash,
            mimeType: mimeType ?? MimeType.applicationOctetStream.rawValue,
            encryptionKey: encryptionKey ?? UInt64.random(in: 0..<(.max)).bigEndianData,
-           mediaName: mediaName ?? "\(UInt64.random(in: 0..<(.max)))",
+           sha256ContentHash: sha256ContentHash ?? streamInfo?.sha256ContentHash ?? UUID().data,
+           mediaName: mediaName ?? streamInfo?.mediaName ?? UUID().uuidString,
            localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,
            streamInfo: streamInfo,
            transitTierInfo: transitTierInfo,

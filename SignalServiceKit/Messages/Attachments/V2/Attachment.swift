@@ -43,6 +43,10 @@ public class Attachment {
     /// this field should be set to nil (but should just be ignored regardless).
     public let originalAttachmentIdForQuotedReply: Attachment.IDType?
 
+    /// Validated Sha256 hash of the plaintext of the media content. Used to deduplicate incoming media.
+    /// Nonnull if downloaded OR possibly if restored from a backup (which we trust to have validated).
+    public let sha256ContentHash: Data?
+
     /// MediaName used for backups (but assigned even if backups disabled).
     /// Nonnull if downloaded OR if restored from a backup.
     public let mediaName: String?
@@ -81,6 +85,9 @@ public class Attachment {
     public struct StreamInfo {
         /// Sha256 hash of the plaintext of the media content. Used to deduplicate incoming media.
         public let sha256ContentHash: Data
+
+        /// MediaName used for backups (but assigned even if backups disabled).
+        public let mediaName: String
 
         /// Byte count of the encrypted fullsize resource
         public let encryptedByteCount: UInt32
@@ -211,12 +218,14 @@ public class Attachment {
         self.mimeType = record.mimeType
         self.encryptionKey = record.encryptionKey
         self.originalAttachmentIdForQuotedReply = record.originalAttachmentIdForQuotedReply
+        self.sha256ContentHash = record.sha256ContentHash
         self.mediaName = record.mediaName
         self.localRelativeFilePathThumbnail = record.localRelativeFilePathThumbnail
         self.lastFullscreenViewTimestamp = record.lastFullscreenViewTimestamp
 
         self.streamInfo = StreamInfo(
             sha256ContentHash: record.sha256ContentHash,
+            mediaName: record.mediaName,
             encryptedByteCount: record.encryptedByteCount,
             unencryptedByteCount: record.unencryptedByteCount,
             contentType: contentType,
@@ -362,6 +371,7 @@ public class Attachment {
 private extension Attachment.StreamInfo {
     init?(
         sha256ContentHash: Data?,
+        mediaName: String?,
         encryptedByteCount: UInt32?,
         unencryptedByteCount: UInt32?,
         contentType: Attachment.ContentType?,
@@ -370,15 +380,18 @@ private extension Attachment.StreamInfo {
     ) {
         guard
             let sha256ContentHash,
+            let mediaName,
             let encryptedByteCount,
             let unencryptedByteCount,
             let contentType,
             let digestSHA256Ciphertext,
             let localRelativeFilePath
         else {
+            // sha256ContentHash and mediaName might still be set
+            // if we don't have a stream. The other columns must either
+            // all be set or none set.
             owsAssertDebug(
-                sha256ContentHash == nil
-                && encryptedByteCount == nil
+                encryptedByteCount == nil
                 && unencryptedByteCount == nil
                 && contentType == nil
                 && localRelativeFilePath == nil,
@@ -387,6 +400,7 @@ private extension Attachment.StreamInfo {
             return nil
         }
         self.sha256ContentHash = sha256ContentHash
+        self.mediaName = mediaName
         self.encryptedByteCount = encryptedByteCount
         self.unencryptedByteCount = unencryptedByteCount
         self.contentType = contentType

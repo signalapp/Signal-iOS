@@ -393,10 +393,8 @@ public class AttachmentStoreImpl: AttachmentStore {
                     attachment: existingAttachment,
                     validatedMimeType: validatedMimeType,
                     streamInfo: streamInfo,
-                    mediaName: Attachment.mediaName(
-                        sha256ContentHash: streamInfo.sha256ContentHash,
-                        encryptionKey: existingAttachment.encryptionKey
-                    ),
+                    sha256ContentHash: streamInfo.sha256ContentHash,
+                    mediaName: streamInfo.mediaName,
                     lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
                 )
             )
@@ -406,10 +404,8 @@ public class AttachmentStoreImpl: AttachmentStore {
                     attachment: existingAttachment,
                     validatedMimeType: validatedMimeType,
                     streamInfo: streamInfo,
-                    mediaName: Attachment.mediaName(
-                        sha256ContentHash: streamInfo.sha256ContentHash,
-                        encryptionKey: existingAttachment.encryptionKey
-                    ),
+                    sha256ContentHash: streamInfo.sha256ContentHash,
+                    mediaName: streamInfo.mediaName,
                     lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
                 )
             )
@@ -430,7 +426,10 @@ public class AttachmentStoreImpl: AttachmentStore {
     public func merge(
         streamInfo: Attachment.StreamInfo,
         into attachment: Attachment,
+        encryptionKey: Data,
         validatedMimeType: String,
+        mediaTierInfo: Attachment.MediaTierInfo?,
+        thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
         tx: DBWriteTransaction
     ) throws {
         guard attachment.asStream() == nil else {
@@ -440,7 +439,10 @@ public class AttachmentStoreImpl: AttachmentStore {
         var newRecord = Attachment.Record(params: .forMerging(
             streamInfo: streamInfo,
             into: attachment,
-            mimeType: validatedMimeType
+            encryptionKey: encryptionKey,
+            mimeType: validatedMimeType,
+            mediaTierInfo: mediaTierInfo,
+            thumbnailMediaTierInfo: thumbnailMediaTierInfo
         ))
 
         newRecord.sqliteId = attachment.id
