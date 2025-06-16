@@ -28,16 +28,40 @@ public enum Cryptography {
 
 // MARK: - Attachments
 
+/// Metadata output from a local encryption operation of a plaintext input.
 public struct EncryptionMetadata {
     public let key: Data
-    public let digest: Data?
-    public let length: Int?
-    public let plaintextLength: Int?
+    public let digest: Data
+    public let length: Int
+    public let plaintextLength: Int
 
-    public init(key: Data, digest: Data? = nil, length: Int? = nil, plaintextLength: Int? = nil) {
+    public init(
+        key: Data,
+        digest: Data,
+        length: Int,
+        plaintextLength: Int
+    ) {
         self.key = key
         self.digest = digest
         self.length = length
+        self.plaintextLength = plaintextLength
+    }
+}
+
+/// Metadata needed to decrypt encrypted input.
+public struct DecryptionMetadata {
+    public let key: Data
+    public let integrityCheck: AttachmentIntegrityCheck?
+    public let plaintextLength: Int?
+
+    public init(
+        key: Data,
+        integrityCheck: AttachmentIntegrityCheck? = nil,
+        length: Int? = nil,
+        plaintextLength: Int? = nil
+    ) {
+        self.key = key
+        self.integrityCheck = integrityCheck
         self.plaintextLength = plaintextLength
     }
 }
@@ -431,34 +455,34 @@ public extension Cryptography {
 
     static func decryptAttachment(
         at encryptedUrl: URL,
-        metadata: EncryptionMetadata,
+        metadata: DecryptionMetadata,
         output unencryptedUrl: URL
     ) throws {
-        // We require digests for all attachments.
-        guard let digest = metadata.digest, !digest.isEmpty else {
-            throw OWSAssertionError("Missing digest")
+        // We require integrityChecks for all attachments.
+        guard let integrityCheck = metadata.integrityCheck, !integrityCheck.isEmpty else {
+            throw OWSAssertionError("Missing integrityCheck")
         }
         try decryptFile(at: encryptedUrl, metadata: metadata, output: unencryptedUrl)
     }
 
     static func decryptAttachment(
         at encryptedUrl: URL,
-        metadata: EncryptionMetadata
+        metadata: DecryptionMetadata
     ) throws -> Data {
-        // We require digests for all attachments.
-        guard let digest = metadata.digest, !digest.isEmpty else {
-            throw OWSAssertionError("Missing digest")
+        // We require integrityChecks for all attachments.
+        guard let integrityCheck = metadata.integrityCheck, !integrityCheck.isEmpty else {
+            throw OWSAssertionError("Missing integrityCheck")
         }
         return try decryptFile(at: encryptedUrl, metadata: metadata)
     }
 
     static func validateAttachment(
         at encryptedUrl: URL,
-        metadata: EncryptionMetadata
+        metadata: DecryptionMetadata
     ) -> Bool {
-        // We require digests for all attachments.
-        guard let digest = metadata.digest, !digest.isEmpty else {
-            owsFailDebug("Missing digest")
+        // We require integrityChecks for all attachments.
+        guard let integrityCheck = metadata.integrityCheck, !integrityCheck.isEmpty else {
+            owsFailDebug("Missing integrityCheck")
             return false
         }
         return validateFile(at: encryptedUrl, metadata: metadata)
@@ -489,7 +513,7 @@ public extension Cryptography {
 
     static func decryptFile(
         at encryptedUrl: URL,
-        metadata: EncryptionMetadata,
+        metadata: DecryptionMetadata,
         output unencryptedUrl: URL
     ) throws {
         guard FileManager.default.createFile(
@@ -526,7 +550,7 @@ public extension Cryptography {
     /// Decrypt a file to an output file without validating the hmac or digest (even if the digest is provided in `metadata`).
     static func decryptFileWithoutValidating(
         at encryptedUrl: URL,
-        metadata: EncryptionMetadata,
+        metadata: DecryptionMetadata,
         output unencryptedUrl: URL
     ) throws {
         guard FileManager.default.createFile(
@@ -542,7 +566,7 @@ public extension Cryptography {
             try decryptFile(
                 at: encryptedUrl,
                 metadata: metadata,
-                validateHmacAndDigest: false,
+                validateHmacAndIntegrityCheck: false,
                 // Most efficient to write one page size at a time.
                 outputBlockSize: UInt32(Constants.diskPageSize)
             ) { plaintextDataBlock in
@@ -559,7 +583,7 @@ public extension Cryptography {
 
     static func decryptFile(
         at encryptedUrl: URL,
-        metadata: EncryptionMetadata
+        metadata: DecryptionMetadata
     ) throws -> Data {
         var plaintext = Data()
         try decryptFile(
@@ -576,13 +600,13 @@ public extension Cryptography {
     /// Decrypt a file to a in memory data without validating the hmac or digest (even if the digest is provided in `metadata`).
     static func decryptFileWithoutValidating(
         at encryptedUrl: URL,
-        metadata: EncryptionMetadata
+        metadata: DecryptionMetadata
     ) throws -> Data {
         var plaintext = Data()
         try decryptFile(
             at: encryptedUrl,
             metadata: metadata,
-            validateHmacAndDigest: false,
+            validateHmacAndIntegrityCheck: false,
             // Read the whole thing into memory.
             outputBlockSize: nil
         ) { plaintextDataBlock in
@@ -593,7 +617,7 @@ public extension Cryptography {
 
     static func validateFile(
         at encryptedUrl: URL,
-        metadata: EncryptionMetadata
+        metadata: DecryptionMetadata
     ) -> Bool {
         do {
             // Don't do anything with the bytes, just read to the end to validate.
@@ -604,15 +628,15 @@ public extension Cryptography {
         }
     }
 
-    /// - parameter validateHmacAndDigest: If true, the source file is assumed to have a computed hmac
-    ///     at the end, which will be validated against the live-computed hmac. Likewise, a live-computed digest
-    ///     will be validated against the digest in the provided metadata.
+    /// - parameter validateHmacAndIntegrityCheck: If true, the source file is assumed to have a computed hmac
+    ///     at the end, which will be validated against the live-computed hmac. Likewise, a live-computed digest/plaintext hash
+    ///     will be validated against the integrityCheck in the provided metadata.
     /// - parameter outputBlockSize: Maximum number of bytes that will be read into memory at once
     ///     and emitted in a single call to `output`. If nil, the length of the file is the limit. Defaults to 16kb.
     static func decryptFile(
         at encryptedUrl: URL,
-        metadata: EncryptionMetadata,
-        validateHmacAndDigest: Bool = true,
+        metadata: DecryptionMetadata,
+        validateHmacAndIntegrityCheck: Bool = true,
         outputBlockSize: UInt32? = 1024 * 16,
         output: (_ plaintextDataBlock: Data) -> Void
     ) throws {
@@ -630,22 +654,28 @@ public extension Cryptography {
         )
 
         var hmac: HMAC<SHA256>?
-        var sha256: SHA256?
-        if validateHmacAndDigest {
+        var ciphertextSha256: SHA256?
+        var plaintextSha256: SHA256?
+        if validateHmacAndIntegrityCheck {
             // The metadata "key" is actually a concatentation of the
             // encryption key and the hmac key.
             let hmacKey = metadata.key.suffix(Constants.hmac256KeyLength)
 
             hmac = HMAC<SHA256>(key: .init(data: hmacKey))
-            if metadata.digest != nil {
-                sha256 = SHA256()
+            switch metadata.integrityCheck {
+            case nil:
+                break
+            case .sha256ContentHash:
+                plaintextSha256 = SHA256()
+            case .digestSHA256Ciphertext:
+                ciphertextSha256 = SHA256()
             }
 
             // Matching encryption, we must start our hmac
             // and digest with the IV, since the encrypted
             // file starts with the IV
             hmac?.update(data: inputFile.iv)
-            sha256?.update(data: inputFile.iv)
+            ciphertextSha256?.update(data: inputFile.iv)
         }
 
         var totalPlaintextLength = 0
@@ -658,13 +688,14 @@ public extension Cryptography {
                 upToCount: outputBlockSize ?? inputFile.plaintextLength
             ) { ciphertext, ciphertextLength in
                 hmac?.update(data: ciphertext.prefix(ciphertextLength))
-                sha256?.update(data: ciphertext.prefix(ciphertextLength))
+                ciphertextSha256?.update(data: ciphertext.prefix(ciphertextLength))
             }
             if plaintextDataBlock.isEmpty {
                 gotEmptyBlock = true
             } else {
                 output(plaintextDataBlock)
                 totalPlaintextLength += plaintextDataBlock.count
+                plaintextSha256?.update(data: plaintextDataBlock)
             }
         } while !gotEmptyBlock
 
@@ -679,14 +710,14 @@ public extension Cryptography {
             break
         }
 
-        if validateHmacAndDigest, var hmac {
+        if validateHmacAndIntegrityCheck, var hmac {
             // Add the last padding bytes to the hmac/digest.
             var remainingPaddingLength = Constants.aescbcIVLength + inputFile.ciphertextLength - inputFile.file.offsetInFile
             while remainingPaddingLength > 0 {
                 let lengthToRead = min(remainingPaddingLength, 1024 * 16)
                 let paddingCiphertext = try inputFile.file.readData(ofLength: Int(lengthToRead))
                 hmac.update(data: paddingCiphertext)
-                sha256?.update(data: paddingCiphertext)
+                ciphertextSha256?.update(data: paddingCiphertext)
                 remainingPaddingLength -= lengthToRead
             }
             // Verify their HMAC matches our locally calculated HMAC
@@ -703,14 +734,26 @@ public extension Cryptography {
                 throw OWSAssertionError("Bad hmac")
             }
 
-            // Verify their digest matches our locally calculated digest
-            // digest of: iv || encrypted data || hmac
-            if let theirDigest = metadata.digest {
-                guard var sha256 else {
+            switch metadata.integrityCheck {
+            case nil:
+                break
+            case .sha256ContentHash(let theirPlaintextHash):
+                // Verify their plaintext hash matches our locally calculated one.
+                guard let plaintextSha256 else {
+                    throw OWSAssertionError("Missing plaintext hash context")
+                }
+                let plaintextHash = Data(plaintextSha256.finalize())
+                guard plaintextHash.ows_constantTimeIsEqual(to: theirPlaintextHash) else {
+                    throw OWSAssertionError("Bad plaintext hash")
+                }
+            case .digestSHA256Ciphertext(let theirDigest):
+                // Verify their digest matches our locally calculated digest
+                // digest of: iv || encrypted data || hmac
+                guard var ciphertextSha256 else {
                     throw OWSAssertionError("Missing digest context")
                 }
-                sha256.update(data: hmacResult)
-                let digest = Data(sha256.finalize())
+                ciphertextSha256.update(data: hmacResult)
+                let digest = Data(ciphertextSha256.finalize())
                 guard digest.ows_constantTimeIsEqual(to: theirDigest) else {
                     Logger.debug("Bad digest. Their digest: \(theirDigest.hexadecimalString), our digest: \(digest.hexadecimalString)")
                     throw OWSAssertionError("Bad digest")

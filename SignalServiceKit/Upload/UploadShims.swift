@@ -24,7 +24,7 @@ extension Upload {
 public protocol _Upload_AttachmentEncrypterShim {
     func encryptAttachment(at unencryptedUrl: URL, output encryptedUrl: URL) throws -> EncryptionMetadata
 
-    func decryptAttachment(at encryptedUrl: URL, metadata: EncryptionMetadata, output: URL) throws
+    func decryptAttachment(at encryptedUrl: URL, metadata: DecryptionMetadata, output: URL) throws
 }
 
 public protocol _Upload_FileSystemShim {
@@ -46,7 +46,7 @@ public struct _Upload_AttachmentEncrypterWrapper: Upload.Shims.AttachmentEncrypt
         try Cryptography.encryptAttachment(at: unencryptedUrl, output: encryptedUrl)
     }
 
-    public func decryptAttachment(at encryptedUrl: URL, metadata: EncryptionMetadata, output: URL) throws {
+    public func decryptAttachment(at encryptedUrl: URL, metadata: DecryptionMetadata, output: URL) throws {
         try Cryptography.decryptAttachment(at: encryptedUrl, metadata: metadata, output: output)
     }
 }

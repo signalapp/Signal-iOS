@@ -234,11 +234,13 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
         if
             let previewAttachmentRef,
             let attachment = attachmentStore.fetch(id: previewAttachmentRef.attachmentRowId, tx: tx),
-            let pointer = attachment.asTransitTierPointer()
+            let pointer = attachment.asTransitTierPointer(),
+            case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = pointer.info.integrityCheck
         {
             let attachmentProto = attachmentManager.buildProtoForSending(
                 from: previewAttachmentRef,
-                pointer: pointer
+                pointer: pointer,
+                digestSHA256Ciphertext: digestSHA256Ciphertext
             )
             builder.setImage(attachmentProto)
         }

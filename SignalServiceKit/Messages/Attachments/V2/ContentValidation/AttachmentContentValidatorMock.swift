@@ -30,11 +30,11 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         throw OWSAssertionError("Unimplemented")
     }
 
-    open func validateContents(
+    open func validateDownloadedContents(
         ofEncryptedFileAt fileUrl: URL,
         encryptionKey: Data,
         plaintextLength: UInt32?,
-        digestSHA256Ciphertext: Data,
+        integrityCheck: AttachmentIntegrityCheck,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
@@ -53,8 +53,8 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
 
     open func validateContents(
         ofBackupMediaFileAt fileUrl: URL,
-        outerEncryptionData: EncryptionMetadata,
-        innerEncryptionData: EncryptionMetadata,
+        outerDecryptionData: DecryptionMetadata,
+        innerDecryptionData: DecryptionMetadata,
         finalEncryptionKey: Data,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,

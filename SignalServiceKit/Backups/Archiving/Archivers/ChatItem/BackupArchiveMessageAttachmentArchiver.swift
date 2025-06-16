@@ -610,8 +610,7 @@ extension ReferencedAttachment {
             FeatureFlags.Backups.remoteExportAlpha,
             let mediaName = attachment.mediaName,
             let mediaTierDigest =
-                attachment.mediaTierInfo?.digestSHA256Ciphertext
-                ?? attachment.streamInfo?.digestSHA256Ciphertext,
+                attachment.streamInfo?.digestSHA256Ciphertext,
             let mediaTierUnencryptedByteCount =
                 attachment.mediaTierInfo?.unencryptedByteCount
                 ?? attachment.streamInfo?.unencryptedByteCount
@@ -669,7 +668,12 @@ extension ReferencedAttachment {
                 allowZero: false
             )
             transitTierLocator.key = transitTierInfo.encryptionKey
-            transitTierLocator.digest = transitTierInfo.digestSHA256Ciphertext
+            switch transitTierInfo.integrityCheck {
+            case .digestSHA256Ciphertext(let data):
+                transitTierLocator.digest = data
+            case .sha256ContentHash:
+                break
+            }
             if let unencryptedByteCount = transitTierInfo.unencryptedByteCount {
                 transitTierLocator.size = unencryptedByteCount
             }
@@ -700,29 +704,39 @@ extension ReferencedAttachment {
             locatorInfo.transitCdnKey = transitTierInfo.cdnKey
             locatorInfo.transitCdnNumber = transitTierInfo.cdnNumber
             locatorInfo.transitTierUploadTimestamp = transitTierInfo.uploadTimestamp
+            // We may overwrite this below with plaintext hash integrity check,
+            // which is desired. We only use encrypted digest integrity check
+            // if we don't have a plaintext hash and DO have a transit tier upload.
+            switch transitTierInfo.integrityCheck {
+            case .digestSHA256Ciphertext(let data):
+                locatorInfo.integrityCheck = .encryptedDigest(data)
+                locatorInfo.legacyDigest = data
+            case .sha256ContentHash(let data):
+                locatorInfo.integrityCheck = .plaintextHash(data)
+            }
         }
 
-        if
-            let mediaName = attachment.mediaName
-        {
-            locatorInfo.mediaName = mediaName
+        if let plaintextHash = attachment.sha256ContentHash {
+            locatorInfo.integrityCheck = .plaintextHash(plaintextHash)
             if let mediaTierCdnNumber = attachment.mediaTierInfo?.cdnNumber {
                 locatorInfo.mediaTierCdnNumber = mediaTierCdnNumber
+            }
+            if
+                let mediaName = attachment.mediaName
+            {
+                locatorInfo.legacyMediaName = mediaName
             }
         }
 
         // Set fields only if some cdn info is available.
-        if
-            locatorInfo.mediaName.isEmpty.negated
-            || locatorInfo.transitCdnKey.isEmpty.negated
-        {
+        switch locatorInfo.integrityCheck {
+        case .plaintextHash, .encryptedDigest:
             locatorInfo.key = attachment.encryptionKey
+
             if
                 let digest = attachment.streamInfo?.digestSHA256Ciphertext
-                    ?? attachment.mediaTierInfo?.digestSHA256Ciphertext
-                    ?? attachment.transitTierInfo?.digestSHA256Ciphertext
             {
-                locatorInfo.digest = digest
+                locatorInfo.legacyDigest = digest
             }
             if
                 let unencryptedByteCount = attachment.streamInfo?.unencryptedByteCount
@@ -731,6 +745,8 @@ extension ReferencedAttachment {
             {
                 locatorInfo.size = unencryptedByteCount
             }
+        case .none:
+            break
         }
 
         return locatorInfo

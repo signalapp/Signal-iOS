@@ -12,7 +12,8 @@ extension AttachmentManager {
     /// that pointer from the parent message we want to send.
     public func buildProtoForSending(
         from reference: AttachmentReference,
-        pointer: AttachmentTransitPointer
+        pointer: AttachmentTransitPointer,
+        digestSHA256Ciphertext: Data
     ) -> SSKProtoAttachmentPointer {
         let builder = SSKProtoAttachmentPointer.builder()
 
@@ -69,7 +70,7 @@ extension AttachmentManager {
             reference.sourceMediaSizePixels.map(setMediaSizePixels(_:))
         }
         builder.setKey(pointer.info.encryptionKey)
-        builder.setDigest(pointer.info.digestSHA256Ciphertext)
+        builder.setDigest(digestSHA256Ciphertext)
         builder.setUploadTimestamp(pointer.uploadTimestamp)
 
         pointer.attachment.blurHash.map(builder.setBlurHash(_:))

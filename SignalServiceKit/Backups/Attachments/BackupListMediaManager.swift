@@ -338,8 +338,9 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         let mediaName = attachment.mediaName
         let fullsizeUnencryptedByteCount = attachment.mediaTierInfo?.unencryptedByteCount
             ?? attachment.streamInfo?.unencryptedByteCount
-        let fullsizeDigestSHA256Ciphertext = attachment.mediaTierInfo?.digestSHA256Ciphertext
-            ?? attachment.streamInfo?.digestSHA256Ciphertext
+        let fullsizeSHA256ContentHash = attachment.mediaTierInfo?.sha256ContentHash
+            ?? attachment.streamInfo?.sha256ContentHash
+            ?? attachment.sha256ContentHash
 
         if localAttachment.isThumbnail {
             if let mediaName {
@@ -370,14 +371,14 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             if
                 let mediaName,
                 let fullsizeUnencryptedByteCount,
-                let fullsizeDigestSHA256Ciphertext
+                let fullsizeSHA256ContentHash
             {
                 try attachmentUploadStore.markUploadedToMediaTier(
                     attachment: attachment,
                     mediaTierInfo: Attachment.MediaTierInfo(
                         cdnNumber: listedMedia.cdn,
                         unencryptedByteCount: fullsizeUnencryptedByteCount,
-                        digestSHA256Ciphertext: fullsizeDigestSHA256Ciphertext,
+                        sha256ContentHash: fullsizeSHA256ContentHash,
                         incrementalMacInfo: attachment.mediaTierInfo?.incrementalMacInfo,
                         uploadEra: uploadEra,
                         lastDownloadAttemptTimestamp: nil

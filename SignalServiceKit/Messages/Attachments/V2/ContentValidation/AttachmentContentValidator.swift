@@ -5,6 +5,24 @@
 
 import Foundation
 
+/// When validating a downloaded attachment, we might either have a plaintext
+/// hash or encrypted blob hash (digest) to validate against, either of which ensure
+/// the file we download is the same as the one the sender intended (or ourselves,
+/// if we are the sender).
+public enum AttachmentIntegrityCheck: Equatable {
+    case digestSHA256Ciphertext(Data)
+    case sha256ContentHash(Data)
+
+    var isEmpty: Bool {
+        switch self {
+        case .digestSHA256Ciphertext(let data):
+            return data.isEmpty
+        case .sha256ContentHash(let data):
+            return data.isEmpty
+        }
+    }
+}
+
 public protocol PendingAttachment {
     var blurHash: String? { get }
     var sha256ContentHash: Data { get }
@@ -74,18 +92,18 @@ public protocol AttachmentContentValidator {
     /// - Parameter plaintextLength: If provided, the decrypted file will be truncated
     /// after this length. If nil, it is assumed the encrypted file has no custom padding (anything besides PKCS7)
     /// and will not be truncated after decrypting.
-    func validateContents(
+    func validateDownloadedContents(
         ofEncryptedFileAt fileUrl: URL,
         encryptionKey: Data,
         plaintextLength: UInt32?,
-        digestSHA256Ciphertext: Data,
+        integrityCheck: AttachmentIntegrityCheck,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> PendingAttachment
 
     /// Just validate an encrypted attachment file's contents, based on the provided mimetype.
-    /// Returns the validated content type;  does no digest validation or primary file copy preparation.
+    /// Returns the validated content type;  does no integrityCheck validation or primary file copy preparation.
     /// Errors are thrown if data reading/parsing/decryption fails.
     func reValidateContents(
         ofEncryptedFileAt fileUrl: URL,
@@ -99,7 +117,7 @@ public protocol AttachmentContentValidator {
     /// Note the content type may be `invalid`; we can still create an Attachment from these.
     /// Errors are thrown if data reading/parsing/decryption fails.
     ///
-    /// Unlike attachments from the live service, digest is not required; we can guarantee
+    /// Unlike attachments from the live service, integrityCheck is not required; we can guarantee
     /// correctness for backup media files since they come from the local user.
     /// 
     /// Unlike transit tier attachments, backup attachments are encrypted twice: once when uploaded
@@ -109,14 +127,14 @@ public protocol AttachmentContentValidator {
     /// Strictly speaking we don't usually need content type validation either, but the set of valid
     /// contents can change over time so it is best to re-validate.
     ///
-    /// - Parameter outerEncryptionData: The media tier encryption metadata use as the outer layer of encryption.
-    /// - Parameter innerEncryptionData: The transit tier encryption metadata.
+    /// - Parameter outerDecryptionData: The media tier decryption metadata use as the outer layer of encryption.
+    /// - Parameter innerDecryptionData: The transit tier decryption metadata.
     /// - Parameter finalEncryptionKey: The encryption key used to encrypt the file in it's final destination.  If the finalEncryptionKey
     /// matches the encryption key in `innerEncryptionData`, this re-encryption will be skipped.
     func validateContents(
         ofBackupMediaFileAt fileUrl: URL,
-        outerEncryptionData: EncryptionMetadata,
-        innerEncryptionData: EncryptionMetadata,
+        outerDecryptionData: DecryptionMetadata,
+        innerDecryptionData: DecryptionMetadata,
         finalEncryptionKey: Data,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
@@ -176,20 +194,20 @@ extension AttachmentContentValidator {
         ))
     }
 
-    public func validateContents(
+    public func validateDownloadedContents(
         ofEncryptedFileAt fileUrl: URL,
         encryptionKey: Data,
         plaintextLength: UInt32,
-        digestSHA256Ciphertext: Data,
+        integrityCheck: AttachmentIntegrityCheck,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> AttachmentDataSource {
-        return .from(pendingAttachment: try self.validateContents(
+        return .from(pendingAttachment: try self.validateDownloadedContents(
             ofEncryptedFileAt: fileUrl,
             encryptionKey: encryptionKey,
             plaintextLength: plaintextLength,
-            digestSHA256Ciphertext: digestSHA256Ciphertext,
+            integrityCheck: integrityCheck,
             mimeType: mimeType,
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename

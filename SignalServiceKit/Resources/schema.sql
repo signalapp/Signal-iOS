@@ -1241,7 +1241,6 @@ CREATE
                 NULL
                 ,"transitUnencryptedByteCount" INTEGER
                 ,"mediaTierUnencryptedByteCount" INTEGER
-                ,"mediaTierDigestSHA256Ciphertext" BLOB
                 ,"mediaTierIncrementalMac" BLOB
                 ,"mediaTierIncrementalMacChunkSize" INTEGER
                 ,"transitTierIncrementalMac" BLOB

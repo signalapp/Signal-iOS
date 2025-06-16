@@ -456,7 +456,7 @@ public class ConversationFactory {
                     uploadTimestamp: 1,
                     encryptionKey: Randomness.generateRandomBytes(16),
                     unencryptedByteCount: 16,
-                    digestSHA256Ciphertext: Randomness.generateRandomBytes(16),
+                    integrityCheck: .digestSHA256Ciphertext(Randomness.generateRandomBytes(16)),
                     // TODO: [Attachment Streaming] support incremental mac
                     incrementalMacInfo: nil,
                     lastDownloadAttemptTimestamp: nil

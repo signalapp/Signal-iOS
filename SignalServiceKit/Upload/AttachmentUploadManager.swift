@@ -454,7 +454,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             let mediaTierInfo = Attachment.MediaTierInfo(
                 cdnNumber: cdnNumber,
                 unencryptedByteCount: result.localUploadMetadata.plaintextDataLength,
-                digestSHA256Ciphertext: result.localUploadMetadata.digest,
+                sha256ContentHash: attachmentStream.sha256ContentHash,
                 // TODO: [Attachment Streaming] support incremental mac
                 incrementalMacInfo: nil,
                 uploadEra: uploadEra,
@@ -878,24 +878,13 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 applyExtraPadding: true
             )
 
-            let digest: Data
-            if let _digest = encryptedThumbnailMetadata.digest {
-                digest = _digest
-            } else {
-                // The digest field is optional, but can never actually be nil when
-                // encrypting (its just nullable for the decryption's usage).
-                owsFailDebug("Missing digest for file we just encrypted!")
-                // We don't actually _need_ a digest here anyway.
-                digest = Data()
-            }
-
             // Write the thumbnail to the file.
             try encryptedThumbnailData.write(to: fileUrl)
 
             return .reuse(Upload.LocalUploadMetadata(
                 fileUrl: fileUrl,
                 key: encryptionKey.encryptionKey,
-                digest: digest,
+                digest: encryptedThumbnailMetadata.digest,
                 encryptedDataLength: UInt32(encryptedThumbnailData.count),
                 plaintextDataLength: UInt32(thumbnailData.count)
             ))
@@ -969,7 +958,11 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             uploadTimestamp: result.beginTimestamp,
             encryptionKey: result.localUploadMetadata.key,
             unencryptedByteCount: result.localUploadMetadata.plaintextDataLength,
-            digestSHA256Ciphertext: result.localUploadMetadata.digest,
+            // ALWAYS use digest for integrity check for uploaded attachments;
+            // we only allow sending using a digest integrity check not a plaintext hash
+            // so prefer digest if we have both. If we don't, this attachment we just
+            // uploaded to be able to send will fail to send.
+            integrityCheck: .digestSHA256Ciphertext(result.localUploadMetadata.digest),
             // TODO: [Attachment Streaming] support incremental mac
             incrementalMacInfo: nil,
             lastDownloadAttemptTimestamp: nil
@@ -1057,9 +1050,10 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     func buildMetadata(forUploading attachmentStream: AttachmentStream) throws -> Upload.LocalUploadMetadata {
         // First we need to decrypt, so we can re-encrypt for upload.
         let tmpDecryptedFile = fileSystem.temporaryFileUrl()
-        let decryptionMedatata = EncryptionMetadata(
+        let decryptionMedatata = DecryptionMetadata(
             key: attachmentStream.attachment.encryptionKey,
-            digest: attachmentStream.info.digestSHA256Ciphertext,
+            // No need to validate for an already-validated stream
+            integrityCheck: nil,
             length: Int(clamping: attachmentStream.info.encryptedByteCount),
             plaintextLength: Int(clamping: attachmentStream.info.unencryptedByteCount)
         )

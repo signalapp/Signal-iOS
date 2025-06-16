@@ -13,7 +13,9 @@ public class DeviceProvisioningURL {
     /// scoped specifically to provisioning to communicate between the primary
     /// and secondary device.
     public enum Capability: String {
-        case linknsync = "backup3"
+        // Will be removed soon
+        case legacy_linknsync = "backup3"
+        case linknsync = "backup4"
     }
 
     public let linkType: LinkType

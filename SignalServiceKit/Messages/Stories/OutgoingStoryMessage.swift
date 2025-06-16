@@ -136,14 +136,16 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
                     for: .storyMessageMedia(storyMessageRowId: storyMessageRowId),
                     tx: transaction
                 ),
-                let pointer = attachment.attachment.asTransitTierPointer()
+                let pointer = attachment.attachment.asTransitTierPointer(),
+                case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = pointer.info.integrityCheck
             else {
                 owsFailDebug("Missing attachment for outgoing story message")
                 return nil
             }
             let attachmentProto = DependenciesBridge.shared.attachmentManager.buildProtoForSending(
                 from: attachment.reference,
-                pointer: pointer
+                pointer: pointer,
+                digestSHA256Ciphertext: digestSHA256Ciphertext
             )
             builder.setFileAttachment(attachmentProto)
             if let storyMediaCaption = attachment.reference.storyMediaCaption {

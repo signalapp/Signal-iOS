@@ -50,7 +50,7 @@ extension Attachment.TransitTierInfo {
         uploadTimestamp: UInt64? = nil,
         encryptionKey: Data? = nil,
         unencryptedByteCount: UInt32? = nil,
-        digestSHA256Ciphertext: Data? = nil,
+        integrityCheck: AttachmentIntegrityCheck? = nil,
         incrementalMacInfo: Attachment.IncrementalMacInfo? = nil,
         lastDownloadAttemptTimestamp: UInt64? = nil
     ) -> Attachment.TransitTierInfo {
@@ -60,7 +60,7 @@ extension Attachment.TransitTierInfo {
             uploadTimestamp: uploadTimestamp ?? Date().ows_millisecondsSince1970,
             encryptionKey: encryptionKey ?? UInt64.random(in: 0..<(.max)).bigEndianData,
             unencryptedByteCount: unencryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
-            digestSHA256Ciphertext: digestSHA256Ciphertext ?? UInt64.random(in: 0..<(.max)).bigEndianData,
+            integrityCheck: integrityCheck ?? .digestSHA256Ciphertext(UInt64.random(in: 0..<(.max)).bigEndianData),
             incrementalMacInfo: incrementalMacInfo,
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp
         )
@@ -71,7 +71,7 @@ extension Attachment.MediaTierInfo {
     public static func mock(
         cdnNumber: UInt32? = nil,
         unencryptedByteCount: UInt32? = nil,
-        digestSHA256Ciphertext: Data? = nil,
+        sha256ContentHash: Data? = nil,
         incrementalMacInfo: Attachment.IncrementalMacInfo? = nil,
         uploadEra: String? = nil,
         lastDownloadAttemptTimestamp: UInt64? = nil
@@ -79,7 +79,7 @@ extension Attachment.MediaTierInfo {
         return Attachment.MediaTierInfo(
             cdnNumber: cdnNumber ?? 3,
             unencryptedByteCount: unencryptedByteCount ?? 16,
-            digestSHA256Ciphertext: digestSHA256Ciphertext ?? UInt64.random(in: 0..<(.max)).bigEndianData,
+            sha256ContentHash: sha256ContentHash ?? UInt64.random(in: 0..<(.max)).bigEndianData,
             incrementalMacInfo: incrementalMacInfo,
             uploadEra: uploadEra ?? "1",
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp

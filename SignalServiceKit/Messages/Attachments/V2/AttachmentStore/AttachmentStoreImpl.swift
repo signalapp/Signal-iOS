@@ -394,6 +394,7 @@ public class AttachmentStoreImpl: AttachmentStore {
                     validatedMimeType: validatedMimeType,
                     streamInfo: streamInfo,
                     sha256ContentHash: streamInfo.sha256ContentHash,
+                    digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext,
                     mediaName: streamInfo.mediaName,
                     lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
                 )

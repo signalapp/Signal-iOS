@@ -58,7 +58,9 @@ public class ProvisioningManager {
         let ephemeralBackupKey: BackupKey?
         if
             shouldLinkNSync,
-            deviceProvisioningUrl.capabilities.contains(where: { $0 == .linknsync })
+            deviceProvisioningUrl.capabilities.contains(where: {
+                $0 == .legacy_linknsync || $0 == .linknsync
+            })
         {
             ephemeralBackupKey = linkAndSyncManager.generateEphemeralBackupKey()
         } else {

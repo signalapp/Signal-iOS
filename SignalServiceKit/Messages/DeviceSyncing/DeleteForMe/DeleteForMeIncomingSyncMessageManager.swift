@@ -206,11 +206,13 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
             } else if
                 let encryptedDigest = attachmentIdentifier.encryptedDigest,
                 let encryptedDigestMatch = targetAttachmentCandidates.first(where: {
-                    let attachmentDigest =
-                        $0.attachment.asStream()?.encryptedFileSha256Digest
-                        ?? $0.attachment.asBackupTierPointer()?.info.digestSHA256Ciphertext
-                        ?? $0.attachment.asTransitTierPointer()?.info.digestSHA256Ciphertext
-                    return attachmentDigest == encryptedDigest
+                    if let digest = $0.attachment.streamInfo?.digestSHA256Ciphertext {
+                        return encryptedDigest == digest
+                    } else if case let .digestSHA256Ciphertext(digest) = $0.attachment.transitTierInfo?.integrityCheck {
+                        return encryptedDigest == digest
+                    } else {
+                        return false
+                    }
                 })
             {
                 return encryptedDigestMatch

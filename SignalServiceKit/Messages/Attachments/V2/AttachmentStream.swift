@@ -133,9 +133,8 @@ public class AttachmentStream {
         // hmac and digest are validated at download time; no need to revalidate every read.
         try Cryptography.decryptFileWithoutValidating(
             at: fileURL,
-            metadata: EncryptionMetadata(
+            metadata: DecryptionMetadata(
                 key: attachment.encryptionKey,
-                digest: info.digestSHA256Ciphertext,
                 plaintextLength: Int(info.unencryptedByteCount)
             ),
             output: tmpURL

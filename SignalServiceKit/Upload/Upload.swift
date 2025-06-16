@@ -213,9 +213,8 @@ extension Upload.LocalUploadMetadata {
         fileUrl: URL,
         metadata: EncryptionMetadata
     ) throws -> Upload.LocalUploadMetadata {
-        guard let lengthRaw = metadata.length, let plaintextLengthRaw = metadata.plaintextLength else {
-            throw OWSAssertionError("Missing length.")
-        }
+        let lengthRaw = metadata.length
+        let plaintextLengthRaw = metadata.plaintextLength
 
         guard
             lengthRaw > 0,
@@ -236,9 +235,7 @@ extension Upload.LocalUploadMetadata {
             throw OWSAssertionError("Data is too large: \(length).")
         }
 
-        guard let digest = metadata.digest else {
-            throw OWSAssertionError("Digest missing for attachment.")
-        }
+        let digest = metadata.digest
 
         return Upload.LocalUploadMetadata(
             fileUrl: fileUrl,

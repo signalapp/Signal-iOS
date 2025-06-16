@@ -30,8 +30,8 @@ class _Upload_AttachmentEncrypterMock: Upload.Shims.AttachmentEncrypter {
         return encryptAttachmentBlock!(unencryptedUrl, encryptedUrl)
     }
 
-    var decryptAttachmentBlock: ((URL, EncryptionMetadata, URL) -> Void)?
-    func decryptAttachment(at encryptedUrl: URL, metadata: EncryptionMetadata, output: URL) throws {
+    var decryptAttachmentBlock: ((URL, DecryptionMetadata, URL) -> Void)?
+    func decryptAttachment(at encryptedUrl: URL, metadata: DecryptionMetadata, output: URL) throws {
         return decryptAttachmentBlock!(encryptedUrl, metadata, output)
     }
 }

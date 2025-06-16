@@ -3199,7 +3199,7 @@ public struct BackupProto_FilePointer: @unchecked Sendable {
   // methods supported on all messages.
 
   /// If unset, importers should consider it to be an InvalidAttachmentLocator without throwing an error.
-  /// DEPRECATED; use LocatorInfo instead if available.
+  /// DEPRECATED; use locatorInfo instead.
   public var locator: OneOf_Locator? {
     get {return _storage._locator}
     set {_uniqueStorage()._locator = newValue}
@@ -3313,7 +3313,7 @@ public struct BackupProto_FilePointer: @unchecked Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should consider it to be an InvalidAttachmentLocator without throwing an error.
-  /// DEPRECATED; use LocatorInfo instead if available.
+  /// DEPRECATED; use locatorInfo instead.
   public enum OneOf_Locator: Equatable, Sendable {
     case backupLocator(BackupProto_FilePointer.BackupLocator)
     case attachmentLocator(BackupProto_FilePointer.AttachmentLocator)
@@ -3433,13 +3433,41 @@ public struct BackupProto_FilePointer: @unchecked Sendable {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// Must be non-empty if transitCdnKey or plaintextHash are set/nonempty.
+    /// Otherwise must be empty.
     public var key: Data = Data()
 
     /// From the sender of the attachment (incl. ourselves)
-    public var digest: Data = Data()
+    /// Will be reserved once all clients start reading integrityCheck
+    public var legacyDigest: Data = Data()
 
+    public var integrityCheck: BackupProto_FilePointer.LocatorInfo.OneOf_IntegrityCheck? = nil
+
+    /// Set if file was at one point downloaded and its plaintextHash was calculated
+    public var plaintextHash: Data {
+      get {
+        if case .plaintextHash(let v)? = integrityCheck {return v}
+        return Data()
+      }
+      set {integrityCheck = .plaintextHash(newValue)}
+    }
+
+    /// Set if file has not been downloaded so its integrity has not been verified
+    /// From the sender of the attachment
+    public var encryptedDigest: Data {
+      get {
+        if case .encryptedDigest(let v)? = integrityCheck {return v}
+        return Data()
+      }
+      set {integrityCheck = .encryptedDigest(newValue)}
+    }
+
+    /// NB: This is the plaintext size, and empty content attachments are legal, so this
+    /// may be zero even if transitCdnKey or mediaName are set/nonempty.
     public var size: UInt32 = 0
 
+    /// Either both transit cdn key and number are set or neither should be set.
+    /// Upload timestamp is optional but should only be set if key/number are set.
     public var transitCdnKey: String {
       get {return _transitCdnKey ?? String()}
       set {_transitCdnKey = newValue}
@@ -3483,7 +3511,9 @@ public struct BackupProto_FilePointer: @unchecked Sendable {
 
     /// Nonempty any time the attachment was downloaded and its
     /// digest validated, whether free tier or paid subscription.
-    public var mediaName: String = String()
+    /// Will be reserved once all clients start reading integrityCheck,
+    /// when mediaName will be derived from the plaintextHash and encryption key
+    public var legacyMediaName: String = String()
 
     /// Separate key used to encrypt this file for the local backup.
     /// Generally required for local backups.
@@ -3500,6 +3530,15 @@ public struct BackupProto_FilePointer: @unchecked Sendable {
     public mutating func clearLocalKey() {self._localKey = nil}
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public enum OneOf_IntegrityCheck: Equatable, @unchecked Sendable {
+      /// Set if file was at one point downloaded and its plaintextHash was calculated
+      case plaintextHash(Data)
+      /// Set if file has not been downloaded so its integrity has not been verified
+      /// From the sender of the attachment
+      case encryptedDigest(Data)
+
+    }
 
     public init() {}
 
@@ -5856,7 +5895,7 @@ public struct BackupProto_ChatStyle: Sendable {
   public init() {}
 }
 
-public struct BackupProto_NotificationProfile: Sendable {
+public struct BackupProto_NotificationProfile: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5893,6 +5932,9 @@ public struct BackupProto_NotificationProfile: Sendable {
   public var scheduleEndTime: UInt32 = 0
 
   public var scheduleDaysEnabled: [BackupProto_NotificationProfile.DayOfWeek] = []
+
+  /// should be 16 bytes
+  public var id: Data = Data()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -5961,7 +6003,7 @@ public struct BackupProto_NotificationProfile: Sendable {
   fileprivate var _emoji: String? = nil
 }
 
-public struct BackupProto_ChatFolder: Sendable {
+public struct BackupProto_ChatFolder: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5985,6 +6027,9 @@ public struct BackupProto_ChatFolder: Sendable {
 
   /// generated recipient id of groups, contacts, and/or note to self
   public var excludedRecipientIds: [UInt64] = []
+
+  /// should be 16 bytes
+  public var id: Data = Data()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -10651,13 +10696,15 @@ extension BackupProto_FilePointer.LocatorInfo: SwiftProtobuf.Message, SwiftProto
   public static let protoMessageName: String = BackupProto_FilePointer.protoMessageName + ".LocatorInfo"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "key"),
-    2: .same(proto: "digest"),
+    2: .same(proto: "legacyDigest"),
+    10: .same(proto: "plaintextHash"),
+    11: .same(proto: "encryptedDigest"),
     3: .same(proto: "size"),
     4: .same(proto: "transitCdnKey"),
     5: .same(proto: "transitCdnNumber"),
     6: .same(proto: "transitTierUploadTimestamp"),
     7: .same(proto: "mediaTierCdnNumber"),
-    8: .same(proto: "mediaName"),
+    8: .same(proto: "legacyMediaName"),
     9: .same(proto: "localKey"),
   ]
 
@@ -10668,14 +10715,30 @@ extension BackupProto_FilePointer.LocatorInfo: SwiftProtobuf.Message, SwiftProto
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularBytesField(value: &self.key) }()
-      case 2: try { try decoder.decodeSingularBytesField(value: &self.digest) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.legacyDigest) }()
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self.size) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._transitCdnKey) }()
       case 5: try { try decoder.decodeSingularUInt32Field(value: &self._transitCdnNumber) }()
       case 6: try { try decoder.decodeSingularUInt64Field(value: &self._transitTierUploadTimestamp) }()
       case 7: try { try decoder.decodeSingularUInt32Field(value: &self._mediaTierCdnNumber) }()
-      case 8: try { try decoder.decodeSingularStringField(value: &self.mediaName) }()
+      case 8: try { try decoder.decodeSingularStringField(value: &self.legacyMediaName) }()
       case 9: try { try decoder.decodeSingularBytesField(value: &self._localKey) }()
+      case 10: try {
+        var v: Data?
+        try decoder.decodeSingularBytesField(value: &v)
+        if let v = v {
+          if self.integrityCheck != nil {try decoder.handleConflictingOneOf()}
+          self.integrityCheck = .plaintextHash(v)
+        }
+      }()
+      case 11: try {
+        var v: Data?
+        try decoder.decodeSingularBytesField(value: &v)
+        if let v = v {
+          if self.integrityCheck != nil {try decoder.handleConflictingOneOf()}
+          self.integrityCheck = .encryptedDigest(v)
+        }
+      }()
       default: break
       }
     }
@@ -10689,8 +10752,8 @@ extension BackupProto_FilePointer.LocatorInfo: SwiftProtobuf.Message, SwiftProto
     if !self.key.isEmpty {
       try visitor.visitSingularBytesField(value: self.key, fieldNumber: 1)
     }
-    if !self.digest.isEmpty {
-      try visitor.visitSingularBytesField(value: self.digest, fieldNumber: 2)
+    if !self.legacyDigest.isEmpty {
+      try visitor.visitSingularBytesField(value: self.legacyDigest, fieldNumber: 2)
     }
     if self.size != 0 {
       try visitor.visitSingularUInt32Field(value: self.size, fieldNumber: 3)
@@ -10707,24 +10770,36 @@ extension BackupProto_FilePointer.LocatorInfo: SwiftProtobuf.Message, SwiftProto
     try { if let v = self._mediaTierCdnNumber {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 7)
     } }()
-    if !self.mediaName.isEmpty {
-      try visitor.visitSingularStringField(value: self.mediaName, fieldNumber: 8)
+    if !self.legacyMediaName.isEmpty {
+      try visitor.visitSingularStringField(value: self.legacyMediaName, fieldNumber: 8)
     }
     try { if let v = self._localKey {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 9)
     } }()
+    switch self.integrityCheck {
+    case .plaintextHash?: try {
+      guard case .plaintextHash(let v)? = self.integrityCheck else { preconditionFailure() }
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 10)
+    }()
+    case .encryptedDigest?: try {
+      guard case .encryptedDigest(let v)? = self.integrityCheck else { preconditionFailure() }
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 11)
+    }()
+    case nil: break
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: BackupProto_FilePointer.LocatorInfo, rhs: BackupProto_FilePointer.LocatorInfo) -> Bool {
     if lhs.key != rhs.key {return false}
-    if lhs.digest != rhs.digest {return false}
+    if lhs.legacyDigest != rhs.legacyDigest {return false}
+    if lhs.integrityCheck != rhs.integrityCheck {return false}
     if lhs.size != rhs.size {return false}
     if lhs._transitCdnKey != rhs._transitCdnKey {return false}
     if lhs._transitCdnNumber != rhs._transitCdnNumber {return false}
     if lhs._transitTierUploadTimestamp != rhs._transitTierUploadTimestamp {return false}
     if lhs._mediaTierCdnNumber != rhs._mediaTierCdnNumber {return false}
-    if lhs.mediaName != rhs.mediaName {return false}
+    if lhs.legacyMediaName != rhs.legacyMediaName {return false}
     if lhs._localKey != rhs._localKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -13975,6 +14050,7 @@ extension BackupProto_NotificationProfile: SwiftProtobuf.Message, SwiftProtobuf.
     9: .same(proto: "scheduleStartTime"),
     10: .same(proto: "scheduleEndTime"),
     11: .same(proto: "scheduleDaysEnabled"),
+    12: .same(proto: "id"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -13994,6 +14070,7 @@ extension BackupProto_NotificationProfile: SwiftProtobuf.Message, SwiftProtobuf.
       case 9: try { try decoder.decodeSingularUInt32Field(value: &self.scheduleStartTime) }()
       case 10: try { try decoder.decodeSingularUInt32Field(value: &self.scheduleEndTime) }()
       case 11: try { try decoder.decodeRepeatedEnumField(value: &self.scheduleDaysEnabled) }()
+      case 12: try { try decoder.decodeSingularBytesField(value: &self.id) }()
       default: break
       }
     }
@@ -14037,6 +14114,9 @@ extension BackupProto_NotificationProfile: SwiftProtobuf.Message, SwiftProtobuf.
     if !self.scheduleDaysEnabled.isEmpty {
       try visitor.visitPackedEnumField(value: self.scheduleDaysEnabled, fieldNumber: 11)
     }
+    if !self.id.isEmpty {
+      try visitor.visitSingularBytesField(value: self.id, fieldNumber: 12)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -14052,6 +14132,7 @@ extension BackupProto_NotificationProfile: SwiftProtobuf.Message, SwiftProtobuf.
     if lhs.scheduleStartTime != rhs.scheduleStartTime {return false}
     if lhs.scheduleEndTime != rhs.scheduleEndTime {return false}
     if lhs.scheduleDaysEnabled != rhs.scheduleDaysEnabled {return false}
+    if lhs.id != rhs.id {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -14081,6 +14162,7 @@ extension BackupProto_ChatFolder: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     6: .same(proto: "folderType"),
     7: .same(proto: "includedRecipientIds"),
     8: .same(proto: "excludedRecipientIds"),
+    9: .same(proto: "id"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -14097,6 +14179,7 @@ extension BackupProto_ChatFolder: SwiftProtobuf.Message, SwiftProtobuf._MessageI
       case 6: try { try decoder.decodeSingularEnumField(value: &self.folderType) }()
       case 7: try { try decoder.decodeRepeatedUInt64Field(value: &self.includedRecipientIds) }()
       case 8: try { try decoder.decodeRepeatedUInt64Field(value: &self.excludedRecipientIds) }()
+      case 9: try { try decoder.decodeSingularBytesField(value: &self.id) }()
       default: break
       }
     }
@@ -14127,6 +14210,9 @@ extension BackupProto_ChatFolder: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     if !self.excludedRecipientIds.isEmpty {
       try visitor.visitPackedUInt64Field(value: self.excludedRecipientIds, fieldNumber: 8)
     }
+    if !self.id.isEmpty {
+      try visitor.visitSingularBytesField(value: self.id, fieldNumber: 9)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -14139,6 +14225,7 @@ extension BackupProto_ChatFolder: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     if lhs.folderType != rhs.folderType {return false}
     if lhs.includedRecipientIds != rhs.includedRecipientIds {return false}
     if lhs.excludedRecipientIds != rhs.excludedRecipientIds {return false}
+    if lhs.id != rhs.id {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

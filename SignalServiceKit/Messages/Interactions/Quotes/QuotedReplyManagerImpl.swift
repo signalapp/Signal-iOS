@@ -857,11 +857,13 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             {
                 mimeType = attachment.mimeType
                 if
-                    let pointer = attachment.asTransitTierPointer()
+                    let pointer = attachment.asTransitTierPointer(),
+                    case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = pointer.info.integrityCheck
                 {
                     let attachmentProto = attachmentManager.buildProtoForSending(
                         from: attachmentRef,
-                        pointer: pointer
+                        pointer: pointer,
+                        digestSHA256Ciphertext: digestSHA256Ciphertext
                     )
                     builder.setThumbnail(attachmentProto)
                 }

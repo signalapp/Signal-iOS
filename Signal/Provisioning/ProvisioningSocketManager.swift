@@ -252,6 +252,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
 
         var capabilities = [DeviceProvisioningURL.Capability]()
         if shouldLinkAndSync {
+            capabilities.append(DeviceProvisioningURL.Capability.legacy_linknsync)
             capabilities.append(DeviceProvisioningURL.Capability.linknsync)
         }
 

@@ -112,6 +112,10 @@ extension Attachment {
             mediaTierInfo: MediaTierInfo?,
             thumbnailMediaTierInfo: ThumbnailMediaTierInfo?
         ) -> ConstructionParams {
+            owsPrecondition(
+                (sha256ContentHash == nil) == (mediaName == nil),
+                "Either both hash and mediaName set or neither set"
+            )
             return .init(
                 blurHash: blurHash,
                 mimeType: mimeType,
@@ -178,6 +182,7 @@ extension Attachment {
             validatedMimeType: String,
             streamInfo: Attachment.StreamInfo,
             sha256ContentHash: Data,
+            digestSHA256Ciphertext: Data,
             mediaName: String,
             lastFullscreenViewTimestamp: UInt64?,
         ) -> ConstructionParams {
@@ -188,7 +193,13 @@ extension Attachment {
                     uploadTimestamp: $0.uploadTimestamp,
                     encryptionKey: $0.encryptionKey,
                     unencryptedByteCount: $0.unencryptedByteCount,
-                    digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
+                    // Whatever the integrity check was before, we now want it
+                    // to be the ciphertext digest NOT the plaintext hash.
+                    // We disallow reusing existing transit tier info when
+                    // forwarding if it doesn't have a digest, as digest is
+                    // required on the outgoing proto. So to allow forwarding
+                    // (where otherwise applicable) set the digest here.
+                    integrityCheck: .digestSHA256Ciphertext(digestSHA256Ciphertext),
                     incrementalMacInfo: $0.incrementalMacInfo,
                     // Wipe the last download attempt time; its now succeeded.
                     lastDownloadAttemptTimestamp: nil
@@ -221,7 +232,7 @@ extension Attachment {
                     uploadTimestamp: $0.uploadTimestamp,
                     encryptionKey: $0.encryptionKey,
                     unencryptedByteCount: $0.unencryptedByteCount,
-                    digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
+                    integrityCheck: $0.integrityCheck,
                     incrementalMacInfo: $0.incrementalMacInfo,
                     lastDownloadAttemptTimestamp: timestamp
                 )
@@ -374,7 +385,7 @@ extension Attachment {
                 return Attachment.MediaTierInfo(
                     cdnNumber: $0.cdnNumber,
                     unencryptedByteCount: $0.unencryptedByteCount,
-                    digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
+                    sha256ContentHash: $0.sha256ContentHash,
                     incrementalMacInfo: $0.incrementalMacInfo,
                     uploadEra: $0.uploadEra,
                     // Wipe the last download attempt time; its now succeeded.
@@ -405,7 +416,7 @@ extension Attachment {
                 return Attachment.MediaTierInfo(
                     cdnNumber: $0.cdnNumber,
                     unencryptedByteCount: $0.unencryptedByteCount,
-                    digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
+                    sha256ContentHash: $0.sha256ContentHash,
                     incrementalMacInfo: $0.incrementalMacInfo,
                     uploadEra: $0.uploadEra,
                     lastDownloadAttemptTimestamp: timestamp
@@ -529,10 +540,15 @@ extension Attachment {
                 mimeType: mimeType,
                 encryptionKey: encryptionKey,
                 streamInfo: streamInfo,
-                // We preserve the transit tier info even if everything else
+                // We preserve the transit tier info even if the encrytion key
                 // changes underneath because it has its own copy of encryption
                 // key, digest, etc, and can therefore be encrypted differently
                 // than the local copy.
+                // We _would_ need to remove it if we changed the plaintext hash
+                // of the underlying attachment, but that's not possible; we get
+                // here by having a plaintext hash or mediaName collision, and
+                // either of those mean the plaintext hash isn't changing (since
+                // the plaintext hash is literally part of the mediaName).
                 transitTierInfo: attachment.transitTierInfo,
                 sha256ContentHash: streamInfo.sha256ContentHash,
                 mediaName: streamInfo.mediaName,

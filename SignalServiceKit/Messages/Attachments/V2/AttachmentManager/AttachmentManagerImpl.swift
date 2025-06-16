@@ -398,7 +398,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             uploadTimestamp: proto.uploadTimestamp,
             encryptionKey: encryptionKey,
             unencryptedByteCount: proto.size,
-            digestSHA256Ciphertext: digestSHA256Ciphertext,
+            integrityCheck: .digestSHA256Ciphertext(digestSHA256Ciphertext),
             // TODO: [Attachment Streaming] Extract incremental MAC info from the attachment pointer.
             incrementalMacInfo: nil,
             lastDownloadAttemptTimestamp: nil
@@ -480,25 +480,26 @@ public class AttachmentManagerImpl: AttachmentManager {
                     sourceUnencryptedByteCount = nil
                 }
 
-                let mediaTierCdnNumber = proto.locatorInfo.hasMediaTierCdnNumber ? proto.locatorInfo.mediaTierCdnNumber : nil
-                if
-                    let mediaName = proto.locatorInfo.mediaName.nilIfEmpty
-                {
-                    guard let digestSHA256Ciphertext = proto.locatorInfo.digest.nilIfEmpty else {
-                        return .failure(.missingDigest)
+                switch proto.locatorInfo.integrityCheck {
+                case .plaintextHash(let sha256ContentHash):
+                    if sha256ContentHash.isEmpty {
+                        fallthrough
                     }
+                    let mediaTierCdnNumber = proto.locatorInfo.hasMediaTierCdnNumber ? proto.locatorInfo.mediaTierCdnNumber : nil
                     attachmentParams = .fromBackup(
                         blurHash: proto.blurHash.nilIfEmpty,
                         mimeType: mimeType,
                         encryptionKey: encryptionKey,
                         transitTierInfo: transitTierInfo,
-                        // TODO: [Backups] restore this from proto if present
-                        sha256ContentHash: nil,
-                        mediaName: mediaName,
+                        sha256ContentHash: sha256ContentHash,
+                        mediaName: Attachment.mediaName(
+                            sha256ContentHash: sha256ContentHash,
+                            encryptionKey: encryptionKey
+                        ),
                         mediaTierInfo: .init(
                             cdnNumber: mediaTierCdnNumber,
                             unencryptedByteCount: proto.locatorInfo.size,
-                            digestSHA256Ciphertext: digestSHA256Ciphertext,
+                            sha256ContentHash: sha256ContentHash,
                             incrementalMacInfo: incrementalMacInfo,
                             uploadEra: uploadEra,
                             lastDownloadAttemptTimestamp: nil
@@ -512,23 +513,24 @@ public class AttachmentManagerImpl: AttachmentManager {
                             lastDownloadAttemptTimestamp: nil
                         )
                     )
-                } else if let transitTierInfo {
-                    attachmentParams = .fromBackup(
-                        blurHash: proto.blurHash.nilIfEmpty,
-                        mimeType: mimeType,
-                        encryptionKey: encryptionKey,
-                        transitTierInfo: transitTierInfo,
-                        // TODO: [Backups] restore this from proto if present
-                        sha256ContentHash: nil,
-                        mediaName: nil,
-                        mediaTierInfo: nil,
-                        thumbnailMediaTierInfo: nil
-                    )
-                } else {
-                    attachmentParams = .forInvalidBackupAttachment(
-                        blurHash: proto.blurHash.nilIfEmpty,
-                        mimeType: mimeType
-                    )
+                case .encryptedDigest, .none:
+                    if let transitTierInfo {
+                        attachmentParams = .fromBackup(
+                            blurHash: proto.blurHash.nilIfEmpty,
+                            mimeType: mimeType,
+                            encryptionKey: encryptionKey,
+                            transitTierInfo: transitTierInfo,
+                            sha256ContentHash: nil,
+                            mediaName: nil,
+                            mediaTierInfo: nil,
+                            thumbnailMediaTierInfo: nil
+                        )
+                    } else {
+                        attachmentParams = .forInvalidBackupAttachment(
+                            blurHash: proto.blurHash.nilIfEmpty,
+                            mimeType: mimeType
+                        )
+                    }
                 }
             } else {
                 attachmentParams = .forInvalidBackupAttachment(
@@ -540,17 +542,13 @@ public class AttachmentManagerImpl: AttachmentManager {
         } else {
             switch proto.locator {
             case .backupLocator(let backupLocator):
-                let mediaTierCdnNumber = backupLocator.hasCdnNumber ? backupLocator.cdnNumber : nil
-                guard let mediaName = backupLocator.mediaName.nilIfEmpty else {
-                    return .failure(.missingMediaName)
-                }
                 guard let encryptionKey = backupLocator.key.nilIfEmpty else {
                     return .failure(.missingEncryptionKey)
                 }
-                guard let digestSHA256Ciphertext = backupLocator.digest.nilIfEmpty else {
-                    return .failure(.missingDigest)
-                }
 
+                // We no longer support importing backup media tier info from legacy locators.
+                // This is fine because any client will backups enabled that might actually have
+                // something on media tier will also be using the new LocatorInfo.
                 let transitTierInfo: Attachment.TransitTierInfo?
                 switch self.transitTierInfo(from: backupLocator, incrementalMacInfo: incrementalMacInfo) {
                 case .success(let value):
@@ -559,34 +557,19 @@ public class AttachmentManagerImpl: AttachmentManager {
                     return .failure(error)
                 }
 
-                attachmentParams = .fromBackup(
-                    blurHash: proto.blurHash.nilIfEmpty,
-                    mimeType: mimeType,
-                    encryptionKey: encryptionKey,
-                    transitTierInfo: transitTierInfo,
-                    // Legacy locator protos will never have plaintext hash
-                    sha256ContentHash: nil,
-                    mediaName: mediaName,
-                    mediaTierInfo: .init(
-                        cdnNumber: mediaTierCdnNumber,
-                        unencryptedByteCount: backupLocator.size,
-                        digestSHA256Ciphertext: digestSHA256Ciphertext,
-                        incrementalMacInfo: incrementalMacInfo,
-                        uploadEra: uploadEra,
-                        lastDownloadAttemptTimestamp: nil
-                    ),
-                    thumbnailMediaTierInfo: .init(
-                        // Assume the thumbnail uses the same cdn as fullsize;
-                        // this _can_ go wrong if the server changes cdns between
-                        // the two uploads but worst case we lose the thumbnail.
-                        cdnNumber: mediaTierCdnNumber,
-                        uploadEra: uploadEra,
-                        lastDownloadAttemptTimestamp: nil
+                if let transitTierInfo {
+                    attachmentParams = .fromPointer(
+                        blurHash: proto.blurHash.nilIfEmpty,
+                        mimeType: mimeType,
+                        encryptionKey: encryptionKey,
+                        transitTierInfo: transitTierInfo
                     )
-                )
-                if backupLocator.size > 0 {
-                    sourceUnencryptedByteCount = backupLocator.size
+                    sourceUnencryptedByteCount = transitTierInfo.unencryptedByteCount
                 } else {
+                    attachmentParams = .forInvalidBackupAttachment(
+                        blurHash: proto.blurHash.nilIfEmpty,
+                        mimeType: mimeType
+                    )
                     sourceUnencryptedByteCount = nil
                 }
             case .attachmentLocator(let attachmentLocator):
@@ -705,7 +688,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             uploadTimestamp: Date().ows_millisecondsSince1970,
             encryptionKey: backupLocator.key,
             unencryptedByteCount: unencryptedByteCount,
-            digestSHA256Ciphertext: backupLocator.digest,
+            integrityCheck: .digestSHA256Ciphertext(backupLocator.digest),
             incrementalMacInfo: incrementalMacInfo,
             lastDownloadAttemptTimestamp: nil
         ))
@@ -762,7 +745,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             uploadTimestamp: attachmentLocator.uploadTimestamp,
             encryptionKey: attachmentLocator.key,
             unencryptedByteCount: unencryptedByteCount,
-            digestSHA256Ciphertext: attachmentLocator.digest,
+            integrityCheck: .digestSHA256Ciphertext(attachmentLocator.digest),
             incrementalMacInfo: incrementalMacInfo,
             lastDownloadAttemptTimestamp: nil
         ))
@@ -801,7 +784,25 @@ public class AttachmentManagerImpl: AttachmentManager {
             uploadTimestampMs = 0
         }
 
-        guard locatorInfo.digest.count > 0 else { return .failure(.missingDigest) }
+        let integrityCheck: AttachmentIntegrityCheck
+        switch locatorInfo.integrityCheck {
+        case .plaintextHash(let data):
+            guard !data.isEmpty else {
+                return .success(nil)
+            }
+            integrityCheck = .sha256ContentHash(data)
+        case .encryptedDigest(let data):
+            guard !data.isEmpty else {
+                return .success(nil)
+            }
+            integrityCheck = .digestSHA256Ciphertext(data)
+        case .none:
+            if let legacyDigest = locatorInfo.legacyDigest.nilIfEmpty {
+                integrityCheck = .digestSHA256Ciphertext(legacyDigest)
+            } else {
+                return .success(nil)
+            }
+        }
 
         return .success(Attachment.TransitTierInfo(
             cdnNumber: locatorInfo.transitCdnNumber,
@@ -809,7 +810,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             uploadTimestamp: uploadTimestampMs,
             encryptionKey: locatorInfo.key,
             unencryptedByteCount: unencryptedByteCount,
-            digestSHA256Ciphertext: locatorInfo.digest,
+            integrityCheck: integrityCheck,
             incrementalMacInfo: incrementalMacInfo,
             lastDownloadAttemptTimestamp: nil
         ))

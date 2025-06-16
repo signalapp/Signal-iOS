@@ -147,13 +147,17 @@ public class MessageStickerManagerImpl: MessageStickerManager {
             throw OWSAssertionError("Could not find sticker attachment")
         }
 
-        guard let attachmentPointer = attachment.attachment.asTransitTierPointer() else {
+        guard
+            let attachmentPointer = attachment.attachment.asTransitTierPointer(),
+            case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = attachmentPointer.info.integrityCheck
+        else {
             throw OWSAssertionError("Generating proto for non-uploaded attachment!")
         }
 
         let attachmentProto = attachmentManager.buildProtoForSending(
             from: attachment.reference,
-            pointer: attachmentPointer
+            pointer: attachmentPointer,
+            digestSHA256Ciphertext: digestSHA256Ciphertext
         )
 
         let protoBuilder = SSKProtoDataMessageSticker.builder(

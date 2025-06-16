@@ -71,23 +71,23 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         return pendingAttachment
     }
 
-    public func validateContents(
+    public func validateDownloadedContents(
         ofEncryptedFileAt fileUrl: URL,
         encryptionKey: Data,
         plaintextLength: UInt32?,
-        digestSHA256Ciphertext: Data,
+        integrityCheck: AttachmentIntegrityCheck,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> PendingAttachment {
-        // Very very first thing: validate the digest.
+        // Very very first thing: validate the integrity check.
         // Throw if this fails.
         var decryptedLength = 0
         try Cryptography.decryptFile(
             at: fileUrl,
             metadata: .init(
                 key: encryptionKey,
-                digest: digestSHA256Ciphertext,
+                integrityCheck: integrityCheck,
                 plaintextLength: plaintextLength.map(Int.init)
             ),
             output: { data in
@@ -100,7 +100,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             fileUrl,
             encryptionKey: encryptionKey,
             plaintextLength: plaintextLength,
-            digestSHA256Ciphertext: digestSHA256Ciphertext
+            integrityCheck: integrityCheck
         )
         return try validateContents(
             input: input,
@@ -121,8 +121,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             fileUrl,
             encryptionKey: encryptionKey,
             plaintextLength: plaintextLength,
-            // No need to validate digest
-            digestSHA256Ciphertext: nil
+            // No need to validate integrity check
+            integrityCheck: nil
         )
         var mimeType = mimeType
         let contentTypeResult = try validateContentType(
@@ -140,8 +140,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     public func validateContents(
         ofBackupMediaFileAt fileUrl: URL,
-        outerEncryptionData: EncryptionMetadata,
-        innerEncryptionData: EncryptionMetadata,
+        outerDecryptionData: DecryptionMetadata,
+        innerDecryptionData: DecryptionMetadata,
         finalEncryptionKey: Data,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
@@ -154,19 +154,19 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let tmpFileUrl = OWSFileSystem.temporaryFileUrl()
         try Cryptography.decryptFile(
             at: fileUrl,
-            metadata: outerEncryptionData,
+            metadata: outerDecryptionData,
             output: tmpFileUrl
         )
 
-        // Get plaintext length if not given, and validate digest if given.
+        // Get plaintext length if not given, and validate integrity check if given.
         let plaintextLength: Int
-        if let innerPlainTextLength = innerEncryptionData.plaintextLength, innerEncryptionData.digest == nil {
+        if let innerPlainTextLength = innerDecryptionData.plaintextLength, innerDecryptionData.integrityCheck == nil {
             plaintextLength = innerPlainTextLength
         } else {
             var decryptedLength = 0
             try Cryptography.decryptFile(
                 at: tmpFileUrl,
-                metadata: innerEncryptionData,
+                metadata: innerDecryptionData,
                 output: { data in
                     decryptedLength += data.count
                 }
@@ -176,9 +176,9 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
         let input = Input.encryptedFile(
             tmpFileUrl,
-            encryptionKey: innerEncryptionData.key,
+            encryptionKey: innerDecryptionData.key,
             plaintextLength: UInt32(plaintextLength),
-            digestSHA256Ciphertext: innerEncryptionData.digest
+            integrityCheck: innerDecryptionData.integrityCheck
         )
         return try validateContents(
             input: input,
@@ -293,7 +293,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             URL,
             encryptionKey: Data,
             plaintextLength: UInt32,
-            digestSHA256Ciphertext: Data?
+            integrityCheck: AttachmentIntegrityCheck?
         )
     }
 
@@ -750,12 +750,9 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             input: input,
             encryptionKey: encryptionKey
         )
-        guard let primaryFileDigest = primaryFileMetadata.digest else {
-            throw OWSAssertionError("No digest in output")
-        }
+        let primaryFileDigest = primaryFileMetadata.digest
         guard
-            let primaryPlaintextLength = primaryFileMetadata.plaintextLength
-                .map(UInt32.init(exactly:)) ?? nil
+            let primaryPlaintextLength = UInt32.init(exactly: primaryFileMetadata.plaintextLength)
         else {
             throw OWSAssertionError("File too large")
         }
@@ -896,11 +893,6 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 encryptionKey: encryptionKey,
                 applyExtraPadding: true
             )
-            // We'll unwrap the digest again later, but unwrap and fail
-            // early so we don't waste time writing bytes to disk.
-            guard encryptionMetadata.digest != nil else {
-                throw OWSAssertionError("No digest in output")
-            }
             let outputFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             try encryptedData.write(to: outputFile)
             return (
@@ -924,7 +916,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 ),
                 encryptionMetadata
             )
-        case .encryptedFile(let fileUrl, let inputEncryptionKey, let plaintextLength, let digestParam):
+        case .encryptedFile(let fileUrl, let inputEncryptionKey, let plaintextLength, let integrityCheckParam):
             // If the input and output encryption keys are the same
             // the file is already encrypted, so nothing to encrypt.
             // Just compute the digest if we don't already have it.
@@ -932,10 +924,16 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             // and pass back the updated encryption metadata
             if inputEncryptionKey == encryptionKey {
 
+                guard let encryptedLength = OWSFileSystem.fileSize(of: fileUrl)?.intValue else {
+                    throw OWSAssertionError("Unable to get file length")
+                }
+
                 let digest: Data
-                if let digestParam {
+                switch integrityCheckParam {
+                case .digestSHA256Ciphertext(let digestParam):
+                    // We separately verify the digest from the integrity check, so use it here.
                     digest = digestParam
-                } else {
+                case nil, .sha256ContentHash:
                     // Compute the digest over the entire encrypted file.
                     digest = try Cryptography.computeSHA256DigestOfFile(at: fileUrl)
                 }
@@ -947,6 +945,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                     EncryptionMetadata(
                         key: encryptionKey,
                         digest: digest,
+                        length: encryptedLength,
                         plaintextLength: Int(plaintextLength)
                     )
                 )

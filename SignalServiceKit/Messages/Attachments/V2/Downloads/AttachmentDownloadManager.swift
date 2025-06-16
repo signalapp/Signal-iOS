@@ -25,11 +25,11 @@ public enum AttachmentDownloads {
         public let source: Source
 
         public enum Source {
-            case transitTier(cdnKey: String, digest: Data, plaintextLength: UInt32?)
+            case transitTier(cdnKey: String, integrityCheck: AttachmentIntegrityCheck, plaintextLength: UInt32?)
             case mediaTierFullsize(
                 cdnReadCredential: MediaTierReadCredential,
                 outerEncryptionMetadata: MediaTierEncryptionMetadata,
-                digest: Data,
+                integrityCheck: AttachmentIntegrityCheck,
                 plaintextLength: UInt32?
             )
             case mediaTierThumbnail(
@@ -53,17 +53,17 @@ public enum AttachmentDownloads {
             }
         }
 
-        public var digest: Data? {
+        public var integrityCheck: AttachmentIntegrityCheck? {
             switch source {
-            case .transitTier(_, let digest, _):
-                return digest
-            case .mediaTierFullsize(_, _, let digest, _):
-                return digest
+            case .transitTier(_, let integrityCheck, _):
+                return integrityCheck
+            case .mediaTierFullsize(_, _, let integrityCheck, _):
+                return integrityCheck
             case .mediaTierThumbnail:
-                // No digest for media tier thumbnails; they come from the local user.
+                // No integrityCheck for media tier thumbnails; they come from the local user.
                 return nil
             case .linkNSyncBackup:
-                // No digest for link'n'sync backups; they come from the local user.
+                // No integrityCheck for link'n'sync backups; they come from the local user.
                 return nil
             }
         }

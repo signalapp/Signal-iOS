@@ -213,11 +213,13 @@ public class ContactShareManagerImpl: ContactShareManager {
                 for: .messageContactAvatar(messageRowId: parentMessageRowId),
                 tx: tx
             ),
-            let avatarPointer = avatarAttachment.attachment.asTransitTierPointer()
+            let avatarPointer = avatarAttachment.attachment.asTransitTierPointer(),
+            case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = avatarPointer.info.integrityCheck
         {
             let attachmentProto = attachmentManager.buildProtoForSending(
                 from: avatarAttachment.reference,
-                pointer: avatarPointer
+                pointer: avatarPointer,
+                digestSHA256Ciphertext: digestSHA256Ciphertext,
             )
             let avatarBuilder = SSKProtoDataMessageContactAvatar.builder()
             avatarBuilder.setAvatar(attachmentProto)

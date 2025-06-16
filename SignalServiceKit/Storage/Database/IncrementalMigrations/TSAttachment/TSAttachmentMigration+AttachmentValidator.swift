@@ -574,12 +574,9 @@ extension TSAttachmentMigration {
                 reservedFileIds: reservedFileIds,
                 encryptionKey: encryptionKey
             )
-            guard let primaryFileDigest = primaryFileMetadata.digest else {
-                throw OWSAssertionError("No digest in output")
-            }
+            let primaryFileDigest = primaryFileMetadata.digest
             guard
-                let primaryPlaintextLength = primaryFileMetadata.plaintextLength
-                    .map(UInt32.init(exactly:)) ?? nil
+                let primaryPlaintextLength = UInt32.init(exactly: primaryFileMetadata.plaintextLength)
             else {
                 throw OWSAssertionError("File too large")
             }

@@ -704,7 +704,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     encryptionKey: transitTierInfo.encryptionKey,
                     source: .transitTier(
                         cdnKey: transitTierInfo.cdnKey,
-                        digest: transitTierInfo.digestSHA256Ciphertext,
+                        integrityCheck: transitTierInfo.integrityCheck,
                         plaintextLength: transitTierInfo.unencryptedByteCount
                     )
                 )
@@ -719,6 +719,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     downloadMetadata = nil
                     break
                 }
+                let integrityCheck = AttachmentIntegrityCheck.sha256ContentHash(mediaTierInfo.sha256ContentHash)
                 downloadMetadata = .init(
                     mimeType: attachment.mimeType,
                     cdnNumber: cdnNumber,
@@ -726,7 +727,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     source: .mediaTierFullsize(
                         cdnReadCredential: cdnCredential,
                         outerEncryptionMetadata: encryptionMetadata,
-                        digest: mediaTierInfo.digestSHA256Ciphertext,
+                        integrityCheck: integrityCheck,
                         plaintextLength: mediaTierInfo.unencryptedByteCount
                     )
                 )
@@ -1690,9 +1691,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                     try Cryptography.decryptAttachment(
                         at: encryptedFileUrl,
-                        metadata: EncryptionMetadata(
+                        metadata: DecryptionMetadata(
                             key: metadata.encryptionKey,
-                            digest: metadata.digest,
+                            integrityCheck: metadata.integrityCheck,
                             plaintextLength: metadata.plaintextLength.map(Int.init)
                         ),
                         output: outputUrl
@@ -1771,17 +1772,17 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         do {
                             let pendingAttachment: PendingAttachment
                             switch metadata.source {
-                            case .transitTier(_, let digest, let plaintextLength):
-                                pendingAttachment = try attachmentValidator.validateContents(
+                            case .transitTier(_, let integrityCheck, let plaintextLength):
+                                pendingAttachment = try attachmentValidator.validateDownloadedContents(
                                     ofEncryptedFileAt: encryptedFileUrl,
                                     encryptionKey: metadata.encryptionKey,
                                     plaintextLength: plaintextLength,
-                                    digestSHA256Ciphertext: digest,
+                                    integrityCheck: integrityCheck,
                                     mimeType: metadata.mimeType,
                                     renderingFlag: .default,
                                     sourceFilename: nil
                                 )
-                            case .mediaTierFullsize(_, let outerEncryptionMetadata, let digest, let plaintextLength):
+                            case .mediaTierFullsize(_, let outerEncryptionMetadata, let integrityCheck, let plaintextLength):
                                 let innerPlaintextLength: Int? = {
                                     guard let plaintextLength else { return nil }
                                     return Int(plaintextLength)
@@ -1789,10 +1790,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                                 pendingAttachment = try attachmentValidator.validateContents(
                                     ofBackupMediaFileAt: encryptedFileUrl,
-                                    outerEncryptionData: EncryptionMetadata(key: outerEncryptionMetadata.encryptionKey),
-                                    innerEncryptionData: EncryptionMetadata(
+                                    outerDecryptionData: DecryptionMetadata(key: outerEncryptionMetadata.encryptionKey),
+                                    innerDecryptionData: DecryptionMetadata(
                                         key: metadata.encryptionKey,
-                                        digest: digest,
+                                        integrityCheck: integrityCheck,
                                         plaintextLength: innerPlaintextLength
                                     ),
                                     finalEncryptionKey: metadata.encryptionKey,
@@ -1803,8 +1804,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             case .mediaTierThumbnail(_, let outerEncryptionMetadata, let innerEncryptionData):
                                 pendingAttachment = try attachmentValidator.validateContents(
                                     ofBackupMediaFileAt: encryptedFileUrl,
-                                    outerEncryptionData: EncryptionMetadata(key: outerEncryptionMetadata.encryptionKey),
-                                    innerEncryptionData: EncryptionMetadata(key: innerEncryptionData.encryptionKey),
+                                    outerDecryptionData: DecryptionMetadata(key: outerEncryptionMetadata.encryptionKey),
+                                    innerDecryptionData: DecryptionMetadata(key: innerEncryptionData.encryptionKey),
                                     finalEncryptionKey: metadata.encryptionKey,
                                     mimeType: metadata.mimeType,
                                     renderingFlag: .default,

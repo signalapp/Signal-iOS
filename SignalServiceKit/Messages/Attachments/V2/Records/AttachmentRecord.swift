@@ -13,7 +13,7 @@ extension Attachment {
 
         var sqliteId: IDType?
         let blurHash: String?
-        let sha256ContentHash: Data?
+        var sha256ContentHash: Data?
         let encryptedByteCount: UInt32?
         let unencryptedByteCount: UInt32?
         let mimeType: String
@@ -29,7 +29,6 @@ extension Attachment {
         let lastTransitDownloadAttemptTimestamp: UInt64?
         let mediaName: String?
         let mediaTierCdnNumber: UInt32?
-        let mediaTierDigestSHA256Ciphertext: Data?
         let mediaTierUnencryptedByteCount: UInt32?
         let mediaTierUploadEra: String?
         let lastMediaTierDownloadAttemptTimestamp: UInt64?
@@ -74,7 +73,6 @@ extension Attachment {
             case mediaTierCdnNumber
             case mediaTierUnencryptedByteCount
             case mediaTierUploadEra
-            case mediaTierDigestSHA256Ciphertext
             case lastMediaTierDownloadAttemptTimestamp
             case thumbnailCdnNumber
             case thumbnailUploadEra
@@ -138,7 +136,6 @@ extension Attachment {
             lastTransitDownloadAttemptTimestamp: UInt64?,
             mediaName: String?,
             mediaTierCdnNumber: UInt32?,
-            mediaTierDigestSHA256Ciphertext: Data?,
             mediaTierUnencryptedByteCount: UInt32?,
             mediaTierUploadEra: String?,
             lastMediaTierDownloadAttemptTimestamp: UInt64?,
@@ -178,7 +175,6 @@ extension Attachment {
             self.lastTransitDownloadAttemptTimestamp = lastTransitDownloadAttemptTimestamp
             self.mediaName = mediaName
             self.mediaTierCdnNumber = mediaTierCdnNumber
-            self.mediaTierDigestSHA256Ciphertext = mediaTierDigestSHA256Ciphertext
             self.mediaTierUnencryptedByteCount = mediaTierUnencryptedByteCount
             self.mediaTierUploadEra = mediaTierUploadEra
             self.lastMediaTierDownloadAttemptTimestamp = lastMediaTierDownloadAttemptTimestamp
@@ -299,13 +295,17 @@ extension Attachment {
             self.transitUploadTimestamp = transitTierInfo?.uploadTimestamp
             self.transitEncryptionKey = transitTierInfo?.encryptionKey
             self.transitUnencryptedByteCount = transitTierInfo?.unencryptedByteCount
-            self.transitDigestSHA256Ciphertext = transitTierInfo?.digestSHA256Ciphertext
+            switch transitTierInfo?.integrityCheck {
+            case .digestSHA256Ciphertext(let data):
+                self.transitDigestSHA256Ciphertext = data
+            case nil, .sha256ContentHash:
+                self.transitDigestSHA256Ciphertext = nil
+            }
             self.transitTierIncrementalMac = transitTierInfo?.incrementalMacInfo?.mac
             self.transitTierIncrementalMacChunkSize = transitTierInfo?.incrementalMacInfo?.chunkSize
             self.lastTransitDownloadAttemptTimestamp = transitTierInfo?.lastDownloadAttemptTimestamp
             self.mediaName = mediaName
             self.mediaTierCdnNumber = mediaTierInfo?.cdnNumber
-            self.mediaTierDigestSHA256Ciphertext = mediaTierInfo?.digestSHA256Ciphertext
             self.mediaTierUnencryptedByteCount = mediaTierInfo?.unencryptedByteCount
             self.mediaTierIncrementalMac = mediaTierInfo?.incrementalMacInfo?.mac
             self.mediaTierIncrementalMacChunkSize = mediaTierInfo?.incrementalMacInfo?.chunkSize
