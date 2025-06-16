@@ -38,11 +38,14 @@ class OWSProgressTest: XCTestCase {
     func testTwoSources() async {
         let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
-                var outputs = [UInt64]()
+                let outputs = AtomicValue<[UInt64]>([], lock: .init())
                 let sink = OWSProgress.createSink { progress in
-                    outputs.append(progress.completedUnitCount)
+                    let _outputs = outputs.update {
+                        $0.append(progress.completedUnitCount)
+                        return $0
+                    }
                     if progress.isFinished {
-                        outputsContinuation.resume(returning: outputs)
+                        outputsContinuation.resume(returning: _outputs)
                     }
                 }
                 let source1 = await sink.addSource(withLabel: "1", unitCount: 50)
