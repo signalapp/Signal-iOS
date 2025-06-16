@@ -68,11 +68,7 @@ public class AudioAttachment {
     ) {
         let audioDurationSeconds: TimeInterval
         switch attachmentStream.attachmentStream.contentType {
-        case .audio(var duration, _):
-            // TODO: Remove & replace with a full fix to recompute the duration for invalid files.
-            if duration <= 0 {
-                duration = Self.cachedAudioDuration(forAttachment: attachmentStream.attachmentStream)
-            }
+        case .audio(let duration, _):
             if duration <= 0 {
                 fallthrough
             }
@@ -109,24 +105,6 @@ public class AudioAttachment {
         }
         self.receivedAtDate = receivedAtDate
         self.owningMessage = owningMessage
-    }
-
-    private static let cachedAttachmentDurations = AtomicDictionary<Int64, TimeInterval>([:], lock: .init())
-    private static func cachedAudioDuration(forAttachment attachmentStream: AttachmentStream) -> TimeInterval {
-        let attachmentId = attachmentStream.attachment.id
-        if let cachedDuration = cachedAttachmentDurations[attachmentId] {
-            return cachedDuration
-        }
-        let computedDuration: TimeInterval
-        do {
-            let asset = try attachmentStream.decryptedAVAsset()
-            computedDuration = asset.duration.seconds
-        } catch {
-            Logger.warn("Couldn't compute fallback duration: \(error)")
-            computedDuration = 0
-        }
-        cachedAttachmentDurations[attachmentId] = computedDuration
-        return computedDuration
     }
 }
 
