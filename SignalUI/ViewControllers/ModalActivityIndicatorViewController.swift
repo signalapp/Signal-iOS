@@ -137,6 +137,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         return try await withCheckedThrowingContinuation { continuation in
             present(
                 fromViewController: viewController,
+                canCancel: false,
                 presentationDelay: presentationDelay,
                 asyncBlock: { modal in
                     let result = await Result(catching: wrappedAsyncBlock)

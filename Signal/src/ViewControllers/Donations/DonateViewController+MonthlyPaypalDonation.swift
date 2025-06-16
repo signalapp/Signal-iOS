@@ -21,50 +21,37 @@ extension DonateViewController {
             owsFail("[Donations] Invalid state; cannot pay")
         }
 
-        Logger.info("[Donations] Starting monthly PayPal donation")
+        Task {
+            do {
+                Logger.info("[Donations] Starting monthly PayPal donation")
+                let (subscriberId, authorizationParams) = try await self.preparePaypalSubscriptionBehindActivityIndicator(
+                    monthlyState: monthly,
+                    selectedSubscriptionLevel: selectedSubscriptionLevel
+                )
+                let paymentMethodId = authorizationParams.paymentMethodId
 
-        firstly(on: DispatchQueue.main) { () -> Promise<(Data, Paypal.SubscriptionAuthorizationParams)> in
-            self.preparePaypalSubscriptionBehindActivityIndicator(
-                monthlyState: monthly,
-                selectedSubscriptionLevel: selectedSubscriptionLevel
-            )
-        }.then(on: DispatchQueue.main) { (subscriberId, authorizationParams) -> Promise<(Data, String)> in
-            Logger.info("[Donations] Authorizing payment for new monthly subscription with PayPal")
-
-            return Promise.wrapAsync { () async throws -> Paypal.MonthlyPaymentWebAuthApprovalParams in
-                return try await Paypal.presentExpectingApprovalParams(
+                Logger.info("[Donations] Authorizing payment for new monthly subscription with PayPal")
+                _ = try await Paypal.presentExpectingApprovalParams(
                     approvalUrl: authorizationParams.approvalUrl,
                     withPresentationContext: self
+                ) as Paypal.MonthlyPaymentWebAuthApprovalParams
+
+                try await self.finalizePaypalSubscriptionBehindProgressView(
+                    subscriberId: subscriberId,
+                    paymentMethodId: paymentMethodId,
+                    monthlyState: monthly,
+                    selectedSubscriptionLevel: selectedSubscriptionLevel
                 )
-            }.map(on: DispatchQueue.sharedUserInitiated) { _ in
-                (subscriberId, authorizationParams.paymentMethodId)
-            }
-        }.then(on: DispatchQueue.main) { (subscriberId, paymentMethodId) -> Promise<Void> in
-            self.finalizePaypalSubscriptionBehindProgressView(
-                subscriberId: subscriberId,
-                paymentMethodId: paymentMethodId,
-                monthlyState: monthly,
-                selectedSubscriptionLevel: selectedSubscriptionLevel
-            )
-        }.done(on: DispatchQueue.main) { () throws in
-            Logger.info("[Donations] Monthly PayPal donation finished")
 
-            self.didCompleteDonation(
-                receiptCredentialSuccessMode: .recurringSubscriptionInitiation
-            )
-        }.catch(on: DispatchQueue.main) { [weak self] error in
-            guard let self else { return }
-
-            if let webAuthError = error as? Paypal.AuthError {
-                switch webAuthError {
-                case .userCanceled:
-                    Logger.info("[Donations] Monthly PayPal donation canceled")
-
-                    self.didCancelDonation()
-                }
-            } else {
+                Logger.info("[Donations] Monthly PayPal donation finished")
+                self.didCompleteDonation(
+                    receiptCredentialSuccessMode: .recurringSubscriptionInitiation
+                )
+            } catch Paypal.AuthError.userCanceled {
+                Logger.info("[Donations] Monthly PayPal donation canceled")
+                self.didCancelDonation()
+            } catch {
                 Logger.info("[Donations] Monthly PayPal donation failed")
-
                 self.didFailDonation(
                     error: error,
                     mode: .monthly,
@@ -76,7 +63,7 @@ extension DonateViewController {
     }
 
     /// Prepare a PayPal subscription for web authentication behind blocking
-    /// UI. Must be called on the main thread.
+    /// UI.
     ///
     /// - Returns
     /// A subscriber ID and parameters for authorizing the subscription via web
@@ -84,92 +71,60 @@ extension DonateViewController {
     private func preparePaypalSubscriptionBehindActivityIndicator(
         monthlyState monthly: State.MonthlyState,
         selectedSubscriptionLevel: DonationSubscriptionLevel
-    ) -> Promise<(Data, Paypal.SubscriptionAuthorizationParams)> {
-        AssertIsOnMainThread()
-
-        let (promise, future) = Promise<(Data, Paypal.SubscriptionAuthorizationParams)>.pending()
-
-        ModalActivityIndicatorViewController.present(
-            fromViewController: self,
-            canCancel: false
-        ) { modal in
-            firstly { () -> Promise<Void> in
+    ) async throws -> (Data, Paypal.SubscriptionAuthorizationParams) {
+        return try await ModalActivityIndicatorViewController.presentAndPropagateResult(
+            from: self,
+            wrappedAsyncBlock: {
                 if let existingSubscriberId = monthly.subscriberID {
                     Logger.info("[Donations] Cancelling existing subscription")
-
-                    return Promise.wrapAsync {
-                        try await DonationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
-                    }
+                    try await DonationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
                 } else {
                     Logger.info("[Donations] No existing subscription to cancel")
-
-                    return Promise.value(())
                 }
-            }.then(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Data> in
+
                 Logger.info("[Donations] Preparing new monthly subscription with PayPal")
+                let subscriberId = try await DonationSubscriptionManager.prepareNewSubscription(
+                    currencyCode: monthly.selectedCurrencyCode
+                )
 
-                return Promise.wrapAsync {
-                    try await DonationSubscriptionManager.prepareNewSubscription(
-                        currencyCode: monthly.selectedCurrencyCode
-                    )
-                }
-            }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId -> Promise<(Data, Paypal.SubscriptionAuthorizationParams)> in
                 Logger.info("[Donations] Creating Signal payment method for new monthly subscription with PayPal")
-
-                return Promise.wrapAsync {
-                    let createParams = try await Paypal.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
-                    return (subscriberId, createParams)
-                }
-            }.map(on: DispatchQueue.main) { retVal in
-                modal.dismiss { future.resolve(retVal) }
-            }.catch(on: DispatchQueue.main) { error in
-                modal.dismiss { future.reject(error) }
-            }
-        }
-
-        return promise
+                let createParams = try await Paypal.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
+                return (subscriberId, createParams)
+            },
+        )
     }
 
     /// Finalize a PayPal subscription after web authentication, behind blocking
-    /// UI. Must be called on the main thread.
+    /// UI.
     private func finalizePaypalSubscriptionBehindProgressView(
         subscriberId: Data,
         paymentMethodId: String,
         monthlyState monthly: State.MonthlyState,
         selectedSubscriptionLevel: DonationSubscriptionLevel
-    ) -> Promise<Void> {
-        AssertIsOnMainThread()
-
-        let finalizePromise: Promise<Void> = Promise.wrapAsync {
-            Logger.info("[Donations] Finalizing new subscription for PayPal donation")
-            return try await DonationSubscriptionManager.finalizeNewSubscription(
-                forSubscriberId: subscriberId,
-                paymentType: .paypal(paymentMethodId: paymentMethodId),
-                subscription: selectedSubscriptionLevel,
-                currencyCode: monthly.selectedCurrencyCode
-            )
-        }.then(on: DispatchQueue.sharedUserInitiated) { _ -> Promise<Void> in
-            Logger.info("[Donations] Redeeming monthly receipt for PayPal donation")
-
-            let redemptionPromise = Promise.wrapAsync {
-                try await DonationSubscriptionManager.requestAndRedeemReceipt(
-                    subscriberId: subscriberId,
-                    subscriptionLevel: selectedSubscriptionLevel.level,
-                    priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
-                    paymentProcessor: .braintree,
-                    paymentMethod: .paypal,
-                    isNewSubscription: true
+    ) async throws {
+        return try await DonationViewsUtil.wrapInProgressView(
+            from: self,
+            operation: {
+                Logger.info("[Donations] Finalizing new subscription for PayPal donation")
+                _ = try await DonationSubscriptionManager.finalizeNewSubscription(
+                    forSubscriberId: subscriberId,
+                    paymentType: .paypal(paymentMethodId: paymentMethodId),
+                    subscription: selectedSubscriptionLevel,
+                    currencyCode: monthly.selectedCurrencyCode
                 )
+
+                Logger.info("[Donations] Redeeming monthly receipt for PayPal donation")
+                try await DonationViewsUtil.waitForRedemption(paymentMethod: .paypal) {
+                    try await DonationSubscriptionManager.requestAndRedeemReceipt(
+                        subscriberId: subscriberId,
+                        subscriptionLevel: selectedSubscriptionLevel.level,
+                        priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
+                        paymentProcessor: .braintree,
+                        paymentMethod: .paypal,
+                        isNewSubscription: true
+                    )
+                }
             }
-
-            return DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: .paypal)
-        }
-
-        return Promise.wrapAsync {
-            return try await DonationViewsUtil.wrapInProgressView(
-                from: self,
-                operation: finalizePromise.awaitable
-            )
-        }
+        )
     }
 }
