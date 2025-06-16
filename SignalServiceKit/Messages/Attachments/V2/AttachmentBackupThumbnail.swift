@@ -70,7 +70,7 @@ public class AttachmentBackupThumbnail {
             // size, and is already the right format (webP) no need for a thumbnail.
             if
                 attachment.mimeType == MimeType.imageWebp.rawValue,
-                pixelSize.largerAxis > AttachmentThumbnailQuality.backupThumbnailDimensionPixels
+                pixelSize.largerAxis <= AttachmentThumbnailQuality.backupThumbnailDimensionPixels
             {
                 return false
             } else {
