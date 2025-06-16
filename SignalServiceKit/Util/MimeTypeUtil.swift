@@ -2326,7 +2326,13 @@ extension MimeTypeUtil {
 // MARK: - Thumbnail Handling
 extension MimeTypeUtil {
 
-    public static func thumbnailMimetype(fullsizeMimeType: String) -> String {
+    public static func thumbnailMimetype(
+        fullsizeMimeType: String,
+        quality: AttachmentThumbnailQuality
+    ) -> String {
+        if quality == .backupThumbnail {
+            return MimeType.imageWebp.rawValue
+        }
         let isWebp = fullsizeMimeType == MimeType.imageWebp.rawValue
         return isWebp ? MimeType.imagePng.rawValue : MimeType.imageJpeg.rawValue
     }

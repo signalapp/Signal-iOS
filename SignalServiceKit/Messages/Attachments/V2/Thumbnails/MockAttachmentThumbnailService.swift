@@ -24,6 +24,10 @@ open class MockAttachmentThumbnailService: AttachmentThumbnailService {
     ) -> UIImage? {
         return nil
     }
+
+    open func backupThumbnailData(image: UIImage) throws -> Data {
+        return Data()
+    }
 }
 
 #endif

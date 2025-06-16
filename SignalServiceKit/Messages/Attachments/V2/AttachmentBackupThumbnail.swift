@@ -67,8 +67,15 @@ public class AttachmentBackupThumbnail {
             return false
         case .image(let pixelSize):
             // If the image itself is small enough to fit the thumbnail
-            // size, no need for a thumbnail.
-            return pixelSize.largerAxis > AttachmentThumbnailQuality.backupThumbnailDimensionPixels
+            // size, and is already the right format (webP) no need for a thumbnail.
+            if
+                attachment.mimeType == MimeType.imageWebp.rawValue,
+                pixelSize.largerAxis > AttachmentThumbnailQuality.backupThumbnailDimensionPixels
+            {
+                return false
+            } else {
+                return true
+            }
         case .video, .animatedImage:
             // Visual but require conversion to still image.
             return true

@@ -457,7 +457,7 @@ public extension QueuedBackupAttachmentDownload {
             // We don't know how big the thumbnail will be; just estimate
             // it to be its largest allowed size.
             return Cryptography.estimatedMediaTierCDNSize(
-                unencryptedSize: UInt32(AttachmentThumbnailQuality.estimatedMaxBackupThumbnailFilesize)
+                unencryptedSize: UInt32(AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes)
             )
         } else {
             // Media tier has the larger byte count, and its better to overcount than

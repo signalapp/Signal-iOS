@@ -1124,7 +1124,10 @@ public class AttachmentManagerImpl: AttachmentManager {
                 // Otherwise fall back to the original's info, leaving transit tier
                 // info blank (thumbnail cannot itself be downloaded) in the hopes
                 // that we will download the original later and fill the thumbnail in.
-                thumbnailMimeType = MimeTypeUtil.thumbnailMimetype(fullsizeMimeType: originalAttachment.mimeType)
+                thumbnailMimeType = MimeTypeUtil.thumbnailMimetype(
+                    fullsizeMimeType: originalAttachment.mimeType,
+                    quality: .small
+                )
                 thumbnailBlurHash = originalAttachment.blurHash
                 thumbnailTransitTierInfo = nil
                 thumbnailEncryptionKey = originalAttachment.encryptionKey

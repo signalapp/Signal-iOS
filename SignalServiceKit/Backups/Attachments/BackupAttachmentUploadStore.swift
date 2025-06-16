@@ -60,7 +60,7 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
         } else {
             // We don't (easily) know the thumbnail size; just estimate as the max size
             // (which is small anyway) and run with it.
-            unencryptedSize = AttachmentThumbnailQuality.estimatedMaxBackupThumbnailFilesize
+            unencryptedSize = AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes
         }
 
         var newRecord = QueuedBackupAttachmentUpload(

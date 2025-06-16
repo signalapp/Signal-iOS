@@ -16,4 +16,6 @@ public protocol AttachmentThumbnailService {
         for attachmentStream: AttachmentStream,
         quality: AttachmentThumbnailQuality
     ) -> UIImage?
+
+    func backupThumbnailData(image: UIImage) throws -> Data
 }

@@ -862,12 +862,13 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 let thumbnailImage = await attachmentThumbnailService.thumbnailImage(
                     for: stream,
                     quality: .backupThumbnail
-                ),
-                let thumbnailData = thumbnailImage.jpegData(compressionQuality: 0.8)
+                )
             else {
                 logger.warn("Unable to generate thumbnail; may not be visual media?")
                 throw OWSUnretryableError()
             }
+
+            let thumbnailData = try attachmentThumbnailService.backupThumbnailData(image: thumbnailImage)
 
             let (encryptedThumbnailData, encryptedThumbnailMetadata) = try Cryptography.encrypt(
                 thumbnailData,

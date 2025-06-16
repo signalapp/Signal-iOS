@@ -26,7 +26,7 @@ extension UIImage {
             at: attachmentThumbnail.fileURL,
             encryptionKey: attachmentThumbnail.attachment.encryptionKey,
             plaintextLength: nil,
-            mimeType: MimeType.imageJpeg.rawValue
+            mimeType: MimeType.imageWebp.rawValue
         )
     }
 

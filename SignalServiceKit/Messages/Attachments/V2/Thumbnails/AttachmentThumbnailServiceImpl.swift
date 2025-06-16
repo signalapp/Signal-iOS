@@ -4,6 +4,8 @@
 //
 
 import Foundation
+import libwebp
+import YYImage
 
 public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
 
@@ -72,6 +74,39 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
         return thumbnailImage
     }
 
+    public func backupThumbnailData(image: UIImage) throws -> Data {
+        var image = image
+        if image.pixelSize.largerAxis > AttachmentThumbnailQuality.backupThumbnailDimensionPixels {
+            guard let resized = image.resized(maxDimensionPoints: AttachmentThumbnailQuality.backupThumbnail.thumbnailDimensionPoints()) else {
+                throw OWSAssertionError("Unable to resize image")
+            }
+            image = resized
+        }
+
+        func generateWebpData(quality: Double) throws -> Data {
+            guard let encoder = YYImageEncoder(type: .webP) else {
+                throw OWSAssertionError("Unable to create thumbnail encoder")
+            }
+            encoder.quality = quality
+            encoder.add(image, duration: 0)
+            guard let imageData = encoder.encode() else {
+                throw OWSAssertionError("Unable to generate webp data")
+            }
+            return imageData
+        }
+
+        // Initially try 0.4 quality. Then scale down until we hit size limits.
+        let qualities: [Double] = [0.4, 0.2, 0.05, 0]
+        let imageData = try qualities
+            .lazy
+            .map(generateWebpData(quality:))
+            .first(where: { $0.count < AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes })
+        guard let imageData else {
+            throw OWSAssertionError("Unable to generate thumbnail below size limit!")
+        }
+        return imageData
+    }
+
     private enum ThumbnailSpec {
         case cannotGenerate
         case originalFits(UIImage)
@@ -128,7 +163,10 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
                     // thumbnails have no special padding;
                     // therefore no plaintext length needed.
                     plaintextLength: nil,
-                    mimeType: MimeTypeUtil.thumbnailMimetype(fullsizeMimeType: attachmentStream.mimeType)
+                    mimeType: MimeTypeUtil.thumbnailMimetype(
+                        fullsizeMimeType: attachmentStream.mimeType,
+                        quality: quality
+                    )
                 )
             } catch {
                 Logger.error("Failed to read cached attachment.")
@@ -151,7 +189,10 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
         )
         do {
             try OWSFileSystem.deleteFileIfExists(url: cacheUrl)
-            let thumbnailMimeType = MimeTypeUtil.thumbnailMimetype(fullsizeMimeType: attachmentStream.mimeType)
+            let thumbnailMimeType = MimeTypeUtil.thumbnailMimetype(
+                fullsizeMimeType: attachmentStream.mimeType,
+                quality: quality
+            )
 
             let imageData: Data?
             switch thumbnailMimeType{
@@ -159,6 +200,8 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
                 imageData = thumbnail.pngData()
             case MimeType.imageJpeg.rawValue:
                 imageData = thumbnail.jpegData(compressionQuality: 0.85)
+            case MimeType.imageWebp.rawValue where quality == .backupThumbnail:
+                imageData = try? backupThumbnailData(image: thumbnail)
             default:
                 owsFailDebug("Unknown thumbnail mime type!")
                 return
