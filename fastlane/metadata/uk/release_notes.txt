@@ -1,1 +1,1 @@
-• Now when you archive an unread message thread it will stay unread. We drew inspiration from the timeless tradition of putting a book back on the shelf even though you haven’t finished reading it yet.
+• Якщо ви архівуєте непрочитану розмову, тепер вона залишиться непрочитаною. Ми надихались одвічною традицією починати читати нову книгу, не дочитавши попередньої.

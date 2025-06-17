@@ -1,1 +1,1 @@
-• Now when you archive an unread message thread it will stay unread. We drew inspiration from the timeless tradition of putting a book back on the shelf even though you haven’t finished reading it yet.
+• Layaknya menaruh kembali buku yang belum selesai dibaca ke rak, kini pesan yang belum dibaca akan tetap berstatus belum dibaca saat Anda mengarsipkannya.

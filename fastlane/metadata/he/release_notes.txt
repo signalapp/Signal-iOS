@@ -1,1 +1,1 @@
-• Now when you archive an unread message thread it will stay unread. We drew inspiration from the timeless tradition of putting a book back on the shelf even though you haven’t finished reading it yet.
+עכשיו, כאשר תעבירו לארכיון שרשור הודעות שלא נקראו – השרשור יהיה מסומן כבלתי נקרא.

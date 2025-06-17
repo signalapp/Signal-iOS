@@ -1,1 +1,1 @@
-• Now when you archive an unread message thread it will stay unread. We drew inspiration from the timeless tradition of putting a book back on the shelf even though you haven’t finished reading it yet.
+• Ranger un livre dans sa bibliothèque ne veut pas nécessairement dire qu'on l'a lu. Sur Signal, c'est pareil : lorsque vous archivez un fil de discussion sans le lire, il n'est plus automatiquement marqué comme lu.

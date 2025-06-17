@@ -1,1 +1,1 @@
-• Now when you archive an unread message thread it will stay unread. We drew inspiration from the timeless tradition of putting a book back on the shelf even though you haven’t finished reading it yet.
+• अब जब आप पढ़े न गए किसी मैसेज थ्रेड को आर्काइव करेंगे, तो वह 'पढ़ा न गया' स्थिति में ही रहेगा। हमने उस पुरानी परंपरा से प्रेरणा ली है जिसमें किताब को वापस शेल्फ़ पर रख दिया जाता है, भले ही आपने अभी तक उसे पूरा न पढ़ा हो।

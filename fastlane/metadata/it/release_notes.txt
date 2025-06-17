@@ -1,1 +1,1 @@
-• Now when you archive an unread message thread it will stay unread. We drew inspiration from the timeless tradition of putting a book back on the shelf even though you haven’t finished reading it yet.
+• Da ora quando archivi un thread di messaggi non letti, il thread rimarrà non letto. Così non si crea confusione e non ti perdi i messaggi che ancora devi leggere (prima o poi).

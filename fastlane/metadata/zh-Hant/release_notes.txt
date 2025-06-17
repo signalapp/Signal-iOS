@@ -1,1 +1,1 @@
-• Now when you archive an unread message thread it will stay unread. We drew inspiration from the timeless tradition of putting a book back on the shelf even though you haven’t finished reading it yet.
+• 現在，當你封存未讀訊息串時，它會保持未讀狀態，不再標示為已讀。

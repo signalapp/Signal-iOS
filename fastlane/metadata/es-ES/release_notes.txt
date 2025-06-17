@@ -1,1 +1,1 @@
-• Now when you archive an unread message thread it will stay unread. We drew inspiration from the timeless tradition of putting a book back on the shelf even though you haven’t finished reading it yet.
+• Ahora, cuando archives una conversación sin leer, esta seguirá apareciendo como no leída. Nos hemos inspirado en la extendida tradición de devolver un libro a la estantería aunque aún no hayas terminado de leerlo.

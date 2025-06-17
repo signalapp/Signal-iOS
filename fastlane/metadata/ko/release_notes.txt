@@ -1,1 +1,1 @@
-• Now when you archive an unread message thread it will stay unread. We drew inspiration from the timeless tradition of putting a book back on the shelf even though you haven’t finished reading it yet.
+• 이제 읽지 않은 메시지를 보관할 경우 읽음으로 표시되지 않습니다.

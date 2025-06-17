@@ -1,1 +1,1 @@
-• Now when you archive an unread message thread it will stay unread. We drew inspiration from the timeless tradition of putting a book back on the shelf even though you haven’t finished reading it yet.
+• Nu forbliver en ulæst beskedtråd ulæst, når du arkiverer den. Vi har ladet os inspirere af den gestus, der ligger i at sætte en bog tilbage på hylden, selvom man ikke er helt færdig med at læse den.
