@@ -66,13 +66,11 @@ extension DonationViewsUtil {
         static func prepareToPay(
             amount: FiatMoney,
             applePayPayment: PKPayment
-        ) -> Promise<PreparedGiftPayment> {
-            return Promise.wrapAsync {
-                return try await prepareToPay(
-                    amount: amount,
-                    withStripePaymentMethod: .applePay(payment: applePayPayment)
-                )
-            }
+        ) async throws -> PreparedGiftPayment {
+            return try await prepareToPay(
+                amount: amount,
+                withStripePaymentMethod: .applePay(payment: applePayPayment)
+            )
         }
 
         /// Prepare a payment with a credit/debit card, using Stripe.

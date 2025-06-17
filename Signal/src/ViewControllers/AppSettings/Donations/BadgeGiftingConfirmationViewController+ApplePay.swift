@@ -48,7 +48,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                     )
                 }
 
-                let preparedPayment = try await DonationViewsUtil.Gifts.prepareToPay(amount: self.price, applePayPayment: payment).awaitable()
+                let preparedPayment = try await DonationViewsUtil.Gifts.prepareToPay(amount: self.price, applePayPayment: payment)
 
                 let safetyNumberConfirmationResult = DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(
                     for: self.thread

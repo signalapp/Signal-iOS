@@ -68,31 +68,32 @@ class BadgeThanksSheetPresenter {
         )
     }
 
+    @MainActor
     func presentBadgeThanksAndClearSuccess(
         fromViewController: UIViewController
     ) {
         let logger = PrefixedLogger(prefix: "[Donations]", suffix: "\(successMode)")
         logger.info("Preparing to present badge thanks sheet.")
 
-        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            return Promise.wrapAsync { try await self.badgeStore.populateAssetsOnBadge(self.redemptionSuccess.badge) }
-        }.map(on: DispatchQueue.main) {
-            logger.info("Showing badge thanks sheet on receipt credential redemption.")
-
-            let badgeThanksSheet = BadgeThanksSheet(
-                receiptCredentialRedemptionSuccess: self.redemptionSuccess
-            )
-
-            fromViewController.present(badgeThanksSheet, animated: true) {
-                self.databaseStorage.write { tx in
-                    self.donationReceiptCredentialResultStore.setHasPresentedSuccess(
-                        successMode: self.successMode,
-                        tx: tx
-                    )
-                }
+        Task {
+            do {
+                try await self.badgeStore.populateAssetsOnBadge(self.redemptionSuccess.badge)
+            } catch {
+                logger.error("Failed to populated badge assets for badge thanks sheet!")
+                return
             }
-        }.catch(on: DispatchQueue.global()) { _ in
-            logger.error("Failed to populated badge assets for badge thanks sheet!")
+
+            logger.info("Showing badge thanks sheet on receipt credential redemption.")
+            let badgeThanksSheet = BadgeThanksSheet(receiptCredentialRedemptionSuccess: self.redemptionSuccess)
+
+            await fromViewController.awaitablePresent(badgeThanksSheet, animated: true)
+
+            await self.databaseStorage.awaitableWrite { tx in
+                self.donationReceiptCredentialResultStore.setHasPresentedSuccess(
+                    successMode: self.successMode,
+                    tx: tx
+                )
+            }
         }
     }
 }

@@ -283,7 +283,7 @@ public final class DonationViewsUtil {
         amount: FiatMoney,
         paymentMethod: DonationPaymentMethod
     ) async throws {
-        let redemptionPromise = Promise.wrapAsync {
+        return try await DonationViewsUtil.waitForRedemption(paymentMethod: paymentMethod) {
             try await DonationSubscriptionManager.requestAndRedeemReceipt(
                 boostPaymentIntentId: paymentIntentId,
                 amount: amount,
@@ -291,8 +291,6 @@ public final class DonationViewsUtil {
                 paymentMethod: paymentMethod
             )
         }
-
-        return try await DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: paymentMethod).awaitable()
     }
 
     public static func finalizeAndRedeemSubscription(
@@ -313,7 +311,7 @@ public final class DonationViewsUtil {
 
         Logger.info("[Donations] Redeeming monthly receipts")
 
-        let redemptionPromise = Promise.wrapAsync {
+        return try await DonationViewsUtil.waitForRedemption(paymentMethod: paymentType.paymentMethod) {
             try await DonationSubscriptionManager.requestAndRedeemReceipt(
                 subscriberId: subscriberId,
                 subscriptionLevel: newSubscriptionLevel.level,
@@ -323,8 +321,6 @@ public final class DonationViewsUtil {
                 isNewSubscription: true
             )
         }
-
-        return try await DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: paymentType.paymentMethod).awaitable()
     }
 
     public static func loadSubscriptionLevels(donationConfiguration: DonationSubscriptionManager.DonationConfiguration, badgeStore: BadgeStore) async throws -> [DonationSubscriptionLevel] {
