@@ -212,29 +212,26 @@ class UrlOpener {
             // using the in-app camera
 
         case .completeIDEALDonation(let donationType):
-            DonationViewsUtil.attemptToContinueActiveIDEALDonation(
-                type: donationType,
-                databaseStorage: self.databaseStorage
-            )
-            .then(on: DispatchQueue.main) { [weak self] handled -> Promise<Void> in
-                guard let self else { return .value(()) }
-                if handled {
-                    return Promise.value(())
-                }
-                return DonationViewsUtil.restartAndCompleteInterruptedIDEALDonation(
+            Task { [appReadiness, databaseStorage] in
+                let handled = await DonationViewsUtil.attemptToContinueActiveIDEALDonation(
                     type: donationType,
-                    rootViewController: rootViewController,
-                    databaseStorage: self.databaseStorage,
-                    appReadiness: appReadiness
+                    databaseStorage: databaseStorage
                 )
-            }.done {
-                Logger.info("[Donations] Completed iDEAL donation")
-            } .catch { error in
-                switch error {
-                case Signal.DonationJobError.timeout:
+                if handled {
+                    Logger.info("[Donations] Completed iDEAL donation")
+                    return
+                }
+                do {
+                    try await DonationViewsUtil.restartAndCompleteInterruptedIDEALDonation(
+                        type: donationType,
+                        rootViewController: rootViewController,
+                        databaseStorage: databaseStorage,
+                        appReadiness: appReadiness
+                    )
+                    Logger.info("[Donations] Completed iDEAL donation")
+                } catch Signal.DonationJobError.timeout {
                     // This is an expected error case for pending donations
-                    break
-                default:
+                } catch {
                     // Unexpected. Log a warning
                     Logger.warn("[Donations] Unexpected error encountered with iDEAL donation")
                 }

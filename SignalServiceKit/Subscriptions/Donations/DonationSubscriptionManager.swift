@@ -917,15 +917,17 @@ public class OWSRetryableSubscriptionError: CustomNSError, IsRetryableProvider {
 
 extension DonationSubscriptionManager {
 
-    private static var cachedBadges = [OneTimeBadgeLevel: CachedBadge]()
+    private static let cachedBadges = AtomicValue<[OneTimeBadgeLevel: CachedBadge]>([:], lock: .init())
 
     public static func getCachedBadge(level: OneTimeBadgeLevel) -> CachedBadge {
-        if let cachedBadge = self.cachedBadges[level] {
+        return self.cachedBadges.update {
+            if let cachedBadge = $0[level] {
+                return cachedBadge
+            }
+            let cachedBadge = CachedBadge(level: level)
+            $0[level] = cachedBadge
             return cachedBadge
         }
-        let cachedBadge = CachedBadge(level: level)
-        self.cachedBadges[level] = cachedBadge
-        return cachedBadge
     }
 
     public static func getBoostBadge() async throws -> ProfileBadge {

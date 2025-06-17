@@ -11,12 +11,13 @@ import UIKit
 extension DonationViewsUtil {
 
     /// If the donation can't be continued, build back up the donation UI and attempt to complete the donation.
+    @MainActor
     static func restartAndCompleteInterruptedIDEALDonation(
         type donationType: Stripe.IDEALCallbackType,
         rootViewController: UIViewController,
         databaseStorage: SDSDatabaseStorage,
         appReadiness: AppReadinessSetter
-    ) -> Promise<Void> {
+    ) async throws {
         let donationStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         let (success, intent, localIntent) = databaseStorage.read { tx in
             switch donationType {
@@ -29,58 +30,36 @@ extension DonationViewsUtil {
             }
         }
 
-        let (promise, future) = Promise<Void>.pending()
-
-        let completion = {
-            guard let frontVc = CurrentAppContext().frontmostViewController() else {
-                future.resolve(())
-                return
-            }
-
-            // Build up the Donation UI
-            let appSettings = AppSettingsViewController.inModalNavigationController(appReadiness: appReadiness)
-            let donationsVC = DonationSettingsViewController()
-            donationsVC.showExpirationSheet = false
-            appSettings.viewControllers += [ donationsVC ]
-
-            frontVc.presentFormSheet(appSettings, animated: false) {
-                AssertIsOnMainThread()
-                firstly(on: DispatchQueue.main) {
-                    if
-                        success,
-                        let localIntent,
-                        intent == localIntent
-                    {
-                        return Self.completeDonation(
-                            type: donationType,
-                            from: donationsVC,
-                            databaseStorage: databaseStorage
-                        )
-                    } else {
-                        Self.handleIDEALDonationIssue(
-                            success: success,
-                            donationType: donationType,
-                            from: donationsVC,
-                            databaseStorage: databaseStorage
-                        )
-                        return Promise.value(())
-                    }
-                }.done {
-                    future.resolve()
-                }.catch { error in
-                    future.reject(error)
-                }
-            }
-        }
-
         if rootViewController.presentedViewController != nil {
-            rootViewController.dismiss(animated: false) {
-                completion()
-            }
-        } else {
-            completion()
+            await rootViewController.awaitableDismiss(animated: false)
         }
-        return promise
+
+        guard let frontVc = CurrentAppContext().frontmostViewController() else {
+            return
+        }
+
+        // Build up the Donation UI
+        let appSettings = AppSettingsViewController.inModalNavigationController(appReadiness: appReadiness)
+        let donationsVC = DonationSettingsViewController()
+        donationsVC.showExpirationSheet = false
+        appSettings.viewControllers += [ donationsVC ]
+
+        await frontVc.awaitablePresentFormSheet(appSettings, animated: false)
+
+        if success, let localIntent, intent == localIntent {
+            try await Self.completeDonation(
+                type: donationType,
+                from: donationsVC,
+                databaseStorage: databaseStorage
+            )
+        } else {
+            Self.handleIDEALDonationIssue(
+                success: success,
+                donationType: donationType,
+                from: donationsVC,
+                databaseStorage: databaseStorage
+            )
+        }
     }
 
     /// Attempts to seamlessly continue the donation, if the app state is still at the appropriate step in the iDEAL donation flow.
@@ -89,10 +68,11 @@ extension DonationViewsUtil {
     /// `true` if the donation was continued by previously-constructed UI.
     /// `false` otherwise,  in which case the caller is responsible for "reconstructing" the appropriate step in the
     /// donation flow and continuing the donation.
+    @MainActor
     static func attemptToContinueActiveIDEALDonation(
         type donationType: Stripe.IDEALCallbackType,
         databaseStorage: SDSDatabaseStorage
-    ) -> Promise<Bool> {
+    ) async -> Bool {
         // Inspect this view controller to find out if the layout is as expected.
         guard
             let frontVC = CurrentAppContext().frontmostViewController(),
@@ -103,90 +83,86 @@ extension DonationViewsUtil {
         else {
             // Not in the expected donation flow, so revert to building
             // the donation view stack from scratch
-            return .value(false)
+            return false
         }
 
-        let (promise, future) = Promise<Bool>.pending()
+        await frontVC.awaitableDismiss(animated: true)
 
-        frontVC.dismiss(animated: true) {
-            let (success, intentId) = {
-                switch donationType {
-                case
-                    let .oneTime(success, intent),
-                    let .monthly(success, _, intent):
-                    return (success, intent)
-                }
-            }()
+        let (success, intentId) = {
+            switch donationType {
+            case
+                let .oneTime(success, intent),
+                let .monthly(success, _, intent):
+                return (success, intent)
+            }
+        }()
 
-            // Attempt to slide back into the current donation flow by completing
-            // the active 3DS session with the intent.  If the payment was externally
-            // failed, pass that into the existing donation flow to be handled inline
-            let continuedWithActiveDonation = donationPaymentVC.completeExternal3DS(
-                success: success,
-                intentID: intentId
-            )
-
-            future.resolve(continuedWithActiveDonation)
-        }
-        return promise
+        // Attempt to slide back into the current donation flow by completing
+        // the active 3DS session with the intent.  If the payment was externally
+        // failed, pass that into the existing donation flow to be handled inline
+        return donationPaymentVC.completeExternal3DS(
+            success: success,
+            intentID: intentId
+        )
     }
 
+    @MainActor
     private static func completeDonation(
         type donationType: Stripe.IDEALCallbackType,
         from donationsVC: DonationSettingsViewController,
         databaseStorage: SDSDatabaseStorage
-    ) -> Promise<Void> {
-        firstly(on: DispatchQueue.sharedUserInitiated) {
-            return Self.loadBadgeForDonation(type: donationType, databaseStorage: databaseStorage)
-        }.then(on: DispatchQueue.main) { badge in
-            Promise.wrapAsync {
-                try await DonationViewsUtil.wrapInProgressView(
-                    from: donationsVC,
-                    operation: {
-                        try await DonationViewsUtil.completeIDEALDonation(
-                            donationType: donationType,
-                            databaseStorage: databaseStorage
-                        )
-                    }
-                )
-            }.done(on: DispatchQueue.main) {
-                // Do this after the `wrapPromiseInProgressView` completes
-                // to dismiss the progress spinner.  Then display the
-                // result of the donation.
-                let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.loadWithSneakyTransaction(
-                    successMode: donationType.asSuccessMode
-                )
-                badgeThanksSheetPresenter?.presentBadgeThanksAndClearSuccess(
-                    fromViewController: donationsVC
-                )
-            }.recover(on: DispatchQueue.main) { error in
-                if let badge {
-                    DonationViewsUtil.presentErrorSheet(
-                        from: donationsVC,
-                        error: error,
-                        mode: donationType.asDonationMode,
-                        badge: badge,
-                        paymentMethod: .ideal
+    ) async throws {
+        let badge = try await Self.loadBadgeForDonation(type: donationType, databaseStorage: databaseStorage)
+
+        defer {
+            // refresh the local state upon completing the donation
+            // to refresh any pending donation messages
+            Task { await donationsVC.loadAndUpdateState() }
+        }
+
+        do {
+            try await DonationViewsUtil.wrapInProgressView(
+                from: donationsVC,
+                operation: {
+                    try await DonationViewsUtil.completeIDEALDonation(
+                        donationType: donationType,
+                        databaseStorage: databaseStorage
                     )
-                } else {
-                    owsFailDebug("[Donations] Failed to load donation badge")
                 }
-                throw error
-            }.ensure(on: DispatchQueue.main) {
-                // refresh the local state upon completing the donation
-                // to refresh any pending donation messages
-                Task { await donationsVC.loadAndUpdateState() }
+            )
+            // Do this after the `wrapPromiseInProgressView` completes
+            // to dismiss the progress spinner.  Then display the
+            // result of the donation.
+            let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.loadWithSneakyTransaction(
+                successMode: donationType.asSuccessMode
+            )
+            badgeThanksSheetPresenter?.presentBadgeThanksAndClearSuccess(
+                fromViewController: donationsVC
+            )
+        } catch {
+            if let badge {
+                DonationViewsUtil.presentErrorSheet(
+                    from: donationsVC,
+                    error: error,
+                    mode: donationType.asDonationMode,
+                    badge: badge,
+                    paymentMethod: .ideal
+                )
+            } else {
+                owsFailDebug("[Donations] Failed to load donation badge")
             }
+            throw error
         }
     }
 
+    @MainActor
     private static func handleIDEALDonationIssue(
         success: Bool,
         donationType: Stripe.IDEALCallbackType,
         from donationsVC: DonationSettingsViewController,
         databaseStorage: SDSDatabaseStorage
     ) {
-        let clearPendingDonation = {
+        let clearPendingDonation = { @MainActor in
             let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
             databaseStorage.write { tx in
                 switch donationType {
@@ -235,31 +211,25 @@ extension DonationViewsUtil {
     private static func loadBadgeForDonation(
         type donationType: Stripe.IDEALCallbackType,
         databaseStorage: SDSDatabaseStorage
-    ) -> Promise<ProfileBadge?> {
-        let donationStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
-        return databaseStorage.read { tx in
-            switch donationType {
-            case .oneTime:
-                return DonationSubscriptionManager.getCachedBadge(level: .boostBadge)
-                    .fetchIfNeeded()
-                    .map(on: DispatchQueue.main) { result in
-                        switch result {
-                        case .notFound:
-                            return nil
-                        case let .profileBadge(profileBadge):
-                            return profileBadge
-                        }
-                    }
-            case .monthly:
-                guard let monthlyDonation = donationStore.getPendingSubscription(tx: tx) else {
-                    return .value(nil)
-                }
-                return Promise.wrapAsync {
-                    try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(monthlyDonation.newSubscriptionLevel.badge)
-                }.map {
-                    return monthlyDonation.newSubscriptionLevel.badge
-                }
+    ) async throws -> ProfileBadge? {
+        switch donationType {
+        case .oneTime:
+            switch try await DonationSubscriptionManager.getCachedBadge(level: .boostBadge).fetchIfNeeded().awaitable() {
+            case .notFound:
+                return nil
+            case let .profileBadge(profileBadge):
+                return profileBadge
             }
+        case .monthly:
+            let donationStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
+            let monthlyDonation = databaseStorage.read { tx in
+                return donationStore.getPendingSubscription(tx: tx)
+            }
+            guard let monthlyDonation else {
+                return nil
+            }
+            try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(monthlyDonation.newSubscriptionLevel.badge)
+            return monthlyDonation.newSubscriptionLevel.badge
         }
     }
 }

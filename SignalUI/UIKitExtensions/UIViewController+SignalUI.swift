@@ -124,4 +124,12 @@ public extension UIViewController {
             }
         }
     }
+
+    func awaitablePresentFormSheet(_ viewController: UIViewController, animated: Bool) async {
+        await withCheckedContinuation { continuation in
+            self.presentFormSheet(viewController, animated: animated) {
+                continuation.resume()
+            }
+        }
+    }
 }
