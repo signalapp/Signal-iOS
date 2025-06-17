@@ -1890,11 +1890,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             timestamp: UInt64,
         ) async throws -> DownloadResult {
             return try await db.awaitableWrite { tx in
-                guard let existingAttachment = self.attachmentStore.fetch(id: attachmentId, tx: tx) else {
+                guard let attachmentWeJustDownloaded = self.attachmentStore.fetch(id: attachmentId, tx: tx) else {
                     Logger.error("Missing attachment after download; could have been deleted while downloading.")
                     throw OWSUnretryableError()
                 }
-                if let stream = existingAttachment.asStream() {
+                if let stream = attachmentWeJustDownloaded.asStream() {
                     // Its already a stream?
                     return .stream(stream)
                 }
@@ -1992,6 +1992,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             pendingAttachmentEncryptionKey: pendingAttachment.encryptionKey,
                             pendingAttachmentMimeType: pendingAttachment.mimeType,
                             pendingAttachmentOrphanRecordId: pendingAttachment.orphanRecordId,
+                            pendingAttachmentTransitTierInfo: attachmentWeJustDownloaded.transitTierInfo,
                             attachmentStore: attachmentStore,
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,
@@ -2172,6 +2173,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             pendingAttachmentEncryptionKey: pendingAttachment.encryptionKey,
                             pendingAttachmentMimeType: pendingAttachment.mimeType,
                             pendingAttachmentOrphanRecordId: pendingAttachment.orphanRecordId,
+                            pendingAttachmentTransitTierInfo: nil,
                             attachmentStore: attachmentStore,
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,
@@ -2357,6 +2359,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             pendingAttachmentEncryptionKey: pendingThumbnailAttachment.encryptionKey,
                             pendingAttachmentMimeType: pendingThumbnailAttachment.mimeType,
                             pendingAttachmentOrphanRecordId: pendingThumbnailAttachment.orphanRecordId,
+                            pendingAttachmentTransitTierInfo: nil,
                             attachmentStore: attachmentStore,
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,

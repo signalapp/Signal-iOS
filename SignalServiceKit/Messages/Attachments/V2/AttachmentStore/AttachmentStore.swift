@@ -175,6 +175,7 @@ public protocol AttachmentStore {
         into attachment: Attachment,
         encryptionKey: Data,
         validatedMimeType: String,
+        transitTierInfo: Attachment.TransitTierInfo?,
         mediaTierInfo: Attachment.MediaTierInfo?,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
         tx: DBWriteTransaction

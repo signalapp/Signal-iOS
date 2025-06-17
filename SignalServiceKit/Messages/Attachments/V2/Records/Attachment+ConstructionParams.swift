@@ -532,6 +532,7 @@ extension Attachment {
             into attachment: Attachment,
             encryptionKey: Data,
             mimeType: String,
+            transitTierInfo: TransitTierInfo?,
             mediaTierInfo: MediaTierInfo?,
             thumbnailMediaTierInfo: ThumbnailMediaTierInfo?
         ) -> ConstructionParams {
@@ -540,16 +541,7 @@ extension Attachment {
                 mimeType: mimeType,
                 encryptionKey: encryptionKey,
                 streamInfo: streamInfo,
-                // We preserve the transit tier info even if the encrytion key
-                // changes underneath because it has its own copy of encryption
-                // key, digest, etc, and can therefore be encrypted differently
-                // than the local copy.
-                // We _would_ need to remove it if we changed the plaintext hash
-                // of the underlying attachment, but that's not possible; we get
-                // here by having a plaintext hash or mediaName collision, and
-                // either of those mean the plaintext hash isn't changing (since
-                // the plaintext hash is literally part of the mediaName).
-                transitTierInfo: attachment.transitTierInfo,
+                transitTierInfo: transitTierInfo,
                 sha256ContentHash: streamInfo.sha256ContentHash,
                 mediaName: streamInfo.mediaName,
                 mediaTierInfo: mediaTierInfo,

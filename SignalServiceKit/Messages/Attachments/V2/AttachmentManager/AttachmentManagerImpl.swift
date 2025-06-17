@@ -969,6 +969,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                         pendingAttachmentEncryptionKey: pendingAttachment.encryptionKey,
                         pendingAttachmentMimeType: pendingAttachment.mimeType,
                         pendingAttachmentOrphanRecordId: hasOrphanRecord ? pendingAttachment.orphanRecordId : nil,
+                        pendingAttachmentTransitTierInfo: attachmentParams.transitTierInfo,
                         attachmentStore: attachmentStore,
                         orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                         orphanedAttachmentStore: orphanedAttachmentStore,
@@ -1002,6 +1003,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         pendingAttachmentEncryptionKey: Data,
         pendingAttachmentMimeType: String,
         pendingAttachmentOrphanRecordId: OrphanedAttachmentRecord.IDType?,
+        pendingAttachmentTransitTierInfo: Attachment.TransitTierInfo?,
         attachmentStore: AttachmentStore,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
@@ -1067,12 +1069,30 @@ public class AttachmentManagerImpl: AttachmentManager {
             }
         }
 
+        // Transit tier info has its own key independent of the local file encryption key;
+        // we should just keep whichever upload we think is newer.
+        let transitTierInfo: Attachment.TransitTierInfo?
+        if
+            let existingTransitTierInfo = existingAttachment.transitTierInfo,
+            let pendingAttachmentTransitTierInfo
+        {
+            if existingTransitTierInfo.uploadTimestamp > pendingAttachmentTransitTierInfo.uploadTimestamp {
+                transitTierInfo = existingTransitTierInfo
+            } else {
+                transitTierInfo = pendingAttachmentTransitTierInfo
+            }
+        } else {
+            // Take whichever one we've got.
+            transitTierInfo = existingAttachment.transitTierInfo ?? pendingAttachmentTransitTierInfo
+        }
+
         // Set the stream info on the existing attachment, if needed.
         try attachmentStore.merge(
             streamInfo: pendingAttachmentStreamInfo,
             into: existingAttachment,
             encryptionKey: pendingAttachmentEncryptionKey,
             validatedMimeType: pendingAttachmentMimeType,
+            transitTierInfo: transitTierInfo,
             mediaTierInfo: mediaTierInfo,
             thumbnailMediaTierInfo: thumbnailMediaTierInfo,
             tx: tx

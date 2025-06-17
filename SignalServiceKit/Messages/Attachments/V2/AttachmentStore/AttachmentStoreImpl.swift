@@ -429,6 +429,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         into attachment: Attachment,
         encryptionKey: Data,
         validatedMimeType: String,
+        transitTierInfo: Attachment.TransitTierInfo?,
         mediaTierInfo: Attachment.MediaTierInfo?,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
         tx: DBWriteTransaction
@@ -442,6 +443,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             into: attachment,
             encryptionKey: encryptionKey,
             mimeType: validatedMimeType,
+            transitTierInfo: transitTierInfo,
             mediaTierInfo: mediaTierInfo,
             thumbnailMediaTierInfo: thumbnailMediaTierInfo
         ))

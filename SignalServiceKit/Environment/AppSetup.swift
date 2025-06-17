@@ -297,9 +297,14 @@ public class AppSetup {
         let storyStore = StoryStoreImpl()
 
         let audioWaveformManager = AudioWaveformManagerImpl()
+
+        let attachmentStore = AttachmentStoreImpl()
+
         let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(db: databaseStorage)
         let attachmentContentValidator = AttachmentContentValidatorImpl(
+            attachmentStore: attachmentStore,
             audioWaveformManager: audioWaveformManager,
+            db: db,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner
         )
 
@@ -370,7 +375,6 @@ public class AppSetup {
             networkManager: networkManager
         )
 
-        let attachmentStore = AttachmentStoreImpl()
         let orphanedAttachmentStore = OrphanedAttachmentStoreImpl()
         let attachmentUploadStore = AttachmentUploadStoreImpl(attachmentStore: attachmentStore)
         let attachmentDownloadStore = AttachmentDownloadStoreImpl(dateProvider: dateProvider)

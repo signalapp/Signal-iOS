@@ -193,24 +193,4 @@ extension AttachmentContentValidator {
             sourceFilename: sourceFilename
         ))
     }
-
-    public func validateDownloadedContents(
-        ofEncryptedFileAt fileUrl: URL,
-        encryptionKey: Data,
-        plaintextLength: UInt32,
-        integrityCheck: AttachmentIntegrityCheck,
-        mimeType: String,
-        renderingFlag: AttachmentReference.RenderingFlag,
-        sourceFilename: String?
-    ) throws -> AttachmentDataSource {
-        return .from(pendingAttachment: try self.validateDownloadedContents(
-            ofEncryptedFileAt: fileUrl,
-            encryptionKey: encryptionKey,
-            plaintextLength: plaintextLength,
-            integrityCheck: integrityCheck,
-            mimeType: mimeType,
-            renderingFlag: renderingFlag,
-            sourceFilename: sourceFilename
-        ))
-    }
 }
