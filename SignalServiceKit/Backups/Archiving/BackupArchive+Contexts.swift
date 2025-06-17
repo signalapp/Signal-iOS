@@ -34,6 +34,10 @@ extension BackupArchive {
             /// "lifetime" was.
             let minRemainingTimeUntilExpirationMs: UInt64
 
+            /// Unviewed view-once messages should be treated as viewed and
+            /// tombstoned for this export.
+            let shouldTombstoneViewOnce: Bool
+
             /// Whether or not the plaintext SVR PIN should be included.
             let shouldIncludePin: Bool
         }

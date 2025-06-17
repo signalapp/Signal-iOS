@@ -185,7 +185,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             return archiveViewOnceMessage(
                 message,
                 messageRowId: messageRowId,
-                context: context.recipientContext
+                context: context
             )
         } else if message.isStoryReply && !message.isGroupStoryReply {
             return archiveDirectStoryReplyMessage(
@@ -792,13 +792,16 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     private func archiveViewOnceMessage(
         _ message: TSMessage,
         messageRowId: Int64,
-        context: BackupArchive.RecipientArchivingContext
+        context: BackupArchive.ChatArchivingContext
     ) -> ArchiveInteractionResult<ChatItemType> {
         var partialErrors = [ArchiveFrameError]()
 
         var proto = BackupProto_ViewOnceMessage()
 
-        if !message.isViewOnceComplete {
+        if
+            !context.includedContentFilter.shouldTombstoneViewOnce,
+            !message.isViewOnceComplete
+        {
             let attachmentResult = attachmentsArchiver.archiveBodyAttachments(
                 messageId: message.uniqueInteractionId,
                 messageRowId: messageRowId,
@@ -827,7 +830,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         let reactions: [BackupProto_Reaction]
         let reactionsResult = reactionArchiver.archiveReactions(
             message,
-            context: context
+            context: context.recipientContext
         )
         switch reactionsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
         case .continue(let values):

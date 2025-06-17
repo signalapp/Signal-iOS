@@ -232,6 +232,14 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                     return .dayInMs
                 }
             }(),
+            shouldTombstoneViewOnce: {
+                switch backupPurpose {
+                case .deviceTransfer:
+                    return false
+                case .remoteBackup:
+                    return true
+                }
+            }(),
             shouldIncludePin: true
         )
 
@@ -268,6 +276,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         let includedContentFilter = BackupArchive.ArchivingContext.IncludedContentFilter(
             minExpirationTimeMs: 0,
             minRemainingTimeUntilExpirationMs: 0,
+            shouldTombstoneViewOnce: false,
             shouldIncludePin: true
         )
 
