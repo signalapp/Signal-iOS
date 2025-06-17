@@ -370,7 +370,7 @@ public class RemoteConfig {
     static func bucket(key: String, aci: Aci, bucketSize: UInt64) -> UInt64 {
         var data = Data((key + ".").utf8)
 
-        data.append(Data(aci.serviceIdBinary))
+        data.append(aci.serviceIdBinary)
 
         let hash = Data(SHA256.hash(data: data))
         guard hash.count == 32 else {

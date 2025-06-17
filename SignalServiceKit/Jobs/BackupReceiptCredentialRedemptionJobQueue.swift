@@ -414,7 +414,7 @@ private extension TSRequest {
             method: "POST",
             parameters: [
                 "receiptCredentialPresentation": receiptCredentialPresentation
-                    .serialize().asData.base64EncodedString(),
+                    .serialize().base64EncodedString(),
             ]
         )
     }

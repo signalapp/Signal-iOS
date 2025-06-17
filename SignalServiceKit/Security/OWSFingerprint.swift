@@ -222,7 +222,7 @@ public class OWSFingerprint {
      *      All-number textual representation
      */
     private static func dataForStableAddress(_ stableAddressData: Data, publicKey: IdentityKey, hashIterations: UInt32) -> Data {
-        let publicKey = publicKey.serialize().asData
+        let publicKey = publicKey.serialize()
 
         var hash = Constants.hashingVersion.bigEndianData
         hash.append(publicKey)

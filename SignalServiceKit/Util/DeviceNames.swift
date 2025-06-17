@@ -23,7 +23,7 @@ public enum DeviceNames {
         let ephemeralKeyPair = IdentityKeyPair.generate()
 
         // master_secret = ECDH(ephemeral_private, identity_public).
-        let masterSecret = Data(ephemeralKeyPair.privateKey.keyAgreement(with: identityKeyPair.publicKey))
+        let masterSecret = ephemeralKeyPair.privateKey.keyAgreement(with: identityKeyPair.publicKey)
 
         // synthetic_iv = HmacSHA256(key=HmacSHA256(key=master_secret, input=“auth”), input=plaintext)[0:16]
         let syntheticIV = computeSyntheticIV(masterSecret: masterSecret, plaintextData: plaintextData)
@@ -37,7 +37,7 @@ public enum DeviceNames {
         try Aes256Ctr32.process(&ciphertext, key: cipherKey, nonce: Data(count: Aes256Ctr32.nonceLength))
 
         let protoBuilder = SignalIOSProtoDeviceName.builder(
-            ephemeralPublic: Data(ephemeralKeyPair.publicKey.serialize()),
+            ephemeralPublic: ephemeralKeyPair.publicKey.serialize(),
             syntheticIv: syntheticIV,
             ciphertext: ciphertext
         )
@@ -103,7 +103,7 @@ public enum DeviceNames {
         }
 
         // master_secret = ECDH(identity_private, ephemeral_public)
-        let masterSecret = Data(identityKeyPair.privateKey.keyAgreement(with: ephemeralPublic))
+        let masterSecret = identityKeyPair.privateKey.keyAgreement(with: ephemeralPublic)
 
         // cipher_key = HmacSHA256(key=HmacSHA256(key=master_secret, input=“cipher”), input=synthetic_iv)
         let cipherKey = computeCipherKey(masterSecret: masterSecret, syntheticIV: receivedSyntheticIV)

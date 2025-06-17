@@ -1387,7 +1387,7 @@ extension CVComponentSystemMessage {
         }
 
         // TODO: We need to touch thread whenever current call changes.
-        let isCurrentCallForThread = currentGroupThreadCallGroupId?.serialize().asData == groupThread.groupId
+        let isCurrentCallForThread = currentGroupThreadCallGroupId?.serialize() == groupThread.groupId
 
         let returnTitle = OWSLocalizedString("CALL_RETURN_BUTTON", comment: "Button to return to the current call")
         let title = isCurrentCallForThread ? returnTitle : CallStrings.joinGroupCall

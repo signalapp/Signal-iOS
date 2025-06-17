@@ -16,7 +16,7 @@ public extension ConversationViewController {
         case .individual(let call):
             return call.thread.uniqueId == thread.uniqueId
         case .groupThread(let call):
-            return call.groupId.serialize().asData == (thread as? TSGroupThread)?.groupId
+            return call.groupId.serialize() == (thread as? TSGroupThread)?.groupId
         case .callLink:
             return false
         }

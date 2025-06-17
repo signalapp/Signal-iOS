@@ -78,7 +78,7 @@ class CallLinkManagerImpl: CallLinkManager {
         let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
         let peekResult = await self.sfuClient.peek(
             sfuUrl: sfuUrl,
-            authCredentialPresentation: authCredentialPresentation.serialize(),
+            authCredentialPresentation: [UInt8](authCredentialPresentation.serialize()),
             linkRootKey: rootKey
         )
         if let errorCode = peekResult.errorStatusCode {
@@ -106,7 +106,7 @@ class CallLinkManagerImpl: CallLinkManager {
             url: URL(string: "v1/call-link/create-auth")!,
             method: "POST",
             parameters: [
-                "createCallLinkCredentialRequest": credentialRequestContext.getRequest().serialize().asData.base64EncodedString()
+                "createCallLinkCredentialRequest": credentialRequestContext.getRequest().serialize().base64EncodedString()
             ]
         )
         let httpResult = try await self.networkManager.asyncRequest(httpRequest)
@@ -114,7 +114,7 @@ class CallLinkManagerImpl: CallLinkManager {
             throw OWSGenericError("Couldn't handle successful result from the server.")
         }
         let httpResponse = try JSONDecoder().decode(CallLinkCreateAuthResponse.self, from: responseBodyData)
-        let credentialResponse = try CreateCallLinkCredentialResponse(contents: [UInt8](httpResponse.credential))
+        let credentialResponse = try CreateCallLinkCredentialResponse(contents: httpResponse.credential)
         return try credentialRequestContext.receive(credentialResponse, userId: localAci, params: self.serverParams)
     }
 
@@ -134,10 +134,10 @@ class CallLinkManagerImpl: CallLinkManager {
         let adminPasskey = CallLinkRootKey.generateAdminPasskey()
         let callLinkState = SignalServiceKit.CallLinkState(try await self.sfuClient.createCallLink(
             sfuUrl: sfuUrl,
-            createCredentialPresentation: createCredentialPresentation.serialize(),
+            createCredentialPresentation: [UInt8](createCredentialPresentation.serialize()),
             linkRootKey: rootKey,
             adminPasskey: adminPasskey,
-            callLinkPublicParams: publicParams.serialize(),
+            callLinkPublicParams: [UInt8](publicParams.serialize()),
             restrictions: SignalServiceKit.CallLinkState.Constants.defaultRequiresAdminApproval ? .adminApproval : .none
         ).unwrap())
         return CreateResult(adminPasskey: adminPasskey, callLinkState: callLinkState)
@@ -153,7 +153,7 @@ class CallLinkManagerImpl: CallLinkManager {
         let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
         return try await self.sfuClient.deleteCallLink(
             sfuUrl: sfuUrl,
-            authCredentialPresentation: authCredentialPresentation.serialize(),
+            authCredentialPresentation: [UInt8](authCredentialPresentation.serialize()),
             linkRootKey: rootKey,
             adminPasskey: adminPasskey
         ).unwrap()
@@ -170,7 +170,7 @@ class CallLinkManagerImpl: CallLinkManager {
         let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
         return SignalServiceKit.CallLinkState(try await self.sfuClient.updateCallLinkName(
             sfuUrl: sfuUrl,
-            authCredentialPresentation: authCredentialPresentation.serialize(),
+            authCredentialPresentation: [UInt8](authCredentialPresentation.serialize()),
             linkRootKey: rootKey,
             adminPasskey: adminPasskey,
             newName: name
@@ -188,7 +188,7 @@ class CallLinkManagerImpl: CallLinkManager {
         let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
         return SignalServiceKit.CallLinkState(try await self.sfuClient.updateCallLinkRestrictions(
             sfuUrl: sfuUrl,
-            authCredentialPresentation: authCredentialPresentation.serialize(),
+            authCredentialPresentation: [UInt8](authCredentialPresentation.serialize()),
             linkRootKey: rootKey,
             adminPasskey: adminPasskey,
             restrictions: requiresAdminApproval ? .adminApproval : .none

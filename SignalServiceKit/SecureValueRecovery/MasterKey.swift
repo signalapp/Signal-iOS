@@ -144,7 +144,7 @@ private extension SVR.DerivedKey {
                 salt: Data(),
                 info: infoData
             )
-            return Data(bytes)
+            return bytes
         }
     }
 }

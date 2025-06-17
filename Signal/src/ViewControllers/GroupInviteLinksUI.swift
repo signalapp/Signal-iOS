@@ -106,7 +106,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
         avatarView.image = databaseStorage.read { tx in
             avatarBuilder.defaultAvatarImage(
-                forGroupId: groupV2ContextInfo.groupId.serialize().asData,
+                forGroupId: groupV2ContextInfo.groupId.serialize(),
                 diameterPoints: Self.avatarSize,
                 transaction: tx
             )

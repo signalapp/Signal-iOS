@@ -307,7 +307,7 @@ private extension ConversationViewController {
                 let profileManager = SSKEnvironment.shared.profileManagerRef
                 let profileKeyMessage = OWSProfileKeyMessage(
                     thread: thread,
-                    profileKey: profileManager.localProfileKey(tx: transaction)!.serialize().asData,
+                    profileKey: profileManager.localProfileKey(tx: transaction)!.serialize(),
                     transaction: transaction
                 )
                 let preparedMessage = PreparedOutgoingMessage.preprepared(

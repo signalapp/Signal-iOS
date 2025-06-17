@@ -34,7 +34,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         self.newGroupState = newGroupState
 
         self.helper = GroupAttributesEditorHelper(
-            groupId: try! newGroupState.groupSeed.groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData,
+            groupId: try! newGroupState.groupSeed.groupSecretParams.getPublicParams().getGroupIdentifier().serialize(),
             groupNameOriginal: newGroupState.groupName,
             groupDescriptionOriginal: nil,
             avatarOriginalData: newGroupState.avatarData,

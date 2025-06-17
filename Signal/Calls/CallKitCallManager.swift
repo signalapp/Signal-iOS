@@ -32,7 +32,7 @@ final class CallKitCallManager {
             return nil
         }
         do {
-            return try GroupIdentifier(contents: [UInt8](Data.data(fromBase64Url: String(handle[prefix.endIndex...]))))
+            return try GroupIdentifier(contents: Data.data(fromBase64Url: String(handle[prefix.endIndex...])))
         } catch {
             // ignore the error
             return nil
@@ -72,7 +72,7 @@ final class CallKitCallManager {
                 value = callKitId
             } else {
                 type = .generic
-                value = Self.kGroupThreadCallHandlePrefix + groupThreadCall.groupId.serialize().asData.asBase64Url
+                value = Self.kGroupThreadCallHandlePrefix + groupThreadCall.groupId.serialize().asBase64Url
             }
         case .callLink(let callLinkCall):
             let callKitId: String

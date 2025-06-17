@@ -79,7 +79,7 @@ public class GroupsV2Protos {
             groupSecretParams: groupV2Params.groupSecretParams,
             profileKeyCredential: profileKeyCredential
         )
-        return presentation.serialize().asData
+        return presentation.serialize()
     }
 
     public struct NewGroupParams {
@@ -120,7 +120,7 @@ public class GroupsV2Protos {
         var groupBuilder = GroupsProtoGroup.builder()
         let initialRevision: UInt32 = 0
         groupBuilder.setRevision(initialRevision)
-        groupBuilder.setPublicKey(try newGroup.secretParams.getPublicParams().serialize().asData)
+        groupBuilder.setPublicKey(try newGroup.secretParams.getPublicParams().serialize())
         // GroupsV2 TODO: Will production implementation of encryptString() pad?
 
         let groupTitle = newGroup.title.rawValue
@@ -206,7 +206,7 @@ public class GroupsV2Protos {
         groupChangeProtoData: Data?
     ) -> SSKProtoGroupContextV2 {
         let builder = SSKProtoGroupContextV2.builder()
-        builder.setMasterKey(masterKey.serialize().asData)
+        builder.setMasterKey(masterKey.serialize())
         builder.setRevision(revision)
 
         if let groupChangeProtoData {
@@ -238,8 +238,8 @@ public class GroupsV2Protos {
             throw OWSAssertionError("Missing changeActionsProtoData.")
         }
         if case .verifySignature = verificationOperation {
-            let serverSignature = try NotarySignature(contents: [UInt8](changeProto.serverSignature ?? Data()))
-            try self.serverPublicParams().verifySignature(message: [UInt8](changeActionsProtoData), notarySignature: serverSignature)
+            let serverSignature = try NotarySignature(contents: changeProto.serverSignature ?? Data())
+            try self.serverPublicParams().verifySignature(message: changeActionsProtoData, notarySignature: serverSignature)
         }
         let result = try GroupsProtoGroupChangeActions(serializedData: changeActionsProtoData)
         if case .verifySignature(let groupId) = verificationOperation {
@@ -261,7 +261,7 @@ public class GroupsV2Protos {
             throw OWSAssertionError("Missing group state in response.")
         }
         let groupSendEndorsementsResponse = try groupResponseProto.groupSendEndorsementsResponse.map {
-            return try GroupSendEndorsementsResponse(contents: [UInt8]($0))
+            return try GroupSendEndorsementsResponse(contents: $0)
         }
         return GroupV2SnapshotResponse(
             groupSnapshot: try parse(
@@ -336,7 +336,7 @@ public class GroupsV2Protos {
             guard let profileKeyCiphertextData = memberProto.profileKey else {
                 throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
             }
-            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: profileKeyCiphertextData)
             let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext, aci: aci)
             profileKeys[aci] = profileKey
         }
@@ -400,7 +400,7 @@ public class GroupsV2Protos {
             guard let profileKeyCiphertextData = requestingMemberProto.profileKey else {
                 throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
             }
-            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: profileKeyCiphertextData)
             let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext, aci: aci)
             profileKeys[aci] = profileKey
         }

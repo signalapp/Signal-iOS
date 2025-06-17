@@ -214,7 +214,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             groupId = nil
         }
 
-        if let groupId = groupId, SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId.serialize().asData, transaction: transaction) {
+        if let groupId = groupId, SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId.serialize(), transaction: transaction) {
             Logger.warn("Ignoring StoryMessage in blocked group.")
             return nil
         } else {
@@ -284,7 +284,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         let record = StoryMessage(
             timestamp: timestamp,
             authorAci: author,
-            groupId: groupId?.serialize().asData,
+            groupId: groupId?.serialize(),
             manifest: manifest,
             attachment: attachment,
             replyCount: replyCount
@@ -399,7 +399,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         let record = StoryMessage(
             timestamp: proto.timestamp,
             authorAci: authorAci,
-            groupId: groupId?.serialize().asData,
+            groupId: groupId?.serialize(),
             manifest: manifest,
             attachment: attachment,
             replyCount: replyCount

@@ -11,7 +11,7 @@ extension OWSOutgoingResendRequest {
         do {
             let decryptionErrorMessage = try DecryptionErrorMessage(bytes: decryptionErrorData)
             let plaintextContent = PlaintextContent(decryptionErrorMessage)
-            return Data(plaintextContent.serialize())
+            return plaintextContent.serialize()
         } catch {
             owsFailDebug("Failed to build plaintext: \(error)")
             return nil

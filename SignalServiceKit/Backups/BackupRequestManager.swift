@@ -222,7 +222,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
         )
 
         return try BackupServiceAuth(
-            backupKey: backupKey.asData,
+            backupKey: backupKey,
             privateKey: privateKey,
             authCredential: authCredential,
             type: credentialType

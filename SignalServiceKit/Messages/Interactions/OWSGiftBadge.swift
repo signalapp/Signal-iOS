@@ -65,7 +65,7 @@ public class OWSGiftBadge: MTLModel {
         guard let rcPresentationData = self.redemptionCredential else {
             throw GiftBadgeError.malformed
         }
-        return try ReceiptCredentialPresentation(contents: [UInt8](rcPresentationData))
+        return try ReceiptCredentialPresentation(contents: rcPresentationData)
     }
 
     public struct Level: Hashable {

@@ -130,14 +130,14 @@ extension BackupReceiptCredentialRedemptionJobRecord {
                 let contextData = try container.decodeIfPresent(Data.self, forKey: .receiptCredentialRequestContext)
             {
                 attemptState = .receiptCredentialRequesting(
-                    request: try ReceiptCredentialRequest(contents: [UInt8](requestData)),
-                    context: try ReceiptCredentialRequestContext(contents: [UInt8](contextData))
+                    request: try ReceiptCredentialRequest(contents: requestData),
+                    context: try ReceiptCredentialRequestContext(contents: contextData)
                 )
             } else if
                 let credentialData = try container.decodeIfPresent(Data.self, forKey: .receiptCredential)
             {
                 attemptState = .receiptCredentialRedemption(
-                    try ReceiptCredential(contents: [UInt8](credentialData))
+                    try ReceiptCredential(contents: credentialData)
                 )
             } else {
                 attemptState = .unattempted
@@ -151,10 +151,10 @@ extension BackupReceiptCredentialRedemptionJobRecord {
 
             switch attemptState {
             case .receiptCredentialRequesting(let request, let context):
-                try container.encode(request.serialize().asData, forKey: .receiptCredentialRequest)
-                try container.encode(context.serialize().asData, forKey: .receiptCredentialRequestContext)
+                try container.encode(request.serialize(), forKey: .receiptCredentialRequest)
+                try container.encode(context.serialize(), forKey: .receiptCredentialRequestContext)
             case .receiptCredentialRedemption(let credential):
-                try container.encode(credential.serialize().asData, forKey: .receiptCredential)
+                try container.encode(credential.serialize(), forKey: .receiptCredential)
             case .unattempted:
                 break
             }

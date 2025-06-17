@@ -142,7 +142,7 @@ public struct TSRequest: CustomDebugStringConvertible {
         case .accessKey(let accessKey):
             httpHeaders.addHeader("Unidentified-Access-Key", value: accessKey.keyData.base64EncodedString(), overwriteOnConflict: true)
         case .endorsement(let fullToken):
-            httpHeaders.addHeader("Group-Send-Token", value: fullToken.serialize().asData.base64EncodedString(), overwriteOnConflict: true)
+            httpHeaders.addHeader("Group-Send-Token", value: fullToken.serialize().base64EncodedString(), overwriteOnConflict: true)
         }
     }
 

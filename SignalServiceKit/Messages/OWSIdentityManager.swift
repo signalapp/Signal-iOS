@@ -65,7 +65,7 @@ public protocol OWSIdentityManager {
 extension OWSIdentityManager {
     @discardableResult
     public func saveIdentityKey(_ identityKey: IdentityKey, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<IdentityChange, RecipientIdError> {
-        return saveIdentityKey(identityKey.publicKey.keyBytes.asData, for: serviceId, tx: tx)
+        return saveIdentityKey(identityKey.publicKey.keyBytes, for: serviceId, tx: tx)
     }
 }
 
@@ -509,7 +509,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     ) throws -> Bool {
         let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
         if localIdentifiers?.aci == serviceId {
-            return isTrustedLocalKey(identityKey.publicKey.keyBytes.asData, tx: tx)
+            return isTrustedLocalKey(identityKey.publicKey.keyBytes, tx: tx)
         }
 
         switch direction {
@@ -524,7 +524,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                 uniqueId: recipientUniqueId,
                 transaction: tx
             )
-            if let recipientIdentity, recipientIdentity.identityKey != identityKey.publicKey.keyBytes.asData {
+            if let recipientIdentity, recipientIdentity.identityKey != identityKey.publicKey.keyBytes {
                 Logger.warn("Key mismatch for \(serviceId)")
                 throw IdentityManagerError.identityKeyMismatchForOutgoingMessage
             }
@@ -687,7 +687,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         return OWSVerificationStateSyncMessage(
             localThread: localThread,
             verificationState: recipientIdentity.verificationState,
-            identityKey: identityKey.serialize().asData,
+            identityKey: identityKey.serialize(),
             verificationForRecipientAddress: recipient.address,
             transaction: tx
         )
@@ -886,7 +886,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         let shouldInsertChangeMessages: Bool
 
         if let recipientIdentity {
-            let didChangeIdentityKey = recipientIdentity.identityKey != identityKey.publicKey.keyBytes.asData
+            let didChangeIdentityKey = recipientIdentity.identityKey != identityKey.publicKey.keyBytes
             if didChangeIdentityKey, !overwriteOnConflict {
                 // The conflict case where we receive a verification sync message whose
                 // identity key disagrees with the local identity key for this recipient.
@@ -914,7 +914,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         guard let recipientIdentity else {
             return owsFailDebug("Missing expected identity for \(aci)")
         }
-        guard recipientIdentity.identityKey == identityKey.publicKey.keyBytes.asData else {
+        guard recipientIdentity.identityKey == identityKey.publicKey.keyBytes else {
             return owsFailDebug("Unexpected identityKey for \(aci)")
         }
 
@@ -1010,7 +1010,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                 batchServiceIds.compactMap { serviceId -> [String: String]? in
                     guard let identityKey = try? self.identityKey(for: serviceId, tx: tx) else { return nil }
 
-                    let externalIdentityKey = identityKey.serialize().asData
+                    let externalIdentityKey = identityKey.serialize()
                     let identityKeyDigest = Data(SHA256.hash(data: externalIdentityKey))
 
                     return ["uuid": serviceId.serviceIdString, "fingerprint": Data(identityKeyDigest.prefix(4)).base64EncodedString()]

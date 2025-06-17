@@ -223,7 +223,7 @@ public final class SSKSessionStore: SignalSessionStore {
             do {
                 let session = try SessionRecord(bytes: data)
                 session.archiveCurrentState()
-                return Data(session.serialize()) as NSData
+                return session.serialize() as NSData
             } catch {
                 owsFailDebug("\(error)")
                 return record
@@ -261,7 +261,7 @@ extension SSKSessionStore {
         deviceId: UInt32,
         tx: DBWriteTransaction
     ) throws {
-        try storeSerializedSession(Data(record.serialize()), for: serviceId, deviceId: deviceId, tx: tx)
+        try storeSerializedSession(record.serialize(), for: serviceId, deviceId: deviceId, tx: tx)
     }
 
     public func archiveSession(for serviceId: ServiceId, deviceId: DeviceId, tx: DBWriteTransaction) {

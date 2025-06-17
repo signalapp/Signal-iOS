@@ -635,7 +635,7 @@ extension GRDBSchemaMigratorTest {
             if let aci = serviceId as? Aci {
                 coder.encode(aci.rawUUID, forKey: "backingUuid")
             } else {
-                coder.encode(serviceId?.serviceIdBinary.asData, forKey: "backingUuid")
+                coder.encode(serviceId?.serviceIdBinary, forKey: "backingUuid")
             }
             coder.encode(self.phoneNumber, forKey: "backingPhoneNumber")
         }

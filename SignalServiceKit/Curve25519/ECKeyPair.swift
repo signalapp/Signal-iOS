@@ -53,10 +53,10 @@ public final class ECKeyPair: NSObject, NSSecureCoding {
     }
 
     public func encode(with coder: NSCoder) {
-        self.identityKeyPair.publicKey.keyBytes.withUnsafeBufferPointer {
+        self.identityKeyPair.publicKey.keyBytes.withUnsafeBytes {
             coder.encodeBytes($0.baseAddress, length: $0.count, forKey: Self.TSECKeyPairPublicKey)
         }
-        self.identityKeyPair.privateKey.serialize().withUnsafeBufferPointer {
+        self.identityKeyPair.privateKey.serialize().withUnsafeBytes {
             coder.encodeBytes($0.baseAddress, length: $0.count, forKey: Self.TSECKeyPairPrivateKey)
         }
     }
@@ -70,15 +70,15 @@ public final class ECKeyPair: NSObject, NSSecureCoding {
     }
 
     private func sign(_ data: Data) throws -> Data {
-        return Data(identityKeyPair.privateKey.generateSignature(message: data))
+        return identityKeyPair.privateKey.generateSignature(message: data)
     }
 
     public var publicKey: Data {
-        return Data(identityKeyPair.publicKey.keyBytes)
+        return identityKeyPair.publicKey.keyBytes
     }
 
     public var privateKey: Data {
-        return Data(identityKeyPair.privateKey.serialize())
+        return identityKeyPair.privateKey.serialize()
     }
 }
 

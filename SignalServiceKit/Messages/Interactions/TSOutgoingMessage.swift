@@ -401,7 +401,7 @@ public extension TSOutgoingMessage {
 
         let builder = SSKProtoPniSignatureMessage.builder()
         builder.setPni(pni.rawUUID.data)
-        builder.setSignature(Data(signature))
+        builder.setSignature(signature)
         return builder.buildInfallibly()
     }
 

@@ -471,7 +471,7 @@ public class GroupCallManager {
         AssertNotOnMainThread()
 
         // The message can't be for the current call
-        if currentCallProvider.currentGroupThreadCallGroupId?.serialize().asData == groupThread.groupId {
+        if currentCallProvider.currentGroupThreadCallGroupId?.serialize() == groupThread.groupId {
             return
         }
 

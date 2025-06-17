@@ -4928,7 +4928,7 @@ public class RegistrationCoordinatorTest {
                 signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: identityKeyPair),
                 lastResortPreKey: {
                     let keyPair = KEMKeyPair.generate()
-                    let signature = Data(identityKeyPair.keyPair.privateKey.generateSignature(message: Data(keyPair.publicKey.serialize())))
+                    let signature = identityKeyPair.keyPair.privateKey.generateSignature(message: keyPair.publicKey.serialize())
 
                     let record = SignalServiceKit.KyberPreKeyRecord(
                         0,

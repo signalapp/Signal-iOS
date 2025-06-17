@@ -109,17 +109,17 @@ public struct RegistrationProvisioningMessage {
         var messageBuilder = RegistrationProtos_RegistrationProvisionMessage()
 
         messageBuilder.accountEntropyPool = accountEntropyPool.rawData
-        messageBuilder.aci = aci.serviceIdBinary.asData
+        messageBuilder.aci = aci.serviceIdBinary
         messageBuilder.e164 = phoneNumber.stringValue
         if let pin {
             messageBuilder.pin = pin
         }
 
-        messageBuilder.aciIdentityKeyPublic = aciIdentityKeyPair.publicKey.serialize().asData
-        messageBuilder.aciIdentityKeyPrivate = aciIdentityKeyPair.privateKey.serialize().asData
+        messageBuilder.aciIdentityKeyPublic = aciIdentityKeyPair.publicKey.serialize()
+        messageBuilder.aciIdentityKeyPrivate = aciIdentityKeyPair.privateKey.serialize()
 
-        messageBuilder.pniIdentityKeyPublic = pniIdentityKeyPair.publicKey.serialize().asData
-        messageBuilder.pniIdentityKeyPrivate = pniIdentityKeyPair.privateKey.serialize().asData
+        messageBuilder.pniIdentityKeyPublic = pniIdentityKeyPair.publicKey.serialize()
+        messageBuilder.pniIdentityKeyPrivate = pniIdentityKeyPair.privateKey.serialize()
 
         messageBuilder.platform = .ios
 
@@ -156,7 +156,7 @@ public struct RegistrationProvisioningMessage {
         }
 
         var envelopeBuilder = RegistrationProtos_RegistrationProvisionEnvelope()
-        envelopeBuilder.publicKey = ourKeyPair.publicKey.serialize().asData
+        envelopeBuilder.publicKey = ourKeyPair.publicKey.serialize()
         envelopeBuilder.body = encryptedMessage
 
         return try envelopeBuilder.serializedData()

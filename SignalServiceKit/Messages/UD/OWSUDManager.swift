@@ -372,7 +372,7 @@ public class OWSUDManagerImpl: OWSUDManager {
             SSKEnvironment.shared.notificationPresenterRef.notifyTestPopulation(ofErrorMessage: "Couldn't parse Sealed Sender certificate.")
             throw error
         }
-        await self.setSenderCertificate(aciOnly: aciOnly, certificateData: Data(senderCertificate.serialize()))
+        await self.setSenderCertificate(aciOnly: aciOnly, certificateData: senderCertificate.serialize())
         return senderCertificate
     }
 

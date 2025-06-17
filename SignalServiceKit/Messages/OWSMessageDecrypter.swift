@@ -126,7 +126,7 @@ public class OWSMessageDecrypter {
 
         let profileKeyMessage = OWSProfileKeyMessage(
             thread: contactThread,
-            profileKey: profileKey.serialize().asData,
+            profileKey: profileKey.serialize(),
             transaction: transaction
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(
@@ -316,7 +316,7 @@ public class OWSMessageDecrypter {
                 timestamp: validatedEnvelope.timestamp,
                 originalSenderDeviceId: unsealedEnvelope.sourceDeviceId.uint32Value
             )
-            return Data(errorMessage.serialize())
+            return errorMessage.serialize()
         } catch {
             owsFailDebug("Could not build DecryptionError: \(error)")
             return nil
@@ -398,7 +398,7 @@ public class OWSMessageDecrypter {
             let protocolAddress = ProtocolAddress(sourceAci, deviceId: sourceDeviceId)
             let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: validatedEnvelope.localIdentity)
 
-            let plaintext: [UInt8]
+            let plaintext: Data
             switch cipherType {
             case .whisper:
                 let message = try SignalMessage(bytes: encryptedData)
@@ -446,7 +446,7 @@ public class OWSMessageDecrypter {
                                isRetryable: false)
             }
 
-            plaintextData = Data(plaintext).withoutPadding()
+            plaintextData = plaintext.withoutPadding()
         } catch {
             throw processError(
                 error,

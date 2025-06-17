@@ -31,7 +31,7 @@ final class OutgoingCallLogEventSyncMessageTest: XCTestCase {
                 .init(
                     eventType: eventType,
                     callId: .maxRandom,
-                    conversationId: Aci.randomForTesting().serviceIdBinary.asData,
+                    conversationId: Aci.randomForTesting().serviceIdBinary,
                     timestamp: UInt64(idx * 100)
                 ),
                 .init(

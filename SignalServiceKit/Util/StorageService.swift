@@ -608,7 +608,7 @@ public struct StorageService {
                 inputKeyMaterial: data,
                 salt: Data(),
                 info: infoData
-            ).asData
+            )
         }
     }
 

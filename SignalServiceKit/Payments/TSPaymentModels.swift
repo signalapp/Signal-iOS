@@ -133,7 +133,7 @@ extension TSPaymentAddress: TSPaymentBaseModel {
 
     static func sign(identityKeyPair: ECKeyPair, publicAddressData: Data) throws -> Data {
         let privateKey: LibSignalClient.PrivateKey = identityKeyPair.identityKeyPair.privateKey
-        return Data(privateKey.generateSignature(message: publicAddressData))
+        return privateKey.generateSignature(message: publicAddressData)
     }
 
     @nonobjc

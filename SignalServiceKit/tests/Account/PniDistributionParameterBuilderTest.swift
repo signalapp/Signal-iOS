@@ -58,7 +58,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
         XCTAssertEqual(Set(parameters.devicePniSignedPreKeys.values.map { $0.keyPair.publicKey }).count, 2)
 
-        XCTAssertEqual(Set(parameters.devicePniPqLastResortPreKeys.values.map { $0.keyPair.publicKey.serialize().asData }).count, 2)
+        XCTAssertEqual(Set(parameters.devicePniPqLastResortPreKeys.values.map { $0.keyPair.publicKey.serialize() }).count, 2)
 
         XCTAssertEqual(
             Set(parameters.pniRegistrationIds.values),

@@ -53,7 +53,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
                 return nil
             }
 
-            let credential = try ExpiringProfileKeyCredential(contents: [UInt8](credentialData))
+            let credential = try ExpiringProfileKeyCredential(contents: credentialData)
 
             guard credential.isValid else {
                 // Safe to leave the expired credential here - we can't clear it
@@ -71,7 +71,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
             for aci: Aci,
             transaction: DBWriteTransaction
         ) throws {
-            let credentialData = credential.serialize().asData
+            let credentialData = credential.serialize()
 
             guard !credentialData.isEmpty else {
                 throw OWSAssertionError("Invalid credential data")
@@ -127,7 +127,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
         let localAci = try tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount).aci
         let localProfileKey = try self.parseProfileKey(profileKey: profileKey)
         let commitment = try localProfileKey.getCommitment(userId: localAci)
-        let commitmentData = commitment.serialize().asData
+        let commitmentData = commitment.serialize()
 
         func fetchLocalPaymentAddressProtoData() async -> Data? {
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
@@ -283,7 +283,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
             request: OWSRequestFactory.getVersionedProfileRequest(
                 aci: aci,
                 profileKeyVersion: try profileKey.getProfileKeyVersion(userId: aci).asHexadecimalString(),
-                credentialRequest: try requestContext?.getRequest().serialize().asData,
+                credentialRequest: try requestContext?.getRequest().serialize(),
                 auth: auth
             ),
             profileKey: profileKey,
@@ -295,8 +295,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
 
     public func parseProfileKey(profileKey: Aes256Key) throws -> ProfileKey {
         let profileKeyData: Data = profileKey.keyData
-        let profileKeyDataBytes = [UInt8](profileKeyData)
-        return try ProfileKey(contents: profileKeyDataBytes)
+        return try ProfileKey(contents: profileKeyData)
     }
 
     public func didFetchProfile(profile: SignalServiceProfile, profileRequest: VersionedProfileRequest) async {
@@ -311,7 +310,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
                 throw OWSAssertionError("Missing request context.")
             }
 
-            let credentialResponse = try ExpiringProfileKeyCredentialResponse(contents: [UInt8](credentialResponseData))
+            let credentialResponse = try ExpiringProfileKeyCredentialResponse(contents: credentialResponseData)
             let clientZkProfileOperations = self.clientZkProfileOperations()
             let profileKeyCredential = try clientZkProfileOperations.receiveExpiringProfileKeyCredential(
                 profileKeyCredentialRequestContext: requestContext,
@@ -329,7 +328,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
                     throw OWSAssertionError("Missing profile in database.")
                 }
 
-                guard profileRequest.profileKey.serialize().asData == userProfile.profileKey?.keyData else {
+                guard profileRequest.profileKey.serialize() == userProfile.profileKey?.keyData else {
                     Logger.warn("Profile key for versioned profile fetch does not match current profile key.")
                     return
                 }

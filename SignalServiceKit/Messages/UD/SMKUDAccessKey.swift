@@ -13,7 +13,7 @@ public struct SMKUDAccessKey {
     public let keyData: Data
 
     public init(profileKey: Aes256Key) {
-        self.keyData = Data(ProfileKey(profileKey).deriveAccessKey())
+        self.keyData = ProfileKey(profileKey).deriveAccessKey()
     }
 
     private init(keyData: Data) {

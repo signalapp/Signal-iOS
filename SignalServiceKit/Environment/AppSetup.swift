@@ -270,7 +270,7 @@ public class AppSetup {
 
         let authCredentialStore = AuthCredentialStore()
 
-        let callLinkPublicParams = try! GenericServerPublicParams(contents: [UInt8](tsConstants.callLinkPublicParams))
+        let callLinkPublicParams = try! GenericServerPublicParams(contents: tsConstants.callLinkPublicParams)
         let authCredentialManager = AuthCredentialManagerImpl(
             authCredentialStore: authCredentialStore,
             callLinkPublicParams: callLinkPublicParams,

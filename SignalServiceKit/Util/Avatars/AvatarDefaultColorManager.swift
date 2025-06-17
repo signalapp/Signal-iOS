@@ -47,21 +47,21 @@ public struct AvatarDefaultColorManager {
         switch useCase {
         case .contact(let recipient):
             if let aci = recipient.aci {
-                seedData = Data(aci.serviceIdBinary)
+                seedData = aci.serviceIdBinary
             } else if let phoneNumber = recipient.phoneNumber {
                 seedData = Data(phoneNumber.stringValue.utf8)
             } else if let pni = recipient.pni {
-                seedData = Data(pni.serviceIdBinary)
+                seedData = pni.serviceIdBinary
             } else {
                 return nil
             }
         case .contactWithoutRecipient(let address):
             if let aci = address.serviceId as? Aci {
-                seedData = Data(aci.serviceIdBinary)
+                seedData = aci.serviceIdBinary
             } else if let phoneNumber = address.phoneNumber {
                 seedData = Data(phoneNumber.utf8)
             } else if let pni = address.serviceId as? Pni {
-                seedData = Data(pni.serviceIdBinary)
+                seedData = pni.serviceIdBinary
             } else {
                 return nil
             }

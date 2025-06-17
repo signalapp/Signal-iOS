@@ -40,7 +40,7 @@ public struct KyberPreKeyRecord: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try container.encode(isLastResort, forKey: .isLastResort)
-        try container.encode(Data(asLSCRecord().serialize()), forKey: .keyData)
+        try container.encode(asLSCRecord().serialize(), forKey: .keyData)
         try container.encodeIfPresent(replacedAt, forKey: .replacedAt)
     }
 
@@ -54,7 +54,7 @@ public struct KyberPreKeyRecord: Codable {
         let record = try LibSignalClient.KyberPreKeyRecord(bytes: keyData)
         self.id = record.id
         self.keyPair = try record.keyPair()
-        self.signature = Data(record.signature)
+        self.signature = record.signature
         self.generatedAt = Date(millisecondsSince1970: record.timestamp)
         self.replacedAt = replacedAt
         self.isLastResort = isLastResort
@@ -119,7 +119,7 @@ public class KyberPreKeyStoreImpl: LibSignalClient.KyberPreKeyStore {
         isLastResort: Bool
     ) -> KyberPreKeyRecord {
         let keyPair = KEMKeyPair.generate()
-        let signature = Data(identityKeyPair.keyPair.privateKey.generateSignature(message: Data(keyPair.publicKey.serialize())))
+        let signature = identityKeyPair.keyPair.privateKey.generateSignature(message: keyPair.publicKey.serialize())
 
         let record = KyberPreKeyRecord(
             id,
@@ -258,7 +258,7 @@ public class KyberPreKeyStoreImpl: LibSignalClient.KyberPreKeyStore {
         let record = SignalServiceKit.KyberPreKeyRecord(
             id,
             keyPair: try record.keyPair(),
-            signature: Data(record.signature),
+            signature: record.signature,
             generatedAt: Date(millisecondsSince1970: record.timestamp),
             replacedAt: nil,
             isLastResort: false
@@ -363,7 +363,7 @@ extension LibSignalClient.KyberPreKeyRecord {
         return SignalServiceKit.KyberPreKeyRecord(
             self.id,
             keyPair: try self.keyPair(),
-            signature: Data(self.signature),
+            signature: self.signature,
             generatedAt: Date(millisecondsSince1970: self.timestamp),
             replacedAt: nil,
             isLastResort: true

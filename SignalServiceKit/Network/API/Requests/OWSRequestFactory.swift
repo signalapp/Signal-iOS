@@ -450,14 +450,14 @@ public enum OWSRequestFactory {
     static func preKeyRequestParameters(_ preKeyRecord: SignalServiceKit.PreKeyRecord) -> [String: Any] {
         [
             "keyId": preKeyRecord.id,
-            "publicKey": preKeyRecord.keyPair.keyPair.publicKey.serialize().asData.base64EncodedStringWithoutPadding()
+            "publicKey": preKeyRecord.keyPair.keyPair.publicKey.serialize().base64EncodedStringWithoutPadding()
         ]
     }
 
     static func signedPreKeyRequestParameters(_ signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord) -> [String: Any] {
         [
             "keyId": signedPreKeyRecord.id,
-            "publicKey": signedPreKeyRecord.keyPair.keyPair.publicKey.serialize().asData.base64EncodedStringWithoutPadding(),
+            "publicKey": signedPreKeyRecord.keyPair.keyPair.publicKey.serialize().base64EncodedStringWithoutPadding(),
             "signature": signedPreKeyRecord.signature.base64EncodedStringWithoutPadding()
         ]
     }
@@ -465,7 +465,7 @@ public enum OWSRequestFactory {
     static func pqPreKeyRequestParameters(_ pqPreKeyRecord: KyberPreKeyRecord) -> [String: Any] {
         [
             "keyId": pqPreKeyRecord.id,
-            "publicKey": pqPreKeyRecord.keyPair.publicKey.serialize().asData.base64EncodedStringWithoutPadding(),
+            "publicKey": pqPreKeyRecord.keyPair.publicKey.serialize().base64EncodedStringWithoutPadding(),
             "signature": pqPreKeyRecord.signature.base64EncodedStringWithoutPadding()
         ]
     }

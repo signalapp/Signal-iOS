@@ -57,7 +57,7 @@ extension GroupManager {
 
             try await SSKEnvironment.shared.groupsV2Ref.updateGroupV2(
                 groupId: groupId,
-                groupSecretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData)),
+                groupSecretParams: try GroupSecretParams(contents: groupSecretParamsData),
                 changesBlock: changesBlock
             )
         }

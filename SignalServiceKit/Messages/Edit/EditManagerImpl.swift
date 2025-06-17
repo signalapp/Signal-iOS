@@ -403,7 +403,7 @@ public class EditManagerImpl: EditManager {
             guard
                 let masterKey = editMessage.groupV2?.masterKey,
                 let contextInfo = try? GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey),
-                contextInfo.groupId.serialize().asData == groupThread.groupModel.groupId
+                contextInfo.groupId.serialize() == groupThread.groupModel.groupId
             else {
                 throw OWSAssertionError("Edit message group does not match target message")
             }

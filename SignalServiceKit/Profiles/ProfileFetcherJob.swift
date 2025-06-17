@@ -318,7 +318,7 @@ public class ProfileFetcherJob {
         return GroupSendFullTokenBuilder(
             secretParams: try groupModel.secretParams(),
             expiration: combinedEndorsement.expiration,
-            endorsement: try GroupSendEndorsement(contents: [UInt8](individualEndorsement.endorsement))
+            endorsement: try GroupSendEndorsement(contents: individualEndorsement.endorsement)
         )
     }
 

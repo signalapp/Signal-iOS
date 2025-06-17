@@ -557,7 +557,7 @@ public class GroupManager: NSObject {
 
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             SSKEnvironment.shared.profileManagerRef.addGroupId(
-                toProfileWhitelist: groupId.serialize().asData,
+                toProfileWhitelist: groupId.serialize(),
                 userProfileWriter: .localUser,
                 transaction: transaction
             )

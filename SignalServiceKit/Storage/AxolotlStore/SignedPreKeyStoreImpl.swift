@@ -118,9 +118,9 @@ public class SignedPreKeyStoreImpl: LibSignalClient.SignedPreKeyStore {
         return SignedPreKeyRecord(
             id: preKeyId,
             keyPair: keyPair,
-            signature: Data(identityKeyPair.keyPair.privateKey.generateSignature(
-                message: Data(keyPair.keyPair.publicKey.serialize())
-            )),
+            signature: identityKeyPair.keyPair.privateKey.generateSignature(
+                message: keyPair.keyPair.publicKey.serialize()
+            ),
             generatedAt: Date(),
             replacedAt: nil
         )
@@ -162,7 +162,7 @@ extension LibSignalClient.SignedPreKeyRecord {
         return SignalServiceKit.SignedPreKeyRecord(
             id: Int32(bitPattern: self.id),
             keyPair: ECKeyPair(keyPair),
-            signature: Data(self.signature),
+            signature: self.signature,
             generatedAt: Date(millisecondsSince1970: self.timestamp),
             replacedAt: nil
         )

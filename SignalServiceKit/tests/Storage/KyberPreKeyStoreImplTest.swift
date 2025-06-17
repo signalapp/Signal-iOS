@@ -37,7 +37,7 @@ class KyberPreKeyStoreImplTest: XCTestCase {
 
         XCTAssert(
             try! self.identityKey.keyPair.publicKey.verifySignature(
-                message: Data(key.keyPair.publicKey.serialize()),
+                message: key.keyPair.publicKey.serialize(),
                 signature: key.signature
             )
         )
@@ -60,7 +60,7 @@ class KyberPreKeyStoreImplTest: XCTestCase {
         XCTAssertEqual(record.id, decodedRecord.id)
         XCTAssert(
             try self.identityKey.keyPair.publicKey.verifySignature(
-                message: Data(decodedRecord.keyPair.publicKey.serialize()),
+                message: decodedRecord.keyPair.publicKey.serialize(),
                 signature: decodedRecord.signature
             )
         )
@@ -162,7 +162,7 @@ class KyberPreKeyStoreImplTest: XCTestCase {
         XCTAssertNotNil(key)
         XCTAssert(
             try! self.identityKey.keyPair.publicKey.verifySignature(
-                message: Data(key!.keyPair.publicKey.serialize()),
+                message: key!.keyPair.publicKey.serialize(),
                 signature: key!.signature
             )
         )

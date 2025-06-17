@@ -84,13 +84,13 @@ public class GroupV2UpdatesImpl {
                     groupModel.groupMembership.isLocalUserFullOrInvitedMember,
                     let groupSecretParams = try? groupModel.secretParams(),
                     let groupId = try? groupSecretParams.getPublicParams().getGroupIdentifier(),
-                    !SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId.serialize().asData, transaction: transaction)
+                    !SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId.serialize(), transaction: transaction)
                 else {
                     // Refreshing a group we're not a member of will throw errors
                     return
                 }
 
-                let storeKey = groupId.serialize().asData.toHex()
+                let storeKey = groupId.serialize().toHex()
                 guard let lastRefreshDate: Date = Self.groupRefreshStore.getDate(
                     storeKey,
                     transaction: transaction
@@ -205,7 +205,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         source: GroupChangeActionFetchSource,
         options: TSGroupModelOptions
     ) async throws {
-        let groupId = try secretParams.getPublicParams().getGroupIdentifier().serialize().asData
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier().serialize()
 
         let isThrottled = { () -> Bool in
             guard options.contains(.throttle) else {
@@ -525,7 +525,7 @@ private extension GroupV2UpdatesImpl {
                 // this step if we are planning to leave the group via the block
                 // above, as it's redundant.
                 SSKEnvironment.shared.groupsV2Ref.updateLocalProfileKeyInGroup(
-                    groupId: groupId.serialize().asData,
+                    groupId: groupId.serialize(),
                     transaction: transaction
                 )
             }
@@ -838,9 +838,9 @@ private extension GroupV2UpdatesImpl {
             do {
                 let uuidCiphertext: UuidCiphertext
                 if let userId = action.userID {
-                    uuidCiphertext = try UuidCiphertext(contents: [UInt8](userId))
+                    uuidCiphertext = try UuidCiphertext(contents: userId)
                 } else if let presentationData = action.presentation {
-                    let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
+                    let presentation = try ProfileKeyCredentialPresentation(contents: presentationData)
                     uuidCiphertext = try presentation.getUuidCiphertext()
                 } else {
                     throw OWSAssertionError("Missing userId.")

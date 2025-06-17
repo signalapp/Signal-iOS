@@ -66,7 +66,7 @@ public class CallLinkProfileKeySharingManager {
         let thread = TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(aci), transaction: tx)
         let profileKeyMessage = OWSProfileKeyMessage(
             thread: thread,
-            profileKey: profileKey.serialize().asData,
+            profileKey: profileKey.serialize(),
             transaction: SDSDB.shimOnlyBridge(tx)
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(

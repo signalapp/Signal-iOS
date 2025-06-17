@@ -35,7 +35,7 @@ public struct TSGroupModelBuilder {
     }
 
     public init(secretParams: GroupSecretParams) {
-        self.init(groupVersion: .V2(secretParamsData: secretParams.serialize().asData))
+        self.init(groupVersion: .V2(secretParamsData: secretParams.serialize()))
     }
 
     fileprivate init(groupModel: TSGroupModel) {
@@ -120,17 +120,17 @@ public struct TSGroupModelBuilder {
                 addedBy: addedByAddress
             )
         case .V2(let secretParamsData):
-            let groupSecretParams = try GroupSecretParams(contents: [UInt8](secretParamsData))
+            let groupSecretParams = try GroupSecretParams(contents: secretParamsData)
 
             return TSGroupModelV2(
-                groupId: try groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData,
+                groupId: try groupSecretParams.getPublicParams().getGroupIdentifier().serialize(),
                 name: name,
                 descriptionText: descriptionText?.stripped.nilIfEmpty,
                 avatarDataState: avatarDataState,
                 groupMembership: groupMembership,
                 groupAccess: groupAccess ?? .defaultForV2,
                 revision: groupV2Revision,
-                secretParamsData: groupSecretParams.serialize().asData,
+                secretParamsData: groupSecretParams.serialize(),
                 avatarUrlPath: avatarUrlPath,
                 inviteLinkPassword: inviteLinkPassword,
                 isAnnouncementsOnly: isAnnouncementsOnly,

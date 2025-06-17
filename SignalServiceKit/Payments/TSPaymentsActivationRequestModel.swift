@@ -42,7 +42,7 @@ public struct TSPaymentsActivationRequestModel: Codable, FetchableRecord, Persis
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(id, forKey: .id)
         try container.encode(threadUniqueId, forKey: .threadUniqueId)
-        try container.encode(Data(senderAci.serviceIdBinary), forKey: .senderAci)
+        try container.encode(senderAci.serviceIdBinary, forKey: .senderAci)
     }
 
     public enum CodingKeys: String, CodingKey {

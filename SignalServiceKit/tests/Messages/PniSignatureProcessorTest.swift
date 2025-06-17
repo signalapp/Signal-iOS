@@ -89,14 +89,14 @@ final class PniSignatureProcessorTest: XCTestCase {
         identityManager.recipientIdentities = [
             aciRecipient.uniqueId: OWSRecipientIdentity(
                 uniqueId: aciRecipient.uniqueId,
-                identityKey: Data(aciIdentityKeyPair.identityKey.publicKey.keyBytes),
+                identityKey: aciIdentityKeyPair.identityKey.publicKey.keyBytes,
                 isFirstKnownKey: true,
                 createdAt: Date(),
                 verificationState: .default
             ),
             pniRecipient.uniqueId: OWSRecipientIdentity(
                 uniqueId: pniRecipient.uniqueId,
-                identityKey: Data(pniIdentityKeyPair.identityKey.publicKey.keyBytes),
+                identityKey: pniIdentityKeyPair.identityKey.publicKey.keyBytes,
                 isFirstKnownKey: true,
                 createdAt: Date(),
                 verificationState: .default
@@ -120,14 +120,14 @@ final class PniSignatureProcessorTest: XCTestCase {
     }
 
     func testValidSignature() throws {
-        let signature = Data(pniIdentityKeyPair.signAlternateIdentity(aciIdentityKeyPair.identityKey))
+        let signature = pniIdentityKeyPair.signAlternateIdentity(aciIdentityKeyPair.identityKey)
         try buildAndHandlePniSignatureMessage(from: aci, pni: pni, signature: signature)
         XCTAssertEqual(recipientMerger.appliedMergesFromPniSignatures, 1)
     }
 
     func testWrongPni() {
         let otherPni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b2")
-        let signature = Data(pniIdentityKeyPair.signAlternateIdentity(aciIdentityKeyPair.identityKey))
+        let signature = pniIdentityKeyPair.signAlternateIdentity(aciIdentityKeyPair.identityKey)
         XCTAssertThrowsError(
             try buildAndHandlePniSignatureMessage(from: aci, pni: otherPni, signature: signature),
             "Shouldn't be able to handle the wrong PNI", { error in
@@ -148,7 +148,7 @@ final class PniSignatureProcessorTest: XCTestCase {
             pniRecipient.aci = otherAci
             recipientDatabaseTable.updateRecipient(pniRecipient, transaction: tx)
         }
-        let signature = Data(pniIdentityKeyPair.signAlternateIdentity(aciIdentityKeyPair.identityKey))
+        let signature = pniIdentityKeyPair.signAlternateIdentity(aciIdentityKeyPair.identityKey)
         XCTAssertThrowsError(
             try buildAndHandlePniSignatureMessage(from: aci, pni: pni, signature: signature),
             "Shouldn't be able to handle PNI after its identity key is gone", { error in
@@ -164,7 +164,7 @@ final class PniSignatureProcessorTest: XCTestCase {
     }
 
     func testInvalidSignature() {
-        let signature = Data(IdentityKeyPair.generate().signAlternateIdentity(aciIdentityKeyPair.identityKey))
+        let signature = IdentityKeyPair.generate().signAlternateIdentity(aciIdentityKeyPair.identityKey)
         XCTAssertThrowsError(
             try buildAndHandlePniSignatureMessage(from: aci, pni: pni, signature: signature),
             "Shouldn't be able to handle an invalid signature", { error in

@@ -35,9 +35,9 @@ final class PniDistributionSyncMessage {
     /// Build a serialized message proto for this sync message.
     func buildSerializedMessageProto() throws -> Data {
         let changeNumberBuilder = SSKProtoSyncMessagePniChangeNumber.builder()
-        changeNumberBuilder.setIdentityKeyPair(Data(pniIdentityKeyPair.identityKeyPair.serialize()))
-        changeNumberBuilder.setSignedPreKey(Data(try signedPreKey.asLSCRecord().serialize()))
-        changeNumberBuilder.setLastResortKyberPreKey(Data(try pqLastResortPreKey.asLSCRecord().serialize()))
+        changeNumberBuilder.setIdentityKeyPair(pniIdentityKeyPair.identityKeyPair.serialize())
+        changeNumberBuilder.setSignedPreKey(try signedPreKey.asLSCRecord().serialize())
+        changeNumberBuilder.setLastResortKyberPreKey(try pqLastResortPreKey.asLSCRecord().serialize())
         changeNumberBuilder.setRegistrationID(registrationId)
         changeNumberBuilder.setNewE164(e164.stringValue)
 

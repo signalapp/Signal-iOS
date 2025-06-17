@@ -23,7 +23,7 @@ class CallKitIdStore {
             assert(!groupIdStore.hasValue(callKitId, transaction: tx))
             assert(!callLinkStore.hasValue(callKitId, transaction: tx))
 
-            groupIdStore.setData(groupId.serialize().asData, key: callKitId, transaction: tx)
+            groupIdStore.setData(groupId.serialize(), key: callKitId, transaction: tx)
         }
     }
 
@@ -70,7 +70,7 @@ class CallKitIdStore {
             // Next try group calls
             if
                 let groupIdData = groupIdStore.getData(callKitId, transaction: tx),
-                let groupId = try? GroupIdentifier(contents: [UInt8](groupIdData))
+                let groupId = try? GroupIdentifier(contents: groupIdData)
             {
                 return .groupThread(groupId)
             }

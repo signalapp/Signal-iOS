@@ -37,7 +37,7 @@ final class BackupArchiveGroupUpdateSwiftToProtoConverter {
             return pni.rawUUID.data
         }
         func serviceIdData(_ serviceId: ServiceIdUppercaseString) -> Data {
-            return serviceId.wrappedValue.serviceIdBinary.asData
+            return serviceId.wrappedValue.serviceIdBinary
         }
 
         var update = BackupProto_GroupChangeChatUpdate.Update()

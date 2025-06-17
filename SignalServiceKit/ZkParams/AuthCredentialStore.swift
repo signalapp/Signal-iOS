@@ -41,7 +41,7 @@ class AuthCredentialStore {
             Self.callLinkAuthCredentialKey(for: redemptionTime),
             transaction: tx
         ).map {
-            return try LibSignalClient.CallLinkAuthCredential(contents: [UInt8]($0))
+            return try LibSignalClient.CallLinkAuthCredential(contents: $0)
         }
     }
 
@@ -51,7 +51,7 @@ class AuthCredentialStore {
         tx: DBWriteTransaction
     ) {
         callLinkAuthCredentialStore.setData(
-            credential.serialize().asData,
+            credential.serialize(),
             key: Self.callLinkAuthCredentialKey(for: redemptionTime),
             transaction: tx
         )
@@ -71,7 +71,7 @@ class AuthCredentialStore {
             Self.groupAuthCredentialKey(for: redemptionTime),
             transaction: tx
         ).map {
-            return try AuthCredentialWithPni.init(contents: [UInt8]($0))
+            return try AuthCredentialWithPni.init(contents: $0)
         }
     }
 
@@ -81,7 +81,7 @@ class AuthCredentialStore {
         tx: DBWriteTransaction
     ) {
         groupAuthCredentialStore.setData(
-            credential.serialize().asData,
+            credential.serialize(),
             key: Self.groupAuthCredentialKey(for: redemptionTime),
             transaction: tx
         )
@@ -104,7 +104,7 @@ class AuthCredentialStore {
                 Self.backupAuthCredentialKey(for: redemptionTime),
                 transaction: tx
             ).map {
-                return try BackupAuthCredential.init(contents: [UInt8]($0))
+                return try BackupAuthCredential.init(contents: $0)
             }
         } catch {
             Logger.warn("Invalid backup credential format")
@@ -120,7 +120,7 @@ class AuthCredentialStore {
     ) {
         let store = credentialType == .messages ? backupAuthCredentialStore : mediaAuthCredentialStore
         store.setData(
-            credential.serialize().asData,
+            credential.serialize(),
             key: Self.backupAuthCredentialKey(for: redemptionTime),
             transaction: tx
         )

@@ -175,8 +175,8 @@ public class BackupIdManager {
                 aci: localAci.rawUUID
             )
 
-            let base64MessageRequestContext = messageBackupRequestContext.getRequest().serialize().asData.base64EncodedString()
-            let base64MediaRequestContext = mediaBackupRequestContext.getRequest().serialize().asData.base64EncodedString()
+            let base64MessageRequestContext = messageBackupRequestContext.getRequest().serialize().base64EncodedString()
+            let base64MediaRequestContext = mediaBackupRequestContext.getRequest().serialize().base64EncodedString()
 
             _ = try await networkManager.asyncRequest(
                 .reserveBackupId(
@@ -221,7 +221,7 @@ private extension TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives/keys")!,
             method: "PUT",
-            parameters: ["backupIdPublicKey": Data(backupAuth.publicKey.serialize()).base64EncodedString()]
+            parameters: ["backupIdPublicKey": backupAuth.publicKey.serialize().base64EncodedString()]
         )
         request.auth = .backup(backupAuth)
         return request

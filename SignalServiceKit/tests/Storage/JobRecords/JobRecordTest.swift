@@ -572,7 +572,7 @@ extension CallRecordDeleteAllJobRecord: ValidatableModel {
             CallRecordDeleteAllJobRecord(
                 sendDeleteAllSyncMessage: true,
                 deleteAllBeforeCallId: 6789,
-                deleteAllBeforeConversationId: Aci.constantForTesting("E84A2412-09CB-4EFB-9B1D-3BEB65C14481").serviceIdBinary.asData,
+                deleteAllBeforeConversationId: Aci.constantForTesting("E84A2412-09CB-4EFB-9B1D-3BEB65C14481").serviceIdBinary,
                 deleteAllBeforeTimestamp: 1234,
                 failureCount: 19,
                 status: .ready

@@ -186,7 +186,7 @@ public class GroupsV2IncomingChanges {
             guard let profileKeyCiphertextData = member.profileKey else {
                 throw OWSAssertionError("Missing profileKeyCiphertext.")
             }
-            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: profileKeyCiphertextData)
             let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext, aci: aci)
 
             profileKeys[aci] = profileKey
@@ -416,7 +416,7 @@ public class GroupsV2IncomingChanges {
             guard let profileKeyCiphertextData = requestingMember.profileKey else {
                 throw OWSAssertionError("Missing profileKeyCiphertext.")
             }
-            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: profileKeyCiphertextData)
             let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext, aci: aci)
 
             guard !oldGroupMembership.isMemberOfAnyKind(aci) else {
@@ -686,7 +686,7 @@ private extension HasAciAndProfileKey {
         {
             let aci = try groupV2Params.aci(for: aciCiphertext)
 
-            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: profileKeyCiphertextData)
             let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext, aci: aci)
 
             return AciProperties(
@@ -699,7 +699,7 @@ private extension HasAciAndProfileKey {
             // is parsing *old* group history, since the server has been writing
             // the properties required for the block above for a long time.
 
-            let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
+            let presentation = try ProfileKeyCredentialPresentation(contents: presentationData)
             let aciCiphertext = try presentation.getUuidCiphertext()
             let aci = try groupV2Params.aci(for: aciCiphertext)
 
@@ -708,7 +708,7 @@ private extension HasAciAndProfileKey {
 
             return AciProperties(
                 aci: aci,
-                aciCiphertext: aciCiphertext.serialize().asData,
+                aciCiphertext: aciCiphertext.serialize(),
                 profileKey: profileKey
             )
         } else {

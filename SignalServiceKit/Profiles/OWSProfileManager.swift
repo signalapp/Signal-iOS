@@ -1984,7 +1984,7 @@ extension OWSProfileManager {
 
         let nonceData = try readHandle.read(upToCount: nonceLength) ?? Data()
 
-        let decryptor = try Aes256GcmDecryption(key: profileKey.serialize().asData, nonce: nonceData, associatedData: [])
+        let decryptor = try Aes256GcmDecryption(key: profileKey.serialize(), nonce: nonceData, associatedData: [])
         while remainingLength > 0 {
             let kBatchLimit = 32768
             var payloadData: Data = try readHandle.read(upToCount: min(remainingLength, kBatchLimit)) ?? Data()

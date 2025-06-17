@@ -38,12 +38,13 @@ public class ProvisioningCipher {
         let sharedSecret = self.ourKeyPair.privateKey.keyAgreement(with: theirPublicKey)
 
         let infoData = Constants.info
-        let derivedSecret: [UInt8] = try infoData.utf8.withContiguousStorageIfAvailable {
-            let totalLength = Constants.cipherKeyLength + Constants.macKeyLength
+        let totalLength = Constants.cipherKeyLength + Constants.macKeyLength
+        let derivedSecret = try infoData.utf8.withContiguousStorageIfAvailable {
             return try hkdf(outputLength: totalLength, inputKeyMaterial: sharedSecret, salt: [], info: $0)
         }!
-        let cipherKey = derivedSecret[0..<Constants.cipherKeyLength]
-        let macKey = derivedSecret[Constants.cipherKeyLength...]
+        owsPrecondition(derivedSecret.count == totalLength)
+        let cipherKey = derivedSecret.prefix(Constants.cipherKeyLength)
+        let macKey = derivedSecret.dropFirst(Constants.cipherKeyLength)
         owsAssertDebug(macKey.count == Constants.macKeyLength)
 
         guard data.count < Int.max - (kCCBlockSizeAES128 + initializationVector.count) else {
@@ -91,26 +92,33 @@ public class ProvisioningCipher {
         return message
     }
 
-    public func decrypt(data: Data, theirPublicKey: PublicKey) throws -> Data {
-        let bytes = [UInt8](data)
+    public func decrypt(data bytes: Data, theirPublicKey: PublicKey) throws -> Data {
+        var bytes = bytes
 
         let versionLength = 1
         let ivLength = 16
         let macLength = 32
-        let provisionMessageLength = bytes.count - versionLength - ivLength - macLength
-        guard provisionMessageLength > 0 else {
+
+        let theirMac = bytes.suffix(macLength)
+        bytes = bytes.dropLast(macLength)
+
+        let messageToAuthenticate = bytes
+
+        let version = bytes.prefix(versionLength)
+        bytes = bytes.dropFirst(versionLength)
+
+        let initializationVector = bytes.prefix(ivLength)
+        bytes = bytes.dropFirst(ivLength)
+
+        let ciphertext = bytes
+
+        guard version.count == versionLength, initializationVector.count == ivLength, theirMac.count == macLength, !ciphertext.isEmpty else {
             throw ProvisioningError.invalidProvisionMessage("provisioning message too short.")
         }
 
-        let version = bytes[0]
-        guard version == 1 else {
+        guard version == Data([1]) else {
             throw ProvisioningError.invalidProvisionMessage("Unexpected version on provisioning message: \(bytes[0])")
         }
-
-        let iv = Array(bytes[1..<17])
-        let theirMac = bytes.suffix(32)
-        let messageToAuthenticate = bytes[0..<(bytes.count - 32)]
-        let ciphertext = Array(bytes[17..<(bytes.count - 32)])
 
         let agreement = ourKeyPair.privateKey.keyAgreement(with: theirPublicKey)
 
@@ -118,32 +126,40 @@ public class ProvisioningCipher {
             try hkdf(outputLength: 64, inputKeyMaterial: agreement, salt: [], info: $0)
         }!
 
-        let cipherKey = Array(keyBytes[0..<32])
-        let macKey = keyBytes[32..<64]
+        owsPrecondition(keyBytes.count == 64)
+        let cipherKey = keyBytes.prefix(32)
+        let macKey = keyBytes.dropFirst(32).prefix(32)
 
         let ourHMAC = Data(HMAC<SHA256>.authenticationCode(for: messageToAuthenticate, using: .init(data: macKey)))
-        guard ourHMAC.ows_constantTimeIsEqual(to: Data(theirMac)) else {
+        guard ourHMAC.ows_constantTimeIsEqual(to: theirMac) else {
             throw ProvisioningError.invalidProvisionMessage("mac mismatch")
         }
 
         var bytesDecrypted: size_t = 0
-        var plaintextBuffer: [UInt8] = [UInt8].init(repeating: 0, count: ciphertext.count + kCCBlockSizeAES128)
-        let cryptStatus = CCCrypt(CCOperation(kCCDecrypt),
-                                  CCAlgorithm(kCCAlgorithmAES128),
-                                  CCOptions(kCCOptionPKCS7Padding),
-                                  cipherKey,
-                                  cipherKey.count,
-                                  iv,
-                                  ciphertext,
-                                  ciphertext.count,
-                                  &plaintextBuffer,
-                                  plaintextBuffer.count,
-                                  &bytesDecrypted)
+        var plaintextData = Data(count: ciphertext.count)
+        let cryptStatus = cipherKey.withUnsafeBytes { keyBytes in
+            initializationVector.withUnsafeBytes { ivBytes in
+                ciphertext.withUnsafeBytes { ciphertextBytes in
+                    plaintextData.withUnsafeMutableBytes { dataBytes in
+                        CCCrypt(
+                            CCOperation(kCCDecrypt),
+                            CCAlgorithm(kCCAlgorithmAES128),
+                            CCOptions(kCCOptionPKCS7Padding),
+                            keyBytes.baseAddress, keyBytes.count,
+                            ivBytes.baseAddress,
+                            ciphertextBytes.baseAddress, ciphertextBytes.count,
+                            dataBytes.baseAddress, dataBytes.count,
+                            &bytesDecrypted,
+                        )
+                    }
+                }
+            }
+        }
 
         guard cryptStatus == kCCSuccess else {
             throw OWSAssertionError("failure with cryptStatus: \(cryptStatus)")
         }
 
-        return Data(plaintextBuffer.prefix(upTo: bytesDecrypted))
+        return plaintextData.prefix(bytesDecrypted)
     }
 }

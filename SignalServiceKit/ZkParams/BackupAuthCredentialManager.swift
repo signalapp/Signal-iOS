@@ -167,7 +167,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
         let authCredentialRepsonse = try JSONDecoder().decode(BackupCredentialResponse.self, from: data)
 
-        let backupServerPublicParams = try GenericServerPublicParams(contents: [UInt8](TSConstants.backupServerPublicParams))
+        let backupServerPublicParams = try GenericServerPublicParams(contents: TSConstants.backupServerPublicParams)
         return try authCredentialRepsonse.credentials.reduce(into: [BackupAuthCredentialType: [ReceivedBackupAuthCredentials]]()) { result, element in
             let type = element.key
             result[type] = try element.value.compactMap {
@@ -181,7 +181,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
                         let backupKey = try backupKeyMaterial.backupKey(type: type, tx: tx)
                         return BackupAuthCredentialRequestContext.create(backupKey: backupKey.serialize(), aci: localAci.rawUUID)
                     }
-                    let backupAuthResponse = try BackupAuthCredentialResponse(contents: [UInt8]($0.credential))
+                    let backupAuthResponse = try BackupAuthCredentialResponse(contents: $0.credential)
                     let credential = try backupRequestContext.receive(
                         backupAuthResponse,
                         timestamp: redemptionDate,

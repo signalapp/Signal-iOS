@@ -11,8 +11,8 @@ source 'https://cdn.cocoapods.org/'
 pod 'blurhash', podspec: './ThirdParty/blurhash.podspec'
 pod 'SwiftProtobuf', "1.29.0"
 
-ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = 'abb5b38e95140bcfb054f4183872c954e519e00193eb49447630d7446e214279'
-pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal.git', tag: 'v0.74.1', testspecs: ["Tests"]
+ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = '564f8f9ce506a59a34e2a74ad537fea3f94643d112d7727085a3e5a7641450e9'
+pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal.git', tag: 'v0.75.0', testspecs: ["Tests"]
 # pod 'LibSignalClient', path: '../libsignal', testspecs: ["Tests"]
 
 ENV['RINGRTC_PREBUILD_CHECKSUM'] = 'b8a9c55d0fb9b9535f471695ee210e3e4c731e624ec69e08e0da94691e946daa'
@@ -269,7 +269,7 @@ def copy_acknowledgements
   acknowledgements_files = targets.map do |target|
     "Pods/Target Support Files/Pods-#{target}/Pods-#{target}-acknowledgements.plist"
   end
-  acknowledgements_files << "Pods/LibSignalClient/acknowledgments/acknowledgments.plist"
+  acknowledgements_files << "Pods/LibSignalClient/acknowledgments/acknowledgments-ios.plist"
   acknowledgements_files << "Pods/SignalRingRTC/acknowledgments/acknowledgments.plist"
   acknowledgements_files << "Pods/SignalRingRTC/out/release/acknowledgments-webrtc-ios.plist"
 

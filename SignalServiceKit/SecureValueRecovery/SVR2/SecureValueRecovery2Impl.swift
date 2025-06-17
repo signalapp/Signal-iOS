@@ -458,7 +458,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         Logger.info("")
 
         do {
-            if let mbrk = try syncMessage.mediaRootBackupKey.map({ try BackupKey(contents: Array($0)) }) {
+            if let mbrk = try syncMessage.mediaRootBackupKey.map({ try BackupKey(contents: $0) }) {
                 accountKeyStore.setMediaRootBackupKey(mbrk, tx: tx)
             }
         } catch {

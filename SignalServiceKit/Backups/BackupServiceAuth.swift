@@ -19,7 +19,7 @@ public struct BackupServiceAuth {
     public let backupLevel: BackupLevel
 
     public init(backupKey: Data, privateKey: PrivateKey, authCredential: BackupAuthCredential, type: BackupAuthCredentialType) throws {
-        let backupServerPublicParams = try GenericServerPublicParams(contents: [UInt8](TSConstants.backupServerPublicParams))
+        let backupServerPublicParams = try GenericServerPublicParams(contents: TSConstants.backupServerPublicParams)
         let presentation = authCredential.present(serverParams: backupServerPublicParams).serialize()
         let signedPresentation = privateKey.generateSignature(message: presentation)
         self.type = type
@@ -27,8 +27,8 @@ public struct BackupServiceAuth {
 
         self.publicKey = privateKey.publicKey
         self.authHeaders = [
-            "X-Signal-ZK-Auth": Data(presentation).base64EncodedString(),
-            "X-Signal-ZK-Auth-Signature": Data(signedPresentation).base64EncodedString()
+            "X-Signal-ZK-Auth": presentation.base64EncodedString(),
+            "X-Signal-ZK-Auth-Signature": signedPresentation.base64EncodedString()
         ]
     }
 

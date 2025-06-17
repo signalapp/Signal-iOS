@@ -25,8 +25,8 @@ public enum CallEventConversation {
             let serviceId = try ServiceId.parseFrom(serviceIdBinary: conversationId)
             self = .individualThread(serviceId: serviceId, isVideo: true)
         case .groupCall:
-            let groupIdentifier = try GroupIdentifier(contents: [UInt8](conversationId))
-            self = .groupThread(groupId: groupIdentifier.serialize().asData)
+            let groupIdentifier = try GroupIdentifier(contents: conversationId)
+            self = .groupThread(groupId: groupIdentifier.serialize())
         case .adHocCall:
             self = .adHoc(roomId: conversationId)
         }
@@ -46,7 +46,7 @@ public enum CallEventConversation {
     var id: Data {
         switch self {
         case .individualThread(let serviceId, _):
-            return Data(serviceId.serviceIdBinary)
+            return serviceId.serviceIdBinary
         case .groupThread(let groupId):
             return groupId
         case .adHoc(let roomId):

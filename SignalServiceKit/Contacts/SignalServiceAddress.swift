@@ -320,7 +320,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             case is Aci:
                 return serviceId.rawUUID
             default:
-                return Data(serviceId.serviceIdBinary)
+                return serviceId.serviceIdBinary
             }
         }, forKey: "backingUuid")
         // Only encode the backingPhoneNumber if we don't know the UUID

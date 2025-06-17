@@ -126,17 +126,17 @@ public struct LinkingProvisioningMessage {
         guard let mrbkBytes = proto.mediaRootBackupKey else {
             throw ProvisioningError.invalidProvisionMessage("missing media key from provisioning message")
         }
-        self.mrbk = try BackupKey(contents: Array(mrbkBytes))
+        self.mrbk = try BackupKey(contents: mrbkBytes)
 
-        self.ephemeralBackupKey = try proto.ephemeralBackupKey.map({ try BackupKey.init(contents: Array($0)) })
+        self.ephemeralBackupKey = try proto.ephemeralBackupKey.map({ try BackupKey.init(contents: $0) })
     }
 
     public func buildEncryptedMessageBody(theirPublicKey: PublicKey) throws -> Data {
         let messageBuilder = ProvisioningProtoProvisionMessage.builder(
-            aciIdentityKeyPublic: aciIdentityKeyPair.publicKey.serialize().asData,
-            aciIdentityKeyPrivate: aciIdentityKeyPair.privateKey.serialize().asData,
-            pniIdentityKeyPublic: pniIdentityKeyPair.publicKey.serialize().asData,
-            pniIdentityKeyPrivate: pniIdentityKeyPair.privateKey.serialize().asData,
+            aciIdentityKeyPublic: aciIdentityKeyPair.publicKey.serialize(),
+            aciIdentityKeyPrivate: aciIdentityKeyPair.privateKey.serialize(),
+            pniIdentityKeyPublic: pniIdentityKeyPair.publicKey.serialize(),
+            pniIdentityKeyPrivate: pniIdentityKeyPair.privateKey.serialize(),
             provisioningCode: provisioningCode,
             profileKey: profileKey.keyData
         )
@@ -154,8 +154,8 @@ public struct LinkingProvisioningMessage {
         case .masterKey(let masterKey):
             messageBuilder.setMasterKey(masterKey.rawData)
         }
-        messageBuilder.setMediaRootBackupKey(mrbk.serialize().asData)
-        ephemeralBackupKey.map { messageBuilder.setEphemeralBackupKey($0.serialize().asData)}
+        messageBuilder.setMediaRootBackupKey(mrbk.serialize())
+        ephemeralBackupKey.map { messageBuilder.setEphemeralBackupKey($0.serialize())}
 
         let plainTextProvisionMessage = try messageBuilder.buildSerializedData()
 
@@ -173,7 +173,7 @@ public struct LinkingProvisioningMessage {
         }
 
         let envelopeBuilder = ProvisioningProtoProvisionEnvelope.builder(
-            publicKey: ourKeyPair.publicKey.serialize().asData,
+            publicKey: ourKeyPair.publicKey.serialize(),
             body: encryptedProvisionMessage
         )
         return try envelopeBuilder.buildSerializedData()

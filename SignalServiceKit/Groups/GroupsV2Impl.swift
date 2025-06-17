@@ -336,7 +336,7 @@ public class GroupsV2Impl: GroupsV2 {
         let changeActionsProto = try GroupsV2Protos.parseGroupChangeProto(changeProto, verificationOperation: .alreadyTrusted)
 
         let groupSendEndorsementsResponse = try changeResponse.groupSendEndorsementsResponse.map {
-            return try GroupSendEndorsementsResponse(contents: [UInt8]($0))
+            return try GroupSendEndorsementsResponse(contents: $0)
         }
 
         try await updateGroupWithChangeActions(
@@ -546,7 +546,7 @@ public class GroupsV2Impl: GroupsV2 {
             )
         }
 
-        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize().asData
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize()
         let response = try await performServiceRequest(
             requestBuilder: requestBuilder,
             groupId: groupId,
@@ -584,7 +584,7 @@ public class GroupsV2Impl: GroupsV2 {
             )
         }
 
-        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize().asData
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize()
         let response = try await performServiceRequest(
             requestBuilder: requestBuilder,
             groupId: groupId,
@@ -615,7 +615,7 @@ public class GroupsV2Impl: GroupsV2 {
         source: GroupChangeActionFetchSource
     ) async throws -> GroupChangesResponse {
         let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
-        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize().asData
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize()
 
         let groupModel: TSGroupModelV2?
         let gseExpiration: UInt64
@@ -710,7 +710,7 @@ public class GroupsV2Impl: GroupsV2 {
         includeFirstState: Bool,
         gseExpiration: UInt64
     ) async throws -> GroupChangesResponse {
-        let groupId = try secretParams.getPublicParams().getGroupIdentifier().serialize().asData
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier().serialize()
 
         let limit: UInt32? = upThroughRevision.map({ (startingAtRevision <= $0) ? ($0 - startingAtRevision + 1) : 1 })
 
@@ -763,7 +763,7 @@ public class GroupsV2Impl: GroupsV2 {
         }
 
         let groupSendEndorsementsResponse = try groupChangesProto.groupSendEndorsementsResponse.map {
-            return try GroupSendEndorsementsResponse(contents: [UInt8]($0))
+            return try GroupSendEndorsementsResponse(contents: $0)
         }
 
         return GroupChangesResponse(
@@ -795,7 +795,7 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     private func getRevisionLocalUserWasAddedToGroup(secretParams: GroupSecretParams) async throws -> UInt32 {
-        let groupId = try secretParams.getPublicParams().getGroupIdentifier().serialize().asData
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier().serialize()
         let getJoinedAtRevisionRequestBuilder: RequestBuilder = { authCredential in
             try StorageService.buildGetJoinedAtRevisionRequest(
                 secretParams: secretParams,
@@ -848,7 +848,7 @@ public class GroupsV2Impl: GroupsV2 {
             downloadedAvatars.merge(justUploadedAvatars)
         }
 
-        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize().asData
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize()
 
         // First step - try to skip downloading the current group avatar.
         if
@@ -1382,7 +1382,7 @@ public class GroupsV2Impl: GroupsV2 {
                                                                                      shouldEvacuateInBackground: true)
 
     private func groupInviteLinkPreviewCacheKey(groupSecretParams: GroupSecretParams) -> Data {
-        return groupSecretParams.serialize().asData
+        return groupSecretParams.serialize()
     }
 
     public func cachedGroupInviteLinkPreview(groupSecretParams: GroupSecretParams) -> GroupInviteLinkPreview? {
@@ -1649,7 +1649,7 @@ public class GroupsV2Impl: GroupsV2 {
             }
             let response = try await performServiceRequest(
                 requestBuilder: requestBuilder,
-                groupId: groupId.serialize().asData,
+                groupId: groupId.serialize(),
                 behavior400: .fail,
                 behavior403: .reportInvalidOrBlockedGroupLink,
             )
@@ -2061,7 +2061,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         let response = try await performServiceRequest(
             requestBuilder: requestBuilder,
-            groupId: try secretParams.getPublicParams().getGroupIdentifier().serialize().asData,
+            groupId: try secretParams.getPublicParams().getGroupIdentifier().serialize(),
             behavior400: .fail,
             behavior403: .fetchGroupUpdates,
         )

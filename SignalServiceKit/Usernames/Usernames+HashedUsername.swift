@@ -31,12 +31,12 @@ extension Usernames {
 
         /// The hash of this username.
         lazy var hashString: String = {
-            Data(libSignalUsername.hash).asBase64Url
+            libSignalUsername.hash.asBase64Url
         }()
 
         /// The ZKProof string for this username's hash.
         lazy var proofString: String = {
-            Data(libSignalUsername.generateProof()).asBase64Url
+            libSignalUsername.generateProof().asBase64Url
         }()
     }
 }

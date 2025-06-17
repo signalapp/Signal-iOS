@@ -58,12 +58,8 @@ extension ProtocolAddress {
     }
 
     public var deviceIdObj: DeviceId {
-        get throws {
-            guard let result = DeviceId(validating: self.deviceId) else {
-                throw OWSAssertionError("Invalid protocol address: must have valid deviceId")
-            }
-            return result
-        }
+        // LibSignal also enforces [1, 127], so this can't fail.
+        return DeviceId(validating: self.deviceId)!
     }
 }
 

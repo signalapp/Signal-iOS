@@ -494,7 +494,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         contact.registration = registration
         if let identity, let identityKey = try? identity.identityKeyObject {
             // `serialize()`, which includes the keyType prefix.
-            contact.identityKey = Data(identityKey.publicKey.serialize())
+            contact.identityKey = identityKey.publicKey.serialize()
             switch identity.verificationState {
             case .default, .defaultAcknowledged:
                 contact.identityState = .default
@@ -682,7 +682,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             do {
                 identityKey = try IdentityKey(publicKey: PublicKey(contactProto.identityKey))
                     // 'keyBytes', which drops the keyType prefix
-                    .publicKey.keyBytes.asData
+                    .publicKey.keyBytes
             } catch {
                 return .failure([.restoreFrameError(.invalidProtoData(.invalidContactIdentityKey), recipientProto.recipientId)])
             }

@@ -19,8 +19,8 @@ public struct SecretSessionKnownSenderError: Error {
         self.senderAci = senderAci
         self.senderDeviceId = senderDeviceId
         self.cipherType = messageContent.messageType
-        self.groupId = messageContent.groupId.map { Data($0) }
-        self.unsealedContent = Data(messageContent.contents)
+        self.groupId = messageContent.groupId
+        self.unsealedContent = messageContent.contents
         self.contentHint = messageContent.contentHint
         self.underlyingError = underlyingError
     }
@@ -132,7 +132,7 @@ public class SMKSecretSessionCipher: NSObject {
             identityStore: currentIdentityStore,
             context: protocolContext)
 
-        return Data(outerBytes)
+        return outerBytes
     }
 
     public func groupEncryptMessage(recipients: [ProtocolAddress],
@@ -164,7 +164,7 @@ public class SMKSecretSessionCipher: NSObject {
             sessionStore: currentSessionStore,
             context: protocolContext ?? NullContext())
 
-        return Data(multiRecipientMessage)
+        return multiRecipientMessage
     }
 
     // public Pair<SignalProtocolAddress, byte[]> decrypt(CertificateValidator validator, byte[] ciphertext, long timestamp)
@@ -252,7 +252,7 @@ public class SMKSecretSessionCipher: NSObject {
         // SessionCipher(signalProtocolStore, sender).decrypt(new PreKeySignalMessage(message.getContent())); default: throw
         // new InvalidMessageException("Unknown type: " + message.getType());
         // }
-        let plaintextData: [UInt8]
+        let plaintextData: Data
         switch messageContent.messageType {
         case .whisper:
             let cipherMessage = try SignalMessage(bytes: messageContent.contents)
@@ -287,6 +287,6 @@ public class SMKSecretSessionCipher: NSObject {
             throw SMKError.assertionError(
                 description: "[\(type(of: self))] Not prepared to handle this message type: \(unknownType.rawValue)")
         }
-        return Data(plaintextData)
+        return plaintextData
     }
 }

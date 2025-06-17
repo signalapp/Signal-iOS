@@ -89,7 +89,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
                 currentDate: Date()
             )
             return firstly {
-                webSocket.send(data: Data(client.initialRequest()))
+                webSocket.send(data: client.initialRequest())
                 return webSocket.waitForResponse()
             }.map(on: scheduler) { handshakeResponse -> Configurator.Client in
                 try client.completeHandshake(handshakeResponse)
@@ -162,12 +162,12 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
     }
 
     private func encryptAndSendRequest(_ request: Data) throws {
-        let encryptedRequest = Data(try client.establishedSend(request))
+        let encryptedRequest = try client.establishedSend(request)
         webSocket.send(data: encryptedRequest)
     }
 
     private func decryptResponse(_ encryptedResponse: Data) throws -> Data {
-        return Data(try client.establishedRecv(encryptedResponse))
+        return try client.establishedRecv(encryptedResponse)
     }
 
     public override func disconnect(code: URLSessionWebSocketTask.CloseCode?) {

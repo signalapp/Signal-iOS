@@ -734,7 +734,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     }
 
     public class func decrypt(profileData: Data, profileKey: ProfileKey) throws -> Data {
-        return try Aes256GcmEncryptedData(concatenated: profileData).decrypt(key: profileKey.serialize().asData)
+        return try Aes256GcmEncryptedData(concatenated: profileData).decrypt(key: profileKey.serialize())
     }
 
     enum DecryptionError: Error {

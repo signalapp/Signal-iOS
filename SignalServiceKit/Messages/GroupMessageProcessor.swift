@@ -224,7 +224,7 @@ internal class SpecificGroupMessageProcessor {
 
         return GroupMessageProcessorManager.discardMode(
             forMessageFrom: sourceAci,
-            groupId: groupContextInfo.groupId.serialize().asData,
+            groupId: groupContextInfo.groupId.serialize(),
             tx: tx
         )
     }
@@ -240,7 +240,7 @@ internal class SpecificGroupMessageProcessor {
         }
         return GroupMessageProcessorManager.discardMode(
             forMessageFrom: sourceAci,
-            groupId: jobInfo.groupContextInfo.groupId.serialize().asData,
+            groupId: jobInfo.groupContextInfo.groupId.serialize(),
             shouldCheckGroupModel: hasGroupBeenUpdated,
             tx: tx
         )
@@ -412,7 +412,7 @@ internal class SpecificGroupMessageProcessor {
     private func updateUsingEmbeddedGroupUpdate(
         jobInfo: IncomingGroupsV2MessageJobInfo
     ) async throws(RetryableError) -> Bool {
-        let groupId = jobInfo.groupContextInfo.groupId.serialize().asData
+        let groupId = jobInfo.groupContextInfo.groupId.serialize()
         let secretParams = jobInfo.groupContextInfo.groupSecretParams
 
         // TODO: Move this to the other method to avoid duplicate fetches.
@@ -675,7 +675,7 @@ public class GroupMessageProcessorManager {
         }
         do {
             let groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupContext.masterKey ?? Data())
-            return groupContextInfo.groupId.serialize().asData
+            return groupContextInfo.groupId.serialize()
         } catch {
             owsFailDebug("Invalid group context: \(error).")
             return nil
@@ -700,7 +700,7 @@ public class GroupMessageProcessorManager {
 
         let existsJob: Bool
         do {
-            existsJob = try GroupMessageProcessorJobStore().existsJob(forGroupId: groupContextInfo.groupId.serialize().asData, tx: tx)
+            existsJob = try GroupMessageProcessorJobStore().existsJob(forGroupId: groupContextInfo.groupId.serialize(), tx: tx)
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: error)
             owsFailDebug("Couldn't check for existing group jobs: \(error)")

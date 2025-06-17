@@ -64,8 +64,8 @@ class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConve
             return .thread(threadRowId: contactThread.sqliteRowId!)
         }
         if
-            let groupId = try? GroupIdentifier(contents: [UInt8](conversationId)),
-            let groupThread = threadStore.fetchGroupThread(groupId: groupId.serialize().asData, tx: tx)
+            let groupId = try? GroupIdentifier(contents: conversationId),
+            let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx)
         {
             return .thread(threadRowId: groupThread.sqliteRowId!)
         }
@@ -84,7 +84,7 @@ class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConve
             switch threadStore.fetchThread(rowId: threadRowId, tx: tx) {
             case let thread as TSContactThread:
                 if let serviceId = recipientDatabaseTable.fetchServiceId(contactThread: thread, tx: tx) {
-                    return serviceId.serviceIdBinary.asData
+                    return serviceId.serviceIdBinary
                 }
                 throw OWSAssertionError("Missing contact service ID - how did we get here?")
             case let thread as TSGroupThread:

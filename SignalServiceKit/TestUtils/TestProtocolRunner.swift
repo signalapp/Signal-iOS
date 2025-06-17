@@ -153,11 +153,13 @@ public struct TestProtocolRunner {
                         context: StoreContext) throws -> Data {
         owsPrecondition(cipherMessage.messageType == .whisper, "only bare SignalMessages are supported")
         let message = try SignalMessage(bytes: cipherMessage.serialize())
-        return Data(try signalDecrypt(message: message,
-                                      from: sender,
-                                      sessionStore: recipientClient.sessionStore,
-                                      identityStore: recipientClient.identityKeyStore,
-                                      context: context))
+        return try signalDecrypt(
+            message: message,
+            from: sender,
+            sessionStore: recipientClient.sessionStore,
+            identityStore: recipientClient.identityKeyStore,
+            context: context,
+        )
     }
 }
 
@@ -396,7 +398,7 @@ public struct FakeService {
         }
 
         assert(cipherMessage.messageType == .whisper)
-        return Data(cipherMessage.serialize())
+        return cipherMessage.serialize()
     }
 
     public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, groupV2Context: SSKProtoGroupContextV2) throws -> Data {
@@ -409,7 +411,7 @@ public struct FakeService {
         }
 
         assert(cipherMessage.messageType == .whisper)
-        return Data(cipherMessage.serialize())
+        return cipherMessage.serialize()
     }
 
     public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient,
@@ -423,7 +425,7 @@ public struct FakeService {
         }
 
         assert(cipherMessage.messageType == .whisper)
-        return Data(cipherMessage.serialize())
+        return cipherMessage.serialize()
     }
 
     public func buildContentData(timestamp: UInt64, bodyText: String?) throws -> Data {

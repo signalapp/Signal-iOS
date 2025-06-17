@@ -27,14 +27,14 @@ extension GroupSendEndorsementStore {
         deleteEndorsements(groupThreadId: groupThreadId, tx: tx)
         insertCombinedEndorsement(CombinedGroupSendEndorsementRecord(
             threadId: groupThreadId,
-            endorsement: combinedEndorsement.serialize().asData,
+            endorsement: combinedEndorsement.serialize(),
             expiration: expiration
         ), tx: tx)
         for (recipientId, individualEndorsement) in individualEndorsements {
             insertIndividualEndorsement(IndividualGroupSendEndorsementRecord(
                 threadId: groupThreadId,
                 recipientId: recipientId,
-                endorsement: individualEndorsement.serialize().asData
+                endorsement: individualEndorsement.serialize()
             ), tx: tx)
         }
     }

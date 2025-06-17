@@ -150,7 +150,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         }
 
         let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: 100)
-        envelopeBuilder.setContent(Data(ciphertext.serialize()))
+        envelopeBuilder.setContent(ciphertext.serialize())
         envelopeBuilder.setType(.prekeyBundle)
         envelopeBuilder.setTimestamp(timestamp)
         envelopeBuilder.setSourceServiceID(bobClient.serviceId.serviceIdString)
@@ -212,7 +212,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         do {
             // Build the message
             let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: timestamp)
-            envelopeBuilder.setContent(Data(ciphertext.serialize()))
+            envelopeBuilder.setContent(ciphertext.serialize())
             envelopeBuilder.setType(.prekeyBundle)
             envelopeBuilder.setSourceServiceID(self.linkedClient.serviceId.serviceIdString)
             envelopeBuilder.setSourceDevice(2)
@@ -305,7 +305,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
 
             // Build the message
             let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: timestamp)
-            envelopeBuilder.setContent(Data(ciphertext.serialize()))
+            envelopeBuilder.setContent(ciphertext.serialize())
             envelopeBuilder.setType(.ciphertext)
             envelopeBuilder.setSourceServiceID(self.linkedClient.serviceId.serviceIdString)
             envelopeBuilder.setSourceDevice(2)

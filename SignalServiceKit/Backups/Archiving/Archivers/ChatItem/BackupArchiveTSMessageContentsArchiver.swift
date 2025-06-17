@@ -428,7 +428,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
             if let mentionAci = Aci.parseFrom(aciString: bodyRangeParam.mentionAci) {
                 bodyRange.associatedValue = .mentionAci(
-                    mentionAci.serviceIdBinary.asData
+                    mentionAci.serviceIdBinary
                 )
             } else if let style = bodyRangeParam.style {
                 let backupProtoStyle: BackupProto_BodyRange.Style = {

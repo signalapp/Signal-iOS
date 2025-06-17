@@ -344,7 +344,7 @@ public final class MessageReceiver {
             return nil
         }
         do {
-            return try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey).groupId.serialize().asData
+            return try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey).groupId.serialize()
         } catch {
             owsFailDebug("Invalid group context.")
             return nil
@@ -465,7 +465,7 @@ public final class MessageReceiver {
                         )
                     }
                 } else if let groupCallUpdate = dataMessage.groupCallUpdate {
-                    if let groupId = try? GroupIdentifier(contents: [UInt8](groupId ?? Data())) {
+                    if let groupId = try? GroupIdentifier(contents: groupId ?? Data()) {
                         let pendingTask = MessageReceiver.buildPendingTask()
                         Task { [callMessageHandler] in
                             defer { pendingTask.complete() }
@@ -1334,7 +1334,7 @@ public final class MessageReceiver {
         transaction tx: DBWriteTransaction
     ) {
         do {
-            let skdm = try SenderKeyDistributionMessage(bytes: skdmData.map { $0 })
+            let skdm = try SenderKeyDistributionMessage(bytes: skdmData)
             let sourceAci = decryptedEnvelope.sourceAci
             let sourceDeviceId = decryptedEnvelope.sourceDeviceId
             let protocolAddress = ProtocolAddress(sourceAci, deviceId: sourceDeviceId)

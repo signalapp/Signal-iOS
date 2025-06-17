@@ -42,13 +42,13 @@ public struct BackupKeyMaterialImpl: BackupKeyMaterial {
         tx: DBReadTransaction
     ) throws(BackupKeyMaterialError) -> MediaTierEncryptionMetadata {
         let backupKey = try backupKey(type: .media, tx: tx)
-        let mediaId: [UInt8]
+        let mediaId: Data
         do {
             mediaId = try backupKey.deriveMediaId(mediaName)
         } catch {
             throw BackupKeyMaterialError.derivationError(error)
         }
-        let keyBytes: [UInt8]
+        let keyBytes: Data
         do {
             switch type {
             case .attachment:
@@ -59,11 +59,12 @@ public struct BackupKeyMaterialImpl: BackupKeyMaterial {
         } catch {
             throw BackupKeyMaterialError.derivationError(error)
         }
+        owsPrecondition(keyBytes.count >= 64)
         return MediaTierEncryptionMetadata(
             type: type,
-            mediaId: Data(mediaId),
-            hmacKey: Data(Array(keyBytes[0..<32])),
-            aesKey: Data(Array(keyBytes[32..<64]))
+            mediaId: mediaId,
+            hmacKey: keyBytes.prefix(32),
+            aesKey: keyBytes.dropFirst(32).prefix(32),
         )
     }
 }

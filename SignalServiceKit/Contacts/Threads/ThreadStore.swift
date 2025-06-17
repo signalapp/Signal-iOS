@@ -88,7 +88,7 @@ public protocol ThreadStore {
 
 extension ThreadStore {
     public func fetchGroupThread(groupId: GroupIdentifier, tx: DBReadTransaction) -> TSGroupThread? {
-        return fetchGroupThread(groupId: groupId.serialize().asData, tx: tx)
+        return fetchGroupThread(groupId: groupId.serialize(), tx: tx)
     }
 
     public func fetchGroupThread(uniqueId: String, tx: DBReadTransaction) -> TSGroupThread? {

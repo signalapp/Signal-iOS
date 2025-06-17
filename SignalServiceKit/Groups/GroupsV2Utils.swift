@@ -9,7 +9,7 @@ public import LibSignalClient
 public extension ProfileKeyVersion {
     // GroupsV2 TODO: We might move this to the wrappers.
     func asHexadecimalString() throws -> String {
-        let profileKeyVersionData = serialize().asData
+        let profileKeyVersionData = serialize()
         // A peculiarity of ProfileKeyVersion is that its contents
         // are an ASCII-encoded hexadecimal string of the profile key
         // version, rather than the raw version bytes.

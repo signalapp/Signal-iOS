@@ -59,8 +59,8 @@ public class SendGiftBadgeJobQueue {
 
         return SendGiftBadgeJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
-            receiptCredentialRequestContext: receiptRequest.context.serialize().asData,
-            receiptCredentialRequest: receiptRequest.request.serialize().asData,
+            receiptCredentialRequestContext: receiptRequest.context.serialize(),
+            receiptCredentialRequest: receiptRequest.request.serialize(),
             amount: amount.value,
             currencyCode: amount.currencyCode,
             paymentIntentClientSecret: stripePaymentIntent?.clientSecret,
@@ -220,8 +220,8 @@ private class SendGiftBadgeJobRunner: JobRunner {
             }
         }()
 
-        let receiptCredentialRequestContext = try ReceiptCredentialRequestContext(contents: [UInt8](jobRecord.receiptCredentialRequestContext))
-        let receiptCredentialRequest = try ReceiptCredentialRequest(contents: [UInt8](jobRecord.receiptCredentialRequest))
+        let receiptCredentialRequestContext = try ReceiptCredentialRequestContext(contents: jobRecord.receiptCredentialRequestContext)
+        let receiptCredentialRequest = try ReceiptCredentialRequest(contents: jobRecord.receiptCredentialRequest)
 
         // We also do this check right before sending the message, but we might be able to prevent
         // charging the payment method (and some extra work) if we check now.
@@ -354,7 +354,7 @@ extension UnpreparedOutgoingMessage {
             thread: thread,
             expiresInSeconds: dmConfig.durationSeconds,
             expireTimerVersion: dmConfig.timerVersion,
-            giftBadge: OWSGiftBadge(redemptionCredential: Data(giftBadgeReceiptCredentialPresentation.serialize()))
+            giftBadge: OWSGiftBadge(redemptionCredential: giftBadgeReceiptCredentialPresentation.serialize())
         )
         return .forMessage(builder.build(transaction: tx))
     }

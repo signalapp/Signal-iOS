@@ -52,12 +52,12 @@ extension TSGroupThread {
 
     public var groupIdentifier: GroupIdentifier {
         get throws {
-            return try GroupIdentifier(contents: [UInt8](self.groupId))
+            return try GroupIdentifier(contents: self.groupId)
         }
     }
 
     public static func fetch(forGroupId groupId: GroupIdentifier, tx: DBReadTransaction) -> TSGroupThread? {
-        return fetch(groupId: groupId.serialize().asData, transaction: tx)
+        return fetch(groupId: groupId.serialize(), transaction: tx)
     }
 
     @objc
@@ -186,8 +186,8 @@ extension TSGroupThread {
     ) -> TSGroupThread {
         let secretParams = try! GroupSecretParams.deriveFromMasterKey(groupMasterKey: masterKey)
         return _forUnitTest(
-            groupId: try! secretParams.getPublicParams().getGroupIdentifier().serialize().asData,
-            secretParamsData: secretParams.serialize().asData,
+            groupId: try! secretParams.getPublicParams().getGroupIdentifier().serialize(),
+            secretParamsData: secretParams.serialize(),
             groupMembers: groupMembers
         )
     }

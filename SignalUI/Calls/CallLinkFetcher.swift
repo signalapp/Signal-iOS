@@ -32,7 +32,7 @@ public class CallLinkFetcherImpl {
         do {
             return try await SignalServiceKit.CallLinkState(self.sfuClient.readCallLink(
                 sfuUrl: sfuUrl,
-                authCredentialPresentation: authCredentialPresentation.serialize(),
+                authCredentialPresentation: [UInt8](authCredentialPresentation.serialize()),
                 linkRootKey: rootKey
             ).unwrap())
         } catch where error.rawValue == 404 {

@@ -48,7 +48,7 @@ final class OutgoingCallEventSyncMessageSerializationTest: SSKBaseTest {
         XCTAssertEqual(syncMessage.callEvent.timestamp, 98765)
         XCTAssertEqual(
             syncMessage.callEvent.conversationId,
-            Data(Aci.parseFrom(aciString: "F9A2CF64-8456-4478-ADB5-3380DEDAE622")!.serviceIdBinary)
+            Aci.parseFrom(aciString: "F9A2CF64-8456-4478-ADB5-3380DEDAE622")!.serviceIdBinary
         )
     }
 
@@ -72,7 +72,7 @@ final class OutgoingCallEventSyncMessageSerializationTest: SSKBaseTest {
                 localThread: ContactThreadFactory().create(transaction: tx),
                 event: OutgoingCallEvent(
                     timestamp: 98765,
-                    conversationId: Aci.randomForTesting().serviceIdBinary.asData,
+                    conversationId: Aci.randomForTesting().serviceIdBinary,
                     callId: 12345,
                     callType: .video,
                     eventDirection: .outgoing,

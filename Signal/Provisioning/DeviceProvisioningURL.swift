@@ -112,7 +112,7 @@ public class DeviceProvisioningURL {
     }
 
     private static func encodePublicKey(_ publicKey: PublicKey) throws -> String {
-        let base64PubKey: String = Data(publicKey.serialize()).base64EncodedString()
+        let base64PubKey: String = publicKey.serialize().base64EncodedString()
         guard let encodedPubKey = base64PubKey.encodeURIComponent else {
             throw OWSAssertionError("Failed to url encode query params")
         }

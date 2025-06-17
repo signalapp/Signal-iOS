@@ -8,7 +8,7 @@ public import LibSignalClient
 extension BackupKey {
     #if TESTABLE_BUILD
     public static func forTesting() -> BackupKey {
-        return try! BackupKey(contents: Array(Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength))))
+        return try! BackupKey(contents: Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)))
     }
     #endif
 }
@@ -163,7 +163,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
     public func generateEphemeralBackupKey() -> BackupKey {
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true)
-        return try! BackupKey(contents: Array(Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength))))
+        return try! BackupKey(contents: Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)))
     }
 
     public func waitForLinkingAndUploadBackup(
@@ -717,7 +717,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 metadata: AttachmentDownloads.DownloadMetadata(
                     mimeType: MimeType.applicationOctetStream.rawValue,
                     cdnNumber: cdnNumber,
-                    encryptionKey: ephemeralBackupKey.serialize().asData,
+                    encryptionKey: ephemeralBackupKey.serialize(),
                     source: .linkNSyncBackup(cdnKey: cdnKey)
                 ),
                 progress: progress

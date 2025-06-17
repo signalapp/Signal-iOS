@@ -28,8 +28,8 @@ struct DonationReceiptCredentialRedemptionJobFinderTest {
             try! DonationReceiptCredentialRedemptionJobRecord(
                 paymentProcessor: "STRIPE",
                 paymentMethod: "sepa",
-                receiptCredentialRequestContext: receiptCredentialRequestContext.serialize().asData,
-                receiptCredentialRequest: receiptCredentialRequest.serialize().asData,
+                receiptCredentialRequestContext: receiptCredentialRequestContext.serialize(),
+                receiptCredentialRequest: receiptCredentialRequest.serialize(),
                 subscriberID: subscriberID,
                 targetSubscriptionLevel: 123,
                 priorSubscriptionLevel: 0,

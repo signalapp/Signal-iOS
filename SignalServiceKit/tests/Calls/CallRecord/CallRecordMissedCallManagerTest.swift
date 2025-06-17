@@ -252,7 +252,7 @@ private class MockConversationIdAdapter: CallRecordSyncMessageConversationIdAdap
     }
 
     func getConversationId(callRecord: CallRecord, tx: DBReadTransaction) throws -> Data {
-        return Aci.randomForTesting().serviceIdBinary.asData
+        return Aci.randomForTesting().serviceIdBinary
     }
 }
 

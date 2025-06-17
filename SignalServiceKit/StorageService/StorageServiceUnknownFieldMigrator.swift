@@ -168,7 +168,7 @@ public class StorageServiceUnknownFieldMigrator {
                 // groupId -> dontNotifyForMentionsIfMuted
                 var recordMap = [Data: Bool]()
                 records.forEach {
-                    if let groupId = (try? GroupV2ContextInfo.deriveFrom(masterKeyData: $0.masterKey))?.groupId.serialize().asData {
+                    if let groupId = (try? GroupV2ContextInfo.deriveFrom(masterKeyData: $0.masterKey))?.groupId.serialize() {
                         recordMap[groupId] = $0.dontNotifyForMentionsIfMuted
                     }
                 }
@@ -197,7 +197,7 @@ public class StorageServiceUnknownFieldMigrator {
                 // until we've had the chance to write ourselves.
                 if isPrimaryDevice {
                     guard
-                        let groupId = (try? GroupV2ContextInfo.deriveFrom(masterKeyData: record.masterKey))?.groupId.serialize().asData,
+                        let groupId = (try? GroupV2ContextInfo.deriveFrom(masterKeyData: record.masterKey))?.groupId.serialize(),
                         let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx)
                     else {
                         return

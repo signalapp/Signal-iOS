@@ -119,14 +119,6 @@ public extension Data {
     }
 }
 
-// MARK: -
-
-public extension Array where Element == UInt8 {
-    var asData: Data {
-        return Data(self)
-    }
-}
-
 // MARK: - UUID
 
 public extension UUID {

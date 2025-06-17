@@ -129,8 +129,8 @@ public extension TSGroupThread {
             owsFail("Failed to compute key bytes!")
         }
 
-        let contextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: Data(keyBytes))
-        return contextInfo.groupId.serialize().asData
+        let contextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: keyBytes)
+        return contextInfo.groupId.serialize()
     }
 
     private static func setGroupIdMapping(

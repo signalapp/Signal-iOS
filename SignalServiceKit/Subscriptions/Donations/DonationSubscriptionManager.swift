@@ -456,7 +456,7 @@ public enum DonationSubscriptionManager {
         do {
             let networkRequest = OWSRequestFactory.subscriptionReceiptCredentialsRequest(
                 subscriberID: subscriberId,
-                request: request.serialize().asData
+                request: request.serialize()
             )
             let response = try await networkManager.asyncRequest(networkRequest)
             return try self.parseReceiptCredentialResponse(
@@ -482,7 +482,7 @@ public enum DonationSubscriptionManager {
             let networkRequest = OWSRequestFactory.boostReceiptCredentials(
                 with: boostPaymentIntentId,
                 for: paymentProcessor.rawValue,
-                request: request.serialize().asData
+                request: request.serialize()
             )
             let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(networkRequest)
             return try self.parseReceiptCredentialResponse(
@@ -546,7 +546,7 @@ public enum DonationSubscriptionManager {
         }
 
         let receiptCredentialResponse = try ReceiptCredentialResponse(
-            contents: [UInt8](receiptCredentialResponseData)
+            contents: receiptCredentialResponseData
         )
         let receiptCredential = try clientOperations.receiveReceiptCredential(
             receiptCredentialRequestContext: receiptCredentialRequestContext,
@@ -605,7 +605,7 @@ public enum DonationSubscriptionManager {
         }()
         Logger.info("[Donations] Redeeming receipt credential presentation. Expires at \(expiresAtForLogging)")
 
-        let receiptCredentialPresentationData = receiptCredentialPresentation.serialize().asData
+        let receiptCredentialPresentationData = receiptCredentialPresentation.serialize()
         let request = OWSRequestFactory.subscriptionRedeemReceiptCredential(
             receiptCredentialPresentation: receiptCredentialPresentationData
         )
@@ -621,7 +621,7 @@ public enum DonationSubscriptionManager {
     private static func generateReceiptSerial() throws -> ReceiptSerial {
         let count = ReceiptSerial.SIZE
         let bytes = Randomness.generateRandomBytes(UInt(count))
-        return try ReceiptSerial(contents: [UInt8](bytes))
+        return try ReceiptSerial(contents: bytes)
     }
 
     private static func clientZKReceiptOperations() -> ClientZkReceiptOperations {

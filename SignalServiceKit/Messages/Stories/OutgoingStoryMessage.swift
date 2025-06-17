@@ -126,7 +126,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         }
 
         let builder = SSKProtoStoryMessage.builder()
-        builder.setProfileKey(ProtoUtils.localProfileKey(tx: transaction).serialize().asData)
+        builder.setProfileKey(ProtoUtils.localProfileKey(tx: transaction).serialize())
 
         switch storyMessage.attachment {
         case .media:

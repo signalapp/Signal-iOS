@@ -623,7 +623,7 @@ struct CVItemModelBuilder: CVItemBuilding {
             else {
                 return false
             }
-            return currentGroupThreadCallGroupId.serialize().asData == groupThread.groupId
+            return currentGroupThreadCallGroupId.serialize() == groupThread.groupId
         }
 
         if

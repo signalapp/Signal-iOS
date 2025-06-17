@@ -90,8 +90,8 @@ internal class SVR2ClientWrapperImpl: SVR2ClientWrapper {
             self.pinHash = pinHash
         }
 
-        var accessKey: Data { Data(pinHash.accessKey) }
-        private var encryptionKey: Data { Data(pinHash.encryptionKey) }
+        var accessKey: Data { pinHash.accessKey }
+        private var encryptionKey: Data { pinHash.encryptionKey }
 
         func encryptMasterKey(_ masterKey: Data) throws -> Data {
             let (iv, cipherText) = try Sha256HmacSiv.encrypt(data: masterKey, key: encryptionKey)

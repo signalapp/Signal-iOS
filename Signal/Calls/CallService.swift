@@ -477,7 +477,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
                 do {
                     try callManager.cancelGroupRing(
-                        groupId: groupThreadCall.groupId.serialize().asData,
+                        groupId: groupThreadCall.groupId.serialize(),
                         ringId: ringId,
                         reason: .declinedByUser
                     )
@@ -542,7 +542,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             let videoCaptureController = VideoCaptureController()
             let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
             let ringRtcCall = callManager.createGroupCall(
-                groupId: groupId.serialize().asData,
+                groupId: groupId.serialize(),
                 sfuUrl: sfuUrl,
                 hkdfExtraInfo: Data(),
                 audioLevelsIntervalMillis: nil,
@@ -601,7 +601,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
             let ringRtcCall = callManager.createCallLinkCall(
                 sfuUrl: sfuUrl,
-                authCredentialPresentation: authCredentialPresentation.serialize(),
+                authCredentialPresentation: [UInt8](authCredentialPresentation.serialize()),
                 linkRootKey: callLink.rootKey,
                 adminPasskey: adminPasskey,
                 hkdfExtraInfo: Data(),
@@ -1533,7 +1533,7 @@ extension CallService: CallManagerDelegate {
         }
 
         let action: RingAction = databaseStorage.read { transaction in
-            guard let groupId = try? GroupIdentifier(contents: [UInt8](groupId)) else {
+            guard let groupId = try? GroupIdentifier(contents: groupId) else {
                 owsFailDebug("discarding group ring \(ringId) from \(senderAci) for invalid group")
                 return .cancel
             }
@@ -1545,7 +1545,7 @@ extension CallService: CallManagerDelegate {
 
             guard GroupMessageProcessorManager.discardMode(
                 forMessageFrom: senderAci,
-                groupId: groupId.serialize().asData,
+                groupId: groupId.serialize(),
                 tx: transaction
             ) == .doNotDiscard else {
                 Logger.warn("discarding group ring \(ringId) from \(senderAci)")
@@ -1583,7 +1583,7 @@ extension CallService: CallManagerDelegate {
             }
             guard currentCall == nil else {
                 do {
-                    try callManager.cancelGroupRing(groupId: groupId.serialize().asData, ringId: ringId, reason: .busy)
+                    try callManager.cancelGroupRing(groupId: groupId.serialize(), ringId: ringId, reason: .busy)
                 } catch {
                     owsFailDebug("RingRTC failed to cancel group ring \(ringId): \(error)")
                 }

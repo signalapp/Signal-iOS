@@ -949,11 +949,11 @@ public class MessageSender {
         guard let combinedRecord else {
             return nil
         }
-        let combinedEndorsement = try GroupSendEndorsement(contents: [UInt8](combinedRecord.endorsement))
+        let combinedEndorsement = try GroupSendEndorsement(contents: combinedRecord.endorsement)
 
         var individualEndorsements = [ServiceId: GroupSendEndorsement]()
         for record in try groupSendEndorsementStore.fetchIndividualEndorsements(groupThreadId: threadId, tx: tx) {
-            let endorsement = try GroupSendEndorsement(contents: [UInt8](record.endorsement))
+            let endorsement = try GroupSendEndorsement(contents: record.endorsement)
             let recipient = DependenciesBridge.shared.recipientDatabaseTable.fetchRecipient(rowId: record.recipientId, tx: tx)
             guard let recipient else {
                 throw OWSAssertionError("Missing Recipient that must exist.")
@@ -1743,7 +1743,7 @@ public class MessageSender {
                 messageType = .unknown
             }
 
-            serializedMessage = Data(result.serialize())
+            serializedMessage = result.serialize()
         }
 
         // We had better have a session after encrypting for this recipient!
@@ -1797,11 +1797,11 @@ public class MessageSender {
                 context: transaction
             )
 
-            serializedMessage = Data(outerBytes)
+            serializedMessage = outerBytes
             messageType = .unidentifiedSender
 
         } else {
-            serializedMessage = Data(plaintext.serialize())
+            serializedMessage = plaintext.serialize()
             messageType = .plaintextContent
         }
 

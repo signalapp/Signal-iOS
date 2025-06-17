@@ -13,7 +13,7 @@ internal class ProtoUtils: NSObject {
     @objc
     internal static func addLocalProfileKeyIfNecessary(_ thread: TSThread, dataMessageBuilder: SSKProtoDataMessageBuilder, transaction: DBReadTransaction) {
         if shouldMessageHaveLocalProfileKey(thread, transaction: transaction) {
-            dataMessageBuilder.setProfileKey(localProfileKey(tx: transaction).serialize().asData)
+            dataMessageBuilder.setProfileKey(localProfileKey(tx: transaction).serialize())
         }
     }
 
@@ -21,18 +21,18 @@ internal class ProtoUtils: NSObject {
     internal static func addLocalProfileKeyIfNecessary(forThread thread: TSThread, profileKeySnapshot: Data?, dataMessageBuilder: SSKProtoDataMessageBuilder, transaction: DBReadTransaction) {
         let profileKey = localProfileKey(tx: transaction)
         let canAddLocalProfileKey: Bool = (
-            profileKeySnapshot?.ows_constantTimeIsEqual(to: profileKey.serialize().asData) == true
+            profileKeySnapshot?.ows_constantTimeIsEqual(to: profileKey.serialize()) == true
             || shouldMessageHaveLocalProfileKey(thread, transaction: transaction)
         )
         if canAddLocalProfileKey {
-            dataMessageBuilder.setProfileKey(profileKey.serialize().asData)
+            dataMessageBuilder.setProfileKey(profileKey.serialize())
         }
     }
 
     @objc
     internal static func addLocalProfileKeyIfNecessary(_ thread: TSThread, callMessageBuilder: SSKProtoCallMessageBuilder, transaction: DBReadTransaction) {
         if shouldMessageHaveLocalProfileKey(thread, transaction: transaction) {
-            callMessageBuilder.setProfileKey(localProfileKey(tx: transaction).serialize().asData)
+            callMessageBuilder.setProfileKey(localProfileKey(tx: transaction).serialize())
         }
     }
 

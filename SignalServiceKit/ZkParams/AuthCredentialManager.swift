@@ -165,7 +165,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
                 aci: localIdentifiers.aci,
                 pni: authCredentialResponse.pni,
                 redemptionTime: fetchedValue.redemptionTime,
-                authCredentialResponse: AuthCredentialWithPniResponse(contents: [UInt8](fetchedValue.credential))
+                authCredentialResponse: AuthCredentialWithPniResponse(contents: fetchedValue.credential)
             )
             result.groupAuthCredentials.append((fetchedValue.redemptionTime, receivedValue))
         }
@@ -175,7 +175,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
                 continue
             }
             let receivedValue = try CallLinkAuthCredentialResponse(
-                contents: [UInt8](fetchedValue.credential)
+                contents: fetchedValue.credential
             ).receive(
                 userId: localIdentifiers.aci,
                 redemptionTime: Date(timeIntervalSince1970: TimeInterval(fetchedValue.redemptionTime)),

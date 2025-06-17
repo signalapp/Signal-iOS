@@ -99,8 +99,8 @@ public class DonationReceiptCredentialRedemptionJobQueue {
         let jobRecord = DonationReceiptCredentialRedemptionJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
             paymentMethod: paymentMethod.rawValue,
-            receiptCredentialRequestContext: receiptCredentialRequestContext.serialize().asData,
-            receiptCredentialRequest: receiptCredentialRequest.serialize().asData,
+            receiptCredentialRequestContext: receiptCredentialRequestContext.serialize(),
+            receiptCredentialRequest: receiptCredentialRequest.serialize(),
             subscriberID: Data(), // Unused
             targetSubscriptionLevel: 0, // Unused
             priorSubscriptionLevel: 0, // Unused
@@ -146,8 +146,8 @@ public class DonationReceiptCredentialRedemptionJobQueue {
         let jobRecord = DonationReceiptCredentialRedemptionJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
             paymentMethod: paymentMethod?.rawValue,
-            receiptCredentialRequestContext: receiptCredentialRequestContext.serialize().asData,
-            receiptCredentialRequest: receiptCredentialRequest.serialize().asData,
+            receiptCredentialRequestContext: receiptCredentialRequestContext.serialize(),
+            receiptCredentialRequest: receiptCredentialRequest.serialize(),
             subscriberID: subscriberID,
             targetSubscriptionLevel: targetSubscriptionLevel,
             priorSubscriptionLevel: priorSubscriptionLevel ?? 0,
@@ -432,10 +432,10 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         }
 
         let receiptCredentialRequestContext = try ReceiptCredentialRequestContext(
-            contents: [UInt8](jobRecord.receiptCredentialRequestContext)
+            contents: jobRecord.receiptCredentialRequestContext
         )
         let receiptCredentialRequest = try ReceiptCredentialRequest(
-            contents: [UInt8](jobRecord.receiptCredentialRequest)
+            contents: jobRecord.receiptCredentialRequest
         )
 
         let paymentType: PaymentType

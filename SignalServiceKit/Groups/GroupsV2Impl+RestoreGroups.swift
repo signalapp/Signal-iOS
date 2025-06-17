@@ -28,7 +28,7 @@ public extension GroupsV2Impl {
 
     static func isGroupKnownToStorageService(groupModel: TSGroupModelV2, transaction: DBReadTransaction) -> Bool {
         do {
-            let masterKeyData = try groupModel.masterKey().serialize().asData
+            let masterKeyData = try groupModel.masterKey().serialize()
             let key = restoreGroupKey(forMasterKeyData: masterKeyData)
             return allStorageServiceGroupMasterKeys.hasValue(key, transaction: transaction)
         } catch {

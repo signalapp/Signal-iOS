@@ -80,7 +80,7 @@ public class AccountKeyStore {
             return nil
         }
         do {
-            return try BackupKey(contents: Array(data))
+            return try BackupKey(contents: data)
         } catch {
             owsFailDebug("Failed to instantiate MediaRootBackupKey")
         }
@@ -95,7 +95,7 @@ public class AccountKeyStore {
             return value
         }
         let newValue = LibSignalClient.BackupKey.generateRandom()
-        mrbkKvStore.setData(newValue.serialize().asData, key: Keys.mrbkKeyName, transaction: tx)
+        mrbkKvStore.setData(newValue.serialize(), key: Keys.mrbkKeyName, transaction: tx)
         return newValue
     }
 
@@ -104,7 +104,7 @@ public class AccountKeyStore {
     }
 
     public func setMediaRootBackupKey(_ mrbk: BackupKey, tx: DBWriteTransaction) {
-        mrbkKvStore.setData(mrbk.serialize().asData, key: Keys.mrbkKeyName, transaction: tx)
+        mrbkKvStore.setData(mrbk.serialize(), key: Keys.mrbkKeyName, transaction: tx)
     }
 
     public func getAccountEntropyPool(tx: DBReadTransaction) -> SignalServiceKit.AccountEntropyPool? {

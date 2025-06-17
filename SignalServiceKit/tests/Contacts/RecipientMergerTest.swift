@@ -246,7 +246,7 @@ class RecipientMergerTest: XCTestCase {
                     if let identityKey = initialState.identityKey {
                         d.identityManager.recipientIdentities[recipient.uniqueId] = OWSRecipientIdentity(
                             uniqueId: recipient.uniqueId,
-                            identityKey: Data(identityKey.publicKey.keyBytes),
+                            identityKey: identityKey.publicKey.keyBytes,
                             isFirstKnownKey: true,
                             createdAt: Date(),
                             verificationState: .default

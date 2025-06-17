@@ -127,9 +127,9 @@ public class BackupArchiveEncryptedProtoStreamProvider {
                 try GzipStreamTransform(.compress),
                 try EncryptingStreamTransform(
                     iv: Randomness.generateRandomBytes(UInt(Cryptography.Constants.aescbcIVLength)),
-                    encryptionKey: Data(messageBackupKey.aesKey)
+                    encryptionKey: messageBackupKey.aesKey,
                 ),
-                try HmacStreamTransform(hmacKey: Data(messageBackupKey.hmacKey), operation: .generate),
+                try HmacStreamTransform(hmacKey: messageBackupKey.hmacKey, operation: .generate),
                 outputTrackingTransform
             ]
 
@@ -180,8 +180,8 @@ public class BackupArchiveEncryptedProtoStreamProvider {
             let messageBackupKey = try backupKey.asMessageBackupKey(for: localAci)
             let transforms: [any StreamTransform] = [
                 frameRestoreProgress.map { InputProgressStreamTransform(frameRestoreProgress: $0) },
-                try HmacStreamTransform(hmacKey: Data(messageBackupKey.hmacKey), operation: .validate),
-                try DecryptingStreamTransform(encryptionKey: Data(messageBackupKey.aesKey)),
+                try HmacStreamTransform(hmacKey: messageBackupKey.hmacKey, operation: .validate),
+                try DecryptingStreamTransform(encryptionKey: messageBackupKey.aesKey),
                 try GzipStreamTransform(.decompress),
                 ChunkedInputStreamTransform(),
             ].compacted()
@@ -206,7 +206,7 @@ public class BackupArchiveEncryptedProtoStreamProvider {
             let inputStreamResult = genericStreamProvider.openInputFileStream(
                 fileUrl: fileUrl,
                 transforms: [
-                    try HmacStreamTransform(hmacKey: Data(messageBackupKey.hmacKey), operation: .validate)
+                    try HmacStreamTransform(hmacKey: messageBackupKey.hmacKey, operation: .validate)
                 ]
             )
 

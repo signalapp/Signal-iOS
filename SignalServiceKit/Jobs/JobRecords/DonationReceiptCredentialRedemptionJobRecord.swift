@@ -24,10 +24,10 @@ public final class DonationReceiptCredentialRedemptionJobRecord: JobRecord, Fact
     func getReceiptCredentialPresentation() throws -> ReceiptCredentialPresentation? {
         if let _receiptCredential {
             return try DonationSubscriptionManager.generateReceiptCredentialPresentation(
-                receiptCredential: try ReceiptCredential(contents: [UInt8](_receiptCredential))
+                receiptCredential: try ReceiptCredential(contents: _receiptCredential)
             )
         } else if let _receiptCredentialPresentation {
-            return try ReceiptCredentialPresentation(contents: [UInt8](_receiptCredentialPresentation))
+            return try ReceiptCredentialPresentation(contents: _receiptCredentialPresentation)
         }
 
         return nil
@@ -183,7 +183,7 @@ public final class DonationReceiptCredentialRedemptionJobRecord: JobRecord, Fact
 
     func setReceiptCredential(_ receiptCredential: ReceiptCredential, tx: DBWriteTransaction) {
         anyUpdate(transaction: tx) { record in
-            record._receiptCredential = receiptCredential.serialize().asData
+            record._receiptCredential = receiptCredential.serialize()
         }
     }
 }

@@ -272,7 +272,7 @@ public enum IndexableNameIdentifier {
         case .signalRecipient(let value):
             return (.signalRecipientId, value.databaseValue)
         case .usernameLookupRecord(let value):
-            return (.usernameLookupRecordId, Data(value.serviceIdBinary).databaseValue)
+            return (.usernameLookupRecordId, value.serviceIdBinary.databaseValue)
         case .nicknameRecord(recipientRowId: let value):
             return (.nicknameRecordRecipientId, value.databaseValue)
         }

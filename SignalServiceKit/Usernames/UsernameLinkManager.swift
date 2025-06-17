@@ -61,13 +61,11 @@ public final class UsernameLinkManagerImpl: UsernameLinkManager {
         existingEntropy: Data?
     ) throws -> (entropy: Data, encryptedUsername: Data) {
         let lscUsername = try LibSignalClient.Username(username)
-        let (entropyBytes, encryptedUsernameBytes) = try lscUsername.createLink(
-            previousEntropy: existingEntropy.map { [UInt8]($0) }
-        )
+        let (entropyBytes, encryptedUsernameBytes) = try lscUsername.createLink(previousEntropy: existingEntropy)
 
         return (
-            entropy: Data(entropyBytes),
-            encryptedUsername: Data(encryptedUsernameBytes)
+            entropy: entropyBytes,
+            encryptedUsername: encryptedUsernameBytes,
         )
     }
 

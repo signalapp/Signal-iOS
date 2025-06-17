@@ -191,9 +191,9 @@ public extension StorageService {
         let serverPublicParams = GroupsV2Protos.serverPublicParams()
         let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)
         let authCredentialPresentation = try clientZkAuthOperations.createAuthCredentialPresentation(groupSecretParams: groupSecretParams, authCredential: authCredential)
-        let authCredentialPresentationData = authCredentialPresentation.serialize().asData
+        let authCredentialPresentationData = authCredentialPresentation.serialize()
 
-        let username: String = try groupSecretParams.getPublicParams().serialize().asData.hexadecimalString
+        let username: String = try groupSecretParams.getPublicParams().serialize().hexadecimalString
         let password: String = authCredentialPresentationData.hexadecimalString
         request.addHeader(
             HttpHeaders.authHeaderKey,

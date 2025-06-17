@@ -485,7 +485,7 @@ public class BackupArchiveAvatarFetcher {
             try container.encodeIfPresent(_id, forKey: .id)
             try container.encodeIfPresent(groupThreadRowId, forKey: .groupThreadRowId)
             try container.encodeIfPresent(groupAvatarUrl, forKey: .groupAvatarUrl)
-            try container.encodeIfPresent(serviceId?.serviceIdBinary.asData, forKey: .serviceId)
+            try container.encodeIfPresent(serviceId?.serviceIdBinary, forKey: .serviceId)
             try container.encode(nextRetryTimestamp, forKey: .nextRetryTimestamp)
             try container.encode(numRetries, forKey: .numRetries)
         }

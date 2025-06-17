@@ -137,8 +137,8 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makeGroupStory()
 
-        let groupMasterKey = try GroupMasterKey(contents: [UInt8](storyMessage.group!.masterKey!))
-        let groupId = try GroupSecretParams.deriveFromMasterKey(groupMasterKey: groupMasterKey).getPublicParams().getGroupIdentifier().serialize().asData
+        let groupMasterKey = try GroupMasterKey(contents: storyMessage.group!.masterKey!)
+        let groupId = try GroupSecretParams.deriveFromMasterKey(groupMasterKey: groupMasterKey).getPublicParams().getGroupIdentifier().serialize()
 
         try write {
             SSKEnvironment.shared.profileManagerRef.addUser(

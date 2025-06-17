@@ -67,7 +67,7 @@ public enum PniDistribution {
 
         func requestParameters() -> [String: Any] {
             [
-                "pniIdentityKey": pniIdentityKey.serialize().asData.base64EncodedString(),
+                "pniIdentityKey": pniIdentityKey.serialize().base64EncodedString(),
                 "devicePniSignedPrekeys": devicePniSignedPreKeys.mapValues { OWSRequestFactory.signedPreKeyRequestParameters($0) },
                 "devicePniPqLastResortPrekeys": devicePniPqLastResortPreKeys.mapValues { OWSRequestFactory.pqPreKeyRequestParameters($0) },
                 "deviceMessages": deviceMessages.map { $0.requestParameters() },

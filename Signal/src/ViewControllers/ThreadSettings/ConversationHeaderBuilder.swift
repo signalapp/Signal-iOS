@@ -235,7 +235,7 @@ struct ConversationHeaderBuilder {
                 switch currentCall?.mode {
                 case nil: return false
                 case .individual(let call): return call.thread.uniqueId == delegate.thread.uniqueId
-                case .groupThread(let call): return call.groupId.serialize().asData == (delegate.thread as? TSGroupThread)?.groupId
+                case .groupThread(let call): return call.groupId.serialize() == (delegate.thread as? TSGroupThread)?.groupId
                 case .callLink: return false
                 }
             }()

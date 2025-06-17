@@ -175,7 +175,7 @@ struct RecipientIdentityTest2 {
     func testEncoder() throws {
         let recipientIdentity = OWSRecipientIdentity(
             uniqueId: "00000000-0000-4000-8000-000000000000",
-            identityKey: IdentityKeyPair.generate().publicKey.keyBytes.asData,
+            identityKey: IdentityKeyPair.generate().publicKey.keyBytes,
             isFirstKnownKey: true,
             createdAt: Date(timeIntervalSince1970: 1234567890),
             verificationState: .verified
@@ -196,7 +196,7 @@ struct RecipientIdentityTest2 {
     @Test
     func testDecoder() throws {
         let uniqueId = "00000000-0000-4000-8000-00000000000A"
-        let identityKey = IdentityKeyPair.generate().publicKey.keyBytes.asData
+        let identityKey = IdentityKeyPair.generate().publicKey.keyBytes
         let isFirstKnownKey = false
         let createdAt = 1324567890
         let verificationState = OWSVerificationState.defaultAcknowledged.rawValue

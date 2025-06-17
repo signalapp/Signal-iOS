@@ -669,7 +669,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 owsFailDebug("Query returned attachment without media name!")
                 return
             }
-            let fullsizeMediaId = Data(try backupKey.deriveMediaId(mediaName))
+            let fullsizeMediaId = try backupKey.deriveMediaId(mediaName)
 
             map[fullsizeMediaId] = LocalAttachment(
                 attachment: attachment,
@@ -682,9 +682,9 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 || attachment.thumbnailMediaTierInfo != nil
             {
                 // Also prep a thumbnail media name.
-                let thumbnailMediaId = Data(try backupKey.deriveMediaId(
+                let thumbnailMediaId = try backupKey.deriveMediaId(
                     AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName)
-                ))
+                )
                 map[thumbnailMediaId] = LocalAttachment(
                     attachment: attachment,
                     isThumbnail: true,

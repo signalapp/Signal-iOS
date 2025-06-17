@@ -100,7 +100,7 @@ class CallHeader: UIView {
                 badged: false
             )
             avatarView.updateWithSneakyTransactionIfNecessary {
-                $0.setGroupIdWithSneakyTransaction(groupId: call.groupId.serialize().asData)
+                $0.setGroupIdWithSneakyTransaction(groupId: call.groupId.serialize())
             }
             let avatarPaddingView = UIView()
             avatarPaddingView.addSubview(avatarView)

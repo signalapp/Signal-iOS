@@ -77,7 +77,7 @@ internal class MockPreKeyManager: PreKeyManager {
     func generateLastResortKyberPreKey(signedBy signingKeyPair: ECKeyPair) -> SignalServiceKit.KyberPreKeyRecord {
 
         let keyPair = KEMKeyPair.generate()
-        let signature = Data(signingKeyPair.keyPair.privateKey.generateSignature(message: Data(keyPair.publicKey.serialize())))
+        let signature = signingKeyPair.keyPair.privateKey.generateSignature(message: keyPair.publicKey.serialize())
 
         let record = SignalServiceKit.KyberPreKeyRecord(
             0,

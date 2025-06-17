@@ -485,7 +485,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
     }
 
     public func recordPendingUpdates(updatedGroupV2MasterKeys: [GroupMasterKey]) {
-        updatePendingMutations { $0.updatedGroupV2MasterKeys.formUnion(updatedGroupV2MasterKeys.map { $0.serialize().asData }) }
+        updatePendingMutations { $0.updatedGroupV2MasterKeys.formUnion(updatedGroupV2MasterKeys.map { $0.serialize() }) }
     }
 
     @objc
@@ -1259,7 +1259,7 @@ class StorageServiceOperation {
                         owsFailDebug("Invalid group model \(error).")
                         return
                     }
-                    createRecord(localId: masterKey.serialize().asData, stateUpdater: groupV2Updater)
+                    createRecord(localId: masterKey.serialize(), stateUpdater: groupV2Updater)
                 } else if let storyThread = thread as? TSPrivateStoryThread {
                     guard let distributionListId = storyThread.distributionListIdentifier else {
                         owsFailDebug("Missing distribution list id for story thread \(thread.logString)")

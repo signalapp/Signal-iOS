@@ -62,7 +62,7 @@ class DebugUIGroupsV2: DebugUIPage {
 
         var messages = [OWSDynamicOutgoingMessage]()
 
-        let masterKey = try! groupModelV2.masterKey().serialize().asData
+        let masterKey = try! groupModelV2.masterKey().serialize()
         let groupContextInfo = try! GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
 
         SSKEnvironment.shared.databaseStorageRef.read { transaction in

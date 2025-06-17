@@ -179,7 +179,7 @@ public class SenderKeyStore {
                 store: self,
                 context: tx
             )
-            return Data(skdm.serialize())
+            return skdm.serialize()
         } catch {
             owsFailDebug("Failed to construct sender key message: \(error)")
             return nil
@@ -215,7 +215,7 @@ extension SenderKeyStore: LibSignalClient.SenderKeyStore {
             updatedValue = KeyMetadata(
                 record: record,
                 senderAci: senderAci,
-                senderDeviceId: try sender.deviceIdObj,
+                senderDeviceId: sender.deviceIdObj,
                 localIdentifiers: localIdentifiers,
                 localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx),
                 distributionId: distributionId
@@ -496,7 +496,7 @@ private struct KeyMetadata {
         }
         set {
             if let newValue = newValue {
-                serializedRecord = Data(newValue.serialize())
+                serializedRecord = newValue.serialize()
             } else {
                 owsFailDebug("Invalid new value")
                 serializedRecord = Data()
@@ -517,7 +517,7 @@ private struct KeyMetadata {
         localDeviceId: LocalDeviceId,
         distributionId: SenderKeyStore.DistributionId
     ) {
-        self.serializedRecord = Data(record.serialize())
+        self.serializedRecord = record.serialize()
         self.distributionId = distributionId
         self._ownerAci = AciUuid(wrappedValue: senderAci)
         self.ownerDeviceId = senderDeviceId

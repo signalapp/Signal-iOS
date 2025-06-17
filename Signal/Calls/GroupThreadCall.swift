@@ -42,7 +42,7 @@ final class GroupThreadCall: Signal.GroupCall {
         self.threadUniqueId = groupThread.uniqueId
 
         super.init(
-            audioDescription: "[SignalCall] with group \(groupId.serialize().asData)",
+            audioDescription: "[SignalCall] with group \(groupId)",
             ringRtcCall: ringRtcCall,
             videoCaptureController: videoCaptureController
         )

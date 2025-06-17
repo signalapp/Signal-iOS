@@ -120,8 +120,8 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
 
         let groupMasterKey: Data
         do {
-            let groupSecretParams = try GroupSecretParams(contents: [UInt8](groupModel.secretParamsData))
-            groupMasterKey = try groupSecretParams.getMasterKey().serialize().asData
+            let groupSecretParams = try GroupSecretParams(contents: groupModel.secretParamsData)
+            groupMasterKey = try groupSecretParams.getMasterKey().serialize()
         } catch {
             errors.append(.archiveFrameError(.groupMasterKeyError(error), groupAppId))
             return
@@ -197,7 +197,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                 // iOS doesn't track the timestamp of the invite, so we'll
                 // default-populate it.
                 var invitedMemberProto = BackupProto_Group.MemberPendingProfileKey()
-                invitedMemberProto.addedByUserID = addedByAci.serviceIdBinary.asData
+                invitedMemberProto.addedByUserID = addedByAci.serviceIdBinary
                 invitedMemberProto.timestamp = 0
                 invitedMemberProto.member = .build(
                     serviceId: serviceId,
@@ -214,14 +214,14 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                 // iOS doesn't track the timestamp of the request, so we'll
                 // default-populate it.
                 var memberPendingAdminApproval = BackupProto_Group.MemberPendingAdminApproval()
-                memberPendingAdminApproval.userID = aci.serviceIdBinary.asData
+                memberPendingAdminApproval.userID = aci.serviceIdBinary
                 memberPendingAdminApproval.timestamp = 0
 
                 return memberPendingAdminApproval
             }
             groupSnapshot.membersBanned = groupMembership.bannedMembers.map { aci, bannedAtMillis -> BackupProto_Group.MemberBanned in
                 var memberBanned = BackupProto_Group.MemberBanned()
-                memberBanned.userID = aci.serviceIdBinary.asData
+                memberBanned.userID = aci.serviceIdBinary
                 memberBanned.timestamp = bannedAtMillis
 
                 return memberBanned
@@ -390,7 +390,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
         }
 
         if groupProto.blocked {
-            blockingManager.addBlockedGroupId(groupContextInfo.groupId.serialize().asData, tx: context.tx)
+            blockingManager.addBlockedGroupId(groupContextInfo.groupId.serialize(), tx: context.tx)
         }
 
         var partialErrors = [BackupArchive.RestoreFrameError<RecipientId>]()
@@ -402,7 +402,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
             do {
                 try avatarDefaultColorManager.persistDefaultColor(
                     defaultAvatarColor,
-                    groupId: groupContextInfo.groupId.serialize().asData,
+                    groupId: groupContextInfo.groupId.serialize(),
                     tx: context.tx
                 )
             } catch {
@@ -508,7 +508,7 @@ private extension BackupProto_Group.Member {
     ) -> BackupProto_Group.Member {
         // iOS doesn't track the joinedAtRevision, so we'll default-populate it.
         var member = BackupProto_Group.Member()
-        member.userID = serviceId.serviceIdBinary.asData
+        member.userID = serviceId.serviceIdBinary
         member.role = role.asBackupProtoRole
         member.joinedAtVersion = 0
         return member

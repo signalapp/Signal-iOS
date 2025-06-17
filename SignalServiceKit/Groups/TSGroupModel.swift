@@ -98,7 +98,7 @@ public class TSGroupModelV2: TSGroupModel {
     }
 
     public func secretParams() throws -> GroupSecretParams {
-        return try GroupSecretParams(contents: [UInt8](self.secretParamsData))
+        return try GroupSecretParams(contents: self.secretParamsData)
     }
 
     public func masterKey() throws -> GroupMasterKey {
@@ -112,7 +112,7 @@ public class TSGroupModelV2: TSGroupModel {
         let masterKey = try self.masterKey()
 
         var contentsV1Builder = GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1.builder()
-        contentsV1Builder.setGroupMasterKey(masterKey.serialize().asData)
+        contentsV1Builder.setGroupMasterKey(masterKey.serialize())
         contentsV1Builder.setInviteLinkPassword(inviteLinkPassword)
 
         var builder = GroupsProtoGroupInviteLink.builder()

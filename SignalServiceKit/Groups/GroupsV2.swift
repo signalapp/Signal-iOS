@@ -249,7 +249,7 @@ extension GroupV2Updates {
         Task {
             do {
                 try await self.refreshGroupImpl(
-                    secretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData)),
+                    secretParams: try GroupSecretParams(contents: groupSecretParamsData),
                     spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                     source: .other,
                     options: options
@@ -294,7 +294,7 @@ public struct GroupV2Change {
 
 extension GroupMasterKey {
     static func isValid(_ masterKeyData: Data) -> Bool {
-        return (try? GroupMasterKey(contents: [UInt8](masterKeyData))) != nil
+        return (try? GroupMasterKey(contents: masterKeyData)) != nil
     }
 }
 
@@ -317,14 +317,14 @@ public struct GroupV2ContextInfo {
     }
 
     private static func groupSecretParams(for masterKeyData: Data) throws -> GroupSecretParams {
-        let groupMasterKey = try GroupMasterKey(contents: [UInt8](masterKeyData))
+        let groupMasterKey = try GroupMasterKey(contents: masterKeyData)
         return try GroupSecretParams.deriveFromMasterKey(groupMasterKey: groupMasterKey)
     }
 
     private init(masterKeyData: Data, groupSecretParams: GroupSecretParams, groupId: GroupIdentifier) {
         self.masterKeyData = masterKeyData
         self.groupSecretParams = groupSecretParams
-        self.groupSecretParamsData = groupSecretParams.serialize().asData
+        self.groupSecretParamsData = groupSecretParams.serialize()
         self.groupId = groupId
     }
 }

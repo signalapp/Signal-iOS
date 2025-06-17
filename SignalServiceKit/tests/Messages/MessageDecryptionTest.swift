@@ -119,15 +119,17 @@ class MessageDecryptionTest: SSKBaseTest {
                                                                  from: senderCert,
                                                                  contentHint: .default,
                                                                  groupId: [])
-                envelopeBuilder.setContent(Data(try! sealedSenderEncrypt(usmc,
-                                                                         for: localClient.protocolAddress,
-                                                                         identityStore: remoteClient.identityKeyStore,
-                                                                         context: transaction)))
+                envelopeBuilder.setContent(try! sealedSenderEncrypt(
+                    usmc,
+                    for: localClient.protocolAddress,
+                    identityStore: remoteClient.identityKeyStore,
+                    context: transaction,
+                ))
                 envelopeBuilder.setServerTimestamp(13336)
             } else {
                 envelopeBuilder.setSourceServiceID(remoteClient.serviceId.serviceIdString)
                 envelopeBuilder.setSourceDevice(remoteClient.deviceId)
-                envelopeBuilder.setContent(Data(ciphertext.serialize()))
+                envelopeBuilder.setContent(ciphertext.serialize())
             }
 
             let envelope = try! envelopeBuilder.build()

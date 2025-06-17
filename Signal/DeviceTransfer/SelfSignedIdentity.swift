@@ -83,12 +83,12 @@ struct SelfSignedIdentity {
 
         // Convert to Security refs
 
-        guard let certificate = SecCertificateCreateWithData(nil, Data(certificateData) as CFData) else {
+        guard let certificate = SecCertificateCreateWithData(nil, certificateData as CFData) else {
             throw OWSAssertionError("Failed to initialize SecCertificate")
         }
 
         guard let privateKey = SecKeyCreateWithData(
-            Data(deviceTransferKey.privateKey) as CFData,
+            deviceTransferKey.privateKey as CFData,
             [
                 kSecAttrKeyType: kSecAttrKeyTypeRSA,
                 kSecAttrKeyClass: kSecAttrKeyClassPrivate,

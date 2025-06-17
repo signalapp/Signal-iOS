@@ -248,8 +248,8 @@ final class IndividualCallService: CallServiceStateObserver {
                     messageAgeSec: messageAgeSec,
                     callMediaType: newCall.individualCall.offerMediaType.asCallMediaType,
                     localDevice: localDeviceId.uint32Value,
-                    senderIdentityKey: partialResult.identityKeys.contactIdentityKey.publicKey.keyBytes.asData,
-                    receiverIdentityKey: partialResult.identityKeys.localIdentityKey.publicKey.keyBytes.asData
+                    senderIdentityKey: partialResult.identityKeys.contactIdentityKey.publicKey.keyBytes,
+                    receiverIdentityKey: partialResult.identityKeys.localIdentityKey.publicKey.keyBytes,
                 )
             } catch {
                 self.handleFailedCall(failedCall: newCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
@@ -299,8 +299,8 @@ final class IndividualCallService: CallServiceStateObserver {
                 sourceDevice: sourceDevice.uint32Value,
                 callId: callId,
                 opaque: opaque,
-                senderIdentityKey: identityKeys.contactIdentityKey.publicKey.keyBytes.asData,
-                receiverIdentityKey: identityKeys.localIdentityKey.publicKey.keyBytes.asData
+                senderIdentityKey: identityKeys.contactIdentityKey.publicKey.keyBytes,
+                receiverIdentityKey: identityKeys.localIdentityKey.publicKey.keyBytes,
             )
         } catch {
             owsFailDebug("error: \(error)")

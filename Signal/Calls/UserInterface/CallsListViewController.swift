@@ -1120,7 +1120,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
         var identifier: Data {
             switch self {
-            case .groupThread(let groupId): groupId.serialize().asData
+            case .groupThread(let groupId): groupId.serialize()
             case .callLink(let rootKey): rootKey.deriveRoomId()
             }
         }
@@ -1237,7 +1237,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         case .individual:
             break
         case .groupThread(groupId: let groupId):
-            guard let groupId = try? GroupIdentifier(contents: [UInt8](groupId)) else {
+            guard let groupId = try? GroupIdentifier(contents: groupId) else {
                 owsFailDebug("Can't peek group call with invalid group id.")
                 break
             }
@@ -1914,7 +1914,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             ).startCall(from: self)
         case let .groupThread(groupId):
             owsPrecondition(withVideo != false, "Can't start voice call.")
-            let groupId = try! GroupIdentifier(contents: [UInt8](groupId))
+            let groupId = try! GroupIdentifier(contents: groupId)
             CallStarter(
                 groupId: groupId,
                 context: self.callStarterContext

@@ -428,7 +428,7 @@ private extension RecipientHidingManagerImpl {
         {
             let profileKeyMessage = OWSProfileKeyMessage(
                 thread: thread,
-                profileKey: profileKey.serialize().asData,
+                profileKey: profileKey.serialize(),
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
             Logger.info("[Recipient hiding][side effects] Share profile key.")

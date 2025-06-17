@@ -219,7 +219,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             localThread: thread,
             accountEntropyPool: accountEntropyPool?.rawData,
             masterKey: masterKey?.rawData,
-            mediaRootBackupKey: mrbk.serialize().asData,
+            mediaRootBackupKey: mrbk.serialize(),
             transaction: tx
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(

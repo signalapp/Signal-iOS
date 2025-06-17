@@ -344,7 +344,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
             groupId: Data(),
             distributionId: distributionId,
             contentHint: .implicit,
-            protocolContext: nil).map { $0 }
+            protocolContext: nil)
 
         // This splits out irrelevant per-recipient data from the shared sender key message
         // This is only necessary in tests. The server would usually handle this.
@@ -354,7 +354,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
         let bobCipher = try! bobMockClient.createSecretSessionCipher()
         let bobPlaintext = try! bobCipher.decryptMessage(
             trustRoot: trustRoot.publicKey,
-            cipherTextData: Data(singleRecipientCiphertext),
+            cipherTextData: singleRecipientCiphertext,
             timestamp: 31335,
             localIdentifiers: bobMockClient.localIdentifiers,
             localDeviceId: .valid(bobMockClient.deviceId),
@@ -398,7 +398,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
             groupId: "inyalowda".data(using: String.Encoding.utf8)!,
             distributionId: distributionId,
             contentHint: .resendable,
-            protocolContext: nil).map { $0 }
+            protocolContext: nil)
 
         // This splits out irrelevant per-recipient data from the shared sender key message
         // This is only necessary in tests. The server would usually handle this.
@@ -409,7 +409,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
         do {
             _ = try bobCipher.decryptMessage(
                 trustRoot: trustRoot.publicKey,
-                cipherTextData: Data(singleRecipientCiphertext),
+                cipherTextData: singleRecipientCiphertext,
                 timestamp: 31335,
                 localIdentifiers: bobMockClient.localIdentifiers,
                 localDeviceId: .valid(bobMockClient.deviceId),
