@@ -581,7 +581,8 @@ extension Attachment {
         }
 
         public static func forOffloadingFiles(
-            attachment: Attachment
+            attachment: Attachment,
+            localRelativeFilePathThumbnail: String?,
         ) -> ConstructionParams {
             return .init(
                 blurHash: attachment.blurHash,
@@ -595,7 +596,7 @@ extension Attachment {
                 mediaName: attachment.mediaName,
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
-                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                localRelativeFilePathThumbnail: localRelativeFilePathThumbnail ?? attachment.localRelativeFilePathThumbnail,
                 originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
                 lastFullscreenViewTimestamp: attachment.lastFullscreenViewTimestamp,
             )

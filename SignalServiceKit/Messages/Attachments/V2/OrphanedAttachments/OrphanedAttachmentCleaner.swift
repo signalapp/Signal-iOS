@@ -34,6 +34,12 @@ public protocol OrphanedAttachmentCleaner {
         _ record: OrphanedAttachmentRecord
     ) throws -> OrphanedAttachmentRecord.IDType
 
+    /// See commitPendingAttachmentWithSneakyTransaction; does the same thing for
+    /// multiple orphan records at once, keyed as chosen by the caller.
+    func commitPendingAttachmentsWithSneakyTransaction<Key: Hashable>(
+        _ records: [Key: OrphanedAttachmentRecord]
+    ) throws -> [Key: OrphanedAttachmentRecord.IDType]
+
     /// Un-marks a pending attachment for deletion IFF currently marked for deletion.
     /// 
     /// If the id is not found, throws an error.
@@ -112,21 +118,31 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
     public func commitPendingAttachmentWithSneakyTransaction(
         _ record: OrphanedAttachmentRecord
     ) throws -> OrphanedAttachmentRecord.IDType {
-        guard record.sqliteId == nil else {
-            throw OWSAssertionError("Reinserting existing record")
-        }
-        let id = try dbProvider().write { db in
-            var record = record
-            // Ensure we mark this attachment as pending.
-            record.isPendingAttachment = true
-            try record.insert(db)
-            guard let id = record.sqliteId else {
-                throw OWSAssertionError("Unable to insert")
+        let id = UUID()
+        return try commitPendingAttachmentsWithSneakyTransaction([id: record])[id]!
+    }
+
+    public func commitPendingAttachmentsWithSneakyTransaction<Key: Hashable>(
+        _ records: [Key: OrphanedAttachmentRecord]
+    ) throws -> [Key: OrphanedAttachmentRecord.IDType] {
+        return try dbProvider().write { db in
+            var results = [Key: OrphanedAttachmentRecord.IDType]()
+            for (key, record) in records {
+                guard record.sqliteId == nil else {
+                    throw OWSAssertionError("Reinserting existing record")
+                }
+                // Ensure we mark this attachment as pending.
+                var record = record
+                record.isPendingAttachment = true
+                try record.insert(db)
+                guard let id = record.sqliteId else {
+                    throw OWSAssertionError("Unable to insert")
+                }
+                skippedRowIds.update(block: { $0.insert(id) })
+                results[key] = id
             }
-            skippedRowIds.update(block: { $0.insert(id) })
-            return id
+            return results
         }
-        return id
     }
 
     public func releasePendingAttachment(withId id: OrphanedAttachmentRecord.IDType, tx: DBWriteTransaction) {
