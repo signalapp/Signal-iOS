@@ -191,7 +191,14 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             auth: auth
         )
         let form = try await backupRequestManager.fetchBackupUploadForm(auth: backupAuth)
-        return try await attachmentUploadManager.uploadBackup(localUploadMetadata: metadata, form: form)
+        let result = try await attachmentUploadManager.uploadBackup(localUploadMetadata: metadata, form: form)
+
+        await db.awaitableWrite { tx in
+            BackupSettingsStore().setLastBackupDate(dateProvider(), tx: tx)
+            BackupSettingsStore().setLastBackupSizeBytes(UInt64(metadata.encryptedDataLength), tx: tx)
+        }
+
+        return result
     }
 
     // MARK: - Export
