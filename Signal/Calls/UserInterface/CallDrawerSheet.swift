@@ -45,7 +45,10 @@ class CallDrawerSheet: InteractiveSheetViewController {
         self.sheetTitleLabel.autoPinHeightToSuperviewMargins()
 
         let doneButton = UIButton(primaryAction: .init(
-            title: CommonStrings.doneButton
+            title: OWSLocalizedString(
+                "GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE",
+                comment: "Title for a 'done' button on a sheet showing the group call members list"
+            )
         ) { [weak self] _ in
             self?.callDrawerDelegate?.didTapDone()
         })
