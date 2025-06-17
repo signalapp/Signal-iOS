@@ -54,11 +54,13 @@ public struct BackupSettingsStore {
     private enum Keys {
         static let haveEverBeenEnabled = "haveEverBeenEnabledKey"
         static let plan = "planKey"
+        static let firstBackupDate = "firstBackupDate"
         static let lastBackupDate = "lastBackupDate"
         static let lastBackupSizeBytes = "lastBackupSizeBytes"
         static let backupFrequency = "backupFrequency"
         static let shouldBackUpOnCellular = "shouldBackUpOnCellular"
         static let shouldOptimizeLocalStorage = "shouldOptimizeLocalStorage"
+        static let lastBackupKeyReminderDate = "lastBackupKeyReminderDate"
     }
 
     private let kvStore: KeyValueStore
@@ -105,6 +107,15 @@ public struct BackupSettingsStore {
     }
 
     // MARK: -
+    public func firstBackupDate(tx: DBReadTransaction) -> Date? {
+        return kvStore.getDate(Keys.firstBackupDate, transaction: tx)
+    }
+
+    private func setFirstBackupDate(_ firstBackupDate: Date, tx: DBWriteTransaction) {
+        kvStore.setDate(firstBackupDate, key: Keys.firstBackupDate, transaction: tx)
+    }
+
+    // MARK: -
 
     public func lastBackupDate(tx: DBReadTransaction) -> Date? {
         return kvStore.getDate(Keys.lastBackupDate, transaction: tx)
@@ -112,6 +123,11 @@ public struct BackupSettingsStore {
 
     public func setLastBackupDate(_ lastBackupDate: Date, tx: DBWriteTransaction) {
         kvStore.setDate(lastBackupDate, key: Keys.lastBackupDate, transaction: tx)
+
+        guard let _ = firstBackupDate(tx: tx) else {
+            setFirstBackupDate(lastBackupDate, tx: tx)
+            return
+        }
     }
 
     // MARK: -
@@ -153,5 +169,15 @@ public struct BackupSettingsStore {
         tx.addSyncCompletion {
             NotificationCenter.default.post(name: Notifications.shouldBackUpOnCellularChanged, object: nil)
         }
+    }
+
+    // MARK: -
+
+    public func lastBackupKeyReminderDate(tx: DBReadTransaction) -> Date? {
+        return kvStore.getDate(Keys.lastBackupKeyReminderDate, transaction: tx)
+    }
+
+    public func setLastBackupKeyReminderDate(_ lastBackupKeyReminderDate: Date, tx: DBWriteTransaction) {
+        kvStore.setDate(lastBackupKeyReminderDate, key: Keys.lastBackupKeyReminderDate, transaction: tx)
     }
 }

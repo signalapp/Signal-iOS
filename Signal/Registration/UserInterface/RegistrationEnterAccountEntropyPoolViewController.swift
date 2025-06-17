@@ -10,18 +10,47 @@ import SwiftUI
 protocol RegistrationEnterAccountEntropyPoolPresenter: AnyObject {
     func next(accountEntropyPool: AccountEntropyPool)
     func cancelKeyEntry()
+    func forgotKeyAction()
 }
 
 class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPoolViewController {
     private weak var presenter: RegistrationEnterAccountEntropyPoolPresenter?
 
-    init(presenter: RegistrationEnterAccountEntropyPoolPresenter) {
+    init(
+        presenter: RegistrationEnterAccountEntropyPoolPresenter,
+        aepValidationPolicy: AEPValidationPolicy = .acceptAnyWellFormed
+    ) {
         self.presenter = presenter
 
         super.init()
 
+        var footerButtonConfig = FooterButtonConfig(
+            title: OWSLocalizedString(
+                "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE",
+                comment: "Title of button to tap if you do not have a backup key during registration."
+            ),
+            action: { [weak self] in
+                self?.didTapNoKeyButton()
+            },
+        )
+
+        switch(aepValidationPolicy) {
+        case .acceptAnyWellFormed:
+            break
+        case .acceptOnly(_):
+            footerButtonConfig = FooterButtonConfig(
+                title: OWSLocalizedString(
+                    "BACKUP_KEY_REMINDER_FORGOT_KEY",
+                    comment: "Title of button to tap if you forgot your backup key."
+                ),
+                action: {
+                    presenter.forgotKeyAction()
+                },
+            )
+        }
+
         configure(
-            aepValidationPolicy: .acceptAnyWellFormed,
+            aepValidationPolicy: aepValidationPolicy,
             colorConfig: ColorConfig(
                 background: UIColor.Signal.background,
                 aepEntryBackground: UIColor.Signal.quaternaryFill,
@@ -36,15 +65,7 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
                     comment: "Description for the screen that allows users to enter their backup key."
                 )
             ),
-            footerButtonConfig: FooterButtonConfig(
-                title: OWSLocalizedString(
-                    "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE",
-                    comment: "Title of button to tap if you do not have a backup key during registration."
-                ),
-                action: { [weak self] in
-                    self?.didTapNoKeyButton()
-                },
-            ),
+            footerButtonConfig: footerButtonConfig,
             onEntryConfirmed: { [weak self] aep in
                 self?.presenter?.next(accountEntropyPool: aep)
             },
@@ -106,6 +127,10 @@ private class PreviewRegistrationEnterAccountEntropyPoolPresenter: RegistrationE
 
     func cancelKeyEntry() {
         print("cancel")
+    }
+
+    func forgotKeyAction() {
+        print("forgotKeyAction")
     }
 }
 
