@@ -685,7 +685,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         guard tsAccountManager.registrationState(tx: tx).isPrimaryDevice == true else {
             // We only query once ever on linked devices, not again when
             // state changes.
-            return true
+            return false
         }
         if currentUploadEra != lastQueriedUploadEra {
             return true
