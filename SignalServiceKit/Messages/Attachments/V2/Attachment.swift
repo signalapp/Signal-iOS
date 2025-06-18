@@ -487,10 +487,6 @@ private extension Attachment.MediaTierInfo {
             let unencryptedByteCount,
             let sha256ContentHash
         else {
-            owsAssertDebug(
-                uploadEra == nil,
-                "Have partial media cdn info!"
-            )
             return nil
         }
         self.cdnNumber = cdnNumber
