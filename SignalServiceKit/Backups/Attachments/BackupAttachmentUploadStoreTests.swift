@@ -38,10 +38,8 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 tx: tx
             )
             try store.enqueue(
-                .init(
-                    reference: reference,
-                    attachmentStream: Attachment(record: attachmentRecord).asStream()!
-                ),
+                Attachment(record: attachmentRecord).asStream()!,
+                owner: reference.owner.asEligibleUploadOwnerType,
                 fullsize: true,
                 tx: tx
             )
@@ -68,10 +66,8 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 tx: tx
             )
             try store.enqueue(
-                .init(
-                    reference: reference,
-                    attachmentStream: Attachment(record: attachmentRecord).asStream()!
-                ),
+                Attachment(record: attachmentRecord).asStream()!,
+                owner: reference.owner.asEligibleUploadOwnerType,
                 fullsize: true,
                 tx: tx
             )
@@ -97,10 +93,8 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             )
             try referenceRecord.insert(tx.database)
             try store.enqueue(
-                .init(
-                    reference: AttachmentReference(record: referenceRecord),
-                    attachmentStream: Attachment(record: attachmentRecord).asStream()!
-                ),
+                Attachment(record: attachmentRecord).asStream()!,
+                owner: AttachmentReference(record: referenceRecord).owner.asEligibleUploadOwnerType,
                 fullsize: true,
                 tx: tx
             )
@@ -126,10 +120,8 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 tx: tx
             )
             try store.enqueue(
-                .init(
-                    reference: reference,
-                    attachmentStream: Attachment(record: attachmentRecord).asStream()!
-                ),
+                Attachment(record: attachmentRecord).asStream()!,
+                owner: reference.owner.asEligibleUploadOwnerType,
                 fullsize: true,
                 tx: tx
             )
@@ -178,10 +170,8 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                     }
                 }()
                 try store.enqueue(
-                    .init(
-                        reference: reference,
-                        attachmentStream: Attachment(record: attachmentRecord).asStream()!
-                    ),
+                    Attachment(record: attachmentRecord).asStream()!,
+                    owner: reference.owner.asEligibleUploadOwnerType,
                     fullsize: true,
                     tx: tx
                 )
@@ -252,18 +242,14 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 )
                 // Enqueue both fullsize and thumbnail
                 try store.enqueue(
-                    .init(
-                        reference: reference,
-                        attachmentStream: Attachment(record: attachmentRecord).asStream()!
-                    ),
+                    Attachment(record: attachmentRecord).asStream()!,
+                    owner: reference.owner.asEligibleUploadOwnerType,
                     fullsize: true,
                     tx: tx
                 )
                 try store.enqueue(
-                    .init(
-                        reference: reference,
-                        attachmentStream: Attachment(record: attachmentRecord).asStream()!
-                    ),
+                    Attachment(record: attachmentRecord).asStream()!,
+                    owner: reference.owner.asEligibleUploadOwnerType,
                     fullsize: false,
                     tx: tx
                 )
@@ -365,5 +351,22 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         )
         try record.insert(tx.database)
         return try AttachmentReference(record: record)
+    }
+}
+
+fileprivate extension AttachmentReference.Owner {
+
+    var asEligibleUploadOwnerType: QueuedBackupAttachmentUpload.OwnerType! {
+        switch self {
+        case .message(let messageSource):
+            return .message(timestamp: messageSource.receivedAtTimestamp)
+        case .thread(let threadSource):
+            switch threadSource {
+            case .threadWallpaperImage, .globalThreadWallpaperImage:
+                return .threadWallpaper
+            }
+        case .storyMessage:
+            return nil
+        }
     }
 }

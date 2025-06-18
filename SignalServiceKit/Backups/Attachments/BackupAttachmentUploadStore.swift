@@ -17,7 +17,8 @@ public protocol BackupAttachmentUploadStore {
     /// Note that the upload operation can (and will) be separately durably enqueued in AttachmentUploadQueue,
     /// that's fine and doesn't change how this queue works.
     func enqueue(
-        _ referencedAttachment: ReferencedAttachmentStream,
+        _ attachment: AttachmentStream,
+        owner: QueuedBackupAttachmentUpload.OwnerType,
         fullsize: Bool,
         tx: DBWriteTransaction
     ) throws
@@ -44,19 +45,16 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
     public init() {}
 
     public func enqueue(
-        _ referencedAttachment: ReferencedAttachmentStream,
+        _ attachment: AttachmentStream,
+        owner: QueuedBackupAttachmentUpload.OwnerType,
         fullsize: Bool,
         tx: DBWriteTransaction
     ) throws {
         let db = tx.database
 
-        guard let ownerType = referencedAttachment.reference.owner.asUploadOwnerType() else {
-            throw OWSAssertionError("Enqueuing attachment that shouldn't be uploaded")
-        }
-
         let unencryptedSize: UInt32
         if fullsize {
-            unencryptedSize = referencedAttachment.attachmentStream.unencryptedByteCount
+            unencryptedSize = attachment.unencryptedByteCount
         } else {
             // We don't (easily) know the thumbnail size; just estimate as the max size
             // (which is small anyway) and run with it.
@@ -64,8 +62,8 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
         }
 
         var newRecord = QueuedBackupAttachmentUpload(
-            attachmentRowId: referencedAttachment.attachment.id,
-            highestPriorityOwnerType: ownerType,
+            attachmentRowId: attachment.id,
+            highestPriorityOwnerType: owner,
             isFullsize: fullsize,
             estimatedByteCount: Cryptography.estimatedMediaTierCDNSize(
                 unencryptedSize: unencryptedSize
@@ -73,7 +71,7 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
         )
 
         let existingRecord = try QueuedBackupAttachmentUpload
-            .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.attachmentRowId) == referencedAttachment.attachment.id)
+            .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.attachmentRowId) == attachment.id)
             .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.isFullsize) == fullsize)
             .fetchOne(db)
 
@@ -124,23 +122,6 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
             .fetchOne(tx.database)
         try record?.delete(tx.database)
         return record
-    }
-}
-
-extension AttachmentReference.Owner {
-
-    public func asUploadOwnerType() -> QueuedBackupAttachmentUpload.OwnerType? {
-        switch self {
-        case .message(let messageSource):
-            return .message(timestamp: messageSource.receivedAtTimestamp)
-        case .thread(let threadSource):
-            switch threadSource {
-            case .threadWallpaperImage, .globalThreadWallpaperImage:
-                return .threadWallpaper
-            }
-        case .storyMessage:
-            return nil
-        }
     }
 }
 

@@ -464,6 +464,8 @@ public class AppSetup {
             attachmentStore: attachmentStore,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupSubscriptionManager: backupSubscriptionManager,
+            dateProvider: dateProvider,
+            interactionStore: interactionStore,
         )
 
         let backupListMediaManager = BackupListMediaManagerImpl(

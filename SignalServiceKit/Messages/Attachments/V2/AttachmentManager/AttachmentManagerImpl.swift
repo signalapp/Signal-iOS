@@ -953,8 +953,9 @@ public class AttachmentManagerImpl: AttachmentManager {
                             tx: tx
                         )
                     {
-                        try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                        try backupAttachmentUploadScheduler.enqueueIfNeededWithOwner(
                             attachment,
+                            owner: owner,
                             tx: tx
                         )
                     }
@@ -964,6 +965,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 if let error = error as? AttachmentInsertError {
                     existingAttachmentId = try Self.handleAttachmentInsertError(
                         error,
+                        newAttachmentOwner: owner,
                         pendingAttachmentStreamInfo: streamInfo,
                         pendingAttachmentEncryptionKey: pendingAttachment.encryptionKey,
                         pendingAttachmentMimeType: pendingAttachment.mimeType,
@@ -996,8 +998,15 @@ public class AttachmentManagerImpl: AttachmentManager {
     /// When inserting an attachment stream (or updating an existing attachment to a stream),
     /// handle errors due to collisions with existing attachments' mediaName or plaintext hash.
     /// Returns the collided attachment's id, which should be used as the attachment id thereafter.
+    ///
+    /// - parameter newAttachmentOwner: If nil, will fetch all owning references for media tier (backup)
+    /// upload eligibility checking.
+    /// If non-nil, will be used exclusively to determine upload eligibility, ignoring any other owning references
+    /// that may exist. This is okay when creating a single new reference and assuming the attachment would
+    /// have already been scheduled for upload had existing references made it eligible.
     internal static func handleAttachmentInsertError(
         _ error: AttachmentInsertError,
+        newAttachmentOwner: AttachmentReference.Owner? = nil,
         pendingAttachmentStreamInfo: Attachment.StreamInfo,
         pendingAttachmentEncryptionKey: Data,
         pendingAttachmentMimeType: String,
@@ -1117,10 +1126,18 @@ public class AttachmentManagerImpl: AttachmentManager {
         // immediately. Let the queue decide if enqeuing is needing and when
         // and whether to actually upload, but let it know about every new
         // stream created.
-        try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
-            existingAttachment,
-            tx: tx
-        )
+        if let newAttachmentOwner {
+            try backupAttachmentUploadScheduler.enqueueIfNeededWithOwner(
+                existingAttachment,
+                owner: newAttachmentOwner,
+                tx: tx
+            )
+        } else {
+            try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                existingAttachment,
+                tx: tx
+            )
+        }
         return existingAttachmentId
     }
 
