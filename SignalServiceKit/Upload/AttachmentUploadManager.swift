@@ -1053,7 +1053,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         let decryptionMedatata = DecryptionMetadata(
             key: attachmentStream.attachment.encryptionKey,
             // No need to validate for an already-validated stream
-            integrityCheck: nil,
+            integrityCheck: .sha256ContentHash(attachmentStream.sha256ContentHash),
             length: Int(clamping: attachmentStream.info.encryptedByteCount),
             plaintextLength: Int(clamping: attachmentStream.info.unencryptedByteCount)
         )
