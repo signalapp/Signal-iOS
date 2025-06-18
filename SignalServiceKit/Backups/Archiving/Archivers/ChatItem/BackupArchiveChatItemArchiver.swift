@@ -277,10 +277,13 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
 
         // We may skip archiving messages based on their expiration
         // (disappearing message) details.
-        if shouldSkipMessageBasedOnExpiration(
-            details: details,
-            context: context
-        ) {
+        if
+            context.includedContentFilter.shouldSkipMessageBasedOnExpiration(
+                expireStartDate: details.expireStartDate,
+                expiresInMs: details.expiresInMs,
+                currentTimestamp: context.startTimestampMs
+            )
+        {
             // Skip, but treat as a success.
             return .success
         }
@@ -358,34 +361,6 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
             default:
                 return _chatItemType
             }
-        }
-    }
-
-    private func shouldSkipMessageBasedOnExpiration(
-        details: BackupArchive.InteractionArchiveDetails,
-        context: BackupArchive.ArchivingContext
-    ) -> Bool {
-        guard
-            let expiresInMs = details.expiresInMs,
-            expiresInMs > 0
-        else {
-            // If the message isn't expiring, no reason to skip.
-            return false
-        }
-
-        if expiresInMs <= context.includedContentFilter.minExpirationTimeMs {
-            // If the expire timer was less than our minimum, we can always
-            // skip.
-            return true
-        } else if let expireStartDate = details.expireStartDate {
-            // If the expiration timer has started, check whether the
-            // remaining time before it expires is sufficient.
-            let expirationDate = expireStartDate + expiresInMs
-            let minExpirationDate = context.startTimestampMs + context.includedContentFilter.minRemainingTimeUntilExpirationMs
-
-            return expirationDate <= minExpirationDate
-        } else {
-            return false
         }
     }
 

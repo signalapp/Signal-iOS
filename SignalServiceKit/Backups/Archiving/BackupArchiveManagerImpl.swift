@@ -209,38 +209,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         backupPurpose: MessageBackupPurpose,
         progress progressSink: OWSProgressSink?
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
-        let includedContentFilter = BackupArchive.ArchivingContext.IncludedContentFilter(
-            minExpirationTimeMs: {
-                switch backupPurpose {
-                case .deviceTransfer:
-                    // Don't exclude any messages in "device transfer" backups,
-                    // i.e. Link'n'Syncs.
-                    return 0
-                case .remoteBackup:
-                    // Skip messages with timers of less than a day.
-                    return .dayInMs
-                }
-            }(),
-            minRemainingTimeUntilExpirationMs: {
-                switch backupPurpose {
-                case .deviceTransfer:
-                    // Don't exclude any messages in "device transfer" backups,
-                    // i.e. Link'n'Syncs.
-                    return 0
-                case .remoteBackup:
-                    // Skip messages with less than a day before they'll expire.
-                    return .dayInMs
-                }
-            }(),
-            shouldTombstoneViewOnce: {
-                switch backupPurpose {
-                case .deviceTransfer:
-                    return false
-                case .remoteBackup:
-                    return true
-                }
-            }(),
-            shouldIncludePin: true
+        let includedContentFilter = BackupArchive.IncludedContentFilter(
+            backupPurpose: backupPurpose
         )
 
         return try await _exportBackup(
@@ -272,12 +242,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
         // For the integration tests, don't filter out any content. The premise
         // of the tests is to verify that round-tripping a Backup file is
-        // idempotent.
-        let includedContentFilter = BackupArchive.ArchivingContext.IncludedContentFilter(
-            minExpirationTimeMs: 0,
-            minRemainingTimeUntilExpirationMs: 0,
-            shouldTombstoneViewOnce: false,
-            shouldIncludePin: true
+        // idempotent. The device transfer purpose includes everything.
+        let includedContentFilter = BackupArchive.IncludedContentFilter(
+            backupPurpose: .deviceTransfer
         )
 
         return try await _exportBackup(
@@ -298,7 +265,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private func _exportBackup<OutputStreamMetadata>(
         localIdentifiers: LocalIdentifiers,
         backupPurpose: MessageBackupPurpose,
-        includedContentFilter: BackupArchive.ArchivingContext.IncludedContentFilter,
+        includedContentFilter: BackupArchive.IncludedContentFilter,
         progressSink: OWSProgressSink?,
         benchTitle: String,
         openOutputStreamBlock: (
@@ -378,7 +345,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         outputStream stream: BackupArchiveProtoOutputStream,
         localIdentifiers: LocalIdentifiers,
         backupPurpose: MessageBackupPurpose,
-        includedContentFilter: BackupArchive.ArchivingContext.IncludedContentFilter,
+        includedContentFilter: BackupArchive.IncludedContentFilter,
         currentAppVersion: String,
         firstAppVersion: String,
         memorySampler: MemorySampler,
