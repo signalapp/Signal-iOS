@@ -41,7 +41,10 @@ class LinkPreviewFetcherTest: XCTestCase {
     func testLinkParsingWithRealData1() async throws {
         try XCTSkipUnless(shouldRunNetworkTests)
 
-        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
+        guard case .string(_, let linkText) = try await linkPreviewFetcher.fetchStringOrImageResource(from: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!) else {
+            XCTFail("fetched page had an image content type")
+            return
+        }
 
         let content = HTMLMetadata.construct(parsing: linkText)
         XCTAssertNotNil(content)
@@ -53,7 +56,10 @@ class LinkPreviewFetcherTest: XCTestCase {
     func testLinkParsingWithRealData2() async throws {
         try XCTSkipUnless(shouldRunNetworkTests)
 
-        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://youtu.be/tP-Ipsat90c")!)
+        guard case .string(_, let linkText) = try await linkPreviewFetcher.fetchStringOrImageResource(from: URL(string: "https://youtu.be/tP-Ipsat90c")!) else {
+            XCTFail("fetched page had an image content type")
+            return
+        }
 
         let content = HTMLMetadata.construct(parsing: linkText)
         XCTAssertNotNil(content)
@@ -65,19 +71,26 @@ class LinkPreviewFetcherTest: XCTestCase {
     func testLinkParsingWithRealData3() async throws {
         try XCTSkipUnless(shouldRunNetworkTests)
 
-        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://www.reddit.com/r/memes/comments/c3p3dy/i_drew_all_the_boys_together_and_i_did_it_for_the/")!)
+        guard case .string(_, let linkText) = try await linkPreviewFetcher.fetchStringOrImageResource(from: URL(string: "https://www.reddit.com/r/memes/comments/c3p3dy/i_drew_all_the_boys_together_and_i_did_it_for_the/")!) else {
+            XCTFail("fetched page had an image content type")
+            return
+        }
 
         let content = HTMLMetadata.construct(parsing: linkText)
         XCTAssertNotNil(content)
 
         XCTAssertEqual(content.ogTitle, "From the memes community on Reddit: I drew all the boys together and i did it for the internet")
-        XCTAssertEqual(content.ogImageUrlString, "https://preview.redd.it/yb3996njhw531.jpg?width=1080&crop=smart&auto=webp&s=0f0c60355dcb7d051fdb2cf068aca3b669d7dbda")
+        // This used to have a dynamic preview, but now it just shows the Reddit logo.
+        XCTAssertEqual(content.ogImageUrlString, "https://i.redd.it/o0h58lzmax6a1.png")
     }
 
     func testLinkParsingWithRealData4() async throws {
         try XCTSkipUnless(shouldRunNetworkTests)
 
-        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://www.reddit.com/r/WhitePeopleTwitter/comments/a7j3mm/why/")!)
+        guard case .string(_, let linkText) = try await linkPreviewFetcher.fetchStringOrImageResource(from: URL(string: "https://www.reddit.com/r/WhitePeopleTwitter/comments/a7j3mm/why/")!) else {
+            XCTFail("fetched page had an image content type")
+            return
+        }
 
         let content = HTMLMetadata.construct(parsing: linkText)
         XCTAssertNotNil(content)
@@ -86,10 +99,25 @@ class LinkPreviewFetcherTest: XCTestCase {
         XCTAssertEqual(content.ogImageUrlString, "https://share.redd.it/preview/post/a7j3mm")
     }
 
+    func testLinkParsingWithRealData4_direct_image() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
+
+        guard case .image(_, let mimeType, let contents) = try await linkPreviewFetcher.fetchStringOrImageResource(from: URL(string: "https://share.redd.it/preview/post/a7j3mm")!) else {
+            XCTFail("fetched page had a non-image content type")
+            return
+        }
+
+        XCTAssertNotNil(mimeType)
+        XCTAssertFalse(contents.isEmpty)
+    }
+
     func testLinkParsingWithRealData5() async throws {
         try XCTSkipUnless(shouldRunNetworkTests)
 
-        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://imgur.com/gallery/KFCL8fm")!)
+        guard case .string(_, let linkText) = try await linkPreviewFetcher.fetchStringOrImageResource(from: URL(string: "https://imgur.com/gallery/KFCL8fm")!) else {
+            XCTFail("fetched page had an image content type")
+            return
+        }
 
         let content = HTMLMetadata.construct(parsing: linkText)
         XCTAssertNotNil(content)
@@ -106,7 +134,10 @@ class LinkPreviewFetcherTest: XCTestCase {
     func testLinkParsingWithRealData6() async throws {
         try XCTSkipUnless(shouldRunNetworkTests)
 
-        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://imgur.com/gallery/FMdwTiV")!)
+        guard case .string(_, let linkText) = try await linkPreviewFetcher.fetchStringOrImageResource(from: URL(string: "https://imgur.com/gallery/FMdwTiV")!) else {
+            XCTFail("fetched page had an image content type")
+            return
+        }
 
         let content = HTMLMetadata.construct(parsing: linkText)
         XCTAssertNotNil(content)
@@ -118,7 +149,10 @@ class LinkPreviewFetcherTest: XCTestCase {
     func testLinkParsingWithRealData_instagram_web_link() async throws {
         try XCTSkipUnless(shouldRunNetworkTests)
 
-        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_web_button_share_sheet")!)
+        guard case .string(_, let linkText) = try await linkPreviewFetcher.fetchStringOrImageResource(from: URL(string: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_web_button_share_sheet")!) else {
+            XCTFail("fetched page had an image content type")
+            return
+        }
 
         let content = HTMLMetadata.construct(parsing: linkText)
         XCTAssertNotNil(content)
@@ -136,7 +170,10 @@ class LinkPreviewFetcherTest: XCTestCase {
     func testLinkParsingWithRealData_instagram_app_sharesheet() async throws {
         try XCTSkipUnless(shouldRunNetworkTests)
 
-        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_share_sheet&igshid=1bgo1ur9m9hi5")!)
+        guard case .string(_, let linkText) = try await linkPreviewFetcher.fetchStringOrImageResource(from: URL(string: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_share_sheet&igshid=1bgo1ur9m9hi5")!) else {
+            XCTFail("fetched page had an image content type")
+            return
+        }
 
         let content = HTMLMetadata.construct(parsing: linkText)
         XCTAssertNotNil(content)
@@ -154,7 +191,10 @@ class LinkPreviewFetcherTest: XCTestCase {
     func testLinkParsingWithRealData9() async throws {
         try XCTSkipUnless(shouldRunNetworkTests)
 
-        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://imgur.com/gallery/igHOwDM")!)
+        guard case .string(_, let linkText) = try await linkPreviewFetcher.fetchStringOrImageResource(from: URL(string: "https://imgur.com/gallery/igHOwDM")!) else {
+            XCTFail("fetched page had an image content type")
+            return
+        }
 
         let content = HTMLMetadata.construct(parsing: linkText)
         XCTAssertNotNil(content)
@@ -166,12 +206,15 @@ class LinkPreviewFetcherTest: XCTestCase {
     func testLinkParsingWithRealData10() async throws {
         try XCTSkipUnless(shouldRunNetworkTests)
 
-        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://www.pinterest.com/norat0464/test-board/")!)
+        guard case .string(_, let linkText) = try await linkPreviewFetcher.fetchStringOrImageResource(from: URL(string: "https://www.pinterest.com/norat0464/test-board/")!) else {
+            XCTFail("fetched page had an image content type")
+            return
+        }
 
         let content = HTMLMetadata.construct(parsing: linkText)
         XCTAssertNotNil(content)
 
-        XCTAssertEqual(content.ogTitle, "Test board")
+        XCTAssertEqual(content.ogTitle, "Test Board")
         XCTAssertEqual(content.ogImageUrlString, "https://i.pinimg.com/200x150/3e/85/f8/3e85f88e7be0dd1418a5b430d2ee8a55.jpg")
     }
 }

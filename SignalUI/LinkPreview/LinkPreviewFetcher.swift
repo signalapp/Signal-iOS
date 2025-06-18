@@ -71,24 +71,44 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
     }
 
     private func fetchLinkPreview(forGenericUrl url: URL) async throws -> OWSLinkPreviewDraft? {
-        let (respondingUrl, rawHtml) = try await self.fetchStringResource(from: url)
+        let normalizedTitle: String?
+        let normalizedDescription: String?
+        let previewThumbnail: PreviewThumbnail?
+        let dateForLinkPreview: Date?
 
-        let content = HTMLMetadata.construct(parsing: rawHtml)
-        let rawTitle = content.ogTitle ?? content.titleTag
-        let normalizedTitle = rawTitle.map { LinkPreviewHelper.normalizeString($0, maxLines: 2) }?.nilIfEmpty
-        var rawDescription = content.ogDescription ?? content.description
-        if rawDescription == rawTitle {
-            rawDescription = nil
-        }
-        let normalizedDescription = rawDescription.map { LinkPreviewHelper.normalizeString($0, maxLines: 3) }
+        switch try await self.fetchStringOrImageResource(from: url) {
+        case .string(let respondingUrl, let rawHtml):
+            let content = HTMLMetadata.construct(parsing: rawHtml)
+            let rawTitle = content.ogTitle ?? content.titleTag
+            normalizedTitle = rawTitle.map { LinkPreviewHelper.normalizeString($0, maxLines: 2) }?.nilIfEmpty
+            var rawDescription = content.ogDescription ?? content.description
+            if rawDescription == rawTitle {
+                rawDescription = nil
+            }
+            normalizedDescription = rawDescription.map { LinkPreviewHelper.normalizeString($0, maxLines: 3) }
+            dateForLinkPreview = content.dateForLinkPreview
 
-        var previewThumbnail: PreviewThumbnail?
-        if
-            let imageUrlString = content.ogImageUrlString ?? content.faviconUrlString,
-            let imageUrl = URL(string: imageUrlString, relativeTo: respondingUrl),
-            let imageData = try? await self.fetchImageResource(from: imageUrl)
-        {
-            previewThumbnail = await Self.previewThumbnail(srcImageData: imageData, srcMimeType: nil)
+            if
+                let imageUrlString = content.ogImageUrlString ?? content.faviconUrlString,
+                let imageUrl = URL(string: imageUrlString, relativeTo: respondingUrl),
+                let (imageData, mimeType) = try? await self.fetchImageResource(from: imageUrl)
+            {
+                previewThumbnail = await Self.previewThumbnail(srcImageData: imageData, srcMimeType: mimeType)
+            } else {
+                previewThumbnail = nil
+            }
+
+        case .image(let url, let mimeType, let contents):
+            previewThumbnail = await Self.previewThumbnail(srcImageData: contents, srcMimeType: mimeType)
+            normalizedDescription = nil
+            dateForLinkPreview = nil
+            normalizedTitle = if previewThumbnail != nil {
+                // The best we can do for a title is the filename in the URL itself,
+                // but that's no worse than the body of the message.
+                url.lastPathComponent.filterStringForDisplay().nilIfEmpty
+            } else {
+                nil
+            }
         }
 
         guard normalizedTitle != nil || previewThumbnail != nil else {
@@ -101,7 +121,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             imageData: previewThumbnail?.imageData,
             imageMimeType: previewThumbnail?.mimetype,
             previewDescription: normalizedDescription,
-            date: content.dateForLinkPreview
+            date: dateForLinkPreview
         )
     }
 
@@ -132,7 +152,19 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
         return urlSession
     }
 
-    func fetchStringResource(from url: URL) async throws -> (URL, String) {
+    enum StringOrImageResource {
+        case string(url: URL, contents: String)
+        case image(url: URL, mimeType: String?, contents: Data)
+
+        static func dataForImage(_ response: any HTTPResponse) -> Data? {
+            guard let rawData = response.responseBodyData, rawData.count < maxFetchedContentSize else {
+                return nil
+            }
+            return rawData
+        }
+    }
+
+    func fetchStringOrImageResource(from url: URL) async throws -> StringOrImageResource {
         let response: any HTTPResponse
         do {
             response = try await self.buildOWSURLSession().performRequest(url.absoluteString, method: .get, ignoreAppExpiry: true)
@@ -145,14 +177,24 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             Logger.warn("Invalid response: \(statusCode).")
             throw LinkPreviewError.fetchFailure
         }
+
+        if let mimeType = response.headers.value(forHeader: "Content-Type"),
+           MimeTypeUtil.isSupportedImageMimeType(mimeType) {
+            guard let imageData = StringOrImageResource.dataForImage(response) else {
+                Logger.warn("Response object could not be parsed")
+                throw LinkPreviewError.invalidPreview
+            }
+            return .image(url: response.requestUrl, mimeType: mimeType, contents: imageData)
+        }
+
         guard let string = response.responseBodyString, !string.isEmpty else {
             Logger.warn("Response object could not be parsed")
             throw LinkPreviewError.invalidPreview
         }
-        return (response.requestUrl, string)
+        return .string(url: response.requestUrl, contents: string)
     }
 
-    private func fetchImageResource(from url: URL) async throws -> Data {
+    private func fetchImageResource(from url: URL) async throws -> (Data, String?) {
         let response: any HTTPResponse
         do {
             response = try await self.buildOWSURLSession().performRequest(url.absoluteString, method: .get, ignoreAppExpiry: true)
@@ -165,11 +207,11 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             Logger.warn("Invalid response: \(statusCode).")
             throw LinkPreviewError.fetchFailure
         }
-        guard let rawData = response.responseBodyData, rawData.count < Self.maxFetchedContentSize else {
+        guard let rawData = StringOrImageResource.dataForImage(response) else {
             Logger.warn("Response object could not be parsed")
             throw LinkPreviewError.invalidPreview
         }
-        return rawData
+        return (rawData, response.headers.value(forHeader: "Content-Type"))
     }
 
     // MARK: - Private, Constants
