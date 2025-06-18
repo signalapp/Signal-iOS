@@ -208,6 +208,9 @@ public class MessageFetcherJob {
             if let token = try params.optionalBase64EncodedData(key: "reportSpamToken") {
                 builder.setSpamReportingToken(token)
             }
+            if let updatedPni: String = try params.optional(key: "updatedPni") {
+                builder.setUpdatedPni(updatedPni)
+            }
 
             return try builder.build()
         } catch {
