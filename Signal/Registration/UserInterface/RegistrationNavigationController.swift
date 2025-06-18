@@ -683,6 +683,11 @@ extension RegistrationNavigationController: RegistrationChooseRestoreMethodPrese
         let guarantee = coordinator.updateRestoreMethod(method: method)
         pushNextController(guarantee)
     }
+
+    func didCancelRestoreMethodSelection() {
+        let guarantee = coordinator.resetRestoreMethodChoice()
+        pushNextController(guarantee)
+    }
 }
 
 extension RegistrationNavigationController: RegistrationQuickRestoreQRCodePresenter {

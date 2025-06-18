@@ -9,6 +9,7 @@ import SignalUI
 
 protocol RegistrationChooseRestoreMethodPresenter: AnyObject {
     func didChooseRestoreMethod(method: RegistrationRestoreMethod)
+    func didCancelRestoreMethodSelection()
 }
 
 public enum RegistrationRestoreMethod {
@@ -119,6 +120,12 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         })
     }()
 
+    private lazy var cancelButton = OWSFlatButton.secondaryButtonForRegistration(
+        title: CommonStrings.cancelButton,
+        target: self,
+        selector: #selector(didTapCancel)
+    )
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         initialRender()
@@ -155,6 +162,9 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
                 restoreFromBackupButton,
                 prominentSkipRestoreButton,
             ])
+            view.addSubview(cancelButton)
+            cancelButton.autoHCenterInSuperview()
+            cancelButton.autoPinBottomToSuperviewMargin(withInset: 14)
         case .unspecified:
             stackView.addArrangedSubviews([
                 transferButton,
@@ -208,6 +218,11 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         presenter?.didChooseRestoreMethod(method: .declined)
     }
 
+    @objc
+    private func didTapCancel() {
+        presenter?.didCancelRestoreMethodSelection()
+    }
+
     private func showMessageBackupPicker() {
         let vc = UIApplication.shared.frontmostViewController!
         let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.item], asCopy: !Platform.isSimulator)
@@ -235,6 +250,10 @@ extension RegistrationChooseRestoreMethodViewController: UIDocumentPickerDelegat
 private class PreviewRegistrationChooseRestoreMethodPresenter: RegistrationChooseRestoreMethodPresenter {
     func didChooseRestoreMethod(method: RegistrationRestoreMethod) {
         print("restore method: \(method)")
+    }
+
+    func didCancelRestoreMethodSelection() {
+        print("did cancel")
     }
 }
 
