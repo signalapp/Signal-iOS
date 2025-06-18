@@ -27,11 +27,14 @@ extension Attachment {
             // Don't offload anything unless this setting is enabled.
             return false
         }
-        guard let stream = self.asStream() else {
+        guard self.asStream() != nil else {
             // We only offload stuff we have locally, duh.
             return false
         }
-        if BackupAttachmentUploadEligibility(stream, currentUploadEra: currentUploadEra).needsUploadFullsize {
+        guard
+            let mediaTierInfo = self.mediaTierInfo,
+            mediaTierInfo.isUploaded(currentUploadEra: currentUploadEra)
+        else {
             // Don't offload until we've backed up to media tier.
             return false
         }

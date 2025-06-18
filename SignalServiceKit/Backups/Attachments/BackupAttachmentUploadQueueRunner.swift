@@ -1,36 +1,11 @@
 //
-// Copyright 2024 Signal Messenger, LLC
+// Copyright 2025 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 
-public protocol BackupAttachmentUploadManager {
-
-    /// "Enqueue" an attachment from a backup for upload, if needed and eligible, otherwise do nothing.
-    ///
-    /// If the same attachment is already enqueued, updates it to the greater of the old and new timestamp.
-    ///
-    /// Doesn't actually trigger an upload; callers must later call `backUpAllAttachments()` to upload.
-    func enqueueIfNeeded(
-        _ referencedAttachment: ReferencedAttachment,
-        currentUploadEra: String,
-        tx: DBWriteTransaction
-    ) throws
-
-    /// Same as full `enqueueIfNeeded` variant but fetches any necessary state from the database
-    /// instead of having it passed in.
-    func enqueueIfNeeded(
-        _ referencedAttachment: ReferencedAttachment,
-        tx: DBWriteTransaction
-    ) throws
-
-    /// Same as `enqueueIfNeeded` variant but fetches all owners of the attachment and enqueues using
-    /// the owner that would result in the highest priority upload (if any, and if eligible).
-    func enqueueUsingHighestPriorityOwnerIfNeeded(
-        _ attachment: Attachment,
-        tx: DBWriteTransaction
-    ) throws
+public protocol BackupAttachmentUploadQueueRunner {
 
     /// Backs up all pending attachments in the BackupAttachmentUploadQueue.
     ///
@@ -48,9 +23,23 @@ public protocol BackupAttachmentUploadManager {
     func backUpAllAttachments() async throws
 }
 
-public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
+extension BackupAttachmentUploadQueueRunner {
+
+    public func backUpAllAttachmentsAfterTxCommits(
+        tx: DBWriteTransaction
+    ) {
+        tx.addSyncCompletion { [self] in
+            Task {
+                try await self.backUpAllAttachments()
+            }
+        }
+    }
+}
+
+public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
     private let attachmentStore: AttachmentStore
+    private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
@@ -66,6 +55,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         appReadiness: AppReadiness,
         attachmentStore: AttachmentStore,
         attachmentUploadManager: AttachmentUploadManager,
+        backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
         backupKeyMaterial: BackupKeyMaterial,
         backupListMediaManager: BackupListMediaManager,
@@ -80,6 +70,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         tsAccountManager: TSAccountManager
     ) {
         self.attachmentStore = attachmentStore
+        self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
@@ -92,6 +83,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         let taskRunner = TaskRunner(
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
+            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
@@ -113,101 +105,6 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
             self?.startObservingQueueStatus()
-        }
-    }
-
-    public func enqueueUsingHighestPriorityOwnerIfNeeded(
-        _ attachment: Attachment,
-        tx: DBWriteTransaction
-    ) throws {
-        let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
-
-        // Before we fetch references, check if the attachment is
-        // eligible to begin with.
-        guard let stream = attachment.asStream() else {
-            return
-        }
-        let eligibility = BackupAttachmentUploadEligibility(
-            stream,
-            currentUploadEra: currentUploadEra
-        )
-        guard eligibility.needsUploadFullsize || eligibility.needsUploadFullsize else {
-            return
-        }
-
-        // Backup uploads are prioritized by attachment owner. Find the highest
-        // priority owner to use.
-        var referenceToUse: AttachmentReference?
-        try attachmentStore.enumerateAllReferences(
-            toAttachmentId: attachment.id,
-            tx: tx
-        ) { reference, _ in
-            guard let ownerType = reference.owner.asUploadOwnerType() else {
-                return
-            }
-            if referenceToUse?.owner.asUploadOwnerType()?.isHigherPriority(than: ownerType) != true {
-                referenceToUse = reference
-            }
-        }
-        if let referenceToUse {
-            try self.enqueueIfNeeded(
-                ReferencedAttachment(reference: referenceToUse, attachment: attachment),
-                currentUploadEra: currentUploadEra,
-                tx: tx
-            )
-        }
-    }
-
-    public func enqueueIfNeeded(
-        _ referencedAttachment: ReferencedAttachment,
-        tx: DBWriteTransaction
-    ) throws {
-        let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
-
-        try enqueueIfNeeded(
-            referencedAttachment,
-            currentUploadEra: currentUploadEra,
-            tx: tx
-        )
-    }
-
-    public func enqueueIfNeeded(
-        _ referencedAttachment: ReferencedAttachment,
-        currentUploadEra: String,
-        tx: DBWriteTransaction
-    ) throws {
-        switch referencedAttachment.reference.owner {
-        case .message, .thread:
-            // We back these up (if other conditions are met)
-            break
-        case .storyMessage:
-            // Story messages are not backed up
-            return
-        }
-
-        guard let referencedStream = referencedAttachment.asReferencedStream else {
-            // We can only upload streams, duh
-            return
-        }
-
-        let eligibility = BackupAttachmentUploadEligibility(
-            referencedStream.attachmentStream,
-            currentUploadEra: currentUploadEra
-        )
-
-        if eligibility.needsUploadFullsize {
-            try backupAttachmentUploadStore.enqueue(
-                referencedStream,
-                fullsize: true,
-                tx: tx
-            )
-        }
-        if eligibility.needsUploadThumbnail {
-            try backupAttachmentUploadStore.enqueue(
-                referencedStream,
-                fullsize: false,
-                tx: tx
-            )
         }
     }
 
@@ -301,6 +198,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
 
         private let attachmentStore: AttachmentStore
         private let attachmentUploadManager: AttachmentUploadManager
+        private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
         private let backupAttachmentUploadStore: BackupAttachmentUploadStore
         private let backupKeyMaterial: BackupKeyMaterial
         private let backupRequestManager: BackupRequestManager
@@ -318,6 +216,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         init(
             attachmentStore: AttachmentStore,
             attachmentUploadManager: AttachmentUploadManager,
+            backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
             backupAttachmentUploadStore: BackupAttachmentUploadStore,
             backupKeyMaterial: BackupKeyMaterial,
             backupRequestManager: BackupRequestManager,
@@ -332,6 +231,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         ) {
             self.attachmentStore = attachmentStore
             self.attachmentUploadManager = attachmentUploadManager
+            self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
             self.backupAttachmentUploadStore = backupAttachmentUploadStore
             self.backupKeyMaterial = backupKeyMaterial
             self.backupRequestManager = backupRequestManager
@@ -375,7 +275,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                 return .cancelled
             }
 
-            guard let stream = attachment.asStream(), let mediaName = attachment.mediaName else {
+            guard attachment.asStream() != nil, let mediaName = attachment.mediaName else {
                 // We only back up attachments we've downloaded (streams)
                 return .cancelled
             }
@@ -463,14 +363,16 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                 uploadRecord: record.record
             )
 
-            let eligibility = BackupAttachmentUploadEligibility(
-                stream,
-                currentUploadEra: currentUploadEra
-            )
-            if
-                (record.record.isFullsize && !eligibility.needsUploadFullsize)
-                || (!record.record.isFullsize && !eligibility.needsUploadThumbnail)
-            {
+            guard
+                db.read(block: { tx in
+                    backupAttachmentUploadScheduler.isEligibleToUpload(
+                        attachment,
+                        fullsize: record.record.isFullsize,
+                        currentUploadEra: currentUploadEra,
+                        tx: tx
+                    )
+                })
+            else {
                 await progress.didFinishUploadOfAttachment(
                     uploadRecord: record.record
                 )
@@ -622,60 +524,11 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     }
 }
 
-public struct BackupAttachmentUploadEligibility {
-    let needsUploadFullsize: Bool
-    let needsUploadThumbnail: Bool
-
-    init(
-        _ attachment: AttachmentStream,
-        currentUploadEra: String
-    ) {
-        self.needsUploadFullsize = {
-            if let mediaTierInfo = attachment.attachment.mediaTierInfo {
-                return mediaTierInfo.uploadEra != currentUploadEra
-                    || mediaTierInfo.cdnNumber == nil
-            } else {
-                return true
-            }
-        }()
-        self.needsUploadThumbnail = {
-            if let thumbnailMediaTierInfo = attachment.attachment.thumbnailMediaTierInfo {
-                return thumbnailMediaTierInfo.uploadEra != currentUploadEra
-                    || thumbnailMediaTierInfo.cdnNumber == nil
-            } else {
-                return AttachmentBackupThumbnail.canBeThumbnailed(attachment.attachment)
-            }
-        }()
-    }
-}
-
 #if TESTABLE_BUILD
 
-open class BackupAttachmentUploadManagerMock: BackupAttachmentUploadManager {
+open class BackupAttachmentUploadQueueRunnerMock: BackupAttachmentUploadQueueRunner {
 
     public init() {}
-
-    public func enqueueIfNeeded(
-        _ referencedAttachment: ReferencedAttachment,
-        currentUploadEra: String,
-        tx: DBWriteTransaction
-    ) throws {
-        // Do nothing
-    }
-
-    public func enqueueIfNeeded(
-        _ referencedAttachment: ReferencedAttachment,
-        tx: DBWriteTransaction
-    ) throws {
-        // Do nothing
-    }
-
-    public func enqueueUsingHighestPriorityOwnerIfNeeded(
-        _ attachment: Attachment,
-        tx: DBWriteTransaction
-    ) throws {
-        // Do nothing
-    }
 
     public func backUpAllAttachments() async throws {
         // Do nothing

@@ -460,12 +460,19 @@ public class AppSetup {
             remoteConfigProvider: remoteConfigManager
         )
 
+        let backupAttachmentUploadScheduler = BackupAttachmentUploadSchedulerImpl(
+            attachmentStore: attachmentStore,
+            backupAttachmentUploadStore: backupAttachmentUploadStore,
+            backupSubscriptionManager: backupSubscriptionManager,
+        )
+
         let backupListMediaManager = BackupListMediaManagerImpl(
             attachmentStore: attachmentStore,
             attachmentUploadStore: attachmentUploadStore,
             backupAttachmentDownloadProgress: backupAttachmentDownloadProgress,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
+            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
@@ -478,10 +485,11 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let backupAttachmentUploadManager = BackupAttachmentUploadManagerImpl(
+        let backupAttachmentUploadQueueRunner = BackupAttachmentUploadQueueRunnerImpl(
             appReadiness: appReadiness,
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
+            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupKeyMaterial: backupKeyMaterial,
             backupListMediaManager: backupListMediaManager,
@@ -501,7 +509,8 @@ public class AppSetup {
             attachmentDownloadStore: attachmentDownloadStore,
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
-            backupAttachmentUploadManager: backupAttachmentUploadManager,
+            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
+            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             currentCallProvider: currentCallProvider,
@@ -523,7 +532,8 @@ public class AppSetup {
         let attachmentManager = AttachmentManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentStore: attachmentStore,
-            backupAttachmentUploadManager: backupAttachmentUploadManager,
+            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
+            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             dateProvider: dateProvider,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
@@ -1191,7 +1201,7 @@ public class AppSetup {
             avatarFetcher: backupArchiveAvatarFetcher,
             backupArchiveErrorPresenter: backupArchiveErrorPresenter,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
-            backupAttachmentUploadManager: backupAttachmentUploadManager,
+            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             backupSubscriptionManager: backupSubscriptionManager,
@@ -1382,7 +1392,6 @@ public class AppSetup {
             backupAttachmentDownloadProgress: backupAttachmentDownloadProgress,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentQueueStatusManager: backupAttachmentQueueStatusManager,
-            backupAttachmentUploadManager: backupAttachmentUploadManager,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupIdManager: backupIdManager,
             backupKeyMaterial: backupKeyMaterial,

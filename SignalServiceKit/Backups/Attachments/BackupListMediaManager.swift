@@ -18,6 +18,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     private let backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
+    private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
     private let backupKeyMaterial: BackupKeyMaterial
     private let backupRequestManager: BackupRequestManager
@@ -37,6 +38,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
+        backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
         backupKeyMaterial: BackupKeyMaterial,
         backupRequestManager: BackupRequestManager,
@@ -53,6 +55,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         self.backupAttachmentDownloadProgress = backupAttachmentDownloadProgress
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
+        self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
         self.backupKeyMaterial = backupKeyMaterial
         self.backupRequestManager = backupRequestManager
@@ -535,36 +538,11 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             }
         }
 
-        func getHighestPriorityUploadReference() throws -> AttachmentReference? {
-            var referenceToUse: AttachmentReference?
-            try attachmentStore.enumerateAllReferences(
-                toAttachmentId: attachment.id,
-                tx: tx
-            ) { reference, _ in
-                guard let ownerType = reference.owner.asUploadOwnerType() else {
-                    return
-                }
-                if referenceToUse?.owner.asUploadOwnerType()?.isHigherPriority(than: ownerType) != true {
-                    referenceToUse = reference
-                }
-            }
-            return referenceToUse
-        }
-
-        if let stream = attachment.asStream() {
-            let eligibility = BackupAttachmentUploadEligibility(stream, currentUploadEra: currentUploadEra)
-            if
-                (localAttachment.isThumbnail && eligibility.needsUploadThumbnail)
-                    || (!localAttachment.isThumbnail && eligibility.needsUploadFullsize),
-                let reference = try getHighestPriorityUploadReference()
-            {
-                try backupAttachmentUploadStore.enqueue(
-                    ReferencedAttachmentStream(reference: reference, attachmentStream: stream),
-                    fullsize: localAttachment.isThumbnail.negated,
-                    tx: tx
-                )
-            }
-        }
+        try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+            attachment,
+            mode: localAttachment.isThumbnail ? .thumbnailOnly : .fullsizeOnly,
+            tx: tx
+        )
 
         if
             var existingDownload = try backupAttachmentDownloadStore.getEnqueuedDownload(

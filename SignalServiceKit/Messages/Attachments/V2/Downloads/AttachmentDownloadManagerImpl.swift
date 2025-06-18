@@ -29,7 +29,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         attachmentDownloadStore: AttachmentDownloadStore,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
-        backupAttachmentUploadManager: BackupAttachmentUploadManager,
+        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
+        backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         backupKeyMaterial: BackupKeyMaterial,
         backupRequestManager: BackupRequestManager,
         currentCallProvider: CurrentCallProvider,
@@ -63,7 +64,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         )
         self.attachmentUpdater = AttachmentUpdater(
             attachmentStore: attachmentStore,
-            backupAttachmentUploadManager: backupAttachmentUploadManager,
+            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
+            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             db: db,
             decrypter: decrypter,
             interactionStore: interactionStore,
@@ -1848,7 +1850,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private class AttachmentUpdater {
 
         private let attachmentStore: AttachmentStore
-        private let backupAttachmentUploadManager: BackupAttachmentUploadManager
+        private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
+        private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
         private let db: any DB
         private let decrypter: Decrypter
         private let interactionStore: InteractionStore
@@ -1860,7 +1863,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         public init(
             attachmentStore: AttachmentStore,
-            backupAttachmentUploadManager: BackupAttachmentUploadManager,
+            backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
+            backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
             db: any DB,
             decrypter: Decrypter,
             interactionStore: InteractionStore,
@@ -1871,7 +1875,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             threadStore: ThreadStore
         ) {
             self.attachmentStore = attachmentStore
-            self.backupAttachmentUploadManager = backupAttachmentUploadManager
+            self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
+            self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
             self.db = db
             self.decrypter = decrypter
             self.interactionStore = interactionStore
@@ -1946,15 +1951,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             // really means "copy from transit tier" and since we just downloaded
                             // we shouldn't need to reupload to do that; we just needed to verify
                             // the digest before copying.
-                            try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+                            try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                                 attachment,
                                 tx: tx
                             )
-                            tx.addSyncCompletion { [backupAttachmentUploadManager] in
-                                Task {
-                                    try await backupAttachmentUploadManager.backUpAllAttachments()
-                                }
-                            }
+                            backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
                         case .mediaTierFullsize, .mediaTierThumbnail:
                             break
                         }
@@ -1996,10 +1997,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             attachmentStore: attachmentStore,
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,
-                            backupAttachmentUploadManager: backupAttachmentUploadManager,
+                            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
                             orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
                             tx: tx
                         )
+                        backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
                     } else {
                         throw error
                     }
@@ -2146,10 +2148,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                                 tx: tx
                             )
                         {
-                            try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+                            try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                                 attachment,
                                 tx: tx
                             )
+                            backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
                         }
                     }
 
@@ -2177,10 +2180,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             attachmentStore: attachmentStore,
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,
-                            backupAttachmentUploadManager: backupAttachmentUploadManager,
+                            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
                             orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
                             tx: tx
                         )
+                        backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
                     } else {
                         throw error
                     }
@@ -2332,10 +2336,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                                 tx: tx
                             )
                         {
-                            try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+                            try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                                 attachment,
                                 tx: tx
                             )
+                            backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
                         }
                     }
 
@@ -2363,10 +2368,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             attachmentStore: attachmentStore,
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,
-                            backupAttachmentUploadManager: backupAttachmentUploadManager,
+                            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
                             orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
                             tx: tx
                         )
+                        backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
                     } else {
                         throw error
                     }

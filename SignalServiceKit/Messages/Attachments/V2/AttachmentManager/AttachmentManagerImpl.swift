@@ -7,7 +7,8 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentStore: AttachmentStore
-    private let backupAttachmentUploadManager: BackupAttachmentUploadManager
+    private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
+    private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
     private let dateProvider: DateProvider
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private let orphanedAttachmentStore: OrphanedAttachmentStore
@@ -18,7 +19,8 @@ public class AttachmentManagerImpl: AttachmentManager {
     public init(
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentStore: AttachmentStore,
-        backupAttachmentUploadManager: BackupAttachmentUploadManager,
+        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
+        backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         dateProvider: @escaping DateProvider,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
@@ -28,7 +30,8 @@ public class AttachmentManagerImpl: AttachmentManager {
     ) {
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentStore = attachmentStore
-        self.backupAttachmentUploadManager = backupAttachmentUploadManager
+        self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
+        self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
         self.dateProvider = dateProvider
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.orphanedAttachmentStore = orphanedAttachmentStore
@@ -120,11 +123,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         )
         // When we create the attachment streams we schedule a backup of the
         // new attachments. Kick the tires so that upload starts happening now.
-        tx.addSyncCompletion { [backupAttachmentUploadManager] in
-            Task {
-                try await backupAttachmentUploadManager.backUpAllAttachments()
-            }
-        }
+        backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
     }
 
     // MARK: Quoted Replies
@@ -954,7 +953,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                             tx: tx
                         )
                     {
-                        try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+                        try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                             attachment,
                             tx: tx
                         )
@@ -973,7 +972,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                         attachmentStore: attachmentStore,
                         orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                         orphanedAttachmentStore: orphanedAttachmentStore,
-                        backupAttachmentUploadManager: backupAttachmentUploadManager,
+                        backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
                         orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
                         tx: tx
                     )
@@ -1007,7 +1006,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         attachmentStore: AttachmentStore,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
-        backupAttachmentUploadManager: BackupAttachmentUploadManager,
+        backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
         tx: DBWriteTransaction
     ) throws -> Attachment.IDType {
@@ -1118,7 +1117,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         // immediately. Let the queue decide if enqeuing is needing and when
         // and whether to actually upload, but let it know about every new
         // stream created.
-        try backupAttachmentUploadManager.enqueueUsingHighestPriorityOwnerIfNeeded(
+        try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
             existingAttachment,
             tx: tx
         )
@@ -1223,11 +1222,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             )
             // When we create the attachment stream we schedule a backup of the
             // new attachment. Kick the tires so that upload starts happening now.
-            tx.addSyncCompletion { [backupAttachmentUploadManager] in
-                Task {
-                    try await backupAttachmentUploadManager.backUpAllAttachments()
-                }
-            }
+            backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
         case .originalAttachment(let originalAttachmentSource):
             guard let originalAttachment = attachmentStore.fetch(id: originalAttachmentSource.id, tx: tx) else {
                 // The original has been deleted.

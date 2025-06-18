@@ -42,7 +42,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let avatarFetcher: BackupArchiveAvatarFetcher
     private let backupArchiveErrorPresenter: BackupArchiveErrorPresenter
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
-    private let backupAttachmentUploadManager: BackupAttachmentUploadManager
+    private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
@@ -81,7 +81,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         avatarFetcher: BackupArchiveAvatarFetcher,
         backupArchiveErrorPresenter: BackupArchiveErrorPresenter,
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
-        backupAttachmentUploadManager: BackupAttachmentUploadManager,
+        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
@@ -117,7 +117,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.avatarFetcher = avatarFetcher
         self.backupArchiveErrorPresenter = backupArchiveErrorPresenter
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
-        self.backupAttachmentUploadManager = backupAttachmentUploadManager
+        self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
@@ -626,11 +626,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
             try stream.closeFileStream()
 
-            tx.addSyncCompletion { [backupAttachmentUploadManager] in
-                Task {
-                    try await backupAttachmentUploadManager.backUpAllAttachments()
-                }
-            }
+            backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
 
             Logger.info("Finished exporting backup")
             bencher.logResults()
