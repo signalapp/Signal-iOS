@@ -514,50 +514,68 @@
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Clé de sauvegarde";
 
+/* Title of button to tap if you forgot your backup key. */
+"BACKUP_KEY_REMINDER_FORGOT_KEY" = "Forgot key?";
+
+/* Action text for Backup Key reminder megaphone */
+"BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "Verify";
+
+/* Body for Backup Key reminder megaphone */
+"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "We'll occasionally ask you to verify your key to ensure you still know it";
+
+/* Title for Backup Key reminder megaphone */
+"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verify your Backup Key";
+
+/* Snooze text for Backup Key reminder megaphone */
+"BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Not Now";
+
+/* Toast indicating that the Backup Key was correct. */
+"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Backup key correct. Keep your key safe.";
+
 /* Body for a sheet warning users to their 'Backup Key' safe. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "Signal will not be able to help you restore your backup if you lose your key. Store it somewhere safe and secure, and do not share it with others.";
+"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "Signal ne pourra pas vous aider à restaurer votre sauvegarde si vous perdez votre clé. Conservez-la dans un endroit sécurisé et ne la partagez avec personne.";
 
 /* Title for a sheet warning users to their 'Backup Key' safe. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_TITLE" = "Keep Your Key Safe";
+"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_TITLE" = "Conservez votre clé en lieu sûr";
 
 /* Title for a button offering to let users see their 'Backup Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "See Key Again";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "Réafficher la clé";
 
 /* Subtitle for a view asking users to confirm their 'Backup Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the backup key you just recorded";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Saisissez la clé de sauvegarde que vous venez d'enregistrer";
 
 /* Title for a view asking users to confirm their 'Backup Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Confirm Your Backup Key";
+"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Confirmer la clé de sauvegarde";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";
+"BACKUP_ONBOARDING_INTRO_BULLET_1" = "Des sauvegardes chiffrées de bout en bout";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_BULLET_2" = "Optional, always";
+"BACKUP_ONBOARDING_INTRO_BULLET_2" = "La liberté de choisir un service en option";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_BULLET_3" = "Delete your backup anytime";
+"BACKUP_ONBOARDING_INTRO_BULLET_3" = "… et de supprimer votre sauvegarde à tout moment";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages and media using Signal's secure, end-to-end encrypted storage service. Never lose a message when you get a new phone or reinstall Signal.";
+"BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Sécurisé et chiffré de bout en bout, le service de stockage Signal vous permet de sauvegarder vos messages et médias. Besoin de changer de téléphone ou de réinstaller Signal ? Vos contenus restent à portée de main.";
 
 /* Title for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_TITLE" = "Signal Backups";
+"BACKUP_ONBOARDING_INTRO_TITLE" = "Sauvegardes Signal";
 
 /* Subtitle for a view introducing the 'Backup Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your backup key is a 64-digit code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your backup key is a 64-character code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
 
 /* Title for a view introducing the 'Backup Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Your Backup Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Votre clé de sauvegarde";
 
 /* Title for a button allowing users to copy their 'Backup Key' to the clipboard. */
-"BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Copy to Clipboard";
+"BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Copier dans le presse-papiers";
 
 /* Subtitle for a view allowing users to record their 'Backup Key'. */
-"BACKUP_RECORD_KEY_SUBTITLE" = "This key is required to recover your account and data. Store this key somewhere safe. If you lose it, you won’t be able to recover your account.";
+"BACKUP_RECORD_KEY_SUBTITLE" = "Vous devrez saisir cette clé pour restaurer votre compte et vos données. Conservez-la en lieu sûr. Si vous la perdez, vous ne pourrez pas restaurer votre compte.";
 
 /* Title for a view allowing users to record their 'Backup Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Record Your Backup Key";
+"BACKUP_RECORD_KEY_TITLE" = "Enregistrer une clé de sauvegarde";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Mettre à niveau";
@@ -2915,10 +2933,10 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Échec de l’appel";
 
 /* Label explaining that an entered 'Backup Key' is incorrect. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Incorrect backup key";
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Clé de sauvegarde incorrecte";
 
 /* Label explaining that an entered 'Backup Key' is malformed. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Invalid backup key";
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Clé de sauvegarde non valide";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Impossible de transférer le message.";
@@ -3265,6 +3283,9 @@
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Quitter l'appel";
 
+/* Title for a 'done' button on a sheet showing the group call members list */
+"GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE" = "Done";
+
 /* Title for the section of the group call member list which displays the list of all members in the call. */
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "Participants";
 
@@ -3497,7 +3518,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ a modifié les paramètres du groupe : seuls les admins peuvent maintenant envoyer des messages.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Impossible de rejoindre le groupe via le lien, car un admin vous a retiré. Contactez un admin pour être rajouté au groupe.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Impossible de rejoindre le groupe via ce lien, car un admin vous a retiré. Contactez un admin pour réintégrer le groupe.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Impossible de rejoindre le groupe";
@@ -5281,6 +5302,9 @@
 /* The body for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Continuer sans transférer vos messages et médias";
 
+/* The title for a less-prominent skip restore 'choice' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE" = "Skip restore";
+
 /* The title for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Inscription sans transfert";
 
@@ -5309,7 +5333,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "Restaurer la sauvegarde";
 
 /* Description for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Your last backup was made on %1$@ at %2$@. Your backup size is %3$@";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Dernière sauvegarde effectuée le %1$@ à %2$@. Taille de la sauvegarde : %3$@.";
 
 /* Text for action button to explore other options. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "Plus d'options";
@@ -9008,7 +9032,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Faire glisser pour annuler";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Signal";
+"VOICE_MESSAGE_FILE_NAME" = "signal";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Appuyez longuement pour enregistrer.";

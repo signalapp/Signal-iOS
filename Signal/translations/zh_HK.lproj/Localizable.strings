@@ -514,50 +514,68 @@
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "備份金鑰";
 
+/* Title of button to tap if you forgot your backup key. */
+"BACKUP_KEY_REMINDER_FORGOT_KEY" = "Forgot key?";
+
+/* Action text for Backup Key reminder megaphone */
+"BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "Verify";
+
+/* Body for Backup Key reminder megaphone */
+"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "We'll occasionally ask you to verify your key to ensure you still know it";
+
+/* Title for Backup Key reminder megaphone */
+"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verify your Backup Key";
+
+/* Snooze text for Backup Key reminder megaphone */
+"BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Not Now";
+
+/* Toast indicating that the Backup Key was correct. */
+"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Backup key correct. Keep your key safe.";
+
 /* Body for a sheet warning users to their 'Backup Key' safe. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "Signal will not be able to help you restore your backup if you lose your key. Store it somewhere safe and secure, and do not share it with others.";
+"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "如果你遺失金鑰，Signal 將無法幫助你還原備份。將其存放在安全可靠的地方，不要與他人分享。";
 
 /* Title for a sheet warning users to their 'Backup Key' safe. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_TITLE" = "Keep Your Key Safe";
+"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_TITLE" = "妥善保管你的金鑰";
 
 /* Title for a button offering to let users see their 'Backup Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "See Key Again";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "再看一次金鑰";
 
 /* Subtitle for a view asking users to confirm their 'Backup Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the backup key you just recorded";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "輸入你剛剛記錄的備份金鑰";
 
 /* Title for a view asking users to confirm their 'Backup Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Confirm Your Backup Key";
+"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "確認你的備份金鑰";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";
+"BACKUP_ONBOARDING_INTRO_BULLET_1" = "端對端加密";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_BULLET_2" = "Optional, always";
+"BACKUP_ONBOARDING_INTRO_BULLET_2" = "永遠可自由選擇";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_BULLET_3" = "Delete your backup anytime";
+"BACKUP_ONBOARDING_INTRO_BULLET_3" = "隨時刪除你的備份";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages and media using Signal's secure, end-to-end encrypted storage service. Never lose a message when you get a new phone or reinstall Signal.";
+"BACKUP_ONBOARDING_INTRO_SUBTITLE" = "使用 Signal 的端對端加密儲存服務備份你的訊息和媒體。當你使用新手機或重新安裝 Signal 時，絕不會遺失訊息。";
 
 /* Title for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_TITLE" = "Signal Backups";
+"BACKUP_ONBOARDING_INTRO_TITLE" = "Signal 備份";
 
 /* Subtitle for a view introducing the 'Backup Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your backup key is a 64-digit code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your backup key is a 64-character code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
 
 /* Title for a view introducing the 'Backup Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Your Backup Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "你的備份金鑰";
 
 /* Title for a button allowing users to copy their 'Backup Key' to the clipboard. */
-"BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Copy to Clipboard";
+"BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "複製到剪貼簿";
 
 /* Subtitle for a view allowing users to record their 'Backup Key'. */
-"BACKUP_RECORD_KEY_SUBTITLE" = "This key is required to recover your account and data. Store this key somewhere safe. If you lose it, you won’t be able to recover your account.";
+"BACKUP_RECORD_KEY_SUBTITLE" = "需要此金鑰才能恢復你的帳戶和資料。將此金鑰存放在安全的地方。如果你將其遺失，你將會無法恢復帳戶。";
 
 /* Title for a view allowing users to record their 'Backup Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Record Your Backup Key";
+"BACKUP_RECORD_KEY_TITLE" = "記錄你的備份金鑰";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "升級";
@@ -2915,10 +2933,10 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "通話失敗";
 
 /* Label explaining that an entered 'Backup Key' is incorrect. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Incorrect backup key";
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "備份金鑰不正確";
 
 /* Label explaining that an entered 'Backup Key' is malformed. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Invalid backup key";
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "無效的備份金鑰";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "訊息無法轉寄。";
@@ -3264,6 +3282,9 @@
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "退出通話";
+
+/* Title for a 'done' button on a sheet showing the group call members list */
+"GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE" = "Done";
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "通話中";
@@ -5281,6 +5302,9 @@
 /* The body for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "不轉移訊息及媒體並繼續";
 
+/* The title for a less-prominent skip restore 'choice' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE" = "Skip restore";
+
 /* The title for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "注冊而不轉移";
 
@@ -5309,7 +5333,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "備份還原";
 
 /* Description for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Your last backup was made on %1$@ at %2$@. Your backup size is %3$@";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "你上次備份是在 %1$@ 的 %2$@ 進行的。你的備份大小為 %3$@";
 
 /* Text for action button to explore other options. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "更多選項";
@@ -9008,7 +9032,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "滑動以取消";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Signal";
+"VOICE_MESSAGE_FILE_NAME" = "signal";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "按住以錄製。";

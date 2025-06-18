@@ -514,50 +514,68 @@
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Clave de copia de seguridad";
 
+/* Title of button to tap if you forgot your backup key. */
+"BACKUP_KEY_REMINDER_FORGOT_KEY" = "Forgot key?";
+
+/* Action text for Backup Key reminder megaphone */
+"BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "Verify";
+
+/* Body for Backup Key reminder megaphone */
+"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "We'll occasionally ask you to verify your key to ensure you still know it";
+
+/* Title for Backup Key reminder megaphone */
+"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verify your Backup Key";
+
+/* Snooze text for Backup Key reminder megaphone */
+"BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Not Now";
+
+/* Toast indicating that the Backup Key was correct. */
+"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Backup key correct. Keep your key safe.";
+
 /* Body for a sheet warning users to their 'Backup Key' safe. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "Signal will not be able to help you restore your backup if you lose your key. Store it somewhere safe and secure, and do not share it with others.";
+"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "Signal no podrá ayudarte a restaurar tu copia de seguridad si pierdes tu clave. Guárdala en un lugar seguro y no la compartas con otras personas.";
 
 /* Title for a sheet warning users to their 'Backup Key' safe. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_TITLE" = "Keep Your Key Safe";
+"BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_TITLE" = "Guarda bien tu clave";
 
 /* Title for a button offering to let users see their 'Backup Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "See Key Again";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "Volver a ver la clave";
 
 /* Subtitle for a view asking users to confirm their 'Backup Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the backup key you just recorded";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Introduce la clave de copia de seguridad que acabas de registrar";
 
 /* Title for a view asking users to confirm their 'Backup Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Confirm Your Backup Key";
+"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Confirma la clave de tu copia de seguridad";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";
+"BACKUP_ONBOARDING_INTRO_BULLET_1" = "Cifrado de extremo a extremo";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_BULLET_2" = "Optional, always";
+"BACKUP_ONBOARDING_INTRO_BULLET_2" = "Servicio opcional, en todo momento";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_BULLET_3" = "Delete your backup anytime";
+"BACKUP_ONBOARDING_INTRO_BULLET_3" = "Copias de seguridad que puedes eliminar en cualquier momento";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages and media using Signal's secure, end-to-end encrypted storage service. Never lose a message when you get a new phone or reinstall Signal.";
+"BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Haz una copia de seguridad de tus mensajes y archivos multimedia utilizando el servicio de almacenamiento seguro y cifrado de extremo a extremo de Signal. No perderás ningún mensaje si cambias de teléfono o vuelves a instalar Signal.";
 
 /* Title for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_TITLE" = "Signal Backups";
+"BACKUP_ONBOARDING_INTRO_TITLE" = "Copias de seguridad de Signal";
 
 /* Subtitle for a view introducing the 'Backup Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your backup key is a 64-digit code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your backup key is a 64-character code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
 
 /* Title for a view introducing the 'Backup Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Your Backup Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Clave de tu copia de seguridad";
 
 /* Title for a button allowing users to copy their 'Backup Key' to the clipboard. */
-"BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Copy to Clipboard";
+"BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Copiar al portapapeles";
 
 /* Subtitle for a view allowing users to record their 'Backup Key'. */
-"BACKUP_RECORD_KEY_SUBTITLE" = "This key is required to recover your account and data. Store this key somewhere safe. If you lose it, you won’t be able to recover your account.";
+"BACKUP_RECORD_KEY_SUBTITLE" = "Se necesita esta clave para recuperar tu cuenta y tus datos. Guárdala en un lugar seguro. Si la pierdes, no podrás recuperar tu cuenta.";
 
 /* Title for a view allowing users to record their 'Backup Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Record Your Backup Key";
+"BACKUP_RECORD_KEY_TITLE" = "Guarda la clave de tu copia de seguridad";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Actualizar";
@@ -602,16 +620,16 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "Se renueva el %1$@";
 
 /* Footer for a menu section related to settings for when Backups are disabled. */
-"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Se han desactivado las copias de seguridad y se han eliminado tus datos del servicio de almacenamiento seguro de Signal.";
+"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Se han desactivado las copias de seguridad y eliminado tus datos del servicio de almacenamiento seguro de Signal.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Se ha producido un error. Contacta con el equipo de asistencia.";
 
 /* Header for a menu section related to settings for when disabling Backups encountered an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "Hubo un error al eliminar tus datos del servicio de almacenamiento seguro de Signal.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "No se han podido eliminar tus datos del servicio de almacenamiento seguro de Signal.";
 
 /* Title for a view indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "No se ha podido eliminar tu plan de copias de seguridad";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "No se ha podido eliminar tu copia de seguridad";
 
 /* Description for a progress view tracking Backups being disabled. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "Eliminando copia de seguridad…";
@@ -629,10 +647,10 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Desactivar y eliminar copia de seguridad";
 
 /* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "Hubo un error al eliminar tus datos del servicio de almacenamiento seguro de Signal.";
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "No se han podido eliminar tus datos del servicio de almacenamiento seguro de Signal.";
 
 /* Title shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "No se ha podido eliminar tu plan de copias de seguridad";
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "No se ha podido eliminar tu copia de seguridad";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
 "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "Debes haberte registrado para poder deshabilitar las copias de seguridad.";
@@ -1370,16 +1388,16 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No hay chats sin leer";
 
 /* Text for a bullet point in a list of Backup features, describing that all media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Copia de seguridad de todos los archivos multimedia";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Copia de todos tus archivos multimedia";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Copia de seguridad de todos los mensajes de texto";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Copia de todos tus mensajes de texto";
 
 /* Text for a bullet point in a list of Backup features, describing that recent media is included. */
 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Últimos 45 días de archivos multimedia";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1 TB de espacio de almacenamiento (~250.000 fotos)";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1 TB de espacio de almacenamiento (~250.000 fotos)";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Se ha producido un error. Contacta con el equipo de asistencia.";
@@ -1412,13 +1430,13 @@
 "CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@/mes";
 
 /* Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
-"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Suscríbete por %1$@/mes";
+"CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Suscribirme por %1$@/mes";
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
 "CHOOSE_BACKUP_PLAN_SUBTITLE" = "Todas las copias de seguridad están cifradas de extremo a extremo. Signal es una organización sin ánimo de lucro: el pago de las copias de seguridad nos ayuda a llevar a cabo nuestra misión.";
 
 /* Title for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_TITLE" = "Elige tu plan de copia de seguridad";
+"CHOOSE_BACKUP_PLAN_TITLE" = "Elige tu plan de copias de seguridad";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Color y fondo de pantalla del chat";
@@ -2915,10 +2933,10 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Llamada fallida";
 
 /* Label explaining that an entered 'Backup Key' is incorrect. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Incorrect backup key";
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Clave de copia de seguridad incorrecta";
 
 /* Label explaining that an entered 'Backup Key' is malformed. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Invalid backup key";
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Clave de copia de seguridad no válida";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "No se ha podido reenviar el mensaje.";
@@ -3264,6 +3282,9 @@
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Abandonar llamada";
+
+/* Title for a 'done' button on a sheet showing the group call members list */
+"GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE" = "Done";
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "En la llamada";
@@ -5281,6 +5302,9 @@
 /* The body for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Continúa sin transferir tus mensajes ni archivos multimedia";
 
+/* The title for a less-prominent skip restore 'choice' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE" = "Skip restore";
+
 /* The title for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Registrarme sin transferir";
 
@@ -5309,7 +5333,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "Restaurar copia";
 
 /* Description for form confirming restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Your last backup was made on %1$@ at %2$@. Your backup size is %3$@";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Última copia de seguridad: %2$@ del %1$@. Tamaño de tu copia de seguridad: %3$@";
 
 /* Text for action button to explore other options. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "Más opciones";
@@ -6707,7 +6731,7 @@
 "RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Detalles";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Libera hasta %1$@ de espacio en este dispositivo para restaurar tus archivos multimedia.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Libera %1$@ de espacio en este dispositivo para restaurar tus archivos multimedia.";
 
 /* Title shown on chat list banner for restoring media from a backupis finished */
 "RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Restauración completada";
