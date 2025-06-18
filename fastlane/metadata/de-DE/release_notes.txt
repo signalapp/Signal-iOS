@@ -1,1 +1,1 @@
-• Now when you archive an unread message thread it will stay unread. We drew inspiration from the timeless tradition of putting a book back on the shelf even though you haven’t finished reading it yet.
+• Message status indicators (sent, delivered, etc.) are now supported by the iOS VoiceOver feature in order to improve accessibility for blind and low-vision individuals.
