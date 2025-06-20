@@ -1796,7 +1796,7 @@ extension AppSetup.FinalContinuation {
         // susceptible to diverging state between the Main App & NSE and should be
         // reloaded here. In practice, some caches exist but aren't used by the
         // NSE, or they are used but behave properly even if they're not reloaded.
-        self.sskEnvironment.warmCaches(appReadiness: self.appReadiness)
+        self.sskEnvironment.warmCaches(appReadiness: self.appReadiness, dependenciesBridge: self.dependenciesBridge)
 
         self.appReadiness.runNowOrWhenAppWillBecomeReady {
             self.dependenciesBridge.chatConnectionManager.updateCanOpenWebSocket()
@@ -1849,7 +1849,7 @@ extension AppSetup.FinalContinuation {
         canInitiateRegistration: Bool
     ) -> SetupError? {
         let storageServiceManager = sskEnvironment.storageServiceManagerRef
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let tsAccountManager = dependenciesBridge.tsAccountManager
 
         let registrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
         let canInitiateReregistration = registrationState.isDeregistered && canInitiateRegistration
