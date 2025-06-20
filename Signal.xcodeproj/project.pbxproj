@@ -537,6 +537,7 @@
 		50086B9E29DF606E00F9C072 /* TSGroupThread+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */; };
 		500876142BF7B32A00D6F615 /* Preconditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A76F522AF565AC00FCF02D /* Preconditions.swift */; };
 		5008FEBC2B1811A0004E73FD /* JobQueueRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */; };
+		500A76152E031CA600322493 /* OWSChatConnectionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500A76142E031CA600322493 /* OWSChatConnectionTest.swift */; };
 		500AEE052A4B68E200371F05 /* WallpaperStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE042A4B68E200371F05 /* WallpaperStore.swift */; };
 		500AEE072A4DF48700371F05 /* ChatColorSettingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */; };
 		500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */; };
@@ -4454,6 +4455,7 @@
 		50086B9B29DF5CB100F9C072 /* NameResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameResolver.swift; sourceTree = "<group>"; };
 		50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSGroupThread+ViewModel.swift"; sourceTree = "<group>"; };
 		5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueueRunner.swift; sourceTree = "<group>"; };
+		500A76142E031CA600322493 /* OWSChatConnectionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSChatConnectionTest.swift; sourceTree = "<group>"; };
 		500AEE042A4B68E200371F05 /* WallpaperStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperStore.swift; sourceTree = "<group>"; };
 		500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatColorSettingStore.swift; sourceTree = "<group>"; };
 		500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeObserver.swift; sourceTree = "<group>"; };
@@ -13137,6 +13139,7 @@
 				F94261D2289B1B5400460798 /* HttpHeadersTest.swift */,
 				F94261D0289B1B5400460798 /* MessageSenderJobRecordTest.swift */,
 				F94261D5289B1B5400460798 /* MessageSendJobQueueTest.swift */,
+				500A76142E031CA600322493 /* OWSChatConnectionTest.swift */,
 				F94261D3289B1B5400460798 /* OWSRequestFactoryTest.swift */,
 				F94261D1289B1B5400460798 /* OWSURLBuilderUtilTest.swift */,
 				6600F350298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift */,
@@ -18835,6 +18838,7 @@
 				041C24ED2DF782AF0065B685 /* OutgoingGroupUpdateMessageTest.swift in Sources */,
 				F96BB60729A528BD001C18DF /* OWS2FAManagerTest.swift in Sources */,
 				667BBAD92BAA5F84006AB9DE /* OWSAttachmentInfoSerializationTest.swift in Sources */,
+				500A76152E031CA600322493 /* OWSChatConnectionTest.swift in Sources */,
 				666072622BAB58A20084B3D2 /* OWSContactSerializationTest.swift in Sources */,
 				D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */,
 				D9B95A9829E8906200D7CB95 /* OWSDeviceTest.swift in Sources */,

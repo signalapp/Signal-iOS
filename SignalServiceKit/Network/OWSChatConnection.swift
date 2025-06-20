@@ -549,7 +549,7 @@ public class OWSChatConnection {
 
     // MARK: - Reconnect
 
-    fileprivate static let socketReconnectDelay: TimeInterval = 5
+    static let socketReconnectDelay: TimeInterval = 5
 }
 
 // MARK: -
@@ -696,7 +696,9 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                 OutageDetection.shared.reportConnectionFailure()
             }
             let result = await connectionAttemptCompleted(.closed(task: nil))
-            self.reconnectAfterFailure()
+            serialQueue.async {
+                self.reconnectAfterFailure()
+            }
             return result
         })
     }
@@ -873,9 +875,40 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
         }
     }
 
+    private var mostRecentFailureDate: MonotonicDate?
+    private var consecutiveFailureCount = 0
+
     private func reconnectAfterFailure() {
+        assertOnQueue(serialQueue)
+
+        let now = MonotonicDate()
+
+        // If it's been "a while" since the most recent failure, reset the counter.
+        // If "a while" is shorter than the maximum exponential backoff, the
+        // counter may be inadvertently reset while trying to back off.
+        if let mostRecentFailureDate, (now - mostRecentFailureDate).seconds > (2 * Self.socketReconnectDelay) {
+            Logger.info("Resetting connection backoff state due to elapsed time.")
+            self.consecutiveFailureCount = 0
+        }
+        self.mostRecentFailureDate = now
+
+        let reconnectDelay: TimeInterval
+        if self.consecutiveFailureCount == 0 {
+            // Reconnect immediately after the first failure.
+            reconnectDelay = 0
+        } else {
+            reconnectDelay = OWSOperation.retryIntervalForExponentialBackoff(
+                failureCount: self.consecutiveFailureCount,
+                maxAverageBackoff: Self.socketReconnectDelay,
+            )
+        }
+        self.consecutiveFailureCount += 1
+
+        let formattedReconnectDelay = String(format: "%.1f", reconnectDelay)
+        Logger.warn("Scheduling reconnect after \(formattedReconnectDelay)s")
+
         // Wait a few seconds before retrying to reduce server load.
-        self.serialQueue.asyncAfter(deadline: .now() + Self.socketReconnectDelay) { [weak self] in
+        self.serialQueue.asyncAfter(deadline: .now() + reconnectDelay) { [weak self] in
             self?._applyDesiredSocketState()
         }
     }
