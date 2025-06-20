@@ -365,7 +365,7 @@ extension ConversationViewController {
             }
         }
 
-        if canDeleteForEveryone && !thread.isNoteToSelf {
+        if canDeleteForEveryone {
             let deleteForEveryoneAction = ActionSheetAction(
                 title: CommonStrings.deleteForEveryoneButton,
                 style: .destructive
