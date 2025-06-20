@@ -176,6 +176,7 @@ public protocol LocalIdentifiersSetter {
     func resetForReregistration(
         localNumber: E164,
         localAci: Aci,
+        discoverability: PhoneNumberDiscoverability?,
         wasPrimaryDevice: Bool,
         tx: DBWriteTransaction
     )

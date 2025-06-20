@@ -268,6 +268,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     public func resetForReregistration(
         localNumber: E164,
         localAci: Aci,
+        discoverability: PhoneNumberDiscoverability?,
         wasPrimaryDevice: Bool,
         tx: DBWriteTransaction
     ) {
@@ -278,6 +279,10 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             kvStore.setString(localNumber.stringValue, key: Keys.reregistrationPhoneNumber, transaction: tx)
             kvStore.setString(localAci.serviceIdUppercaseString, key: Keys.reregistrationAci, transaction: tx)
             kvStore.setBool(wasPrimaryDevice, key: Keys.reregistrationWasPrimaryDevice, transaction: tx)
+        }
+
+        if let discoverability {
+            setPhoneNumberDiscoverability(discoverability, tx: tx)
         }
     }
 

@@ -182,12 +182,14 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     public func resetForReregistration(
         localPhoneNumber: E164,
         localAci: Aci,
+        discoverability: PhoneNumberDiscoverability?,
         wasPrimaryDevice: Bool,
         tx: DBWriteTransaction
     ) {
         tsAccountManager.resetForReregistration(
             localNumber: localPhoneNumber,
             localAci: localAci,
+            discoverability: discoverability,
             wasPrimaryDevice: wasPrimaryDevice,
             tx: tx
         )

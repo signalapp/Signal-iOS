@@ -79,7 +79,13 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
         self?.registrationStateMock = { .reregistering(phoneNumber: phoneNumber.stringValue, aci: aci) }
     }
 
-    open func resetForReregistration(localPhoneNumber: E164, localAci: Aci, wasPrimaryDevice: Bool, tx: DBWriteTransaction) {
+    open func resetForReregistration(
+        localPhoneNumber: E164,
+        localAci: Aci,
+        discoverability: PhoneNumberDiscoverability?,
+        wasPrimaryDevice: Bool,
+        tx: DBWriteTransaction
+    ) {
         return resetForReregistrationMock(localPhoneNumber, localAci, wasPrimaryDevice)
     }
 
