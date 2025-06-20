@@ -328,7 +328,7 @@ public class Attachment {
             // That upload includes a digest (if we restore from a backup
             // with no digest, we can't forward that transit tier info
             // even though we know about it and its maybe recent).
-            case .digestSHA256Ciphertext = transitTierInfo.integrityCheck,
+            case .digestSHA256Ciphertext(let digest) = transitTierInfo.integrityCheck,
             // And we are still in the window to reuse it
             dateProvider().timeIntervalSince(
                 Date(millisecondsSince1970: transitTierInfo.uploadTimestamp)
@@ -340,7 +340,7 @@ public class Attachment {
                     cdnKey: transitTierInfo.cdnKey,
                     cdnNumber: transitTierInfo.cdnNumber,
                     key: transitTierInfo.encryptionKey,
-                    digest: stream.encryptedFileSha256Digest,
+                    digest: digest,
                     // Okay to fall back to our local data length even if the original sender
                     // didn't include it; we now know it from the local file.
                     plaintextDataLength: transitTierInfo.unencryptedByteCount ?? metadata.plaintextDataLength,

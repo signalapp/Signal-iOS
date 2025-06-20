@@ -186,13 +186,17 @@ extension Attachment {
             mediaName: String,
             lastFullscreenViewTimestamp: UInt64?,
         ) -> ConstructionParams {
-            let transitTierInfo = attachment.transitTierInfo.map {
-                return Attachment.TransitTierInfo(
-                    cdnNumber: $0.cdnNumber,
-                    cdnKey: $0.cdnKey,
-                    uploadTimestamp: $0.uploadTimestamp,
-                    encryptionKey: $0.encryptionKey,
-                    unencryptedByteCount: $0.unencryptedByteCount,
+            let transitTierInfo: Attachment.TransitTierInfo?
+            if
+                let existingTransitTierInfo = attachment.transitTierInfo,
+                existingTransitTierInfo.encryptionKey == attachment.encryptionKey
+            {
+                transitTierInfo = Attachment.TransitTierInfo(
+                    cdnNumber: existingTransitTierInfo.cdnNumber,
+                    cdnKey: existingTransitTierInfo.cdnKey,
+                    uploadTimestamp: existingTransitTierInfo.uploadTimestamp,
+                    encryptionKey: existingTransitTierInfo.encryptionKey,
+                    unencryptedByteCount: existingTransitTierInfo.unencryptedByteCount,
                     // Whatever the integrity check was before, we now want it
                     // to be the ciphertext digest NOT the plaintext hash.
                     // We disallow reusing existing transit tier info when
@@ -200,10 +204,17 @@ extension Attachment {
                     // required on the outgoing proto. So to allow forwarding
                     // (where otherwise applicable) set the digest here.
                     integrityCheck: .digestSHA256Ciphertext(digestSHA256Ciphertext),
-                    incrementalMacInfo: $0.incrementalMacInfo,
+                    incrementalMacInfo: existingTransitTierInfo.incrementalMacInfo,
                     // Wipe the last download attempt time; its now succeeded.
                     lastDownloadAttemptTimestamp: nil
                 )
+            } else if
+                let existingTransitTierInfo = attachment.transitTierInfo,
+                case .digestSHA256Ciphertext(_) = existingTransitTierInfo.integrityCheck
+            {
+                transitTierInfo = existingTransitTierInfo
+            } else {
+                transitTierInfo = nil
             }
             return .init(
                 blurHash: attachment.blurHash,
@@ -392,12 +403,42 @@ extension Attachment {
                     lastDownloadAttemptTimestamp: nil
                 )
             }
+            let transitTierInfo: Attachment.TransitTierInfo?
+            if
+                let existingTransitTierInfo = attachment.transitTierInfo,
+                existingTransitTierInfo.encryptionKey == attachment.encryptionKey
+            {
+                transitTierInfo = Attachment.TransitTierInfo(
+                    cdnNumber: existingTransitTierInfo.cdnNumber,
+                    cdnKey: existingTransitTierInfo.cdnKey,
+                    uploadTimestamp: existingTransitTierInfo.uploadTimestamp,
+                    encryptionKey: existingTransitTierInfo.encryptionKey,
+                    unencryptedByteCount: existingTransitTierInfo.unencryptedByteCount,
+                    // Whatever the integrity check was before, we now want it
+                    // to be the ciphertext digest NOT the plaintext hash.
+                    // We disallow reusing existing transit tier info when
+                    // forwarding if it doesn't have a digest, as digest is
+                    // required on the outgoing proto. So to allow forwarding
+                    // (where otherwise applicable) set the digest here.
+                    integrityCheck: .digestSHA256Ciphertext(streamInfo.digestSHA256Ciphertext),
+                    incrementalMacInfo: existingTransitTierInfo.incrementalMacInfo,
+                    // Wipe the last download attempt time; its now succeeded.
+                    lastDownloadAttemptTimestamp: nil
+                )
+            } else if
+                let existingTransitTierInfo = attachment.transitTierInfo,
+                case .digestSHA256Ciphertext(_) = existingTransitTierInfo.integrityCheck
+            {
+                transitTierInfo = existingTransitTierInfo
+            } else {
+                transitTierInfo = nil
+            }
             return .init(
                 blurHash: attachment.blurHash,
                 mimeType: validatedMimeType,
                 encryptionKey: attachment.encryptionKey,
                 streamInfo: streamInfo,
-                transitTierInfo: attachment.transitTierInfo,
+                transitTierInfo: transitTierInfo,
                 sha256ContentHash: sha256ContentHash,
                 mediaName: mediaName,
                 mediaTierInfo: mediaTierInfo,
