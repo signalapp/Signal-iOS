@@ -958,7 +958,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 body: message,
                 threadIdentifier: nil,
                 userInfo: userInfo,
-                soundQuery: .global
+                soundQuery: .global,
+                forceBeforeRegistered: true,
             )
         }
     }
