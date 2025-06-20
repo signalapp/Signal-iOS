@@ -142,9 +142,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         notificationObservers.append(NotificationCenter.default.addObserver(forName: Self.callServicePreferencesDidChange, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.configureDataMode() }
         })
-        notificationObservers.append(NotificationCenter.default.addObserver(forName: .registrationStateDidChange, object: nil, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.registrationChanged() }
-        })
 
         // Note that we're not using the usual .owsReachabilityChanged
         // We want to update our data mode if the app has been backgrounded
@@ -164,6 +161,9 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
                 self.callManager.setSelfUuid(localAci.rawUUID)
             }
+            self.notificationObservers.append(NotificationCenter.default.addObserver(forName: .registrationStateDidChange, object: nil, queue: .main) { [weak self] _ in
+                MainActor.assumeIsolated { self?.registrationChanged() }
+            })
         }
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {

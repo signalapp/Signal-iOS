@@ -654,14 +654,14 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             self.refreshRepeatedlyIfNeeded(forceInitialRefreshImmediately: false)
-        }
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(registrationStateDidChange),
-            name: .registrationStateDidChange,
-            object: nil
-        )
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(self.registrationStateDidChange),
+                name: .registrationStateDidChange,
+                object: nil
+            )
+        }
     }
 
     // MARK: -

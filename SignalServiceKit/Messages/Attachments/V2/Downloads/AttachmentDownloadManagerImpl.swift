@@ -107,24 +107,23 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         self.tsAccountManager = tsAccountManager
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
-            self?.beginDownloadingIfNecessary()
-        }
+            guard let self else { return }
+            self.beginDownloadingIfNecessary()
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(registrationStateDidChange),
-            name: .registrationStateDidChange,
-            object: nil
-        )
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(registrationStateDidChange),
+                name: .registrationStateDidChange,
+                object: nil
+            )
+        }
     }
 
     @objc
     private func registrationStateDidChange() {
         AssertIsOnMainThread()
         guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
-        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
-            self?.beginDownloadingIfNecessary()
-        }
+        self.beginDownloadingIfNecessary()
     }
 
     public func downloadBackup(
