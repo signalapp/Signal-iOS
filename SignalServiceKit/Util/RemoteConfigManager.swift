@@ -257,6 +257,10 @@ public class RemoteConfig {
         return !isEnabled(.notificationServiceWebSocketKillSwitch)
     }
 
+    public var shouldVerifyPniAndPniIdentityKeyExist: Bool {
+        return isEnabled(.shouldVerifyPniAndPniIdentityKeyExist)
+    }
+
     // MARK: UInt values
 
     private func getUIntValue(
@@ -450,6 +454,7 @@ private enum IsEnabledFlag: String, FlagType {
     case paypalOneTimeDonationKillSwitch = "ios.paypalOneTimeDonationKillSwitch"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
+    case shouldVerifyPniAndPniIdentityKeyExist = "ios.shouldVerifyPniAndPniIdentityKeyExist"
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
     case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
 
@@ -474,6 +479,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalOneTimeDonationKillSwitch: false
         case .ringrtcNwPathMonitorTrialKillSwitch: false
         case .serviceExtensionFailureKillSwitch: true
+        case .shouldVerifyPniAndPniIdentityKeyExist: true
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true
         case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true
         }
@@ -577,7 +583,7 @@ public class MockRemoteConfigProvider: RemoteConfigProvider {
 // MARK: -
 
 public protocol RemoteConfigManager: RemoteConfigProvider {
-    func warmCaches()
+    func warmCaches() -> RemoteConfig
     var cachedConfig: RemoteConfig? { get }
     /// Refresh the remote config from the server if it's been too long since we
     /// last fetched it.
@@ -591,7 +597,9 @@ public protocol RemoteConfigManager: RemoteConfigProvider {
 public class StubbableRemoteConfigManager: RemoteConfigManager {
     public var cachedConfig: RemoteConfig?
 
-    public func warmCaches() {}
+    public func warmCaches() -> RemoteConfig {
+        return currentConfig()
+    }
 
     public func refreshIfNeeded() async throws {
     }
@@ -675,7 +683,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         self.refreshRepeatedlyIfNeeded(forceInitialRefreshImmediately: true)
     }
 
-    public func warmCaches() {
+    public func warmCaches() -> RemoteConfig {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
         // swiftlint:disable large_tuple
@@ -707,7 +715,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             // If we're not registered or haven't saved one, use an empty one.
             remoteConfig = .emptyConfig
         }
-        updateCachedConfig { oldConfig in
+        return updateCachedConfig { oldConfig in
             if let oldConfig {
                 // If we're calling warmCaches for the second or later time, we can only
                 // update the flags that are hot-swappable.

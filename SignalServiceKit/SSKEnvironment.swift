@@ -241,14 +241,19 @@ public class SSKEnvironment: NSObject {
     /// This may be called multiple times within a single process.
     ///
     /// Re-warming helps ensure the NSE sees the same state as the Main App.
+    @MainActor
     public func warmCaches(appReadiness: AppReadiness, dependenciesBridge: DependenciesBridge) {
         // Note: All of these methods must be safe to invoke repeatedly.
 
         dependenciesBridge.tsAccountManager.warmCaches()
+        let remoteConfig = self.remoteConfigManagerRef.warmCaches()
+        self.verifyPniAndPniIdentityKey(
+            dependenciesBridge: dependenciesBridge,
+            remoteConfig: remoteConfig,
+        )
         self.fixLocalRecipientIfNeeded(dependenciesBridge: dependenciesBridge)
         SignalProxy.warmCaches(appReadiness: appReadiness)
         self.signalServiceRef.warmCaches()
-        self.remoteConfigManagerRef.warmCaches()
         self.profileManagerRef.warmCaches()
         self.receiptManagerRef.prepareCachedValues()
         dependenciesBridge.svr.warmCaches()
@@ -258,6 +263,50 @@ public class SSKEnvironment: NSObject {
         StoryManager.setup(appReadiness: appReadiness)
         DonationSubscriptionManager.warmCaches()
         dependenciesBridge.db.read { tx in appExpiryRef.warmCaches(with: tx) }
+    }
+
+    @MainActor
+    private func verifyPniAndPniIdentityKey(dependenciesBridge: DependenciesBridge, remoteConfig: RemoteConfig) {
+        let databaseStorage = self.databaseStorageRef
+        let tsAccountManager = dependenciesBridge.tsAccountManager
+
+        guard remoteConfig.shouldVerifyPniAndPniIdentityKeyExist else {
+            return
+        }
+
+        // If we can't send a PNI Hello World, there is no way to set a PNI
+        // Identity Key on our own account. If we don't have one or don't believe
+        // it to be correct, the only path forward will be to re-register.
+        let canSendPniHelloWorld = true
+        // So that the compiler makes you read this when deleting this type.
+        assert(PniHelloWorldManagerImpl.self == PniHelloWorldManagerImpl.self)
+
+        let mustHavePniAndPniIdentityKey: Bool
+        switch tsAccountManager.registrationStateWithMaybeSneakyTransaction {
+        case .provisioned:
+            mustHavePniAndPniIdentityKey = true
+        case .registered:
+            mustHavePniAndPniIdentityKey = !canSendPniHelloWorld
+        default:
+            mustHavePniAndPniIdentityKey = false
+        }
+
+        guard mustHavePniAndPniIdentityKey else {
+            return
+        }
+
+        let (hasPni, hasPniIdentityKey) = databaseStorage.read { tx -> (Bool, Bool) in
+            let hasPni = tsAccountManager.localIdentifiers(tx: tx)!.pni != nil
+            let hasPniIdentityKey = dependenciesBridge.identityManager.identityKeyPair(for: .pni, tx: tx) != nil
+            return (hasPni, hasPniIdentityKey)
+        }
+
+        if !hasPni || !hasPniIdentityKey {
+            Logger.warn("Deregistering because PNI state is missing (hasPni: \(hasPni); hasPniIdentityKey: \(hasPniIdentityKey))")
+            databaseStorage.write { tx in
+                dependenciesBridge.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
+            }
+        }
     }
 
     /// Ensures the local SignalRecipient is correct.
