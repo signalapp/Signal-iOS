@@ -42,7 +42,7 @@ extension DonationPaymentDetailsViewController {
                             messageText: messageText,
                             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
                             blockingManager: SSKEnvironment.shared.blockingManagerRef
-                        ).awaitable()
+                        )
                     }
                 )
                 Logger.info("[Gifting] Gifting card donation finished")

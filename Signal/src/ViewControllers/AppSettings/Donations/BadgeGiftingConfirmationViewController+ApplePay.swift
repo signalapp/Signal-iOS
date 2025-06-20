@@ -107,7 +107,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                             controller.dismiss()
                             presentModalActivityIndicatorIfNotAlreadyPresented()
                         }
-                    ).awaitable()
+                    )
                 }
 
                 // We shouldn't need to dismiss the Apple Pay sheet here, but if the `chargeSucceeded`

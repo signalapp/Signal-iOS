@@ -160,8 +160,8 @@ extension DonationViewsUtil {
             messageText: String,
             databaseStorage: SDSDatabaseStorage,
             blockingManager: BlockingManager,
-            onChargeSucceeded: @escaping () -> Void = {}
-        ) -> Promise<Void> {
+            onChargeSucceeded: @MainActor () -> Void = {}
+        ) async throws {
             let jobRecord = SendGiftBadgeJobQueue.createJob(
                 preparedPayment: preparedPayment,
                 receiptRequest: DonationSubscriptionManager.generateReceiptRequest(),
@@ -169,22 +169,20 @@ extension DonationViewsUtil {
                 thread: thread,
                 messageText: messageText
             )
-            return Promise.wrapAsync {
-                let chargePromise: Promise<Void>
-                let completionPromise: Promise<Void>
-                (chargePromise, completionPromise) = try await databaseStorage.awaitableWrite { tx in
-                    if blockingManager.isAddressBlocked(thread.contactAddress, transaction: tx) {
-                        throw SendGiftError.recipientIsBlocked
-                    }
-                    return DonationUtilities.sendGiftBadgeJobQueue.addJob(jobRecord, tx: tx)
+            let chargePromise: Promise<Void>
+            let completionPromise: Promise<Void>
+            (chargePromise, completionPromise) = try await databaseStorage.awaitableWrite { tx in
+                if blockingManager.isAddressBlocked(thread.contactAddress, transaction: tx) {
+                    throw SendGiftError.recipientIsBlocked
                 }
-                do {
-                    try await chargePromise.awaitable()
-                    await MainActor.run { onChargeSucceeded() }
-                    try await completionPromise.awaitable()
-                } catch {
-                    throw SendGiftError.failedAndUserMaybeCharged
-                }
+                return DonationUtilities.sendGiftBadgeJobQueue.addJob(jobRecord, tx: tx)
+            }
+            do {
+                try await chargePromise.awaitable()
+                await onChargeSucceeded()
+                try await completionPromise.awaitable()
+            } catch {
+                throw SendGiftError.failedAndUserMaybeCharged
             }
         }
 
