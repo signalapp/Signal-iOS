@@ -2605,12 +2605,6 @@
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
 "DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Disappearing messages are turned on for this chat. Your donation message will disappear in %1$@.";
 
-/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Cannot donate. Check your connection and try again.";
-
-/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "Cannot Donate";
-
 /* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "One-time Donation";
 

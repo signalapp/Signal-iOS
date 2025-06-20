@@ -28,7 +28,7 @@ extension DonationPaymentDetailsViewController {
                             amount: self.donationAmount, creditOrDebitCard: creditOrDebitCard
                         )
 
-                        switch try await DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: thread).promise.awaitable() {
+                        switch await DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: thread).promise.awaitable() {
                         case .userDidNotConfirmSafetyNumberChange:
                             throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
                         case .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded:

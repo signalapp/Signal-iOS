@@ -110,8 +110,8 @@ extension DonationViewsUtil {
         /// Because some screens care, returns the promise and whether the user needs to intervene.
         static func showSafetyNumberConfirmationIfNecessary(
             for thread: TSContactThread
-        ) -> (needsUserInteraction: Bool, promise: Promise<SafetyNumberConfirmationResult>) {
-            let (promise, future) = Promise<SafetyNumberConfirmationResult>.pending()
+        ) -> (needsUserInteraction: Bool, promise: Guarantee<SafetyNumberConfirmationResult>) {
+            let (promise, future) = Guarantee<SafetyNumberConfirmationResult>.pending()
 
             let needsUserInteraction = SafetyNumberConfirmationSheet.presentIfNecessary(
                 address: thread.contactAddress,

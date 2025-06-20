@@ -30,7 +30,7 @@ extension BadgeGiftingConfirmationViewController {
                     fromViewController: self
                 )
                 let preparedPayment = try await self.presentPaypal(with: approvalUrl, paymentId: paymentId)
-                let safetyNumberConfirmationResult = try await DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread).promise.awaitable()
+                let safetyNumberConfirmationResult = await DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread).promise.awaitable()
                 switch safetyNumberConfirmationResult {
                 case .userDidNotConfirmSafetyNumberChange:
                     throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted

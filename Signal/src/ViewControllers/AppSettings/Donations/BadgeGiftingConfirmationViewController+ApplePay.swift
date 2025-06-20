@@ -57,7 +57,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                     wrappedCompletion(.init(status: .success, errors: nil))
                 }
 
-                switch try await safetyNumberConfirmationResult.promise.awaitable() {
+                switch await safetyNumberConfirmationResult.promise.awaitable() {
                 case .userDidNotConfirmSafetyNumberChange:
                     throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
                 case .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded:

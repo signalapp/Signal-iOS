@@ -78,19 +78,11 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         // from eating events after the VC is dismissed.
         messageTextView.resignFirstResponder()
 
-        firstly(on: DispatchQueue.main) { [weak self] () -> Promise<DonationViewsUtil.Gifts.SafetyNumberConfirmationResult> in
-            guard let self = self else {
-                throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
-            }
-            return DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread).promise
-        }.done(on: DispatchQueue.main) { [weak self] safetyNumberConfirmationResult in
-            guard let self = self else {
-                throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
-            }
-
-            switch safetyNumberConfirmationResult {
+        Task {
+            switch await DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread).promise.awaitable() {
             case .userDidNotConfirmSafetyNumberChange:
-                throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
+                Logger.warn("[Gifting] User canceled flow")
+                return
             case .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded:
                 break
             }
@@ -108,46 +100,25 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                     usingCurrency: self.price.currencyCode,
                     withConfiguration: self.paymentMethodsConfiguration,
                     localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
-                )
-            ) { [weak self] (sheet, paymentMethod) in
-                sheet.dismiss(animated: true) { [weak self] in
-                    guard let self else { return }
-                    switch paymentMethod {
-                    case .applePay:
-                        self.startApplePay()
-                    case .creditOrDebitCard:
-                        self.startCreditOrDebitCard()
-                    case .paypal:
-                        self.startPaypal()
-                    case .sepa, .ideal:
-                        owsFail("Bank transfer not supported for gift badges")
+                ),
+                didChoosePaymentMethod: { [weak self] (sheet, paymentMethod) in
+                    sheet.dismiss(animated: true) { [weak self] in
+                        guard let self else { return }
+                        switch paymentMethod {
+                        case .applePay:
+                            self.startApplePay()
+                        case .creditOrDebitCard:
+                            self.startCreditOrDebitCard()
+                        case .paypal:
+                            self.startPaypal()
+                        case .sepa, .ideal:
+                            owsFail("Bank transfer not supported for gift badges")
+                        }
                     }
-                }
-            }
+                },
+            )
 
             self.present(sheet, animated: true)
-        }.catch { error in
-            if let error = error as? DonationViewsUtil.Gifts.SendGiftError {
-                Logger.warn("[Gifting] Error \(error)")
-                switch error {
-                case .userCanceledBeforeChargeCompleted:
-                    return
-                default:
-                    break
-                }
-            }
-
-            owsFailDebugUnlessNetworkFailure(error)
-            OWSActionSheets.showActionSheet(
-                title: OWSLocalizedString(
-                    "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE",
-                    comment: "Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog."
-                ),
-                message: OWSLocalizedString(
-                    "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY",
-                    comment: "Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown."
-                )
-            )
         }
     }
 
