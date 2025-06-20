@@ -50,18 +50,14 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
 
                 let preparedPayment = try await DonationViewsUtil.Gifts.prepareToPay(amount: self.price, applePayPayment: payment)
 
-                let safetyNumberConfirmationResult = DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(
-                    for: self.thread
+                let safetyNumberConfirmationResult = await DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(
+                    for: self.thread,
+                    didPresent: {
+                        wrappedCompletion(.init(status: .success, errors: nil))
+                    }
                 )
-                if safetyNumberConfirmationResult.needsUserInteraction {
-                    wrappedCompletion(.init(status: .success, errors: nil))
-                }
-
-                switch await safetyNumberConfirmationResult.promise.awaitable() {
-                case .userDidNotConfirmSafetyNumberChange:
+                guard safetyNumberConfirmationResult else {
                     throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
-                case .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded:
-                    break
                 }
 
                 var modalActivityIndicatorViewController: ModalActivityIndicatorViewController?

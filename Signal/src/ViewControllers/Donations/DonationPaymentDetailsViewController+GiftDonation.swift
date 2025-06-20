@@ -28,11 +28,8 @@ extension DonationPaymentDetailsViewController {
                             amount: self.donationAmount, creditOrDebitCard: creditOrDebitCard
                         )
 
-                        switch await DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: thread).promise.awaitable() {
-                        case .userDidNotConfirmSafetyNumberChange:
+                        guard await DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: thread) else {
                             throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
-                        case .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded:
-                            break
                         }
 
                         try await DonationViewsUtil.Gifts.startJob(

@@ -147,7 +147,8 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         for addresses: () -> [SignalServiceAddress],
         from viewController: UIViewController,
         confirmationText: String,
-        untrustedThreshold: Date? = nil
+        untrustedThreshold: Date? = nil,
+        didPresent didPresentBlock: @MainActor () -> Void = {},
     ) async -> Bool {
         while true {
             var untrustedThreshold = untrustedThreshold
@@ -169,7 +170,9 @@ public class SafetyNumberConfirmationSheet: UIViewController {
                         }
                     }
                 )
-                if !didPresent {
+                if didPresent {
+                    didPresentBlock()
+                } else {
                     continuation.resume(returning: true)
                 }
             }

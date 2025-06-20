@@ -79,12 +79,9 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         messageTextView.resignFirstResponder()
 
         Task {
-            switch await DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread).promise.awaitable() {
-            case .userDidNotConfirmSafetyNumberChange:
+            guard await DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread) else {
                 Logger.warn("[Gifting] User canceled flow")
                 return
-            case .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded:
-                break
             }
 
             let recipientFullName = SSKEnvironment.shared.databaseStorageRef.read { transaction in
