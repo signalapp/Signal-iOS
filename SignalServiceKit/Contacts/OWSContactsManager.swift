@@ -1258,10 +1258,8 @@ extension OWSContactsManager: ContactManager {
 
         Self.unknownAddressFetchDateMap[aci] = Date()
 
-        Task {
-            let profileFetcher = SSKEnvironment.shared.profileFetcherRef
-            _ = try await profileFetcher.fetchProfile(for: aci, context: .init(isOpportunistic: true))
-        }
+        let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+        _ = profileFetcher.fetchProfileSync(for: aci, context: .init(isOpportunistic: true))
     }
 
     // MARK: - System Contacts
