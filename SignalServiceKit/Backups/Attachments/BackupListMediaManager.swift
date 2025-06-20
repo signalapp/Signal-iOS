@@ -87,7 +87,8 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             localAci,
             currentUploadEra,
             needsToQuery,
-            backupKey
+            backupKey,
+            backupPlan
         ) = try db.read { tx in
             let currentUploadEra = self.backupSubscriptionManager.getUploadEra(tx: tx)
             return (
@@ -95,11 +96,19 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
                 currentUploadEra,
                 try self.needsToQueryListMedia(currentUploadEra: currentUploadEra, tx: tx),
-                try backupKeyMaterial.backupKey(type: .media, tx: tx)
+                try backupKeyMaterial.backupKey(type: .media, tx: tx),
+                backupSettingsStore.backupPlan(tx: tx),
             )
         }
         guard needsToQuery else {
             return
+        }
+
+        switch backupPlan {
+        case .disabled:
+            return
+        case .free, .paid, .paidExpiringSoon:
+            break
         }
 
         guard let localAci, let isPrimaryDevice else {
