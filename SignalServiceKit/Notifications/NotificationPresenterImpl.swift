@@ -1300,7 +1300,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 body: notificationBody,
                 threadIdentifier: nil,
                 userInfo: userInfo,
-                soundQuery: .global
+                soundQuery: .global,
+                forceBeforeRegistered: true,
             )
         }
     }
