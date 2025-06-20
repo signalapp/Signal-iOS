@@ -175,34 +175,30 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         case .badgeRedeemedViaBankPayment, .badgeRedeemedViaNonBankPayment:
             // Capture this value on the main thread.
             let shouldMakeVisibleAndPrimary = self.shouldMakeVisibleAndPrimary
-            DispatchQueue.global().async {
-                self.saveVisibilityChanges(shouldMakeVisibleAndPrimary: shouldMakeVisibleAndPrimary)
+            Task {
+                try await self.saveVisibilityChanges(shouldMakeVisibleAndPrimary: shouldMakeVisibleAndPrimary)
             }
         case let .giftReceived(_, notNowAction, _):
             notNowAction()
         }
     }
 
-    private func performConfirmationAction(_ promise: @escaping () -> Promise<Void>, errorHandler: @escaping (Error) -> Void) {
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-            promise().done {
-                modal.dismiss {
-                    self.dismiss(animated: true)
+    private func performConfirmationAction(_ operation: @escaping () async throws -> Void) async throws {
+        do {
+            try await ModalActivityIndicatorViewController.presentAndPropagateResult(from: self, wrappedAsyncBlock: {
+                do {
+                    return try await operation()
+                } catch {
+                    owsFailDebug("Unexpectedly failed to confirm badge action \(error)")
+                    throw error
                 }
-            }.catch { error in
-                owsFailDebug("Unexpectedly failed to confirm badge action \(error)")
-                modal.dismiss {
-                    errorHandler(error)
-                }
-            }
+            })
+            self.dismiss(animated: true)
         }
     }
 
-    @discardableResult
-    private func saveVisibilityChanges(shouldMakeVisibleAndPrimary: Bool) -> Promise<Void> {
-        AssertNotOnMainThread()
-
-        return SSKEnvironment.shared.databaseStorageRef.write { tx in
+    private func saveVisibilityChanges(shouldMakeVisibleAndPrimary: Bool) async throws {
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (tx) -> Promise<Void> in
             let visibleBadgeResolver = VisibleBadgeResolver(
                 badgesSnapshot: .forLocalProfile(profileManager: SSKEnvironment.shared.profileManagerRef, tx: tx)
             )
@@ -226,24 +222,21 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                 authedAccount: .implicit(),
                 tx: tx
             )
-        }
+        }.awaitable()
     }
 
-    private static func redeemGiftBadge(incomingMessage: TSIncomingMessage) -> Promise<Void> {
-        return Promise.wrapAsync {
-            guard let giftBadge = incomingMessage.giftBadge else {
-                throw OWSAssertionError("trying to redeem message without a badge")
-            }
-            return try await DonationSubscriptionManager.redeemReceiptCredentialPresentation(
-                receiptCredentialPresentation: try giftBadge.getReceiptCredentialPresentation()
-            )
-        }.done(on: DispatchQueue.global()) {
-            Self.updateGiftBadge(incomingMessage: incomingMessage, state: .redeemed)
+    private static func redeemGiftBadge(incomingMessage: TSIncomingMessage) async throws {
+        guard let giftBadge = incomingMessage.giftBadge else {
+            throw OWSAssertionError("trying to redeem message without a badge")
         }
+        try await DonationSubscriptionManager.redeemReceiptCredentialPresentation(
+            receiptCredentialPresentation: try giftBadge.getReceiptCredentialPresentation()
+        )
+        await Self.updateGiftBadge(incomingMessage: incomingMessage, state: .redeemed)
     }
 
-    private static func updateGiftBadge(incomingMessage: TSIncomingMessage, state: OWSGiftBadgeRedemptionState) {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+    private static func updateGiftBadge(incomingMessage: TSIncomingMessage, state: OWSGiftBadgeRedemptionState) async {
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             incomingMessage.anyUpdateIncomingMessage(transaction: transaction) {
                 $0.giftBadge?.redemptionState = state
             }
@@ -419,10 +412,14 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                 guard let self = self else { return }
                 // Capture this value on the main thread.
                 let shouldMakeVisibleAndPrimary = self.shouldMakeVisibleAndPrimary
-                self.performConfirmationAction {
-                    self.saveVisibilityChanges(shouldMakeVisibleAndPrimary: shouldMakeVisibleAndPrimary)
-                } errorHandler: { error in
-                    self.dismiss(animated: true)
+                Task {
+                    do {
+                        try await self.performConfirmationAction {
+                            try await self.saveVisibilityChanges(shouldMakeVisibleAndPrimary: shouldMakeVisibleAndPrimary)
+                        }
+                    } catch {
+                        self.dismiss(animated: true)
+                    }
                 }
             }
             button.autoSetHeightUsingFont()
@@ -461,22 +458,24 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                 guard let self = self else { return }
                 // Capture this value on the main thread.
                 let shouldMakeVisibleAndPrimary = self.shouldMakeVisibleAndPrimary
-                self.performConfirmationAction {
-                    Self.redeemGiftBadge(incomingMessage: incomingMessage)
-                        .then(on: DispatchQueue.global()) {
-                            self.saveVisibilityChanges(shouldMakeVisibleAndPrimary: shouldMakeVisibleAndPrimary)
+                Task {
+                    do {
+                        try await self.performConfirmationAction {
+                            try await Self.redeemGiftBadge(incomingMessage: incomingMessage)
+                            try await self.saveVisibilityChanges(shouldMakeVisibleAndPrimary: shouldMakeVisibleAndPrimary)
                         }
-                } errorHandler: { error in
-                    OWSActionSheets.showActionSheet(
-                        title: OWSLocalizedString(
-                            "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE",
-                            comment: "Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
-                        ),
-                        message: OWSLocalizedString(
-                            "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY",
-                            comment: "Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
+                    } catch {
+                        OWSActionSheets.showActionSheet(
+                            title: OWSLocalizedString(
+                                "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE",
+                                comment: "Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
+                            ),
+                            message: OWSLocalizedString(
+                                "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY",
+                                comment: "Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
+                            )
                         )
-                    )
+                    }
                 }
             }
             redeemButton.autoSetHeightUsingFont()
