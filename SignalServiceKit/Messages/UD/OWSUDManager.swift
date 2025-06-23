@@ -365,7 +365,7 @@ public class OWSUDManagerImpl: OWSUDManager {
         let senderCertificate: SenderCertificate
         do {
             senderCertificate = try await self.requestSenderCertificate(aciOnly: aciOnly)
-        } catch where error.isNetworkFailureOrTimeout || error.httpStatusCode.map({ $0/100 }) == 5 {
+        } catch where error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {
             throw error
         } catch {
             Logger.warn("Couldn't fetch Sealed Sender certificate: \(error)")
