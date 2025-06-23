@@ -5,6 +5,7 @@
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>AttachmentValidationBackfillMigrator</string>
+		<string>BackupBGProcessingTaskRunner</string>
 		<string>MessageAttachmentMigrationTask</string>
 		<string>MessageFetchBGRefreshTask</string>
 		<string>LazyDatabaseMigratorTask</string>

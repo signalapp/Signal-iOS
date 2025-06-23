@@ -319,6 +319,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         )
         attachmentValidationRunner.registerBGProcessingTask(appReadiness: appReadiness)
 
+        let backupSettingsStore = BackupSettingsStore()
+        let backupRunner = BackupBGProcessingTaskRunner(
+            backupSettingsStore: backupSettingsStore,
+            db: databaseStorage,
+            exportJob: { DependenciesBridge.shared.backupExportJob }
+        )
+        backupRunner.registerBGProcessingTask(appReadiness: appReadiness)
+
         let databaseMigratorRunner = LazyDatabaseMigratorRunner(
             backgroundMessageFetcherFactory: { DependenciesBridge.shared.backgroundMessageFetcherFactory },
             databaseStorage: databaseStorage,
@@ -332,6 +340,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 attachmentMigrationRunner.scheduleBGProcessingTaskIfNeeded()
             }
             attachmentValidationRunner.scheduleBGProcessingTaskIfNeeded()
+            backupRunner.scheduleBGProcessingTaskIfNeeded()
         }
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {

@@ -1081,6 +1081,8 @@
 		66A1ABE22C3311B40033C5EB /* TSAttachmentMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1ABE12C3311B40033C5EB /* TSAttachmentMigration.swift */; };
 		66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */; };
 		66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */; };
+		66A1F4E22E035C020095DE4B /* BackupExportJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1F4E12E035BFE0095DE4B /* BackupExportJob.swift */; };
+		66A1F4E62E03641D0095DE4B /* BackupBGProcessingTaskRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1F4E52E0364140095DE4B /* BackupBGProcessingTaskRunner.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
 		66A64D342D00E52400203F4B /* MediaGalleryChangeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A64D332D00E51200203F4B /* MediaGalleryChangeInfo.swift */; };
 		66A830442CEBFCC700A7656D /* OWSProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A830432CEBFC6800A7656D /* OWSProgress.swift */; };
@@ -5016,6 +5018,8 @@
 		66A1ABE12C3311B40033C5EB /* TSAttachmentMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentMigration.swift; sourceTree = "<group>"; };
 		66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactory.swift; sourceTree = "<group>"; };
 		66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationServiceResponses.swift; sourceTree = "<group>"; };
+		66A1F4E12E035BFE0095DE4B /* BackupExportJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupExportJob.swift; sourceTree = "<group>"; };
+		66A1F4E52E0364140095DE4B /* BackupBGProcessingTaskRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupBGProcessingTaskRunner.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
 		66A64D332D00E51200203F4B /* MediaGalleryChangeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryChangeInfo.swift; sourceTree = "<group>"; };
 		66A830432CEBFC6800A7656D /* OWSProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSProgress.swift; sourceTree = "<group>"; };
@@ -9598,6 +9602,7 @@
 			children = (
 				D97C9FEF2DD2C11000191CE2 /* Archiving */,
 				667BB2042C58073600E79B57 /* Attachments */,
+				66A1F4E02E035BE40095DE4B /* BackupExportJob */,
 				D9388C8F2DA4751A0048D4F9 /* Settings */,
 				C1A0F79C2B9F57340009DC0D /* BackupKeyMaterial.swift */,
 				C1A0F79E2B9F59920009DC0D /* BackupKeyMaterialImpl.swift */,
@@ -9966,6 +9971,14 @@
 				66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */,
 			);
 			path = Registration;
+			sourceTree = "<group>";
+		};
+		66A1F4E02E035BE40095DE4B /* BackupExportJob */ = {
+			isa = PBXGroup;
+			children = (
+				66A1F4E12E035BFE0095DE4B /* BackupExportJob.swift */,
+			);
+			path = BackupExportJob;
 			sourceTree = "<group>";
 		};
 		66B35EA1299F077F00130204 /* UserInterface */ = {
@@ -10481,6 +10494,7 @@
 				450DF2061E0DD28D003D14BE /* UserInterface */,
 				6698FC12297F38AC004EFC30 /* ViewControllerContext */,
 				66DA8DF92C91125200799E70 /* AttachmentValidationBackfillRunner.swift */,
+				66A1F4E52E0364140095DE4B /* BackupBGProcessingTaskRunner.swift */,
 				66DA8DF72C910D3B00799E70 /* BGProcessingTaskRunner.swift */,
 				66C1BF542D0CC881002296F7 /* IncrementalMessageTSAttachmentMigrationRunner.swift */,
 				66CDB7512AF9D117009A36EC /* MessageFetchBGRefreshTask.swift */,
@@ -16745,6 +16759,7 @@
 				32C584A825B81C6600256804 /* AvatarViewController.swift in Sources */,
 				B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */,
 				66485EB02CCC515A00B8613F /* BackupArchiveInternalErrorViewController.swift in Sources */,
+				66A1F4E62E03641D0095DE4B /* BackupBGProcessingTaskRunner.swift in Sources */,
 				D97C9FF22DD3FB7E00191CE2 /* BackupDisablingManager.swift in Sources */,
 				D93FA5BF2DE77E470013879E /* BackupEnablingManager.swift in Sources */,
 				04E66D402DFC825B0059DBAC /* BackupKeyReminderMegaphone.swift in Sources */,
@@ -17685,6 +17700,7 @@
 				66734F012CA1ED3F00558494 /* BackupAttachmentUploadScheduler.swift in Sources */,
 				66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */,
 				C18806342BD8080B0024044A /* BackupAuthCredentialManager.swift in Sources */,
+				66A1F4E22E035C020095DE4B /* BackupExportJob.swift in Sources */,
 				D923DF9C2DC135D200CDAFC3 /* BackupIdManager.swift in Sources */,
 				C1A0F79D2B9F57340009DC0D /* BackupKeyMaterial.swift in Sources */,
 				C1A0F79F2B9F59920009DC0D /* BackupKeyMaterialImpl.swift in Sources */,

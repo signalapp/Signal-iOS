@@ -429,7 +429,8 @@ private extension InternalSettingsViewController {
             metadata: metadata,
             registeredBackupIDToken: registeredBackupIDToken,
             localIdentifiers: localIdentifiers,
-            auth: .implicit()
+            auth: .implicit(),
+            progress: nil,
         )
     }
 }

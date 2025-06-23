@@ -42,7 +42,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let avatarFetcher: BackupArchiveAvatarFetcher
     private let backupArchiveErrorPresenter: BackupArchiveErrorPresenter
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
-    private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
@@ -81,7 +80,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         avatarFetcher: BackupArchiveAvatarFetcher,
         backupArchiveErrorPresenter: BackupArchiveErrorPresenter,
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
-        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
@@ -117,7 +115,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.avatarFetcher = avatarFetcher
         self.backupArchiveErrorPresenter = backupArchiveErrorPresenter
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
-        self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
@@ -183,7 +180,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         metadata: Upload.EncryptedBackupUploadMetadata,
         registeredBackupIDToken: BackupIdManager.RegisteredBackupIDToken,
         localIdentifiers: LocalIdentifiers,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
+        progress: OWSProgressSink?
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
             for: .messages,
@@ -191,7 +189,11 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             auth: auth
         )
         let form = try await backupRequestManager.fetchBackupUploadForm(auth: backupAuth)
-        let result = try await attachmentUploadManager.uploadBackup(localUploadMetadata: metadata, form: form)
+        let result = try await attachmentUploadManager.uploadBackup(
+            localUploadMetadata: metadata,
+            form: form,
+            progress: progress
+        )
 
         await db.awaitableWrite { tx in
             BackupSettingsStore().setLastBackupDate(dateProvider(), tx: tx)
@@ -570,8 +572,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             }
 
             try stream.closeFileStream()
-
-            backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
 
             Logger.info("Finished exporting backup")
             bencher.logResults()

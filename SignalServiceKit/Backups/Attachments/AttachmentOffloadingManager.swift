@@ -318,7 +318,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
     }
 
     private func backupPlanAllowsOffloading(tx: DBReadTransaction) -> Bool {
-        switch db.read(block: { backupSettingsStore.backupPlan(tx: $0) }) {
+        switch backupSettingsStore.backupPlan(tx: tx) {
         case .disabled, .free:
             return false
         case .paidExpiringSoon(_):

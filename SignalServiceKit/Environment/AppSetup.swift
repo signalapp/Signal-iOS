@@ -1203,7 +1203,6 @@ public class AppSetup {
             avatarFetcher: backupArchiveAvatarFetcher,
             backupArchiveErrorPresenter: backupArchiveErrorPresenter,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
-            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             backupSubscriptionManager: backupSubscriptionManager,
@@ -1370,6 +1369,31 @@ public class AppSetup {
             receiptSender: receiptSender,
         )
 
+        let attachmentOffloadingManager = AttachmentOffloadingManagerImpl(
+            attachmentStore: attachmentStore,
+            attachmentThumbnailService: attachmentThumbnailService,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupSettingsStore: backupSettingsStore,
+            backupSubscriptionManager: backupSubscriptionManager,
+            dateProvider: dateProvider,
+            db: db,
+            listMediaManager: backupListMediaManager,
+            orphanedAttachmentCleaner: orphanedAttachmentCleaner,
+            orphanedAttachmentStore: orphanedAttachmentStore
+        )
+        let backupExportJob = BackupExportJobImpl(
+            attachmentOffloadingManager: attachmentOffloadingManager,
+            backupArchiveManager: backupArchiveManager,
+            backupAttachmentUploadProgress: backupAttachmentUploadProgress,
+            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
+            backupIdManager: backupIdManager,
+            backupKeyMaterial: backupKeyMaterial,
+            backupListMediaManager: backupListMediaManager,
+            db: db,
+            orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
+            tsAccountManager: tsAccountManager
+        )
+
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
             adHocCallRecordManager: adHocCallRecordManager,
@@ -1395,6 +1419,7 @@ public class AppSetup {
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentQueueStatusManager: backupAttachmentQueueStatusManager,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
+            backupExportJob: backupExportJob,
             backupIdManager: backupIdManager,
             backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,

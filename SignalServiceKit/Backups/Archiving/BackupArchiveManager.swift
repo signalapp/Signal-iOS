@@ -28,7 +28,8 @@ public protocol BackupArchiveManager {
         metadata: Upload.EncryptedBackupUploadMetadata,
         registeredBackupIDToken: BackupIdManager.RegisteredBackupIDToken,
         localIdentifiers: LocalIdentifiers,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
+        progress: OWSProgressSink?,
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata>
 
     // MARK: - Export
