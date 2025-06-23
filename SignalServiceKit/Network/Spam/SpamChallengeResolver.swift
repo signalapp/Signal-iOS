@@ -41,7 +41,7 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
         super.init()
         SwiftSingletons.register(self)
 
-        appReadiness.runNowOrWhenAppWillBecomeReady {
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.workQueue.async {
                 self.loadChallengesFromDatabase()
                 if let challengeCount = self.challenges?.count, challengeCount > 0 {

@@ -28,7 +28,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         SwiftSingletons.register(self)
 
-        appReadiness.runNowOrWhenAppWillBecomeReady {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 return
             }
