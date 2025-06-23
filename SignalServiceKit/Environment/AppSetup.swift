@@ -1110,12 +1110,14 @@ public class AppSetup {
 
         let messagePipelineSupervisor = MessagePipelineSupervisor()
 
+        let backupAttachmentByteCounter = BackupArchiveAttachmentByteCounter()
         let backupChatStyleArchiver = BackupArchiveChatStyleArchiver(
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             chatColorSettingStore: chatColorSettingStore,
-            wallpaperStore: wallpaperStore
+            wallpaperStore: wallpaperStore,
+            backupAttachmentByteCounter: backupAttachmentByteCounter
         )
 
         let backupInteractionStore = BackupArchiveInteractionStore(interactionStore: interactionStore)
@@ -1230,7 +1232,8 @@ public class AppSetup {
                 interactionStore: backupInteractionStore,
                 archivedPaymentStore: archivedPaymentStore,
                 reactionStore: reactionStore,
-                threadStore: backupThreadStore
+                threadStore: backupThreadStore,
+                backupAttachmentByteCounter: backupAttachmentByteCounter
             ),
             contactRecipientArchiver: backupContactRecipientArchiver,
             databaseChangeObserver: databaseStorage.databaseChangeObserver,
@@ -1288,7 +1291,8 @@ public class AppSetup {
             remoteConfigManager: remoteConfigManager,
             stickerPackArchiver: BackupArchiveStickerPackArchiver(
                 backupStickerPackDownloadStore: backupStickerPackDownloadStore
-            )
+            ),
+            attachmentByteCounter: backupAttachmentByteCounter
         )
 
         let externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl()

@@ -70,6 +70,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let releaseNotesRecipientArchiver: BackupArchiveReleaseNotesRecipientArchiver
     private let remoteConfigManager: RemoteConfigManager
     private let stickerPackArchiver: BackupArchiveStickerPackArchiver
+    private let attachmentByteCounter: BackupArchiveAttachmentByteCounter
 
     public init(
         accountDataArchiver: BackupArchiveAccountDataArchiver,
@@ -106,7 +107,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         postFrameRestoreActionManager: BackupArchivePostFrameRestoreActionManager,
         releaseNotesRecipientArchiver: BackupArchiveReleaseNotesRecipientArchiver,
         remoteConfigManager: RemoteConfigManager,
-        stickerPackArchiver: BackupArchiveStickerPackArchiver
+        stickerPackArchiver: BackupArchiveStickerPackArchiver,
+        attachmentByteCounter: BackupArchiveAttachmentByteCounter
     ) {
         self.accountDataArchiver = accountDataArchiver
         self.appVersion = appVersion
@@ -144,6 +146,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.remoteConfigManager = remoteConfigManager
         self.stickerPackArchiver = stickerPackArchiver
         self.adHocCallArchiver = adHocCallArchiver
+        self.attachmentByteCounter = attachmentByteCounter
     }
 
     // MARK: - Remote backups
@@ -195,9 +198,24 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             progress: progress
         )
 
+        var backupSize = UInt64(metadata.encryptedDataLength)
+        let backupPlan = db.read { tx in
+            BackupSettingsStore().backupPlan(tx: tx)
+        }
+
+        switch backupPlan {
+        case .free:
+            break
+        case .paid, .paidExpiringSoon:
+            backupSize += attachmentByteCounter.attachmentByteSize()
+        case .disabled:
+            owsFailDebug("Shouldn't generate backup when backups is disabled")
+            backupSize = 0
+        }
+
         await db.awaitableWrite { tx in
             BackupSettingsStore().setLastBackupDate(dateProvider(), tx: tx)
-            BackupSettingsStore().setLastBackupSizeBytes(UInt64(metadata.encryptedDataLength), tx: tx)
+            BackupSettingsStore().setLastBackupSizeBytes(UInt64(backupSize), tx: tx)
         }
 
         return result
@@ -214,6 +232,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         let includedContentFilter = BackupArchive.IncludedContentFilter(
             backupPurpose: backupPurpose
         )
+
+        attachmentByteCounter.clearAttachmentByteCounter()
 
         return try await _exportBackup(
             localIdentifiers: localIdentifiers,

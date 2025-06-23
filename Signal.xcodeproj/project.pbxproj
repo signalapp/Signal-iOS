@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		041C24ED2DF782AF0065B685 /* OutgoingGroupUpdateMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */; };
 		047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */; };
+		04BC94D22E061D8300446C52 /* BackupArchiveAttachmentByteCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BC94D12E061D7500446C52 /* BackupArchiveAttachmentByteCounter.swift */; };
 		04E66D402DFC825B0059DBAC /* BackupKeyReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D3E2DFC81BC0059DBAC /* BackupKeyReminderMegaphone.swift */; };
 		04E66D422DFF3A4B0059DBAC /* BackupsReminderCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */; };
 		04E66D452E00AB6A0059DBAC /* BackupSettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */; };
@@ -3820,6 +3821,7 @@
 
 /* Begin PBXFileReference section */
 		047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphoneTests.swift; sourceTree = "<group>"; };
+		04BC94D12E061D7500446C52 /* BackupArchiveAttachmentByteCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveAttachmentByteCounter.swift; sourceTree = "<group>"; };
 		04E66D3E2DFC81BC0059DBAC /* BackupKeyReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphone.swift; sourceTree = "<group>"; };
 		04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsReminderCoordinator.swift; sourceTree = "<group>"; };
 		04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSettingsStoreTests.swift; sourceTree = "<group>"; };
@@ -12597,6 +12599,7 @@
 				663AAF252E0225E000B9C4B8 /* BackupArchive+IncludedContentFilter.swift */,
 				665C0D5F2ADF57D000539A37 /* BackupArchive+Shims.swift */,
 				661429182D35B9EA0043AA22 /* BackupArchive+Timestamp.swift */,
+				04BC94D12E061D7500446C52 /* BackupArchiveAttachmentByteCounter.swift */,
 				66485EB22CD03F5D00B8613F /* BackupArchiveErrorPresenter.swift */,
 				66232AE02CC0271F00AE6A76 /* BackupArchiveFullTextSearchIndexer.swift */,
 				665C0D5B2ADF538100539A37 /* BackupArchiveManager.swift */,
@@ -17644,6 +17647,7 @@
 				661429192D35B9F10043AA22 /* BackupArchive+Timestamp.swift in Sources */,
 				66CD25642B06949C00139E17 /* BackupArchiveAccountDataArchiver.swift in Sources */,
 				D9CA61482C2E2D0000F99EA3 /* BackupArchiveAdHocCallArchiver.swift in Sources */,
+				04BC94D22E061D8300446C52 /* BackupArchiveAttachmentByteCounter.swift in Sources */,
 				664A4D2D2CDEDD0800AC26F3 /* BackupArchiveAvatarFetcher.swift in Sources */,
 				E1447D8F2CCACFFD004D8FA2 /* BackupArchiveCallLinkRecipientArchiver.swift in Sources */,
 				66CD25662B0695F400139E17 /* BackupArchiveChatArchiver.swift in Sources */,
