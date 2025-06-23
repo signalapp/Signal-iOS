@@ -803,22 +803,24 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         var isEnabledFlags = [String: Bool]()
         var valueFlags = [String: String]()
         var timeGatedFlags = [String: Date]()
-        fetchedConfig.items.forEach { (key: String, item: FetchedRemoteConfigItem) in
-            switch item {
-            case .isEnabled(let isEnabled):
-                if IsEnabledFlag(rawValue: key) != nil {
-                    isEnabledFlags[key] = isEnabled
-                }
-            case .value(let value):
-                if ValueFlag(rawValue: key) != nil {
-                    valueFlags[key] = value
-                } else if TimeGatedFlag(rawValue: key) != nil {
+        fetchedConfig.items.forEach { config in
+            if IsEnabledFlag(rawValue: config.name) != nil {
+                isEnabledFlags[config.name] = (config.value == "1" || config.value == "true" || config.value == "TRUE" || config.enabled == true)
+                return
+            }
+            if ValueFlag(rawValue: config.name) != nil {
+                valueFlags[config.name] = config.value
+                return
+            }
+            if TimeGatedFlag(rawValue: config.name) != nil {
+                if let value = config.value {
                     if let secondsSinceEpoch = TimeInterval(value) {
-                        timeGatedFlags[key] = Date(timeIntervalSince1970: secondsSinceEpoch)
+                        timeGatedFlags[config.name] = Date(timeIntervalSince1970: secondsSinceEpoch)
                     } else {
                         owsFailDebug("Invalid value: \(value) \(type(of: value))")
                     }
                 }
+                return
             }
         }
 
@@ -867,13 +869,18 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
     // MARK: -
 
-    private enum FetchedRemoteConfigItem {
-        case isEnabled(Bool)
-        case value(String)
+    private struct UserRemoteConfigList: Decodable {
+        var config: [UserRemoteConfig]
+    }
+
+    private struct UserRemoteConfig: Decodable {
+        var name: String
+        var enabled: Bool?
+        var value: String?
     }
 
     private struct FetchedRemoteConfigResponse {
-        let items: [String: FetchedRemoteConfigItem]
+        let items: [UserRemoteConfig]
         let serverEpochTimeMs: UInt64?
     }
 
@@ -882,37 +889,13 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
         let response = try await networkManager.asyncRequest(request)
 
-        guard let json = response.responseBodyJson else {
-            throw OWSAssertionError("Missing or invalid JSON.")
-        }
-        guard let parser = ParamParser(responseObject: json) else {
-            throw OWSAssertionError("Missing or invalid response.")
-        }
+        let result = try JSONDecoder().decode(UserRemoteConfigList.self, from: response.responseBodyData ?? Data())
 
-        let config: [[String: Any]] = try parser.required(key: "config")
         let serverEpochTimeMs = response.headers["x-signal-timestamp"].flatMap(UInt64.init(_:))
         owsAssertDebug(serverEpochTimeMs != nil, "Must have X-Signal-Timestamp.")
 
-        let items: [String: FetchedRemoteConfigItem] = try config.reduce([:]) { accum, item in
-            var accum = accum
-            guard let itemParser = ParamParser(responseObject: item) else {
-                throw OWSAssertionError("Missing or invalid remote config item.")
-            }
-
-            let name: String = try itemParser.required(key: "name")
-            let isEnabled: Bool = try itemParser.required(key: "enabled")
-
-            if let value: String = try itemParser.optional(key: "value") {
-                accum[name] = .value(value)
-            } else {
-                accum[name] = .isEnabled(isEnabled)
-            }
-
-            return accum
-        }
-
         return FetchedRemoteConfigResponse(
-            items: items,
+            items: result.config,
             serverEpochTimeMs: serverEpochTimeMs
         )
     }
