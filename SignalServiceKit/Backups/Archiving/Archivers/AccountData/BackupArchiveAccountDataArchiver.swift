@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 extension BackupArchive {
     /// An identifier for the ``BackupProto_AccountData`` backup frame.
     ///
@@ -253,9 +255,16 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         accountSettings.phoneNumberSharingMode = phoneNumberSharingMode
         accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: context.tx) ?? []
         accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: context.tx)
-        accountSettings.optimizeOnDeviceStorage = switch backupSettingsStore.backupPlan(tx: context.tx) {
-        case .disabled, .free: false
-        case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage): optimizeLocalStorage
+        switch backupSettingsStore.backupPlan(tx: context.tx) {
+        case .disabled:
+            accountSettings.clearBackupTier()
+            accountSettings.optimizeOnDeviceStorage = false
+        case .free:
+            accountSettings.backupTier = UInt64(BackupLevel.free.rawValue)
+            accountSettings.optimizeOnDeviceStorage = false
+        case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage):
+            accountSettings.backupTier = UInt64(BackupLevel.paid.rawValue)
+            accountSettings.optimizeOnDeviceStorage = optimizeLocalStorage
         }
 
         let customChatColorsResult = chatStyleArchiver.archiveCustomChatColors(
@@ -342,14 +351,32 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                 ),
                 tx: context.tx
             )
+        }
 
+        let backupLevel: BackupLevel?
+        if accountData.accountSettings.hasBackupTier {
+            guard
+                let parsedLevel =
+                    UInt8(exactly: accountData.accountSettings.backupTier)
+                    .map(BackupLevel.init(rawValue:))
+            else {
+                return .failure([.restoreFrameError(
+                    .invalidProtoData(.invalidBackupTier),
+                    .localUser
+                )])
+            }
+            backupLevel = parsedLevel
+        } else {
+            // Backups disabled
+            backupLevel = nil
+        }
+        switch backupLevel {
+        case .paid:
             uploadEra = backupSubscriptionManager.getUploadEra(tx: context.tx)
             backupPlan = .paid(
                 optimizeLocalStorage: accountData.accountSettings.optimizeOnDeviceStorage
             )
-
-            backupSettingsStore.setBackupPlan(backupPlan, tx: context.tx)
-        } else {
+        case .free:
             // The exporting client was not subscribed at export time.
             // It may have subscribed after, or not. We don't know, and we don't
             // know if it was previously subscribed and if so what its subscriberId was.
@@ -360,21 +387,13 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             // Querying the list endpoint will bring us up to date on the upload status
             // within this "era" otherwise.
             uploadEra = backupSubscriptionManager.getUploadEra(tx: context.tx)
-            switch context.backupPurpose {
-            case .remoteBackup:
-                // If this came from a remote backup, assume
-                // backups is enabled and free if not otherwise specified.
-                backupPlan = .free
-            case .deviceTransfer:
-                // Do not assume backups aren't disabled if link'n'syncing.
-                // TODO: [Backups] We probably want to communicate if backups
-                // is disabled or not in link'n'sync.
-                backupPlan = .disabled
-            }
-
-            // TODO: [LocalBackups] if restoring a local backup file don't set remote backup plan.
-            backupSettingsStore.setBackupPlan(backupPlan, tx: context.tx)
+            backupPlan = .free
+        case .none:
+            // See above comment; the same applies
+            uploadEra = backupSubscriptionManager.getUploadEra(tx: context.tx)
+            backupPlan = .disabled
         }
+        backupSettingsStore.setBackupPlan(backupPlan, tx: context.tx)
 
         // These MUST get set before we restore custom chat colors/wallpapers.
         context.uploadEra = uploadEra

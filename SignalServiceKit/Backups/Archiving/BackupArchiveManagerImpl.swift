@@ -379,30 +379,11 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             }
             try Task.checkCancellation()
 
-            var currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
-            switch backupPurpose {
-            case .remoteBackup:
-                switch currentBackupPlan {
-                case .disabled:
-                    throw OWSAssertionError("Generating remote backup while backups disabled!")
-                case .free, .paid, .paidExpiringSoon:
-                    break
-                }
-            case .deviceTransfer:
-                // You don't need backups enabled to do a link'n'sync; default free.
-                switch currentBackupPlan {
-                case .disabled:
-                    currentBackupPlan = .free
-                case .free, .paid, .paidExpiringSoon:
-                    break
-                }
-            }
             let currentBackupAttachmentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
 
             let customChatColorContext = BackupArchive.CustomChatColorArchivingContext(
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-                currentBackupPlan: currentBackupPlan,
                 includedContentFilter: includedContentFilter,
                 startTimestampMs: startTimestampMs,
                 tx: tx
@@ -443,7 +424,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             let recipientArchivingContext = BackupArchive.RecipientArchivingContext(
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-                currentBackupPlan: currentBackupPlan,
                 includedContentFilter: includedContentFilter,
                 localIdentifiers: localIdentifiers,
                 localRecipientId: localRecipientId,
@@ -520,7 +500,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             let chatArchivingContext = BackupArchive.ChatArchivingContext(
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-                currentBackupPlan: currentBackupPlan,
                 customChatColorContext: customChatColorContext,
                 includedContentFilter: includedContentFilter,
                 recipientContext: recipientArchivingContext,
@@ -558,7 +537,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             let archivingContext = BackupArchive.ArchivingContext(
                 bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-                currentBackupPlan: currentBackupPlan,
                 includedContentFilter: includedContentFilter,
                 startTimestampMs: startTimestampMs,
                 tx: tx

@@ -563,6 +563,9 @@ extension BackupArchive {
                 /// An invalid member (group, distribution list, etc) was specified as a distribution list member.  Includes the offending proto
                 case invalidDistributionListMember(protoClass: Any.Type)
 
+                /// The backup tier in account settings was set but not able to be parsed by libsignal.
+                case invalidBackupTier
+
                 /// A ``BackupProto/Contact`` with no aci, pni, or e164.
                 case contactWithoutIdentifiers
                 /// A ``BackupProto/Contact`` for the local user. This shouldn't exist.
@@ -825,7 +828,8 @@ extension BackupArchive {
                         .invalidMediaRootBackupKey,
                         .accountDataNotFound,
                         .recipientIdNotFound,
-                        .chatIdNotFound:
+                        .chatIdNotFound,
+                        .invalidBackupTier:
                     // Collapse these by the id they refer to, which is in the "type".
                     return typeLogString
                 case .customChatColorNotFound(let id):
@@ -941,6 +945,7 @@ extension BackupArchive {
                         .invalidProfileKey,
                         .invalidContactIdentityKey,
                         .invalidDistributionListMember,
+                        .invalidBackupTier,
                         .contactWithoutIdentifiers,
                         .otherContactWithLocalIdentifiers,
                         .chatItemInvalidDateSent,

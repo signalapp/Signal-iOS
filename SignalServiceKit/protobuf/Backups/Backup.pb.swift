@@ -586,6 +586,16 @@ public struct BackupProto_AccountData: @unchecked Sendable {
       set {_uniqueStorage()._optimizeOnDeviceStorage = newValue}
     }
 
+    /// See zkgroup for integer particular values. Unset if backups are not enabled.
+    public var backupTier: UInt64 {
+      get {return _storage._backupTier ?? 0}
+      set {_uniqueStorage()._backupTier = newValue}
+    }
+    /// Returns true if `backupTier` has been explicitly set.
+    public var hasBackupTier: Bool {return _storage._backupTier != nil}
+    /// Clears the value of `backupTier`. Subsequent reads from it will return its default value.
+    public mutating func clearBackupTier() {_uniqueStorage()._backupTier = nil}
+
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     public init() {}
@@ -6521,6 +6531,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
     18: .same(proto: "defaultChatStyle"),
     19: .same(proto: "customChatColors"),
     20: .same(proto: "optimizeOnDeviceStorage"),
+    21: .same(proto: "backupTier"),
   ]
 
   fileprivate class _StorageClass {
@@ -6544,6 +6555,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
     var _defaultChatStyle: BackupProto_ChatStyle? = nil
     var _customChatColors: [BackupProto_ChatStyle.CustomChatColor] = []
     var _optimizeOnDeviceStorage: Bool = false
+    var _backupTier: UInt64? = nil
 
     #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
@@ -6578,6 +6590,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       _defaultChatStyle = source._defaultChatStyle
       _customChatColors = source._customChatColors
       _optimizeOnDeviceStorage = source._optimizeOnDeviceStorage
+      _backupTier = source._backupTier
     }
   }
 
@@ -6616,6 +6629,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         case 18: try { try decoder.decodeSingularMessageField(value: &_storage._defaultChatStyle) }()
         case 19: try { try decoder.decodeRepeatedMessageField(value: &_storage._customChatColors) }()
         case 20: try { try decoder.decodeSingularBoolField(value: &_storage._optimizeOnDeviceStorage) }()
+        case 21: try { try decoder.decodeSingularUInt64Field(value: &_storage._backupTier) }()
         default: break
         }
       }
@@ -6688,6 +6702,9 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       if _storage._optimizeOnDeviceStorage != false {
         try visitor.visitSingularBoolField(value: _storage._optimizeOnDeviceStorage, fieldNumber: 20)
       }
+      try { if let v = _storage._backupTier {
+        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 21)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6717,6 +6734,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         if _storage._defaultChatStyle != rhs_storage._defaultChatStyle {return false}
         if _storage._customChatColors != rhs_storage._customChatColors {return false}
         if _storage._optimizeOnDeviceStorage != rhs_storage._optimizeOnDeviceStorage {return false}
+        if _storage._backupTier != rhs_storage._backupTier {return false}
         return true
       }
       if !storagesAreEqual {return false}

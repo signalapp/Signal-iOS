@@ -32,19 +32,16 @@ extension BackupArchive {
 
         /// Always set even if BackupPlan is free
         let currentBackupAttachmentUploadEra: String
-        let currentBackupPlan: BackupPlan
 
         init(
             bencher: BackupArchive.ArchiveBencher,
             currentBackupAttachmentUploadEra: String,
-            currentBackupPlan: BackupPlan,
             includedContentFilter: IncludedContentFilter,
             startTimestampMs: UInt64,
             tx: DBWriteTransaction
         ) {
             self.bencher = bencher
             self.currentBackupAttachmentUploadEra = currentBackupAttachmentUploadEra
-            self.currentBackupPlan = currentBackupPlan
             self.includedContentFilter = includedContentFilter
             self.startTimestampMs = startTimestampMs
             self._tx = tx
