@@ -468,6 +468,8 @@ public class OWSChatConnection {
         let requestId = UInt64.random(in: .min ... .max)
         let requestDescription = "\(request) [\(requestId)]"
         do {
+            Logger.info("Sending… -> \(requestDescription)")
+
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
                 self.serialQueue.async {
                     if let canOpenWebSocketError = self.canOpenWebSocketError {
@@ -479,8 +481,6 @@ public class OWSChatConnection {
             }
 
             try await waitForOpen(timeout: 30)
-
-            Logger.info("Sending… -> \(requestDescription)")
 
             let backgroundTask = OWSBackgroundTask(label: #function)
             defer { backgroundTask.end() }
