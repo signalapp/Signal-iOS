@@ -27,10 +27,8 @@ struct MonitorTest {
         async let m2: Void = Monitor.waitForCondition(satisfiedCondition, in: state)
 
         // An ugly polling loop to avoid polling everywhere else...
-        var iterationCounter = 0
         while state.get().onSatisfied.count < 2 {
             try await Task.sleep(nanoseconds: NSEC_PER_USEC)
-            iterationCounter += 1
         }
 
         Monitor.updateAndNotify(
@@ -60,5 +58,39 @@ struct MonitorTest {
         waitTask.cancel()
         await #expect(throws: CancellationError.self, performing: { try await waitTask.value })
         #expect(state.get().onSatisfied.isEmpty)
+    }
+
+    private class QueueState {
+        var isSatisfied = false
+        var onSatisfied = [NSObject: Monitor.Continuation]()
+    }
+
+    private let queueSatisfiedCondition = Monitor.Condition<QueueState>(
+        isSatisfied: { $0.isSatisfied },
+        waiters: \.onSatisfied,
+    )
+
+    @Test
+    func testWaitQueue() async throws {
+        let queue = DispatchQueue(label: #fileID)
+        let queueState = QueueState()
+        func queueStateCount() async -> Int {
+            await withCheckedContinuation { continuation in
+                queue.async { continuation.resume(returning: queueState.onSatisfied.count) }
+            }
+        }
+        async let m1: Void = Monitor.waitForCondition(self.queueSatisfiedCondition, in: queueState, on: queue)
+        async let m2: Void = Monitor.waitForCondition(self.queueSatisfiedCondition, in: queueState, on: queue)
+        // An ugly polling loop to avoid polling everywhere else...
+        while await queueStateCount() < 2 {
+            try await Task.sleep(nanoseconds: NSEC_PER_USEC)
+        }
+        queue.async {
+            queueState.isSatisfied = true
+            Monitor.notifyOnQueue(queue, state: queueState, conditions: self.queueSatisfiedCondition)
+        }
+        try await m1
+        try await m2
+        #expect(await queueStateCount() == 0)
     }
 }

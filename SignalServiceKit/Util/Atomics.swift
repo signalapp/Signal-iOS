@@ -140,8 +140,8 @@ public final class AtomicValue<T>: Sendable {
     }
 
     @discardableResult
-    public func update<Result>(block: (inout T) throws -> Result) rethrows -> Result {
-        try lock.withLock { try block(&self.value) }
+    public func update<Result, E>(block: (inout T) throws(E) -> Result) throws(E) -> Result {
+        try lock.withLock { () throws(E) in try block(&self.value) }
     }
 }
 

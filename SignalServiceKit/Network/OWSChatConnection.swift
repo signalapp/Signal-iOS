@@ -193,28 +193,10 @@ public class OWSChatConnection {
     }
 
     // Access on serialQueue.
-    private var onSocketShouldBeClosed = [NSObject: CancellableContinuation<Void>]()
+    private var onSocketShouldBeClosed = [NSObject: Monitor.Continuation]()
 
-    func waitUntilSocketShouldBeClosed() async throws {
-        let cancellationToken = NSObject()
-        let cancellableContinuation = CancellableContinuation<Void>()
-        serialQueue.async {
-            if self.shouldSocketBeOpen() {
-                self.onSocketShouldBeClosed[cancellationToken] = cancellableContinuation
-            } else {
-                cancellableContinuation.resume(with: .success(()))
-            }
-        }
-        try await withTaskCancellationHandler(
-            operation: cancellableContinuation.wait,
-            onCancel: {
-                // Don't cancel because CancellableContinuation does that.
-                // We just clean up the state so that we don't leak memory.
-                self.serialQueue.async {
-                    self.onSocketShouldBeClosed.removeValue(forKey: cancellationToken)
-                }
-            }
-        )
+    func waitUntilSocketShouldBeClosed() async throws(CancellationError) {
+        return try await Monitor.waitForCondition(shouldBeClosedCondition, in: self, on: serialQueue)
     }
 
     // MARK: - Socket LifeCycle
@@ -377,9 +359,7 @@ public class OWSChatConnection {
         }
 
         // If the socket shouldn't be open, notify anybody who's waiting.
-        if !shouldSocketBeOpen() {
-            notifySocketShouldBeClosed()
-        }
+        notifySocketShouldBeClosedIfNeeded()
     }
 
     // This method aligns the socket state with the "desired" socket state.
@@ -406,19 +386,18 @@ public class OWSChatConnection {
             ensureWebsocketExists()
         } else {
             disconnectIfNeeded()
-            notifySocketShouldBeClosed()
+            notifySocketShouldBeClosedIfNeeded()
         }
     }
 
-    private func notifySocketShouldBeClosed() {
-        assertOnQueue(serialQueue)
+    private let shouldBeClosedCondition = Monitor.Condition<OWSChatConnection>(
+        isSatisfied: { !$0.shouldSocketBeOpen() },
+        waiters: \.onSocketShouldBeClosed,
+    )
 
-        // Notify any listeners that we're no longer trying to connect.
-        let continuationsToResume = self.onSocketShouldBeClosed
-        self.onSocketShouldBeClosed = [:]
-        for (_, continuationToResume) in continuationsToResume {
-            continuationToResume.resume(with: .success(()))
-        }
+    private func notifySocketShouldBeClosedIfNeeded() {
+        assertOnQueue(serialQueue)
+        Monitor.notifyOnQueue(serialQueue, state: self, conditions: shouldBeClosedCondition)
     }
 
     // This method must be thread-safe.

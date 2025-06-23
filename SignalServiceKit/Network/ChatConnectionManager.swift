@@ -15,7 +15,7 @@ public protocol ChatConnectionManager {
     /// re-connect, this will keep waiting. In other words, this waits until we
     /// are no longer capable of opening a socket (e.g., we are deregistered,
     /// all connection tokens are released).
-    func waitUntilIdentifiedConnectionShouldBeClosed() async throws
+    func waitUntilIdentifiedConnectionShouldBeClosed() async throws(CancellationError)
     var identifiedConnectionState: OWSChatConnectionState { get }
     var hasEmptiedInitialQueue: Bool { get async }
 
@@ -67,7 +67,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         try await self.connectionIdentified.waitForOpen()
     }
 
-    public func waitUntilIdentifiedConnectionShouldBeClosed() async throws {
+    public func waitUntilIdentifiedConnectionShouldBeClosed() async throws(CancellationError) {
         owsAssertBeta(OWSChatConnection.canAppUseSocketsToMakeRequests)
         try await self.connectionIdentified.waitUntilSocketShouldBeClosed()
     }
@@ -120,7 +120,7 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
     public func waitForIdentifiedConnectionToOpen() async throws {
     }
 
-    public func waitUntilIdentifiedConnectionShouldBeClosed() async throws {
+    public func waitUntilIdentifiedConnectionShouldBeClosed() async throws(CancellationError) {
     }
 
     public var identifiedConnectionState: OWSChatConnectionState = .closed
