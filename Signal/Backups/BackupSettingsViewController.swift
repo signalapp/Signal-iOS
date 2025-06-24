@@ -180,10 +180,9 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
             return
         }
 
+        // We know we're enabled now! Set state before popping so correct UI is shown.
+        viewModel.backupEnabledState = .enabled
         navigationController?.popToViewController(self, animated: true) { [self] in
-            // We know we're enabled now!
-            viewModel.backupEnabledState = .enabled
-
             presentWelcomeToBackupsSheet()
         }
     }
