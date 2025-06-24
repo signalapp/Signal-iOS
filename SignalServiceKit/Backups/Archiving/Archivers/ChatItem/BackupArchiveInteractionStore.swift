@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SQLite3
 import GRDB
 
 public final class BackupArchiveInteractionStore {
