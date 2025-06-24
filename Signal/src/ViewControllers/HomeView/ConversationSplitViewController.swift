@@ -15,6 +15,9 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     private let detailPlaceholderVC = NoSelectedConversationViewController()
 
     private var chatListNavController: OWSNavigationController { homeVC.chatListNavController }
+    private var callsListNavController: OWSNavigationController { homeVC.callsListNavController }
+    private var storiesNavController: OWSNavigationController { homeVC.storiesNavController }
+
     private lazy var detailNavController = OWSNavigationController()
     private var lastActiveInterfaceOrientation = UIInterfaceOrientation.unknown
 
@@ -46,11 +49,20 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     }
 
     var topViewController: UIViewController? {
-        guard !isCollapsed else {
-            return chatListNavController.topViewController
+        let selectedNavController: OWSNavigationController = switch homeVC.selectedHomeTab {
+        case .chatList:
+            chatListNavController
+        case .calls:
+            callsListNavController
+        case .stories:
+            storiesNavController
         }
 
-        return detailNavController.topViewController ?? chatListNavController.topViewController
+        if isCollapsed {
+            return selectedNavController.topViewController
+        }
+
+        return detailNavController.topViewController ?? selectedNavController.topViewController
     }
 
     private let appReadiness: AppReadinessSetter
