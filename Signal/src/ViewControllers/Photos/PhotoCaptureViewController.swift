@@ -130,6 +130,13 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         cameraCaptureSession.updateVideoPreviewConnection(toOrientation: previewOrientation)
         updateIconOrientations(isAnimated: false, captureOrientation: previewOrientation)
 
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(sessionWasInterrupted),
+            name: AVCaptureSession.wasInterruptedNotification,
+            object: nil
+        )
+
         resumePhotoCapture()
 
         if let dataSource = dataSource, dataSource.numberOfMediaItems > 0 {
@@ -1519,6 +1526,18 @@ extension PhotoCaptureViewController: CameraCaptureSessionDelegate {
 
     func cameraCaptureSession(_ session: CameraCaptureSession, didFinishFocusingAt focusPoint: CGPoint) {
         completeFocusAnimation(forFocusPoint: focusPoint)
+    }
+
+    @objc
+    func sessionWasInterrupted(notification: Notification) {
+        if let userInfo = notification.userInfo {
+            guard let reasonValue = userInfo[AVCaptureSessionInterruptionReasonKey] as? NSNumber,
+                  let reason = AVCaptureSession.InterruptionReason(rawValue: reasonValue.intValue) else {
+                Logger.info("session was interrupted for no apparent reason")
+                return
+            }
+            Logger.info("session was interrupted with reason code: \(reason.rawValue)")
+        }
     }
 }
 
