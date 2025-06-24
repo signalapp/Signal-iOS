@@ -1,1 +1,1 @@
-• Message status indicators (sent, delivered, etc.) are now supported by the iOS VoiceOver feature in order to improve accessibility for blind and low-vision individuals.
+• iOS 旁白功能現在可支援訊息狀態指示器（已傳送、已送達等），以方便盲人和弱視人士使用。

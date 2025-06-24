@@ -515,22 +515,22 @@
 "BACKUP_KEY_PLACEHOLDER" = "بیک اپ کیی";
 
 /* Title of button to tap if you forgot your backup key. */
-"BACKUP_KEY_REMINDER_FORGOT_KEY" = "Forgot key?";
+"BACKUP_KEY_REMINDER_FORGOT_KEY" = "کیی بھول گئے ہیں؟";
 
 /* Action text for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "Verify";
+"BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "تصدیق کریں";
 
 /* Body for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "We'll occasionally ask you to verify your key to ensure you still know it";
+"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "ہم کبھی کبھار آپ سے اپنی کیی کی تصدیق کرنے کے لیے کہیں گے تاکہ یقینی بنایا جا سکے کہ آپ کو یہ ابھی بھی یاد ہے";
 
 /* Title for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verify your Backup Key";
+"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "اپنی بیک اپ کیی کی تصدیق کریں";
 
 /* Snooze text for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Not Now";
+"BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "ابھی نہیں";
 
 /* Toast indicating that the Backup Key was correct. */
-"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Backup key correct. Keep your key safe.";
+"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "بیک اپ کیی درست ہے۔ اپنی کیی کو محفوظ رکھیں۔";
 
 /* Body for a sheet warning users to their 'Backup Key' safe. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "اگر آپ اپنی کیی کو کھو دیتے ہیں تو Signal آپ کے بیک اپ کو بحال کرنے میں مدد نہیں کر سکے گا۔ اسے کسی انتہائی محفوظ جگہ پر اسٹور کریں، اور دوسروں کے ساتھ شئیر نہ کریں۔";
@@ -563,7 +563,7 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Signal بیک اپس";
 
 /* Subtitle for a view introducing the 'Backup Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your backup key is a 64-character code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "آپ کی بیک اپ کی کیی 64 حروف پر مشتمل ایک کوڈ ہے جو آپ کو Signal کو دوبارہ انسٹال کرنے پر اپنے بیک اپ کو بحال کرنے میں مدد دیتا ہے۔\n\nاگر آپ اپنی کیی بھول جاتے ہیں، تو آپ اپنے بیک اپ کو بحال نہیں کر سکیں گے۔ Signal آپ کے بیک اپ کو بحال کرنے میں مدد نہیں کر سکتا۔";
 
 /* Title for a view introducing the 'Backup Key' during an onboarding flow. */
 "BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "آپ کی بیک اپ کیی";
@@ -3284,7 +3284,7 @@
 "GROUP_CALL_LEAVE_BUTTON" = "کال چھوڑو";
 
 /* Title for a 'done' button on a sheet showing the group call members list */
-"GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE" = "Done";
+"GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE" = "ہو گیا";
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "کال میں";
@@ -5303,7 +5303,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "اپنے میسجز اور میڈیا کو منتقل کیے بغیر جاری رکھیں";
 
 /* The title for a less-prominent skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE" = "Skip restore";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE" = "بحال کرنا نظر انداز کریں";
 
 /* The title for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "منتقلی کے بغیر رجسٹر کریں";
