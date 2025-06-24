@@ -20,6 +20,7 @@ public protocol ChatConnectionManager {
     var hasEmptiedInitialQueue: Bool { get async }
 
     func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool
+    func shouldSocketBeOpen_restOnly(connectionType: OWSChatConnectionType) -> Bool
     func requestConnections(shouldReconnectIfConnectedElsewhere: Bool) -> [OWSChatConnection.ConnectionToken]
     func waitForDisconnectIfClosed() async
     func makeRequest(_ request: TSRequest) async throws -> HTTPResponse
@@ -55,6 +56,10 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
 
     public func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool {
         return connection(ofType: connectionType).canOpenWebSocket
+    }
+
+    public func shouldSocketBeOpen_restOnly(connectionType: OWSChatConnectionType) -> Bool {
+        return connection(ofType: connectionType).shouldSocketBeOpen_restOnly
     }
 
     public func waitForIdentifiedConnectionToOpen() async throws {
@@ -124,6 +129,10 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
 
     public func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool {
         return shouldWaitForSocketToMakeRequestPerType[connectionType] ?? true
+    }
+
+    public func shouldSocketBeOpen_restOnly(connectionType: OWSChatConnectionType) -> Bool {
+        fatalError()
     }
 
     public func requestConnections(shouldReconnectIfConnectedElsewhere: Bool) -> [OWSChatConnection.ConnectionToken] {

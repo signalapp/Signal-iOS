@@ -245,6 +245,10 @@ public class OWSChatConnection {
         return serialQueue.sync { self.canOpenWebSocketError == nil }
     }
 
+    public var shouldSocketBeOpen_restOnly: Bool {
+        return serialQueue.sync { self.shouldSocketBeOpen() }
+    }
+
     /// Tracks app-wide, "fatal" errors that block web sockets.
     ///
     /// If this property is nonnil, the app shouldn't attempt to open a
