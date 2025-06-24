@@ -517,7 +517,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             appReadiness.runNowOrWhenAppDidBecomeReadySync {
                 DispatchQueue.global(qos: .userInitiated).async {
                     let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager
-                    if chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: .identified) {
+                    if chatConnectionManager.shouldSocketBeOpen_restOnly(connectionType: .identified) {
                         // Immediately let the NSE know we will handle this notification so that it
                         // does not attempt to process messages while we are active.
                         DarwinNotificationCenter.postNotification(name: .mainAppHandledNotification)
