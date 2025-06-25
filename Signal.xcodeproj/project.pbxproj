@@ -712,6 +712,7 @@
 		50C98A412B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */; };
 		50CDC6592DFB92FD00824B4A /* MonitorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CDC6582DFB92FD00824B4A /* MonitorTest.swift */; };
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
+		50CF74192E0A0EB7002DCA93 /* ConcurrentTaskQueueTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF74182E0A0EB7002DCA93 /* ConcurrentTaskQueueTest.swift */; };
 		50D146CD2D1F4E5800D628DE /* ProfileKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D146CC2D1F4E5800D628DE /* ProfileKey.swift */; };
 		50D1EEAE2D95D95A00ADF921 /* TimeIntervalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D1EEAD2D95D95A00ADF921 /* TimeIntervalTest.swift */; };
 		50D1EEB02D96446E00ADF921 /* ObjectRetainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D1EEAF2D96446E00ADF921 /* ObjectRetainer.swift */; };
@@ -4639,6 +4640,7 @@
 		50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberVisibilityFetcher.swift; sourceTree = "<group>"; };
 		50CDC6582DFB92FD00824B4A /* MonitorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorTest.swift; sourceTree = "<group>"; };
 		50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentGiftBadge.swift; sourceTree = "<group>"; };
+		50CF74182E0A0EB7002DCA93 /* ConcurrentTaskQueueTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentTaskQueueTest.swift; sourceTree = "<group>"; };
 		50D146CC2D1F4E5800D628DE /* ProfileKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileKey.swift; sourceTree = "<group>"; };
 		50D1EEAD2D95D95A00ADF921 /* TimeIntervalTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeIntervalTest.swift; sourceTree = "<group>"; };
 		50D1EEAF2D96446E00ADF921 /* ObjectRetainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectRetainer.swift; sourceTree = "<group>"; };
@@ -9132,6 +9134,7 @@
 		50E0198E2CC2491A0063EA48 /* Concurrency */ = {
 			isa = PBXGroup;
 			children = (
+				50CF74182E0A0EB7002DCA93 /* ConcurrentTaskQueueTest.swift */,
 				50CDC6582DFB92FD00824B4A /* MonitorTest.swift */,
 				6605B9892B211BD500E8A68A /* SerialTaskQueueTest.swift */,
 			);
@@ -18780,6 +18783,7 @@
 				D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */,
 				F9C9610B29A91026001E4A09 /* ChatServiceAuthTest.swift in Sources */,
 				501E4DAE2D13439E00D883C7 /* CompletionSerializerTest.swift in Sources */,
+				50CF74192E0A0EB7002DCA93 /* ConcurrentTaskQueueTest.swift in Sources */,
 				50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */,
 				500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */,
 				5077B5B82BBC7FE600EF399E /* ContactTest.swift in Sources */,

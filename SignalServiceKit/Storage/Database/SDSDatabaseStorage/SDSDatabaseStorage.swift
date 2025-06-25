@@ -497,7 +497,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         line: Int = #line,
         block: (DBWriteTransaction) throws(E) -> T
     ) async throws(E) -> T {
-        return try await self.awaitableWriteQueue.run { () throws(E) -> T in
+        return try await self.awaitableWriteQueue.runWithoutTaskCancellationHandler { () throws(E) -> T in
             return try self._writeCommitIfThrows(file: file, function: function, line: line, isAwaitableWrite: true, block: block)
         }
     }
@@ -508,7 +508,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         line: Int = #line,
         block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) async -> T {
-        return await self.awaitableWriteQueue.run {
+        return await self.awaitableWriteQueue.runWithoutTaskCancellationHandler {
             do {
                 return try self.performWriteWithTxCompletion(
                     file: file,
