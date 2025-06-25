@@ -20,7 +20,7 @@ public class AsyncAtomic<State> {
     }
 
     public func update<T>(_ block: (inout State) async -> T) async -> T {
-        return await taskQueue.run {
+        return await taskQueue.runWithoutTaskCancellationHandler {
             await block(&state)
         }
     }
