@@ -1225,6 +1225,8 @@ public class GroupManager: NSObject {
         )
     }
 
+    private static let localProfileCommitmentQueue = ConcurrentTaskQueue(concurrentLimit: 1)
+
     /// Ensure that we have a profile key commitment for our local profile
     /// available on the service.
     ///
@@ -1233,6 +1235,12 @@ public class GroupManager: NSObject {
     /// our profile key credential from the service until we've uploaded a profile
     /// key commitment to the service.
     public static func ensureLocalProfileHasCommitmentIfNecessary() async throws {
+        try await localProfileCommitmentQueue.run {
+            try await _ensureLocalProfileHasCommitmentIfNecessary()
+        }
+    }
+
+    private static func _ensureLocalProfileHasCommitmentIfNecessary() async throws {
         let accountManager = DependenciesBridge.shared.tsAccountManager
 
         func hasProfileKeyCredential() throws -> Bool {
