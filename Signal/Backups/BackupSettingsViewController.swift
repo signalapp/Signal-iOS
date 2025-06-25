@@ -16,12 +16,14 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
     }
 
     private let accountKeyStore: AccountKeyStore
+    private let backupAttachmentUploadTracker: BackupSettingsAttachmentUploadTracker
     private let backupDisablingManager: BackupDisablingManager
     private let backupEnablingManager: BackupEnablingManager
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
 
+    private var eventObservationTasks: [Task<Void, Never>]
     private let onLoadAction: OnLoadAction
     private let viewModel: BackupSettingsViewModel
 
@@ -31,6 +33,8 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         self.init(
             onLoadAction: onLoadAction,
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
+            backupAttachmentUploadProgress: DependenciesBridge.shared.backupAttachmentUploadProgress,
+            backupAttachmentQueueStatusManager: DependenciesBridge.shared.backupAttachmentQueueStatusManager,
             backupDisablingManager: AppEnvironment.shared.backupDisablingManager,
             backupEnablingManager: AppEnvironment.shared.backupEnablingManager,
             backupSettingsStore: BackupSettingsStore(),
@@ -42,6 +46,8 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
     init(
         onLoadAction: OnLoadAction,
         accountKeyStore: AccountKeyStore,
+        backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
+        backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager,
         backupDisablingManager: BackupDisablingManager,
         backupEnablingManager: BackupEnablingManager,
         backupSettingsStore: BackupSettingsStore,
@@ -49,17 +55,23 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         db: DB,
     ) {
         self.accountKeyStore = accountKeyStore
+        self.backupAttachmentUploadTracker = BackupSettingsAttachmentUploadTracker(
+            backupAttachmentQueueStatusManager: backupAttachmentQueueStatusManager,
+            backupAttachmentUploadProgress: backupAttachmentUploadProgress
+        )
         self.backupDisablingManager = backupDisablingManager
         self.backupEnablingManager = backupEnablingManager
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
 
+        self.eventObservationTasks = []
         self.onLoadAction = onLoadAction
         self.viewModel = db.read { tx in
             let viewModel = BackupSettingsViewModel(
                 backupEnabledState: .disabled, // Default, set below
                 backupPlanLoadingState: .loading, // Default, loaded after init
+                latestBackupAttachmentUploadUpdate: nil, // Default, loaded after init
                 lastBackupDate: backupSettingsStore.lastBackupDate(tx: tx),
                 lastBackupSizeBytes: backupSettingsStore.lastBackupSizeBytes(tx: tx),
                 backupFrequency: backupSettingsStore.backupFrequency(tx: tx),
@@ -92,14 +104,26 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         // Run as soon as we've set the actionDelegate.
         viewModel.loadBackupPlan()
 
-        NotificationCenter.default.addObserver(
-            forName: BackupSettingsStore.Notifications.backupPlanChanged,
-            object: nil,
-            queue: nil
-        ) { [weak self] _ in
-            guard let self else { return }
-            viewModel.loadBackupPlan()
-        }
+        eventObservationTasks = [
+            Task { [weak self, backupAttachmentUploadTracker] in
+                for await uploadUpdate in await backupAttachmentUploadTracker.start() {
+                    guard let self else { return }
+                    viewModel.latestBackupAttachmentUploadUpdate = uploadUpdate
+                }
+            },
+            Task.detached { [weak self] in
+                for await _ in NotificationCenter.default.notifications(
+                    named: BackupSettingsStore.Notifications.backupPlanChanged
+                ) {
+                    guard let self else { return }
+                    await viewModel.loadBackupPlan()
+                }
+            },
+        ]
+    }
+
+    deinit {
+        eventObservationTasks.forEach { $0.cancel() }
     }
 
     override func viewDidLoad() {
@@ -482,6 +506,8 @@ private class BackupSettingsViewModel: ObservableObject {
 
     @Published var backupPlanLoadingState: BackupPlanLoadingState
     @Published var backupEnabledState: BackupEnabledState
+    @Published var latestBackupAttachmentUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?
+
     @Published var lastBackupDate: Date?
     @Published var lastBackupSizeBytes: UInt64?
     @Published var backupFrequency: BackupFrequency
@@ -494,6 +520,7 @@ private class BackupSettingsViewModel: ObservableObject {
     init(
         backupEnabledState: BackupEnabledState,
         backupPlanLoadingState: BackupPlanLoadingState,
+        latestBackupAttachmentUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?,
         lastBackupDate: Date?,
         lastBackupSizeBytes: UInt64?,
         backupFrequency: BackupFrequency,
@@ -501,6 +528,7 @@ private class BackupSettingsViewModel: ObservableObject {
     ) {
         self.backupEnabledState = backupEnabledState
         self.backupPlanLoadingState = backupPlanLoadingState
+        self.latestBackupAttachmentUploadUpdate = latestBackupAttachmentUploadUpdate
         self.lastBackupDate = lastBackupDate
         self.lastBackupSizeBytes = lastBackupSizeBytes
         self.backupFrequency = backupFrequency
@@ -633,6 +661,14 @@ struct BackupSettingsView: View {
                 )
             }
 
+            if let latestBackupAttachmentUploadUpdate = viewModel.latestBackupAttachmentUploadUpdate {
+                SignalSection {
+                    BackupAttachmentUploadProgressView(
+                        latestUploadUpdate: latestBackupAttachmentUploadUpdate
+                    )
+                }
+            }
+
             switch viewModel.backupEnabledState {
             case .enabled:
                 SignalSection {
@@ -659,7 +695,7 @@ struct BackupSettingsView: View {
                 }
 
                 SignalSection {
-                    BackupEnabledView(viewModel: viewModel)
+                    BackupDetailsView(viewModel: viewModel)
                 }
 
                 SignalSection {
@@ -783,6 +819,49 @@ struct BackupSettingsView: View {
             }
                 .buttonStyle(.plain)
         )
+    }
+}
+
+// MARK: -
+
+private struct BackupAttachmentUploadProgressView: View {
+    let latestUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            ProgressView(value: latestUploadUpdate.percentageUploaded)
+                .progressViewStyle(.linear)
+                .tint(Color.Signal.accent)
+                .scaleEffect(x: 1, y: 1.5)
+                .padding(.vertical, 12)
+
+            let subtitleText: String = switch latestUploadUpdate.state {
+            case .running:
+                String(
+                    format: OWSLocalizedString(
+                        "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING",
+                        comment: "Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the amount uploaded as a percentage, e.g. 10% }}."
+                    ),
+                    latestUploadUpdate.bytesUploaded.formatted(.byteCount(style: .decimal)),
+                    latestUploadUpdate.totalBytesToUpload.formatted(.byteCount(style: .decimal)),
+                    latestUploadUpdate.percentageUploaded.formatted(.percent.precision(.fractionLength(0))),
+                )
+            case .pausedLowBattery:
+                OWSLocalizedString(
+                    "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY",
+                    comment: "Subtitle for a progress bar tracking uploads that are paused because of low battery."
+                )
+            case .pausedNeedsWifi:
+                OWSLocalizedString(
+                    "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI",
+                    comment: "Subtitle for a progress bar tracking uploads that are paused because they need WiFi."
+                )
+            }
+
+            Text(subtitleText)
+                .font(.subheadline)
+                .foregroundStyle(Color.Signal.secondaryLabel)
+        }
     }
 }
 
@@ -980,7 +1059,7 @@ private struct BackupPlanView: View {
 
 // MARK: -
 
-private struct BackupEnabledView: View {
+private struct BackupDetailsView: View {
     let viewModel: BackupSettingsViewModel
 
     var body: some View {
@@ -1105,19 +1184,20 @@ private struct BackupEnabledView: View {
     }
 }
 
-// MARK: -
+// MARK: - Previews
 
 #if DEBUG
 
 private extension BackupSettingsViewModel {
     static func forPreview(
         backupEnabledState: BackupEnabledState,
-        planLoadResult: Result<BackupPlanLoadingState.LoadedBackupPlan, Error>,
+        latestBackupAttachmentUploadUpdateState: BackupSettingsAttachmentUploadTracker.UploadUpdate.State?,
+        backupPlanLoadResult: Result<BackupPlanLoadingState.LoadedBackupPlan, Error>,
     ) -> BackupSettingsViewModel {
         class PreviewActionsDelegate: ActionsDelegate {
-            private let planLoadResult: Result<BackupPlanLoadingState.LoadedBackupPlan, Error>
-            init(planLoadResult: Result<BackupPlanLoadingState.LoadedBackupPlan, Error>) {
-                self.planLoadResult = planLoadResult
+            private let backupPlanLoadResult: Result<BackupPlanLoadingState.LoadedBackupPlan, Error>
+            init(backupPlanLoadResult: Result<BackupPlanLoadingState.LoadedBackupPlan, Error>) {
+                self.backupPlanLoadResult = backupPlanLoadResult
             }
 
             func enableBackups(implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?) { print("Enabling! implicitPlanSelection: \(implicitPlanSelection as Any)") }
@@ -1126,7 +1206,7 @@ private extension BackupSettingsViewModel {
 
             func loadBackupPlan() async throws -> BackupSettingsViewModel.BackupPlanLoadingState.LoadedBackupPlan {
                 try! await Task.sleep(nanoseconds: 2.clampedNanoseconds)
-                return try planLoadResult.get()
+                return try backupPlanLoadResult.get()
             }
             func upgradeFromFreeToPaidPlan() { print("Upgrading!") }
             func manageOrCancelPaidPlan() { print("Managing or canceling!") }
@@ -1142,12 +1222,19 @@ private extension BackupSettingsViewModel {
         let viewModel = BackupSettingsViewModel(
             backupEnabledState: backupEnabledState,
             backupPlanLoadingState: .loading,
+            latestBackupAttachmentUploadUpdate: latestBackupAttachmentUploadUpdateState.map {
+                BackupSettingsAttachmentUploadTracker.UploadUpdate(
+                    state: $0,
+                    bytesUploaded: 400_000_000,
+                    totalBytesToUpload: 1_600_000_000,
+                )
+            },
             lastBackupDate: Date().addingTimeInterval(-1 * .day),
             lastBackupSizeBytes: 2_400_000_000,
             backupFrequency: .daily,
             shouldBackUpOnCellular: false
         )
-        let actionsDelegate = PreviewActionsDelegate(planLoadResult: planLoadResult)
+        let actionsDelegate = PreviewActionsDelegate(backupPlanLoadResult: backupPlanLoadResult)
         viewModel.actionsDelegate = actionsDelegate
         ObjectRetainer.retainObject(actionsDelegate, forLifetimeOf: viewModel)
 
@@ -1156,64 +1243,96 @@ private extension BackupSettingsViewModel {
     }
 }
 
-#Preview("Paid") {
+#Preview("Plan: Paid") {
     BackupSettingsView(viewModel: .forPreview(
         backupEnabledState: .enabled,
-        planLoadResult: .success(.paid(
+        latestBackupAttachmentUploadUpdateState: nil,
+        backupPlanLoadResult: .success(.paid(
             price: FiatMoney(currencyCode: "USD", value: 2.99),
             renewalDate: Date().addingTimeInterval(.week)
         ))
     ))
 }
 
-#Preview("Free") {
+#Preview("Plan: Free") {
     BackupSettingsView(viewModel: .forPreview(
         backupEnabledState: .enabled,
-        planLoadResult: .success(.free)
+        latestBackupAttachmentUploadUpdateState: nil,
+        backupPlanLoadResult: .success(.free)
     ))
 }
 
-#Preview("Expiring") {
+#Preview("Plan: Expiring") {
     BackupSettingsView(viewModel: .forPreview(
         backupEnabledState: .enabled,
-        planLoadResult: .success(.paidExpiringSoon(
+        latestBackupAttachmentUploadUpdateState: nil,
+        backupPlanLoadResult: .success(.paidExpiringSoon(
             expirationDate: Date().addingTimeInterval(.week)
         ))
     ))
 }
 
-#Preview("Plan Network Error") {
+#Preview("Plan: Network Error") {
     BackupSettingsView(viewModel: .forPreview(
         backupEnabledState: .enabled,
-        planLoadResult: .failure(OWSHTTPError.networkFailure(.genericTimeout))
+        latestBackupAttachmentUploadUpdateState: nil,
+        backupPlanLoadResult: .failure(OWSHTTPError.networkFailure(.genericTimeout))
     ))
 }
 
-#Preview("Plan Generic Error") {
+#Preview("Plan: Generic Error") {
     BackupSettingsView(viewModel: .forPreview(
         backupEnabledState: .enabled,
-        planLoadResult: .failure(OWSGenericError(""))
+        latestBackupAttachmentUploadUpdateState: nil,
+        backupPlanLoadResult: .failure(OWSGenericError(""))
     ))
 }
 
-#Preview("Disabled") {
+#Preview("Uploads: Running") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupEnabledState: .enabled,
+        latestBackupAttachmentUploadUpdateState: .running,
+        backupPlanLoadResult: .success(.free)
+    ))
+}
+
+#Preview("Uploads: Paused (WiFi)") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupEnabledState: .enabled,
+        latestBackupAttachmentUploadUpdateState: .pausedNeedsWifi,
+        backupPlanLoadResult: .success(.free)
+    ))
+}
+
+#Preview("Uploads: Paused (Battery)") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupEnabledState: .enabled,
+        latestBackupAttachmentUploadUpdateState: .pausedLowBattery,
+        backupPlanLoadResult: .success(.free)
+    ))
+}
+
+#Preview("Disabling: Success") {
     BackupSettingsView(viewModel: .forPreview(
         backupEnabledState: .disabled,
-        planLoadResult: .success(.free),
+        latestBackupAttachmentUploadUpdateState: nil,
+        backupPlanLoadResult: .success(.free),
     ))
 }
 
-#Preview("Disabling Remotely") {
+#Preview("Disabling: Remotely") {
     BackupSettingsView(viewModel: .forPreview(
         backupEnabledState: .disabledLocallyStillDisablingRemotely,
-        planLoadResult: .success(.free),
+        latestBackupAttachmentUploadUpdateState: nil,
+        backupPlanLoadResult: .success(.free),
     ))
 }
 
-#Preview("Disabling Remotely Error") {
+#Preview("Disabling: Remotely Failed") {
     BackupSettingsView(viewModel: .forPreview(
         backupEnabledState: .disabledLocallyButDisableRemotelyFailed,
-        planLoadResult: .success(.free),
+        latestBackupAttachmentUploadUpdateState: nil,
+        backupPlanLoadResult: .success(.free),
     ))
 }
 

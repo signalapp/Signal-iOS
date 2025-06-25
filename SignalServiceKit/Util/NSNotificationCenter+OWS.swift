@@ -24,3 +24,27 @@ extension NotificationCenter {
         }
     }
 }
+
+// MARK: -
+
+extension NotificationCenter {
+    public struct Observer {
+        fileprivate let wrapped: AnyObject
+    }
+
+    public func addObserver(
+        name: Notification.Name,
+        block: @escaping (Notification) -> Void
+    ) -> Observer {
+        return Observer(wrapped: addObserver(
+            forName: name,
+            object: nil,
+            queue: nil,
+            using: block
+        ))
+    }
+
+    public func removeObserver(_ observer: Observer) {
+        removeObserver(observer.wrapped)
+    }
+}

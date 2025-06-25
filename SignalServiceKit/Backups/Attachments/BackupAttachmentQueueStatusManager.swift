@@ -37,6 +37,8 @@ public enum BackupAttachmentQueueStatus: Equatable {
     public static let notificationQueueTypeKey = "BackupAttachmentQueueType"
 }
 
+// MARK: -
+
 /// Observes various inputs that determine whether we are abke to download backup-sourced
 /// attachments and emits consolidated status updates.
 /// Main actor isolated because most of its inputs are themselves main actor isolated.
@@ -50,6 +52,18 @@ public protocol BackupAttachmentQueueStatusManager {
     /// in order to attempt download resumption.
     func reattemptDiskSpaceChecks()
 }
+
+extension BackupAttachmentQueueStatusManager {
+    func notifyStatusDidChange(type: BackupAttachmentQueueType) {
+        NotificationCenter.default.post(
+            name: BackupAttachmentQueueStatus.didChangeNotification,
+            object: nil,
+            userInfo: [BackupAttachmentQueueStatus.notificationQueueTypeKey: type]
+        )
+    }
+}
+
+// MARK: -
 
 @MainActor
 /// API just for BackupAttachmentDownloadManager to update the state in this class.
@@ -71,6 +85,8 @@ public protocol BackupAttachmentQueueStatusUpdates: BackupAttachmentQueueStatusM
     /// Call when the QueuedBackupAttachmentRecord table is emptied.
     func didEmptyQueue(type: BackupAttachmentQueueType)
 }
+
+// MARK: -
 
 @MainActor
 public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatusUpdates {
@@ -335,7 +351,7 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
         didSet {
             for type in BackupAttachmentQueueType.allCases {
                 if oldValue.status(type: type) != state.status(type: type) {
-                    fireNotification(type: type)
+                    notifyStatusDidChange(type: type)
                 }
             }
         }
@@ -510,13 +526,5 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
     private func downloadDidExperienceOutOfSpaceError() -> BackupAttachmentQueueStatus {
         state.downloadDidExperienceOutOfSpaceError = true
         return state.status(type: .download)
-    }
-
-    private func fireNotification(type: BackupAttachmentQueueType) {
-        NotificationCenter.default.post(
-            name: BackupAttachmentQueueStatus.didChangeNotification,
-            object: nil,
-            userInfo: [BackupAttachmentQueueStatus.notificationQueueTypeKey: type]
-        )
     }
 }
