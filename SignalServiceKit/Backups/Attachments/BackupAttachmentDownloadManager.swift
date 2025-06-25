@@ -217,11 +217,13 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             try await taskQueue.stop()
             return
         }
+
         do {
             try await progress.beginObserving()
         } catch {
             owsFailDebug("Unable to observe download progres \(error.grdbErrorForLogging)")
         }
+
         try await taskQueue.loadAndRunTasks()
     }
 

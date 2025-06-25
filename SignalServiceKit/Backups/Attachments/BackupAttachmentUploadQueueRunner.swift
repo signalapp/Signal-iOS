@@ -167,7 +167,26 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
             try await listMediaManager.queryListMediaIfNeeded()
         }
 
-        try await taskQueue.loadAndRunTasks()
+        switch await statusManager.beginObservingIfNeeded(type: .upload) {
+        case .running:
+            Logger.info("Running Backup uploads.")
+            try await taskQueue.loadAndRunTasks()
+        case .empty:
+            return
+        case .notRegisteredAndReady:
+            Logger.warn("Skipping Backup uploads: not registered and ready.")
+            try await taskQueue.stop()
+        case .noWifiReachability:
+            Logger.warn("Skipping Backup uploads: need wifi.")
+            try await taskQueue.stop()
+        case .lowBattery:
+            Logger.warn("Skipping Backup uploads: low battery.")
+            try await taskQueue.stop()
+        case .suspended:
+            owsFailDebug("Suspended not applicable to uploads!")
+        case .lowDiskSpace:
+            owsFailDebug("Low disk space not applicable to uploads!")
+        }
     }
 
     // MARK: - Observation

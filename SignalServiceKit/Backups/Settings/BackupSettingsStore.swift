@@ -107,6 +107,7 @@ public struct BackupSettingsStore {
     }
 
     // MARK: -
+
     public func firstBackupDate(tx: DBReadTransaction) -> Date? {
         return kvStore.getDate(Keys.firstBackupDate, transaction: tx)
     }

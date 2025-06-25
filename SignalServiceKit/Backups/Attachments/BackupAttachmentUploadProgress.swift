@@ -58,11 +58,6 @@ public actor BackupAttachmentUploadProgress {
             source: source,
             progress: self
         )
-        block(OWSProgress(
-            completedUnitCount: 0,
-            totalUnitCount: queueSnapshot.totalByteCount,
-            sourceProgresses: [:]
-        ))
         observers.append(observer)
         return observer
     }
@@ -174,7 +169,7 @@ public actor BackupAttachmentUploadProgress {
             let source = observer.source
             if completedByteCount >= totalByteCount {
                 if source.completedUnitCount < source.totalUnitCount {
-                    source.incrementCompletedUnitCount(by: source.totalUnitCount - source.completedUnitCount)
+                    source.incrementCompletedUnitCount(by: completedByteCount)
                 }
                 recentlyCompletedUploads.set(key: uploadId, value: ())
             } else {
