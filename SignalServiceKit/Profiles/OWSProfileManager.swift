@@ -1913,25 +1913,13 @@ extension OWSProfileManager {
         let backgroundTask = OWSBackgroundTask(label: "\(#function)")
         defer { backgroundTask.end() }
 
-        return try await Self._downloadAndDecryptAvatar(
-            avatarUrlPath: avatarUrlPath,
-            profileKey: profileKey,
-            remainingRetries: 3
-        )
-    }
-
-    private static func _downloadAndDecryptAvatar(
-        avatarUrlPath: String,
-        profileKey: ProfileKey,
-        remainingRetries: Int
-    ) async throws -> URL {
         assert(!avatarUrlPath.isEmpty)
-        do {
+        return try await Retry.performWithBackoff(maxAttempts: 4, isRetryable: { $0.isNetworkFailureOrTimeout }) {
             Logger.info("")
-            let urlSession = self.avatarUrlSession
+            let urlSession = Self.avatarUrlSession
             let response = try await urlSession.performDownload(avatarUrlPath, method: .get)
             let decryptedFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
-            try decryptAvatar(at: response.downloadUrl, to: decryptedFileUrl, profileKey: profileKey)
+            try Self.decryptAvatar(at: response.downloadUrl, to: decryptedFileUrl, profileKey: profileKey)
             guard Data.ows_isValidImage(at: decryptedFileUrl, mimeType: nil) else {
                 throw OWSGenericError("Couldn't validate avatar")
             }
@@ -1939,12 +1927,6 @@ extension OWSProfileManager {
                 throw OWSGenericError("Couldn't decode image")
             }
             return decryptedFileUrl
-        } catch where error.isNetworkFailureOrTimeout && remainingRetries > 0 {
-            return try await _downloadAndDecryptAvatar(
-                avatarUrlPath: avatarUrlPath,
-                profileKey: profileKey,
-                remainingRetries: remainingRetries - 1
-            )
         }
     }
 
