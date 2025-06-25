@@ -123,14 +123,9 @@ public actor BackupAttachmentUploadProgress {
 
     // MARK: - Private
 
-    private nonisolated let backupSubscriptionManager: BackupSubscriptionManager
     private nonisolated let db: DB
 
-    init(
-        backupSubscriptionManager: BackupSubscriptionManager,
-        db: DB
-    ) {
-        self.backupSubscriptionManager = backupSubscriptionManager
+    init(db: DB) {
         self.db = db
     }
 

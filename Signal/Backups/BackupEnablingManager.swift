@@ -17,6 +17,7 @@ class BackupEnablingManager {
         }
     }
 
+    private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
     private let backupDisablingManager: BackupDisablingManager
     private let backupIdManager: BackupIdManager
     private let backupSettingsStore: BackupSettingsStore
@@ -25,6 +26,7 @@ class BackupEnablingManager {
     private let tsAccountManager: TSAccountManager
 
     init(
+        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupDisablingManager: BackupDisablingManager,
         backupIdManager: BackupIdManager,
         backupSettingsStore: BackupSettingsStore,
@@ -32,6 +34,7 @@ class BackupEnablingManager {
         db: DB,
         tsAccountManager: TSAccountManager
     ) {
+        self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
         self.backupDisablingManager = backupDisablingManager
         self.backupIdManager = backupIdManager
         self.backupSettingsStore = backupSettingsStore
@@ -135,6 +138,8 @@ class BackupEnablingManager {
                         .paid(optimizeLocalStorage: currentOptimizeLocalStorage),
                         tx: tx
                     )
+
+                    backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
                 }
 
             case .pending:

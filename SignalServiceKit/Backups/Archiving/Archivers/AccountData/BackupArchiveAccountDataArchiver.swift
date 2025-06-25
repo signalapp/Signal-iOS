@@ -50,6 +50,7 @@ extension BackupArchive {
 
 /// Archives the ``BackupProto_AccountData`` frame.
 public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
+    private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let chatStyleArchiver: BackupArchiveChatStyleArchiver
@@ -71,6 +72,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     private let usernameEducationManager: UsernameEducationManager
 
     public init(
+        backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         chatStyleArchiver: BackupArchiveChatStyleArchiver,
@@ -91,6 +93,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         udManager: BackupArchive.Shims.UDManager,
         usernameEducationManager: UsernameEducationManager
     ) {
+        self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.chatStyleArchiver = chatStyleArchiver
@@ -372,7 +375,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         }
         switch backupLevel {
         case .paid:
-            uploadEra = backupSubscriptionManager.getUploadEra(tx: context.tx)
+            uploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: context.tx)
             backupPlan = .paid(
                 optimizeLocalStorage: accountData.accountSettings.optimizeOnDeviceStorage
             )
@@ -386,11 +389,11 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             // invalidating our belief in any attachment uploads.
             // Querying the list endpoint will bring us up to date on the upload status
             // within this "era" otherwise.
-            uploadEra = backupSubscriptionManager.getUploadEra(tx: context.tx)
+            uploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: context.tx)
             backupPlan = .free
         case .none:
             // See above comment; the same applies
-            uploadEra = backupSubscriptionManager.getUploadEra(tx: context.tx)
+            uploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: context.tx)
             backupPlan = .disabled
         }
         backupSettingsStore.setBackupPlan(backupPlan, tx: context.tx)

@@ -42,16 +42,6 @@ public enum BackupSubscription {
                 return false
             }
         }
-
-        fileprivate var uploadEra: String {
-            // We just hash and base64 encode the subscriptionId as the "upload era".
-            // All the "era" means is if it changes, all existing uploads to the backup
-            // tier should be considered invalid and needing reupload.
-            // Hash so as to avoid putting the unsafe-to-log subscription id in more places.
-            var hasher = SHA256()
-            hasher.update(data: subscriberId)
-            return Data(hasher.finalize()).base64EncodedString()
-        }
     }
 
     /// Describes the result of initiating a StoreKit purchase.
@@ -102,6 +92,7 @@ public final class BackupSubscriptionManager {
 
     private let logger = PrefixedLogger(prefix: "[Backups][Sub]")
 
+    private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
     private let db: any DB
@@ -112,6 +103,7 @@ public final class BackupSubscriptionManager {
     private let tsAccountManager: TSAccountManager
 
     init(
+        backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
@@ -120,13 +112,14 @@ public final class BackupSubscriptionManager {
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager
     ) {
+        self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
         self.db = db
         self.networkManager = networkManager
         self.receiptCredentialRedemptionJobQueue = receiptCredentialRedemptionJobQueue
         self.storageServiceManager = storageServiceManager
-        self.store = Store()
+        self.store = Store(backupAttachmentUploadEraStore: backupAttachmentUploadEraStore)
         self.tsAccountManager = tsAccountManager
 
         listenForTransactionUpdates()
@@ -599,19 +592,6 @@ public final class BackupSubscriptionManager {
         return newSubscriberId
     }
 
-    // MARK: - UploadEra
-
-    // UploadEra is set when we set subscriberId and doesn't change until we affirmatively
-    // set a new subscriberId. The only situation where it is unset is if we have never
-    // subscribed on this device. In this case, we choose an arbitrary string as the era;
-    // it doesn't matter what it is except that if we subscribe in the future it will
-    // change to a different value.
-    private static let initialUploadEra = "initialUploadEra"
-
-    public func getUploadEra(tx: DBReadTransaction) -> String {
-        return store.getIAPSubscriberData(tx: tx)?.uploadEra ?? Self.initialUploadEra
-    }
-
     // MARK: - Persistence
 
     private struct Store: SubscriptionRedemptionNecessityCheckerStore {
@@ -631,9 +611,11 @@ public final class BackupSubscriptionManager {
             static let lastRedemptionNecessaryCheck = "lastRedemptionNecessaryCheck"
         }
 
+        private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
         private let kvStore: KeyValueStore
 
-        init() {
+        init(backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore) {
+            self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
             self.kvStore = KeyValueStore(collection: "BackupSubscriptionManager")
         }
 
@@ -672,14 +654,8 @@ public final class BackupSubscriptionManager {
                 kvStore.setString(purchaseToken, key: Keys.purchaseToken, transaction: tx)
             }
 
-            // UploadEra, which is derived from the stored IAPSubscriberData, should ONLY
-            // change when and if we begin a new subscription, and must not be wiped when
-            // a subscription ends. If the semantics of stored IAPSubscriberData ever change
-            // such that we actively delete existing data based on subscription state changes,
-            // we need to start storing uploadEra independently so that we can ensure it
-            // isn't deleted and only changes at the start of a new subscription.
-            let iapSubscriberDataCanary: IAPSubscriberData? = iapSubscriberData
-            owsAssertDebug(iapSubscriberDataCanary != nil, "Canary: we should never wipe IAPSubscriberData")
+            // Any time we set the subscriber ID, rotate the upload era.
+            backupAttachmentUploadEraStore.rotateUploadEra(tx: tx)
         }
 
         // MARK: - SubscriptionRedemptionNecessityCheckerStore

@@ -42,9 +42,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let avatarFetcher: BackupArchiveAvatarFetcher
     private let backupArchiveErrorPresenter: BackupArchiveErrorPresenter
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
+    private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
-    private let backupSubscriptionManager: BackupSubscriptionManager
     private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
     private let callLinkRecipientArchiver: BackupArchiveCallLinkRecipientArchiver
     private let chatArchiver: BackupArchiveChatArchiver
@@ -81,9 +81,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         avatarFetcher: BackupArchiveAvatarFetcher,
         backupArchiveErrorPresenter: BackupArchiveErrorPresenter,
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
+        backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
-        backupSubscriptionManager: BackupSubscriptionManager,
         backupStickerPackDownloadStore: BackupStickerPackDownloadStore,
         callLinkRecipientArchiver: BackupArchiveCallLinkRecipientArchiver,
         chatArchiver: BackupArchiveChatArchiver,
@@ -117,10 +117,10 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.avatarFetcher = avatarFetcher
         self.backupArchiveErrorPresenter = backupArchiveErrorPresenter
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
+        self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
-        self.backupSubscriptionManager = backupSubscriptionManager
         self.callLinkRecipientArchiver = callLinkRecipientArchiver
         self.chatArchiver = chatArchiver
         self.chatItemArchiver = chatItemArchiver
@@ -401,7 +401,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             }
             try Task.checkCancellation()
 
-            let currentBackupAttachmentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
+            let currentBackupAttachmentUploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
 
             let customChatColorContext = BackupArchive.CustomChatColorArchivingContext(
                 bencher: bencher,

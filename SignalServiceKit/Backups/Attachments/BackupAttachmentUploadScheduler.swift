@@ -70,20 +70,20 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
 
     private let attachmentStore: AttachmentStore
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
-    private let backupSubscriptionManager: BackupSubscriptionManager
+    private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let dateProvider: DateProvider
     private let interactionStore: InteractionStore
 
     public init(
         attachmentStore: AttachmentStore,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
-        backupSubscriptionManager: BackupSubscriptionManager,
+        backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         dateProvider: @escaping DateProvider,
         interactionStore: InteractionStore,
     ) {
         self.attachmentStore = attachmentStore
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
-        self.backupSubscriptionManager = backupSubscriptionManager
+        self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.dateProvider = dateProvider
         self.interactionStore = interactionStore
     }
@@ -126,7 +126,7 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
             return
         }
 
-        let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
+        let currentUploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
 
         let eligibility = Eligibility(
             stream,
@@ -169,7 +169,7 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
             return
         }
 
-        let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
+        let currentUploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
 
         let eligibility = Eligibility(
             stream,

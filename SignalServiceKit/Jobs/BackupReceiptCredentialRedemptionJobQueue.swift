@@ -18,6 +18,7 @@ class BackupReceiptCredentialRedemptionJobQueue {
 
     public init(
         authCredentialStore: AuthCredentialStore,
+        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupSettingsStore: BackupSettingsStore,
         db: any DB,
         networkManager: NetworkManager,
@@ -25,6 +26,7 @@ class BackupReceiptCredentialRedemptionJobQueue {
     ) {
         self.jobRunnerFactory = BackupReceiptCredentialRedemptionJobRunnerFactory(
             authCredentialStore: authCredentialStore,
+            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupSettingsStore: backupSettingsStore,
             db: db,
             networkManager: networkManager
@@ -70,17 +72,20 @@ class BackupReceiptCredentialRedemptionJobQueue {
 
 private class BackupReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
     private let authCredentialStore: AuthCredentialStore
+    private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
     private let backupSettingsStore: BackupSettingsStore
     private let db: any DB
     private let networkManager: NetworkManager
 
     init(
         authCredentialStore: AuthCredentialStore,
+        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupSettingsStore: BackupSettingsStore,
         db: any DB,
         networkManager: NetworkManager
     ) {
         self.authCredentialStore = authCredentialStore
+        self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
         self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.networkManager = networkManager
@@ -89,6 +94,7 @@ private class BackupReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactor
     func buildRunner() -> BackupReceiptCredentialRedemptionJobRunner {
         return BackupReceiptCredentialRedemptionJobRunner(
             authCredentialStore: authCredentialStore,
+            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupSettingsStore: backupSettingsStore,
             db: db,
             networkManager: networkManager,
@@ -99,6 +105,7 @@ private class BackupReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactor
     func buildRunner(continuation: CheckedContinuation<Void, Error>) -> BackupReceiptCredentialRedemptionJobRunner {
         return BackupReceiptCredentialRedemptionJobRunner(
             authCredentialStore: authCredentialStore,
+            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupSettingsStore: backupSettingsStore,
             db: db,
             networkManager: networkManager,
@@ -124,6 +131,7 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
     }
 
     private let authCredentialStore: AuthCredentialStore
+    private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
     private let backupSettingsStore: BackupSettingsStore
     private let db: any DB
     private let networkManager: NetworkManager
@@ -133,12 +141,14 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
 
     init(
         authCredentialStore: AuthCredentialStore,
+        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupSettingsStore: BackupSettingsStore,
         db: any DB,
         networkManager: NetworkManager,
         continuation: CheckedContinuation<Void, Error>?
     ) {
         self.authCredentialStore = authCredentialStore
+        self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
         self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.networkManager = networkManager
@@ -173,6 +183,8 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                         .paid(optimizeLocalStorage: false),
                         tx: tx
                     )
+
+                    backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
                 case .disabled:
                     // Don't sneakily enable Backups!
                     break

@@ -411,6 +411,7 @@ public class AppSetup {
         )
 
         let backupSettingsStore = BackupSettingsStore()
+        let backupAttachmentUploadEraStore = BackupAttachmentUploadEraStore()
         let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
         let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
 
@@ -428,28 +429,7 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(
-            authCredentialStore: authCredentialStore,
-            backupSettingsStore: backupSettingsStore,
-            db: db,
-            networkManager: networkManager,
-            reachabilityManager: reachabilityManager
-        )
-        let backupSubscriptionManager = BackupSubscriptionManager(
-            backupSettingsStore: backupSettingsStore,
-            dateProvider: dateProvider,
-            db: db,
-            networkManager: networkManager,
-            receiptCredentialRedemptionJobQueue: backupReceiptCredentialRedemptionJobQueue,
-            storageServiceManager: storageServiceManager,
-            tsAccountManager: tsAccountManager
-        )
-
-        let backupAttachmentUploadProgress = BackupAttachmentUploadProgress(
-            backupSubscriptionManager: backupSubscriptionManager,
-            db: db
-        )
-
+        let backupAttachmentUploadProgress = BackupAttachmentUploadProgress(db: db)
         let backupAttachmentDownloadProgress = BackupAttachmentDownloadProgress(
             appContext: appContext,
             appReadiness: appReadiness,
@@ -463,7 +443,7 @@ public class AppSetup {
         let backupAttachmentUploadScheduler = BackupAttachmentUploadSchedulerImpl(
             attachmentStore: attachmentStore,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
-            backupSubscriptionManager: backupSubscriptionManager,
+            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             dateProvider: dateProvider,
             interactionStore: interactionStore,
         )
@@ -476,10 +456,10 @@ public class AppSetup {
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
+            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
-            backupSubscriptionManager: backupSubscriptionManager,
             dateProvider: dateProvider,
             db: db,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
@@ -493,16 +473,36 @@ public class AppSetup {
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
+            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupKeyMaterial: backupKeyMaterial,
             backupListMediaManager: backupListMediaManager,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
-            backupSubscriptionManager: backupSubscriptionManager,
             dateProvider: dateProvider,
             db: db,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
             progress: backupAttachmentUploadProgress,
             statusManager: backupAttachmentQueueStatusManager,
+            tsAccountManager: tsAccountManager
+        )
+
+        let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(
+            authCredentialStore: authCredentialStore,
+            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
+            backupSettingsStore: backupSettingsStore,
+            db: db,
+            networkManager: networkManager,
+            reachabilityManager: reachabilityManager
+        )
+
+        let backupSubscriptionManager = BackupSubscriptionManager(
+            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
+            backupSettingsStore: backupSettingsStore,
+            dateProvider: dateProvider,
+            db: db,
+            networkManager: networkManager,
+            receiptCredentialRedemptionJobQueue: backupReceiptCredentialRedemptionJobQueue,
+            storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager
         )
 
@@ -1174,6 +1174,7 @@ public class AppSetup {
 
         let backupArchiveManager = BackupArchiveManagerImpl(
             accountDataArchiver: BackupArchiveAccountDataArchiver(
+                backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
                 backupSettingsStore: backupSettingsStore,
                 backupSubscriptionManager: backupSubscriptionManager,
                 chatStyleArchiver: backupChatStyleArchiver,
@@ -1205,9 +1206,9 @@ public class AppSetup {
             avatarFetcher: backupArchiveAvatarFetcher,
             backupArchiveErrorPresenter: backupArchiveErrorPresenter,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
+            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
-            backupSubscriptionManager: backupSubscriptionManager,
             backupStickerPackDownloadStore: backupStickerPackDownloadStore,
             callLinkRecipientArchiver: BackupArchiveCallLinkRecipientArchiver(
                 callLinkStore: callLinkStore
@@ -1377,8 +1378,8 @@ public class AppSetup {
             attachmentStore: attachmentStore,
             attachmentThumbnailService: attachmentThumbnailService,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupSettingsStore: backupSettingsStore,
-            backupSubscriptionManager: backupSubscriptionManager,
             dateProvider: dateProvider,
             db: db,
             listMediaManager: backupListMediaManager,
@@ -1423,6 +1424,7 @@ public class AppSetup {
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentQueueStatusManager: backupAttachmentQueueStatusManager,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
+            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupExportJob: backupExportJob,
             backupIdManager: backupIdManager,
             backupKeyMaterial: backupKeyMaterial,

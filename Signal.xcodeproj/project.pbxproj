@@ -2745,6 +2745,7 @@
 		D9C42C2F2B6C60600086B142 /* CallRecordDeleteManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C42C2E2B6C60600086B142 /* CallRecordDeleteManagerTest.swift */; };
 		D9C42C312B6C60FE0086B142 /* MockDeletedCallRecordCleanupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C42C302B6C60FE0086B142 /* MockDeletedCallRecordCleanupManager.swift */; };
 		D9C42C332B6C66320086B142 /* MockCallRecordDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C42C322B6C66320086B142 /* MockCallRecordDeleteManager.swift */; };
+		D9C4C0852E0A75F200B74696 /* BackupAttachmentUploadEraStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C4C0842E0A75EF00B74696 /* BackupAttachmentUploadEraStore.swift */; };
 		D9C544292B8578B50036F274 /* CallRecord+CallStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C544282B8578B50036F274 /* CallRecord+CallStatus.swift */; };
 		D9C5442B2B8578F30036F274 /* CallRecordMissedCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C5442A2B8578F30036F274 /* CallRecordMissedCallManager.swift */; };
 		D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */; };
@@ -6694,6 +6695,7 @@
 		D9C42C2E2B6C60600086B142 /* CallRecordDeleteManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordDeleteManagerTest.swift; sourceTree = "<group>"; };
 		D9C42C302B6C60FE0086B142 /* MockDeletedCallRecordCleanupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDeletedCallRecordCleanupManager.swift; sourceTree = "<group>"; };
 		D9C42C322B6C66320086B142 /* MockCallRecordDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallRecordDeleteManager.swift; sourceTree = "<group>"; };
+		D9C4C0842E0A75EF00B74696 /* BackupAttachmentUploadEraStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadEraStore.swift; sourceTree = "<group>"; };
 		D9C544282B8578B50036F274 /* CallRecord+CallStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallRecord+CallStatus.swift"; sourceTree = "<group>"; };
 		D9C5442A2B8578F30036F274 /* CallRecordMissedCallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordMissedCallManager.swift; sourceTree = "<group>"; };
 		D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgrade.swift; sourceTree = "<group>"; };
@@ -9691,6 +9693,7 @@
 				667BB2072C580C1400E79B57 /* BackupAttachmentDownloadStore.swift */,
 				66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */,
 				66F98DDD2DB70739009F1A86 /* BackupAttachmentQueueStatusManager.swift */,
+				D9C4C0842E0A75EF00B74696 /* BackupAttachmentUploadEraStore.swift */,
 				6683454F2DCA9BE700566AB3 /* BackupAttachmentUploadProgress.swift */,
 				663AAF212E01EDD600B9C4B8 /* BackupAttachmentUploadQueueRunner.swift */,
 				66734F002CA1ED3A00558494 /* BackupAttachmentUploadScheduler.swift */,
@@ -17702,6 +17705,7 @@
 				6685FEF02DB073FD0086CF3C /* BackupAttachmentDownloadProgress.swift in Sources */,
 				667BB2082C580C1400E79B57 /* BackupAttachmentDownloadStore.swift in Sources */,
 				66F98DDE2DB7073F009F1A86 /* BackupAttachmentQueueStatusManager.swift in Sources */,
+				D9C4C0852E0A75F200B74696 /* BackupAttachmentUploadEraStore.swift in Sources */,
 				668345502DCA9BEE00566AB3 /* BackupAttachmentUploadProgress.swift in Sources */,
 				663AAF222E01EDDD00B9C4B8 /* BackupAttachmentUploadQueueRunner.swift in Sources */,
 				66734F012CA1ED3F00558494 /* BackupAttachmentUploadScheduler.swift in Sources */,

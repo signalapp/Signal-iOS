@@ -76,6 +76,7 @@ public class AppEnvironment: NSObject {
         self.badgeManager = badgeManager
         self.backupDisablingManager = backupDisablingManager
         self.backupEnablingManager = BackupEnablingManager(
+            backupAttachmentUploadQueueRunner: DependenciesBridge.shared.backupAttachmentUploadQueueRunner,
             backupDisablingManager: backupDisablingManager,
             backupIdManager: DependenciesBridge.shared.backupIdManager,
             backupSettingsStore: BackupSettingsStore(),

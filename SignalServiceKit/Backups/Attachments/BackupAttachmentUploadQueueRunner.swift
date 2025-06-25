@@ -43,7 +43,6 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
-    private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: any DB
     private let listMediaManager: BackupListMediaManager
     private let progress: BackupAttachmentUploadProgress
@@ -57,11 +56,11 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
         attachmentUploadManager: AttachmentUploadManager,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
+        backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupKeyMaterial: BackupKeyMaterial,
         backupListMediaManager: BackupListMediaManager,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
-        backupSubscriptionManager: BackupSubscriptionManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
@@ -74,7 +73,6 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
-        self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
         self.listMediaManager = backupListMediaManager
         self.progress = progress
@@ -85,10 +83,10 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
+            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
-            backupSubscriptionManager: backupSubscriptionManager,
             dateProvider: dateProvider,
             db: db,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
@@ -200,10 +198,10 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
         private let attachmentUploadManager: AttachmentUploadManager
         private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
         private let backupAttachmentUploadStore: BackupAttachmentUploadStore
+        private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
         private let backupKeyMaterial: BackupKeyMaterial
         private let backupRequestManager: BackupRequestManager
         private let backupSettingsStore: BackupSettingsStore
-        private let backupSubscriptionManager: BackupSubscriptionManager
         private let dateProvider: DateProvider
         private let db: any DB
         private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
@@ -218,10 +216,10 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
             attachmentUploadManager: AttachmentUploadManager,
             backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
             backupAttachmentUploadStore: BackupAttachmentUploadStore,
+            backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
             backupKeyMaterial: BackupKeyMaterial,
             backupRequestManager: BackupRequestManager,
             backupSettingsStore: BackupSettingsStore,
-            backupSubscriptionManager: BackupSubscriptionManager,
             dateProvider: @escaping DateProvider,
             db: any DB,
             orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
@@ -233,10 +231,10 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
             self.attachmentUploadManager = attachmentUploadManager
             self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
             self.backupAttachmentUploadStore = backupAttachmentUploadStore
+            self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
             self.backupKeyMaterial = backupKeyMaterial
             self.backupRequestManager = backupRequestManager
             self.backupSettingsStore = backupSettingsStore
-            self.backupSubscriptionManager = backupSubscriptionManager
             self.dateProvider = dateProvider
             self.db = db
             self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
@@ -267,7 +265,7 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
                 return (
                     self.attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx),
                     self.backupSettingsStore.backupPlan(tx: tx),
-                    self.backupSubscriptionManager.getUploadEra(tx: tx)
+                    self.backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
                 )
             }
             guard let attachment else {

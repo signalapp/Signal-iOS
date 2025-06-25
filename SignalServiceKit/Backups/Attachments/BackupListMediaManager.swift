@@ -20,10 +20,10 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
+    private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupKeyMaterial: BackupKeyMaterial
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
-    private let backupSubscriptionManager: BackupSubscriptionManager
     private let dateProvider: DateProvider
     private let db: any DB
     private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
@@ -40,10 +40,10 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
+        backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupKeyMaterial: BackupKeyMaterial,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
-        backupSubscriptionManager: BackupSubscriptionManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
@@ -57,10 +57,10 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
+        self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupKeyMaterial = backupKeyMaterial
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
-        self.backupSubscriptionManager = backupSubscriptionManager
         self.dateProvider = dateProvider
         self.db = db
         self.kvStore = KeyValueStore(collection: "ListBackupMediaManager")
@@ -90,7 +90,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             backupKey,
             backupPlan
         ) = try db.read { tx in
-            let currentUploadEra = self.backupSubscriptionManager.getUploadEra(tx: tx)
+            let currentUploadEra = self.backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
             return (
                 self.tsAccountManager.registrationState(tx: tx).isPrimaryDevice,
                 self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
@@ -162,7 +162,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 try await result.storedMediaObjects.forEachChunk(chunkSize: 100) { chunk in
                     try await db.awaitableWrite { tx in
                         let backupPlan = backupSettingsStore.backupPlan(tx: tx)
-                        let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
+                        let currentUploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
                         for storedMediaObject in chunk {
                             try self.handleListedMedia(
                                 storedMediaObject,

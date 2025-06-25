@@ -79,8 +79,8 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
     private let attachmentStore: AttachmentStore
     private let attachmentThumbnailService: AttachmentThumbnailService
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupSettingsStore: BackupSettingsStore
-    private let backupSubscriptionManager: BackupSubscriptionManager
     private let dateProvider: DateProvider
     private let db: DB
     private let listMediaManager: BackupListMediaManager
@@ -91,8 +91,8 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         attachmentStore: AttachmentStore,
         attachmentThumbnailService: AttachmentThumbnailService,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupSettingsStore: BackupSettingsStore,
-        backupSubscriptionManager: BackupSubscriptionManager,
         dateProvider: @escaping DateProvider,
         db: DB,
         listMediaManager: BackupListMediaManager,
@@ -102,8 +102,8 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         self.attachmentStore = attachmentStore
         self.attachmentThumbnailService = attachmentThumbnailService
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupSettingsStore = backupSettingsStore
-        self.backupSubscriptionManager = backupSubscriptionManager
         self.dateProvider = dateProvider
         self.db = db
         self.listMediaManager = listMediaManager
@@ -153,7 +153,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                 return ([], false)
             }
 
-            let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
+            let currentUploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
 
             var attachmentQuery = Attachment.Record
                 // We only offload downloaded attachments, duh
@@ -229,7 +229,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                 return
             }
 
-            let currentUploadEra = backupSubscriptionManager.getUploadEra(tx: tx)
+            let currentUploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
 
             for nextAttachment in candidateAttachments {
                 // Refetch the attachment and reference.
