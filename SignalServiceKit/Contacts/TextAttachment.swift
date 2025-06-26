@@ -49,7 +49,8 @@ public struct UnsentTextAttachment {
                         previewDescription: nil,
                         date: nil
                     ),
-                    imageDataSource: nil
+                    imageDataSource: nil,
+                    isForwarded: linkPreview.isForwarded,
                 )
             } catch {
                 Logger.error("Failed to generate link preview.")
@@ -397,7 +398,12 @@ public struct TextAttachment: Codable, Equatable {
             let urlString = preview.urlString,
             let url = URL(string: urlString)
         {
-            linkPreviewDraft = OWSLinkPreviewDraft(url: url, title: preview.title)
+            linkPreviewDraft = OWSLinkPreviewDraft(
+                url: url,
+                title: preview.title,
+                // This code path is only used for forwarding
+                isForwarded: true
+            )
         }
         return UnsentTextAttachment(
             body: body,

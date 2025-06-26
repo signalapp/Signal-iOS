@@ -31,13 +31,16 @@ public class OWSLinkPreviewDraft: Equatable {
     public let previewDescription: String?
     public let date: Date?
 
+    public let isForwarded: Bool
+
     public init(
         url: URL,
         title: String?,
         imageData: Data? = nil,
         imageMimeType: String? = nil,
         previewDescription: String? = nil,
-        date: Date? = nil
+        date: Date? = nil,
+        isForwarded: Bool,
     ) {
         self.url = url
         self.title = title
@@ -45,6 +48,7 @@ public class OWSLinkPreviewDraft: Equatable {
         self.imageMimeType = imageMimeType
         self.previewDescription = previewDescription
         self.date = date
+        self.isForwarded = isForwarded
     }
 
     public var displayDomain: String? {

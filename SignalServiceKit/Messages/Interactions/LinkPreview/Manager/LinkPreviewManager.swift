@@ -33,7 +33,7 @@ public protocol LinkPreviewManager {
     func buildDataSource<Builder: LinkPreviewBuilder>(
         from draft: OWSLinkPreviewDraft,
         builder: Builder
-    ) throws -> Builder.DataSource
+    ) throws -> LinkPreviewDataSource
 
     /// Uses the default builder.
     func buildLinkPreview(
@@ -42,7 +42,7 @@ public protocol LinkPreviewManager {
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
 
     func buildLinkPreview<Builder: LinkPreviewBuilder>(
-        from dataSource: Builder.DataSource,
+        from dataSource: LinkPreviewDataSource,
         builder: Builder,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>

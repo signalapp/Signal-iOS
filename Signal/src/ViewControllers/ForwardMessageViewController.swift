@@ -782,7 +782,8 @@ public struct ForwardMessageItem {
             imageData: linkPreviewImage?.imageData,
             imageMimeType: linkPreviewImage?.mimetype,
             previewDescription: linkPreview.previewDescription,
-            date: linkPreview.date
+            date: linkPreview.date,
+            isForwarded: true,
         )
     }
 }

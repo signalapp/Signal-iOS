@@ -8,11 +8,10 @@ import Foundation
 public struct LinkPreviewDataSource {
     public let metadata: OWSLinkPreview.Metadata
     public let imageDataSource: AttachmentDataSource?
+    public let isForwarded: Bool
 }
 
 public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
-
-    public typealias DataSource = LinkPreviewDataSource
 
     private let attachmentManager: AttachmentManager
     private let attachmentValidator: AttachmentContentValidator
@@ -35,7 +34,7 @@ public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
             date: draft.date
         )
         guard let imageData = draft.imageData, let imageMimeType = draft.imageMimeType else {
-            return .init(metadata: metadata, imageDataSource: nil)
+            return .init(metadata: metadata, imageDataSource: nil, isForwarded: draft.isForwarded)
         }
         let imageDataSource: AttachmentDataSource = try attachmentValidator.validateContents(
             data: imageData,
@@ -43,7 +42,7 @@ public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
             renderingFlag: .default,
             sourceFilename: nil
         )
-        return .init(metadata: metadata, imageDataSource: imageDataSource)
+        return .init(metadata: metadata, imageDataSource: imageDataSource, isForwarded: draft.isForwarded)
     }
 
     public func createLinkPreview(

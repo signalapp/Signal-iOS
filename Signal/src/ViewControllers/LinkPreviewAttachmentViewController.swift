@@ -212,7 +212,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         case (.loaded(let linkPreviewDraft), _):
             newState = .draft(linkPreviewDraft)
         case (.failed, .some(let linkPreviewUrl)):
-            newState = .draft(OWSLinkPreviewDraft(url: linkPreviewUrl, title: nil))
+            newState = .draft(OWSLinkPreviewDraft(url: linkPreviewUrl, title: nil, isForwarded: false))
         case (.failed, .none):
             owsFailDebug("Must have linkPreviewUrl in the .failed state.")
             newState = .placeholder

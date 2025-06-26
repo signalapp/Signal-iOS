@@ -7,14 +7,12 @@ import Foundation
 
 public protocol LinkPreviewBuilder {
 
-    associatedtype DataSource
-
     func buildDataSource(
         _ draft: OWSLinkPreviewDraft
-    ) throws -> DataSource
+    ) throws -> LinkPreviewDataSource
 
     func createLinkPreview(
-        from dataSource: DataSource,
+        from dataSource: LinkPreviewDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
 

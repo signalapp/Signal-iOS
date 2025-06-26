@@ -45,14 +45,15 @@ public class MockLinkPreviewManager: LinkPreviewManager {
                 previewDescription: draft.previewDescription,
                 date: draft.date
             ),
-            imageDataSource: nil
+            imageDataSource: nil,
+            isForwarded: draft.isForwarded
         )
     }
 
     public func buildDataSource<Builder: LinkPreviewBuilder>(
         from draft: OWSLinkPreviewDraft,
         builder: Builder
-    ) throws -> Builder.DataSource {
+    ) throws -> LinkPreviewDataSource {
         return try builder.buildDataSource(draft)
     }
 
@@ -64,7 +65,7 @@ public class MockLinkPreviewManager: LinkPreviewManager {
     }
 
     public func buildLinkPreview<Builder: LinkPreviewBuilder>(
-        from dataSource: Builder.DataSource,
+        from dataSource: LinkPreviewDataSource,
         builder: Builder,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {

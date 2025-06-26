@@ -60,7 +60,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             linkPreviewDraft = try await self.linkPreviewDraft(forGroupInviteLink: url)
         } else if let callLink = CallLink(url: url) {
             let linkName = try await self.fetchName(forCallLink: callLink)
-            linkPreviewDraft = OWSLinkPreviewDraft(url: url, title: linkName)
+            linkPreviewDraft = OWSLinkPreviewDraft(url: url, title: linkName, isForwarded: false)
         } else {
             linkPreviewDraft = try await self.fetchLinkPreview(forGenericUrl: url)
         }
@@ -121,7 +121,8 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             imageData: previewThumbnail?.imageData,
             imageMimeType: previewThumbnail?.mimetype,
             previewDescription: normalizedDescription,
-            date: dateForLinkPreview
+            date: dateForLinkPreview,
+            isForwarded: false,
         )
     }
 
@@ -327,7 +328,8 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             url: url,
             title: title,
             imageData: previewThumbnail?.imageData,
-            imageMimeType: previewThumbnail?.mimetype
+            imageMimeType: previewThumbnail?.mimetype,
+            isForwarded: false
         )
     }
 
@@ -369,7 +371,8 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             url: url,
             title: title,
             imageData: previewThumbnail?.imageData,
-            imageMimeType: previewThumbnail?.mimetype
+            imageMimeType: previewThumbnail?.mimetype,
+            isForwarded: false,
         )
     }
 
