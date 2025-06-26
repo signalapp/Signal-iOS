@@ -1,1 +1,1 @@
-• Message status indicators (sent, delivered, etc.) are now supported by the iOS VoiceOver feature in order to improve accessibility for blind and low-vision individuals.
+• Os indicadores de status das mensagens (enviadas, entregues etc.) agora são compatíveis com o recurso VoiceOver do iOS para melhorar a acessibilidade de pessoas cegas e com baixa visão.

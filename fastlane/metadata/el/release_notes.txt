@@ -1,1 +1,1 @@
-• Message status indicators (sent, delivered, etc.) are now supported by the iOS VoiceOver feature in order to improve accessibility for blind and low-vision individuals.
+• Οι ενδείξεις κατάστασης μηνυμάτων (αποστολή, παράδοση κ.λπ.) υποστηρίζονται πλέον από τη λειτουργία VoiceOver του iOS, προκειμένου να βελτιωθεί η προσβασιμότητα για τυφλά άτομα και άτομα με χαμηλή όραση.
