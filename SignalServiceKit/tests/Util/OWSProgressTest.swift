@@ -9,6 +9,7 @@ import XCTest
 class OWSProgressTest: XCTestCase {
 
     func testSimpleSourceSink() async {
+        var sinkRef: OWSProgressSink?
         let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
                 var outputs = [UInt64]()
@@ -18,6 +19,7 @@ class OWSProgressTest: XCTestCase {
                         outputsContinuation.resume(returning: outputs)
                     }
                 }
+                sinkRef = sink
                 let source = await sink.addSource(withLabel: "1", unitCount: 100)
                 let inputTask = Task {
                     for _ in 0..<10 {
@@ -33,9 +35,11 @@ class OWSProgressTest: XCTestCase {
         XCTAssertGreaterThanOrEqual(outputs.count, 1)
         XCTAssertLessThanOrEqual(outputs.count, 11)
         XCTAssertEqual(outputs.last, 100)
+        XCTAssertNotNil(sinkRef)
     }
 
     func testTwoSources() async {
+        var sinkRef: OWSProgressSink?
         let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
                 let outputs = AtomicValue<[UInt64]>([], lock: .init())
@@ -48,6 +52,7 @@ class OWSProgressTest: XCTestCase {
                         outputsContinuation.resume(returning: _outputs)
                     }
                 }
+                sinkRef = sink
                 let source1 = await sink.addSource(withLabel: "1", unitCount: 50)
                 let source2 = await sink.addSource(withLabel: "2", unitCount: 50)
                 let inputTask1 = Task {
@@ -72,9 +77,11 @@ class OWSProgressTest: XCTestCase {
         // initial 0 emission, plus two updates to total unit count, plus 10 updates.
         XCTAssertLessThanOrEqual(outputs.count, 13)
         XCTAssertEqual(outputs.last, 100)
+        XCTAssertNotNil(sinkRef)
     }
 
     func testTwoLayers() async {
+        var sinkRef: OWSProgressSink?
         let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
                 var outputs = [UInt64]()
@@ -84,6 +91,7 @@ class OWSProgressTest: XCTestCase {
                         outputsContinuation.resume(returning: outputs)
                     }
                 }
+                sinkRef = sink
                 let source1 = await sink.addSource(withLabel: "1", unitCount: 50)
                 let child = await sink.addChild(withLabel: "a", unitCount: 50)
                 let source2 = await child.addSource(withLabel: "2", unitCount: 100)
@@ -103,6 +111,7 @@ class OWSProgressTest: XCTestCase {
         // initial 0 emission, plus two updates to total unit count, plus 10 updates.
         XCTAssertLessThanOrEqual(outputs.count, 13)
         XCTAssertEqual(outputs.last, 100)
+        XCTAssertNotNil(sinkRef)
     }
 
     func testMultipleLayers() async {
@@ -129,6 +138,7 @@ class OWSProgressTest: XCTestCase {
             + unitCountBZ2
             + unitCountC2
 
+        var sinkRef: OWSProgressSink?
         let outputs: [OWSProgress] = await withCheckedContinuation { outputsContinuation in
             Task {
                 var outputs = [OWSProgress]()
@@ -138,6 +148,7 @@ class OWSProgressTest: XCTestCase {
                         outputsContinuation.resume(returning: outputs)
                     }
                 }
+                sinkRef = sink
                 let childA = await sink.addChild(withLabel: "A", unitCount: 100)
                 let sourceA1 = await childA.addSource(withLabel: "A1", unitCount: 100)
                 _ = await childA.addSource(withLabel: "A2", unitCount: 100)
@@ -166,6 +177,7 @@ class OWSProgressTest: XCTestCase {
         // initial 0 emission, plus 3 updates to total unit count, plus 5 updates.
         XCTAssertLessThanOrEqual(outputs.count, 9)
         XCTAssertEqual(outputs.last!.completedUnitCount, expectedCompletedUnitCount)
+        XCTAssertNotNil(sinkRef)
     }
 
     func testAddToOtherBranchAfterEmitting() async {
@@ -173,6 +185,7 @@ class OWSProgressTest: XCTestCase {
         // A and B. You add source A1 to A and B1 to B.
         // You are allowed to add a second source B2 to B
         // after A1 emits but not after B1 emits.
+        var sinkRef: OWSProgressSink?
         let outputs: [OWSProgress] = await withCheckedContinuation { percent50Continuation in
             Task {
                 var childB: OWSProgressSink?
@@ -188,6 +201,7 @@ class OWSProgressTest: XCTestCase {
                                 percent50Continuation.resume(returning: outputs)
                             }
                         }
+                        sinkRef = sink
                         let childA = await sink.addChild(withLabel: "A", unitCount: 100)
                         let sourceA1 = await childA.addSource(withLabel: "A1", unitCount: 100)
                         childB = await sink.addChild(withLabel: "B", unitCount: 100)
@@ -208,6 +222,7 @@ class OWSProgressTest: XCTestCase {
         // anything about them except that theres a first and last.
         XCTAssertGreaterThanOrEqual(outputs.count, 1)
         XCTAssertEqual(outputs.last!.percentComplete, 0.5)
+        XCTAssertNotNil(sinkRef)
     }
 
     func testSourceProgresses() async {
@@ -315,6 +330,7 @@ class OWSProgressTest: XCTestCase {
     }
 
     func testUpdatePeriodically_estimatedTimeFinishesFirst() async {
+        var sinkRef: OWSProgressSink?
         let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
                 var outputs = [UInt64]()
@@ -324,6 +340,7 @@ class OWSProgressTest: XCTestCase {
                         outputsContinuation.resume(returning: outputs)
                     }
                 }
+                sinkRef = sink
                 let source = await sink.addSource(withLabel: "1", unitCount: 100)
                 let inputTask = Task {
                     try await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
@@ -337,9 +354,11 @@ class OWSProgressTest: XCTestCase {
         }
         XCTAssertLessThanOrEqual(outputs.count, 52)
         XCTAssertEqual(outputs.last, 100)
+        XCTAssertNotNil(sinkRef)
     }
 
     func testUpdatePeriodically_WorkFinishesFirst() async {
+        var sinkRef: OWSProgressSink?
         let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
                 var outputs = [UInt64]()
@@ -349,6 +368,7 @@ class OWSProgressTest: XCTestCase {
                         outputsContinuation.resume(returning: outputs)
                     }
                 }
+                sinkRef = sink
                 let source = await sink.addSource(withLabel: "1", unitCount: 100)
                 let inputTask = Task {
                     try await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
@@ -362,9 +382,11 @@ class OWSProgressTest: XCTestCase {
         }
         XCTAssertLessThanOrEqual(outputs.count, 102)
         XCTAssertEqual(outputs.last, 100)
+        XCTAssertNotNil(sinkRef)
     }
 
     func testUpdatePeriodically_NonThrowing() async {
+        var sinkRef: OWSProgressSink?
         let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
                 var outputs = [UInt64]()
@@ -374,6 +396,7 @@ class OWSProgressTest: XCTestCase {
                         outputsContinuation.resume(returning: outputs)
                     }
                 }
+                sinkRef = sink
                 let source = await sink.addSource(withLabel: "1", unitCount: 100)
                 // If the task doesn't throw the updatePeriodically call shouldn't throw either.
                 let inputTask = Task {
@@ -390,9 +413,11 @@ class OWSProgressTest: XCTestCase {
         }
         XCTAssertLessThanOrEqual(outputs.count, 102)
         XCTAssertEqual(outputs.last, 100)
+        XCTAssertNotNil(sinkRef)
     }
 
     func testUpdatePeriodically_OptionalResult() async {
+        var sinkRef: OWSProgressSink?
         let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
                 var outputs = [UInt64]()
@@ -402,6 +427,7 @@ class OWSProgressTest: XCTestCase {
                         outputsContinuation.resume(returning: outputs)
                     }
                 }
+                sinkRef = sink
                 let source = await sink.addSource(withLabel: "1", unitCount: 100)
                 let inputTask: Task<String?, Never> = Task {
                     try? await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
@@ -417,5 +443,6 @@ class OWSProgressTest: XCTestCase {
         }
         XCTAssertLessThanOrEqual(outputs.count, 102)
         XCTAssertEqual(outputs.last, 100)
+        XCTAssertNotNil(sinkRef)
     }
 }

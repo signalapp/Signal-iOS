@@ -238,6 +238,7 @@ private actor OWSProgressRootNode: OWSProgressSink {
 
     private var latestEmittedProgress: OWSProgress?
     private let observer: Observer
+    private var observerQueue = SerialTaskQueue()
 
     private var totalDirectChildUnitCount: UInt64 = 0
     /// Children hold strong references to their parent, so parents hold weak references to children.
@@ -352,7 +353,7 @@ private actor OWSProgressRootNode: OWSProgressSink {
         }
         if progressDidChange {
             latestEmittedProgress = progress
-            Task { [progress] in
+            observerQueue.enqueue { [observer, progress] in
                 await observer(progress)
             }
         }
