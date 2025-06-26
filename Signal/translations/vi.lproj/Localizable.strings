@@ -515,22 +515,22 @@
 "BACKUP_KEY_PLACEHOLDER" = "Mã khóa sao lưu";
 
 /* Title of button to tap if you forgot your backup key. */
-"BACKUP_KEY_REMINDER_FORGOT_KEY" = "Forgot key?";
+"BACKUP_KEY_REMINDER_FORGOT_KEY" = "Quên mã khóa?";
 
 /* Action text for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "Verify";
+"BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "Xác minh";
 
 /* Body for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "We'll occasionally ask you to verify your key to ensure you still know it";
+"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "Thỉnh thoảng chúng tôi sẽ yêu cầu bạn nhập lại mã khóa để đảm bảo bạn còn nhớ";
 
 /* Title for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verify your Backup Key";
+"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Xác minh Mã khóa sao lưu";
 
 /* Snooze text for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Not Now";
+"BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Để sau";
 
 /* Toast indicating that the Backup Key was correct. */
-"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Backup key correct. Keep your key safe.";
+"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Mã khóa sao lưu đúng. Cất giữ mã khóa một cách an toàn.";
 
 /* Body for a sheet warning users to their 'Backup Key' safe. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "Signal sẽ không thể giúp bạn khôi phục bản sao lưu nếu bạn để mất mã khóa. Lưu mã khóa ở nơi an toàn và bảo mật, và không chia sẻ với ai khác.";
@@ -563,7 +563,7 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Bản sao lưu Signal";
 
 /* Subtitle for a view introducing the 'Backup Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your backup key is a 64-character code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Mã khóa sao lưu của bạn là mã có 64 ký tự có tác dụng giúp bạn khôi phục bản sao lưu khi cài lại Signal.\n\nNếu quên mã khóa, bạn sẽ không thể khôi phục bản sao lưu. Signal không thể giúp bạn khôi phục bản sao lưu.";
 
 /* Title for a view introducing the 'Backup Key' during an onboarding flow. */
 "BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Mã khóa sao lưu";
@@ -696,6 +696,15 @@
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Kích hoạt lại sao lưu";
+
+/* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Upload paused: device has low battery";
+
+/* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Upload paused: waiting for Wi-Fi";
+
+/* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the amount uploaded as a percentage, e.g. 10% }}. */
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Uploading %1$@ of %2$@ (%3$@)";
 
 /* Message for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Tùy thuộc vào kích thước của bản sao lưu, quá trình này có thể mất một khoảng thời gian dài. Bạn có thể sử dụng điện thoại như bình thường khi quá trình sao lưu đang diễn ra.";
@@ -2605,12 +2614,6 @@
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
 "DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Tin nhắn tự xóa được bật cho cuộc trò chuyện này. Tin nhắn đi kèm khoản ủng hộ của bạn sẽ biến mất trong %1$@.";
 
-/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Không thể ủng hộ. Kiểm tra kết nối của bạn và thử lại.";
-
-/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "Không thể Ủng hộ";
-
 /* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "Khoản Ủng hộ Một lần";
 
@@ -3284,7 +3287,7 @@
 "GROUP_CALL_LEAVE_BUTTON" = "Rời Cuộc gọi";
 
 /* Title for a 'done' button on a sheet showing the group call members list */
-"GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE" = "Done";
+"GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE" = "Xong";
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "Đang trong cuộc gọi";
@@ -5303,7 +5306,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Tiếp tục và không chuyển tin nhắn cùng tệp đa phương tiện";
 
 /* The title for a less-prominent skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE" = "Skip restore";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE" = "Bỏ qua";
 
 /* The title for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Đăng ký và không chuyển";

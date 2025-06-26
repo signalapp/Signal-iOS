@@ -515,22 +515,22 @@
 "BACKUP_KEY_PLACEHOLDER" = "Sikkerhedskopinøgle";
 
 /* Title of button to tap if you forgot your backup key. */
-"BACKUP_KEY_REMINDER_FORGOT_KEY" = "Forgot key?";
+"BACKUP_KEY_REMINDER_FORGOT_KEY" = "Har du glemt sikkerhedskopinøglen?";
 
 /* Action text for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "Verify";
+"BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "Verificér";
 
 /* Body for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "We'll occasionally ask you to verify your key to ensure you still know it";
+"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "Vi vil indimellem bede dig om at verificere din sikkerhedskopinøgle for at sikre, at du stadig kan huske den.";
 
 /* Title for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verify your Backup Key";
+"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verificer din sikkerhedskopinøgle";
 
 /* Snooze text for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Not Now";
+"BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Ikke nu";
 
 /* Toast indicating that the Backup Key was correct. */
-"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Backup key correct. Keep your key safe.";
+"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Sikkerhedskopinøglen er korrekt. Opbevar din nøgle sikkert";
 
 /* Body for a sheet warning users to their 'Backup Key' safe. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "Signal vil ikke kunne hjælpe dig med at gendanne din sikkerhedskopi, hvis du mister din nøgle. Opbevar den et sikkert sted, og del den ikke med andre.";
@@ -563,7 +563,7 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Signal-sikkerhedskopier";
 
 /* Subtitle for a view introducing the 'Backup Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your backup key is a 64-character code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Din sikkerhedskopinøgle er en kode på 64 tegn, som lader dig gendanne din sikkerhedskopi, når du geninstallerer Signal.\n\nHvis du glemmer din nøgle, kan du ikke gendanne din sikkerhedskopi. Signal kan ikke hjælpe dig med at gendanne din sikkerhedskopi.";
 
 /* Title for a view introducing the 'Backup Key' during an onboarding flow. */
 "BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Din sikkerhedskopinøgle";
@@ -696,6 +696,15 @@
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Slå sikkerhedskopiering til igen";
+
+/* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Upload paused: device has low battery";
+
+/* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Upload paused: waiting for Wi-Fi";
+
+/* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the amount uploaded as a percentage, e.g. 10% }}. */
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Uploading %1$@ of %2$@ (%3$@)";
 
 /* Message for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Afhængigt af størrelsen på din sikkerhedskopi kan dette tage lang tid. Du kan bruge din telefon, som du plejer, mens sikkerhedskopieringen oprettes.";
@@ -2605,12 +2614,6 @@
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
 "DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Forsvindende beskeder er slået til i denne chat. Din donationsmeddelelse vil forsvinde om %1$@.";
 
-/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Kan ikke donere. Tjek din forbindelse, og prøv igen.";
-
-/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "Kan ikke donere";
-
 /* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "Engangsdonation";
 
@@ -3284,7 +3287,7 @@
 "GROUP_CALL_LEAVE_BUTTON" = "Forlad opkald";
 
 /* Title for a 'done' button on a sheet showing the group call members list */
-"GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE" = "Done";
+"GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE" = "Udført";
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "I opkald";
@@ -5303,7 +5306,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Fortsæt med at overføre dine beskeder og medier";
 
 /* The title for a less-prominent skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE" = "Skip restore";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE" = "Spring gendannelse over";
 
 /* The title for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "Registrer uden at overføre";

@@ -515,22 +515,22 @@
 "BACKUP_KEY_PLACEHOLDER" = "ব্যাকআপ 'কি'";
 
 /* Title of button to tap if you forgot your backup key. */
-"BACKUP_KEY_REMINDER_FORGOT_KEY" = "Forgot key?";
+"BACKUP_KEY_REMINDER_FORGOT_KEY" = "'কি' ভুলে গেছেন?";
 
 /* Action text for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "Verify";
+"BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "যাচাই করুন";
 
 /* Body for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "We'll occasionally ask you to verify your key to ensure you still know it";
+"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "আপনার 'কি' আপনার মনে আছে কিনা তা নিশ্চিত করতে আমরা মাঝে মাঝে আপনাকে যাচাই করতে বলবো";
 
 /* Title for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verify your Backup Key";
+"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "আপনার ব্যাকআপ 'কি' যাচাই করুন";
 
 /* Snooze text for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Not Now";
+"BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "এখন নয়";
 
 /* Toast indicating that the Backup Key was correct. */
-"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Backup key correct. Keep your key safe.";
+"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "ব্যাকআপ 'কি' সঠিক। আপনার 'কি' নিরাপদ রাখুন।";
 
 /* Body for a sheet warning users to their 'Backup Key' safe. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "আপনি আপনার 'কি' হারিয়ে ফেললে Signal আপনাকে আপনার ব্যাকআপ পুনরুদ্ধারে সাহায্য করতে সক্ষম হবে না। এটিকে নিরাপদ ও সুরক্ষিত স্থানে সংরক্ষণ করুন এবং অন্যদের সাথে শেয়ার করবেন না।";
@@ -563,7 +563,7 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Signal ব্যাকআপ";
 
 /* Subtitle for a view introducing the 'Backup Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your backup key is a 64-character code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "আপনার ব্যাকআপ 'কি' একটি 64-ক্যারেক্টারের কোড যা আপনাকে Signal পুনরায় ইনস্টল করার সময় আপনার ব্যাকআপ পুনর্বহাল করতে সাহায্য করে।\n\n'কি' ভুলে গেলে, আপনি আপনার ব্যাকআপ পুনরুদ্ধার করতে পারবেন না। Signal আপনাকে আপনার ব্যাকআপ পুনরুদ্ধার করতে সাহায্য করতে পারবে না।";
 
 /* Title for a view introducing the 'Backup Key' during an onboarding flow. */
 "BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "আপনার ব্যাকআপ 'কি'";
@@ -696,6 +696,15 @@
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "ব্যাকআপ পুনরায় সচল করুন";
+
+/* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Upload paused: device has low battery";
+
+/* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Upload paused: waiting for Wi-Fi";
+
+/* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the amount uploaded as a percentage, e.g. 10% }}. */
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Uploading %1$@ of %2$@ (%3$@)";
 
 /* Message for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "আপনার ব্যাকআপের আকারের উপর নির্ভর করে, এতে দীর্ঘ সময় নিতে পারে। ব্যাকআপ নেওয়ার সময় আপনি স্বাভাবিক সময়ের মতই আপনার ফোন ব্যবহার করতে পারবেন।";
@@ -2605,12 +2614,6 @@
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
 "DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "এই চ্যাটের জন্য অদৃশ্য হয়ে যাওয়া ম্যাসেজ চালু করা হয়েছে। %1$@-এর মধ্যে আপনার ডোনেশন ম্যাসেজটি অদৃশ্য হয়ে যাবে।";
 
-/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "ডোনেট করা যাচ্ছে না। আপনার নেটওয়ার্ক সংযোগ ঠিক আছে কি না দেখুন এবং আবার চেষ্টা করুন।";
-
-/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "ডোনেট করা যাচ্ছে না";
-
 /* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "এককালীন ডোনেশন";
 
@@ -3284,7 +3287,7 @@
 "GROUP_CALL_LEAVE_BUTTON" = "কল ছেড়ে যান";
 
 /* Title for a 'done' button on a sheet showing the group call members list */
-"GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE" = "Done";
+"GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE" = "শেষ";
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "যারা কলে আছেন";
@@ -5303,7 +5306,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "আপনার মেসেজ এবং মিডিয়া স্থানান্তর না করেই চালিয়ে যান";
 
 /* The title for a less-prominent skip restore 'choice' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE" = "Skip restore";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE" = "পুনরুদ্ধার এড়িয়ে যান";
 
 /* The title for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE" = "স্থানান্তর না করেই রেজিস্টার করুন";
