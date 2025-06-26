@@ -54,6 +54,7 @@ public class BackupExportJobImpl: BackupExportJob {
     private let backupKeyMaterial: BackupKeyMaterial
     private let backupListMediaManager: BackupListMediaManager
     private let db: DB
+    private let messageProcessor: MessageProcessor
     private let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
     private let tsAccountManager: TSAccountManager
 
@@ -68,6 +69,7 @@ public class BackupExportJobImpl: BackupExportJob {
         backupKeyMaterial: BackupKeyMaterial,
         backupListMediaManager: BackupListMediaManager,
         db: DB,
+        messageProcessor: MessageProcessor,
         orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
         tsAccountManager: TSAccountManager
     ) {
@@ -79,6 +81,7 @@ public class BackupExportJobImpl: BackupExportJob {
         self.backupKeyMaterial = backupKeyMaterial
         self.backupListMediaManager = backupListMediaManager
         self.db = db
+        self.messageProcessor = messageProcessor
         self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
         self.tsAccountManager = tsAccountManager
     }
@@ -99,6 +102,14 @@ public class BackupExportJobImpl: BackupExportJob {
         guard let localIdentifiers else {
             throw OWSAssertionError("Creating a backup when unregistered?")
         }
+
+        logger.info("Waiting on message processing...")
+        // We wait for message processing to finish before emitting a backup, to ensure
+        // we put as much up-to-date message history into the backup as possible.
+        // This is especially important for users with notifications disabled;
+        // the launch of the BGProcessingTask may be the first chance we get
+        // to fetch messages in a while, and its good practice to back those up.
+        try await messageProcessor.waitForFetchingAndProcessing()
 
         logger.info("Starting...")
 

@@ -1406,6 +1406,7 @@ public class AppSetup {
             backupKeyMaterial: backupKeyMaterial,
             backupListMediaManager: backupListMediaManager,
             db: db,
+            messageProcessor: messageProcessor,
             orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
             tsAccountManager: tsAccountManager
         )
