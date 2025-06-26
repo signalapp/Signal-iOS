@@ -38,7 +38,7 @@ class BackupSettingsAttachmentUploadTracker {
 
     private struct State {
         var lastReportedUploadProgress: OWSProgress = .zero
-        var lastReportedQueueStatus: BackupAttachmentQueueStatus?
+        var lastReportedUploadQueueStatus: BackupAttachmentUploadQueueStatus?
 
         var isTracking: Bool = false
         var uploadQueueStatusObserver: NotificationCenter.Observer?
@@ -46,15 +46,15 @@ class BackupSettingsAttachmentUploadTracker {
         var streamContinuation: AsyncStream<UploadUpdate?>.Continuation?
     }
 
-    private let backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager
+    private let backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     private let state: AsyncAtomic<State>
 
     init(
-        backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager,
+        backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
     ) {
-        self.backupAttachmentQueueStatusManager = backupAttachmentQueueStatusManager
+        self.backupAttachmentUploadQueueStatusReporter = backupAttachmentUploadQueueStatusReporter
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.state = AsyncAtomic(State())
     }
@@ -107,14 +107,9 @@ class BackupSettingsAttachmentUploadTracker {
 
     private func observeUploadQueueStatus() -> NotificationCenter.Observer {
         let uploadQueueStatusObserver = NotificationCenter.default.addObserver(
-            name: BackupAttachmentQueueStatus.didChangeNotification
+            name: .backupAttachmentUploadQueueStatusDidChange
         ) { [weak self] notification in
-            guard
-                let self,
-                let userInfo = notification.userInfo,
-                let queueType = userInfo[BackupAttachmentQueueStatus.notificationQueueTypeKey] as? BackupAttachmentQueueType,
-                queueType == .upload
-            else { return }
+            guard let self else { return }
 
             Task {
                 await self.handleQueueStatusUpdate()
@@ -132,9 +127,9 @@ class BackupSettingsAttachmentUploadTracker {
 
     private func handleQueueStatusUpdate() async {
         await state.update { _state in
-            _state.lastReportedQueueStatus = backupAttachmentQueueStatusManager.currentStatus(type: .upload)
+            _state.lastReportedUploadQueueStatus = backupAttachmentUploadQueueStatusReporter.currentStatus()
 
-            switch _state.lastReportedQueueStatus! {
+            switch _state.lastReportedUploadQueueStatus! {
             case .running:
                 // If the queue is running, add an observer. It's important that
                 // we not do this until the queue is running, since the observer
@@ -165,7 +160,7 @@ class BackupSettingsAttachmentUploadTracker {
 
                 _state.uploadProgressObserver = nil
 
-            case .noWifiReachability, .lowBattery, .suspended, .lowDiskSpace:
+            case .noWifiReachability, .lowBattery:
                 break
             }
 
@@ -188,20 +183,17 @@ class BackupSettingsAttachmentUploadTracker {
             return
         }
 
-        let lastReportedQueueStatus = state.lastReportedQueueStatus
+        let lastReportedUploadQueueStatus = state.lastReportedUploadQueueStatus
         let lastReportedUploadProgress = state.lastReportedUploadProgress
 
-        switch lastReportedQueueStatus {
+        switch lastReportedUploadQueueStatus {
         case .running:
             streamContinuation.yield(UploadUpdate(state: .running, progress: lastReportedUploadProgress))
         case .noWifiReachability:
             streamContinuation.yield(UploadUpdate(state: .pausedNeedsWifi, progress: lastReportedUploadProgress))
         case .lowBattery:
             streamContinuation.yield(UploadUpdate(state: .pausedLowBattery, progress: lastReportedUploadProgress))
-        case .empty, .notRegisteredAndReady:
-            streamContinuation.yield(nil)
-        case nil, .suspended, .lowDiskSpace:
-            owsFailDebug("Unexpected upload queue status! \(lastReportedQueueStatus as Any)")
+        case nil, .empty, .notRegisteredAndReady:
             streamContinuation.yield(nil)
         }
     }

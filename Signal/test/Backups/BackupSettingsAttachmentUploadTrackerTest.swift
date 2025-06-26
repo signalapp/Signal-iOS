@@ -17,9 +17,9 @@ class BackupSettingsAttachmentUploadTrackerTest {
     func testLaunchingWithQueuePopulated() async {
         let db = InMemoryDB()
         let uploadProgress = BackupAttachmentUploadProgress(db: db)
-        let uploadQueueStatusManager = MockQueueStatusManager()
+        let uploadQueueStatusReporter = MockUploadQueueStatusReporter()
         let uploadTracker = BackupSettingsAttachmentUploadTracker(
-            backupAttachmentQueueStatusManager: uploadQueueStatusManager,
+            backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,
             backupAttachmentUploadProgress: uploadProgress
         )
 
@@ -31,7 +31,7 @@ class BackupSettingsAttachmentUploadTrackerTest {
         }
 
         // Simulate launching with uploads queued.
-        uploadQueueStatusManager.currentStatusMock = .running
+        uploadQueueStatusReporter.currentStatusMock = .running
 
         let expectedUpdates: [ExpectedUpdate] = [
             ExpectedUpdate(update: (.running, 0), nextSteps: {
@@ -41,7 +41,7 @@ class BackupSettingsAttachmentUploadTrackerTest {
                 await uploadProgress.didFinishUploadOfAttachment(uploadRecord: uploadRecords[1])
             }),
             ExpectedUpdate(update: (.running, 1), nextSteps: {
-                uploadQueueStatusManager.currentStatusMock = .empty
+                uploadQueueStatusReporter.currentStatusMock = .empty
             }),
             ExpectedUpdate(update: nil, nextSteps: {}),
         ]
@@ -55,9 +55,9 @@ class BackupSettingsAttachmentUploadTrackerTest {
     func testQueueStartsEmptyThenStartsRunning() async {
         let db = InMemoryDB()
         let uploadProgress = BackupAttachmentUploadProgress(db: db)
-        let uploadQueueStatusManager = MockQueueStatusManager()
+        let uploadQueueStatusReporter = MockUploadQueueStatusReporter()
         let uploadTracker = BackupSettingsAttachmentUploadTracker(
-            backupAttachmentQueueStatusManager: uploadQueueStatusManager,
+            backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,
             backupAttachmentUploadProgress: uploadProgress
         )
 
@@ -70,7 +70,7 @@ class BackupSettingsAttachmentUploadTrackerTest {
 
         let expectedUpdates: [ExpectedUpdate] = [
             ExpectedUpdate(update: nil, nextSteps: {
-                uploadQueueStatusManager.currentStatusMock = .running
+                uploadQueueStatusReporter.currentStatusMock = .running
             }),
             ExpectedUpdate(update: (.running, 0), nextSteps: {
                 await uploadProgress.didFinishUploadOfAttachment(uploadRecord: uploadRecords[0])
@@ -79,7 +79,7 @@ class BackupSettingsAttachmentUploadTrackerTest {
                 await uploadProgress.didFinishUploadOfAttachment(uploadRecord: uploadRecords[1])
             }),
             ExpectedUpdate(update: (.running, 1), nextSteps: {
-                uploadQueueStatusManager.currentStatusMock = .empty
+                uploadQueueStatusReporter.currentStatusMock = .empty
             }),
             ExpectedUpdate(update: nil, nextSteps: {}),
         ]
@@ -93,9 +93,9 @@ class BackupSettingsAttachmentUploadTrackerTest {
     func testTrackingStoppingAndReTracking() async {
         let db = InMemoryDB()
         let uploadProgress = BackupAttachmentUploadProgress(db: db)
-        let uploadQueueStatusManager = MockQueueStatusManager()
+        let uploadQueueStatusReporter = MockUploadQueueStatusReporter()
         let uploadTracker = BackupSettingsAttachmentUploadTracker(
-            backupAttachmentQueueStatusManager: uploadQueueStatusManager,
+            backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,
             backupAttachmentUploadProgress: uploadProgress
         )
 
@@ -107,7 +107,7 @@ class BackupSettingsAttachmentUploadTrackerTest {
 
         let firstExpectedUpdates: [ExpectedUpdate] = [
             ExpectedUpdate(update: nil, nextSteps: {
-                uploadQueueStatusManager.currentStatusMock = .running
+                uploadQueueStatusReporter.currentStatusMock = .running
             }),
             ExpectedUpdate(update: (.running, 0), nextSteps: {}),
         ]
@@ -118,7 +118,7 @@ class BackupSettingsAttachmentUploadTrackerTest {
                 await uploadProgress.didFinishUploadOfAttachment(uploadRecord: uploadRecords[0])
             }),
             ExpectedUpdate(update: (.running, 1), nextSteps: {
-                uploadQueueStatusManager.currentStatusMock = .empty
+                uploadQueueStatusReporter.currentStatusMock = .empty
             }),
             ExpectedUpdate(update: nil, nextSteps: {}),
         ]
@@ -129,9 +129,9 @@ class BackupSettingsAttachmentUploadTrackerTest {
     func testTrackingStopsWhenStreamCancelled() async {
         let db = InMemoryDB()
         let uploadProgress = BackupAttachmentUploadProgress(db: db)
-        let uploadQueueStatusManager = MockQueueStatusManager()
+        let uploadQueueStatusReporter = MockUploadQueueStatusReporter()
         let uploadTracker = BackupSettingsAttachmentUploadTracker(
-            backupAttachmentQueueStatusManager: uploadQueueStatusManager,
+            backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,
             backupAttachmentUploadProgress: uploadProgress
         )
 
@@ -203,16 +203,12 @@ class BackupSettingsAttachmentUploadTrackerTest {
 
 // MARK: -
 
-private class MockQueueStatusManager: BackupAttachmentQueueStatusManager {
-    var currentStatusMock: BackupAttachmentQueueStatus = .empty {
-        didSet { notifyStatusDidChange(type: .upload) }
+private class MockUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter {
+    var currentStatusMock: BackupAttachmentUploadQueueStatus = .empty {
+        didSet { notifyStatusDidChange() }
     }
 
-    func currentStatus(type: BackupAttachmentQueueType) -> BackupAttachmentQueueStatus {
-        owsPrecondition(type == .upload)
+    func currentStatus() -> BackupAttachmentUploadQueueStatus {
         return currentStatusMock
     }
-
-    func minimumRequiredDiskSpaceToCompleteDownloads() -> UInt64 { owsFail("") }
-    func reattemptDiskSpaceChecks() { owsFail("") }
 }

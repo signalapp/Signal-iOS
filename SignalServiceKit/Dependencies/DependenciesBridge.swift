@@ -67,9 +67,10 @@ public class DependenciesBridge {
     public let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     public let backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress
     public let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
-    public let backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager
+    public let backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter
     public let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     public let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
+    public let backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter
     public let backupExportJob: BackupExportJob
     public let backupIdManager: BackupIdManager
     public let backupKeyMaterial: BackupKeyMaterial
@@ -196,9 +197,10 @@ public class DependenciesBridge {
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
-        backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager,
+        backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
         backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
+        backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter,
         backupExportJob: BackupExportJob,
         backupIdManager: BackupIdManager,
         backupKeyMaterial: BackupKeyMaterial,
@@ -324,9 +326,10 @@ public class DependenciesBridge {
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.backupAttachmentDownloadProgress = backupAttachmentDownloadProgress
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
-        self.backupAttachmentQueueStatusManager = backupAttachmentQueueStatusManager
+        self.backupAttachmentDownloadQueueStatusReporter = backupAttachmentDownloadQueueStatusReporter
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
+        self.backupAttachmentUploadQueueStatusReporter = backupAttachmentUploadQueueStatusReporter
         self.backupExportJob = backupExportJob
         self.backupIdManager = backupIdManager
         self.backupKeyMaterial = backupKeyMaterial

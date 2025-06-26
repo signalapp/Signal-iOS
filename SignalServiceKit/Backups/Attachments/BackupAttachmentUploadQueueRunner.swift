@@ -36,7 +36,7 @@ extension BackupAttachmentUploadQueueRunner {
     }
 }
 
-public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
+class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
     private let attachmentStore: AttachmentStore
     private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
@@ -46,11 +46,11 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
     private let db: any DB
     private let listMediaManager: BackupListMediaManager
     private let progress: BackupAttachmentUploadProgress
-    private let statusManager: BackupAttachmentQueueStatusUpdates
+    private let statusManager: BackupAttachmentUploadQueueStatusManager
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
 
-    public init(
+    init(
         appReadiness: AppReadiness,
         attachmentStore: AttachmentStore,
         attachmentUploadManager: AttachmentUploadManager,
@@ -65,7 +65,7 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
         db: any DB,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
         progress: BackupAttachmentUploadProgress,
-        statusManager: BackupAttachmentQueueStatusUpdates,
+        statusManager: BackupAttachmentUploadQueueStatusManager,
         tsAccountManager: TSAccountManager
     ) {
         self.attachmentStore = attachmentStore
@@ -167,7 +167,7 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
             try await listMediaManager.queryListMediaIfNeeded()
         }
 
-        switch await statusManager.beginObservingIfNeeded(type: .upload) {
+        switch await statusManager.beginObservingIfNecessary() {
         case .running:
             Logger.info("Running Backup uploads.")
             try await taskQueue.loadAndRunTasks()
@@ -182,10 +182,6 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
         case .lowBattery:
             Logger.warn("Skipping Backup uploads: low battery.")
             try await taskQueue.stop()
-        case .suspended:
-            owsFailDebug("Suspended not applicable to uploads!")
-        case .lowDiskSpace:
-            owsFailDebug("Low disk space not applicable to uploads!")
         }
     }
 
@@ -194,16 +190,14 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
     private func startObservingQueueStatus() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(queueStatusDidChange(_:)),
-            name: BackupAttachmentQueueStatus.didChangeNotification,
+            selector: #selector(queueStatusDidChange),
+            name: .backupAttachmentUploadQueueStatusDidChange,
             object: nil
         )
     }
 
     @objc
-    private func queueStatusDidChange(_ notification: Notification) {
-        let type = notification.userInfo?[BackupAttachmentQueueStatus.notificationQueueTypeKey]
-        guard type as? BackupAttachmentQueueType == .upload else { return }
+    private func queueStatusDidChange() {
         Task {
             try await self.backUpAllAttachments()
         }
@@ -225,7 +219,7 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
         private let db: any DB
         private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
         private let progress: BackupAttachmentUploadProgress
-        private let statusManager: BackupAttachmentQueueStatusUpdates
+        private let statusManager: BackupAttachmentUploadQueueStatusManager
         private let tsAccountManager: TSAccountManager
 
         let store: TaskStore
@@ -243,7 +237,7 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
             db: any DB,
             orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
             progress: BackupAttachmentUploadProgress,
-            statusManager: BackupAttachmentQueueStatusUpdates,
+            statusManager: BackupAttachmentUploadQueueStatusManager,
             tsAccountManager: TSAccountManager
         ) {
             self.attachmentStore = attachmentStore
@@ -415,22 +409,6 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
                     )
                 }
             } catch let error {
-                switch await statusManager.jobDidExperienceError(type: .upload, error) {
-                case nil:
-                    // No state change, keep going.
-                    break
-                case .suspended:
-                    try? await loader.stop()
-                case .running:
-                    break
-                case .empty:
-                    // The queue will stop on its own, finish this task.
-                    break
-                case .lowDiskSpace, .lowBattery, .noWifiReachability, .notRegisteredAndReady:
-                    // Stop the queue now proactively.
-                    try? await loader.stop()
-                }
-
                 switch error as? BackupArchive.Response.CopyToMediaTierError {
                 case .sourceObjectNotFound:
                     // Any time we find this error, retry. It means the upload
@@ -499,7 +477,7 @@ public class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueR
 
         func didDrainQueue() async {
             await progress.didEmptyUploadQueue()
-            await statusManager.didEmptyQueue(type: .upload)
+            await statusManager.didEmptyQueue()
         }
     }
 

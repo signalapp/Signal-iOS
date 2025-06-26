@@ -1214,12 +1214,12 @@
 		66F6D6A52C7D0E0000EFAF75 /* ColorOrGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D6A42C7D0E0000EFAF75 /* ColorOrGradient.swift */; };
 		66F6D6A72C7D0FF300EFAF75 /* Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D6A62C7D0FF300EFAF75 /* Wallpaper.swift */; };
 		66F6D6A92C7D106100EFAF75 /* Wallpaper+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D6A82C7D106100EFAF75 /* Wallpaper+Constants.swift */; };
-		66F98DDE2DB7073F009F1A86 /* BackupAttachmentQueueStatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DDD2DB70739009F1A86 /* BackupAttachmentQueueStatusManager.swift */; };
+		66F98DDE2DB7073F009F1A86 /* BackupAttachmentDownloadQueueStatusManaager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManaager.swift */; };
 		66F98DE02DB710F8009F1A86 /* DeviceBatteryLevelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DDF2DB710EA009F1A86 /* DeviceBatteryLevelManager.swift */; };
 		66F98DE22DB71220009F1A86 /* DeviceBatteryLevelManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE12DB71219009F1A86 /* DeviceBatteryLevelManagerImpl.swift */; };
 		66F98DE62DBBED6C009F1A86 /* LineWrappingStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE52DBBED68009F1A86 /* LineWrappingStackView.swift */; };
 		66F98DE82DBBF25A009F1A86 /* LineWrappingStackViewTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE72DBBF24F009F1A86 /* LineWrappingStackViewTestController.swift */; };
-		66F98DEA2DC53155009F1A86 /* ChatListViewController+BackupProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE92DC5314E009F1A86 /* ChatListViewController+BackupProgressView.swift */; };
+		66F98DEA2DC53155009F1A86 /* ChatListViewController+BackupDownloadProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE92DC5314E009F1A86 /* ChatListViewController+BackupDownloadProgressView.swift */; };
 		66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */; };
 		66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */; };
 		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
@@ -2676,6 +2676,7 @@
 		D984F7242C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */; };
 		D985D86629B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */; };
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
+		D98ACAA72E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98ACAA62E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift */; };
 		D98CA2AD2DF14A890060370E /* BackupOnboardingKeyIntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98CA2AC2DF14A830060370E /* BackupOnboardingKeyIntroViewController.swift */; };
 		D98CA2B12DF238EA0060370E /* LocalDeviceAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98CA2AF2DF171110060370E /* LocalDeviceAuthentication.swift */; };
 		D98CA2B32DF245140060370E /* BackupRecordKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98CA2B22DF2450E0060370E /* BackupRecordKeyViewController.swift */; };
@@ -5158,12 +5159,12 @@
 		66F6D6A42C7D0E0000EFAF75 /* ColorOrGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorOrGradient.swift; sourceTree = "<group>"; };
 		66F6D6A62C7D0FF300EFAF75 /* Wallpaper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallpaper.swift; sourceTree = "<group>"; };
 		66F6D6A82C7D106100EFAF75 /* Wallpaper+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Wallpaper+Constants.swift"; sourceTree = "<group>"; };
-		66F98DDD2DB70739009F1A86 /* BackupAttachmentQueueStatusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentQueueStatusManager.swift; sourceTree = "<group>"; };
+		66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManaager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadQueueStatusManaager.swift; sourceTree = "<group>"; };
 		66F98DDF2DB710EA009F1A86 /* DeviceBatteryLevelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceBatteryLevelManager.swift; sourceTree = "<group>"; };
 		66F98DE12DB71219009F1A86 /* DeviceBatteryLevelManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceBatteryLevelManagerImpl.swift; sourceTree = "<group>"; };
 		66F98DE52DBBED68009F1A86 /* LineWrappingStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWrappingStackView.swift; sourceTree = "<group>"; };
 		66F98DE72DBBF24F009F1A86 /* LineWrappingStackViewTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWrappingStackViewTestController.swift; sourceTree = "<group>"; };
-		66F98DE92DC5314E009F1A86 /* ChatListViewController+BackupProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+BackupProgressView.swift"; sourceTree = "<group>"; };
+		66F98DE92DC5314E009F1A86 /* ChatListViewController+BackupDownloadProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+BackupDownloadProgressView.swift"; sourceTree = "<group>"; };
 		66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsBiometryLockPromptViewController.swift; sourceTree = "<group>"; };
 		66FA2B1E28CBA4A5006845CD /* DeviceOwnerAuthenticationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceOwnerAuthenticationType.swift; sourceTree = "<group>"; };
 		66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
@@ -6627,6 +6628,7 @@
 		D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageTest.swift; sourceTree = "<group>"; };
 		D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerTest.swift; sourceTree = "<group>"; };
 		D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChangePhoneNumberPniManager+Shims.swift"; sourceTree = "<group>"; };
+		D98ACAA62E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadQueueStatusManager.swift; sourceTree = "<group>"; };
 		D98CA2AC2DF14A830060370E /* BackupOnboardingKeyIntroViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOnboardingKeyIntroViewController.swift; sourceTree = "<group>"; };
 		D98CA2AF2DF171110060370E /* LocalDeviceAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDeviceAuthentication.swift; sourceTree = "<group>"; };
 		D98CA2B22DF2450E0060370E /* BackupRecordKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRecordKeyViewController.swift; sourceTree = "<group>"; };
@@ -9697,12 +9699,13 @@
 				6685FEED2DB06F740086CF3C /* BackupAttachmentDownloadEligibility.swift */,
 				66E257022CA3860B00100A08 /* BackupAttachmentDownloadManager.swift */,
 				6685FEEF2DB073F60086CF3C /* BackupAttachmentDownloadProgress.swift */,
+				66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManaager.swift */,
 				667BB2072C580C1400E79B57 /* BackupAttachmentDownloadStore.swift */,
 				66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */,
-				66F98DDD2DB70739009F1A86 /* BackupAttachmentQueueStatusManager.swift */,
 				D9C4C0842E0A75EF00B74696 /* BackupAttachmentUploadEraStore.swift */,
 				6683454F2DCA9BE700566AB3 /* BackupAttachmentUploadProgress.swift */,
 				663AAF212E01EDD600B9C4B8 /* BackupAttachmentUploadQueueRunner.swift */,
+				D98ACAA62E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift */,
 				66734F002CA1ED3A00558494 /* BackupAttachmentUploadScheduler.swift */,
 				66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */,
 				66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */,
@@ -10686,7 +10689,7 @@
 				50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */,
 				50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */,
 				34E95C26269F6095004807EC /* ChatListViewController+Actions.swift */,
-				66F98DE92DC5314E009F1A86 /* ChatListViewController+BackupProgressView.swift */,
+				66F98DE92DC5314E009F1A86 /* ChatListViewController+BackupDownloadProgressView.swift */,
 				76847C932A13416A008E2EAB /* ChatListViewController+Camera.swift */,
 				34E95C28269F6109004807EC /* ChatListViewController+Helpers.swift */,
 				34E95C2C26A0673F004807EC /* ChatListViewController+Loading.swift */,
@@ -16878,7 +16881,7 @@
 				50101FB42B08447000C648E4 /* ChatListProxyButtonCreator.swift in Sources */,
 				50101FB22B083C8100C648E4 /* ChatListSettingsButtonState.swift in Sources */,
 				34E95C27269F6096004807EC /* ChatListViewController+Actions.swift in Sources */,
-				66F98DEA2DC53155009F1A86 /* ChatListViewController+BackupProgressView.swift in Sources */,
+				66F98DEA2DC53155009F1A86 /* ChatListViewController+BackupDownloadProgressView.swift in Sources */,
 				76847C942A13416A008E2EAB /* ChatListViewController+Camera.swift in Sources */,
 				34E95C29269F6109004807EC /* ChatListViewController+Helpers.swift in Sources */,
 				34E95C2D26A06740004807EC /* ChatListViewController+Loading.swift in Sources */,
@@ -17723,11 +17726,12 @@
 				6685FEEE2DB06F7C0086CF3C /* BackupAttachmentDownloadEligibility.swift in Sources */,
 				66E257032CA3861200100A08 /* BackupAttachmentDownloadManager.swift in Sources */,
 				6685FEF02DB073FD0086CF3C /* BackupAttachmentDownloadProgress.swift in Sources */,
+				66F98DDE2DB7073F009F1A86 /* BackupAttachmentDownloadQueueStatusManaager.swift in Sources */,
 				667BB2082C580C1400E79B57 /* BackupAttachmentDownloadStore.swift in Sources */,
-				66F98DDE2DB7073F009F1A86 /* BackupAttachmentQueueStatusManager.swift in Sources */,
 				D9C4C0852E0A75F200B74696 /* BackupAttachmentUploadEraStore.swift in Sources */,
 				668345502DCA9BEE00566AB3 /* BackupAttachmentUploadProgress.swift in Sources */,
 				663AAF222E01EDDD00B9C4B8 /* BackupAttachmentUploadQueueRunner.swift in Sources */,
+				D98ACAA72E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift in Sources */,
 				66734F012CA1ED3F00558494 /* BackupAttachmentUploadScheduler.swift in Sources */,
 				66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */,
 				C18806342BD8080B0024044A /* BackupAuthCredentialManager.swift in Sources */,

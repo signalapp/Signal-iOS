@@ -415,10 +415,20 @@ public class AppSetup {
         let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
         let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
 
-        let backupAttachmentQueueStatusManager = BackupAttachmentQueueStatusManagerImpl(
+        let backupAttachmentDownloadQueueStatusManager = BackupAttachmentDownloadQueueStatusManagerImpl(
             appContext: appContext,
             appReadiness: appReadiness,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            dateProvider: dateProvider,
+            db: db,
+            deviceBatteryLevelManager: deviceBatteryLevelManager,
+            reachabilityManager: reachabilityManager,
+            remoteConfigManager: remoteConfigManager,
+            tsAccountManager: tsAccountManager
+        )
+        let backupAttachmentUploadQueueStatusManager = BackupAttachmentUploadQueueStatusManagerImpl(
+            appContext: appContext,
+            appReadiness: appReadiness,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
@@ -482,7 +492,7 @@ public class AppSetup {
             db: db,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
             progress: backupAttachmentUploadProgress,
-            statusManager: backupAttachmentQueueStatusManager,
+            statusManager: backupAttachmentUploadQueueStatusManager,
             tsAccountManager: tsAccountManager
         )
 
@@ -1076,7 +1086,7 @@ public class AppSetup {
                 mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
                 progress: backupAttachmentDownloadProgress,
                 remoteConfigProvider: remoteConfigManager,
-                statusManager: backupAttachmentQueueStatusManager,
+                statusManager: backupAttachmentDownloadQueueStatusManager,
                 tsAccountManager: tsAccountManager
             )
 
@@ -1422,9 +1432,10 @@ public class AppSetup {
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentDownloadProgress: backupAttachmentDownloadProgress,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-            backupAttachmentQueueStatusManager: backupAttachmentQueueStatusManager,
+            backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusManager,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
+            backupAttachmentUploadQueueStatusReporter: backupAttachmentUploadQueueStatusManager,
             backupExportJob: backupExportJob,
             backupIdManager: backupIdManager,
             backupKeyMaterial: backupKeyMaterial,

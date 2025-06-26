@@ -34,7 +34,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
             onLoadAction: onLoadAction,
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             backupAttachmentUploadProgress: DependenciesBridge.shared.backupAttachmentUploadProgress,
-            backupAttachmentQueueStatusManager: DependenciesBridge.shared.backupAttachmentQueueStatusManager,
+            backupAttachmentUploadQueueStatusReporter: DependenciesBridge.shared.backupAttachmentUploadQueueStatusReporter,
             backupDisablingManager: AppEnvironment.shared.backupDisablingManager,
             backupEnablingManager: AppEnvironment.shared.backupEnablingManager,
             backupSettingsStore: BackupSettingsStore(),
@@ -47,7 +47,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         onLoadAction: OnLoadAction,
         accountKeyStore: AccountKeyStore,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
-        backupAttachmentQueueStatusManager: BackupAttachmentQueueStatusManager,
+        backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter,
         backupDisablingManager: BackupDisablingManager,
         backupEnablingManager: BackupEnablingManager,
         backupSettingsStore: BackupSettingsStore,
@@ -56,7 +56,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
     ) {
         self.accountKeyStore = accountKeyStore
         self.backupAttachmentUploadTracker = BackupSettingsAttachmentUploadTracker(
-            backupAttachmentQueueStatusManager: backupAttachmentQueueStatusManager,
+            backupAttachmentUploadQueueStatusReporter: backupAttachmentUploadQueueStatusReporter,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress
         )
         self.backupDisablingManager = backupDisablingManager

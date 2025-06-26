@@ -68,7 +68,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
     private let progress: BackupAttachmentDownloadProgress
     private let remoteConfigProvider: RemoteConfigProvider
-    private let statusManager: BackupAttachmentQueueStatusUpdates
+    private let statusManager: BackupAttachmentDownloadQueueStatusManager
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
 
@@ -87,7 +87,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
         progress: BackupAttachmentDownloadProgress,
         remoteConfigProvider: RemoteConfigProvider,
-        statusManager: BackupAttachmentQueueStatusUpdates,
+        statusManager: BackupAttachmentDownloadQueueStatusManager,
         tsAccountManager: TSAccountManager
     ) {
         self.appContext = appContext
@@ -192,7 +192,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             try await listMediaManager.queryListMediaIfNeeded()
         }
 
-        switch await statusManager.beginObservingIfNeeded(type: .download) {
+        switch await statusManager.beginObservingIfNecessary() {
         case .running:
             break
         case .suspended:
@@ -383,16 +383,14 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private func startObservingQueueStatus() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(queueStatusDidChange(_:)),
-            name: BackupAttachmentQueueStatus.didChangeNotification,
+            selector: #selector(queueStatusDidChange),
+            name: .backupAttachmentDownloadQueueStatusDidChange,
             object: nil
         )
     }
 
     @objc
-    private func queueStatusDidChange(_ notification: Notification) {
-        let type = notification.userInfo?[BackupAttachmentQueueStatus.notificationQueueTypeKey]
-        guard type as? BackupAttachmentQueueType == .download else { return }
+    private func queueStatusDidChange() {
         Task {
             try await self.restoreAttachmentsIfNeeded()
         }
@@ -412,7 +410,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
         private let progress: BackupAttachmentDownloadProgress
         private let remoteConfigProvider: RemoteConfigProvider
-        private let statusManager: BackupAttachmentQueueStatusUpdates
+        private let statusManager: BackupAttachmentDownloadQueueStatusManager
         private let tsAccountManager: TSAccountManager
 
         let store: TaskStore
@@ -430,7 +428,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
             progress: BackupAttachmentDownloadProgress,
             remoteConfigProvider: RemoteConfigProvider,
-            statusManager: BackupAttachmentQueueStatusUpdates,
+            statusManager: BackupAttachmentDownloadQueueStatusManager,
             tsAccountManager: TSAccountManager
         ) {
             self.attachmentStore = attachmentStore
@@ -601,7 +599,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                     progress: progressSink
                 )
             } catch let error {
-                switch await statusManager.jobDidExperienceError(type: .download, error) {
+                switch await statusManager.jobDidExperienceError(error) {
                 case nil:
                     // No state change, keep going.
                     break
@@ -770,7 +768,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         func didDrainQueue() async {
             await progress.didEmptyDownloadQueue()
-            await statusManager.didEmptyQueue(type: .download)
+            await statusManager.didEmptyQueue()
             await db.awaitableWrite { tx in
                 // Go ahead and delete all done rows to reset the byte count.
                 // This isn't load-bearing, but its nice to do just in case

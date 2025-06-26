@@ -5,24 +5,19 @@
 
 import GRDB
 
-public enum BackupAttachmentQueueType: Equatable, CaseIterable {
-    case upload
-    case download
-}
-
-public enum BackupAttachmentQueueStatus: Equatable {
-    /// Running and up-/down- loading attachments off the queue
+public enum BackupAttachmentDownloadQueueStatus: Equatable {
+    /// The queue is running, and attachments are downloading.
     case running
 
-    /// The user has not yet opted to begin downloads.
+    /// Downloads may be available, but are pending user action to start running.
     case suspended
 
-    /// There's nothing to up-/down- load!
+    /// There's nothing to download.
     case empty
 
-    /// Must be registered and isAppReady to up-/down- load.
+    /// Must be registered and the app ready to download.
     case notRegisteredAndReady
-    /// Wifi (not cellular) is required to up-/down- load.
+    /// Wifi is required for downloads, but not available.
     case noWifiReachability
     /// The device has low battery or is in low power mode.
     case lowBattery
@@ -32,20 +27,23 @@ public enum BackupAttachmentQueueStatus: Equatable {
     /// ahead of time we will hit the threshold before finishing.
     /// Does not apply to upload.
     case lowDiskSpace
+}
 
-    public static let didChangeNotification = Notification.Name(rawValue: "BackupAttachmentDownloadQueueStatusDidChange")
-    public static let notificationQueueTypeKey = "BackupAttachmentQueueType"
+public extension Notification.Name {
+    static let backupAttachmentDownloadQueueStatusDidChange = Notification.Name(rawValue: "BackupAttachmentDownloadQueueStatusDidChange")
 }
 
 // MARK: -
 
-/// Observes various inputs that determine whether we are abke to download backup-sourced
-/// attachments and emits consolidated status updates.
-/// Main actor isolated because most of its inputs are themselves main actor isolated.
+/// Reports whether we are able to download Backup attachments, via various
+/// consolidated inputs.
+///
+/// `@MainActor`-isolated because most of the inputs are themselves isolated.
 @MainActor
-public protocol BackupAttachmentQueueStatusManager {
-    func currentStatus(type: BackupAttachmentQueueType) -> BackupAttachmentQueueStatus
+public protocol BackupAttachmentDownloadQueueStatusReporter {
+    func currentStatus() -> BackupAttachmentDownloadQueueStatus
 
+    /// Synchronously returns the minimum required disk space for downloads.
     nonisolated func minimumRequiredDiskSpaceToCompleteDownloads() -> UInt64
 
     /// Re-triggers disk space checks and clears any in-memory state for past disk space errors,
@@ -53,48 +51,48 @@ public protocol BackupAttachmentQueueStatusManager {
     func reattemptDiskSpaceChecks()
 }
 
-extension BackupAttachmentQueueStatusManager {
-    func notifyStatusDidChange(type: BackupAttachmentQueueType) {
-        NotificationCenter.default.post(
-            name: BackupAttachmentQueueStatus.didChangeNotification,
+extension BackupAttachmentDownloadQueueStatusReporter {
+    func notifyStatusDidChange() {
+        NotificationCenter.default.postOnMainThread(
+            name: .backupAttachmentDownloadQueueSuspensionStatusDidChange,
             object: nil,
-            userInfo: [BackupAttachmentQueueStatus.notificationQueueTypeKey: type]
         )
     }
 }
 
 // MARK: -
 
+/// API for callers to manage the `StatusReporter` in response to relevant
+/// external events.
 @MainActor
-/// API just for BackupAttachmentDownloadManager to update the state in this class.
-public protocol BackupAttachmentQueueStatusUpdates: BackupAttachmentQueueStatusManager {
+public protocol BackupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusReporter {
 
-    /// Check the current state _and_ begin observing state changes if the queue of backup up-/down- loads is not empty.
-    func beginObservingIfNeeded(type: BackupAttachmentQueueType) -> BackupAttachmentQueueStatus
+    /// Begin observing status updates, if necessary.
+    func beginObservingIfNecessary() -> BackupAttachmentDownloadQueueStatus
 
     /// Synchronously check remaining disk space.
     /// If there is sufficient space, early exit and return nil.
     /// Otherwise, await a full state update and return the updated status.
-    nonisolated func quickCheckDiskSpaceForDownloads() async -> BackupAttachmentQueueStatus?
+    nonisolated func quickCheckDiskSpaceForDownloads() async -> BackupAttachmentDownloadQueueStatus?
 
     /// Checks if the error should change the status (e.g. out of disk space errors should stop subsequent downloads)
     /// Returns nil if the error has no effect on the status (though note the status may be changed for any other concurrent
     /// reason unrelated to the error).
-    nonisolated func jobDidExperienceError(type: BackupAttachmentQueueType, _ error: Error) async -> BackupAttachmentQueueStatus?
+    nonisolated func jobDidExperienceError(_ error: Error) async -> BackupAttachmentDownloadQueueStatus?
 
-    /// Call when the QueuedBackupAttachmentRecord table is emptied.
-    func didEmptyQueue(type: BackupAttachmentQueueType)
+    /// Call when the download queue is emptied.
+    func didEmptyQueue()
 }
 
 // MARK: -
 
 @MainActor
-public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatusUpdates {
+public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDownloadQueueStatusManager {
 
-    // MARK: - API
+    // MARK: - BackupAttachmentDownloadQueueStatusReporter
 
-    public func currentStatus(type: BackupAttachmentQueueType) -> BackupAttachmentQueueStatus {
-        return state.status(type: type)
+    public func currentStatus() -> BackupAttachmentDownloadQueueStatus {
+        return state.asQueueStatus
     }
 
     public nonisolated func minimumRequiredDiskSpaceToCompleteDownloads() -> UInt64 {
@@ -103,57 +101,50 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
 
     public func reattemptDiskSpaceChecks() {
         // Check for disk space available now in case the user freed up space.
-        self.availableDiskSpaceMaybeDidChange()
+        availableDiskSpaceMaybeDidChange()
         // Also, if we had experienced an error for some individual download before,
         // clear that now. If our check for disk space says we've got space but then
         // actual downloads fail with a disk space error...this will put us in a
         // loop of attempting over and over when the user acks. But if we don't do
         // this, the user has no (obvious) way to get out of running out of space.
-        self.state.downloadDidExperienceOutOfSpaceError = false
+        state.downloadDidExperienceOutOfSpaceError = false
     }
 
-    public func beginObservingIfNeeded(type: BackupAttachmentQueueType) -> BackupAttachmentQueueStatus {
-        observeDeviceAndLocalStatesIfNeeded()
-        return currentStatus(type: type)
+    // MARK: - BackupAttachmentDownloadQueueStatusManager
+
+    public func beginObservingIfNecessary() -> BackupAttachmentDownloadQueueStatus {
+        observeDeviceAndLocalStatesIfNecessary()
+        return currentStatus()
     }
 
-    public nonisolated func jobDidExperienceError(type: BackupAttachmentQueueType, _ error: Error) async -> BackupAttachmentQueueStatus? {
-        switch type {
-        case .upload:
+    public nonisolated func jobDidExperienceError(_ error: Error) async -> BackupAttachmentDownloadQueueStatus? {
+        // We only care about out of disk space errors for downloads.
+        guard (error as NSError).code == NSFileWriteOutOfSpaceError else {
+            // Return nil to avoid having to thread-hop to the main thread just to get
+            // the current status when we know it won't change due to this error.
             return nil
-        case .download:
-            // We only care about out of disk space errors for downloads.
-            guard (error as NSError).code == NSFileWriteOutOfSpaceError else {
-                // Return nil to avoid having to thread-hop to the main thread just to get
-                // the current status when we know it won't change due to this error.
-                return nil
-            }
-            return await MainActor.run {
-                return self.downloadDidExperienceOutOfSpaceError()
-            }
+        }
+
+        return await MainActor.run {
+            return downloadDidExperienceOutOfSpaceError()
         }
     }
 
-    public nonisolated func quickCheckDiskSpaceForDownloads() async -> BackupAttachmentQueueStatus? {
-        let requiredDiskSpace = self.getRequiredDiskSpace()
+    public nonisolated func quickCheckDiskSpaceForDownloads() async -> BackupAttachmentDownloadQueueStatus? {
+        let requiredDiskSpace = getRequiredDiskSpace()
         if
-            let availableDiskSpace = self.getAvailableDiskSpace(),
+            let availableDiskSpace = getAvailableDiskSpace(),
             availableDiskSpace < requiredDiskSpace
         {
-            await self.availableDiskSpaceMaybeDidChange()
-            return await self.state.status(type: .download)
+            await availableDiskSpaceMaybeDidChange()
+            return await state.asQueueStatus
         } else {
             return nil
         }
     }
 
-    public func didEmptyQueue(type: BackupAttachmentQueueType) {
-        switch type {
-        case .upload:
-            state.isUploadQueueEmpty = true
-        case .download:
-            state.isDownloadQueueEmpty = true
-        }
+    public func didEmptyQueue() {
+        state.isQueueEmpty = true
         stopObservingDeviceAndLocalStates()
     }
 
@@ -162,8 +153,7 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
     private let appContext: AppContext
     private let appReadiness: AppReadiness
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
-    private let backupAttachmentUploadStore: BackupAttachmentUploadStore
-    private let backupSettingsStore: BackupSettingsStore
+    private var batteryLevelMonitor: DeviceBatteryLevelMonitor?
     private let dateProvider: DateProvider
     private let db: DB
     private let deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?
@@ -175,8 +165,6 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
         appContext: AppContext,
         appReadiness: AppReadiness,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
-        backupAttachmentUploadStore: BackupAttachmentUploadStore,
-        backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: DB,
         deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?,
@@ -187,8 +175,6 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
         self.appContext = appContext
         self.appReadiness = appReadiness
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
-        self.backupAttachmentUploadStore = backupAttachmentUploadStore
-        self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
         self.db = db
         self.deviceBatteryLevelManager = deviceBatteryLevelManager
@@ -197,14 +183,11 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
         self.tsAccountManager = tsAccountManager
 
         self.state = State(
-            isUploadQueueEmpty: nil,
-            isDownloadQueueEmpty: nil,
+            isQueueEmpty: nil,
             areDownloadsSuspended: nil,
             isMainApp: appContext.isMainApp,
             isAppReady: false,
             isRegistered: nil,
-            backupPlan: nil,
-            shouldBackUpOnCellular: nil,
             isWifiReachable: nil,
             batteryLevel: nil,
             isLowPowerMode: nil,
@@ -221,17 +204,12 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
     // MARK: - Private
 
     private struct State {
-        var isUploadQueueEmpty: Bool?
-
-        var isDownloadQueueEmpty: Bool?
+        var isQueueEmpty: Bool?
         var areDownloadsSuspended: Bool?
 
         var isMainApp: Bool
         var isAppReady: Bool
         var isRegistered: Bool?
-
-        var backupPlan: BackupPlan?
-        var shouldBackUpOnCellular: Bool?
 
         var isWifiReachable: Bool?
         // Value from 0 to 1
@@ -244,14 +222,11 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
         var downloadDidExperienceOutOfSpaceError: Bool
 
         init(
-            isUploadQueueEmpty: Bool?,
-            isDownloadQueueEmpty: Bool?,
+            isQueueEmpty: Bool?,
             areDownloadsSuspended: Bool?,
             isMainApp: Bool,
             isAppReady: Bool,
             isRegistered: Bool?,
-            backupPlan: BackupPlan?,
-            shouldBackUpOnCellular: Bool?,
             isWifiReachable: Bool?,
             batteryLevel: Float?,
             isLowPowerMode: Bool?,
@@ -259,14 +234,11 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
             requiredDiskSpace: UInt64?,
             downloadDidExperienceOutOfSpaceError: Bool,
         ) {
-            self.isUploadQueueEmpty = isUploadQueueEmpty
-            self.isDownloadQueueEmpty = isDownloadQueueEmpty
+            self.isQueueEmpty = isQueueEmpty
             self.areDownloadsSuspended = areDownloadsSuspended
             self.isMainApp = isMainApp
             self.isAppReady = isAppReady
             self.isRegistered = isRegistered
-            self.backupPlan = backupPlan
-            self.shouldBackUpOnCellular = shouldBackUpOnCellular
             self.isWifiReachable = isWifiReachable
             self.batteryLevel = batteryLevel
             self.isLowPowerMode = isLowPowerMode
@@ -275,24 +247,9 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
             self.downloadDidExperienceOutOfSpaceError = downloadDidExperienceOutOfSpaceError
         }
 
-        func status(type: BackupAttachmentQueueType) -> BackupAttachmentQueueStatus {
-            switch type {
-            case .upload:
-                if isUploadQueueEmpty == true {
-                    return .empty
-                }
-
-                switch backupPlan {
-                case nil, .disabled, .free:
-                    // Upload queue doesn't run unless we're paid-tier.
-                    return .empty
-                case .paid, .paidExpiringSoon:
-                    break
-                }
-            case .download:
-                if isDownloadQueueEmpty == true {
-                    return .empty
-                }
+        var asQueueStatus: BackupAttachmentDownloadQueueStatus {
+            if isQueueEmpty == true {
+                return .empty
             }
 
             guard
@@ -303,13 +260,8 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
                 return .notRegisteredAndReady
             }
 
-            switch type {
-            case .download:
-                if areDownloadsSuspended == true {
-                    return .suspended
-                }
-            case .upload:
-                break
+            if areDownloadsSuspended == true {
+                return .suspended
             }
 
             if downloadDidExperienceOutOfSpaceError {
@@ -317,7 +269,6 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
             }
 
             if
-                type == .download,
                 let availableDiskSpace,
                 let requiredDiskSpace,
                 availableDiskSpace < requiredDiskSpace
@@ -325,20 +276,14 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
                 return .lowDiskSpace
             }
 
-            let needsWifi: Bool
-            switch type {
-            case .upload:
-                needsWifi = shouldBackUpOnCellular != true
-            case .download:
-                needsWifi = true
-            }
-            guard !needsWifi || isWifiReachable == true else {
+            if isWifiReachable != true {
                 return .noWifiReachability
             }
 
             if let batteryLevel, batteryLevel < 0.1 {
                 return .lowBattery
             }
+
             if isLowPowerMode == true {
                 return .lowBattery
             }
@@ -349,60 +294,44 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
 
     private var state: State {
         didSet {
-            for type in BackupAttachmentQueueType.allCases {
-                if oldValue.status(type: type) != state.status(type: type) {
-                    notifyStatusDidChange(type: type)
-                }
+            if oldValue.asQueueStatus != state.asQueueStatus {
+                notifyStatusDidChange()
             }
         }
     }
 
     // MARK: State Observation
 
-    private func observeDeviceAndLocalStatesIfNeeded() {
+    private func observeDeviceAndLocalStatesIfNecessary() {
         // For change logic, treat nil as empty (if nil, observation is unstarted)
-        let wasUploadQueueEmpty = state.isUploadQueueEmpty ?? true
-        let wasDownloadQueueEmpty = state.isDownloadQueueEmpty ?? true
+        let wasQueueEmpty = state.isQueueEmpty ?? true
 
-        let (isUploadQueueEmpty, isDownloadQueueEmpty, areDownloadsSuspended) = db.read { tx in
+        let (isQueueEmpty, areDownloadsSuspended) = db.read { tx in
             return (
-                ((try? backupAttachmentUploadStore.fetchNextUploads(count: 1, tx: tx)) ?? []).isEmpty,
                 (try? backupAttachmentDownloadStore.hasAnyReadyDownloads(tx: tx))?.negated ?? true,
                 backupAttachmentDownloadStore.isQueueSuspended(tx: tx)
             )
 
         }
+        state.isQueueEmpty = isQueueEmpty
         state.areDownloadsSuspended = areDownloadsSuspended
-        state.isUploadQueueEmpty = isUploadQueueEmpty
-        state.isDownloadQueueEmpty = isDownloadQueueEmpty
 
-        let wereBothEmptyBefore = wasUploadQueueEmpty && wasDownloadQueueEmpty
-        let areBothEmptyNow = isUploadQueueEmpty && isDownloadQueueEmpty
-
-        if areBothEmptyNow, !wereBothEmptyBefore {
-            // Stop observing all others
+        // Only observe if the queue is non-empty, so as to not waste resources;
+        // for example, by telling the OS we want battery level updates.
+        if isQueueEmpty, !wasQueueEmpty {
             stopObservingDeviceAndLocalStates()
-        } else if !areBothEmptyNow, wereBothEmptyBefore {
-            // Start observing all others.
-            // We don't want to waste resources (in particular, tell
-            // the OS we want battery level updates) unless we have to
-            // so only observe if we have things in the queue.
+        } else if !isQueueEmpty, wasQueueEmpty {
             observeDeviceAndLocalStates()
         }
     }
 
     private func observeDeviceAndLocalStates() {
-        let (backupPlan, shouldBackUpOnCellular) = db.read { tx in
-            (
-                backupSettingsStore.backupPlan(tx: tx),
-                backupSettingsStore.shouldBackUpOnCellular(tx: tx)
-            )
+        let isRegistered = db.read { tx in
+            tsAccountManager.registrationState(tx: tx).isRegistered
         }
 
-        let notificationsToObserve: [(NSNotification.Name, Selector)] = [
+        let notificationsToObserve: [(Notification.Name, Selector)] = [
             (.registrationStateDidChange, #selector(registrationStateDidChange)),
-            (BackupSettingsStore.Notifications.backupPlanChanged, #selector(backupPlanDidChange)),
-            (BackupSettingsStore.Notifications.shouldBackUpOnCellularChanged, #selector(shouldBackUpOnCellularDidChange)),
             (.reachabilityChanged, #selector(reachabilityDidChange)),
             (UIDevice.batteryLevelDidChangeNotification, #selector(batteryLevelDidChange)),
             (Notification.Name.NSProcessInfoPowerStateDidChange, #selector(lowPowerModeDidChange)),
@@ -423,14 +352,11 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
 
         self.batteryLevelMonitor = deviceBatteryLevelManager?.beginMonitoring(reason: "BackupDownloadQueue")
         self.state = State(
-            isUploadQueueEmpty: state.isUploadQueueEmpty,
-            isDownloadQueueEmpty: state.isDownloadQueueEmpty,
+            isQueueEmpty: state.isQueueEmpty,
             areDownloadsSuspended: state.areDownloadsSuspended,
             isMainApp: appContext.isMainApp,
             isAppReady: appReadiness.isAppReady,
-            isRegistered: tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered,
-            backupPlan: backupPlan,
-            shouldBackUpOnCellular: shouldBackUpOnCellular,
+            isRegistered: isRegistered,
             isWifiReachable: reachabilityManager.isReachable(via: .wifi),
             batteryLevel: batteryLevelMonitor?.batteryLevel,
             isLowPowerMode: deviceBatteryLevelManager?.isLowPowerModeEnabled,
@@ -448,48 +374,34 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
     // MARK: Per state changes
 
     private func appReadinessDidChange() {
-        self.state.isAppReady = appReadiness.isAppReady
+        state.isAppReady = appReadiness.isAppReady
     }
 
     @objc
     private func registrationStateDidChange() {
-        self.state.isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
-    }
-
-    @objc
-    private func backupPlanDidChange() {
-        state.backupPlan = db.read { tx in
-            backupSettingsStore.backupPlan(tx: tx)
-        }
-    }
-
-    @objc
-    private func shouldBackUpOnCellularDidChange() {
-        state.shouldBackUpOnCellular = db.read { tx in
-            backupSettingsStore.shouldBackUpOnCellular(tx: tx)
+        state.isRegistered = db.read { tx in
+            tsAccountManager.registrationState(tx: tx) .isRegistered
         }
     }
 
     @objc
     private func reachabilityDidChange() {
-        self.state.isWifiReachable = reachabilityManager.isReachable(via: .wifi)
+        state.isWifiReachable = reachabilityManager.isReachable(via: .wifi)
     }
-
-    private var batteryLevelMonitor: DeviceBatteryLevelMonitor?
 
     @objc
     private func batteryLevelDidChange() {
-        self.state.batteryLevel = batteryLevelMonitor?.batteryLevel
+        state.batteryLevel = batteryLevelMonitor?.batteryLevel
     }
 
     @objc
     private func lowPowerModeDidChange() {
-        self.state.isLowPowerMode = deviceBatteryLevelManager?.isLowPowerModeEnabled
+        state.isLowPowerMode = deviceBatteryLevelManager?.isLowPowerModeEnabled
     }
 
     @objc
     private func suspensionStatusDidChange() {
-        self.state.areDownloadsSuspended = db.read(block: backupAttachmentDownloadStore.isQueueSuspended(tx:))
+        state.areDownloadsSuspended = db.read(block: backupAttachmentDownloadStore.isQueueSuspended(tx:))
     }
 
     private nonisolated func getAvailableDiskSpace() -> UInt64? {
@@ -523,8 +435,8 @@ public class BackupAttachmentQueueStatusManagerImpl: BackupAttachmentQueueStatus
         availableDiskSpaceMaybeDidChange()
     }
 
-    private func downloadDidExperienceOutOfSpaceError() -> BackupAttachmentQueueStatus {
+    private func downloadDidExperienceOutOfSpaceError() -> BackupAttachmentDownloadQueueStatus {
         state.downloadDidExperienceOutOfSpaceError = true
-        return state.status(type: .download)
+        return state.asQueueStatus
     }
 }
