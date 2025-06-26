@@ -165,19 +165,14 @@ public actor BackupAttachmentUploadProgress {
                 attachmentId: uploadRecord.attachmentRowId,
                 isFullsize: uploadRecord.isFullsize
             )
-            let prevByteCount = activeUploadByteCounts[uploadId] ?? 0
             let source = observer.source
+
+            let prevByteCount = activeUploadByteCounts[uploadId] ?? 0
+            source.incrementCompletedUnitCount(by: completedByteCount - prevByteCount)
+            activeUploadByteCounts[uploadId] = completedByteCount
+
             if completedByteCount >= totalByteCount {
-                if source.completedUnitCount < source.totalUnitCount {
-                    source.incrementCompletedUnitCount(by: completedByteCount)
-                }
                 recentlyCompletedUploads.set(key: uploadId, value: ())
-            } else {
-                let diff = min(max(completedByteCount, prevByteCount) - prevByteCount, source.totalUnitCount - source.completedUnitCount)
-                if diff > 0 {
-                    source.incrementCompletedUnitCount(by: diff)
-                }
-                activeUploadByteCounts[uploadId] = completedByteCount
             }
         }
     }
