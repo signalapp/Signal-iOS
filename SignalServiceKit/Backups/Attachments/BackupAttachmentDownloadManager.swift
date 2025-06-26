@@ -78,6 +78,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         attachmentStore: AttachmentStore,
         attachmentDownloadManager: AttachmentDownloadManager,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         backupListMediaManager: BackupListMediaManager,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
@@ -109,6 +110,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             attachmentStore: attachmentStore,
             attachmentDownloadManager: attachmentDownloadManager,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
@@ -403,6 +405,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         private let attachmentStore: AttachmentStore
         private let attachmentDownloadManager: AttachmentDownloadManager
         private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+        private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
         private let backupRequestManager: BackupRequestManager
         private let backupSettingsStore: BackupSettingsStore
         private let dateProvider: DateProvider
@@ -421,6 +424,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             attachmentStore: AttachmentStore,
             attachmentDownloadManager: AttachmentDownloadManager,
             backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+            backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
             backupRequestManager: BackupRequestManager,
             backupSettingsStore: BackupSettingsStore,
             dateProvider: @escaping DateProvider,
@@ -434,6 +438,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.attachmentStore = attachmentStore
             self.attachmentDownloadManager = attachmentDownloadManager
             self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+            self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
             self.backupRequestManager = backupRequestManager
             self.backupSettingsStore = backupSettingsStore
             self.dateProvider = dateProvider
@@ -617,62 +622,68 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 // if possible with no backoff, then only if we're on a linked device
                 // we retry media tier with some delay. The latter retry is because the
                 // primary might still be working on uploading the attachment to media tier.
-                if
-                    error.httpStatusCode == 404,
-                    !record.record.isThumbnail,
-                    record.record.canDownloadFromMediaTier
-                {
-                    if
-                        record.record.numRetries == 0,
-                        eligibility.fullsizeTransitTierState == .ready,
-                        source == .mediaTierFullsize
-                    {
-                        return .retryableError(RetryAsTransitTierError())
-                    } else if
-                        db.read(block: { tx in
+                func canRetryMediaTier404() -> Bool {
+                    db.read { tx in
                         guard tsAccountManager.registrationState(tx: tx).isPrimaryDevice == false else {
-                                return false
-                            }
-                            switch backupSettingsStore.backupPlan(tx: tx) {
-                            case .disabled, .free:
-                                // The primary would only be uploading if were paid tier.
-                                // (this is inexact but the user can always tap to download)
-                                return false
-                            case .paid, .paidExpiringSoon:
-                                break
-                            }
-                            guard let attachment = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx) else {
-                                return false
-                            }
-                            return attachment.mediaTierInfo != nil
-                                // If we had a cdn number, that came from the primary, and the
-                                // primary therefore _thinks_ its uploaded, and won't upload again.
-                                // That or we discovered this via list media and its gone now.
-                                && attachment.mediaTierInfo?.cdnNumber == nil
-                        }),
-                        let nextRetryTimestamp = { () -> UInt64? in
-                            guard record.record.numRetries < 32 else {
-                                owsFailDebug("risk of integer overflow")
-                                return nil
-                            }
-                            // Exponential backoff, starting at 1 day for the first two retries.
-                            let initialDelay = UInt64.dayInMs
-                            let delay = UInt64(pow(2.0, max(0, Double(record.record.numRetries) - 1))) * initialDelay
-                            if delay > UInt64.dayInMs * 30 {
-                                // Don't go more than 30 days; stop retrying.
-                                Logger.info("Giving up retrying attachment download")
-                                return nil
-                            }
-                            return delay
-                        }()
-                    {
-                        return .retryableError(RetryMediaTierError(nextRetryTimestamp: nextRetryTimestamp))
+                            return false
+                        }
+                        switch backupSettingsStore.backupPlan(tx: tx) {
+                        case .disabled, .free:
+                            // The primary would only be uploading if were paid tier.
+                            // (this is inexact but the user can always tap to download)
+                            return false
+                        case .paid, .paidExpiringSoon:
+                            break
+                        }
+                        guard let attachment = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx) else {
+                            return false
+                        }
+                        return attachment.mediaTierInfo != nil
+                            // If we had a cdn number, that came from the primary, and the
+                            // primary therefore _thinks_ its uploaded, and won't upload again.
+                            // That or we discovered this via list media and its gone now.
+                            && attachment.mediaTierInfo?.cdnNumber == nil
                     }
                 }
-                if error.httpStatusCode == 404 {
+
+                if
+                    !record.record.isThumbnail,
+                    record.record.numRetries == 0,
+                    eligibility.fullsizeTransitTierState == .ready,
+                    source == .mediaTierFullsize
+                {
+                    // Retry as transit tier. If we wouldn't have retried as media tier anyway,
+                    // wipe the media tier info so that we reupload in the future.
+                    return .retryableError(RetryAsTransitTierError(
+                        shouldWipeMediaTierInfo: error.httpStatusCode == 404 && !canRetryMediaTier404()
+                    ))
+                } else if
+                    error.httpStatusCode == 404,
+                    !record.record.isThumbnail,
+                    record.record.canDownloadFromMediaTier,
+                    canRetryMediaTier404(),
+                    let nextRetryTimestamp = { () -> UInt64? in
+                        guard record.record.numRetries < 32 else {
+                            owsFailDebug("risk of integer overflow")
+                            return nil
+                        }
+                        // Exponential backoff, starting at 1 day for the first two retries.
+                        let initialDelay = UInt64.dayInMs
+                        let delay = UInt64(pow(2.0, max(0, Double(record.record.numRetries) - 1))) * initialDelay
+                        if delay > UInt64.dayInMs * 30 {
+                            // Don't go more than 30 days; stop retrying.
+                            Logger.info("Giving up retrying attachment download")
+                            return nil
+                        }
+                        return delay
+                    }()
+                {
+                    return .retryableError(RetryMediaTierError(nextRetryTimestamp: nextRetryTimestamp))
+                } else if error.httpStatusCode == 404 {
                     return .unretryableError(Unretryable404Error(source: source))
+                } else {
+                    return .unretryableError(error)
                 }
-                return .unretryableError(error)
             }
 
             await progress.didFinishDownloadOfAttachment(
@@ -699,7 +710,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             let nextRetryTimestamp: UInt64
         }
 
-        private struct RetryAsTransitTierError: Error {}
+        private struct RetryAsTransitTierError: Error {
+            let shouldWipeMediaTierInfo: Bool
+        }
 
         private struct Unretryable404Error: Error {
             let source: QueuedAttachmentDownloadRecord.SourceType
@@ -718,13 +731,29 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 try downloadRecord.update(tx.database)
             } else if
                 isRetryable,
-                error is RetryAsTransitTierError
+                let error = error as? RetryAsTransitTierError
             {
                 // Just increment the retry count by 1 but don't update
                 // the retry timestamp so we retry immediately as transit tier.
                 var downloadRecord = record.record
                 downloadRecord.numRetries += 1
                 try downloadRecord.update(tx.database)
+
+                if error.shouldWipeMediaTierInfo {
+                    try attachmentStore.removeMediaTierInfo(
+                        forAttachmentId: record.record.attachmentRowId,
+                        tx: tx
+                    )
+                    if
+                        let stream = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx)?.asStream()
+                    {
+                        try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                            stream.attachment,
+                            mode: .fullsizeOnly,
+                            tx: tx
+                        )
+                    }
+                }
             } else if !isRetryable {
                 try backupAttachmentDownloadStore.remove(
                     attachmentId: record.record.attachmentRowId,
@@ -740,11 +769,29 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                             forAttachmentId: record.record.attachmentRowId,
                             tx: tx
                         )
+                        if
+                            let stream = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx)?.asStream()
+                        {
+                            try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                                stream.attachment,
+                                mode: .thumbnailOnly,
+                                tx: tx
+                            )
+                        }
                     case .mediaTierFullsize:
                         try attachmentStore.removeMediaTierInfo(
                             forAttachmentId: record.record.attachmentRowId,
                             tx: tx
                         )
+                        if
+                            let stream = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx)?.asStream()
+                        {
+                            try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                                stream.attachment,
+                                mode: .fullsizeOnly,
+                                tx: tx
+                            )
+                        }
                     case .transitTier:
                         try attachmentStore.removeTransitTierInfo(
                             forAttachmentId: record.record.attachmentRowId,

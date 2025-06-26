@@ -1077,6 +1077,7 @@ public class AppSetup {
                 attachmentStore: attachmentStore,
                 attachmentDownloadManager: attachmentDownloadManager,
                 backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+                backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
                 backupListMediaManager: backupListMediaManager,
                 backupRequestManager: backupRequestManager,
                 backupSettingsStore: backupSettingsStore,
