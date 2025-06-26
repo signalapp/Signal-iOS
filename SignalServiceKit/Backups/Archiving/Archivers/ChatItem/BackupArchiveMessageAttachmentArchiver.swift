@@ -12,18 +12,15 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
-    private let backupAttachmentByteCounter: BackupArchiveAttachmentByteCounter
 
     init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
-        backupAttachmentByteCounter: BackupArchiveAttachmentByteCounter
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
-        self.backupAttachmentByteCounter = backupAttachmentByteCounter
     }
 
     /// We tend to deal with all attachments for a given message back-to-back, but in separate steps.
@@ -85,7 +82,7 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
         for referencedAttachment in referencedAttachments {
             let pointerProto = referencedAttachment.asBackupFilePointer(
                 currentBackupAttachmentUploadEra: context.currentBackupAttachmentUploadEra,
-                attachmentBytesCounter: backupAttachmentByteCounter
+                attachmentByteCounter: context.attachmentByteCounter,
             )
 
             var attachmentProto = BackupProto_MessageAttachment()
@@ -149,7 +146,7 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
 
         let pointerProto = referencedAttachment.asBackupFilePointer(
             currentBackupAttachmentUploadEra: context.currentBackupAttachmentUploadEra,
-            attachmentBytesCounter: backupAttachmentByteCounter
+            attachmentByteCounter: context.attachmentByteCounter
         )
 
         var attachmentProto = BackupProto_MessageAttachment()
@@ -419,7 +416,7 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
 
         let result = referencedAttachment.asBackupFilePointer(
             currentBackupAttachmentUploadEra: context.currentBackupAttachmentUploadEra,
-            attachmentBytesCounter: backupAttachmentByteCounter
+            attachmentByteCounter: context.attachmentByteCounter,
         )
 
         return .success(result)
@@ -565,7 +562,7 @@ extension ReferencedAttachment {
 
     internal func asBackupFilePointer(
         currentBackupAttachmentUploadEra: String,
-        attachmentBytesCounter: BackupArchiveAttachmentByteCounter
+        attachmentByteCounter: BackupArchiveAttachmentByteCounter
     ) -> BackupProto_FilePointer {
         var proto = BackupProto_FilePointer()
         proto.contentType = attachment.mimeType
@@ -606,11 +603,14 @@ extension ReferencedAttachment {
         }
 
         if attachment.mediaName != nil {
-            guard let unencryptedByteCount = attachment.streamInfo?.unencryptedByteCount
-                    ?? attachment.mediaTierInfo?.unencryptedByteCount else {
+            guard
+                let unencryptedByteCount =
+                    attachment.streamInfo?.unencryptedByteCount
+                    ?? attachment.mediaTierInfo?.unencryptedByteCount
+            else {
                 return proto
             }
-            attachmentBytesCounter.addToByteCount(
+            attachmentByteCounter.addToByteCount(
                 attachmentID: attachment.id,
                 byteCount: UInt64(Cryptography.estimatedMediaTierCDNSize(unencryptedSize: unencryptedByteCount))
             )

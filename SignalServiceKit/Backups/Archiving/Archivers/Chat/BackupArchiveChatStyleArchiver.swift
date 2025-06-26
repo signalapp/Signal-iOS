@@ -12,7 +12,6 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let chatColorSettingStore: ChatColorSettingStore
     private let wallpaperStore: WallpaperStore
-    private let backupAttachmentByteCounter: BackupArchiveAttachmentByteCounter
 
     public init(
         attachmentManager: AttachmentManager,
@@ -20,14 +19,12 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         chatColorSettingStore: ChatColorSettingStore,
         wallpaperStore: WallpaperStore,
-        backupAttachmentByteCounter: BackupArchiveAttachmentByteCounter
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.chatColorSettingStore = chatColorSettingStore
         self.wallpaperStore = wallpaperStore
-        self.backupAttachmentByteCounter = backupAttachmentByteCounter
     }
 
     // MARK: - Custom Chat Colors
@@ -459,7 +456,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
 
         return .success(referencedAttachment.asBackupFilePointer(
             currentBackupAttachmentUploadEra: context.currentBackupAttachmentUploadEra,
-            attachmentBytesCounter: backupAttachmentByteCounter
+            attachmentByteCounter: context.attachmentByteCounter,
         ))
     }
 

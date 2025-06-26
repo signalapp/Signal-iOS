@@ -49,13 +49,11 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
     private let archivedPaymentStore: ArchivedPaymentStore
     private let reactionStore: ReactionStore
     private let threadStore: BackupArchiveThreadStore
-    private let backupAttachmentByteCounter: BackupArchiveAttachmentByteCounter
 
     private lazy var attachmentsArchiver = BackupArchiveMessageAttachmentArchiver(
         attachmentManager: attachmentManager,
         attachmentStore: attachmentStore,
         backupAttachmentDownloadManager: backupAttachmentDownloadManager,
-        backupAttachmentByteCounter: backupAttachmentByteCounter
     )
     private lazy var reactionArchiver = BackupArchiveReactionArchiver(
         reactionStore: BackupArchiveReactionStore()
@@ -99,7 +97,6 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         archivedPaymentStore: ArchivedPaymentStore,
         reactionStore: ReactionStore,
         threadStore: BackupArchiveThreadStore,
-        backupAttachmentByteCounter: BackupArchiveAttachmentByteCounter
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
@@ -114,7 +111,6 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         self.archivedPaymentStore = archivedPaymentStore
         self.reactionStore = reactionStore
         self.threadStore = threadStore
-        self.backupAttachmentByteCounter = backupAttachmentByteCounter
     }
 
     // MARK: -

@@ -20,6 +20,7 @@ extension BackupArchive {
 
         /// For benchmarking archive steps.
         let bencher: BackupArchive.ArchiveBencher
+        let attachmentByteCounter: BackupArchiveAttachmentByteCounter
 
         /// Parameters configuring what content is included in this archive.
         let includedContentFilter: IncludedContentFilter
@@ -35,12 +36,14 @@ extension BackupArchive {
 
         init(
             bencher: BackupArchive.ArchiveBencher,
+            attachmentByteCounter: BackupArchiveAttachmentByteCounter,
             currentBackupAttachmentUploadEra: String,
             includedContentFilter: IncludedContentFilter,
             startTimestampMs: UInt64,
             tx: DBWriteTransaction
         ) {
             self.bencher = bencher
+            self.attachmentByteCounter = attachmentByteCounter
             self.currentBackupAttachmentUploadEra = currentBackupAttachmentUploadEra
             self.includedContentFilter = includedContentFilter
             self.startTimestampMs = startTimestampMs

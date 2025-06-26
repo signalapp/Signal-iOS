@@ -114,6 +114,7 @@ public class BackupArchiveEncryptedProtoStreamProvider {
         localAci: Aci,
         backupKey: BackupKey,
         exportProgress: BackupArchiveExportProgress?,
+        attachmentByteCounter: BackupArchiveAttachmentByteCounter,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenOutputStreamResult<Upload.EncryptedBackupUploadMetadata> {
         do {
@@ -153,7 +154,8 @@ public class BackupArchiveEncryptedProtoStreamProvider {
                         fileUrl: fileUrl,
                         digest: try outputTrackingTransform.digest(),
                         encryptedDataLength: UInt32(clamping: outputTrackingTransform.count),
-                        plaintextDataLength: UInt32(clamping: inputTrackingTransform.count)
+                        plaintextDataLength: UInt32(clamping: inputTrackingTransform.count),
+                        attachmentByteSize: attachmentByteCounter.attachmentByteSize()
                     )
                 }
             )

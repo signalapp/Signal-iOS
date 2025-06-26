@@ -16,11 +16,6 @@ public class BackupArchiveAttachmentByteCounter {
         }
     }
 
-    func clearAttachmentByteCounter() {
-        bytesCounter = 0
-        includedAttachmentsInByteCount = Set()
-    }
-
     func attachmentByteSize() -> UInt64 {
         bytesCounter
     }

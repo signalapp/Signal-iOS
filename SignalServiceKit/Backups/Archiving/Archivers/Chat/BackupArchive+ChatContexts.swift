@@ -106,6 +106,7 @@ extension BackupArchive {
 
         init(
             bencher: BackupArchive.ArchiveBencher,
+            attachmentByteCounter: BackupArchiveAttachmentByteCounter,
             currentBackupAttachmentUploadEra: String,
             customChatColorContext: CustomChatColorArchivingContext,
             includedContentFilter: IncludedContentFilter,
@@ -117,6 +118,7 @@ extension BackupArchive {
             self.recipientContext = recipientContext
             super.init(
                 bencher: bencher,
+                attachmentByteCounter: attachmentByteCounter,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 includedContentFilter: includedContentFilter,
                 startTimestampMs: startTimestampMs,
@@ -343,6 +345,7 @@ extension BackupArchive {
 
         override init(
             bencher: BackupArchive.ArchiveBencher,
+            attachmentByteCounter: BackupArchiveAttachmentByteCounter,
             currentBackupAttachmentUploadEra: String,
             includedContentFilter: IncludedContentFilter,
             startTimestampMs: UInt64,
@@ -350,6 +353,7 @@ extension BackupArchive {
         ) {
             super.init(
                 bencher: bencher,
+                attachmentByteCounter: attachmentByteCounter,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 includedContentFilter: includedContentFilter,
                 startTimestampMs: startTimestampMs,

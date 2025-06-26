@@ -133,6 +133,7 @@ extension BackupArchive {
 
         init(
             bencher: BackupArchive.ArchiveBencher,
+            attachmentByteCounter: BackupArchiveAttachmentByteCounter,
             currentBackupAttachmentUploadEra: String,
             includedContentFilter: IncludedContentFilter,
             localIdentifiers: LocalIdentifiers,
@@ -158,6 +159,7 @@ extension BackupArchive {
 
             super.init(
                 bencher: bencher,
+                attachmentByteCounter: attachmentByteCounter,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 includedContentFilter: includedContentFilter,
                 startTimestampMs: startTimestampMs,
