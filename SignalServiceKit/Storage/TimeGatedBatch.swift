@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import GRDB
 
 enum TimeGatedBatch {
     /// Processes `objects` within one or more transactions.
@@ -69,24 +70,40 @@ enum TimeGatedBatch {
     /// - SeeAlso
     /// ``TimeGatedBatch/processAll(db:yieldTxAfter:processBatch)``. This method
     /// is an `async` variant of that method; see its docs for more details.
-    static func processAllAsync(
+    static func processAllAsync<E: Error>(
         db: any DB,
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
-        processBatch: (DBWriteTransaction) throws -> Int
-    ) async rethrows -> Int {
+        errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
+        processBatch: (DBWriteTransaction) throws(E) -> Int
+    ) async throws(E) -> Int {
         var itemCount = 0
-        while true {
-            let (txItemCount, mightHaveMore) = try await db.awaitableWrite { tx in
+        outerloop: while true {
+            let txResult = await db.awaitableWriteWithTxCompletion { (tx) -> TransactionCompletion<Result<(txItemCount: Int, mightHaveMore: Bool), E>> in
                 let startTime = CACurrentMediaTime()
-                return try processSome(
-                    yieldDeadline: startTime + maximumDuration,
-                    processBatch: processBatch,
-                    tx: tx
-                )
+                do throws(E) {
+                    return try .commit(.success(processSome(
+                        yieldDeadline: startTime + maximumDuration,
+                        processBatch: processBatch,
+                        tx: tx
+                    )))
+                } catch let error {
+                    switch errorTxCompletion {
+                    case .commit:
+                        return .commit(.failure(error))
+                    case .rollback:
+                        return .rollback(.failure(error))
+                    }
+                }
             }
-            itemCount += txItemCount
-            guard mightHaveMore else {
-                break
+            switch txResult {
+            case .success(let result):
+                let (txItemCount, mightHaveMore) = result
+                itemCount += txItemCount
+                guard mightHaveMore else {
+                    break outerloop
+                }
+            case .failure(let error):
+                throw error
             }
         }
         return itemCount
@@ -106,38 +123,59 @@ enum TimeGatedBatch {
     /// single transaction (if time allows), so those operations can fetch &
     /// delete in small batches without exploding the number of transactions.
     ///
+    /// - parameter errorTxCompletion: The strategy to employ with the latest
+    /// transaction if an error is thrown: rollback or commit changes made so far _within_
+    /// that last transaction. Prior non-throwing transactions would already be committed.
     /// - Returns: The total number of items processed across all batches.
-    static func processAll(
+    static func processAll<E: Error>(
         db: any DB,
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
-        processBatch: (DBWriteTransaction) throws -> Int
-    ) rethrows -> Int {
+        errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
+        processBatch: (DBWriteTransaction) throws(E) -> Int
+    ) throws(E) -> Int {
         var itemCount = 0
-        while true {
-            let (txItemCount, mightHaveMore) = try db.write { tx in
+        outerloop: while true {
+            let txResult = db.writeWithTxCompletion { (tx) -> TransactionCompletion<Result<(txItemCount: Int, mightHaveMore: Bool), E>> in
                 let startTime = CACurrentMediaTime()
-                return try processSome(
-                    yieldDeadline: startTime + maximumDuration,
-                    processBatch: processBatch,
-                    tx: tx
-                )
+                do throws(E) {
+                    return try .commit(.success(processSome(
+                        yieldDeadline: startTime + maximumDuration,
+                        processBatch: processBatch,
+                        tx: tx
+                    )))
+                } catch let error {
+                    switch errorTxCompletion {
+                    case .commit:
+                        return .commit(.failure(error))
+                    case .rollback:
+                        return .rollback(.failure(error))
+                    }
+                }
             }
-            itemCount += txItemCount
-            guard mightHaveMore else {
-                break
+            switch txResult {
+            case .success(let result):
+                let (txItemCount, mightHaveMore) = result
+                itemCount += txItemCount
+                guard mightHaveMore else {
+                    break outerloop
+                }
+            case .failure(let error):
+                throw error
             }
         }
         return itemCount
     }
 
-    private static func processSome(
+    private static func processSome<E>(
         yieldDeadline: CFTimeInterval,
-        processBatch: (DBWriteTransaction) throws -> Int,
+        processBatch: (DBWriteTransaction) throws(E) -> Int,
         tx: DBWriteTransaction
-    ) rethrows -> (txItemCount: Int, mightHaveMore: Bool) {
+    ) throws(E) -> (txItemCount: Int, mightHaveMore: Bool) {
         var itemCount = 0
         while true {
-            let batchCount = try autoreleasepool { try processBatch(tx) }
+            let batchCount = try autoreleasepool { () throws(E) -> Int in
+                return try processBatch(tx)
+            }
             if batchCount == 0 {
                 return (itemCount, mightHaveMore: false)
             }

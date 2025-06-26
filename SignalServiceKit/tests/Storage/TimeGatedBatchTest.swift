@@ -137,4 +137,55 @@ class DBTimeBatchingTest: XCTestCase {
         }
         XCTFail("Couldn't satisfy the test conditions even with a 10s yield.")
     }
+
+    func testProcessMultipleTransactionsAndRollback() async throws {
+        let tableName = "ljfdhslgkjabglakjh"
+        let db = InMemoryDB()
+        try await db.awaitableWrite { tx in
+            try tx.database.create(table: tableName) { table in
+                table.column("id", .integer).primaryKey()
+            }
+        }
+
+        weak var priorTx: DBWriteTransaction?
+        var batchCounter = 0
+        do {
+            _ = try TimeGatedBatch.processAll(
+                db: db,
+                yieldTxAfter: -1,
+                errorTxCompletion: .rollback,
+            ) { tx in
+                // Every iteration should use a new transaction.
+                // In practice, `priorTx` is always `nil`, but this code is right even in
+                // situations where some other component retains the transaction.
+                XCTAssert(priorTx !== tx)
+                priorTx = tx
+
+                batchCounter += 1
+
+                // Write some rows.
+                for i in 0..<10 {
+                    try tx.database.execute(
+                        sql: "INSERT INTO \(tableName) (id) VALUES (?);",
+                        arguments: [i * batchCounter]
+                    )
+                }
+                if batchCounter == 2 {
+                    // Trigger a rollback
+                    struct SomeError: Error {}
+                    throw SomeError()
+                } else {
+                    return 10
+                }
+            }
+            XCTFail("Should have thrown an error!")
+        } catch {
+            // Good, we expect an error
+        }
+
+        let numRows = try db.read { tx in
+            return try Int.fetchOne(tx.database, sql: "SELECT COUNT(id) FROM \(tableName);")
+        }
+        XCTAssertEqual(numRows, 10)
+    }
 }
