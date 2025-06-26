@@ -1304,6 +1304,7 @@ public class AppSetup {
             stickerPackArchiver: BackupArchiveStickerPackArchiver(
                 backupStickerPackDownloadStore: backupStickerPackDownloadStore
             ),
+            tsAccountManager: tsAccountManager,
             attachmentByteCounter: backupAttachmentByteCounter
         )
 

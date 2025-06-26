@@ -27,7 +27,6 @@ public protocol BackupArchiveManager {
     func uploadEncryptedBackup(
         metadata: Upload.EncryptedBackupUploadMetadata,
         registeredBackupIDToken: BackupIdManager.RegisteredBackupIDToken,
-        localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
         progress: OWSProgressSink?,
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata>

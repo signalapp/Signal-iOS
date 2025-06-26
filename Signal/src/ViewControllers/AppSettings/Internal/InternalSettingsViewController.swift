@@ -428,7 +428,6 @@ private extension InternalSettingsViewController {
         _ = try await backupArchiveManager.uploadEncryptedBackup(
             metadata: metadata,
             registeredBackupIDToken: registeredBackupIDToken,
-            localIdentifiers: localIdentifiers,
             auth: .implicit(),
             progress: nil,
         )

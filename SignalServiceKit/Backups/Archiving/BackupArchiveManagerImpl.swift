@@ -70,6 +70,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let releaseNotesRecipientArchiver: BackupArchiveReleaseNotesRecipientArchiver
     private let remoteConfigManager: RemoteConfigManager
     private let stickerPackArchiver: BackupArchiveStickerPackArchiver
+    private let tsAccountManager: TSAccountManager
     private let attachmentByteCounter: BackupArchiveAttachmentByteCounter
 
     public init(
@@ -108,6 +109,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         releaseNotesRecipientArchiver: BackupArchiveReleaseNotesRecipientArchiver,
         remoteConfigManager: RemoteConfigManager,
         stickerPackArchiver: BackupArchiveStickerPackArchiver,
+        tsAccountManager: TSAccountManager,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter
     ) {
         self.accountDataArchiver = accountDataArchiver
@@ -146,6 +148,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.remoteConfigManager = remoteConfigManager
         self.stickerPackArchiver = stickerPackArchiver
         self.adHocCallArchiver = adHocCallArchiver
+        self.tsAccountManager = tsAccountManager
         self.attachmentByteCounter = attachmentByteCounter
     }
 
@@ -182,10 +185,19 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     public func uploadEncryptedBackup(
         metadata: Upload.EncryptedBackupUploadMetadata,
         registeredBackupIDToken: BackupIdManager.RegisteredBackupIDToken,
-        localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
         progress: OWSProgressSink?
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {
+        let (localIdentifiers, isPrimaryDevice) = db.read { tx in
+            return (
+                tsAccountManager.localIdentifiers(tx: tx),
+                tsAccountManager.registrationState(tx: tx).isPrimaryDevice
+            )
+        }
+        guard let localIdentifiers, isPrimaryDevice == true else {
+            throw OWSAssertionError("Backing up not on a registered primary!")
+        }
+
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
             for: .messages,
             localAci: localIdentifiers.aci,

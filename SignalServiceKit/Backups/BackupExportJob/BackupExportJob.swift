@@ -145,7 +145,6 @@ public class BackupExportJobImpl: BackupExportJob {
         _ = try await backupArchiveManager.uploadEncryptedBackup(
             metadata: uploadMetadata,
             registeredBackupIDToken: registeredBackupIDToken,
-            localIdentifiers: localIdentifiers,
             auth: .implicit(),
             progress: backupUploadProgress,
         )
