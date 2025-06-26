@@ -134,7 +134,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
             }
         }
 
-        await orphanedAttachmentCleaner.runUntilFinished()
+        try await orphanedAttachmentCleaner.runUntilFinished()
     }
 
     static let maxThumbnailedAttachmentsPerBatch = 5

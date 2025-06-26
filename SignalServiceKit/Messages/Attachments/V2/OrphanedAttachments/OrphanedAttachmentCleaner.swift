@@ -19,7 +19,7 @@ public protocol OrphanedAttachmentCleaner {
     /// Also fires immediately to clean up existing rows in the table, if any remained from prior app launches.
     func beginObserving()
 
-    func runUntilFinished() async
+    func runUntilFinished() async throws(CancellationError)
 
     /// Marks pending attachment files for deletion.
     /// Call `releasePendingAttachment` to un-mark the files for deletion
@@ -105,14 +105,14 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
     public func beginObserving() {
         // Kick off a run immediately for any rows already in the database.
         taskScheduler.task { [observer] in
-            await observer!.jobRunner.runNextCleanupJob()
+            try? await observer!.jobRunner.runNextCleanupJob()
         }
         // Begin observing the database for changes.
         dbProvider().add(transactionObserver: observer)
     }
 
-    public func runUntilFinished() async {
-        await observer.jobRunner.runNextCleanupJob()
+    public func runUntilFinished() async throws(CancellationError) {
+        try await observer.jobRunner.runNextCleanupJob()
     }
 
     public func commitPendingAttachmentWithSneakyTransaction(
@@ -173,7 +173,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
         private nonisolated let fileSystem: Shims.OWSFileSystem
         private weak var cleaner: OrphanedAttachmentCleanerImpl?
 
-        private let taskQueue = SerialTaskQueue()
+        private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
         init(
             dbProvider: @escaping () -> DatabaseWriter,
@@ -185,10 +185,10 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
             self.cleaner = cleaner
         }
 
-        func runNextCleanupJob() async {
-            try! await taskQueue.enqueue(operation: {
+        func runNextCleanupJob() async throws(CancellationError) {
+            try await taskQueue.run {
                 await self._runNextCleanupJob()
-            }).value
+            }
         }
 
         private func _runNextCleanupJob() async {
@@ -369,7 +369,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
             // When we get a matching event, run the next job _after_ committing.
             // The job should pick up whatever new row(s) got added to the table.
             taskScheduler.task { [jobRunner] in
-                await jobRunner.runNextCleanupJob()
+                try await jobRunner.runNextCleanupJob()
             }
         }
 

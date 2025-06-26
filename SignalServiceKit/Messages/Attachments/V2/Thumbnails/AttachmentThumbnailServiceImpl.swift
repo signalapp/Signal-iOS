@@ -11,7 +11,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
 
     public init() {}
 
-    private let taskQueue = SerialTaskQueue()
+    private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     public func thumbnailImage(
         for attachmentStream: AttachmentStream,
@@ -24,9 +24,9 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
         case .originalFits(let image):
             return image
         case .requiresGeneration:
-            return try? await taskQueue.enqueue(operation: {
-                return self.thumbnailImageSync(for: attachmentStream, quality: quality)
-            }).value
+            return try? await taskQueue.run { [weak self] in
+                return self?.thumbnailImageSync(for: attachmentStream, quality: quality)
+            }
         }
     }
 

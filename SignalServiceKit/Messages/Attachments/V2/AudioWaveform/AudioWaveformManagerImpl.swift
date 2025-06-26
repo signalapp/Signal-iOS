@@ -138,8 +138,8 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
     }
 
     /// "High priority" just gets its own queue.
-    private let taskQueue = SerialTaskQueue()
-    private let highPriorityTaskQueue = SerialTaskQueue()
+    private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
+    private let highPriorityTaskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     private var cache = LRUCache<AttachmentId, Weak<AudioWaveform>>(maxSize: 64)
 
@@ -158,7 +158,10 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
             }
 
             let taskQueue = highPriority ? self.highPriorityTaskQueue : self.taskQueue
-            return try await taskQueue.enqueue(operation: {
+            return try await taskQueue.run { [weak self] in
+                guard let self else {
+                    throw OWSAssertionError("Waveform manager deallocated!")
+                }
                 let waveform = try self._buildAudioWaveForm(
                     source: source,
                     waveformPath: waveformPath
@@ -166,7 +169,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
 
                 identifier.cacheKey.map { self.cache[$0] = Weak(value: waveform) }
                 return waveform
-            }).value
+            }
         }
     }
 

@@ -371,7 +371,7 @@ public final class BackupSubscriptionManager {
     /// `_redeemSubscriptionIfNecessary()` uses persisted state, so latter
     /// callers may be able to short-circuit based on state persisted by an
     /// earlier caller.
-    private let redemptionTaskQueue = SerialTaskQueue()
+    private let redemptionTaskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     /// Redeems a StoreKit Backups subscription with Signal servers for access
     /// to paid-tier Backup credentials, if there exists a StoreKit transaction
@@ -381,9 +381,9 @@ public final class BackupSubscriptionManager {
     /// This method serializes callers, is safe to call repeatedly, and returns
     /// quickly if there is not a transaction we have yet to redeem.
     public func redeemSubscriptionIfNecessary() async throws {
-        return try await redemptionTaskQueue.enqueue {
+        return try await redemptionTaskQueue.run {
             try await self._redeemSubscriptionIfNecessary()
-        }.value
+        }
     }
 
     private func _redeemSubscriptionIfNecessary() async throws {

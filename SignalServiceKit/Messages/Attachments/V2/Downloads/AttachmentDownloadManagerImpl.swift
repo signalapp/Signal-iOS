@@ -1677,15 +1677,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.stickerManager = stickerManager
         }
 
-        // Use serialQueue to ensure that we only load into memory
+        // Use concurrent=1 queue to ensure that we only load into memory
         // & decrypt a single attachment at a time.
-        private let decryptionQueue = SerialTaskQueue()
+        private let decryptionQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
         func decryptTransientAttachment(
             encryptedFileUrl: URL,
             metadata: DownloadMetadata
         ) async throws -> URL {
-            return try await decryptionQueue.enqueue(operation: {
+            return try await decryptionQueue.run {
                 do {
                     // Transient attachments decrypt to a tmp file.
                     let outputUrl = OWSFileSystem.temporaryFileUrl()
@@ -1709,7 +1709,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     }
                     throw error
                 }
-            }).value
+            }
         }
 
         func validateAndPrepareInstalledSticker(
@@ -1717,7 +1717,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         ) async throws -> PendingAttachment {
             let attachmentValidator = self.attachmentValidator
             let stickerManager = self.stickerManager
-            return try await decryptionQueue.enqueue(operation: {
+            return try await decryptionQueue.run {
                 // AttachmentValidator runs synchronously _and_ opens write transactions
                 // internally. We can't block on the write lock in the cooperative thread
                 // pool, so bridge out of structured concurrency to run the validation.
@@ -1756,7 +1756,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         }
                     }
                 }
-            }).value
+            }
         }
 
         func validateAndPrepare(
@@ -1764,7 +1764,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             metadata: DownloadMetadata
         ) async throws -> PendingAttachment {
             let attachmentValidator = self.attachmentValidator
-            return try await decryptionQueue.enqueue(operation: {
+            return try await decryptionQueue.run {
                 // AttachmentValidator runs synchronously _and_ opens write transactions
                 // internally. We can't block on the write lock in the cooperative thread
                 // pool, so bridge out of structured concurrency to run the validation.
@@ -1821,12 +1821,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         }
                     }
                 }
-            }).value
+            }
         }
 
         func prepareQuotedReplyThumbnail(originalAttachmentStream: AttachmentStream) async throws -> PendingAttachment {
             let attachmentValidator = self.attachmentValidator
-            return try await decryptionQueue.enqueue(operation: {
+            return try await decryptionQueue.run {
                 // AttachmentValidator runs synchronously _and_ opens write transactions
                 // internally. We can't block on the write lock in the cooperative thread
                 // pool, so bridge out of structured concurrency to run the validation.
@@ -1842,7 +1842,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         }
                     }
                 }
-            }).value
+            }
         }
     }
 

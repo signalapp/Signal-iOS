@@ -69,13 +69,13 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         self.tsAccountManager = tsAccountManager
     }
 
-    private let taskQueue = SerialTaskQueue()
+    private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     public func queryListMediaIfNeeded() async throws {
-        // Enqueue in a serial task queue; we only want to run one of these at a time.
-        try await taskQueue.enqueue(operation: { [weak self] in
+        // Enqueue in a concurrent(1) task queue; we only want to run one of these at a time.
+        try await taskQueue.run { [weak self] in
             try await self?._queryListMediaIfNeeded()
-        }).value
+        }
     }
 
     private func _queryListMediaIfNeeded() async throws {
