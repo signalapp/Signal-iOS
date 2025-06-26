@@ -214,18 +214,10 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
                 return .cancelled
             }
 
-            let (localAci, registrationState, attachment) = db.read { tx in
-                let attachment: Attachment?
-                if let mediaName = record.record.mediaName {
-                    attachment = attachmentStore.fetchAttachment(mediaName: mediaName, tx: tx)
-                } else {
-                    attachment = nil
-                }
-
+            let (localAci, registrationState) = db.read { tx in
                 return (
                     tsAccountManager.localIdentifiers(tx: tx)?.aci,
                     tsAccountManager.registrationState(tx: tx),
-                    attachment
                 )
             }
 
@@ -253,46 +245,6 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
                 return .cancelled
             case .registered:
                 break
-            }
-
-            // Check the existing attachment only if this was locally
-            // orphaned (the record has a mediaName).
-            if record.record.mediaName != nil, let type = record.record.type {
-                let attachmentCdnNumber: UInt32?
-                switch type {
-                case .fullsize:
-                    attachmentCdnNumber = attachment?.mediaTierInfo?.cdnNumber
-                case .thumbnail:
-                    attachmentCdnNumber = attachment?.thumbnailMediaTierInfo?.cdnNumber
-                }
-
-                // If an attachment exists with the same media name, that means a new
-                // copy with the same file contents got created between orphan record
-                // insertion and now. Most likely we want to cancel this delete.
-                if attachmentCdnNumber == nil {
-                    // The new attachment hasn't been uploaded to backups. It might
-                    // be uploading right now, so don't try and delete.
-                    return .cancelled
-                } else if
-                    let attachmentCdnNumber,
-                    attachmentCdnNumber == record.record.cdnNumber
-                {
-                    // The new copy has been uploaded to the same cdn.
-                    // Don't delete it.
-                    return .cancelled
-                } else if
-                    let attachmentCdnNumber,
-                    attachmentCdnNumber < record.record.cdnNumber
-                {
-                    // This is rare, but we could end up with two copies of
-                    // the same attachment on two cdns (say 3 and 4). We want
-                    // to allow deleting the copy on the older cdn but never the newer one.
-                    // If the delete record is for 4 and the attachment is uploaded
-                    // to 3, for all we know there's a job enqueued right now to
-                    // "upload" it to 4 so we don't wanna delete and race with that.
-                    Logger.info("Deleting duplicate upload at older cdn \(record.record.cdnNumber)")
-                    return .cancelled
-                }
             }
 
             guard let localAci else {
