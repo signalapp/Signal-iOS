@@ -102,7 +102,23 @@ extension HTMLMetadata {
         guard let attributedString = try? NSAttributedString(data: data, options: options, documentAttributes: nil) else {
             return nil
         }
-        return attributedString.string
+        
+        var decodedString = attributedString.string
+        //Attempt recursive decode iteratively a maximum of three times.
+        for _ in 0..<3 {
+            let decodedStringAsData = Data(decodedString.utf8)
+            guard let redecodedAttributedString = try? NSAttributedString(data: decodedStringAsData, options: options, documentAttributes: nil) else {
+                return decodedString
+            }
+            let redecodedString  = redecodedAttributedString.string
+            if redecodedString == decodedString {
+                break
+            }
+            else {
+                decodedString = redecodedString
+            }
+        }
+        return decodedString
     }
 }
 
