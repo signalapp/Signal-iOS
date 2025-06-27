@@ -2360,3 +2360,19 @@ CREATE
     ,"estimatedByteCount"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "ListedBackupMediaObject" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            ,"mediaId" BLOB NOT NULL
+            ,"cdnNumber" INTEGER NOT NULL
+            ,"objectLength" INTEGER NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_ListedBackupMediaObject_on_mediaId"
+        ON "ListedBackupMediaObject"("mediaId"
+)
+;

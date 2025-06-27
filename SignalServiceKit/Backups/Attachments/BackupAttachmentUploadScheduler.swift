@@ -325,12 +325,14 @@ open class BackupAttachmentUploadSchedulerMock: BackupAttachmentUploadScheduler 
         return false
     }
 
+    var enqueuedAttachmentIds = [Attachment.IDType]()
+
     public func enqueueUsingHighestPriorityOwnerIfNeeded(
         _ attachment: Attachment,
         mode: BackupAttachmentUploadEnqueueMode,
         tx: DBWriteTransaction
     ) throws {
-        // Do nothing
+        enqueuedAttachmentIds.append(attachment.id)
     }
 
     public func enqueueIfNeededWithOwner(

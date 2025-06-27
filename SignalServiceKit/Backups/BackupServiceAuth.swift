@@ -22,14 +22,28 @@ public struct BackupServiceAuth {
         let backupServerPublicParams = try GenericServerPublicParams(contents: TSConstants.backupServerPublicParams)
         let presentation = authCredential.present(serverParams: backupServerPublicParams).serialize()
         let signedPresentation = privateKey.generateSignature(message: presentation)
-        self.type = type
-        self.backupLevel = authCredential.backupLevel
 
-        self.publicKey = privateKey.publicKey
-        self.authHeaders = [
-            "X-Signal-ZK-Auth": presentation.base64EncodedString(),
-            "X-Signal-ZK-Auth-Signature": signedPresentation.base64EncodedString()
-        ]
+        self.init(
+            authHeaders: [
+                "X-Signal-ZK-Auth": presentation.base64EncodedString(),
+                "X-Signal-ZK-Auth-Signature": signedPresentation.base64EncodedString()
+            ],
+            publicKey: privateKey.publicKey,
+            type: type,
+            backupLevel: authCredential.backupLevel
+        )
+    }
+
+    private init(
+        authHeaders: [String: String],
+        publicKey: PublicKey,
+        type: BackupAuthCredentialType,
+        backupLevel: BackupLevel,
+    ) {
+        self.authHeaders = authHeaders
+        self.publicKey = publicKey
+        self.type = type
+        self.backupLevel = backupLevel
     }
 
     public func apply(to httpHeaders: inout HttpHeaders) {
@@ -37,4 +51,20 @@ public struct BackupServiceAuth {
             httpHeaders.addHeader(headerKey, value: headerValue, overwriteOnConflict: true)
         }
     }
+
+    #if TESTABLE_BUILD
+
+    static func mock(
+        type: BackupAuthCredentialType = .messages,
+        backupLevel: BackupLevel = .free
+    ) -> Self {
+        return .init(
+            authHeaders: [:],
+            publicKey: PrivateKey.generate().publicKey,
+            type: type,
+            backupLevel: backupLevel
+        )
+    }
+
+    #endif
 }

@@ -16,7 +16,7 @@ class BackupSettingsAttachmentUploadTrackerTest {
     @Test
     func testLaunchingWithQueuePopulated() async {
         let db = InMemoryDB()
-        let uploadProgress = BackupAttachmentUploadProgress(db: db)
+        let uploadProgress = BackupAttachmentUploadProgressImpl(db: db)
         let uploadQueueStatusReporter = MockUploadQueueStatusReporter()
         let uploadTracker = BackupSettingsAttachmentUploadTracker(
             backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,
@@ -54,7 +54,7 @@ class BackupSettingsAttachmentUploadTrackerTest {
     @Test
     func testQueueStartsEmptyThenStartsRunning() async {
         let db = InMemoryDB()
-        let uploadProgress = BackupAttachmentUploadProgress(db: db)
+        let uploadProgress = BackupAttachmentUploadProgressImpl(db: db)
         let uploadQueueStatusReporter = MockUploadQueueStatusReporter()
         let uploadTracker = BackupSettingsAttachmentUploadTracker(
             backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,
@@ -92,7 +92,7 @@ class BackupSettingsAttachmentUploadTrackerTest {
     @Test
     func testTrackingStoppingAndReTracking() async {
         let db = InMemoryDB()
-        let uploadProgress = BackupAttachmentUploadProgress(db: db)
+        let uploadProgress = BackupAttachmentUploadProgressImpl(db: db)
         let uploadQueueStatusReporter = MockUploadQueueStatusReporter()
         let uploadTracker = BackupSettingsAttachmentUploadTracker(
             backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,
@@ -128,7 +128,7 @@ class BackupSettingsAttachmentUploadTrackerTest {
     @Test
     func testTrackingStopsWhenStreamCancelled() async {
         let db = InMemoryDB()
-        let uploadProgress = BackupAttachmentUploadProgress(db: db)
+        let uploadProgress = BackupAttachmentUploadProgressImpl(db: db)
         let uploadQueueStatusReporter = MockUploadQueueStatusReporter()
         let uploadTracker = BackupSettingsAttachmentUploadTracker(
             backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,

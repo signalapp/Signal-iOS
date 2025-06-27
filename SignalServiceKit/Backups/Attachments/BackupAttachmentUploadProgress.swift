@@ -5,6 +5,32 @@
 
 public import GRDB
 
+public class BackupAttachmentUploadProgressObserver {
+    fileprivate let queueSnapshot: BackupAttachmentUploadProgressImpl.UploadQueueSnapshot
+    fileprivate let sink: OWSProgressSink
+    fileprivate let source: OWSProgressSource
+    private weak var progress: BackupAttachmentUploadProgress?
+    fileprivate let id: UUID = UUID()
+
+    fileprivate init(
+        queueSnapshot: BackupAttachmentUploadProgressImpl.UploadQueueSnapshot,
+        sink: OWSProgressSink,
+        source: OWSProgressSource,
+        progress: BackupAttachmentUploadProgress?
+    ) {
+        self.queueSnapshot = queueSnapshot
+        self.sink = sink
+        self.source = source
+        self.progress = progress
+    }
+
+    deinit {
+        Task { [weak progress, id] in
+            await progress?.removeObserver(id)
+        }
+    }
+}
+
 /// Tracks and reports progress for backup (media tier) attachment uploads.
 ///
 /// At observation time, checks the current total scheduled bytes to upload, and uses that
@@ -15,39 +41,43 @@ public import GRDB
 /// and "remembers" the total bytes to download.
 ///
 /// Note: ignores/excludes thumbnail uploads; just deals with fullsize attachments.
-public actor BackupAttachmentUploadProgress {
+public protocol BackupAttachmentUploadProgress: AnyObject {
 
-    // MARK: - Public API
-
-    public class Observer {
-        fileprivate let queueSnapshot: UploadQueueSnapshot
-        fileprivate let sink: OWSProgressSink
-        fileprivate let source: OWSProgressSource
-        private weak var progress: BackupAttachmentUploadProgress?
-        fileprivate let id: UUID = UUID()
-
-        fileprivate init(
-            queueSnapshot: UploadQueueSnapshot,
-            sink: OWSProgressSink,
-            source: OWSProgressSource,
-            progress: BackupAttachmentUploadProgress?
-        ) {
-            self.queueSnapshot = queueSnapshot
-            self.sink = sink
-            self.source = source
-            self.progress = progress
-        }
-
-        deinit {
-            Task { [weak progress, id] in
-                await progress?.removeObserver(id)
-            }
-        }
-    }
+    typealias Observer = BackupAttachmentUploadProgressObserver
 
     /// Begin observing progress of all backup attachment uploads that are scheduled as of the time this method is called.
     /// The total count will not change over the lifetime of the observer, even if new attachments are scheduled for upload.
     /// The returned observer must be retained to continue receiving updates (Careful of retain cycles; the observer retains the block).
+    func addObserver(_ block: @escaping (OWSProgress) -> Void) async throws -> Observer
+
+    func removeObserver(_ observer: Observer) async
+
+    func removeObserver(_ id: UUID) async
+
+    /// Create an OWSProgressSink for a single attachment to be uploaded.
+    /// Should be called prior to uploading any backup attachment.
+    func willBeginUploadingAttachment(
+        uploadRecord: QueuedBackupAttachmentUpload
+    ) async -> OWSProgressSink
+
+    /// Stopgap to inform that an attachment finished uploading.
+    /// There are a couple edge cases (e.g. already uploaded) that result in uploads
+    /// finishing without reporting any progress updates. This method ensures we always mark
+    /// attachments as finished in all cases.
+    func didFinishUploadOfAttachment(
+        uploadRecord: QueuedBackupAttachmentUpload
+    ) async
+
+    /// Called when there are no more enqueued uploads.
+    /// As a final stopgap, in case we missed some bytes and counting got out of sync,
+    /// this should fully advance the uploaded byte count to the total byte count.
+    func didEmptyUploadQueue() async
+}
+
+public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress {
+
+    // MARK: - Public API
+
     public func addObserver(_ block: @escaping (OWSProgress) -> Void) async throws -> Observer {
         let queueSnapshot = try self.computeRemainingUnuploadedByteCount()
         let sink = OWSProgress.createSink(block)
@@ -68,9 +98,7 @@ public actor BackupAttachmentUploadProgress {
 
     // MARK: - BackupAttachmentUploadManager API
 
-    /// Create an OWSProgressSink for a single attachment to be uploaded.
-    /// Should be called prior to uploading any backup attachment.
-    internal func willBeginUploadingAttachment(
+    public func willBeginUploadingAttachment(
         uploadRecord: QueuedBackupAttachmentUpload
     ) async -> OWSProgressSink {
         let sink = OWSProgress.createSink { [weak self] progress in
@@ -85,11 +113,7 @@ public actor BackupAttachmentUploadProgress {
         return sink
     }
 
-    /// Stopgap to inform that an attachment finished uploading.
-    /// There are a couple edge cases (e.g. already uploaded) that result in uploads
-    /// finishing without reporting any progress updates. This method ensures we always mark
-    /// attachments as finished in all cases.
-    internal func didFinishUploadOfAttachment(
+    public func didFinishUploadOfAttachment(
         uploadRecord: QueuedBackupAttachmentUpload
     ) {
         didUpdateProgressForActiveUpload(
@@ -99,10 +123,7 @@ public actor BackupAttachmentUploadProgress {
         )
     }
 
-    /// Called when there are no more enqueued uploads.
-    /// As a final stopgap, in case we missed some bytes and counting got out of sync,
-    /// this should fully advance the uploaded byte count to the total byte count.
-    internal func didEmptyUploadQueue() async {
+    public func didEmptyUploadQueue() async {
         activeUploadByteCounts.keys.forEach {
             recentlyCompletedUploads.set(key: $0, value: ())
         }
@@ -177,7 +198,7 @@ public actor BackupAttachmentUploadProgress {
         }
     }
 
-    func removeObserver(_ id: UUID) {
+    public func removeObserver(_ id: UUID) {
         observers.removeAll(where: { $0.id == id })
     }
 
@@ -217,3 +238,52 @@ extension QueuedBackupAttachmentUpload: TableRecord {
         using: ForeignKey([QueuedBackupAttachmentUpload.CodingKeys.attachmentRowId.rawValue])
     )
 }
+
+#if TESTABLE_BUILD
+
+open class BackuAttachmentUploadProgressMock: BackupAttachmentUploadProgress {
+
+    init() {}
+
+    open func addObserver(
+        _ block: @escaping (OWSProgress) -> Void
+    ) async throws -> BackupAttachmentUploadProgressObserver {
+        let sink = OWSProgress.createSink(block)
+        let source = await sink.addSource(withLabel: "", unitCount: 100)
+        return BackupAttachmentUploadProgressObserver(
+            queueSnapshot: .init(
+                totalByteCount: 100,
+                maxRowId: nil
+            ),
+            sink: sink,
+            source: source,
+            progress: nil
+        )
+    }
+
+    open func removeObserver(_ observer: Observer) async {
+        // Do nothing
+    }
+
+    open func removeObserver(_ id: UUID) async {
+        // Do nothing
+    }
+
+    open func willBeginUploadingAttachment(
+        uploadRecord: QueuedBackupAttachmentUpload
+    ) async -> any OWSProgressSink {
+        OWSProgress.createSink({ _ in })
+    }
+
+    open func didFinishUploadOfAttachment(
+        uploadRecord: QueuedBackupAttachmentUpload
+    ) async {
+        // Do nothing
+    }
+
+    open func didEmptyUploadQueue() async {
+        // Do nothing
+    }
+}
+
+#endif

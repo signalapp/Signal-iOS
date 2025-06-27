@@ -302,6 +302,7 @@ public extension DatabaseRecovery {
             "TSAttachmentMigration",
             "AvatarDefaultColor",
             GroupMessageProcessorJob.databaseTableName,
+            "ListedBackupMediaObject",
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

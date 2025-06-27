@@ -1085,6 +1085,7 @@
 		66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */; };
 		66A1F4E22E035C020095DE4B /* BackupExportJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1F4E12E035BFE0095DE4B /* BackupExportJob.swift */; };
 		66A1F4E62E03641D0095DE4B /* BackupBGProcessingTaskRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1F4E52E0364140095DE4B /* BackupBGProcessingTaskRunner.swift */; };
+		66A1F4EB2E07CEA50095DE4B /* BackupListMediaManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1F4E92E07CE8C0095DE4B /* BackupListMediaManagerTests.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
 		66A64D342D00E52400203F4B /* MediaGalleryChangeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A64D332D00E51200203F4B /* MediaGalleryChangeInfo.swift */; };
 		66A830442CEBFCC700A7656D /* OWSProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A830432CEBFC6800A7656D /* OWSProgress.swift */; };
@@ -5029,6 +5030,7 @@
 		66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationServiceResponses.swift; sourceTree = "<group>"; };
 		66A1F4E12E035BFE0095DE4B /* BackupExportJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupExportJob.swift; sourceTree = "<group>"; };
 		66A1F4E52E0364140095DE4B /* BackupBGProcessingTaskRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupBGProcessingTaskRunner.swift; sourceTree = "<group>"; };
+		66A1F4E92E07CE8C0095DE4B /* BackupListMediaManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupListMediaManagerTests.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
 		66A64D332D00E51200203F4B /* MediaGalleryChangeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryChangeInfo.swift; sourceTree = "<group>"; };
 		66A830432CEBFC6800A7656D /* OWSProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSProgress.swift; sourceTree = "<group>"; };
@@ -9710,6 +9712,7 @@
 				66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */,
 				66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */,
 				66B545192DD5B9980016289B /* BackupListMediaManager.swift */,
+				66A1F4E92E07CE8C0095DE4B /* BackupListMediaManagerTests.swift */,
 				668478F62CAB66D600430D68 /* OrphanedBackupAttachment.swift */,
 				668479002CB0A77C00430D68 /* OrphanedBackupAttachmentManager.swift */,
 				668478F82CAB686F00430D68 /* OrphanedBackupAttachmentStore.swift */,
@@ -18796,6 +18799,7 @@
 				66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */,
 				66C795302C9B83A200C13937 /* BackupAttachmentUploadStoreTests.swift in Sources */,
 				047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */,
+				66A1F4EB2E07CEA50095DE4B /* BackupListMediaManagerTests.swift in Sources */,
 				04E66D452E00AB6A0059DBAC /* BackupSettingsStoreTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,
 				D9C42C2F2B6C60600086B142 /* CallRecordDeleteManagerTest.swift in Sources */,

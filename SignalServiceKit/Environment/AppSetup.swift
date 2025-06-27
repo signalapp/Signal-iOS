@@ -439,8 +439,8 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let backupAttachmentUploadProgress = BackupAttachmentUploadProgress(db: db)
-        let backupAttachmentDownloadProgress = BackupAttachmentDownloadProgress(
+        let backupAttachmentUploadProgress = BackupAttachmentUploadProgressImpl(db: db)
+        let backupAttachmentDownloadProgress = BackupAttachmentDownloadProgressImpl(
             appContext: appContext,
             appReadiness: appReadiness,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,

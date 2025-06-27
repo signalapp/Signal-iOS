@@ -330,6 +330,7 @@ public class GRDBSchemaMigrator {
         case addByteCountAndIsFullsizeToBackupAttachmentUpload
         case refactorBackupAttachmentDownload
         case removeAttachmentMediaTierDigestColumn
+        case addListMediaTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -393,7 +394,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 115
+    public static let grdbSchemaVersionLatest: UInt = 116
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4089,6 +4090,23 @@ public class GRDBSchemaMigrator {
             try tx.database.alter(table: "Attachment") { table in
                 table.drop(column: "mediaTierDigestSHA256Ciphertext")
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addListMediaTable) { tx in
+            try tx.database.create(table: "ListedBackupMediaObject") { table in
+                table.column("id", .integer).primaryKey(autoincrement: true)
+                table.column("mediaId", .blob).notNull()
+                table.column("cdnNumber", .integer).notNull()
+                table.column("objectLength", .integer).notNull()
+            }
+
+            try tx.database.create(
+                index: "index_ListedBackupMediaObject_on_mediaId",
+                on: "ListedBackupMediaObject",
+                columns: ["mediaId"]
+            )
+
             return .success(())
         }
 

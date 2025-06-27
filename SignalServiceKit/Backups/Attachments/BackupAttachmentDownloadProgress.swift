@@ -5,35 +5,71 @@
 
 public import GRDB
 
+public class BackupAttachmentDownloadProgressObserver {
+    private weak var progress: BackupAttachmentDownloadProgress?
+    fileprivate let id: UUID = UUID()
+    fileprivate let block: (OWSProgress) -> Void
+
+    fileprivate init(progress: BackupAttachmentDownloadProgress? = nil, block: @escaping (OWSProgress) -> Void) {
+        self.progress = progress
+        self.block = block
+    }
+
+    deinit {
+        Task { [weak progress, id] in
+            await progress?.removeObserver(id)
+        }
+    }
+}
+
 /// Tracks and reports progress for backup (media tier) attachment downloads.
 ///
 /// When we restore a backup (or disable backups or other state changes that trigger bulk rescheduling
 /// of media tier downloads) we compute and store the total bytes to download. This class counts
 /// up to that number until all downloads finish; this ensures we show a stable total even as we make
 /// partial progress.
-public actor BackupAttachmentDownloadProgress {
+public protocol BackupAttachmentDownloadProgress: AnyObject {
 
-    // MARK: - Public API
-
-    public class Observer {
-        private weak var progress: BackupAttachmentDownloadProgress?
-        fileprivate let id: UUID = UUID()
-        fileprivate let block: (OWSProgress) -> Void
-
-        fileprivate init(progress: BackupAttachmentDownloadProgress? = nil, block: @escaping (OWSProgress) -> Void) {
-            self.progress = progress
-            self.block = block
-        }
-
-        deinit {
-            Task { [weak progress, id] in
-                await progress?.removeObserver(id)
-            }
-        }
-    }
+    typealias Observer = BackupAttachmentDownloadProgressObserver
 
     /// Begin observing progress of all backup attachment downloads.
     /// The observer will immediately be provided the current progress if any, and then updated with future progress state.
+    func addObserver(_ block: @escaping (OWSProgress) -> Void) async -> Observer
+
+    func removeObserver(_ observer: Observer) async
+
+    func removeObserver(_ id: UUID) async
+
+    /// Compute total pending bytes to download, and set up observation for attachments to be downloaded.
+    func beginObserving() async throws
+
+    /// Create an OWSProgressSink for a single attachment to be downloaded.
+    /// Should be called prior to downloading any backup attachment.
+    func willBeginDownloadingAttachment(
+        withId id: Attachment.IDType,
+        isThumbnail: Bool,
+    ) async -> OWSProgressSink
+
+    /// Stopgap to inform that an attachment finished downloading.
+    /// There are a couple edge cases (e.g. we already have a stream) that result in downloads
+    /// finishing without reporting any progress updates. This method ensures we always mark
+    /// attachments as finished in all cases.
+    func didFinishDownloadOfAttachment(
+        withId id: Attachment.IDType,
+        isThumbnail: Bool,
+        byteCount: UInt64
+    ) async
+
+    /// Called when there are no more enqueued downloads.
+    /// As a final stopgap, in case we missed some bytes and counting got out of sync,
+    /// this should fully advance the downloaded byte count to the total byte count.
+    func didEmptyDownloadQueue() async
+}
+
+public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgress {
+
+    // MARK: - Public API
+
     public func addObserver(_ block: @escaping (OWSProgress) -> Void) async -> Observer {
         let observer = Observer(block: block)
         if let latestProgress {
@@ -52,8 +88,7 @@ public actor BackupAttachmentDownloadProgress {
 
     // MARK: - BackupAttachmentDownloadManager API
 
-    /// Compute total pending bytes to download, and set up observation for attachments to be downloaded.
-    internal func beginObserving() async throws {
+    public func beginObserving() async throws {
         await initializeProgress()
 
         let pendingByteCount: UInt64
@@ -93,7 +128,7 @@ public actor BackupAttachmentDownloadProgress {
 
     /// Create an OWSProgressSink for a single attachment to be downloaded.
     /// Should be called prior to downloading any backup attachment.
-    internal func willBeginDownloadingAttachment(
+    public func willBeginDownloadingAttachment(
         withId id: Attachment.IDType,
         isThumbnail: Bool,
     ) async -> OWSProgressSink {
@@ -108,11 +143,7 @@ public actor BackupAttachmentDownloadProgress {
         return sink
     }
 
-    /// Stopgap to inform that an attachment finished downloading.
-    /// There are a couple edge cases (e.g. we already have a stream) that result in downloads
-    /// finishing without reporting any progress updates. This method ensures we always mark
-    /// attachments as finished in all cases.
-    internal func didFinishDownloadOfAttachment(
+    public func didFinishDownloadOfAttachment(
         withId id: Attachment.IDType,
         isThumbnail: Bool,
         byteCount: UInt64
@@ -124,10 +155,7 @@ public actor BackupAttachmentDownloadProgress {
         )
     }
 
-    /// Called when there are no more enqueued downloads.
-    /// As a final stopgap, in case we missed some bytes and counting got out of sync,
-    /// this should fully advance the downloaded byte count to the total byte count.
-    internal func didEmptyDownloadQueue() async {
+    public func didEmptyDownloadQueue() async {
         activeDownloadByteCounts.keys.forEach {
             recentlyCompletedDownloads.set(key: $0, value: ())
         }
@@ -262,7 +290,7 @@ public actor BackupAttachmentDownloadProgress {
         observers.elements.forEach { $0.block(progress) }
     }
 
-    func removeObserver(_ id: UUID) {
+    public func removeObserver(_ id: UUID) {
         observers.removeAll(where: { $0.id == id })
     }
 }
@@ -273,3 +301,49 @@ extension QueuedBackupAttachmentDownload: TableRecord {
         using: ForeignKey([QueuedBackupAttachmentDownload.CodingKeys.attachmentRowId.rawValue])
     )
 }
+
+#if TESTABLE_BUILD
+
+open class BackupAttachmentDownloadProgressMock: BackupAttachmentDownloadProgress {
+
+    init() {}
+
+    open func addObserver(
+        _ block: @escaping (OWSProgress) -> Void
+    ) async -> BackupAttachmentDownloadProgressObserver {
+        return BackupAttachmentDownloadProgressObserver(block: block)
+    }
+
+    open func removeObserver(_ observer: Observer) async {
+        // Do nothing
+    }
+
+    open func removeObserver(_ id: UUID) async {
+        // Do nothing
+    }
+
+    open func beginObserving() async throws {
+        // Do nothing
+    }
+
+    open func willBeginDownloadingAttachment(
+        withId id: Attachment.IDType,
+        isThumbnail: Bool
+    ) async -> any OWSProgressSink {
+        return OWSProgress.createSink({ _ in })
+    }
+
+    open func didFinishDownloadOfAttachment(
+        withId id: Attachment.IDType,
+        isThumbnail: Bool,
+        byteCount: UInt64
+    ) async {
+        // Do nothing
+    }
+
+    open func didEmptyDownloadQueue() async {
+        // Do nothing
+    }
+}
+
+#endif
