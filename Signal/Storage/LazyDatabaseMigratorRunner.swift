@@ -28,12 +28,12 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
 
     static var requiresNetworkConnectivity: Bool = true
 
-    func shouldLaunchBGProcessingTask() -> Bool {
+    func startCondition() -> BGProcessingTaskStartCondition {
         guard
             tsAccountManager().registrationStateWithMaybeSneakyTransaction.isRegistered,
             remoteConfigManager().currentConfig().isLazyDatabaseMigratorEnabled
         else {
-            return false
+            return .never
         }
         do {
             let indexes = try databaseStorage.read { tx in
@@ -54,7 +54,7 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
                 "index_model_TSInteraction_ConversationLoadInteractionDistance",
             ]
             if !indexes.isDisjoint(with: lazilyRemovedIndexes) {
-                return true
+                return .asSoonAsPossible
             }
             let lazilyInsertedIndexes = [
                 "Interaction_incompleteViewOnce_partial",
@@ -65,12 +65,12 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
                 "Interaction_storyReply_partial",
             ]
             if !indexes.isSuperset(of: lazilyInsertedIndexes) {
-                return true
+                return .asSoonAsPossible
             }
-            return false
+            return .never
         } catch {
             Logger.warn("Couldn't check if we need to execute.")
-            return false
+            return .never
         }
     }
 
@@ -162,7 +162,7 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
         #if DEBUG
         // If we just ran the migration, we shouldn't need to run it again. If this
         // fails, the list of indexes and migrations we perform don't match.
-        owsAssertDebug(!shouldLaunchBGProcessingTask())
+        owsAssertDebug(startCondition() == .never)
         #endif
 
         Logger.info("Done!")

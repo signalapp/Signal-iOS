@@ -42,9 +42,13 @@ class IncrementalMessageTSAttachmentMigrationRunner: BGProcessingTaskRunner {
         )
     }
 
-    public func shouldLaunchBGProcessingTask() -> Bool {
+    public func startCondition() -> BGProcessingTaskStartCondition {
         let state = db.read(block: store.getState(tx:))
-        return state != .finished
+        if state != .finished {
+            return .asSoonAsPossible
+        } else {
+            return .never
+        }
     }
 
     private class MigrationLogger: TSAttachmentMigrationLogger {

@@ -358,7 +358,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 // Lastly, these are one-off migrations, and most test devices will run
                 // them immediately and never again, so running them redundantly will help
                 // provide coverage for otherwise dead code.
-                if databaseMigratorRunner.shouldLaunchBGProcessingTask() || databaseMigratorRunner.simulatePriorCancellation() {
+                if databaseMigratorRunner.startCondition() != .never || databaseMigratorRunner.simulatePriorCancellation() {
                     try await databaseMigratorRunner.run()
                 }
                 #endif
