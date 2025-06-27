@@ -336,59 +336,60 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
         await migrateAttachmentsBeforeBackup(progress: migrateAttachmentsProgressSink)
 
-        let result: Result<OutputStreamMetadata, Error> = await db.awaitableWriteWithTxCompletion { tx in
-            return self.databaseChangeObserver.disable(tx: tx, during: { tx in
-                do {
-                    let outputStreamMetadata = try BenchMemory(
-                        title: benchTitle,
-                        memorySamplerRatio: Constants.memorySamplerFrameRatio,
-                        logInProduction: true
-                    ) { memorySampler -> OutputStreamMetadata in
-                        let outputStream: BackupArchiveProtoOutputStream
-                        let outputStreamMetadataProvider: () throws -> OutputStreamMetadata
-                        switch openOutputStreamBlock(exportProgress, tx) {
-                        case .success(let _outputStream, let _outputStreamMetadataProvider):
-                            outputStream = _outputStream
-                            outputStreamMetadataProvider = _outputStreamMetadataProvider
-                        case .unableToOpenFileStream:
-                            throw OWSAssertionError("Unable to open output file stream!")
-                        }
-
-                        try self._exportBackup(
-                            outputStream: outputStream,
-                            localIdentifiers: localIdentifiers,
-                            backupPurpose: backupPurpose,
-                            attachmentByteCounter: attachmentByteCounter,
-                            includedContentFilter: includedContentFilter,
-                            currentAppVersion: appVersion.currentAppVersion,
-                            firstAppVersion: appVersion.firstBackupAppVersion ?? appVersion.firstAppVersion,
-                            memorySampler: memorySampler,
-                            tx: tx
-                        )
-
-                        return try outputStreamMetadataProvider()
-                    }
-
-                    return .commit(.success(outputStreamMetadata))
-                } catch let error {
-                    return .rollback(.failure(error))
-                }
-            })
+        let mediaRootBackupKey = await db.awaitableWrite { tx in
+            localStorage.getOrGenerateMediaRootBackupKey(tx: tx)
         }
 
-        return try result.get()
+        return try db.read { tx in
+            let outputStreamMetadata = try BenchMemory(
+                title: benchTitle,
+                memorySamplerRatio: Constants.memorySamplerFrameRatio,
+                logInProduction: true
+            ) { memorySampler -> OutputStreamMetadata in
+                let outputStream: BackupArchiveProtoOutputStream
+                let outputStreamMetadataProvider: () throws -> OutputStreamMetadata
+                switch openOutputStreamBlock(exportProgress, tx) {
+                case .success(let _outputStream, let _outputStreamMetadataProvider):
+                    outputStream = _outputStream
+                    outputStreamMetadataProvider = _outputStreamMetadataProvider
+                case .unableToOpenFileStream:
+                    throw OWSAssertionError("Unable to open output file stream!")
+                }
+
+                try self._exportBackup(
+                    outputStream: outputStream,
+                    localIdentifiers: localIdentifiers,
+                    mediaRootBackupKey: mediaRootBackupKey,
+                    backupPurpose: backupPurpose,
+                    attachmentByteCounter: attachmentByteCounter,
+                    includedContentFilter: includedContentFilter,
+                    currentAppVersion: appVersion.currentAppVersion,
+                    firstAppVersion: appVersion.firstBackupAppVersion ?? appVersion.firstAppVersion,
+                    memorySampler: memorySampler,
+                    tx: tx
+                )
+
+                return try outputStreamMetadataProvider()
+            }
+
+            return outputStreamMetadata
+        }
     }
 
+    /// parameter mediaRootBackupKey - required to enforce that before this method opens its read tx,
+    /// a separate write tx must be used to generate and store a MRBK. The parameter is unused and the
+    /// MRBK is refetched (and this method will throw an error if it is unset).
     private func _exportBackup(
         outputStream stream: BackupArchiveProtoOutputStream,
         localIdentifiers: LocalIdentifiers,
+        mediaRootBackupKey mediaRootBackupKeyParam: BackupKey,
         backupPurpose: MessageBackupPurpose,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter,
         includedContentFilter: BackupArchive.IncludedContentFilter,
         currentAppVersion: String,
         firstAppVersion: String,
         memorySampler: MemorySampler,
-        tx: DBWriteTransaction
+        tx: DBReadTransaction
     ) throws {
         let bencher = BackupArchive.ArchiveBencher(
             dateProviderMonotonic: dateProviderMonotonic,
@@ -402,6 +403,13 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         case .remoteBackup: "RemoteBackup"
         }
 
+        // We already have a passed-in MRBK, but that came from outside this read tx so
+        // refetch it to make sure. If it changed to a new value, use the new value, thats fine
+        // (though unexpected). If it changed to _nil_ (should never happen on primaries), exit.
+        guard let mediaRootBackupKey = localStorage.getMediaRootBackupKey(tx: tx) else {
+            throw OWSAssertionError("MRBK unset as backup being created!")
+        }
+
         var errors = [LoggableErrorAndProto]()
         let result = Result<Void, Error>(catching: {
             Logger.info("Exporting for \(purposeString) with version \(backupVersion), timestamp \(startTimestampMs)")
@@ -413,6 +421,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                     backupTimeMs: startTimestampMs,
                     currentAppVersion: currentAppVersion,
                     firstAppVersion: firstAppVersion,
+                    mediaRootBackupKey: mediaRootBackupKey,
                     tx: tx
                 )
             }
@@ -617,7 +626,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             Logger.info("Finished exporting backup")
             bencher.logResults()
         })
-        processErrors(errors: errors, didFail: result.isSuccess.negated, tx: tx)
+        processErrors(errors: errors, didFail: result.isSuccess.negated)
         return try result.get()
     }
 
@@ -627,7 +636,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         backupTimeMs: UInt64,
         currentAppVersion: String,
         firstAppVersion: String,
-        tx: DBWriteTransaction
+        mediaRootBackupKey: BackupKey,
+        tx: DBReadTransaction
     ) throws {
         var backupInfo = BackupProto_BackupInfo()
         backupInfo.version = backupVersion
@@ -635,7 +645,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         backupInfo.currentAppVersion = currentAppVersion
         backupInfo.firstAppVersion = firstAppVersion
 
-        backupInfo.mediaRootBackupKey = localStorage.getOrGenerateMediaRootBackupKey(tx: tx).serialize()
+        backupInfo.mediaRootBackupKey = mediaRootBackupKey.serialize()
 
         switch stream.writeHeader(backupInfo) {
         case .success:
@@ -1229,7 +1239,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             return backupInfo
         })
 
-        processErrors(errors: frameErrors, didFail: result.isSuccess.negated, tx: tx)
+        processErrors(errors: frameErrors, didFail: result.isSuccess.negated)
         return try result.get()
     }
 
@@ -1293,8 +1303,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
     private func processErrors(
         errors: [LoggableErrorAndProto],
-        didFail: Bool,
-        tx: DBWriteTransaction
+        didFail: Bool
     ) {
         let collapsedErrors = BackupArchive.collapse(errors)
         var maxLogLevel = -1
@@ -1313,7 +1322,12 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         // Only present errors if some error rises above warning.
         // (But if one does, present _all_ errors).
         if maxLogLevel > BackupArchive.LogLevel.warning.rawValue {
-            backupArchiveErrorPresenter.persistErrors(collapsedErrors, didFail: didFail, tx: tx)
+            Task {
+                await db.awaitableWrite { tx in
+                    backupArchiveErrorPresenter.persistErrors(collapsedErrors, didFail: didFail, tx: tx)
+                }
+            }
+
         }
     }
 

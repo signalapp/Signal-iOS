@@ -139,7 +139,7 @@ extension BackupArchive {
             localIdentifiers: LocalIdentifiers,
             localRecipientId: RecipientId,
             startTimestampMs: UInt64,
-            tx: DBWriteTransaction
+            tx: DBReadTransaction
         ) {
             self.localIdentifiers = localIdentifiers
             self.localRecipientId = localRecipientId

@@ -112,7 +112,7 @@ extension BackupArchive {
             includedContentFilter: IncludedContentFilter,
             recipientContext: RecipientArchivingContext,
             startTimestampMs: UInt64,
-            tx: DBWriteTransaction
+            tx: DBReadTransaction
         ) {
             self.customChatColorContext = customChatColorContext
             self.recipientContext = recipientContext
@@ -349,7 +349,7 @@ extension BackupArchive {
             currentBackupAttachmentUploadEra: String,
             includedContentFilter: IncludedContentFilter,
             startTimestampMs: UInt64,
-            tx: DBWriteTransaction
+            tx: DBReadTransaction
         ) {
             super.init(
                 bencher: bencher,

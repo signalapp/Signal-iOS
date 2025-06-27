@@ -28,8 +28,7 @@ extension BackupArchive {
         /// The timestamp at which the archiving process started.
         let startTimestampMs: UInt64
 
-        private let _tx: DBWriteTransaction
-        var tx: DBReadTransaction { _tx }
+        let tx: DBReadTransaction
 
         /// Always set even if BackupPlan is free
         let currentBackupAttachmentUploadEra: String
@@ -40,14 +39,14 @@ extension BackupArchive {
             currentBackupAttachmentUploadEra: String,
             includedContentFilter: IncludedContentFilter,
             startTimestampMs: UInt64,
-            tx: DBWriteTransaction
+            tx: DBReadTransaction
         ) {
             self.bencher = bencher
             self.attachmentByteCounter = attachmentByteCounter
             self.currentBackupAttachmentUploadEra = currentBackupAttachmentUploadEra
             self.includedContentFilter = includedContentFilter
             self.startTimestampMs = startTimestampMs
-            self._tx = tx
+            self.tx = tx
         }
     }
 
