@@ -1147,6 +1147,36 @@ public class InteractionFinder: NSObject {
         }
     }
 
+    public class func outgoingAndIncomingMessageCount(transaction: DBReadTransaction, limit: Int) -> UInt {
+        let sql = """
+            SELECT COUNT(*)
+            FROM (
+             SELECT * FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
+            WHERE \(interactionColumn: .recordType) IN (?, ?)
+            LIMIT ?)
+            """
+        let arguments: StatementArguments = [
+            SDSRecordType.outgoingMessage.rawValue,
+            SDSRecordType.incomingMessage.rawValue,
+            limit
+        ]
+
+        do {
+            return try UInt.fetchOne(
+                transaction.database,
+                sql: sql,
+                arguments: arguments
+            ) ?? 0
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to determine message count")
+        }
+    }
+
     // MARK: - Fetch by Row ID
 
     public enum RowIdFilter {

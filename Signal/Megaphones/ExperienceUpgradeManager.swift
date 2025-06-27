@@ -77,6 +77,9 @@ class ExperienceUpgradeManager {
                     case .backupKeyReminder:
                         return ExperienceUpgradeManifest
                             .checkPreconditionsForBackupKeyReminder(transaction: transaction)
+                    case .enableBackupsReminder:
+                        return ExperienceUpgradeManifest
+                            .checkPreconditionsForBackupEnablementReminder(transaction: transaction)
                     case .unrecognized:
                         break
                     }
@@ -208,7 +211,8 @@ class ExperienceUpgradeManager {
                 .createUsernameReminder,
                 .inactiveLinkedDeviceReminder,
                 .contactPermissionReminder,
-                .backupKeyReminder:
+                .backupKeyReminder,
+                .enableBackupsReminder:
             return true
         case .remoteMegaphone:
             // Remote megaphones are always presentable. We filter out any with
@@ -297,6 +301,8 @@ class ExperienceUpgradeManager {
             )
         case .backupKeyReminder:
             return BackupKeyReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .enableBackupsReminder:
+            return BackupEnablementMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .unrecognized:
             return nil
         }

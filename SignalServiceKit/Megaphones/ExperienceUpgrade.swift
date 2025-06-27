@@ -119,6 +119,7 @@ extension ExperienceUpgrade {
                 .pinReminder,
                 .contactPermissionReminder,
                 .backupKeyReminder,
+                .enableBackupsReminder,
                 .unrecognized:
             return
         case .remoteMegaphone(let megaphone):
