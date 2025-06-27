@@ -143,6 +143,15 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
+    public var urgent: Bool {
+        return proto.urgent
+    }
+    @objc
+    public var hasUrgent: Bool {
+        return proto.hasUrgent
+    }
+
+    @objc
     public var updatedPni: String? {
         guard hasUpdatedPni else {
             return nil
@@ -277,6 +286,9 @@ extension SSKProtoEnvelope {
         if let _value = sourceServiceID {
             builder.setSourceServiceID(_value)
         }
+        if hasUrgent {
+            builder.setUrgent(urgent)
+        }
         if let _value = updatedPni {
             builder.setUpdatedPni(_value)
         }
@@ -370,6 +382,11 @@ public class SSKProtoEnvelopeBuilder: NSObject {
 
     public func setSourceServiceID(_ valueParam: String) {
         proto.sourceServiceID = valueParam
+    }
+
+    @objc
+    public func setUrgent(_ valueParam: Bool) {
+        proto.urgent = valueParam
     }
 
     @objc

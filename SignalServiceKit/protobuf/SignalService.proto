@@ -39,7 +39,7 @@ message Envelope {
   // We may eventually want to make this required.
   optional uint64 serverTimestamp = 10;
   optional string sourceServiceId = 11;
-  reserved /* urgent */ 14;
+  optional bool urgent = 14 [default = true];  // indicates that the content is considered timely by the sender; defaults to true so senders have to opt-out to say something isn't time critical
   // On change-number sync messages delivered to linked devices, this will
   // contain the account's new PNI.
   optional string updatedPni = 15;

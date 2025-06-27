@@ -114,6 +114,16 @@ struct SignalServiceProtos_Envelope: @unchecked Sendable {
   /// Clears the value of `sourceServiceID`. Subsequent reads from it will return its default value.
   mutating func clearSourceServiceID() {self._sourceServiceID = nil}
 
+  /// indicates that the content is considered timely by the sender; defaults to true so senders have to opt-out to say something isn't time critical
+  var urgent: Bool {
+    get {return _urgent ?? true}
+    set {_urgent = newValue}
+  }
+  /// Returns true if `urgent` has been explicitly set.
+  var hasUrgent: Bool {return self._urgent != nil}
+  /// Clears the value of `urgent`. Subsequent reads from it will return its default value.
+  mutating func clearUrgent() {self._urgent = nil}
+
   /// On change-number sync messages delivered to linked devices, this will
   /// contain the account's new PNI.
   var updatedPni: String {
@@ -169,6 +179,7 @@ struct SignalServiceProtos_Envelope: @unchecked Sendable {
   fileprivate var _serverGuid: String? = nil
   fileprivate var _serverTimestamp: UInt64? = nil
   fileprivate var _sourceServiceID: String? = nil
+  fileprivate var _urgent: Bool? = nil
   fileprivate var _updatedPni: String? = nil
   fileprivate var _story: Bool? = nil
   fileprivate var _spamReportingToken: Data? = nil
@@ -4220,6 +4231,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     9: .same(proto: "serverGuid"),
     10: .same(proto: "serverTimestamp"),
     11: .same(proto: "sourceServiceId"),
+    14: .same(proto: "urgent"),
     15: .same(proto: "updatedPni"),
     16: .same(proto: "story"),
     17: .same(proto: "spamReportingToken"),
@@ -4239,6 +4251,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 10: try { try decoder.decodeSingularUInt64Field(value: &self._serverTimestamp) }()
       case 11: try { try decoder.decodeSingularStringField(value: &self._sourceServiceID) }()
       case 13: try { try decoder.decodeSingularStringField(value: &self._destinationServiceID) }()
+      case 14: try { try decoder.decodeSingularBoolField(value: &self._urgent) }()
       case 15: try { try decoder.decodeSingularStringField(value: &self._updatedPni) }()
       case 16: try { try decoder.decodeSingularBoolField(value: &self._story) }()
       case 17: try { try decoder.decodeSingularBytesField(value: &self._spamReportingToken) }()
@@ -4276,6 +4289,9 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     try { if let v = self._destinationServiceID {
       try visitor.visitSingularStringField(value: v, fieldNumber: 13)
     } }()
+    try { if let v = self._urgent {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 14)
+    } }()
     try { if let v = self._updatedPni {
       try visitor.visitSingularStringField(value: v, fieldNumber: 15)
     } }()
@@ -4297,6 +4313,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs._serverGuid != rhs._serverGuid {return false}
     if lhs._serverTimestamp != rhs._serverTimestamp {return false}
     if lhs._sourceServiceID != rhs._sourceServiceID {return false}
+    if lhs._urgent != rhs._urgent {return false}
     if lhs._updatedPni != rhs._updatedPni {return false}
     if lhs._story != rhs._story {return false}
     if lhs._spamReportingToken != rhs._spamReportingToken {return false}

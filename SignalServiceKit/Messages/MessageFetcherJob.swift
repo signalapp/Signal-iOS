@@ -211,6 +211,9 @@ public class MessageFetcherJob {
             if let updatedPni: String = try params.optional(key: "updatedPni") {
                 builder.setUpdatedPni(updatedPni)
             }
+            if let urgent: Bool = try params.optional(key: "urgent") {
+                builder.setUrgent(urgent)
+            }
 
             return try builder.build()
         } catch {

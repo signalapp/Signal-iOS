@@ -188,7 +188,15 @@ public final class MessageReceiver {
         tx: DBWriteTransaction
     ) {
         let protoContent = request.protoContent
-        Logger.info("Received (-> \(request.decryptedEnvelope.localIdentity)) \(request.decryptedEnvelope.timestamp) (serverTimestamp: \(request.decryptedEnvelope.serverTimestamp)) w/\(protoContent.contentDescription) from \(request.decryptedEnvelope.sourceAci)")
+        do {
+            let identity = request.decryptedEnvelope.localIdentity
+            let timestamp = request.decryptedEnvelope.timestamp
+            let serverTs = request.decryptedEnvelope.serverTimestamp
+            let protoDesc = protoContent.contentDescription
+            let fromAci = request.decryptedEnvelope.sourceAci
+            let urgent = request.decryptedEnvelope.envelope.urgent
+            Logger.info("Received (-> \(identity)) \(timestamp) (serverTimestamp: \(serverTs)) w/\(protoDesc) from \(fromAci) (isUrgent: \(urgent))")
+        }
 
         switch request.messageType {
         case .syncMessage(let syncMessage):
