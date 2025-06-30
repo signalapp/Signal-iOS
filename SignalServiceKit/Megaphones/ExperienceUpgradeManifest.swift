@@ -647,6 +647,10 @@ extension ExperienceUpgradeManifest {
     }
 
     public static func checkPreconditionsForBackupKeyReminder(transaction: DBReadTransaction) -> Bool {
+        guard FeatureFlags.Backups.settings else {
+            return false
+        }
+
         let backupSettingsStore = BackupSettingsStore()
         let backupPlan = backupSettingsStore.backupPlan(tx: transaction)
 
