@@ -672,7 +672,7 @@ extension ExperienceUpgradeManifest {
     }
 
     public static func checkPreconditionsForBackupEnablementReminder(transaction: DBReadTransaction) -> Bool {
-        guard FeatureFlags.Backups.fileAlpha else {
+        guard FeatureFlags.Backups.settings else {
             return false
         }
 
