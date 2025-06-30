@@ -85,9 +85,9 @@ public final class InMemoryDB: DB {
     }
 
     public func asyncWriteWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: @escaping (DBWriteTransaction) -> TransactionCompletion<T>,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
@@ -109,9 +109,9 @@ public final class InMemoryDB: DB {
     }
 
     public func awaitableWriteWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) async -> T {
         await Task.yield()
@@ -155,9 +155,9 @@ public final class InMemoryDB: DB {
     }
 
     public func writeWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) -> T {
         return _writeWithTxCompletion(block: block)

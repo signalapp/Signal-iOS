@@ -48,7 +48,11 @@ public extension DatabaseRecovery {
             // We use the `performWrite` method directly instead of the usual
             // `write` methods because we explicitly do NOT want to owsFail if
             // opening the write throws an error (probably a corruption error).
-            try databaseStorage.performWriteWithTxCompletion { tx in
+            try databaseStorage.performWriteWithTxCompletion(
+                file: #file,
+                function: #function,
+                line: #line
+            ) { tx in
                 do {
                     try SqliteUtil.reindex(db: tx.database)
                     Logger.info("Reindexed database")
@@ -511,7 +515,11 @@ public extension DatabaseRecovery {
             owsPrecondition(SqliteUtil.isSafe(sqlName: tableName))
 
             do {
-                return try from.readThrows { fromTransaction -> TableCopyResult in
+                return try from.readThrows(
+                    file: #file,
+                    function: #function,
+                    line: #line
+                ) { fromTransaction -> TableCopyResult in
                     let fromDb = fromTransaction.database
 
                     let columnNames: [String]

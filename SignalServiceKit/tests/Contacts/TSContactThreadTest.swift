@@ -31,7 +31,7 @@ class TSContactThreadTest: SSKBaseTest {
 
         let identityManager = DependenciesBridge.shared.identityManager
         SSKEnvironment.shared.databaseStorageRef.write { tx in
-            identityManager.saveIdentityKey(Data(count: 32), for: contactThread.contactAddress.serviceId!, tx: tx)
+            _ = identityManager.saveIdentityKey(Data(count: 32), for: contactThread.contactAddress.serviceId!, tx: tx)
         }
 
         XCTAssert(contactThread.hasSafetyNumbers())

@@ -222,18 +222,18 @@ public class SDSDatabaseStorage: NSObject, DB {
     // MARK: - Reading & Writing
 
     public func readThrows<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: (DBReadTransaction) throws -> T
     ) throws -> T {
         try grdbStorage.read { try block($0) }
     }
 
     public func read(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: (DBReadTransaction) -> Void
     ) {
         do {
@@ -252,11 +252,10 @@ public class SDSDatabaseStorage: NSObject, DB {
         read(file: "objc", function: "block", line: 0, block: block)
     }
 
-    @discardableResult
     public func read<T, E: Error>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: (DBReadTransaction) throws(E) -> T
     ) throws(E) -> T {
         return try _read(file: file, function: function, line: line, block: block)
@@ -284,9 +283,9 @@ public class SDSDatabaseStorage: NSObject, DB {
     }
 
     public func performWriteWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         isAwaitableWrite: Bool = false,
         block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) throws -> T {
@@ -318,9 +317,9 @@ public class SDSDatabaseStorage: NSObject, DB {
 
     // NOTE: This method is not @objc. See SDSDatabaseStorage+Objc.h.
     public func write(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: (DBWriteTransaction) -> Void
     ) {
         do {
@@ -340,11 +339,10 @@ public class SDSDatabaseStorage: NSObject, DB {
         }
     }
 
-    @discardableResult
     public func write<T, E>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: (DBWriteTransaction) throws(E) -> T
     ) throws(E) -> T {
         return try _writeCommitIfThrows(
@@ -356,11 +354,10 @@ public class SDSDatabaseStorage: NSObject, DB {
         )
     }
 
-    @discardableResult
     public func writeWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) -> T {
         do {
@@ -412,9 +409,9 @@ public class SDSDatabaseStorage: NSObject, DB {
     // MARK: - Async
 
     public func asyncRead<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: @escaping (DBReadTransaction) -> T,
         completionQueue: DispatchQueue = .main,
         completion: ((T) -> Void)? = nil
@@ -429,18 +426,18 @@ public class SDSDatabaseStorage: NSObject, DB {
     }
 
     public func asyncWrite(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: @escaping (DBWriteTransaction) -> Void
     ) {
         asyncWrite(file: file, function: function, line: line, block: block, completion: nil)
     }
 
     public func asyncWrite<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: @escaping (DBWriteTransaction) -> T,
         completion: ((T) -> Void)?
     ) {
@@ -448,9 +445,9 @@ public class SDSDatabaseStorage: NSObject, DB {
     }
 
     public func asyncWriteWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: @escaping (DBWriteTransaction) -> TransactionCompletion<T>,
         completion: ((T) -> Void)?
     ) {
@@ -458,9 +455,9 @@ public class SDSDatabaseStorage: NSObject, DB {
     }
 
     public func asyncWrite<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: @escaping (DBWriteTransaction) -> T,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
@@ -474,9 +471,9 @@ public class SDSDatabaseStorage: NSObject, DB {
     }
 
     public func asyncWriteWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: @escaping (DBWriteTransaction) -> TransactionCompletion<T>,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
@@ -492,9 +489,9 @@ public class SDSDatabaseStorage: NSObject, DB {
     // MARK: - Awaitable
 
     public func awaitableWrite<T, E>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: (DBWriteTransaction) throws(E) -> T
     ) async throws(E) -> T {
         return try await self.awaitableWriteQueue.runWithoutTaskCancellationHandler { () throws(E) -> T in
@@ -503,9 +500,9 @@ public class SDSDatabaseStorage: NSObject, DB {
     }
 
     public func awaitableWriteWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) async -> T {
         return await self.awaitableWriteQueue.runWithoutTaskCancellationHandler {
@@ -529,9 +526,9 @@ public class SDSDatabaseStorage: NSObject, DB {
     @available(*, deprecated, message: "Use DatabaseStorageWrite() instead")
     @objc
     func __private_objc_write(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: (DBWriteTransaction) -> Void
     ) {
         write(file: file, function: function, line: line, block: block)
@@ -541,9 +538,9 @@ public class SDSDatabaseStorage: NSObject, DB {
     @available(*, deprecated, message: "Use DatabaseStorageAsyncWrite() instead")
     @objc
     func __private_objc_asyncWrite(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
+        file: String,
+        function: String,
+        line: Int,
         block: @escaping (DBWriteTransaction) -> Void
     ) {
         asyncWrite(file: file, function: function, line: line, block: block, completion: nil)

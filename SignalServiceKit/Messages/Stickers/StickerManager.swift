@@ -1014,7 +1014,7 @@ public class StickerManager: NSObject {
         let (promise, future) = Promise<Void>.pending()
         DispatchQueue.global().async {
             SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
-                firstly {
+                _ = firstly {
                     ensureDownloads(forStickerPack: stickerPack, transaction: transaction)
                 }.done {
                     future.resolve()
