@@ -45,6 +45,13 @@ public protocol DB {
         block: (DBWriteTransaction) throws(E) -> T
     ) async throws(E) -> T
 
+    func awaitableWriteWithRollbackIfThrows<T, E>(
+        file: String,
+        function: String,
+        line: Int,
+        block: (DBWriteTransaction) throws(E) -> T
+    ) async throws(E) -> T
+
     func awaitableWriteWithTxCompletion<T>(
         file: String,
         function: String,
@@ -62,6 +69,13 @@ public protocol DB {
     ) throws(E) -> T
 
     func write<T, E>(
+        file: String,
+        function: String,
+        line: Int,
+        block: (DBWriteTransaction) throws(E) -> T
+    ) throws(E) -> T
+
+    func writeWithRollbackIfThrows<T, E>(
         file: String,
         function: String,
         line: Int,
@@ -142,6 +156,15 @@ extension DB {
         return try await awaitableWrite(file: file, function: function, line: line, block: block)
     }
 
+    public func awaitableWriteWithRollbackIfThrows<T, E>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (DBWriteTransaction) throws(E) -> T
+    ) async throws(E) -> T {
+        return try await awaitableWriteWithRollbackIfThrows(file: file, function: function, line: line, block: block)
+    }
+
     public func awaitableWriteWithTxCompletion<T>(
         file: String = #file,
         function: String = #function,
@@ -169,6 +192,15 @@ extension DB {
         block: (DBWriteTransaction) throws(E) -> T
     ) throws(E) -> T {
         return try write(file: file, function: function, line: line, block: block)
+    }
+
+    public func writeWithRollbackIfThrows<T, E>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (DBWriteTransaction) throws(E) -> T
+    ) throws(E) -> T {
+        return try writeWithRollbackIfThrows(file: file, function: function, line: line, block: block)
     }
 
     public func writeWithTxCompletion<T>(

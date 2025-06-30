@@ -345,11 +345,28 @@ public class SDSDatabaseStorage: NSObject, DB {
         line: Int,
         block: (DBWriteTransaction) throws(E) -> T
     ) throws(E) -> T {
-        return try _writeCommitIfThrows(
+        return try _writeWithTxCompletionIfThrows(
             file: file,
             function: function,
             line: line,
             isAwaitableWrite: false,
+            completionIfThrows: .commit(()),
+            block: block,
+        )
+    }
+
+    public func writeWithRollbackIfThrows<T, E>(
+        file: String,
+        function: String,
+        line: Int,
+        block: (DBWriteTransaction) throws(E) -> T
+    ) throws(E) -> T {
+        return try _writeWithTxCompletionIfThrows(
+            file: file,
+            function: function,
+            line: line,
+            isAwaitableWrite: false,
+            completionIfThrows: .rollback(()),
             block: block,
         )
     }
@@ -373,11 +390,12 @@ public class SDSDatabaseStorage: NSObject, DB {
         }
     }
 
-    private func _writeCommitIfThrows<T, E>(
+    private func _writeWithTxCompletionIfThrows<T, E>(
         file: String,
         function: String,
         line: Int,
         isAwaitableWrite: Bool,
+        completionIfThrows: TransactionCompletion<Void>,
         block: (DBWriteTransaction) throws(E) -> T,
     ) throws(E) -> T {
         var value: T!
@@ -391,11 +409,11 @@ public class SDSDatabaseStorage: NSObject, DB {
             ) { tx in
                 do throws(E) {
                     value = try block(tx)
+                    return .commit(())
                 } catch {
                     thrown = error
+                    return completionIfThrows
                 }
-                // Always commit regardless of thrown errors.
-                return .commit(())
             }
         } catch {
             owsFail("error: \(error.grdbErrorForLogging)")
@@ -495,7 +513,32 @@ public class SDSDatabaseStorage: NSObject, DB {
         block: (DBWriteTransaction) throws(E) -> T
     ) async throws(E) -> T {
         return try await self.awaitableWriteQueue.runWithoutTaskCancellationHandler { () throws(E) -> T in
-            return try self._writeCommitIfThrows(file: file, function: function, line: line, isAwaitableWrite: true, block: block)
+            return try self._writeWithTxCompletionIfThrows(
+                file: file,
+                function: function,
+                line: line,
+                isAwaitableWrite: true,
+                completionIfThrows: .commit(()),
+                block: block
+            )
+        }
+    }
+
+    public func awaitableWriteWithRollbackIfThrows<T, E>(
+        file: String,
+        function: String,
+        line: Int,
+        block: (DBWriteTransaction) throws(E) -> T
+    ) async throws(E) -> T {
+        return try await self.awaitableWriteQueue.runWithoutTaskCancellationHandler { () throws(E) -> T in
+            return try self._writeWithTxCompletionIfThrows(
+                file: file,
+                function: function,
+                line: line,
+                isAwaitableWrite: true,
+                completionIfThrows: .rollback(()),
+                block: block
+            )
         }
     }
 

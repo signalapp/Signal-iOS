@@ -54,6 +54,62 @@ class SDSDatabaseStorageRollbackTest: SSKBaseTest {
         }
     }
 
+    func test_writeWithRollbackIfThrows() {
+        try? databaseStorage.writeWithRollbackIfThrows { tx in
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
+            kvStore.setBool(true, key: key, transaction: tx)
+            throw SomeError()
+        }
+
+        // Should have rolled back.
+        databaseStorage.read { tx in
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
+        }
+
+        // Run it again but catch the throw this time.
+        databaseStorage.writeWithRollbackIfThrows { tx in
+            do {
+                kvStore.setBool(true, key: key, transaction: tx)
+                throw SomeError()
+            } catch {
+                // Suppress error
+            }
+        }
+
+        // Should NOT have rolled back.
+        databaseStorage.read { tx in
+            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx))
+        }
+    }
+
+    func test_writeWithRollbackIfThrows_async() async {
+        try? await databaseStorage.awaitableWriteWithRollbackIfThrows { tx in
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
+            kvStore.setBool(true, key: key, transaction: tx)
+            throw SomeError()
+        }
+
+        // Should have rolled back.
+        databaseStorage.read { tx in
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
+        }
+
+        // Run it again but catch the throw this time.
+        await databaseStorage.awaitableWriteWithRollbackIfThrows { tx in
+            do {
+                kvStore.setBool(true, key: key, transaction: tx)
+                throw SomeError()
+            } catch {
+                // Suppress error
+            }
+        }
+
+        // Should NOT have rolled back.
+        databaseStorage.read { tx in
+            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx))
+        }
+    }
+
     func test_writeWithTxCompletionRollback() {
         databaseStorage.writeWithTxCompletion { tx in
             XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
@@ -160,6 +216,62 @@ class InMemoryDBRollbackTest: XCTestCase {
         }
 
         // Even though we threw an error, "normal" writes don't rollback.
+        db.read { tx in
+            XCTAssertTrue(getBool(tx: tx))
+        }
+    }
+
+    func test_writeWithRollbackIfThrows() {
+        try? db.writeWithRollbackIfThrows { tx in
+            XCTAssertFalse(getBool(tx: tx))
+            setBool(true, tx: tx)
+            throw SomeError()
+        }
+
+        // Should have rolled back.
+        db.read { tx in
+            XCTAssertFalse(getBool(tx: tx))
+        }
+
+        // Run it again but catch the throw this time.
+        db.writeWithRollbackIfThrows { tx in
+            do {
+                setBool(true, tx: tx)
+                throw SomeError()
+            } catch {
+                // Suppress error
+            }
+        }
+
+        // Should NOT have rolled back.
+        db.read { tx in
+            XCTAssertTrue(getBool(tx: tx))
+        }
+    }
+
+    func test_writeWithRollbackIfThrows_async() async {
+        try? await db.awaitableWriteWithRollbackIfThrows { tx in
+            XCTAssertFalse(getBool(tx: tx))
+            setBool(true, tx: tx)
+            throw SomeError()
+        }
+
+        // Should have rolled back.
+        db.read { tx in
+            XCTAssertFalse(getBool(tx: tx))
+        }
+
+        // Run it again but catch the throw this time.
+        await db.awaitableWriteWithRollbackIfThrows { tx in
+            do {
+                setBool(true, tx: tx)
+                throw SomeError()
+            } catch {
+                // Suppress error
+            }
+        }
+
+        // Should NOT have rolled back.
         db.read { tx in
             XCTAssertTrue(getBool(tx: tx))
         }
