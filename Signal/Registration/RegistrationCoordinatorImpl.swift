@@ -102,18 +102,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return nextStep()
     }
 
-    func returnToSplash() -> Guarantee<RegistrationStep> {
-        Logger.info("")
-
-        db.write { tx in
-            self.updatePersistedState(tx) {
-                $0.hasShownSplash = false
-                $0.restoreMode = nil
-            }
-        }
-        return nextStep()
-    }
-
     public func requestPermissions() -> Guarantee<RegistrationStep> {
         Logger.info("")
 
@@ -550,6 +538,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return self.nextStep()
     }
 
+    public func resetRestoreMode() -> Guarantee<RegistrationStep> {
+        db.write { tx in
+            self.updatePersistedState(tx) {
+                $0.hasShownSplash = false
+                $0.restoreMode = nil
+            }
+        }
+        return resetRestoreMethodChoice()
+    }
+
     public func resetRestoreMethodChoice() -> Guarantee<RegistrationStep> {
         inMemoryState.restoreMethod = nil
         inMemoryState.needsToAskForDeviceTransfer = true
@@ -559,7 +557,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 $0.hasDeclinedTransfer = false
             }
         }
-        return returnToSplash()
+        return self.nextStep()
     }
 
     public func confirmRestoreFromBackup() -> Guarantee<RegistrationStep> {
@@ -1346,6 +1344,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }.map { cdnInfo -> RegistrationStep in
             return .confirmRestoreFromBackup(
                 RegistrationRestoreFromBackupConfirmationState(
+                    mode: .manual,
                     tier: .free,
                     lastBackupDate: cdnInfo?.lastModified,
                     lastBackupSizeBytes: cdnInfo?.contentLength
@@ -1600,6 +1599,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // if backup, show the confirmation screen
             return .value(.confirmRestoreFromBackup(
                 RegistrationRestoreFromBackupConfirmationState(
+                    mode: .quickRestore,
                     tier: registrationMessage.tier ?? .free,
                     lastBackupDate: registrationMessage.backupTimestamp.map(Date.init(millisecondsSince1970:)),
                     lastBackupSizeBytes: registrationMessage.backupSizeBytes.map(UInt.init)
