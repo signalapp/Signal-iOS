@@ -137,15 +137,15 @@ public protocol JobRunner<JobRecordType> {
 /// don't, these factories will be responsible for passing dependencies into
 /// `JobRunner` instances.
 public protocol JobRunnerFactory<JobRunnerType> {
-    associatedtype JobRunnerType: JobRunner
+    associatedtype JobRunnerType: JobRunner, Sendable
 
     /// Creates a `JobRunner` for a `JobRecord` loaded from the database.
     func buildRunner() -> JobRunnerType
 }
 
 public class JobQueueRunner<
-    JobFinderType: JobRecordFinder,
-    JobRunnerFactoryType: JobRunnerFactory
+    JobFinderType: JobRecordFinder & Sendable,
+    JobRunnerFactoryType: JobRunnerFactory & Sendable,
 > where JobFinderType.JobRecordType == JobRunnerFactoryType.JobRunnerType.JobRecordType {
     private let db: any DB
     private let jobFinder: JobFinderType

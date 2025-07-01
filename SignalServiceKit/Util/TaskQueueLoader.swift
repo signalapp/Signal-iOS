@@ -26,7 +26,7 @@ extension TaskRecord {
 /// Intermediary between the ``TaskQueueLoader`` and the queue table in the database.
 /// Used to peek (get next tasks to do) and remove tasks once complete.
 public protocol TaskRecordStore {
-    associatedtype Record: TaskRecord
+    associatedtype Record: TaskRecord, Sendable
 
     /// Fetch the next `count` records to run, in priority order.
     ///
@@ -148,7 +148,7 @@ extension TaskRecordRunner {
 /// On the other hand, ``JobRunner`` gives you more in-built functionality, particularly with
 /// respect to error handling and retries. Callers of this class are left to do that on their own as well
 /// as left the task of actually starting up the loader and managing the queue table.
-public actor TaskQueueLoader<Runner: TaskRecordRunner> {
+public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
 
     typealias Store = Runner.Store
     typealias Record = Store.Record

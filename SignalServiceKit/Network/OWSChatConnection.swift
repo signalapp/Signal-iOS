@@ -537,7 +537,7 @@ public class OWSChatConnection {
 
 // MARK: -
 
-internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSChatConnection, ConnectionEventsListener {
+internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OWSChatConnection, ConnectionEventsListener {
     fileprivate let libsignalNet: Net
 
     fileprivate enum ConnectionState {

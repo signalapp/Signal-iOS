@@ -23,7 +23,7 @@ public protocol BackupAttachmentUploadQueueRunner {
     func backUpAllAttachments() async throws
 }
 
-extension BackupAttachmentUploadQueueRunner {
+extension BackupAttachmentUploadQueueRunner where Self: Sendable {
 
     public func backUpAllAttachmentsAfterTxCommits(
         tx: DBWriteTransaction

@@ -167,7 +167,7 @@ extension OWSProgressSource {
     }
 }
 
-extension OWSProgressSource {
+extension OWSProgressSource where Self: Sendable {
 
     /// Given some block of asynchronous work, update progress
     /// on the current source periodically (every ``timeInterval`` seconds)

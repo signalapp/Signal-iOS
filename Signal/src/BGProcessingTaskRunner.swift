@@ -37,7 +37,7 @@ public protocol BGProcessingTaskRunner {
     func run() async throws
 }
 
-extension BGProcessingTaskRunner {
+extension BGProcessingTaskRunner where Self: Sendable {
     private var logger: PrefixedLogger { PrefixedLogger(prefix: Self.taskIdentifier) }
 
     /// Must be called synchronously within appDidFinishLaunching for every BGProcessingTask

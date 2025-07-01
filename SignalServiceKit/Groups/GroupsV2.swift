@@ -220,7 +220,7 @@ public protocol GroupV2Updates {
     ) throws -> TSGroupThread
 }
 
-extension GroupV2Updates {
+extension GroupV2Updates where Self: Sendable {
     public func refreshGroup(
         secretParams: GroupSecretParams,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata = .learnedByLocallyInitatedRefresh,
