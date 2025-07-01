@@ -35,7 +35,7 @@ public final class TSMutex<State: ~Copyable>: Sendable {
     }
 
     @inlinable
-    public func withLock<T: ~Copyable, E: Error>(_ body: @Sendable (inout State) throws(E) -> sending T) throws(E) -> sending T {
+    public func withLock<T: ~Copyable, E: Error>(_ body: (inout State) throws(E) -> sending T) throws(E) -> sending T {
         os_unfair_lock_lock(_lock)
         defer { os_unfair_lock_unlock(_lock) }
         return try body(&_state)
@@ -48,7 +48,7 @@ extension TSMutex where State == Void {
     }
 
     @inlinable
-    public func withLock<T: ~Copyable, E: Error>(_ body: @Sendable () throws(E) -> sending T) throws(E) -> sending T {
+    public func withLock<T: ~Copyable, E: Error>(_ body: () throws(E) -> sending T) throws(E) -> sending T {
         try withLock { (_) throws(E) in
             try body()
         }
