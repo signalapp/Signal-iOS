@@ -250,7 +250,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
         label.font = Constants.titleLabelFont
         label.adjustsFontSizeToFitWidth = true
         label.textAlignment = .left
-        label.numberOfLines = 1
+        label.numberOfLines = 0
         return label
     }()
 
@@ -260,7 +260,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
         label.textColor = UIColor.Signal.secondaryLabel
         label.adjustsFontSizeToFitWidth = true
         label.textAlignment = .right
-        label.numberOfLines = 1
+        label.numberOfLines = 0
         return label
     }()
 
@@ -371,7 +371,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
         // Nil = hidden
         var progressIndicatorView: CGRect?
         var titleLabel: CGRect?
-        var subtitleLabel: CGRect?
+        var subtitleLabel: (CGRect, NSTextAlignment)?
         var diskSpaceLabel: CGRect?
         var detailsButton: CGRect?
         var dismissButton: CGRect?
@@ -387,7 +387,10 @@ public class BackupAttachmentDownloadProgressView: UIView {
         titleLabel.isHidden = frames.titleLabel == nil
         frames.titleLabel.map { titleLabel.frame = $0 }
         subtitleLabel.isHidden = frames.subtitleLabel == nil
-        frames.subtitleLabel.map { subtitleLabel.frame = $0 }
+        frames.subtitleLabel.map { (frame, textAlignment) in
+            subtitleLabel.frame = frame
+            subtitleLabel.textAlignment = textAlignment
+        }
         diskSpaceLabel.isHidden = frames.diskSpaceLabel == nil
         frames.diskSpaceLabel.map { diskSpaceLabel.frame = $0 }
         detailsButton.isHidden = frames.detailsButton == nil
@@ -504,7 +507,10 @@ public class BackupAttachmentDownloadProgressView: UIView {
 
         let subtitleLabelAvailableWidth = labelsAvailableWidth - titleLabelSize.width - Constants.spacing
 
-        if subtitleLabelSize.width > subtitleLabelAvailableWidth {
+        if
+            subtitleLabelSize.width > 0,
+            subtitleLabelSize.width > subtitleLabelAvailableWidth
+        {
             // We go to two lines
             let labelsHeight = titleLabelSize.height + subtitleLabelSize.height
             frames.backgroundView.height = max(
@@ -519,11 +525,14 @@ public class BackupAttachmentDownloadProgressView: UIView {
                 width: titleLabelSize.width,
                 height: titleLabelSize.height
             )
-            frames.subtitleLabel = CGRect(
-                x: frames.titleLabel!.minX,
-                y: frames.titleLabel!.maxY,
-                width: subtitleLabelSize.width,
-                height: subtitleLabelSize.height
+            frames.subtitleLabel = (
+                CGRect(
+                    x: frames.titleLabel!.minX,
+                    y: frames.titleLabel!.maxY,
+                    width: subtitleLabelSize.width,
+                    height: subtitleLabelSize.height
+                ),
+                .left
             )
         } else {
             // Just one line
@@ -541,11 +550,14 @@ public class BackupAttachmentDownloadProgressView: UIView {
                 height: titleLabelSize.height
             )
             let subtitleMinX = frames.titleLabel!.maxX + Constants.spacing
-            frames.subtitleLabel = CGRect(
-                x: subtitleMinX,
-                y: (frames.backgroundView.height / 2) - (subtitleLabelSize.height / 2),
-                width: labelsMaxXBound - subtitleMinX,
-                height: subtitleLabelSize.height
+            frames.subtitleLabel = (
+                CGRect(
+                    x: subtitleMinX,
+                    y: (frames.backgroundView.height / 2) - (subtitleLabelSize.height / 2),
+                    width: labelsMaxXBound - subtitleMinX,
+                    height: subtitleLabelSize.height
+                ),
+                .right
             )
         }
     }
