@@ -51,7 +51,7 @@ extension BackupArchive {
 /// Archives the ``BackupProto_AccountData`` frame.
 public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
-    private let backupSettingsStore: BackupSettingsStore
+    private let backupPlanManager: BackupPlanManager
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let chatStyleArchiver: BackupArchiveChatStyleArchiver
     private let disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore
@@ -73,7 +73,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
 
     public init(
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
-        backupSettingsStore: BackupSettingsStore,
+        backupPlanManager: BackupPlanManager,
         backupSubscriptionManager: BackupSubscriptionManager,
         chatStyleArchiver: BackupArchiveChatStyleArchiver,
         disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore,
@@ -94,7 +94,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         usernameEducationManager: UsernameEducationManager
     ) {
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
-        self.backupSettingsStore = backupSettingsStore
+        self.backupPlanManager = backupPlanManager
         self.backupSubscriptionManager = backupSubscriptionManager
         self.chatStyleArchiver = chatStyleArchiver
         self.disappearingMessageConfigurationStore = disappearingMessageConfigurationStore
@@ -258,7 +258,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         accountSettings.phoneNumberSharingMode = phoneNumberSharingMode
         accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: context.tx) ?? []
         accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: context.tx)
-        switch backupSettingsStore.backupPlan(tx: context.tx) {
+        switch backupPlanManager.backupPlan(tx: context.tx) {
         case .disabled:
             accountSettings.clearBackupTier()
             accountSettings.optimizeOnDeviceStorage = false
@@ -396,7 +396,14 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             uploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: context.tx)
             backupPlan = .disabled
         }
-        backupSettingsStore.setBackupPlan(backupPlan, tx: context.tx)
+        do {
+            try backupPlanManager.setBackupPlan(backupPlan, tx: context.tx)
+        } catch {
+            return .failure([.restoreFrameError(
+                .failedToSetBackupPlan(error),
+                .localUser,
+            )])
+        }
 
         // These MUST get set before we restore custom chat colors/wallpapers.
         context.uploadEra = uploadEra

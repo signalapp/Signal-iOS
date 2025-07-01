@@ -779,6 +779,8 @@ extension BackupArchive {
             /// We failed to properly create the attachment in the DB after restoring
             case failedToCreateAttachment
 
+            case failedToSetBackupPlan(RawError)
+
             /// These should never happen; it means some invariant we could not
             /// enforce with the type system was broken. Nothing was wrong with
             /// the proto; its the iOS code that has a bug somewhere.
@@ -921,7 +923,7 @@ extension BackupArchive {
                 // We don't want to re-log every instance of this we see if they repeat.
                 // Collapse them by the raw error itself.
                 return "\(rawError)"
-            case .developerError:
+            case .failedToSetBackupPlan, .developerError:
                 // Log each of these as we see them.
                 return nil
             }
@@ -1027,6 +1029,7 @@ extension BackupArchive {
                     .referencedCustomChatColorNotFound,
                     .databaseModelMissingRowId,
                     .databaseInsertionFailed,
+                    .failedToSetBackupPlan,
                     .failedToEnqueueAttachmentDownload,
                     .developerError:
                 return .error

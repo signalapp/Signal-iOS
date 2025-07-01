@@ -15,29 +15,36 @@ class BackupEnablingManager {
         init(_ localizedActionSheetMessage: String) {
             self.localizedActionSheetMessage = localizedActionSheetMessage
         }
+
+        fileprivate static let networkError = DisplayableError(OWSLocalizedString(
+            "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR",
+            comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error."
+        ))
+
+        fileprivate static let genericError = DisplayableError(OWSLocalizedString(
+            "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR",
+            comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error."
+        ))
     }
 
-    private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
     private let backupDisablingManager: BackupDisablingManager
     private let backupIdManager: BackupIdManager
-    private let backupSettingsStore: BackupSettingsStore
+    private let backupPlanManager: BackupPlanManager
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
     private let tsAccountManager: TSAccountManager
 
     init(
-        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupDisablingManager: BackupDisablingManager,
         backupIdManager: BackupIdManager,
-        backupSettingsStore: BackupSettingsStore,
+        backupPlanManager: BackupPlanManager,
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
         tsAccountManager: TSAccountManager
     ) {
-        self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
         self.backupDisablingManager = backupDisablingManager
         self.backupIdManager = backupIdManager
-        self.backupSettingsStore = backupSettingsStore
+        self.backupPlanManager = backupPlanManager
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
         self.tsAccountManager = tsAccountManager
@@ -56,11 +63,6 @@ class BackupEnablingManager {
                 comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered."
             ))
         }
-
-        let networkErrorSheetMessage = OWSLocalizedString(
-            "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR",
-            comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error."
-        )
 
         // First, reserve a Backup ID. We'll need this regardless of which plan
         // the user chose, and we want to be sure it's succeeded before we
@@ -81,27 +83,34 @@ class BackupEnablingManager {
                 )
             }
         } catch where error.isNetworkFailureOrTimeout {
-            throw DisplayableError(networkErrorSheetMessage)
+            throw .networkError
         } catch {
             owsFailDebug("Unexpectedly failed to register Backup ID! \(error)")
-            throw DisplayableError(OWSLocalizedString(
-                "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR",
-                comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error."
-            ))
+            throw .genericError
+        }
+
+        func setBackupPlan(newBackupPlanBlock: (BackupPlan) -> BackupPlan) async throws(DisplayableError) {
+            do {
+                try await db.awaitableWriteWithRollbackIfThrows { tx in
+                    let newBackupPlan = newBackupPlanBlock(backupPlanManager.backupPlan(tx: tx))
+                    try backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
+                }
+            } catch {
+                owsFailDebug("Failed to set BackupPlan! \(error)")
+                throw .genericError
+            }
         }
 
         switch planSelection {
         case .free:
-            await db.awaitableWrite { tx in
-                backupSettingsStore.setBackupPlan(.free, tx: tx)
-            }
+            try await setBackupPlan { _ in .free }
 
         case .paid:
             let purchaseResult: BackupSubscription.PurchaseResult
             do {
                 purchaseResult = try await backupSubscriptionManager.purchaseNewSubscription()
             } catch StoreKitError.networkError {
-                throw DisplayableError(networkErrorSheetMessage)
+                throw .networkError
             } catch {
                 owsFailDebug("StoreKit purchase unexpectedly failed: \(error)")
                 throw DisplayableError(OWSLocalizedString(
@@ -126,20 +135,15 @@ class BackupEnablingManager {
                     ))
                 }
 
-                await db.awaitableWrite { tx in
-                    let currentOptimizeLocalStorage = switch backupSettingsStore.backupPlan(tx: tx) {
+                try await setBackupPlan { currentBackupPlan in
+                    let currentOptimizeLocalStorage = switch currentBackupPlan {
                     case .disabled, .free:
                         false
                     case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage):
                         optimizeLocalStorage
                     }
 
-                    backupSettingsStore.setBackupPlan(
-                        .paid(optimizeLocalStorage: currentOptimizeLocalStorage),
-                        tx: tx
-                    )
-
-                    backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
+                    return .paid(optimizeLocalStorage: currentOptimizeLocalStorage)
                 }
 
             case .pending:
@@ -147,9 +151,7 @@ class BackupEnablingManager {
                 // is approved, but if/when that happens BackupPlan will get set
                 // set to .paid. For the time being, we can enable Backups as
                 // a free-tier user!
-                await db.awaitableWrite { tx in
-                    backupSettingsStore.setBackupPlan(.free, tx: tx)
-                }
+                try await setBackupPlan { _ in .free }
 
             case .userCancelled:
                 // Do nothing – don't even dismiss "choose plan", to give

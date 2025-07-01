@@ -496,26 +496,6 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(
-            authCredentialStore: authCredentialStore,
-            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
-            backupSettingsStore: backupSettingsStore,
-            db: db,
-            networkManager: networkManager,
-            reachabilityManager: reachabilityManager
-        )
-
-        let backupSubscriptionManager = BackupSubscriptionManager(
-            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
-            backupSettingsStore: backupSettingsStore,
-            dateProvider: dateProvider,
-            db: db,
-            networkManager: networkManager,
-            receiptCredentialRedemptionJobQueue: backupReceiptCredentialRedemptionJobQueue,
-            storageServiceManager: storageServiceManager,
-            tsAccountManager: tsAccountManager
-        )
-
         let attachmentDownloadManager = AttachmentDownloadManagerImpl(
             appReadiness: appReadiness,
             attachmentDownloadStore: attachmentDownloadStore,
@@ -541,6 +521,49 @@ public class AppSetup {
             threadStore: threadStore,
             tsAccountManager: tsAccountManager
         )
+        let backupAttachmentDownloadManager = testDependencies.backupAttachmentDownloadManager ?? BackupAttachmentDownloadManagerImpl(
+            appContext: appContext,
+            appReadiness: appReadiness,
+            attachmentStore: attachmentStore,
+            attachmentDownloadManager: attachmentDownloadManager,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
+            backupListMediaManager: backupListMediaManager,
+            backupRequestManager: backupRequestManager,
+            backupSettingsStore: backupSettingsStore,
+            dateProvider: dateProvider,
+            db: db,
+            mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
+            progress: backupAttachmentDownloadProgress,
+            remoteConfigProvider: remoteConfigManager,
+            statusManager: backupAttachmentDownloadQueueStatusManager,
+            tsAccountManager: tsAccountManager
+        )
+
+        let backupPlanManager = BackupPlanManagerImpl(
+            backupAttachmentDownloadManager: backupAttachmentDownloadManager,
+            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
+            backupSettingsStore: backupSettingsStore
+        )
+
+        let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(
+            authCredentialStore: authCredentialStore,
+            backupPlanManager: backupPlanManager,
+            db: db,
+            networkManager: networkManager,
+            reachabilityManager: reachabilityManager
+        )
+        let backupSubscriptionManager = BackupSubscriptionManager(
+            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
+            backupPlanManager: backupPlanManager,
+            dateProvider: dateProvider,
+            db: db,
+            networkManager: networkManager,
+            receiptCredentialRedemptionJobQueue: backupReceiptCredentialRedemptionJobQueue,
+            storageServiceManager: storageServiceManager,
+            tsAccountManager: tsAccountManager
+        )
+
         let attachmentManager = AttachmentManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentStore: attachmentStore,
@@ -1070,27 +1093,6 @@ public class AppSetup {
             threadStore: threadStore
         )
 
-        let backupAttachmentDownloadManager = testDependencies.backupAttachmentDownloadManager
-            ?? BackupAttachmentDownloadManagerImpl(
-                appContext: appContext,
-                appReadiness: appReadiness,
-                attachmentStore: attachmentStore,
-                attachmentDownloadManager: attachmentDownloadManager,
-                backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-                backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
-                backupListMediaManager: backupListMediaManager,
-                backupRequestManager: backupRequestManager,
-                backupSettingsStore: backupSettingsStore,
-                backupSubscriptionManager: backupSubscriptionManager,
-                dateProvider: dateProvider,
-                db: db,
-                mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
-                progress: backupAttachmentDownloadProgress,
-                remoteConfigProvider: remoteConfigManager,
-                statusManager: backupAttachmentDownloadQueueStatusManager,
-                tsAccountManager: tsAccountManager
-            )
-
         let reactionStore: any ReactionStore = ReactionStoreImpl()
         let disappearingMessagesJob = OWSDisappearingMessagesJob(appReadiness: appReadiness, databaseStorage: databaseStorage)
 
@@ -1184,7 +1186,7 @@ public class AppSetup {
         let backupArchiveManager = BackupArchiveManagerImpl(
             accountDataArchiver: BackupArchiveAccountDataArchiver(
                 backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
-                backupSettingsStore: backupSettingsStore,
+                backupPlanManager: backupPlanManager,
                 backupSubscriptionManager: backupSubscriptionManager,
                 chatStyleArchiver: backupChatStyleArchiver,
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
@@ -1439,6 +1441,7 @@ public class AppSetup {
             backupIdManager: backupIdManager,
             backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
+            backupPlanManager: backupPlanManager,
             backupSubscriptionManager: backupSubscriptionManager,
             badgeCountFetcher: badgeCountFetcher,
             callLinkStore: callLinkStore,

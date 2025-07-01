@@ -54,7 +54,7 @@ public class AppEnvironment: NSObject {
         let backupSettingsStore = BackupSettingsStore()
         let backupDisablingManager = BackupDisablingManager(
             backupIdManager: DependenciesBridge.shared.backupIdManager,
-            backupSettingsStore: BackupSettingsStore(),
+            backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             db: DependenciesBridge.shared.db,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
@@ -76,10 +76,9 @@ public class AppEnvironment: NSObject {
         self.badgeManager = badgeManager
         self.backupDisablingManager = backupDisablingManager
         self.backupEnablingManager = BackupEnablingManager(
-            backupAttachmentUploadQueueRunner: DependenciesBridge.shared.backupAttachmentUploadQueueRunner,
             backupDisablingManager: backupDisablingManager,
             backupIdManager: DependenciesBridge.shared.backupIdManager,
-            backupSettingsStore: BackupSettingsStore(),
+            backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,

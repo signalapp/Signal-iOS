@@ -88,7 +88,7 @@ extension ChatListViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(backupPlanDidChange(_:)),
-            name: BackupSettingsStore.Notifications.backupPlanChanged,
+            name: .backupPlanChanged,
             object: nil
         )
 

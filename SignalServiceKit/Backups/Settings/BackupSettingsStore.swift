@@ -47,7 +47,6 @@ public enum BackupPlan: RawRepresentable {
 public struct BackupSettingsStore {
 
     public enum Notifications {
-        public static let backupPlanChanged = Notification.Name("BackupSettingsStore.backupPlanChanged")
         public static let shouldBackUpOnCellularChanged = Notification.Name("BackupSettingsStore.shouldBackUpOnCellularChanged")
     }
 
@@ -93,17 +92,14 @@ public struct BackupSettingsStore {
         return .disabled
     }
 
+    /// Set the current `BackupPlan`, without side-effects.
+    ///
+    /// - Important
+    /// Callers should prefer the API on `BackupPlanManager`, or have considered
+    /// the consequences of avoiding the side-effects of setting `BackupPlan`.
     public func setBackupPlan(_ newBackupPlan: BackupPlan, tx: DBWriteTransaction) {
-        let currentBackupPlan = backupPlan(tx: tx)
-
         kvStore.setBool(true, key: Keys.haveEverBeenEnabled, transaction: tx)
         kvStore.setInt(newBackupPlan.rawValue, key: Keys.plan, transaction: tx)
-
-        if currentBackupPlan != newBackupPlan {
-            tx.addSyncCompletion {
-                NotificationCenter.default.post(name: Notifications.backupPlanChanged, object: nil)
-            }
-        }
     }
 
     // MARK: -

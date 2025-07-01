@@ -2680,6 +2680,7 @@
 		D985D86629B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */; };
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
 		D98ACAA72E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98ACAA62E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift */; };
+		D98ACAA92E0DA71B00FA497F /* BackupPlanManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98ACAA82E0DA71700FA497F /* BackupPlanManager.swift */; };
 		D98CA2AD2DF14A890060370E /* BackupOnboardingKeyIntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98CA2AC2DF14A830060370E /* BackupOnboardingKeyIntroViewController.swift */; };
 		D98CA2B12DF238EA0060370E /* LocalDeviceAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98CA2AF2DF171110060370E /* LocalDeviceAuthentication.swift */; };
 		D98CA2B32DF245140060370E /* BackupRecordKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98CA2B22DF2450E0060370E /* BackupRecordKeyViewController.swift */; };
@@ -6635,6 +6636,7 @@
 		D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerTest.swift; sourceTree = "<group>"; };
 		D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChangePhoneNumberPniManager+Shims.swift"; sourceTree = "<group>"; };
 		D98ACAA62E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadQueueStatusManager.swift; sourceTree = "<group>"; };
+		D98ACAA82E0DA71700FA497F /* BackupPlanManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupPlanManager.swift; sourceTree = "<group>"; };
 		D98CA2AC2DF14A830060370E /* BackupOnboardingKeyIntroViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOnboardingKeyIntroViewController.swift; sourceTree = "<group>"; };
 		D98CA2AF2DF171110060370E /* LocalDeviceAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDeviceAuthentication.swift; sourceTree = "<group>"; };
 		D98CA2B22DF2450E0060370E /* BackupRecordKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRecordKeyViewController.swift; sourceTree = "<group>"; };
@@ -12491,6 +12493,7 @@
 			isa = PBXGroup;
 			children = (
 				D923DF9B2DC135A000CDAFC3 /* BackupIdManager.swift */,
+				D98ACAA82E0DA71700FA497F /* BackupPlanManager.swift */,
 				D9388C902DA4751F0048D4F9 /* BackupSettingsStore.swift */,
 			);
 			path = Settings;
@@ -17752,6 +17755,7 @@
 				66B5451A2DD5B9A00016289B /* BackupListMediaManager.swift in Sources */,
 				D970541F2CFE4D0200AC7954 /* BackupPaymentMethod.swift in Sources */,
 				D97054202CFE4D0200AC7954 /* BackupPaymentProcessor.swift in Sources */,
+				D98ACAA92E0DA71B00FA497F /* BackupPlanManager.swift in Sources */,
 				D9EE79112CF525A4007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift in Sources */,
 				D9EE790F2CF5232C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift in Sources */,
 				C14391132BD1C0DF00ED6FCB /* BackupRequestManager.swift in Sources */,

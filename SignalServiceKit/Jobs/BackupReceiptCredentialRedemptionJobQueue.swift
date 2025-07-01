@@ -18,16 +18,14 @@ class BackupReceiptCredentialRedemptionJobQueue {
 
     public init(
         authCredentialStore: AuthCredentialStore,
-        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
-        backupSettingsStore: BackupSettingsStore,
+        backupPlanManager: BackupPlanManager,
         db: any DB,
         networkManager: NetworkManager,
         reachabilityManager: SSKReachabilityManager
     ) {
         self.jobRunnerFactory = BackupReceiptCredentialRedemptionJobRunnerFactory(
             authCredentialStore: authCredentialStore,
-            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
-            backupSettingsStore: backupSettingsStore,
+            backupPlanManager: backupPlanManager,
             db: db,
             networkManager: networkManager
         )
@@ -72,21 +70,18 @@ class BackupReceiptCredentialRedemptionJobQueue {
 
 private class BackupReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
     private let authCredentialStore: AuthCredentialStore
-    private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
-    private let backupSettingsStore: BackupSettingsStore
+    private let backupPlanManager: BackupPlanManager
     private let db: any DB
     private let networkManager: NetworkManager
 
     init(
         authCredentialStore: AuthCredentialStore,
-        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
-        backupSettingsStore: BackupSettingsStore,
+        backupPlanManager: BackupPlanManager,
         db: any DB,
         networkManager: NetworkManager
     ) {
         self.authCredentialStore = authCredentialStore
-        self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
-        self.backupSettingsStore = backupSettingsStore
+        self.backupPlanManager = backupPlanManager
         self.db = db
         self.networkManager = networkManager
     }
@@ -94,8 +89,7 @@ private class BackupReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactor
     func buildRunner() -> BackupReceiptCredentialRedemptionJobRunner {
         return BackupReceiptCredentialRedemptionJobRunner(
             authCredentialStore: authCredentialStore,
-            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
-            backupSettingsStore: backupSettingsStore,
+            backupPlanManager: backupPlanManager,
             db: db,
             networkManager: networkManager,
             continuation: nil
@@ -105,8 +99,7 @@ private class BackupReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactor
     func buildRunner(continuation: CheckedContinuation<Void, Error>) -> BackupReceiptCredentialRedemptionJobRunner {
         return BackupReceiptCredentialRedemptionJobRunner(
             authCredentialStore: authCredentialStore,
-            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
-            backupSettingsStore: backupSettingsStore,
+            backupPlanManager: backupPlanManager,
             db: db,
             networkManager: networkManager,
             continuation: continuation
@@ -131,8 +124,7 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
     }
 
     private let authCredentialStore: AuthCredentialStore
-    private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
-    private let backupSettingsStore: BackupSettingsStore
+    private let backupPlanManager: BackupPlanManager
     private let db: any DB
     private let networkManager: NetworkManager
 
@@ -141,15 +133,13 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
 
     init(
         authCredentialStore: AuthCredentialStore,
-        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
-        backupSettingsStore: BackupSettingsStore,
+        backupPlanManager: BackupPlanManager,
         db: any DB,
         networkManager: NetworkManager,
         continuation: CheckedContinuation<Void, Error>?
     ) {
         self.authCredentialStore = authCredentialStore
-        self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
-        self.backupSettingsStore = backupSettingsStore
+        self.backupPlanManager = backupPlanManager
         self.db = db
         self.networkManager = networkManager
         self.continuation = continuation
@@ -169,45 +159,50 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
     // MARK: -
 
     func runJobAttempt(_ jobRecord: BackupReceiptCredentialRedemptionJobRecord) async -> JobAttemptResult {
+        struct TerminalJobError: Error {}
+
         switch await _redeemBackupReceiptCredential(jobRecord: jobRecord) {
         case .success:
-            await db.awaitableWrite { tx in
-                jobRecord.anyRemove(transaction: tx)
+            do {
+                try await db.awaitableWriteWithRollbackIfThrows { tx in
+                    jobRecord.anyRemove(transaction: tx)
 
-                /// We're now a paid-tier Backups user according to the server.
-                /// If our local thinks we're free-tier, upgrade it.
-                switch backupSettingsStore.backupPlan(tx: tx) {
-                case .free:
-                    // "Optimize Media" is off by default when you first upgrade.
-                    backupSettingsStore.setBackupPlan(
-                        .paid(optimizeLocalStorage: false),
-                        tx: tx
-                    )
+                    /// We're now a paid-tier Backups user according to the server.
+                    /// If our local thinks we're free-tier, upgrade it.
+                    switch backupPlanManager.backupPlan(tx: tx) {
+                    case .free:
+                        // "Optimize Media" is off by default when you first upgrade.
+                        try backupPlanManager.setBackupPlan(
+                            .paid(optimizeLocalStorage: false),
+                            tx: tx
+                        )
+                    case .disabled:
+                        // Don't sneakily enable Backups!
+                        break
+                    case .paid, .paidExpiringSoon:
+                        break
+                    }
 
-                    backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
-                case .disabled:
-                    // Don't sneakily enable Backups!
-                    break
-                case .paid, .paidExpiringSoon:
-                    break
+                    /// Clear out any cached Backup auth credentials, since we
+                    /// may now be able to fetch credentials with a higher level
+                    /// of access than we had cached.
+                    authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
                 }
+                return .finished(.success(()))
+            } catch {
+                owsFailDebug("Failed to set BackupPlan! \(error)")
 
-                /// Clear out any cached Backup auth credentials, since we
-                /// may now be able to fetch credentials with a higher level
-                /// of access than we had cached.
-                authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
+                await db.awaitableWrite { jobRecord.anyRemove(transaction: $0) }
+                return .finished(.failure(TerminalJobError()))
             }
 
-            return .finished(.success(()))
         case .networkError, .needsReattempt, .paymentStillProcessing:
             return .retryAfter(incrementExponentialRetryDelay())
-        case .redemptionUnsuccessful, .assertion:
-            struct TerminalJobError: Error {}
 
-            logger.warn("Job encountered unexpected terminal error")
-            await db.awaitableWrite { tx in
-                jobRecord.anyRemove(transaction: tx)
-            }
+        case .redemptionUnsuccessful, .assertion:
+            owsFailDebug("Job encountered unexpected terminal error!")
+
+            await db.awaitableWrite { jobRecord.anyRemove(transaction: $0) }
             return .finished(.failure(TerminalJobError()))
         }
     }

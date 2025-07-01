@@ -113,7 +113,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
             },
             Task.detached { [weak self] in
                 for await _ in NotificationCenter.default.notifications(
-                    named: BackupSettingsStore.Notifications.backupPlanChanged
+                    named: .backupPlanChanged
                 ) {
                     guard let self else { return }
                     await viewModel.loadBackupPlan()
@@ -246,28 +246,27 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
     // MARK: -
 
     fileprivate func disableBackups() {
-        AssertIsOnMainThread()
+        Task { await _disableBackups() }
+    }
 
-        func errorActionSheet(_ message: String) {
-            OWSActionSheets.showActionSheet(
-                message: message,
-                fromViewController: self
-            )
-        }
-
-        do throws(BackupDisablingManager.NotRegisteredError) {
-            try db.write { tx throws(BackupDisablingManager.NotRegisteredError) in
-                return try backupDisablingManager.disableBackups(tx: tx)
-            }
+    @MainActor
+    private func _disableBackups() async {
+        do {
+            try await backupDisablingManager.startDisablingBackups()
 
             if let disableRemotelyState = db.read(block: { backupDisablingManager.currentDisableRemotelyState(tx: $0) }) {
                 viewModel.handleDisableBackupsRemoteState(disableRemotelyState)
             }
+        } catch is BackupDisablingManager.NotRegisteredError {
+            OWSActionSheets.showActionSheet(
+                message: OWSLocalizedString(
+                    "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED",
+                    comment: "Message shown in an action sheet when the user tries to disable Backups, but is not registered."
+                ),
+                fromViewController: self
+            )
         } catch {
-            errorActionSheet(OWSLocalizedString(
-                "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED",
-                comment: "Message shown in an action sheet when the user tries to disable Backups, but is not registered."
-            ))
+            showDisablingBackupsFailedSheet()
         }
     }
 

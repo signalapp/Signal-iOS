@@ -61,7 +61,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private let attachmentStore: AttachmentStore
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupSettingsStore: BackupSettingsStore
-    private let backupSubscriptionManager: BackupSubscriptionManager
     private let dateProvider: DateProvider
     private let db: any DB
     private let listMediaManager: BackupListMediaManager
@@ -82,7 +81,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         backupListMediaManager: BackupListMediaManager,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
-        backupSubscriptionManager: BackupSubscriptionManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
@@ -97,7 +95,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.listMediaManager = backupListMediaManager
         self.backupSettingsStore = backupSettingsStore
-        self.backupSubscriptionManager = backupSubscriptionManager
         self.dateProvider = dateProvider
         self.db = db
         self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore

@@ -249,7 +249,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
 
         let notificationsToObserve: [(Notification.Name, Selector)] = [
             (.registrationStateDidChange, #selector(registrationStateDidChange)),
-            (BackupSettingsStore.Notifications.backupPlanChanged, #selector(backupPlanDidChange)),
+            (.backupPlanChanged, #selector(backupPlanDidChange)),
             (BackupSettingsStore.Notifications.shouldBackUpOnCellularChanged, #selector(shouldBackUpOnCellularDidChange)),
             (.reachabilityChanged, #selector(reachabilityDidChange)),
             (UIDevice.batteryLevelDidChangeNotification, #selector(batteryLevelDidChange)),

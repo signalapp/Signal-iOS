@@ -93,7 +93,7 @@ public final class BackupSubscriptionManager {
     private let logger = PrefixedLogger(prefix: "[Backups][Sub]")
 
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
-    private let backupSettingsStore: BackupSettingsStore
+    private let backupPlanManager: BackupPlanManager
     private let dateProvider: DateProvider
     private let db: any DB
     private let networkManager: NetworkManager
@@ -104,7 +104,7 @@ public final class BackupSubscriptionManager {
 
     init(
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
-        backupSettingsStore: BackupSettingsStore,
+        backupPlanManager: BackupPlanManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
         networkManager: NetworkManager,
@@ -113,7 +113,7 @@ public final class BackupSubscriptionManager {
         tsAccountManager: TSAccountManager
     ) {
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
-        self.backupSettingsStore = backupSettingsStore
+        self.backupPlanManager = backupPlanManager
         self.dateProvider = dateProvider
         self.db = db
         self.networkManager = networkManager
@@ -269,7 +269,7 @@ public final class BackupSubscriptionManager {
         subscriptionFetcher: SubscriptionFetcher
     ) async throws -> Subscription? {
         let subscription = try await subscriptionFetcher.fetch(subscriberID: subscriberID)
-        await downgradeBackupPlanIfNecessary(fetchedSubscription: subscription)
+        try await downgradeBackupPlanIfNecessary(fetchedSubscription: subscription)
         return subscription
     }
 
@@ -286,36 +286,40 @@ public final class BackupSubscriptionManager {
     /// code also sets `BackupPlan` as appropriate.
     private func downgradeBackupPlanIfNecessary(
         fetchedSubscription subscription: Subscription?
-    ) async {
-        let currentBackupPlan = db.read { backupSettingsStore.backupPlan(tx: $0) }
+    ) async throws {
+        try await db.awaitableWriteWithRollbackIfThrows { tx in
+            let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
 
-        let downgradedBackupPlan: BackupPlan? = {
-            if let subscription, subscription.active, subscription.cancelAtEndOfPeriod {
-                switch currentBackupPlan {
-                case .paid(let optimizeLocalStorage):
-                    return .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
-                case .disabled, .free, .paidExpiringSoon:
-                    break
+            let downgradedBackupPlan: BackupPlan? = {
+                if let subscription, subscription.active, subscription.cancelAtEndOfPeriod {
+                    switch currentBackupPlan {
+                    case .paid(let optimizeLocalStorage):
+                        return .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
+                    case .disabled, .free, .paidExpiringSoon:
+                        break
+                    }
+                } else if let subscription, subscription.active {
+                    // No downgrade – subscription present and active!
+                } else {
+                    switch currentBackupPlan {
+                    case .paid, .paidExpiringSoon:
+                        return .free
+                    case .disabled, .free:
+                        break
+                    }
                 }
-            } else if let subscription, subscription.active {
-                // No downgrade – subscription present and active!
-            } else {
-                switch currentBackupPlan {
-                case .paid, .paidExpiringSoon:
-                    return .free
-                case .disabled, .free:
-                    break
+
+                return nil
+            }()
+
+            if let downgradedBackupPlan {
+                do {
+                    try backupPlanManager.setBackupPlan(downgradedBackupPlan, tx: tx)
+                    logger.info("Downgraded BackupPlan: \(currentBackupPlan) -> \(downgradedBackupPlan)")
+                } catch {
+                    owsFailDebug("Failed to downgrade BackupPlan! \(error)")
+                    throw error
                 }
-            }
-
-            return nil
-        }()
-
-        if let downgradedBackupPlan {
-            logger.info("Downgrading BackupPlan: \(currentBackupPlan) -> \(downgradedBackupPlan)")
-
-            await db.awaitableWrite { tx in
-                backupSettingsStore.setBackupPlan(downgradedBackupPlan, tx: tx)
             }
         }
     }
