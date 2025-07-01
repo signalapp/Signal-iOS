@@ -84,7 +84,7 @@ public class GroupV2UpdatesImpl {
                     groupModel.groupMembership.isLocalUserFullOrInvitedMember,
                     let groupSecretParams = try? groupModel.secretParams(),
                     let groupId = try? groupSecretParams.getPublicParams().getGroupIdentifier(),
-                    !SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId.serialize(), transaction: transaction)
+                    !SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: transaction)
                 else {
                     // Refreshing a group we're not a member of will throw errors
                     return
@@ -221,7 +221,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
 
         try SSKEnvironment.shared.databaseStorageRef.read { tx in
             // - If we're blocked, it's an immediate error
-            if SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId.serialize(), transaction: tx) {
+            if SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: tx) {
                 throw GroupsV2Error.groupBlocked
             }
         }

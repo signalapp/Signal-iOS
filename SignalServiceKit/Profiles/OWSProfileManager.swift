@@ -333,7 +333,7 @@ public class OWSProfileManager: ProfileManagerProtocol {
 
     public func isGroupId(inProfileWhitelist groupId: Data, transaction: DBReadTransaction) -> Bool {
         owsAssertDebug(!groupId.isEmpty)
-        if SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: transaction) {
+        if SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked_deprecated(groupId, tx: transaction) {
             return false
         }
         let groupIdKey = groupKey(groupId: groupId)
@@ -909,7 +909,7 @@ extension OWSProfileManager: ProfileManager {
 
         return allWhitelistedGroupKeys.lazy
             .compactMap { self.groupIdForGroupKey($0) }
-            .filter { SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked($0, transaction: tx) }
+            .filter { SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked_deprecated($0, tx: tx) }
     }
 
     private func groupIdForGroupKey(_ groupKey: String) -> Data? {

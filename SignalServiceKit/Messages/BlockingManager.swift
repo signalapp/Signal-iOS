@@ -93,8 +93,16 @@ public class BlockingManager {
         return (try? blockedRecipientStore.isBlocked(recipientId: recipientId, tx: transaction)) ?? false
     }
 
-    public func isGroupIdBlocked(_ groupId: Data, transaction: DBReadTransaction) -> Bool {
-        return (try? blockedGroupStore.isBlocked(groupId: groupId, tx: transaction)) ?? false
+    public func isGroupIdBlocked(_ groupId: GroupIdentifier, transaction tx: DBReadTransaction) -> Bool {
+        return _isGroupIdBlocked(groupId.serialize(), tx: tx)
+    }
+
+    public func isGroupIdBlocked_deprecated(_ groupId: Data, tx: DBReadTransaction) -> Bool {
+        return _isGroupIdBlocked(groupId, tx: tx)
+    }
+
+    private func _isGroupIdBlocked(_ groupId: Data, tx: DBReadTransaction) -> Bool {
+        return (try? blockedGroupStore.isBlocked(groupId: groupId, tx: tx)) ?? false
     }
 
     public func blockedRecipientIds(tx: DBReadTransaction) throws -> Set<SignalRecipient.RowId> {
@@ -331,7 +339,7 @@ public class BlockingManager {
         if let contactThread = thread as? TSContactThread {
             return isAddressBlocked(contactThread.contactAddress, transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
-            return isGroupIdBlocked(groupThread.groupModel.groupId, transaction: transaction)
+            return _isGroupIdBlocked(groupThread.groupModel.groupId, tx: transaction)
         } else if thread is TSPrivateStoryThread {
             return false
         } else {

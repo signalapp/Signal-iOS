@@ -100,7 +100,12 @@ class NSECallMessageHandler: CallMessageHandler {
                         return true
                     }
 
-                    guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                    guard let groupId = try? GroupIdentifier(contents: groupId) else {
+                        owsFailDebug("discarding group ring \(ringId) from \(caller.aci) for invalid group identifier")
+                        return false
+                    }
+
+                    guard let thread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) else {
                         owsFailDebug("discarding group ring \(ringId) from \(caller.aci) for unknown group")
                         return false
                     }

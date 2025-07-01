@@ -343,7 +343,7 @@ public final class MessageReceiver {
         }
     }
 
-    private func groupId(for dataMessage: SSKProtoDataMessage) -> Data? {
+    private func groupId(for dataMessage: SSKProtoDataMessage) -> GroupIdentifier? {
         guard let groupContext = dataMessage.groupV2 else {
             return nil
         }
@@ -352,7 +352,7 @@ public final class MessageReceiver {
             return nil
         }
         do {
-            return try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey).groupId.serialize()
+            return try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey).groupId
         } catch {
             owsFailDebug("Invalid group context.")
             return nil
@@ -381,7 +381,7 @@ public final class MessageReceiver {
             }
 
             if let dataMessage = sent.message {
-                let groupId: Data? = groupId(for: dataMessage)
+                let groupId: GroupIdentifier? = groupId(for: dataMessage)
 
                 guard SDS.fitsInInt64(sent.expirationStartTimestamp) else {
                     owsFailDebug("Invalid expirationStartTimestamp.")
@@ -400,7 +400,7 @@ public final class MessageReceiver {
                 if dataMessage.hasProfileKey {
                     if let groupId {
                         SSKEnvironment.shared.profileManagerRef.addGroupId(
-                            toProfileWhitelist: groupId, userProfileWriter: .localUser, transaction: tx
+                            toProfileWhitelist: groupId.serialize(), userProfileWriter: .localUser, transaction: tx
                         )
                     } else {
                         // If we observe a linked device sending our profile key to another user,
@@ -473,7 +473,7 @@ public final class MessageReceiver {
                         )
                     }
                 } else if let groupCallUpdate = dataMessage.groupCallUpdate {
-                    if let groupId = try? GroupIdentifier(contents: groupId ?? Data()) {
+                    if let groupId {
                         let pendingTask = MessageReceiver.buildPendingTask()
                         Task { [callMessageHandler] in
                             defer { pendingTask.complete() }
@@ -1368,11 +1368,15 @@ public final class MessageReceiver {
         }
         let thread: TSThread
         if let groupId = typingMessage.groupID {
+            guard let groupId = try? GroupIdentifier(contents: groupId) else {
+                Logger.warn("Ignoring typing message from \(envelope.sourceAci) with invalid group identifier")
+                return
+            }
             if SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: tx) {
                 Logger.warn("Ignoring blocked message from \(envelope.sourceAci) in \(groupId)")
                 return
             }
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) else {
+            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
                 // This isn't necessarily an error. We might not yet know about the thread,
                 // in which case we don't need to display the typing indicators.
                 Logger.warn("Ignoring typingMessage for non-existent thread")

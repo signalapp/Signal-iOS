@@ -177,15 +177,15 @@ class BlockingManagerTests: SSKBaseTest {
             // Verify our victims aren't blocked anymore
             XCTAssertFalse(blockingManager.isAddressBlocked(SignalServiceAddress(noLongerBlockedAci), transaction: readTx))
             XCTAssertFalse(blockingManager.isAddressBlocked(SignalServiceAddress(noLongerBlockedPhoneNumber), transaction: readTx))
-            XCTAssertFalse(blockingManager.isGroupIdBlocked(try noLongerBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(), transaction: readTx))
+            XCTAssertFalse(blockingManager.isGroupIdBlocked(try noLongerBlockedGroupParams.getPublicParams().getGroupIdentifier(), transaction: readTx))
 
             XCTAssertTrue(blockingManager.isAddressBlocked(SignalServiceAddress(stillBlockedAci), transaction: readTx))
             XCTAssertTrue(blockingManager.isAddressBlocked(SignalServiceAddress(stillBlockedPhoneNumber), transaction: readTx))
-            XCTAssertTrue(blockingManager.isGroupIdBlocked(try stillBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(), transaction: readTx))
+            XCTAssertTrue(blockingManager.isGroupIdBlocked(try stillBlockedGroupParams.getPublicParams().getGroupIdentifier(), transaction: readTx))
 
             XCTAssertTrue(blockingManager.isAddressBlocked(SignalServiceAddress(newlyBlockedAci), transaction: readTx))
             XCTAssertTrue(blockingManager.isAddressBlocked(SignalServiceAddress(newlyBlockedPhoneNumber), transaction: readTx))
-            XCTAssertTrue(blockingManager.isGroupIdBlocked(try newlyBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(), transaction: readTx))
+            XCTAssertTrue(blockingManager.isGroupIdBlocked(try newlyBlockedGroupParams.getPublicParams().getGroupIdentifier(), transaction: readTx))
 
             // Finally, verify that any remote state agrees
             let otherBlockedAddresses = otherBlockingManager.blockedAddresses(transaction: readTx)

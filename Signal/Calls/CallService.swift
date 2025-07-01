@@ -1551,7 +1551,7 @@ extension CallService: CallManagerDelegate {
 
             guard GroupMessageProcessorManager.discardMode(
                 forMessageFrom: senderAci,
-                groupId: groupId.serialize(),
+                groupId: groupId,
                 tx: transaction
             ) == .doNotDiscard else {
                 Logger.warn("discarding group ring \(ringId) from \(senderAci)")

@@ -975,14 +975,14 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
             return nil
         }
 
-        let groupId = groupContextInfo.groupId.serialize()
+        let groupId = groupContextInfo.groupId
 
         var builder = StorageServiceProtoGroupV2Record.builder(masterKey: masterKeyData)
 
-        builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction))
+        builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId.serialize(), transaction: transaction))
         builder.setBlocked(blockingManager.isGroupIdBlocked(groupId, transaction: transaction))
 
-        let threadId = TSGroupThread.threadId(forGroupId: groupId, transaction: transaction)
+        let threadId = TSGroupThread.threadId(forGroupId: groupId.serialize(), transaction: transaction)
         let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: threadId,
                                                                        ignoreMissing: true,
                                                                        transaction: transaction)
@@ -991,7 +991,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
         builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
 
-        let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+        let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction)
         switch groupThread?.mentionNotificationMode {
         case .none, .default:
             break
@@ -1001,7 +1001,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
             builder.setDontNotifyForMentionsIfMuted(false)
         }
 
-        if let storyContextAssociatedData = StoryFinder.getAssociatedData(forContext: .group(groupId: groupId), transaction: transaction) {
+        if let storyContextAssociatedData = StoryFinder.getAssociatedData(forContext: .group(groupId: groupId.serialize()), transaction: transaction) {
             builder.setHideStory(storyContextAssociatedData.isHidden)
         }
 
@@ -1019,7 +1019,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
 
         builder.setAvatarColor(
             avatarDefaultColorManager.defaultColor(
-                useCase: .group(groupId: groupId),
+                useCase: .group(groupId: groupId.serialize()),
                 tx: transaction
             ).asStorageServiceProtoAvatarColor
         )
@@ -1046,9 +1046,9 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
             owsFailDebug("Invalid master key.")
             return .invalid
         }
-        let groupId = groupContextInfo.groupId.serialize()
+        let groupId = groupContextInfo.groupId
 
-        if let localThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+        if let localThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) {
             let localStorySendMode = localThread.storyViewMode.storageServiceMode
             if localStorySendMode != record.storySendMode {
                 localThread.updateWithStoryViewMode(.init(storageServiceMode: record.storySendMode), transaction: transaction)
@@ -1074,31 +1074,31 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
 
         // Gather some local contact state to do comparisons against.
         let localIsBlocked = blockingManager.isGroupIdBlocked(groupId, transaction: transaction)
-        let localIsWhitelisted = profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction)
+        let localIsWhitelisted = profileManager.isGroupId(inProfileWhitelist: groupId.serialize(), transaction: transaction)
 
         // If our local blocked state differs from the service state, use the service's value.
         if record.blocked != localIsBlocked {
             if record.blocked {
-                blockingManager.addBlockedGroupId(groupId, blockMode: .remote, transaction: transaction)
+                blockingManager.addBlockedGroupId(groupId.serialize(), blockMode: .remote, transaction: transaction)
             } else {
-                blockingManager.removeBlockedGroup(groupId: groupId, wasLocallyInitiated: false, transaction: transaction)
+                blockingManager.removeBlockedGroup(groupId: groupId.serialize(), wasLocallyInitiated: false, transaction: transaction)
             }
         }
 
         // If our local whitelisted state differs from the service state, use the service's value.
         if record.whitelisted != localIsWhitelisted {
             if record.whitelisted {
-                profileManager.addGroupId(toProfileWhitelist: groupId,
+                profileManager.addGroupId(toProfileWhitelist: groupId.serialize(),
                                           userProfileWriter: .storageService,
                                           transaction: transaction)
             } else {
-                profileManager.removeGroupId(fromProfileWhitelist: groupId,
+                profileManager.removeGroupId(fromProfileWhitelist: groupId.serialize(),
                                              userProfileWriter: .storageService,
                                              transaction: transaction)
             }
         }
 
-        let localThreadId = TSGroupThread.threadId(forGroupId: groupId, transaction: transaction)
+        let localThreadId = TSGroupThread.threadId(forGroupId: groupId.serialize(), transaction: transaction)
         ThreadAssociatedData.create(for: localThreadId, transaction: transaction)
         let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThreadId, transaction: transaction)
 
@@ -1115,7 +1115,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         }
 
         let localStoryContextAssociatedData = StoryContextAssociatedData.fetchOrDefault(
-            sourceContext: .group(groupId: groupId),
+            sourceContext: .group(groupId: groupId.serialize()),
             transaction: transaction
         )
         if record.hideStory != localStoryContextAssociatedData.isHidden {
@@ -1135,11 +1135,11 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
     /// may need to overwrite state set by a linked device.
     private func mergeDefaultAvatarColor(
         in record: StorageServiceProtoGroupV2Record,
-        groupId: Data,
+        groupId: GroupIdentifier,
         tx: DBWriteTransaction
     ) -> Bool {
         let localDefaultAvatarColor = avatarDefaultColorManager.defaultColor(
-            useCase: .group(groupId: groupId),
+            useCase: .group(groupId: groupId.serialize()),
             tx: tx
         )
         let remoteDefaultAvatarColor = record.avatarColor.flatMap {
@@ -1155,7 +1155,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         } else if let remoteDefaultAvatarColor {
             try? avatarDefaultColorManager.persistDefaultColor(
                 remoteDefaultAvatarColor,
-                groupId: groupId,
+                groupId: groupId.serialize(),
                 tx: tx
             )
         }

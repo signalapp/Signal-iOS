@@ -224,7 +224,7 @@ internal class SpecificGroupMessageProcessor {
 
         return GroupMessageProcessorManager.discardMode(
             forMessageFrom: sourceAci,
-            groupId: groupContextInfo.groupId.serialize(),
+            groupId: groupContextInfo.groupId,
             tx: tx
         )
     }
@@ -240,7 +240,7 @@ internal class SpecificGroupMessageProcessor {
         }
         return GroupMessageProcessorManager.discardMode(
             forMessageFrom: sourceAci,
-            groupId: jobInfo.groupContextInfo.groupId.serialize(),
+            groupId: jobInfo.groupContextInfo.groupId,
             shouldCheckGroupModel: hasGroupBeenUpdated,
             tx: tx
         )
@@ -792,7 +792,7 @@ public class GroupMessageProcessorManager {
     /// group is blocked.
     public static func discardMode(
         forMessageFrom sourceAci: Aci,
-        groupId: Data,
+        groupId: GroupIdentifier,
         shouldCheckGroupModel: Bool = true,
         tx: DBReadTransaction
     ) -> DiscardMode {
@@ -816,7 +816,7 @@ public class GroupMessageProcessorManager {
                 owsFailDebug("Missing localAddress.")
                 return .discard
             }
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) else {
+            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
                 // The user might have just deleted the thread
                 // but this race should be extremely rare.
                 // Usually this should indicate a bug.

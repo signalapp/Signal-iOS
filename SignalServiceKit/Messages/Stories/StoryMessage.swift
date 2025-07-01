@@ -214,7 +214,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             groupId = nil
         }
 
-        if let groupId = groupId, SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId.serialize(), transaction: transaction) {
+        if let groupId = groupId, SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: transaction) {
             Logger.warn("Ignoring StoryMessage in blocked group.")
             return nil
         } else {
