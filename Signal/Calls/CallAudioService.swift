@@ -174,12 +174,12 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
             // The user is capturing video or wants to use the speaker for an
             // audio call, so choose the VideoChat mode, which enables the speaker
             // with the proximity sensor disabled.
-            setAudioSession(category: .playAndRecord, mode: .videoChat, options: [.allowBluetooth, .allowBluetoothA2DP])
+            setAudioSession(category: .playAndRecord, mode: .videoChat, options: [.allowBluetoothHFP, .allowBluetoothA2DP])
         } else {
             // The user is not capturing video and doesn't want to use the speaker
             // for an audio call, so choose VoiceChat mode, which uses the receiver
             // with the proximity sensor enabled.
-            setAudioSession(category: .playAndRecord, mode: .voiceChat, options: [.allowBluetooth, .allowBluetoothA2DP])
+            setAudioSession(category: .playAndRecord, mode: .voiceChat, options: [.allowBluetoothHFP, .allowBluetoothA2DP])
         }
     }
 
@@ -209,13 +209,13 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
                 // The user is capturing video or wants to use the speaker for an
                 // audio call, so choose the VideoChat mode, which enables the speaker
                 // with the proximity sensor disabled.
-                setAudioSession(category: .playAndRecord, mode: .videoChat, options: [.allowBluetooth, .allowBluetoothA2DP])
+                setAudioSession(category: .playAndRecord, mode: .videoChat, options: [.allowBluetoothHFP, .allowBluetoothA2DP])
             }
         } else {
             // The user is not capturing video and doesn't want to use the speaker
             // for an audio call, so choose VoiceChat mode, which uses the receiver
             // with the proximity sensor enabled.
-            setAudioSession(category: .playAndRecord, mode: .voiceChat, options: [.allowBluetooth, .allowBluetoothA2DP])
+            setAudioSession(category: .playAndRecord, mode: .voiceChat, options: [.allowBluetoothHFP, .allowBluetoothA2DP])
         }
     }
 

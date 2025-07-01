@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import AVFoundation
+public import AVFoundation
 import Foundation
 public import SignalServiceKit
 
@@ -173,7 +173,7 @@ public class AudioSession: NSObject {
                 mode: .default,
                 options: [
                     .defaultToSpeaker,
-                    .allowBluetooth,
+                    .allowBluetoothHFP,
                     .allowBluetoothA2DP
                 ]
             )
@@ -268,6 +268,12 @@ public class AudioSession: NSObject {
             }
         }
     }
+}
+
+extension AVAudioSession.CategoryOptions {
+    #if !canImport(AVFoundation, _version: 2360.66.3)
+    public static let allowBluetoothHFP = Self.allowBluetooth
+    #endif
 }
 
 extension AudioBehavior: CustomStringConvertible {
