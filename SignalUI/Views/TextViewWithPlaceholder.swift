@@ -122,6 +122,19 @@ public class TextViewWithPlaceholder: UIView {
         textView.isFirstResponder
     }
 
+    public func setSecureTextEntry(val: Bool) {
+        textView.isSecureTextEntry = val
+    }
+
+    public func setTextContentType(val: UITextContentType) {
+        textView.textContentType = val
+    }
+
+    public func reformatText(replacementText: String) {
+        textView.text = ""
+        _ = self.delegate?.textView(self, uiTextView: textView, shouldChangeTextIn: NSRange(location: 0, length: 0), replacementText: replacementText)
+    }
+
     // MARK: - Private Properties
 
     private func buildTextView() -> UITextView {

@@ -487,6 +487,9 @@
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
 
+/* Username for backup key autofill */
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Backups";
+
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
 

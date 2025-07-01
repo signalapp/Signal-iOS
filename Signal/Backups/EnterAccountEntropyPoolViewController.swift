@@ -53,6 +53,7 @@ class EnterAccountEntropyPoolViewController: OWSViewController, OWSNavigationChi
         navigationItem.rightBarButtonItem = nextBarButtonItem
 
         let stackView = UIStackView(arrangedSubviews: [
+            usernameTextField,
             titleLabel,
             subtitleLabel,
             aepTextView,
@@ -127,6 +128,20 @@ class EnterAccountEntropyPoolViewController: OWSViewController, OWSNavigationChi
         button.setTitleColor(UIColor.Signal.ultramarine, for: .normal)
         button.addTarget(self, action: #selector(didTapNoKeyButton), for: .touchUpInside)
         return button
+    }()
+
+    private lazy var usernameTextField: UITextField = {
+        let usernameField = UITextField()
+        usernameField.font = UIFont.systemFont(ofSize: 1)
+        usernameField.autoSetDimension(.height, toSize: 1)
+        usernameField.textContentType = .username
+        usernameField.backgroundColor = view.backgroundColor
+        usernameField.textColor = view.backgroundColor
+        usernameField.text = OWSLocalizedString(
+            "AUTOFILL_BACKUP_KEY_USERNAME",
+            comment: "Username for backup key autofill"
+        )
+        return usernameField
     }()
 
     // MARK: -
@@ -260,6 +275,8 @@ private class AccountEntropyPoolTextView: UIView {
             "BACKUP_KEY_PLACEHOLDER",
             comment: "Text used as placeholder in backup key text view."
         )
+        textView.setSecureTextEntry(val: true)
+        textView.setTextContentType(val: .password)
 
         self.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -318,6 +335,16 @@ private class AccountEntropyPoolTextView: UIView {
 extension AccountEntropyPoolTextView: TextViewWithPlaceholderDelegate {
 
     func textViewDidUpdateText(_ textView: TextViewWithPlaceholder) {
+        // For autofill, the text is set without first passing through the formatting code.
+        // Detect if the text is not formatted by looking for spaced chunks, and call the
+        // formatting function if not.
+        let formattedSpace = String(repeating: " ", count: Constants.spacesBetweenChunks)
+        if let t = textView.text,
+           !t.isEmpty,
+           t.count > Constants.spacesBetweenChunks,
+           !t.contains(formattedSpace) {
+                textView.reformatText(replacementText: t)
+        }
         onTextViewUpdated()
     }
 
