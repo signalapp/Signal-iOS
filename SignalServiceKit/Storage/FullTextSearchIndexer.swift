@@ -137,6 +137,7 @@ extension FullTextSearchIndexer {
     public static let ftsTableName = "indexable_text_fts"
 
     static let contentTableName = "indexable_text"
+    static let interactionTableName = "model_TSInteraction"
     static let uniqueIdColumn = "uniqueId"
     static let collectionColumn = "collection"
     static let ftsContentColumn = "ftsIndexableContent"
@@ -265,9 +266,9 @@ extension FullTextSearchIndexer {
                     SNIPPET(\(ftsTableName), \(indexOfContentColumnInFTSTable), '<\(matchTag)>', '</\(matchTag)>', '…', \(numTokens)) AS \(matchSnippet)
                 FROM \(ftsTableName)
                 LEFT JOIN \(contentTableName) ON \(contentTableName).rowId = \(ftsTableName).rowId
-                LEFT JOIN model_TSInteraction ON model_TSInteraction.uniqueId = \(contentTableName).\(uniqueIdColumn)
+                LEFT JOIN \(interactionTableName) ON \(interactionTableName).uniqueId = \(contentTableName).\(uniqueIdColumn)
                 WHERE \(ftsTableName).\(ftsContentColumn) MATCH ?
-                AND model_TSInteraction.uniqueThreadId = ?
+                AND \(interactionTableName).uniqueThreadId = ?
                 ORDER BY rank
                 LIMIT \(maxResults)
                 """
