@@ -516,16 +516,13 @@ public extension PaymentsImpl {
         return try await mobileCoinAPI.maxTransactionAmount()
     }
 
-    func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<TSPaymentAmount> {
+    func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) async throws -> TSPaymentAmount {
         guard paymentAmount.currency == .mobileCoin else {
-            return Promise(error: OWSAssertionError("Invalid currency."))
+            throw OWSAssertionError("Invalid currency.")
         }
 
-        return firstly(on: DispatchQueue.global()) { () -> Promise<MobileCoinAPI> in
-            self.getMobileCoinAPI()
-        }.then(on: DispatchQueue.global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<TSPaymentAmount> in
-            try mobileCoinAPI.getEstimatedFee(forPaymentAmount: paymentAmount)
-        }
+        let mobileCoinAPI = try await self.getMobileCoinAPI().awaitable()
+        return try await mobileCoinAPI.getEstimatedFee(forPaymentAmount: paymentAmount)
     }
 
     func prepareOutgoingPayment(

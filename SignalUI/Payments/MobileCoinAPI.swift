@@ -165,83 +165,63 @@ public class MobileCoinAPI {
         }
     }
 
-    func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) throws -> Promise<TSPaymentAmount> {
-        Logger.verbose("")
-
+    func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) async throws -> TSPaymentAmount {
         guard paymentAmount.isValidAmount(canBeEmpty: false) else {
             throw OWSAssertionError("Invalid amount.")
         }
 
-        let client = self.client
-
-        // We don't need to support amountPicoMobHigh.
-        return firstly(on: DispatchQueue.global()) { () -> Promise<TSPaymentAmount> in
-            let (promise, future) = Promise<TSPaymentAmount>.pending()
-            if DebugFlags.paymentsNoRequestsComplete.get() {
-                // Never resolve.
-                return promise
-            }
-            client.estimateTotalFee(toSendAmount: Amount(paymentAmount.picoMob, in: .MOB),
-                                    feeLevel: Self.feeLevel) { (result: Swift.Result<UInt64,
-                                                                                     TransactionEstimationFetcherError>) in
-                switch result {
-                case .success(let feePicoMob):
-                    let fee = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
-                    guard fee.isValidAmount(canBeEmpty: false) else {
-                        future.reject(OWSAssertionError("Invalid amount."))
-                        return
-                    }
-                    Logger.verbose("Success paymentAmount: \(paymentAmount), fee: \(fee), ")
-                    future.resolve(fee)
-                case .failure(let error):
-                    let error = Self.convertMCError(error: error)
-                    future.reject(error)
+        return try await _getPaymentAmount(canBeEmpty: false, getPicoMob: { client in
+            return try await withCheckedThrowingContinuation { continuation in
+                // We don't need to support amountPicoMobHigh.
+                let amount = Amount(paymentAmount.picoMob, in: .MOB)
+                client.estimateTotalFee(toSendAmount: amount, feeLevel: Self.feeLevel) {
+                    continuation.resume(with: $0)
                 }
             }
-            return promise
-        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<TSPaymentAmount> in
-            if case PaymentsError.insufficientFunds = error {
-                Logger.warn("Error: \(error)")
-            } else {
-                owsFailDebugUnlessMCNetworkFailure(error)
-            }
-            throw error
-        }.timeout(seconds: Self.timeoutDuration, description: "getEstimatedFee") { () -> Error in
-            PaymentsError.timeout
-        }
+        })
     }
 
     func maxTransactionAmount() async throws -> TSPaymentAmount {
-        // We don't need to support amountPicoMobHigh.
+        return try await _getPaymentAmount(canBeEmpty: true, getPicoMob: { client in
+            return try await withCheckedThrowingContinuation { continuation in
+                client.amountTransferable(tokenId: .MOB, feeLevel: Self.feeLevel) {
+                    continuation.resume(with: $0)
+                }
+            }
+        })
+    }
+
+    private func _getPaymentAmount(canBeEmpty: Bool, getPicoMob: @escaping (MobileCoinClient) async throws -> UInt64) async throws -> TSPaymentAmount {
         if DebugFlags.paymentsNoRequestsComplete.get() {
             // Never resolve.
-            try! await Task.sleep(nanoseconds: .max)
+            try! await Task.sleep(nanoseconds: TimeInterval.infinity.clampedNanoseconds)
         }
 
         do {
-            let feePicoMob = try await withUncooperativeTimeout(seconds: Self.timeoutDuration) {
-                try await withCheckedThrowingContinuation { continuation in
-                    self.client.amountTransferable(tokenId: .MOB, feeLevel: Self.feeLevel) {
-                        continuation.resume(with: $0)
+            return try await withUncooperativeTimeout(seconds: Self.timeoutDuration) { [client] in
+                do {
+                    let picoMob: UInt64
+                    do {
+                        picoMob = try await getPicoMob(client)
+                    } catch {
+                        throw Self.convertMCError(error: error)
                     }
+                    let result = TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
+                    guard result.isValidAmount(canBeEmpty: canBeEmpty) else {
+                        throw OWSAssertionError("Invalid amount.")
+                    }
+                    return result
+                } catch {
+                    if case PaymentsError.insufficientFunds = error {
+                        Logger.warn("Error: \(error)")
+                    } else {
+                        owsFailDebugUnlessMCNetworkFailure(error)
+                    }
+                    throw error
                 }
             }
-            let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
-            guard paymentAmount.isValidAmount(canBeEmpty: true) else {
-                throw OWSAssertionError("Invalid amount.")
-            }
-            Logger.verbose("Success paymentAmount: \(paymentAmount), ")
-            return paymentAmount
         } catch is UncooperativeTimeoutError {
             throw PaymentsError.timeout
-        } catch {
-            let error = Self.convertMCError(error: error)
-            if case PaymentsError.insufficientFunds = error {
-                Logger.warn("Error: \(error)")
-            } else {
-                owsFailDebugUnlessMCNetworkFailure(error)
-            }
-            throw error
         }
     }
 
@@ -271,7 +251,9 @@ public class MobileCoinAPI {
                 Logger.verbose("balance: \(balance.picoMob)")
             }
         }.then(on: DispatchQueue.global()) { () -> Promise<TSPaymentAmount> in
-            try self.getEstimatedFee(forPaymentAmount: paymentAmount)
+            return Promise.wrapAsync {
+                try await self.getEstimatedFee(forPaymentAmount: paymentAmount)
+            }
         }.then(on: DispatchQueue.global()) { (estimatedFeeAmount: TSPaymentAmount) -> Promise<PreparedTransaction> in
             Logger.verbose("estimatedFeeAmount: \(estimatedFeeAmount.picoMob)")
             guard paymentAmount.isValidAmount(canBeEmpty: false) else {

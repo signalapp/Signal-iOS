@@ -967,8 +967,8 @@ public class SendPaymentViewController: OWSViewController {
 
     private func getEstimatedFeeAndSubmit(paymentAmount: TSPaymentAmount) {
         ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: self) { modalActivityIndicator in
-            firstly {
-                SUIEnvironment.shared.paymentsSwiftRef.getEstimatedFee(forPaymentAmount: paymentAmount)
+            Promise.wrapAsync {
+                try await SUIEnvironment.shared.paymentsSwiftRef.getEstimatedFee(forPaymentAmount: paymentAmount)
             }.done { (estimatedFeeAmount: TSPaymentAmount) in
                 AssertIsOnMainThread()
 
