@@ -1234,6 +1234,7 @@
 		66FC638C29E9E9D200F00DAC /* TextCheckingDataItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */; };
 		66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */; };
 		66FFDADC2C823C270079C0E7 /* BackupArchive+Contexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FFDADB2C823C270079C0E7 /* BackupArchive+Contexts.swift */; };
+		6FE6A7232E1472540004DBC0 /* FullTextSearchIndexerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE6A7222E1472540004DBC0 /* FullTextSearchIndexerTest.swift */; };
 		7203F5332D53B53000639949 /* UInt64+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7203F5322D53B52900639949 /* UInt64+SSK.swift */; };
 		7203F5352D53B83500639949 /* TimeInterval+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7203F5342D53B83000639949 /* TimeInterval+SSK.swift */; };
 		720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FD1269F642F00841DF9 /* AvatarModel.swift */; };
@@ -5182,6 +5183,7 @@
 		67391FF368D9A60FC8B73F0E /* Pods-Signal.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.profiling.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.profiling.xcconfig"; sourceTree = "<group>"; };
 		675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BB92957776B3173894CD3E9 /* Pods-SignalServiceKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.app store release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.app store release.xcconfig"; sourceTree = "<group>"; };
+		6FE6A7222E1472540004DBC0 /* FullTextSearchIndexerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullTextSearchIndexerTest.swift; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		7203F5322D53B52900639949 /* UInt64+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt64+SSK.swift"; sourceTree = "<group>"; };
 		7203F5342D53B83000639949 /* TimeInterval+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+SSK.swift"; sourceTree = "<group>"; };
@@ -13192,9 +13194,8 @@
 		F94261D7289B1B5400460798 /* Storage */ = {
 			isa = PBXGroup;
 			children = (
-				F97217F928DCA35F00113D9F /* Database */,
-				D9B95A9329E682CA00D7CB95 /* JobRecords */,
 				66485EB82CD17D5D00B8613F /* DbRollbackTests.swift */,
+				6FE6A7222E1472540004DBC0 /* FullTextSearchIndexerTest.swift */,
 				F94261DE289B1B5400460798 /* InteractionFinderTest.swift */,
 				C167F1E42A7162D700D4A9AF /* KyberPreKeyStoreImplTest.swift */,
 				F94261DD289B1B5400460798 /* ModelReadCacheTest.swift */,
@@ -13205,6 +13206,8 @@
 				F94261DB289B1B5400460798 /* SDSKeyValueStoreTest.swift */,
 				F94261E1289B1B5400460798 /* SignedPreKeyStoreImplTest.swift */,
 				50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */,
+				F97217F928DCA35F00113D9F /* Database */,
+				D9B95A9329E682CA00D7CB95 /* JobRecords */,
 			);
 			name = Storage;
 			path = SignalServiceKit/tests/Storage;
@@ -18936,6 +18939,7 @@
 				F9426259289B1B5500460798 /* RemoteConfigManagerTests.swift in Sources */,
 				F945FE4D298481EA00C835C7 /* RingrtcFieldTrialsTest.swift in Sources */,
 				F942624E289B1B5500460798 /* SDSDatabaseStorageObservationTest.swift in Sources */,
+				6FE6A7232E1472540004DBC0 /* FullTextSearchIndexerTest.swift in Sources */,
 				F942624B289B1B5500460798 /* SDSDatabaseStorageTest.swift in Sources */,
 				F942624A289B1B5500460798 /* SDSKeyValueStoreTest.swift in Sources */,
 				662C44172A1D21D7001F83E2 /* SecureValueRecovery2Tests.swift in Sources */,
