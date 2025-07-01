@@ -288,6 +288,10 @@ class FullTextSearchIndexerTest: SSKBaseTest {
             ) { message, _, _ in
                 results.append(message)
             }
+
+            // Should return results in a reasonable time
+            let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
+            XCTAssertLessThan(timeElapsed, 1.0, "Search should complete within 1 second")
             
             // Should find the expected number of results (approximately 1/3 of messages)
             XCTAssertGreaterThan(results.count, 300, "Should find results from Alice's thread")
