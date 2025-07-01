@@ -26,6 +26,12 @@ def get_marketing_version():
     return contents["CFBundleShortVersionString"]
 
 
+def get_xcode_version():
+    return subprocess.run(
+        ["xcodebuild", "-version"], check=True, capture_output=True, encoding="utf8"
+    ).stdout.split("\n")[0]
+
+
 def build_payload(src, dst, message):
     payload = {
         "number": src,
@@ -56,10 +62,11 @@ def main(ns):
     ref = env["CI_GIT_REF"]
     trigger = env["CI_START_CONDITION"]
     version = get_marketing_version()
+    xcode_version = get_xcode_version()
 
     message = (
         f"{prefix} Cloud build for {version} ({build_number}) {ns.event} "
-        f"from {ref} (trigger: {trigger})\n\n{build_url}"
+        f"from {ref} (trigger: {trigger})\n\nXcode version: {xcode_version}\n\n{build_url}"
     )
     args = ["curl", "--silent"]
     args.extend(["-H", "Content-Type: application/json"])
