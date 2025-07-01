@@ -419,6 +419,7 @@ public class AppSetup {
             appContext: appContext,
             appReadiness: appReadiness,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             db: db,
             deviceBatteryLevelManager: deviceBatteryLevelManager,

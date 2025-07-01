@@ -46,6 +46,7 @@ public class CLVBackupDownloadProgressView {
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupSettingsStore: BackupSettingsStore
     private let db: DB
 
     init() {
@@ -54,12 +55,14 @@ public class CLVBackupDownloadProgressView {
         self.backupAttachmentDownloadManager = DependenciesBridge.shared.backupAttachmentDownloadManager
         self.backupAttachmentDownloadQueueStatusReporter = DependenciesBridge.shared.backupAttachmentDownloadQueueStatusReporter
         self.backupAttachmentDownloadStore = DependenciesBridge.shared.backupAttachmentDownloadStore
+        self.backupSettingsStore = BackupSettingsStore()
         self.db = DependenciesBridge.shared.db
 
         backupAttachmentDownloadProgressView = BackupAttachmentDownloadProgressView(
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusReporter,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupSettingsStore: backupSettingsStore,
             db: db
         )
 
@@ -147,7 +150,9 @@ public class CLVBackupDownloadProgressView {
                 spaceRequired: max(minRequiredDiskSpace, requiredDiskSpace)
             )
         case .noWifiReachability:
-            return .paused(reason: .wifiNotReachable)
+            return .wifiNotReachable
+        case .noReachability:
+            return .paused(reason: .notReachable)
         case .running:
             return .restoring(progress: viewState.downloadProgress)
         case .empty:
@@ -167,12 +172,13 @@ public class BackupAttachmentDownloadProgressView: UIView {
 
     public enum State {
         case restoring(progress: OWSProgress?)
+        case wifiNotReachable
         case paused(reason: PauseReason)
         case outOfDiskSpace(spaceRequired: UInt64)
         case complete(size: UInt64, dismissAction: () -> Void)
 
         public enum PauseReason {
-            case wifiNotReachable
+            case notReachable
             case lowBattery
         }
     }
@@ -198,17 +204,20 @@ public class BackupAttachmentDownloadProgressView: UIView {
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupSettingsStore: BackupSettingsStore
     private let db: DB
 
     public init(
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupSettingsStore: BackupSettingsStore,
         db: DB
     ) {
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.backupAttachmentDownloadQueueStatusReporter = backupAttachmentDownloadQueueStatusReporter
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupSettingsStore = backupSettingsStore
         self.db = db
         super.init(frame: .zero)
 
@@ -272,7 +281,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
             switch self?.state {
             case .complete(_, let dismissAction):
                 dismissAction()
-            default:
+            case nil, .restoring, .wifiNotReachable, .paused, .outOfDiskSpace:
                 return
             }
         }
@@ -284,6 +293,18 @@ public class BackupAttachmentDownloadProgressView: UIView {
             title: Constants.detailsButtonText
         ) { [weak self] in
             self?.didTapDetails()
+        }
+        button.setTitleColor(UIColor.Signal.label, for: .normal)
+        button.titleLabel?.font = Constants.detailsButtonFont
+        button.isHidden = true
+        return button
+    }()
+
+    private lazy var resumeButton: OWSButton = {
+        let button = OWSButton(
+            title: Constants.resumeButtonText
+        ) { [weak self] in
+            self?.didTapResume()
         }
         button.setTitleColor(UIColor.Signal.label, for: .normal)
         button.titleLabel?.font = Constants.detailsButtonFont
@@ -307,6 +328,8 @@ public class BackupAttachmentDownloadProgressView: UIView {
         backgroundView.addSubview(diskSpaceLabel)
         backgroundView.addSubview(detailsButton)
 
+        backgroundView.addSubview(resumeButton)
+
         render()
     }
 
@@ -320,6 +343,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
         subtitleLabel.text = Self.subtitleLabelText(state: state)
         renderProgressIndicator()
         diskSpaceLabel.text = Self.diskSpaceLabelText(state: state)
+        renderResumeButton()
         renderDetailsButton()
         renderDismissButton()
         layout()
@@ -351,6 +375,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
         var diskSpaceLabel: CGRect?
         var detailsButton: CGRect?
         var dismissButton: CGRect?
+        var resumeButton: CGRect?
     }
 
     private func layout() {
@@ -369,6 +394,8 @@ public class BackupAttachmentDownloadProgressView: UIView {
         frames.detailsButton.map { detailsButton.frame = $0 }
         dismissButton.isHidden = frames.dismissButton == nil
         frames.dismissButton.map { dismissButton.frame = $0 }
+        resumeButton.isHidden = frames.resumeButton == nil
+        frames.resumeButton.map { resumeButton.frame = $0 }
     }
 
     static func measureHeight(
@@ -407,12 +434,23 @@ public class BackupAttachmentDownloadProgressView: UIView {
             frames.dismissButton?.x = frames.backgroundView.width - Constants.spacing - Constants.iconSize
             frames.dismissButton?.width = Constants.iconSize
             frames.dismissButton?.height = Constants.iconSize
-        default:
+        case .wifiNotReachable:
+            let resumeButtonSize = (Constants.resumeButtonText as NSString).boundingRect(
+                with: .square(.greatestFiniteMagnitude),
+                options: [.usesFontLeading, .usesLineFragmentOrigin],
+                attributes: [.font: Constants.resumeButtonFont],
+                context: nil
+            )
+            frames.resumeButton = .zero
+            frames.resumeButton?.x = frames.backgroundView.width - Constants.spacing - resumeButtonSize.width
+            frames.resumeButton?.width = resumeButtonSize.width
+            frames.resumeButton?.height = resumeButtonSize.height
+        case nil, .paused, .outOfDiskSpace:
             break
         }
 
         switch state {
-        case .restoring, .paused, .complete:
+        case .restoring, .wifiNotReachable, .paused, .complete:
             measureTitleSubtitleLabel(&frames)
         case .outOfDiskSpace:
             measureOutOfDiskSpaceViews(&frames)
@@ -426,7 +464,8 @@ public class BackupAttachmentDownloadProgressView: UIView {
         let centerYFrames: [WritableKeyPath<Frames, CGRect?>] = [
             \.progressIndicatorView,
             \.dismissButton,
-            \.detailsButton
+            \.detailsButton,
+            \.resumeButton,
         ]
         for frameKeyPath in centerYFrames {
             guard var frame = frames[keyPath: frameKeyPath] else { continue }
@@ -441,6 +480,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
         let labelsMaxXBounds: [CGFloat?] = [
             frames.progressIndicatorView?.minX,
             frames.dismissButton?.minX,
+            frames.resumeButton?.minX,
             frames.backgroundView.width,
         ]
         let labelsMaxXBound = labelsMaxXBounds.compacted().min()! - Constants.spacing
@@ -547,7 +587,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
 
     private func renderIcon() {
         let (iconName, tintColor): (String, UIColor) = switch state {
-        case .restoring, .paused, nil:
+        case .restoring, .wifiNotReachable, .paused, nil:
             ("backup-bold", UIColor.Signal.label)
         case .outOfDiskSpace:
             ("backup-error-bold", UIColor.Signal.orange)
@@ -563,6 +603,11 @@ public class BackupAttachmentDownloadProgressView: UIView {
             OWSLocalizedString(
                 "RESTORING_MEDIA_BANNER_TITLE",
                 comment: "Title shown on chat list banner for restoring media from a backup"
+            )
+        case .wifiNotReachable:
+            OWSLocalizedString(
+                "RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE",
+                comment: "Title shown on chat list banner for restoring media from a backup when waiting for wifi"
             )
         case .paused:
             OWSLocalizedString(
@@ -594,6 +639,8 @@ public class BackupAttachmentDownloadProgressView: UIView {
             )
         case .restoring:
             nil
+        case .wifiNotReachable:
+            nil
         case .paused(let reason):
             switch reason {
             case .lowBattery:
@@ -601,10 +648,10 @@ public class BackupAttachmentDownloadProgressView: UIView {
                     "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE",
                     comment: "Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery"
                 )
-            case .wifiNotReachable:
+            case .notReachable:
                 OWSLocalizedString(
-                    "RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE",
-                    comment: "Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no wifi connection"
+                    "RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE",
+                    comment: "Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection"
                 )
             }
         case .outOfDiskSpace:
@@ -625,7 +672,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
             } else {
                 progressIndicatorView.percentComplete = 0
             }
-        default:
+        case nil, .wifiNotReachable, .paused, .outOfDiskSpace, .complete:
             progressIndicatorView.isHidden = true
         }
     }
@@ -640,7 +687,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
                 ),
                 formatByteSize(spaceRequired)
             )
-        default:
+        case nil, .restoring, .wifiNotReachable, .paused, .complete:
             nil
         }
     }
@@ -648,14 +695,21 @@ public class BackupAttachmentDownloadProgressView: UIView {
     private func renderDetailsButton() {
         detailsButton.isHidden = switch state {
         case .outOfDiskSpace: false
-        default: true
+        case nil, .restoring, .wifiNotReachable, .paused, .complete: true
         }
     }
 
     private func renderDismissButton() {
         dismissButton.isHidden = switch state {
         case .complete: false
-        default: true
+        case nil, .restoring, .wifiNotReachable, .paused, .outOfDiskSpace: true
+        }
+    }
+
+    private func renderResumeButton() {
+        resumeButton.isHidden = switch state {
+        case .wifiNotReachable: false
+        case nil, .restoring, .paused, .outOfDiskSpace, .complete: true
         }
     }
 
@@ -663,9 +717,22 @@ public class BackupAttachmentDownloadProgressView: UIView {
         return OWSFormat.formatFileSize(UInt(byteSize), maximumFractionalDigits: 0)
     }
 
+    private func didTapResume() {
+        switch state {
+        case nil, .restoring, .paused, .outOfDiskSpace, .complete:
+            return
+        case .wifiNotReachable:
+            Task {
+                await db.awaitableWrite { tx in
+                    backupSettingsStore.setShouldAllowBackupDownloadsOnCellular(tx: tx)
+                }
+            }
+        }
+    }
+
     private func didTapDetails() {
         switch state {
-        case .restoring, .paused, .complete, nil:
+        case .restoring, .wifiNotReachable, .paused, .complete, nil:
             return
         case .outOfDiskSpace(let spaceRequired):
             let spaceRequiredString = Self.formatByteSize(spaceRequired)
@@ -741,7 +808,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
                     self?.chatListViewController?.viewState.backupDownloadProgressViewState
                         .totalPendingBackupAttachmentDownloadByteCount = nil
                     await self?.db.awaitableWrite { tx in
-                        self?.backupAttachmentDownloadStore.setIsQueueSuspended(true, tx: tx)
+                        self?.backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
                     }
                     if let chatListViewController = self?.chatListViewController {
                         self?.db.read { tx in
@@ -785,6 +852,12 @@ public class BackupAttachmentDownloadProgressView: UIView {
             comment: "Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps."
         )
         static var detailsButtonFont: UIFont { .dynamicTypeSubheadlineClamped.bold() }
+
+        static let resumeButtonText = OWSLocalizedString(
+            "RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON",
+            comment: "Button title shown on chat list banner for restoring media from a backup when paused because the device needs WiFi to continue, to resume downloads without WiFi."
+        )
+        static var resumeButtonFont: UIFont { .dynamicTypeSubheadlineClamped.bold() }
     }
 
     // MARK: ArcView

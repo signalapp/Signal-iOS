@@ -19,6 +19,8 @@ public enum BackupAttachmentDownloadQueueStatus: Equatable {
     case notRegisteredAndReady
     /// Wifi is required for downloads, but not available.
     case noWifiReachability
+    /// Internet access is required for downloads, but not available.
+    case noReachability
     /// The device has low battery or is in low power mode.
     case lowBattery
     /// There is not enough disk space to finish downloading.
@@ -54,7 +56,7 @@ public protocol BackupAttachmentDownloadQueueStatusReporter {
 extension BackupAttachmentDownloadQueueStatusReporter {
     func notifyStatusDidChange() {
         NotificationCenter.default.postOnMainThread(
-            name: .backupAttachmentDownloadQueueSuspensionStatusDidChange,
+            name: .backupAttachmentDownloadQueueStatusDidChange,
             object: nil,
         )
     }
@@ -153,6 +155,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
     private let appContext: AppContext
     private let appReadiness: AppReadiness
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupSettingsStore: BackupSettingsStore
     private var batteryLevelMonitor: DeviceBatteryLevelMonitor?
     private let dateProvider: DateProvider
     private let db: DB
@@ -165,6 +168,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         appContext: AppContext,
         appReadiness: AppReadiness,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: DB,
         deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?,
@@ -175,6 +179,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         self.appContext = appContext
         self.appReadiness = appReadiness
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
         self.db = db
         self.deviceBatteryLevelManager = deviceBatteryLevelManager
@@ -188,7 +193,9 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             isMainApp: appContext.isMainApp,
             isAppReady: false,
             isRegistered: nil,
+            shouldAllowBackupDownloadsOnCellular: nil,
             isWifiReachable: nil,
+            isReachable: nil,
             batteryLevel: nil,
             isLowPowerMode: nil,
             availableDiskSpace: nil,
@@ -211,7 +218,10 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         var isAppReady: Bool
         var isRegistered: Bool?
 
+        var shouldAllowBackupDownloadsOnCellular: Bool?
         var isWifiReachable: Bool?
+        var isReachable: Bool?
+
         // Value from 0 to 1
         var batteryLevel: Float?
         var isLowPowerMode: Bool?
@@ -227,7 +237,9 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             isMainApp: Bool,
             isAppReady: Bool,
             isRegistered: Bool?,
+            shouldAllowBackupDownloadsOnCellular: Bool?,
             isWifiReachable: Bool?,
+            isReachable: Bool?,
             batteryLevel: Float?,
             isLowPowerMode: Bool?,
             availableDiskSpace: UInt64?,
@@ -239,7 +251,9 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             self.isMainApp = isMainApp
             self.isAppReady = isAppReady
             self.isRegistered = isRegistered
+            self.shouldAllowBackupDownloadsOnCellular = shouldAllowBackupDownloadsOnCellular
             self.isWifiReachable = isWifiReachable
+            self.isReachable = isReachable
             self.batteryLevel = batteryLevel
             self.isLowPowerMode = isLowPowerMode
             self.availableDiskSpace = availableDiskSpace
@@ -276,8 +290,15 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
                 return .lowDiskSpace
             }
 
-            if isWifiReachable != true {
+            if
+                shouldAllowBackupDownloadsOnCellular != true,
+                isWifiReachable != true
+            {
                 return .noWifiReachability
+            }
+
+            if isReachable != true {
+                return .noReachability
             }
 
             if let batteryLevel, batteryLevel < 0.1 {
@@ -309,7 +330,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         let (isQueueEmpty, areDownloadsSuspended) = db.read { tx in
             return (
                 (try? backupAttachmentDownloadStore.hasAnyReadyDownloads(tx: tx))?.negated ?? true,
-                backupAttachmentDownloadStore.isQueueSuspended(tx: tx)
+                backupSettingsStore.isBackupAttachmentDownloadQueueSuspended(tx: tx)
             )
 
         }
@@ -326,8 +347,11 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
     }
 
     private func observeDeviceAndLocalStates() {
-        let isRegistered = db.read { tx in
-            tsAccountManager.registrationState(tx: tx).isRegistered
+        let (isRegistered, shouldAllowBackupDownloadsOnCellular) = db.read { tx in
+            return (
+                tsAccountManager.registrationState(tx: tx).isRegistered,
+                backupSettingsStore.shouldAllowBackupDownloadsOnCellular(tx: tx)
+            )
         }
 
         let notificationsToObserve: [(Notification.Name, Selector)] = [
@@ -337,6 +361,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             (Notification.Name.NSProcessInfoPowerStateDidChange, #selector(lowPowerModeDidChange)),
             (.OWSApplicationWillEnterForeground, #selector(willEnterForeground)),
             (.backupAttachmentDownloadQueueSuspensionStatusDidChange, #selector(suspensionStatusDidChange)),
+            (.shouldAllowBackupDownloadsOnCellularChanged, #selector(shouldAllowBackupDownloadsOnCellularDidChange)),
         ]
         for (name, selector) in notificationsToObserve {
             NotificationCenter.default.addObserver(
@@ -357,7 +382,9 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             isMainApp: appContext.isMainApp,
             isAppReady: appReadiness.isAppReady,
             isRegistered: isRegistered,
+            shouldAllowBackupDownloadsOnCellular: shouldAllowBackupDownloadsOnCellular,
             isWifiReachable: reachabilityManager.isReachable(via: .wifi),
+            isReachable: reachabilityManager.isReachable(via: .any),
             batteryLevel: batteryLevelMonitor?.batteryLevel,
             isLowPowerMode: deviceBatteryLevelManager?.isLowPowerModeEnabled,
             availableDiskSpace: getAvailableDiskSpace(),
@@ -387,6 +414,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
     @objc
     private func reachabilityDidChange() {
         state.isWifiReachable = reachabilityManager.isReachable(via: .wifi)
+        state.isReachable = reachabilityManager.isReachable(via: .any)
     }
 
     @objc
@@ -401,7 +429,16 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
     @objc
     private func suspensionStatusDidChange() {
-        state.areDownloadsSuspended = db.read(block: backupAttachmentDownloadStore.isQueueSuspended(tx:))
+        state.areDownloadsSuspended = db.read { tx in
+            backupSettingsStore.isBackupAttachmentDownloadQueueSuspended(tx: tx)
+        }
+    }
+
+    @objc
+    private func shouldAllowBackupDownloadsOnCellularDidChange() {
+        state.shouldAllowBackupDownloadsOnCellular = db.read { tx in
+            backupSettingsStore.shouldAllowBackupDownloadsOnCellular(tx: tx)
+        }
     }
 
     private nonisolated func getAvailableDiskSpace() -> UInt64? {

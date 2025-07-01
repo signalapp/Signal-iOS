@@ -6754,17 +6754,23 @@
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Device has low battery";
 
+/* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
+"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "No internet…";
+
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
 "RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Restore Paused";
-
-/* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no wifi connection */
-"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Waiting for Wi-Fi…";
 
 /* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
 "RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ of %2$@";
 
+/* Button title shown on chat list banner for restoring media from a backup when paused because the device needs WiFi to continue, to resume downloads without WiFi. */
+"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "Resume";
+
 /* Title shown on chat list banner for restoring media from a backup */
 "RESTORING_MEDIA_BANNER_TITLE" = "Restoring Media";
+
+/* Title shown on chat list banner for restoring media from a backup when waiting for wifi */
+"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Skip Restore";

@@ -75,7 +75,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
                 lastBackupDate: backupSettingsStore.lastBackupDate(tx: tx),
                 lastBackupSizeBytes: backupSettingsStore.lastBackupSizeBytes(tx: tx),
                 backupFrequency: backupSettingsStore.backupFrequency(tx: tx),
-                shouldBackUpOnCellular: backupSettingsStore.shouldBackUpOnCellular(tx: tx)
+                shouldAllowBackupUploadsOnCellular: backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx)
             )
 
             if let disableBackupsRemotelyState = backupDisablingManager.currentDisableRemotelyState(tx: tx) {
@@ -388,9 +388,9 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
         }
     }
 
-    fileprivate func setShouldBackUpOnCellular(_ newShouldBackUpOnCellular: Bool) {
+    fileprivate func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) {
         db.write { tx in
-            backupSettingsStore.setShouldBackUpOnCellular(newShouldBackUpOnCellular, tx: tx)
+            backupSettingsStore.setShouldAllowBackupUploadsOnCellular(newShouldAllowBackupUploadsOnCellular, tx: tx)
         }
     }
 
@@ -478,7 +478,7 @@ private class BackupSettingsViewModel: ObservableObject {
 
         func performManualBackup()
         func setBackupFrequency(_ newBackupFrequency: BackupFrequency)
-        func setShouldBackUpOnCellular(_ newShouldBackUpOnCellular: Bool)
+        func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool)
 
         func showViewBackupKey()
     }
@@ -510,7 +510,7 @@ private class BackupSettingsViewModel: ObservableObject {
     @Published var lastBackupDate: Date?
     @Published var lastBackupSizeBytes: UInt64?
     @Published var backupFrequency: BackupFrequency
-    @Published var shouldBackUpOnCellular: Bool
+    @Published var shouldAllowBackupUploadsOnCellular: Bool
 
     weak var actionsDelegate: ActionsDelegate?
 
@@ -523,7 +523,7 @@ private class BackupSettingsViewModel: ObservableObject {
         lastBackupDate: Date?,
         lastBackupSizeBytes: UInt64?,
         backupFrequency: BackupFrequency,
-        shouldBackUpOnCellular: Bool,
+        shouldAllowBackupUploadsOnCellular: Bool,
     ) {
         self.backupEnabledState = backupEnabledState
         self.backupPlanLoadingState = backupPlanLoadingState
@@ -531,7 +531,7 @@ private class BackupSettingsViewModel: ObservableObject {
         self.lastBackupDate = lastBackupDate
         self.lastBackupSizeBytes = lastBackupSizeBytes
         self.backupFrequency = backupFrequency
-        self.shouldBackUpOnCellular = shouldBackUpOnCellular
+        self.shouldAllowBackupUploadsOnCellular = shouldAllowBackupUploadsOnCellular
 
         self.loadBackupPlanQueue = SerialTaskQueue()
     }
@@ -630,9 +630,9 @@ private class BackupSettingsViewModel: ObservableObject {
         actionsDelegate?.setBackupFrequency(newBackupFrequency)
     }
 
-    func setShouldBackUpOnCellular(_ newShouldBackUpOnCellular: Bool) {
-        shouldBackUpOnCellular = newShouldBackUpOnCellular
-        actionsDelegate?.setShouldBackUpOnCellular(newShouldBackUpOnCellular)
+    func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) {
+        shouldAllowBackupUploadsOnCellular = newShouldAllowBackupUploadsOnCellular
+        actionsDelegate?.setShouldAllowBackupUploadsOnCellular(newShouldAllowBackupUploadsOnCellular)
     }
 
     // MARK: -
@@ -1159,8 +1159,8 @@ private struct BackupDetailsView: View {
                     comment: "Label for a toggleable menu item describing whether to make backups on cellular data."
                 ),
                 isOn: Binding(
-                    get: { viewModel.shouldBackUpOnCellular },
-                    set: { viewModel.setShouldBackUpOnCellular($0) }
+                    get: { viewModel.shouldAllowBackupUploadsOnCellular },
+                    set: { viewModel.setShouldAllowBackupUploadsOnCellular($0) }
                 )
             )
         }
@@ -1213,7 +1213,7 @@ private extension BackupSettingsViewModel {
 
             func performManualBackup() { print("Manually backing up!") }
             func setBackupFrequency(_ newBackupFrequency: BackupFrequency) { print("Frequency: \(newBackupFrequency)") }
-            func setShouldBackUpOnCellular(_ newShouldBackUpOnCellular: Bool) { print("Cellular: \(newShouldBackUpOnCellular)") }
+            func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) { print("Cellular: \(newShouldAllowBackupUploadsOnCellular)") }
 
             func showViewBackupKey() { print("Showing View Backup Key!") }
         }
@@ -1231,7 +1231,7 @@ private extension BackupSettingsViewModel {
             lastBackupDate: Date().addingTimeInterval(-1 * .day),
             lastBackupSizeBytes: 2_400_000_000,
             backupFrequency: .daily,
-            shouldBackUpOnCellular: false
+            shouldAllowBackupUploadsOnCellular: false
         )
         let actionsDelegate = PreviewActionsDelegate(backupPlanLoadResult: backupPlanLoadResult)
         viewModel.actionsDelegate = actionsDelegate

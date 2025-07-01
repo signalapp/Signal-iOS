@@ -6,10 +6,6 @@
 import Foundation
 import GRDB
 
-public extension NSNotification.Name {
-    static let backupAttachmentDownloadQueueSuspensionStatusDidChange = Self("backupAttachmentDownloadQueueSuspensionStatusDidChange")
-}
-
 public protocol BackupAttachmentDownloadStore {
 
     /// "Enqueue" an attachment from a backup for download (using its reference).
@@ -96,15 +92,6 @@ public protocol BackupAttachmentDownloadStore {
 
     /// Returns nil, NOT 0, if there are no rows.
     func computeEstimatedRemainingByteCount(tx: DBReadTransaction) throws -> UInt64?
-
-    // MARK: Queue State
-
-    /// We "suspend" the queue to prevent media tier downloads from automatically beginning and consuming
-    /// device storage when backup plan state changes happen (which can happen in the background).
-    /// Once the user opts in, we can un-suspend.
-    func setIsQueueSuspended(_ isSuspended: Bool, tx: DBWriteTransaction)
-
-    func isQueueSuspended(tx: DBReadTransaction) -> Bool
 
     // MARK: Banner state
 
@@ -419,19 +406,6 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
             WHERE \(QueuedBackupAttachmentDownload.CodingKeys.state.rawValue) = \(QueuedBackupAttachmentDownload.State.ready.rawValue);
             """
         )
-    }
-
-    private let isQueueSuspendedKey = "isQueueSuspendedKey"
-
-    public func setIsQueueSuspended(_ isSuspended: Bool, tx: DBWriteTransaction) {
-        kvStore.setBool(isSuspended, key: isQueueSuspendedKey, transaction: tx)
-        tx.addSyncCompletion {
-            NotificationCenter.default.post(name: .backupAttachmentDownloadQueueSuspensionStatusDidChange, object: nil)
-        }
-    }
-
-    public func isQueueSuspended(tx: DBReadTransaction) -> Bool {
-        kvStore.getBool(isQueueSuspendedKey, defaultValue: false, transaction: tx)
     }
 
     private let didDismissDownloadCompleteBannerKey = "didDismissDownloadCompleteBannerKey"

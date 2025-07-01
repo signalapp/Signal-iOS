@@ -207,6 +207,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             Logger.info("Skipping backup attachment downloads while not reachable by wifi")
             try await taskQueue.stop()
             return
+        case .noReachability:
+            Logger.info("Skipping backup attachment downloads while not reachable at all")
+            try await taskQueue.stop()
+            return
         case .lowBattery:
             Logger.info("Skipping backup attachment downloads while low battery")
             try await taskQueue.stop()
@@ -263,19 +267,19 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             try backupAttachmentDownloadStore.markAllReadyIneligible(tx: tx)
             // This doesn't _really_ do anything, since we don't run the queue
             // when disabled anyway, but may as well suspend.
-            backupAttachmentDownloadStore.setIsQueueSuspended(true, tx: tx)
+            backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
 
         case (.disabled, .free):
             try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
             // Suspend the queue so the user has to explicitly opt-in to download.
-            backupAttachmentDownloadStore.setIsQueueSuspended(true, tx: tx)
+            backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
 
         case
                 let (.disabled, .paid(optimizeStorage)),
                 let (.disabled, .paidExpiringSoon(optimizeStorage)):
             try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
             // Suspend the queue so the user has to explicitly opt-in to download.
-            backupAttachmentDownloadStore.setIsQueueSuspended(true, tx: tx)
+            backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
             if optimizeStorage {
                 // Unclear how you would go straight from disabled to optimize
                 // enabled, but just go through the motions of both state changes
@@ -340,7 +344,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage):
             try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
             // Unsuspend; this is the user opt-in to trigger downloads.
-            backupAttachmentDownloadStore.setIsQueueSuspended(false, tx: tx)
+            backupSettingsStore.setIsBackupDownloadQueueSuspended(false, tx: tx)
             if optimizeLocalStorage {
                 // If we had optimize enabled, make anything ineligible (offloaded
                 // attachments) now eligible.
@@ -363,7 +367,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         )
         // Un-suspend; when optimization is enabled we always auto-download
         // the stuff that is eligible (newer attachments).
-        backupAttachmentDownloadStore.setIsQueueSuspended(false, tx: tx)
+        backupSettingsStore.setIsBackupDownloadQueueSuspended(false, tx: tx)
         // Reset the progress counter.
         try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
     }
@@ -374,7 +378,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
         // Suspend the queue; the user has to explicitly opt in to downloads
         // after optimization is disabled.
-        backupAttachmentDownloadStore.setIsQueueSuspended(true, tx: tx)
+        backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
     }
 
     // MARK: - Queue status observation
@@ -456,7 +460,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             struct SuspendedError: Error {}
             struct NeedsDiskSpaceError: Error {}
             struct NeedsBatteryError: Error {}
-            struct NeedsWifiError: Error {}
+            struct NeedsInternetError: Error {}
             struct NeedsToBeRegisteredError: Error {}
 
             switch await statusManager.quickCheckDiskSpaceForDownloads() {
@@ -477,9 +481,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             case .lowBattery:
                 try? await taskQueueLoader?.stop()
                 return .retryableError(NeedsBatteryError())
-            case .noWifiReachability:
+            case .noWifiReachability, .noReachability:
                 try? await taskQueueLoader?.stop()
-                return .retryableError(NeedsWifiError())
+                return .retryableError(NeedsInternetError())
             case .notRegisteredAndReady:
                 try? await taskQueueLoader?.stop()
                 return .retryableError(NeedsToBeRegisteredError())
@@ -610,7 +614,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 case .empty:
                     // The queue will stop on its own, finish this task.
                     break
-                case .suspended, .lowDiskSpace, .lowBattery, .noWifiReachability, .notRegisteredAndReady:
+                case .suspended, .lowDiskSpace, .lowBattery, .noWifiReachability, .noReachability, .notRegisteredAndReady:
                     // Stop the queue now proactively.
                     try? await taskQueueLoader?.stop()
                 }

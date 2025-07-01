@@ -122,7 +122,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             isAppReady: false,
             isRegistered: nil,
             backupPlan: nil,
-            shouldBackUpOnCellular: nil,
+            shouldAllowBackupUploadsOnCellular: nil,
             isWifiReachable: nil,
             batteryLevel: nil,
             isLowPowerMode: nil,
@@ -143,9 +143,10 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
         var isRegistered: Bool?
 
         var backupPlan: BackupPlan?
-        var shouldBackUpOnCellular: Bool?
 
+        var shouldAllowBackupUploadsOnCellular: Bool?
         var isWifiReachable: Bool?
+
         // Value from 0 to 1
         var batteryLevel: Float?
         var isLowPowerMode: Bool?
@@ -156,7 +157,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             isAppReady: Bool,
             isRegistered: Bool?,
             backupPlan: BackupPlan?,
-            shouldBackUpOnCellular: Bool?,
+            shouldAllowBackupUploadsOnCellular: Bool?,
             isWifiReachable: Bool?,
             batteryLevel: Float?,
             isLowPowerMode: Bool?,
@@ -166,7 +167,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             self.isAppReady = isAppReady
             self.isRegistered = isRegistered
             self.backupPlan = backupPlan
-            self.shouldBackUpOnCellular = shouldBackUpOnCellular
+            self.shouldAllowBackupUploadsOnCellular = shouldAllowBackupUploadsOnCellular
             self.isWifiReachable = isWifiReachable
             self.batteryLevel = batteryLevel
             self.isLowPowerMode = isLowPowerMode
@@ -193,7 +194,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             }
 
             if
-                shouldBackUpOnCellular != true,
+                shouldAllowBackupUploadsOnCellular != true,
                 isWifiReachable != true
             {
                 return .noWifiReachability
@@ -240,17 +241,17 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
     }
 
     private func observeDeviceAndLocalStates() {
-        let (backupPlan, shouldBackUpOnCellular) = db.read { tx in
+        let (backupPlan, shouldAllowBackupUploadsOnCellular) = db.read { tx in
             (
                 backupSettingsStore.backupPlan(tx: tx),
-                backupSettingsStore.shouldBackUpOnCellular(tx: tx)
+                backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx)
             )
         }
 
         let notificationsToObserve: [(Notification.Name, Selector)] = [
             (.registrationStateDidChange, #selector(registrationStateDidChange)),
             (.backupPlanChanged, #selector(backupPlanDidChange)),
-            (BackupSettingsStore.Notifications.shouldBackUpOnCellularChanged, #selector(shouldBackUpOnCellularDidChange)),
+            (.shouldAllowBackupUploadsOnCellularChanged, #selector(shouldAllowBackupUploadsOnCellularDidChange)),
             (.reachabilityChanged, #selector(reachabilityDidChange)),
             (UIDevice.batteryLevelDidChangeNotification, #selector(batteryLevelDidChange)),
             (Notification.Name.NSProcessInfoPowerStateDidChange, #selector(lowPowerModeDidChange)),
@@ -271,7 +272,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             isAppReady: appReadiness.isAppReady,
             isRegistered: tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered,
             backupPlan: backupPlan,
-            shouldBackUpOnCellular: shouldBackUpOnCellular,
+            shouldAllowBackupUploadsOnCellular: shouldAllowBackupUploadsOnCellular,
             isWifiReachable: reachabilityManager.isReachable(via: .wifi),
             batteryLevel: batteryLevelMonitor?.batteryLevel,
             isLowPowerMode: deviceBatteryLevelManager?.isLowPowerModeEnabled,
@@ -304,9 +305,9 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
     }
 
     @objc
-    private func shouldBackUpOnCellularDidChange() {
-        state.shouldBackUpOnCellular = db.read { tx in
-            backupSettingsStore.shouldBackUpOnCellular(tx: tx)
+    private func shouldAllowBackupUploadsOnCellularDidChange() {
+        state.shouldAllowBackupUploadsOnCellular = db.read { tx in
+            backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx)
         }
     }
 
