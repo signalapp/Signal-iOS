@@ -218,7 +218,9 @@ public final class BackupSubscriptionManager {
 
                     do {
                         /// This transaction entitles us to a subscription, so
-                        /// let's attempt to do so.
+                        /// let's attempt to do so. Because we know we have a
+                        /// novel transaction, we know redemption is necessary.
+                        await setRedemptionAttemptIsNecessary()
                         try await redeemSubscriptionIfNecessary()
                     } catch {
                         owsFailDebug(
@@ -291,15 +293,15 @@ public final class BackupSubscriptionManager {
             let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
 
             let downgradedBackupPlan: BackupPlan? = {
-                if let subscription, subscription.active, subscription.cancelAtEndOfPeriod {
+                if let subscription, subscription.active {
                     switch currentBackupPlan {
-                    case .paid(let optimizeLocalStorage):
+                    case .paid(let optimizeLocalStorage) where subscription.cancelAtEndOfPeriod:
                         return .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
+                    case .paid:
+                        break
                     case .disabled, .free, .paidExpiringSoon:
                         break
                     }
-                } else if let subscription, subscription.active {
-                    // No downgrade – subscription present and active!
                 } else {
                     switch currentBackupPlan {
                     case .paid, .paidExpiringSoon:
@@ -348,6 +350,9 @@ public final class BackupSubscriptionManager {
         case .success(let purchaseResult):
             switch purchaseResult {
             case .verified:
+                // We've successfully purchased, which means a redemption
+                // attempt is necessary.
+                await setRedemptionAttemptIsNecessary()
                 return .success
             case .unverified:
                 throw OWSAssertionError(
@@ -366,6 +371,16 @@ public final class BackupSubscriptionManager {
                 "Unknown purchase result!",
                 logger: logger
             )
+        }
+    }
+
+    // MARK: -
+
+    /// We generally only attempt redemptions 1x/3d, but on occasion we know
+    /// that a redemption is necessary and we should bypass that debounce.
+    private func setRedemptionAttemptIsNecessary() async {
+        await db.awaitableWrite { tx in
+            store.wipeLastRedemptionNecessaryCheck(tx: tx)
         }
     }
 
@@ -419,7 +434,7 @@ public final class BackupSubscriptionManager {
             if persistedIAPSubscriberData.matches(storeKitTransaction: localEntitlingTransaction) {
                 /// We have an active local subscription that matches our persisted
                 /// identifiers. That's the simplest happy-path! Probably...
-                logger.debug("Local transaction matches persisted: \(localEntitlingTransaction.originalID)")///
+                logger.debug("Local transaction matches persisted: \(localEntitlingTransaction.originalID)")
 
                 /// ...because we may need to register a new subscriber ID.
                 ///
@@ -670,6 +685,10 @@ public final class BackupSubscriptionManager {
 
         func setLastRedemptionNecessaryCheck(_ now: Date, tx: DBWriteTransaction) {
             kvStore.setDate(now, key: Keys.lastRedemptionNecessaryCheck, transaction: tx)
+        }
+
+        func wipeLastRedemptionNecessaryCheck(tx: DBWriteTransaction) {
+            kvStore.removeValue(forKey: Keys.lastRedemptionNecessaryCheck, transaction: tx)
         }
     }
 }

@@ -296,7 +296,9 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
     // MARK: -
 
     fileprivate func loadBackupPlan() async throws -> BackupSettingsViewModel.BackupPlanLoadingState.LoadedBackupPlan {
-        switch db.read(block: { backupSettingsStore.backupPlan(tx: $0) }) {
+        var currentBackupPlan = db.read { backupSettingsStore.backupPlan(tx: $0) }
+
+        switch currentBackupPlan {
         case .free:
             return .free
         case .disabled, .paid, .paidExpiringSoon:
@@ -310,37 +312,30 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
             return .free
         }
 
+        // The subscription fetch may have updated our local Backup plan.
+        currentBackupPlan = db.read { backupSettingsStore.backupPlan(tx: $0) }
+
+        switch currentBackupPlan {
+        case .free:
+            return .free
+        case .disabled, .paid, .paidExpiringSoon:
+            break
+        }
+
         let endOfCurrentPeriod = Date(timeIntervalSince1970: backupSubscription.endOfCurrentPeriod)
 
-        switch backupSubscription.status {
-        case .active, .pastDue:
-            // `.pastDue` means that a renewal failed, but the payment
-            // processor is automatically retrying. For now, assume it
-            // may recover, and show it as paid. If it fails, it'll
-            // become `.canceled` instead.
-            if backupSubscription.cancelAtEndOfPeriod {
-                return .paidExpiringSoon(expirationDate: endOfCurrentPeriod)
+        if backupSubscription.cancelAtEndOfPeriod {
+            if endOfCurrentPeriod.isAfterNow {
+                return .paidButExpiring(expirationDate: endOfCurrentPeriod)
+            } else {
+                return .paidButExpired(expirationDate: endOfCurrentPeriod)
             }
-
-            return .paid(
-                price: backupSubscription.amount,
-                renewalDate: endOfCurrentPeriod
-            )
-        case .canceled:
-            // TODO: [Backups] Downgrade local state to the free plan, if necessary.
-            // This might be the first place we learn, locally, that our
-            // subscription has expired and we've been implicitly downgraded to
-            // the free plan. Correspondingly, we should use this as a change to
-            // set local state, if necessary. Make sure to log that state change
-            // loudly!
-            return .free
-        case .incomplete, .unpaid, .unknown:
-            // These are unexpected statuses, so we know that something
-            // is wrong with the subscription. Consequently, we can show
-            // it as free.
-            owsFailDebug("Unexpected backup subscription status! \(backupSubscription.status)")
-            return .free
         }
+
+        return .paid(
+            price: backupSubscription.amount,
+            renewalDate: endOfCurrentPeriod
+        )
     }
 
     // MARK: -
@@ -367,12 +362,6 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
             // Reload the BackupPlan, since our subscription may now be in a
             // different state (e.g., set to not renew).
             viewModel.loadBackupPlan()
-        }
-    }
-
-    fileprivate func resubscribeToPaidPlan() {
-        Task {
-            await showChooseBackupPlan(initialPlanSelection: .free)
         }
     }
 
@@ -474,7 +463,6 @@ private class BackupSettingsViewModel: ObservableObject {
         func loadBackupPlan() async throws -> BackupPlanLoadingState.LoadedBackupPlan
         func upgradeFromFreeToPaidPlan()
         func manageOrCancelPaidPlan()
-        func resubscribeToPaidPlan()
 
         func performManualBackup()
         func setBackupFrequency(_ newBackupFrequency: BackupFrequency)
@@ -487,7 +475,8 @@ private class BackupSettingsViewModel: ObservableObject {
         enum LoadedBackupPlan {
             case free
             case paid(price: FiatMoney, renewalDate: Date)
-            case paidExpiringSoon(expirationDate: Date)
+            case paidButExpiring(expirationDate: Date)
+            case paidButExpired(expirationDate: Date)
         }
 
         case loading
@@ -613,10 +602,6 @@ private class BackupSettingsViewModel: ObservableObject {
 
     func manageOrCancelPaidPlan() {
         actionsDelegate?.manageOrCancelPaidPlan()
-    }
-
-    func resubscribeToPaidPlan() {
-        actionsDelegate?.resubscribeToPaidPlan()
     }
 
     // MARK: -
@@ -798,10 +783,10 @@ struct BackupSettingsView: View {
             // Don't let them reenable until we know if they're already paying
             // or not.
             return AnyView(EmptyView())
-        case .loaded(.free), .genericError:
+        case .loaded(.free), .loaded(.paidButExpired), .genericError:
             // Let the reenable with anything.
             implicitPlanSelection = nil
-        case .loaded(.paid), .loaded(.paidExpiringSoon):
+        case .loaded(.paid), .loaded(.paidButExpiring):
             // Only let the user reenable with .paid, because they're already
             // paying.
             implicitPlanSelection = .paid
@@ -957,7 +942,7 @@ private struct BackupPlanView: View {
                             "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER",
                             comment: "Header describing what the free backup plan includes."
                         ))
-                    case .paid, .paidExpiringSoon:
+                    case .paid, .paidButExpiring, .paidButExpired:
                         Text(OWSLocalizedString(
                             "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER",
                             comment: "Header describing what the paid backup plan includes."
@@ -993,11 +978,21 @@ private struct BackupPlanView: View {
                         format: renewalStringFormat,
                         DateFormatter.localizedString(from: renewalDate, dateStyle: .medium, timeStyle: .none)
                     ))
-                case .paidExpiringSoon(let expirationDate):
-                    let expirationDateFutureString = OWSLocalizedString(
-                        "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT",
-                        comment: "Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}."
-                    )
+                case .paidButExpiring(let expirationDate), .paidButExpired(let expirationDate):
+                    let expirationDateFormatString = switch loadedBackupPlan {
+                    case .free, .paid:
+                        owsFail("Not possible")
+                    case .paidButExpiring:
+                        OWSLocalizedString(
+                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT",
+                            comment: "Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}."
+                        )
+                    case .paidButExpired:
+                        OWSLocalizedString(
+                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT",
+                            comment: "Text explaining that a user's paid plan, which has been canceled, expired on a past date. Embeds {{ the formatted expiration date }}."
+                        )
+                    }
 
                     Text(OWSLocalizedString(
                         "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION",
@@ -1005,7 +1000,7 @@ private struct BackupPlanView: View {
                     ))
                     .foregroundStyle(Color.Signal.red)
                     Text(String(
-                        format: expirationDateFutureString,
+                        format: expirationDateFormatString,
                         DateFormatter.localizedString(from: expirationDate, dateStyle: .medium, timeStyle: .none)
                     ))
                 }
@@ -1016,10 +1011,8 @@ private struct BackupPlanView: View {
                     switch loadedBackupPlan {
                     case .free:
                         viewModel.upgradeFromFreeToPaidPlan()
-                    case .paid:
+                    case .paid, .paidButExpiring, .paidButExpired:
                         viewModel.manageOrCancelPaidPlan()
-                    case .paidExpiringSoon:
-                        viewModel.resubscribeToPaidPlan()
                     }
                 } label: {
                     switch loadedBackupPlan {
@@ -1033,7 +1026,7 @@ private struct BackupPlanView: View {
                             "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE",
                             comment: "Title for a button allowing users to manage or cancel their paid backup plan."
                         ))
-                    case .paidExpiringSoon:
+                    case .paidButExpiring, .paidButExpired:
                         Text(OWSLocalizedString(
                             "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE",
                             comment: "Title for a button allowing users to reenable a paid backup plan that has been canceled."
@@ -1265,8 +1258,18 @@ private extension BackupSettingsViewModel {
     BackupSettingsView(viewModel: .forPreview(
         backupEnabledState: .enabled,
         latestBackupAttachmentUploadUpdateState: nil,
-        backupPlanLoadResult: .success(.paidExpiringSoon(
+        backupPlanLoadResult: .success(.paidButExpiring(
             expirationDate: Date().addingTimeInterval(.week)
+        ))
+    ))
+}
+
+#Preview("Expired") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupEnabledState: .enabled,
+        latestBackupAttachmentUploadUpdateState: nil,
+        backupPlanLoadResult: .success(.paidButExpired(
+            expirationDate: Date().addingTimeInterval(-1 * .week)
         ))
     ))
 }
