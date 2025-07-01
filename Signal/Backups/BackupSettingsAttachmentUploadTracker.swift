@@ -6,9 +6,8 @@
 import SignalServiceKit
 import SwiftUI
 
-@MainActor
 class BackupSettingsAttachmentUploadTracker {
-    struct UploadUpdate {
+    struct UploadUpdate: Equatable {
         enum State {
             case running
             case pausedLowBattery
@@ -36,11 +35,51 @@ class BackupSettingsAttachmentUploadTracker {
         }
     }
 
+    private let backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter
+    private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
+
+    init(
+        backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter,
+        backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
+    ) {
+        self.backupAttachmentUploadQueueStatusReporter = backupAttachmentUploadQueueStatusReporter
+        self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
+    }
+
+    func updates() -> AsyncStream<UploadUpdate?> {
+        return AsyncStream { continuation in
+            let tracker = Tracker(
+                backupAttachmentUploadQueueStatusReporter: backupAttachmentUploadQueueStatusReporter,
+                backupAttachmentUploadProgress: backupAttachmentUploadProgress,
+                continuation: continuation
+            )
+
+            tracker.start()
+
+            continuation.onTermination = { reason in
+                switch reason {
+                case .cancelled:
+                    tracker.stop()
+                case .finished:
+                    owsFailDebug("How did we finish? We should've canceled first.")
+                @unknown default:
+                    owsFailDebug("Unexpected continuation termination reason: \(reason)")
+                    tracker.stop()
+                }
+            }
+        }
+    }
+}
+
+// MARK: -
+
+private class Tracker {
+    typealias UploadUpdate = BackupSettingsAttachmentUploadTracker.UploadUpdate
+
     private struct State {
         var lastReportedUploadProgress: OWSProgress = .zero
         var lastReportedUploadQueueStatus: BackupAttachmentUploadQueueStatus?
 
-        var isTracking: Bool = false
         var uploadQueueStatusObserver: NotificationCenter.Observer?
         var uploadProgressObserver: BackupAttachmentUploadProgress.Observer?
         var streamContinuation: AsyncStream<UploadUpdate?>.Continuation?
@@ -53,40 +92,24 @@ class BackupSettingsAttachmentUploadTracker {
     init(
         backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
+        continuation: AsyncStream<UploadUpdate?>.Continuation
     ) {
         self.backupAttachmentUploadQueueStatusReporter = backupAttachmentUploadQueueStatusReporter
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
-        self.state = AsyncAtomic(State())
+        self.state = AsyncAtomic(State(
+            streamContinuation: continuation
+        ))
     }
 
-    func start() async -> AsyncStream<UploadUpdate?> {
-        return await state.update { _state in
-            owsPrecondition(!_state.isTracking, "Multiple simultaneous trackings not supported.")
-            _state.isTracking = true
-
-            return AsyncStream { continuation in
-                _state.streamContinuation = continuation
-                _state.uploadQueueStatusObserver = observeUploadQueueStatus()
-
-                continuation.onTermination = { [weak self] reason in
-                    guard let self else { return }
-
-                    switch reason {
-                    case .finished: return
-                    case .cancelled: break
-                    @unknown default: break
-                    }
-
-                    Task {
-                        await self.stop()
-                    }
-                }
-            }
+    func start() {
+        state.enqueueUpdate { @MainActor [weak self] _state in
+            guard let self else { return }
+            _state.uploadQueueStatusObserver = observeUploadQueueStatus()
         }
     }
 
-    func stop() async {
-        await state.update { _state in
+    func stop() {
+        state.enqueueUpdate { [self] _state in
             if let uploadQueueStatusObserver = _state.uploadQueueStatusObserver {
                 NotificationCenter.default.removeObserver(uploadQueueStatusObserver)
             }
@@ -105,31 +128,34 @@ class BackupSettingsAttachmentUploadTracker {
 
     // MARK: -
 
+    @MainActor
     private func observeUploadQueueStatus() -> NotificationCenter.Observer {
         let uploadQueueStatusObserver = NotificationCenter.default.addObserver(
             name: .backupAttachmentUploadQueueStatusDidChange
         ) { [weak self] notification in
             guard let self else { return }
 
-            Task {
-                await self.handleQueueStatusUpdate()
-            }
+            handleQueueStatusUpdate(
+                backupAttachmentUploadQueueStatusReporter.currentStatus()
+            )
         }
 
         // Now that we're observing updates, handle the initial value as if we'd
         // just gotten it in an update.
-        Task {
-            await handleQueueStatusUpdate()
-        }
+        handleQueueStatusUpdate(
+            backupAttachmentUploadQueueStatusReporter.currentStatus()
+        )
 
         return uploadQueueStatusObserver
     }
 
-    private func handleQueueStatusUpdate() async {
-        await state.update { _state in
-            _state.lastReportedUploadQueueStatus = backupAttachmentUploadQueueStatusReporter.currentStatus()
+    private func handleQueueStatusUpdate(
+        _ queueStatus: BackupAttachmentUploadQueueStatus,
+    ) {
+        state.enqueueUpdate { [self] _state in
+            _state.lastReportedUploadQueueStatus = queueStatus
 
-            switch _state.lastReportedUploadQueueStatus! {
+            switch queueStatus {
             case .running:
                 // If the queue is running, add an observer. It's important that
                 // we not do this until the queue is running, since the observer
@@ -139,9 +165,7 @@ class BackupSettingsAttachmentUploadTracker {
                     .addObserver { [weak self] progressUpdate in
                         guard let self else { return }
 
-                        Task {
-                            await self.handleUploadProgressUpdate(progressUpdate)
-                        }
+                        handleUploadProgressUpdate(progressUpdate)
                     }
 
                 if let observer {
@@ -168,10 +192,9 @@ class BackupSettingsAttachmentUploadTracker {
         }
     }
 
-    private func handleUploadProgressUpdate(_ uploadProgress: OWSProgress) async {
-        await state.update { _state in
+    private func handleUploadProgressUpdate(_ uploadProgress: OWSProgress) {
+        state.enqueueUpdate { [self] _state in
             _state.lastReportedUploadProgress = uploadProgress
-
             yieldCurrentUploadUpdate(state: _state)
         }
     }

@@ -106,7 +106,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
 
         eventObservationTasks = [
             Task { [weak self, backupAttachmentUploadTracker] in
-                for await uploadUpdate in await backupAttachmentUploadTracker.start() {
+                for await uploadUpdate in backupAttachmentUploadTracker.updates() {
                     guard let self else { return }
                     viewModel.latestBackupAttachmentUploadUpdate = uploadUpdate
                 }

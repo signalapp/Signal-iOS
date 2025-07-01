@@ -2646,6 +2646,7 @@
 		D9683D922D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D6F2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.binproto */; };
 		D9683D932D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_04.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D652D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_04.binproto */; };
 		D9683D942D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D6C2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.txtproto */; };
+		D96869452E1065F5005451E4 /* AsyncAtomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96869442E1065F1005451E4 /* AsyncAtomic.swift */; };
 		D968B4982C9E1AD1006B14E1 /* SmsLockIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D968B4972C9E1AC3006B14E1 /* SmsLockIconView.swift */; };
 		D968F71E2C34884B00AB318B /* BackupArchiveReleaseNotesRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D968F71D2C34884B00AB318B /* BackupArchiveReleaseNotesRecipientArchiver.swift */; };
 		D96A94A72954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */; };
@@ -2879,7 +2880,6 @@
 		D9EE790F2CF5232C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EE790E2CF5229C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift */; };
 		D9EE79112CF525A4007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EE79102CF5259D007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift */; };
 		D9F02BE72B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F02BE62B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift */; };
-		D9F1FA5B2E0BADE500FE76FE /* AsyncAtomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F1FA5A2E0BADDE00FE76FE /* AsyncAtomic.swift */; };
 		D9F399AD2A95798A001599EC /* IdentityKeyChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399AC2A95798A001599EC /* IdentityKeyChecker.swift */; };
 		D9F399B02A967664001599EC /* IdentityKeyCheckerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399AE2A96764A001599EC /* IdentityKeyCheckerTest.swift */; };
 		D9F399B22A96D65D001599EC /* IdentityKeyMismatchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399B12A96D65D001599EC /* IdentityKeyMismatchManager.swift */; };
@@ -6599,6 +6599,7 @@
 		D9683D702D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_09.txtproto; sourceTree = "<group>"; };
 		D9683D712D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_10.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_10.binproto; sourceTree = "<group>"; };
 		D9683D722D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_10.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_10.txtproto; sourceTree = "<group>"; };
+		D96869442E1065F1005451E4 /* AsyncAtomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncAtomic.swift; sourceTree = "<group>"; };
 		D968B4972C9E1AC3006B14E1 /* SmsLockIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmsLockIconView.swift; sourceTree = "<group>"; };
 		D968F71D2C34884B00AB318B /* BackupArchiveReleaseNotesRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveReleaseNotesRecipientArchiver.swift; sourceTree = "<group>"; };
 		D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+MonthlyPaypalDonation.swift"; sourceTree = "<group>"; };
@@ -6848,7 +6849,6 @@
 		D9EE790E2CF5229C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupReceiptCredentialRedemptionJobRecord.swift; sourceTree = "<group>"; };
 		D9EE79102CF5259D007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupReceiptCredentialRedemptionJobQueue.swift; sourceTree = "<group>"; };
 		D9F02BE62B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallsListViewController+ViewModelLoaderTest.swift"; sourceTree = "<group>"; };
-		D9F1FA5A2E0BADDE00FE76FE /* AsyncAtomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncAtomic.swift; sourceTree = "<group>"; };
 		D9F399AC2A95798A001599EC /* IdentityKeyChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityKeyChecker.swift; sourceTree = "<group>"; };
 		D9F399AE2A96764A001599EC /* IdentityKeyCheckerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityKeyCheckerTest.swift; sourceTree = "<group>"; };
 		D9F399B12A96D65D001599EC /* IdentityKeyMismatchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityKeyMismatchManager.swift; sourceTree = "<group>"; };
@@ -8888,7 +8888,7 @@
 		500AF3A92C58346500CB9F4F /* Concurrency */ = {
 			isa = PBXGroup;
 			children = (
-				D9F1FA5A2E0BADDE00FE76FE /* AsyncAtomic.swift */,
+				D96869442E1065F1005451E4 /* AsyncAtomic.swift */,
 				500AF3AA2C58347C00CB9F4F /* CancellableContinuation.swift */,
 				500AF3AC2C5834A400CB9F4F /* CancellableContinuationTest.swift */,
 				50C0203B2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift */,
@@ -17604,7 +17604,7 @@
 				C1DAA7582C13C1E00078AE84 /* ArchivedPayment.swift in Sources */,
 				C1DAA75A2C1742680078AE84 /* ArchivedPaymentStore.swift in Sources */,
 				F9C5CE0A289453B400548EEE /* Array+SSK.swift in Sources */,
-				D9F1FA5B2E0BADE500FE76FE /* AsyncAtomic.swift in Sources */,
+				D96869452E1065F5005451E4 /* AsyncAtomic.swift in Sources */,
 				F9C5CDF7289453B400548EEE /* Atomics.swift in Sources */,
 				6640132C2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift in Sources */,
 				66D7B91D2B97C5330005C98B /* Attachment+ContentType.swift in Sources */,

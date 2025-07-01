@@ -6,22 +6,18 @@
 /// A wrapper around arbitrary state that asynchronously serializes access to
 /// that state, allowing callers to perform async work while maintaining
 /// exclusive access.
-///
-/// Callers should prefer this type over making themselves an `actor` if they
-/// might need to perform async work while maintaining exclusive access to the
-/// wrapped state.
 public class AsyncAtomic<State> {
     private var state: State
-    private let taskQueue: ConcurrentTaskQueue
+    private let updatesQueue: SerialTaskQueue
 
-    public init(_ wrapped: State) {
-        self.state = wrapped
-        self.taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
+    public init(_ initialState: State) {
+        self.state = initialState
+        self.updatesQueue = SerialTaskQueue()
     }
 
-    public func update<T>(_ block: (inout State) async -> T) async -> T {
-        return await taskQueue.runWithoutTaskCancellationHandler {
-            await block(&state)
+    public func enqueueUpdate(_ update: @escaping (inout State) async -> Void) {
+        updatesQueue.enqueue { [self] in
+            await update(&state)
         }
     }
 }
