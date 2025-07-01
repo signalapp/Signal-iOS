@@ -1583,7 +1583,7 @@ extension CallService: CallManagerDelegate {
             }
         case .ring(let groupId):
             let currentCall = self.callServiceState.currentCall
-            if case .groupThread(let call) = currentCall?.mode, call.groupId.serialize() == groupId.serialize() {
+            if case .groupThread(let call) = currentCall?.mode, call.groupId == groupId {
                 // We're already ringing or connected, or at the very least already in the lobby.
                 return
             }

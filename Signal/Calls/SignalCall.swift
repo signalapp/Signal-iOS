@@ -134,7 +134,7 @@ enum CallMode {
         switch (self, callTarget) {
         case (.individual(let call), .individual(let thread)) where call.thread.uniqueId == thread.uniqueId:
             return true
-        case (.groupThread(let call), .groupThread(let groupId)) where call.groupId.serialize() == groupId.serialize():
+        case (.groupThread(let call), .groupThread(let groupId)) where call.groupId == groupId:
             return true
         case (.callLink(let call), .callLink(let callLink)) where call.callLink.rootKey.bytes == callLink.rootKey.bytes:
             return true
