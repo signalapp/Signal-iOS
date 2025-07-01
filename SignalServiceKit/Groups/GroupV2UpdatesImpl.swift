@@ -138,7 +138,7 @@ public class GroupV2UpdatesImpl {
 extension GroupV2UpdatesImpl: GroupV2Updates {
 
     public func updateGroupWithChangeActions(
-        groupId: Data,
+        groupId: GroupIdentifier,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
@@ -146,7 +146,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         transaction: DBWriteTransaction
     ) throws -> TSGroupThread {
 
-        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+        guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) else {
             throw OWSAssertionError("Missing groupThread.")
         }
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {

@@ -616,11 +616,11 @@ public class GroupManager: NSObject {
 
     // MARK: - Removed from Group or Invite Revoked
 
-    public static func handleNotInGroup(groupId: Data) async {
+    public static func handleNotInGroup(groupId: GroupIdentifier) async {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
 
         do {
-            let groupThread = databaseStorage.read { tx in TSGroupThread.fetch(groupId: groupId, transaction: tx) }
+            let groupThread = databaseStorage.read { tx in TSGroupThread.fetch(forGroupId: groupId, tx: tx) }
             guard let groupThread else {
                 // We may be be trying to restore a group from storage service
                 // that we are no longer a member of.
@@ -663,7 +663,7 @@ public class GroupManager: NSObject {
                 owsFailDebug("Missing localIdentifiers.")
                 return
             }
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) else {
+            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
                 owsFailDebug("Couldn't fetch thread that's guaranteed to exist.")
                 return
             }

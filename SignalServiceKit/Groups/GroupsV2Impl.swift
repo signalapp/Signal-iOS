@@ -197,7 +197,6 @@ public class GroupsV2Impl: GroupsV2 {
     private func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) async throws {
 
         let justUploadedAvatars = GroupAvatarStateMap.from(changes: changes)
-        let groupId = changes.groupId
         let groupV2Params = try GroupV2Params(groupSecretParams: changes.groupSecretParams)
         let isAddingOrInviting = changes.membersToAdd.count > 0
 
@@ -205,7 +204,6 @@ public class GroupsV2Impl: GroupsV2 {
         let httpResponse: HTTPResponse
         do {
             (messageBehavior, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
-                groupId: groupId,
                 groupV2Params: groupV2Params,
                 changes: changes
             )
@@ -219,7 +217,6 @@ public class GroupsV2Impl: GroupsV2 {
                 try await refreshGroupWithTimeout(secretParams: groupV2Params.groupSecretParams)
 
                 (messageBehavior, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
-                    groupId: groupId,
                     groupV2Params: groupV2Params,
                     changes: changes
                 )
@@ -231,7 +228,6 @@ public class GroupsV2Impl: GroupsV2 {
                 // credentials first.
 
                 (messageBehavior, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
-                    groupId: groupId,
                     groupV2Params: groupV2Params,
                     changes: changes,
                     shouldForceRefreshProfileKeyCredentials: true,
@@ -249,7 +245,6 @@ public class GroupsV2Impl: GroupsV2 {
             messageBehavior: messageBehavior,
             justUploadedAvatars: justUploadedAvatars,
             isUrgent: isAddingOrInviting,
-            groupId: groupId,
             groupV2Params: groupV2Params
         )
     }
@@ -260,14 +255,15 @@ public class GroupsV2Impl: GroupsV2 {
     ///   - shouldForceRefreshProfileKeyCredentials: Whether we should force-refresh PKCs for any new members while building the proto.
     ///   - forceFailOn400: Whether we should force failure when receiving a 400. If `false`, may instead report expired PKCs.
     private func buildGroupChangeProtoAndTryToUpdateGroupOnService(
-        groupId: Data,
         groupV2Params: GroupV2Params,
         changes: GroupsV2OutgoingChanges,
         shouldForceRefreshProfileKeyCredentials: Bool = false,
         forceFailOn400: Bool = false
     ) async throws -> (GroupUpdateMessageBehavior, HTTPResponse) {
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
+
         let (groupThread, dmToken) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) else {
+            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
                 throw OWSAssertionError("Thread does not exist.")
             }
 
@@ -324,7 +320,6 @@ public class GroupsV2Impl: GroupsV2 {
         messageBehavior: GroupUpdateMessageBehavior,
         justUploadedAvatars: GroupAvatarStateMap,
         isUrgent: Bool,
-        groupId: Data,
         groupV2Params: GroupV2Params
     ) async throws {
         guard let changeProto = changeResponse.groupChange else {
@@ -340,7 +335,6 @@ public class GroupsV2Impl: GroupsV2 {
         }
 
         try await updateGroupWithChangeActions(
-            groupId: groupId,
             spamReportingMetadata: .learnedByLocallyInitatedRefresh,
             changeActionsProto: changeActionsProto,
             groupSendEndorsementsResponse: groupSendEndorsementsResponse,
@@ -465,14 +459,12 @@ public class GroupsV2Impl: GroupsV2 {
     // This method can process protos from another client, so there's a possibility
     // the serverGuid may be present and can be passed along to record with the update.
     public func updateGroupWithChangeActions(
-        groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSecretParams: GroupSecretParams
     ) async throws {
         let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
         try await _updateGroupWithChangeActions(
-            groupId: groupId,
             spamReportingMetadata: spamReportingMetadata,
             changeActionsProto: changeActionsProto,
             groupSendEndorsementsResponse: nil,
@@ -482,7 +474,6 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     private func updateGroupWithChangeActions(
-        groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
@@ -490,7 +481,6 @@ public class GroupsV2Impl: GroupsV2 {
         groupV2Params: GroupV2Params
     ) async throws {
         try await _updateGroupWithChangeActions(
-            groupId: groupId,
             spamReportingMetadata: spamReportingMetadata,
             changeActionsProto: changeActionsProto,
             groupSendEndorsementsResponse: groupSendEndorsementsResponse,
@@ -500,13 +490,13 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     private func _updateGroupWithChangeActions(
-        groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         justUploadedAvatars: GroupAvatarStateMap?,
         groupV2Params: GroupV2Params
     ) async throws {
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
         let downloadedAvatars = try await fetchAllAvatarData(
             changeActionsProtos: [changeActionsProto],
             justUploadedAvatars: justUploadedAvatars,
@@ -546,7 +536,7 @@ public class GroupsV2Impl: GroupsV2 {
             )
         }
 
-        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize()
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
         let response = try await performServiceRequest(
             requestBuilder: requestBuilder,
             groupId: groupId,
@@ -584,7 +574,7 @@ public class GroupsV2Impl: GroupsV2 {
             )
         }
 
-        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize()
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
         let response = try await performServiceRequest(
             requestBuilder: requestBuilder,
             groupId: groupId,
@@ -710,7 +700,7 @@ public class GroupsV2Impl: GroupsV2 {
         includeFirstState: Bool,
         gseExpiration: UInt64
     ) async throws -> GroupChangesResponse {
-        let groupId = try secretParams.getPublicParams().getGroupIdentifier().serialize()
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier()
 
         let limit: UInt32? = upThroughRevision.map({ (startingAtRevision <= $0) ? ($0 - startingAtRevision + 1) : 1 })
 
@@ -795,7 +785,7 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     private func getRevisionLocalUserWasAddedToGroup(secretParams: GroupSecretParams) async throws -> UInt32 {
-        let groupId = try secretParams.getPublicParams().getGroupIdentifier().serialize()
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier()
         let getJoinedAtRevisionRequestBuilder: RequestBuilder = { authCredential in
             try StorageService.buildGetJoinedAtRevisionRequest(
                 secretParams: secretParams,
@@ -972,14 +962,10 @@ public class GroupsV2Impl: GroupsV2 {
     // MARK: - Generic Group Change
 
     public func updateGroupV2(
-        groupId: Data,
-        groupSecretParams: GroupSecretParams,
+        secretParams: GroupSecretParams,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
     ) async throws {
-        let changes = GroupsV2OutgoingChanges(
-            groupId: groupId,
-            groupSecretParams: groupSecretParams
-        )
+        let changes = GroupsV2OutgoingChanges(groupSecretParams: secretParams)
         changesBlock(changes)
         try await updateExistingGroupOnService(changes: changes)
     }
@@ -1025,7 +1011,7 @@ public class GroupsV2Impl: GroupsV2 {
     /// certain errors.
     private func performServiceRequest(
         requestBuilder: RequestBuilder,
-        groupId: Data?,
+        groupId: GroupIdentifier?,
         behavior400: Behavior400,
         behavior403: Behavior403,
     ) async throws -> HTTPResponse {
@@ -1057,7 +1043,7 @@ public class GroupsV2Impl: GroupsV2 {
     /// on the error and our 4XX behaviors.
     private func tryRecoveryFromServiceRequestFailure(
         error: Error,
-        groupId: Data?,
+        groupId: GroupIdentifier?,
         behavior400: Behavior400,
         behavior403: Behavior403,
     ) async throws -> Never {
@@ -1206,9 +1192,9 @@ public class GroupsV2Impl: GroupsV2 {
         }
     }
 
-    private func tryToUpdateGroupToLatest(groupId: Data) {
+    private func tryToUpdateGroupToLatest(groupId: GroupIdentifier) {
         guard let groupThread = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+            TSGroupThread.fetch(forGroupId: groupId, tx: transaction)
         }) else {
             owsFailDebug("Missing group thread.")
             return
@@ -1649,7 +1635,7 @@ public class GroupsV2Impl: GroupsV2 {
             }
             let response = try await performServiceRequest(
                 requestBuilder: requestBuilder,
-                groupId: groupId.serialize(),
+                groupId: groupId,
                 behavior400: .fail,
                 behavior403: .reportInvalidOrBlockedGroupLink,
             )
@@ -1853,7 +1839,6 @@ public class GroupsV2Impl: GroupsV2 {
         var newRevision: UInt32?
         do {
             newRevision = try await cancelRequestToJoinUsingPatch(
-                groupId: groupModel.groupId,
                 groupV2Params: groupV2Params,
                 inviteLinkPassword: groupModel.inviteLinkPassword
             )
@@ -1927,10 +1912,11 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     private func cancelRequestToJoinUsingPatch(
-        groupId: Data,
         groupV2Params: GroupV2Params,
         inviteLinkPassword: Data?
     ) async throws -> UInt32 {
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
+
         // We re-fetch the GroupInviteLinkPreview before trying in order to get the latest:
         //
         // * revision
@@ -2061,7 +2047,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         let response = try await performServiceRequest(
             requestBuilder: requestBuilder,
-            groupId: try secretParams.getPublicParams().getGroupIdentifier().serialize(),
+            groupId: try secretParams.getPublicParams().getGroupIdentifier(),
             behavior400: .fail,
             behavior403: .fetchGroupUpdates,
         )

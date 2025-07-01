@@ -25,14 +25,13 @@ extension GroupManager {
 
     private enum GenericGroupUpdateOperation {
         static func run(
-            groupId: Data,
             groupSecretParamsData: Data,
             updateDescription: String,
             changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
         ) async throws {
             do {
                 try await Promise.wrapAsync {
-                    try await self._run(groupId: groupId, groupSecretParamsData: groupSecretParamsData, changesBlock: changesBlock)
+                    try await self._run(groupSecretParamsData: groupSecretParamsData, changesBlock: changesBlock)
                 }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: updateDescription) {
                     return GroupsV2Error.timeout
                 }.awaitable()
@@ -49,15 +48,13 @@ extension GroupManager {
         }
 
         private static func _run(
-            groupId: Data,
             groupSecretParamsData: Data,
             changesBlock: (GroupsV2OutgoingChanges) -> Void
         ) async throws {
             try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
 
             try await SSKEnvironment.shared.groupsV2Ref.updateGroupV2(
-                groupId: groupId,
-                groupSecretParams: try GroupSecretParams(contents: groupSecretParamsData),
+                secretParams: try GroupSecretParams(contents: groupSecretParamsData),
                 changesBlock: changesBlock
             )
         }
@@ -70,7 +67,6 @@ extension GroupManager {
     ) async throws {
         try await operationQueue(forUpdatingGroup: groupModel).enqueue {
             try await GenericGroupUpdateOperation.run(
-                groupId: groupModel.groupId,
                 groupSecretParamsData: groupModel.secretParamsData,
                 updateDescription: description,
                 changesBlock: changesBlock

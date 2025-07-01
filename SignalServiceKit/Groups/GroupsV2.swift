@@ -93,13 +93,11 @@ public protocol GroupsV2 {
     ) async throws -> GroupV2SnapshotResponse
 
     func updateGroupV2(
-        groupId: Data,
-        groupSecretParams: GroupSecretParams,
+        secretParams: GroupSecretParams,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
     ) async throws
 
     func updateGroupWithChangeActions(
-        groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSecretParams: GroupSecretParams
@@ -213,7 +211,7 @@ public protocol GroupV2Updates {
     ) async throws
 
     func updateGroupWithChangeActions(
-        groupId: Data,
+        groupId: GroupIdentifier,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
@@ -495,8 +493,7 @@ public class MockGroupsV2: GroupsV2 {
     }
 
     public func updateGroupV2(
-        groupId: Data,
-        groupSecretParams: GroupSecretParams,
+        secretParams: GroupSecretParams,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
     ) async throws {
         owsFail("Not implemented.")
@@ -515,7 +512,6 @@ public class MockGroupsV2: GroupsV2 {
     }
 
     public func updateGroupWithChangeActions(
-        groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSecretParams: GroupSecretParams
@@ -626,7 +622,7 @@ public class MockGroupV2Updates: GroupV2Updates {
     }
 
     public func updateGroupWithChangeActions(
-        groupId: Data,
+        groupId: GroupIdentifier,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,

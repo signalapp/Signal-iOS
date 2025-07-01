@@ -37,7 +37,6 @@ public import LibSignalClient
 // * If we add (alice and bob) but another user adds (alice) first, we'll just add (bob).
 public class GroupsV2OutgoingChanges {
 
-    public let groupId: Data
     public let groupSecretParams: GroupSecretParams
 
     // MARK: -
@@ -96,13 +95,11 @@ public class GroupsV2OutgoingChanges {
     // Non-nil if dm state changed.
     private var newDisappearingMessageToken: DisappearingMessageToken?
 
-    public init(groupId: Data, groupSecretParams: GroupSecretParams) {
-        self.groupId = groupId
+    public init(groupSecretParams: GroupSecretParams) {
         self.groupSecretParams = groupSecretParams
     }
 
     public init(for groupModel: TSGroupModelV2) throws {
-        self.groupId = groupModel.groupId
         self.groupSecretParams = try groupModel.secretParams()
     }
 
@@ -222,7 +219,8 @@ public class GroupsV2OutgoingChanges {
         currentDisappearingMessageToken: DisappearingMessageToken,
         forceRefreshProfileKeyCredentials: Bool
     ) async throws -> GroupsV2BuiltGroupChange {
-        guard groupId == currentGroupModel.groupId else {
+        let groupId = try self.groupSecretParams.getPublicParams().getGroupIdentifier()
+        guard groupId.serialize() == currentGroupModel.groupId else {
             throw OWSAssertionError("Mismatched groupId.")
         }
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
