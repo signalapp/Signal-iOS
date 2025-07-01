@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class LocalIdentifiers {
+public final class LocalIdentifiers {
     /// The ACI for the current user.
     public let aci: Aci
 
@@ -107,6 +107,10 @@ extension LocalIdentifiers {
             pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-000000000BBB"),
             phoneNumber: "+16505550100"
         )
+    }
+
+    func withoutPni() -> Self {
+        return Self(aci: self.aci, pni: nil, phoneNumber: self.phoneNumber)
     }
 }
 

@@ -12,7 +12,7 @@ final class PreKeyTaskTests: SSKBaseTest {
 
     private var mockTSAccountManager: MockTSAccountManager!
     private var mockIdentityManager: PreKey.Mocks.IdentityManager!
-    private var mockLinkedDevicePniKeyManager: PreKey.Mocks.LinkedDevicePniKeyManager!
+    private var mockIdentityKeyMismatchManager: PreKey.Mocks.IdentityKeyMismatchManager!
     private var mockAPIClient: PreKey.Mocks.APIClient!
     private var mockDateProvider: PreKey.Mocks.DateProvider!
     private var mockDb: InMemoryDB!
@@ -31,7 +31,7 @@ final class PreKeyTaskTests: SSKBaseTest {
 
         mockTSAccountManager = .init()
         mockIdentityManager = .init()
-        mockLinkedDevicePniKeyManager = .init()
+        mockIdentityKeyMismatchManager = .init()
         mockAPIClient = .init()
         mockDateProvider = .init()
         mockDb = InMemoryDB()
@@ -47,8 +47,8 @@ final class PreKeyTaskTests: SSKBaseTest {
             apiClient: mockAPIClient,
             dateProvider: mockDateProvider.targetDate,
             db: mockDb,
+            identityKeyMismatchManager: mockIdentityKeyMismatchManager,
             identityManager: mockIdentityManager,
-            linkedDevicePniKeyManager: mockLinkedDevicePniKeyManager,
             messageProcessor: SSKEnvironment.shared.messageProcessorRef,
             protocolStoreManager: mockProtocolStoreManager,
             remoteConfigProvider: MockRemoteConfigProvider(),
@@ -378,11 +378,15 @@ final class PreKeyTaskTests: SSKBaseTest {
             responseError: nil,
             responseData: nil
         ))
+        var didValidateIdentityKey = false
+        mockIdentityKeyMismatchManager.validateIdentityKeyMock = { _ in
+            didValidateIdentityKey = true
+        }
 
         _ = try? await taskManager.refresh(identity: .pni, targets: .all, force: true, auth: .implicit())
 
         // Validate
-        XCTAssertTrue(mockLinkedDevicePniKeyManager.hasSuspectedIssue)
+        XCTAssertTrue(didValidateIdentityKey)
     }
 
     //

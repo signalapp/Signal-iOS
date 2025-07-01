@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-final class LinkedDevicePniKeyManagerTest: XCTestCase {
+final class IdentityKeyMismatchManagerTest: XCTestCase {
     private struct TestKVStore {
         private static let hasSuspectedIssueKey = "hasSuspectedIssue"
 
@@ -26,23 +26,25 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     }
 
     private var db: InMemoryDB!
+    private var identityKeyCheckerMock: IdentityKeyCheckerMock!
     private var kvStore: TestKVStore!
     private var messageProcessorMock: MessageProcessorMock!
-    private var pniIdentityKeyCheckerMock: PniIdentityKeyCheckerMock!
     private var registrationStateChangeManagerMock: MockRegistrationStateChangeManager!
     private var tsAccountManagerMock: MockTSAccountManager!
+    private var whoAmIManagerMock: MockWhoAmIManager!
 
-    private var linkedDevicePniKeyManager: LinkedDevicePniKeyManagerImpl!
+    private var identityKeyMismatchManager: IdentityKeyMismatchManagerImpl!
 
     private var isMarkedDeregistered: Bool = false
 
     override func setUp() {
         db = InMemoryDB()
+        identityKeyCheckerMock = IdentityKeyCheckerMock()
         kvStore = TestKVStore(db: db)
         messageProcessorMock = MessageProcessorMock()
-        pniIdentityKeyCheckerMock = PniIdentityKeyCheckerMock()
         registrationStateChangeManagerMock = .init()
         tsAccountManagerMock = .init()
+        whoAmIManagerMock = MockWhoAmIManager()
 
         registrationStateChangeManagerMock.setIsDeregisteredOrDelinkedMock = { [weak self] isDeregistered in
             self?.isMarkedDeregistered = isDeregistered
@@ -50,38 +52,41 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
 
         tsAccountManagerMock.registrationStateMock = { .provisioned }
 
-        linkedDevicePniKeyManager = LinkedDevicePniKeyManagerImpl(
+        identityKeyMismatchManager = IdentityKeyMismatchManagerImpl(
             db: db,
+            identityKeyChecker: identityKeyCheckerMock,
             messageProcessor: messageProcessorMock,
-            pniIdentityKeyChecker: pniIdentityKeyCheckerMock,
             registrationStateChangeManager: registrationStateChangeManagerMock,
-            tsAccountManager: tsAccountManagerMock
+            tsAccountManager: tsAccountManagerMock,
+            whoAmIManager: whoAmIManagerMock,
         )
     }
 
     private func runRunRun(recordIssue: Bool) async {
         if recordIssue {
             await db.awaitableWrite { tx in
-                linkedDevicePniKeyManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
+                identityKeyMismatchManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
             }
         }
-        await linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
+        await identityKeyMismatchManager.validateLocalPniIdentityKeyIfNecessary()
     }
 
     func testDoesntRecordIfPrimaryDevice() async {
         tsAccountManagerMock.registrationStateMock = { .registered }
 
         await db.awaitableWrite { tx in
-            return linkedDevicePniKeyManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
+            return identityKeyMismatchManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
         }
-        await linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
+        await identityKeyMismatchManager.validateLocalPniIdentityKeyIfNecessary()
 
         XCTAssertFalse(kvStore.hasDecryptionError())
     }
 
     func testUnlinkedIfDecryptionErrorAndMissingPni() async {
+        let localIdentifiers = LocalIdentifiers.mock
         messageProcessorMock.waitForFetchingAndProcessingMock = {}
-        tsAccountManagerMock.localIdentifiersMock = { .missingPni }
+        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(localIdentifiers: localIdentifiers))
+        tsAccountManagerMock.localIdentifiersMock = { localIdentifiers.withoutPni() }
 
         await runRunRun(recordIssue: true)
 
@@ -90,10 +95,12 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     }
 
     func testUnlinkedIfDecryptionErrorAndMismatchedIdentityKey() async {
+        let localIdentifiers = LocalIdentifiers.mock
         messageProcessorMock.waitForFetchingAndProcessingMock = {}
-        tsAccountManagerMock.localIdentifiersMock = { .mock }
+        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(localIdentifiers: localIdentifiers))
+        tsAccountManagerMock.localIdentifiersMock = { localIdentifiers }
         var serverHasSameKeyResponses = [false]
-        pniIdentityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _ in serverHasSameKeyResponses.popFirst()! }
+        identityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _, _ in serverHasSameKeyResponses.popFirst()! }
 
         await runRunRun(recordIssue: true)
 
@@ -103,10 +110,12 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     }
 
     func testNotUnlinkedIfIdentityKeyCheckingFails() async {
+        let localIdentifiers = LocalIdentifiers.mock
         messageProcessorMock.waitForFetchingAndProcessingMock = {}
-        tsAccountManagerMock.localIdentifiersMock = { .mock }
+        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(localIdentifiers: localIdentifiers))
+        tsAccountManagerMock.localIdentifiersMock = { localIdentifiers }
         var serverHasSameKeyResponses = [OWSGenericError("")]
-        pniIdentityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _ in throw serverHasSameKeyResponses.popFirst()! }
+        identityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _, _ in throw serverHasSameKeyResponses.popFirst()! }
 
         await runRunRun(recordIssue: true)
 
@@ -116,10 +125,12 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     }
 
     func testNotUnlinkedIfIdentityKeyMatches() async {
+        let localIdentifiers = LocalIdentifiers.mock
         messageProcessorMock.waitForFetchingAndProcessingMock = {}
-        tsAccountManagerMock.localIdentifiersMock = { .mock }
+        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(localIdentifiers: localIdentifiers))
+        tsAccountManagerMock.localIdentifiersMock = { localIdentifiers }
         var serverHasSameKeyResponses = [true]
-        pniIdentityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _ in serverHasSameKeyResponses.popFirst()! }
+        identityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _, _ in serverHasSameKeyResponses.popFirst()! }
 
         await runRunRun(recordIssue: true)
 
@@ -152,14 +163,16 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     /// *after* the message queue is cleared, because that's where we'll
     /// register the error.
     func testChecksForDecryptionErrorAfterClearingQueue() async {
-        messageProcessorMock.waitForFetchingAndProcessingMock = { [db, linkedDevicePniKeyManager] in
+        messageProcessorMock.waitForFetchingAndProcessingMock = { [db, identityKeyMismatchManager] in
             await db!.awaitableWrite { tx in
-                linkedDevicePniKeyManager!.recordSuspectedIssueWithPniIdentityKey(tx: tx)
+                identityKeyMismatchManager!.recordSuspectedIssueWithPniIdentityKey(tx: tx)
             }
         }
-        tsAccountManagerMock.localIdentifiersMock = { .mock }
+        let localIdentifiers = LocalIdentifiers.mock
+        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(localIdentifiers: localIdentifiers))
+        tsAccountManagerMock.localIdentifiersMock = { localIdentifiers }
         var serverHasSameKeyResponses = [false]
-        pniIdentityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _ in serverHasSameKeyResponses.popFirst()! }
+        identityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _, _ in serverHasSameKeyResponses.popFirst()! }
 
         await runRunRun(recordIssue: false)
 
@@ -174,19 +187,21 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     func testMultipleCallsResultInOneRun() async {
         let fetchingAndProcessing = CancellableContinuation<Void>()
         messageProcessorMock.waitForFetchingAndProcessingMock = { try! await fetchingAndProcessing.wait() }
-        tsAccountManagerMock.localIdentifiersMock = { .mock }
+        let localIdentifiers = LocalIdentifiers.mock
+        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(localIdentifiers: localIdentifiers))
+        tsAccountManagerMock.localIdentifiersMock = { localIdentifiers }
         var serverHasSameKeyResponses = [true]
-        pniIdentityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _ in serverHasSameKeyResponses.popFirst()! }
+        identityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _, _ in serverHasSameKeyResponses.popFirst()! }
 
         await db.awaitableWrite { tx in
-            linkedDevicePniKeyManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
+            identityKeyMismatchManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
         }
         await withTaskGroup(of: Void.self) { taskGroup in
             taskGroup.addTask {
-                await self.linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
+                await self.identityKeyMismatchManager.validateLocalPniIdentityKeyIfNecessary()
             }
             taskGroup.addTask {
-                await self.linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
+                await self.identityKeyMismatchManager.validateLocalPniIdentityKeyIfNecessary()
             }
             // One of the two Tasks should be able to complete immediately.
             _ = await taskGroup.next()
@@ -200,7 +215,8 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
         XCTAssertEqual(serverHasSameKeyResponses, [])
 
         messageProcessorMock.waitForFetchingAndProcessingMock = {}
-        tsAccountManagerMock.localIdentifiersMock = { .mock }
+        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(localIdentifiers: localIdentifiers))
+        tsAccountManagerMock.localIdentifiersMock = { localIdentifiers }
         serverHasSameKeyResponses = [false]
 
         await runRunRun(recordIssue: true)
@@ -214,20 +230,10 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
 // MARK: - Mocks
 
 private extension LocalIdentifiers {
-    static let mock = LocalIdentifiers(
-        aci: Aci.randomForTesting(),
-        pni: Pni.randomForTesting(),
-        e164: E164("+17735550155")!
-    )
-
-    static let missingPni = LocalIdentifiers(
-        aci: Aci.randomForTesting(),
-        pni: nil,
-        e164: E164("+17735550155")!
-    )
+    static let mock: LocalIdentifiers = .forUnitTests
 }
 
-private class MessageProcessorMock: LinkedDevicePniKeyManagerImpl.Shims.MessageProcessor {
+private class MessageProcessorMock: IdentityKeyMismatchManagerImpl.Shims.MessageProcessor {
     var waitForFetchingAndProcessingMock: (() async throws(CancellationError) -> Void)!
 
     func waitForFetchingAndProcessing() async throws(CancellationError) {
@@ -235,10 +241,10 @@ private class MessageProcessorMock: LinkedDevicePniKeyManagerImpl.Shims.MessageP
     }
 }
 
-private class PniIdentityKeyCheckerMock: PniIdentityKeyChecker {
-    var serverHasSameKeyAsLocalMock: ((_ localPni: Pni) async throws -> Bool)!
+private class IdentityKeyCheckerMock: IdentityKeyChecker {
+    var serverHasSameKeyAsLocalMock: ((_ identity: OWSIdentity, _ localIdentifier: ServiceId) async throws -> Bool)!
 
-    func serverHasSameKeyAsLocal(localPni: Pni) async throws -> Bool {
-        return try await serverHasSameKeyAsLocalMock!(localPni)
+    func serverHasSameKeyAsLocal(for identity: OWSIdentity, localIdentifier: ServiceId) async throws -> Bool {
+        return try await serverHasSameKeyAsLocalMock!(identity, localIdentifier)
     }
 }

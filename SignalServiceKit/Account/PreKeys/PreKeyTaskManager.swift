@@ -18,8 +18,8 @@ internal struct PreKeyTaskManager {
     private let apiClient: PreKeyTaskAPIClient
     private let dateProvider: DateProvider
     private let db: any DB
+    private let identityKeyMismatchManager: IdentityKeyMismatchManager
     private let identityManager: PreKey.Shims.IdentityManager
-    private let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
     private let messageProcessor: MessageProcessor
     private let protocolStoreManager: SignalProtocolStoreManager
     private let remoteConfigProvider: any RemoteConfigProvider
@@ -29,8 +29,8 @@ internal struct PreKeyTaskManager {
         apiClient: PreKeyTaskAPIClient,
         dateProvider: @escaping DateProvider,
         db: any DB,
+        identityKeyMismatchManager: IdentityKeyMismatchManager,
         identityManager: PreKey.Shims.IdentityManager,
-        linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
         messageProcessor: MessageProcessor,
         protocolStoreManager: SignalProtocolStoreManager,
         remoteConfigProvider: any RemoteConfigProvider,
@@ -39,8 +39,8 @@ internal struct PreKeyTaskManager {
         self.apiClient = apiClient
         self.dateProvider = dateProvider
         self.db = db
+        self.identityKeyMismatchManager = identityKeyMismatchManager
         self.identityManager = identityManager
-        self.linkedDevicePniKeyManager = linkedDevicePniKeyManager
         self.messageProcessor = messageProcessor
         self.protocolStoreManager = protocolStoreManager
         self.remoteConfigProvider = remoteConfigProvider
@@ -512,15 +512,24 @@ internal struct PreKeyTaskManager {
                 try await self.messageProcessor.waitForFetchingAndProcessing()
                 await self.db.awaitableWrite { tx in self.cullStateAfterMessageProcessing(identity: identity, tx: tx) }
             }
-        case let .failure(error) where error.httpStatusCode == 422 && identity == .pni && tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == false:
-            // We think we have an incorrect PNI identity key, which
-            // we should record so we can handle it later.
-            await db.awaitableWrite { tx in
-                self.linkedDevicePniKeyManager
-                    .recordSuspectedIssueWithPniIdentityKey(tx: tx)
+        case let .failure(error) where error.httpStatusCode == 422:
+            let shouldValidate: Bool
+            switch (tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice, identity) {
+            case (.some(false), .pni):
+                shouldValidate = true
+            case (.some(false), .aci):
+                shouldValidate = remoteConfigProvider.currentConfig().shouldValidateLinkedAciIdentityKey
+            case (.some(true), .pni):
+                shouldValidate = remoteConfigProvider.currentConfig().shouldValidatePrimaryPniIdentityKey
+            case (.some(true), .aci):
+                shouldValidate = remoteConfigProvider.currentConfig().shouldValidatePrimaryAciIdentityKey
+            case (.none, _):
+                shouldValidate = false
             }
-            Task {
-                await self.linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
+            // We think we might have an incorrect identity key -- check it and
+            // deregister if it's wrong.
+            if shouldValidate {
+                await self.identityKeyMismatchManager.validateIdentityKey(for: identity)
             }
             fallthrough
         case let .failure(error):

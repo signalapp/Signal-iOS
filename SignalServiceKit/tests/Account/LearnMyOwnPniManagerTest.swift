@@ -38,7 +38,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     override func tearDown() {
-        whoAmIManagerMock.whoAmIResult.ensureUnset()
+        whoAmIManagerMock.whoAmIResponse.ensureUnset()
     }
 
     func testSkipsIfLinkedDevice() async throws {
@@ -62,7 +62,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         let remotePni = Pni.randomForTesting()
 
         tsAccountManagerMock.localIdentifiersMock = { .init(aci: localAci, pni: nil, e164: localE164) }
-        whoAmIManagerMock.whoAmIResult = .value(.init(aci: localAci, pni: remotePni, e164: localE164))
+        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(aci: localAci, pni: remotePni, e164: localE164))
 
         try await learnMyOwnPniManager.learnMyOwnPniIfNecessary()
 
@@ -89,7 +89,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         let remotePni = Pni.randomForTesting()
 
         tsAccountManagerMock.localIdentifiersMock = { .init(aci: localAci, pni: nil, e164: localE164) }
-        whoAmIManagerMock.whoAmIResult = .value(.init(aci: remoteAci, pni: remotePni, e164: localE164))
+        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(aci: remoteAci, pni: remotePni, e164: localE164))
 
         do {
             try await learnMyOwnPniManager.learnMyOwnPniIfNecessary()
@@ -109,7 +109,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         let remoteE164 = E164("+17735550198")!
 
         tsAccountManagerMock.localIdentifiersMock = { .init(aci: localAci, pni: nil, e164: localE164) }
-        whoAmIManagerMock.whoAmIResult = .value(.init(aci: localAci, pni: remotePni, e164: remoteE164))
+        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(aci: localAci, pni: remotePni, e164: remoteE164))
 
         do {
             try await learnMyOwnPniManager.learnMyOwnPniIfNecessary()
@@ -127,7 +127,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         let remotePni = Pni.randomForTesting()
 
         tsAccountManagerMock.localIdentifiersMock = { .init(aci: localAci, pni: nil, e164: localE164) }
-        whoAmIManagerMock.whoAmIResult = .value(.init(aci: localAci, pni: remotePni, e164: localE164))
+        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(aci: localAci, pni: remotePni, e164: localE164))
 
         let expectation1 = self.expectation(description: "1")
         let expectation2 = self.expectation(description: "2")
@@ -150,27 +150,5 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         await fulfillment(of: [expectation1, expectation2], timeout: 1, enforceOrder: false)
 
         XCTAssertEqual(remotePni, self.updatedPni)
-    }
-}
-
-private extension WhoAmIManager.WhoAmIResponse {
-    init(aci: Aci, pni: Pni, e164: E164) {
-        self.init(
-            aci: aci,
-            pni: pni,
-            e164: e164,
-            usernameHash: nil,
-            entitlements: Entitlements(backup: nil, badges: [])
-        )
-    }
-}
-
-// MARK: - Mocks
-
-private class MockWhoAmIManager: WhoAmIManager {
-    var whoAmIResult: ConsumableMockPromise<WhoAmIResponse> = .unset
-
-    func makeWhoAmIRequest() async throws -> WhoAmIResponse {
-        return try await whoAmIResult.consumeIntoPromise().awaitable()
     }
 }

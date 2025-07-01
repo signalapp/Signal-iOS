@@ -3,7 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public protocol LinkedDevicePniKeyManager {
+import Foundation
+import LibSignalClient
+
+public protocol IdentityKeyMismatchManager {
     /// Records that we encountered an issue we suspect is due to a problem with
     /// our PNI identity key.
     func recordSuspectedIssueWithPniIdentityKey(tx: DBWriteTransaction)
@@ -35,9 +38,11 @@ public protocol LinkedDevicePniKeyManager {
     /// We do not expect many devices to have ended up in a bad state, and so we
     /// hope that this unlinking will be a rare last resort.
     func validateLocalPniIdentityKeyIfNecessary() async
+
+    func validateIdentityKey(for identity: OWSIdentity) async
 }
 
-class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
+class IdentityKeyMismatchManagerImpl: IdentityKeyMismatchManager {
     private enum Constants {
         static let collection = "LinkedDevicePniKeyManagerImpl"
         static let hasRecordedSuspectedIssueKey = "hasSuspectedIssue"
@@ -46,27 +51,30 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
     private let logger = PrefixedLogger(prefix: "LDPKM")
 
     private let db: any DB
+    private let identityKeyChecker: IdentityKeyChecker
     private let kvStore: KeyValueStore
     private let messageProcessor: Shims.MessageProcessor
-    private let pniIdentityKeyChecker: PniIdentityKeyChecker
     private let registrationStateChangeManager: RegistrationStateChangeManager
     private let tsAccountManager: TSAccountManager
+    private let whoAmIManager: any WhoAmIManager
 
     private let isValidating = AtomicBool(false, lock: .init())
 
     init(
         db: any DB,
+        identityKeyChecker: IdentityKeyChecker,
         messageProcessor: Shims.MessageProcessor,
-        pniIdentityKeyChecker: PniIdentityKeyChecker,
         registrationStateChangeManager: RegistrationStateChangeManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
+        whoAmIManager: any WhoAmIManager,
     ) {
         self.db = db
+        self.identityKeyChecker = identityKeyChecker
         self.kvStore = KeyValueStore(collection: Constants.collection)
         self.messageProcessor = messageProcessor
-        self.pniIdentityKeyChecker = pniIdentityKeyChecker
         self.registrationStateChangeManager = registrationStateChangeManager
         self.tsAccountManager = tsAccountManager
+        self.whoAmIManager = whoAmIManager
     }
 
     func recordSuspectedIssueWithPniIdentityKey(tx: DBWriteTransaction) {
@@ -113,38 +121,62 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
             return
         }
 
+        await validateIdentityKey(for: .pni)
+    }
+
+    func validateIdentityKey(for identity: OWSIdentity) async {
+        let logger = logger
+        logger.info("Validating identity key for \(identity)")
         do {
-            let isValid = try await _validateLocalPniIdentityKey()
+            let isValid = try await _validateIdentityKey(for: identity)
             await self.db.awaitableWrite { tx in
                 if !isValid {
                     logger.warn("Marking as deregistered.")
                     self.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
                 }
-                self.clearPniMessageDecryptionError(tx: tx)
+                if identity == .pni {
+                    self.clearPniMessageDecryptionError(tx: tx)
+                }
             }
         } catch {
-            logger.warn("Couldn't check PNI identity key: \(error)")
+            // Eat all the errors -- the caller should be triggering this in response
+            // to its own error, and we always want to pass that error to the caller.
+            logger.warn("Couldn't validate identity key: \(error)")
         }
     }
 
-    private func _validateLocalPniIdentityKey() async throws -> Bool {
+    private func _validateIdentityKey(for identity: OWSIdentity) async throws -> Bool {
         let logger = logger
 
-        let localPni = self.db.read { tx in
-            return self.tsAccountManager.localIdentifiers(tx: tx)?.pni
-        }
-        guard let localPni else {
-            logger.warn("Missing local PNI.")
-            return false
+        let localIdentifier: ServiceId
+        do {
+            let loadLocalIdentifiers = { [db, tsAccountManager] () throws -> LocalIdentifiers in
+                let localIdentifiers = db.read { tx in
+                    return tsAccountManager.localIdentifiers(tx: tx)
+                }
+                guard let localIdentifiers else {
+                    throw OWSGenericError("not registered")
+                }
+                return localIdentifiers
+            }
+
+            switch identity {
+            case .aci:
+                // Our ACI can't change, so we don't need to check it.
+                localIdentifier = try loadLocalIdentifiers().aci
+            case .pni:
+                // Our PNI might change, and if it does, we might get errors when trying to
+                // fetch the identity key for the old one. Check for that here.
+                let remotePni = try await whoAmIManager.makeWhoAmIRequest().pni
+                guard try loadLocalIdentifiers().pni == remotePni else {
+                    logger.warn("The PNI identity key isn't valid because the PNI isn't valid.")
+                    return false
+                }
+                localIdentifier = remotePni
+            }
         }
 
-        let matched = try await self.pniIdentityKeyChecker.serverHasSameKeyAsLocal(localPni: localPni)
-        guard matched else {
-            logger.warn("Local PNI identity key didn't match remote!")
-            return false
-        }
-
-        return true
+        return try await self.identityKeyChecker.serverHasSameKeyAsLocal(for: identity, localIdentifier: localIdentifier)
     }
 
     private func clearPniMessageDecryptionError(tx: DBWriteTransaction) {
@@ -157,23 +189,23 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
 
 // MARK: - Mocks
 
-extension LinkedDevicePniKeyManagerImpl {
+extension IdentityKeyMismatchManagerImpl {
     enum Shims {
-        typealias MessageProcessor = _LinkedDevicePniKeyManagerImpl_MessageProcessor_Shim
+        typealias MessageProcessor = _IdentityKeyMismatchManagerImpl_MessageProcessor_Shim
     }
 
     enum Wrappers {
-        typealias MessageProcessor = _LinkedDevicePniKeyManagerImpl_MessageProcessor_Wrapper
+        typealias MessageProcessor = _IdentityKeyMismatchManagerImpl_MessageProcessor_Wrapper
     }
 }
 
 // MARK: MessageProcessor
 
-protocol _LinkedDevicePniKeyManagerImpl_MessageProcessor_Shim {
+protocol _IdentityKeyMismatchManagerImpl_MessageProcessor_Shim {
     func waitForFetchingAndProcessing() async throws(CancellationError)
 }
 
-class _LinkedDevicePniKeyManagerImpl_MessageProcessor_Wrapper: _LinkedDevicePniKeyManagerImpl_MessageProcessor_Shim {
+class _IdentityKeyMismatchManagerImpl_MessageProcessor_Wrapper: _IdentityKeyMismatchManagerImpl_MessageProcessor_Shim {
     private let messageProcessor: MessageProcessor
 
     public init(_ messageProcessor: MessageProcessor) {

@@ -41,7 +41,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     }
 
     override func tearDown() {
-        mockWhoAmIManager.whoamiResponse.ensureUnset()
+        mockWhoAmIManager.whoAmIResponse.ensureUnset()
         owsPrecondition(!mockMessageProcessor.canWait)
         mockStorageServiceManager.pendingRestoreResult.ensureUnset()
         owsPrecondition(mockUsernameLinkManager.decryptEncryptedLinkMocks.isEmpty)
@@ -51,7 +51,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         mockLocalUsernameManager.startingUsernameState = .unset
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockWhoAmIManager.whoamiResponse = .value(.noRemoteUsername)
+        mockWhoAmIManager.whoAmIResponse = .value(.noRemoteUsername)
 
         await validationManager.validateUsernameIfNecessary()
 
@@ -66,7 +66,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         mockLocalUsernameManager.startingUsernameState = .unset
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockWhoAmIManager.whoamiResponse = .error()
+        mockWhoAmIManager.whoAmIResponse = .error()
 
         await validationManager.validateUsernameIfNecessary()
 
@@ -81,7 +81,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         mockLocalUsernameManager.startingUsernameState = .unset
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
+        mockWhoAmIManager.whoAmIResponse = .value(.withRemoteUsername("boba_fett.42"))
 
         await validationManager.validateUsernameIfNecessary()
 
@@ -99,7 +99,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         )
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
+        mockWhoAmIManager.whoAmIResponse = .value(.withRemoteUsername("boba_fett.42"))
         mockUsernameLinkManager.decryptEncryptedLinkMocks = [{ _ in "boba_fett.42" }]
 
         await validationManager.validateUsernameIfNecessary()
@@ -118,7 +118,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         )
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockWhoAmIManager.whoamiResponse = .error()
+        mockWhoAmIManager.whoAmIResponse = .error()
 
         await validationManager.validateUsernameIfNecessary()
 
@@ -136,7 +136,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         )
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.43"))
+        mockWhoAmIManager.whoAmIResponse = .value(.withRemoteUsername("boba_fett.43"))
 
         await validationManager.validateUsernameIfNecessary()
 
@@ -154,7 +154,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         )
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
+        mockWhoAmIManager.whoAmIResponse = .value(.withRemoteUsername("boba_fett.42"))
         mockUsernameLinkManager.decryptEncryptedLinkMocks = [{ _ in throw OWSGenericError("") }]
 
         await validationManager.validateUsernameIfNecessary()
@@ -173,7 +173,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         )
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
+        mockWhoAmIManager.whoAmIResponse = .value(.withRemoteUsername("boba_fett.42"))
         mockUsernameLinkManager.decryptEncryptedLinkMocks = [{ _ in "boba_fett.43" }]
 
         await validationManager.validateUsernameIfNecessary()
@@ -189,7 +189,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         mockLocalUsernameManager.startingUsernameState = .linkCorrupted(username: "boba_fett.42")
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
+        mockWhoAmIManager.whoAmIResponse = .value(.withRemoteUsername("boba_fett.42"))
 
         await validationManager.validateUsernameIfNecessary()
 
@@ -204,7 +204,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         mockLocalUsernameManager.startingUsernameState = .linkCorrupted(username: "boba_fett.42")
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockWhoAmIManager.whoamiResponse = .error()
+        mockWhoAmIManager.whoAmIResponse = .error()
 
         await validationManager.validateUsernameIfNecessary()
 
@@ -219,7 +219,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         mockLocalUsernameManager.startingUsernameState = .linkCorrupted(username: "boba_fett.42")
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.43"))
+        mockWhoAmIManager.whoAmIResponse = .value(.withRemoteUsername("boba_fett.43"))
 
         await validationManager.validateUsernameIfNecessary()
 
@@ -343,14 +343,6 @@ extension UsernameValidationManagerTest {
         public func waitForFetchingAndProcessing() async throws(CancellationError) {
             owsPrecondition(canWait)
             canWait = false
-        }
-    }
-
-    private class MockWhoAmIManager: WhoAmIManager {
-        var whoamiResponse: ConsumableMockPromise<WhoAmIResponse> = .unset
-
-        func makeWhoAmIRequest() async throws -> WhoAmIResponse {
-            return try await whoamiResponse.consumeIntoPromise().awaitable()
         }
     }
 }

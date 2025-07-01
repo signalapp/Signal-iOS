@@ -131,10 +131,10 @@ public class AppEnvironment: NSObject {
             let db = DependenciesBridge.shared.db
             let deletedCallRecordCleanupManager = DependenciesBridge.shared.deletedCallRecordCleanupManager
             let groupCallPeekClient = SSKEnvironment.shared.groupCallManagerRef.groupCallPeekClient
+            let identityKeyMismatchManager = DependenciesBridge.shared.identityKeyMismatchManager
             let inactiveLinkedDeviceFinder = DependenciesBridge.shared.inactiveLinkedDeviceFinder
             let interactionStore = DependenciesBridge.shared.interactionStore
             let learnMyOwnPniManager = DependenciesBridge.shared.learnMyOwnPniManager
-            let linkedDevicePniKeyManager = DependenciesBridge.shared.linkedDevicePniKeyManager
             let masterKeySyncManager = DependenciesBridge.shared.masterKeySyncManager
             let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
             let pniHelloWorldManager = DependenciesBridge.shared.pniHelloWorldManager
@@ -183,7 +183,7 @@ public class AppEnvironment: NSObject {
                 }
             } else {
                 Task {
-                    await linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
+                    await identityKeyMismatchManager.validateLocalPniIdentityKeyIfNecessary()
                 }
             }
 

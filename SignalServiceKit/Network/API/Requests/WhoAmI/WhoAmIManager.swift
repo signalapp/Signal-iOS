@@ -40,6 +40,18 @@ struct WhoAmIManagerImpl: WhoAmIManager {
     }
 }
 
+#if TESTABLE_BUILD
+
+class MockWhoAmIManager: WhoAmIManager {
+    var whoAmIResponse: ConsumableMockPromise<WhoAmIResponse> = .unset
+
+    func makeWhoAmIRequest() async throws -> WhoAmIResponse {
+        return try await whoAmIResponse.consumeIntoPromise().awaitable()
+    }
+}
+
+#endif
+
 // MARK: -
 
 public enum WhoAmIRequestFactory {
@@ -91,6 +103,24 @@ public enum WhoAmIRequestFactory {
             public let e164: E164
             public let usernameHash: String?
             public let entitlements: Entitlements
+
+            #if TESTABLE_BUILD
+
+            static func forUnitTest(aci: Aci, pni: Pni, e164: E164) -> Self {
+                return Self(
+                    aci: aci,
+                    pni: pni,
+                    e164: e164,
+                    usernameHash: nil,
+                    entitlements: Entitlements(backup: nil, badges: [])
+                )
+            }
+
+            static func forUnitTest(localIdentifiers: LocalIdentifiers) -> Self {
+                return forUnitTest(aci: localIdentifiers.aci, pni: localIdentifiers.pni!, e164: E164(localIdentifiers.phoneNumber)!)
+            }
+
+            #endif
         }
 
         public enum AmIDeregistered: Int, UnknownEnumCodable {

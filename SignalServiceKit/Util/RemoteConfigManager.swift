@@ -261,6 +261,18 @@ public class RemoteConfig {
         return isEnabled(.shouldVerifyPniAndPniIdentityKeyExist)
     }
 
+    public var shouldValidateLinkedAciIdentityKey: Bool {
+        return isEnabled(.shouldValidateLinkedAciIdentityKey)
+    }
+
+    public var shouldValidatePrimaryAciIdentityKey: Bool {
+        return isEnabled(.shouldValidatePrimaryAciIdentityKey)
+    }
+
+    public var shouldValidatePrimaryPniIdentityKey: Bool {
+        return isEnabled(.shouldValidatePrimaryPniIdentityKey)
+    }
+
     // MARK: UInt values
 
     private func getUIntValue(
@@ -454,6 +466,9 @@ private enum IsEnabledFlag: String, FlagType {
     case paypalOneTimeDonationKillSwitch = "ios.paypalOneTimeDonationKillSwitch"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
+    case shouldValidateLinkedAciIdentityKey = "ios.shouldValidateLinkedAciIdentityKey"
+    case shouldValidatePrimaryAciIdentityKey = "ios.shouldValidatePrimaryAciIdentityKey"
+    case shouldValidatePrimaryPniIdentityKey = "ios.shouldValidatePrimaryPniIdentityKey"
     case shouldVerifyPniAndPniIdentityKeyExist = "ios.shouldVerifyPniAndPniIdentityKeyExist"
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
     case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
@@ -479,6 +494,9 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalOneTimeDonationKillSwitch: false
         case .ringrtcNwPathMonitorTrialKillSwitch: false
         case .serviceExtensionFailureKillSwitch: true
+        case .shouldValidateLinkedAciIdentityKey: true
+        case .shouldValidatePrimaryAciIdentityKey: true
+        case .shouldValidatePrimaryPniIdentityKey: true
         case .shouldVerifyPniAndPniIdentityKeyExist: true
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true
         case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true

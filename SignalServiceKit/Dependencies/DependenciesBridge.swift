@@ -108,6 +108,7 @@ public class DependenciesBridge {
     public let groupMemberUpdater: GroupMemberUpdater
     let groupSendEndorsementStore: any GroupSendEndorsementStore
     public let groupUpdateInfoMessageInserter: GroupUpdateInfoMessageInserter
+    public let identityKeyMismatchManager: IdentityKeyMismatchManager
     public let identityManager: OWSIdentityManager
     public let inactiveLinkedDeviceFinder: InactiveLinkedDeviceFinder
     let incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager
@@ -119,7 +120,6 @@ public class DependenciesBridge {
     public let interactionStore: InteractionStore
     public let lastVisibleInteractionStore: LastVisibleInteractionStore
     public let learnMyOwnPniManager: LearnMyOwnPniManager
-    public let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
     public let linkAndSyncManager: LinkAndSyncManager
     public let linkPreviewManager: LinkPreviewManager
     public let linkPreviewSettingStore: LinkPreviewSettingStore
@@ -239,6 +239,7 @@ public class DependenciesBridge {
         groupMemberUpdater: GroupMemberUpdater,
         groupSendEndorsementStore: any GroupSendEndorsementStore,
         groupUpdateInfoMessageInserter: GroupUpdateInfoMessageInserter,
+        identityKeyMismatchManager: IdentityKeyMismatchManager,
         identityManager: OWSIdentityManager,
         inactiveLinkedDeviceFinder: InactiveLinkedDeviceFinder,
         incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager,
@@ -250,7 +251,6 @@ public class DependenciesBridge {
         interactionStore: InteractionStore,
         lastVisibleInteractionStore: LastVisibleInteractionStore,
         learnMyOwnPniManager: LearnMyOwnPniManager,
-        linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
         linkAndSyncManager: LinkAndSyncManager,
         linkPreviewManager: LinkPreviewManager,
         linkPreviewSettingStore: LinkPreviewSettingStore,
@@ -369,6 +369,7 @@ public class DependenciesBridge {
         self.groupMemberUpdater = groupMemberUpdater
         self.groupSendEndorsementStore = groupSendEndorsementStore
         self.groupUpdateInfoMessageInserter = groupUpdateInfoMessageInserter
+        self.identityKeyMismatchManager = identityKeyMismatchManager
         self.identityManager = identityManager
         self.inactiveLinkedDeviceFinder = inactiveLinkedDeviceFinder
         self.incomingCallEventSyncMessageManager = incomingCallEventSyncMessageManager
@@ -380,7 +381,6 @@ public class DependenciesBridge {
         self.interactionStore = interactionStore
         self.lastVisibleInteractionStore = lastVisibleInteractionStore
         self.learnMyOwnPniManager = learnMyOwnPniManager
-        self.linkedDevicePniKeyManager = linkedDevicePniKeyManager
         self.linkAndSyncManager = linkAndSyncManager
         self.linkPreviewManager = linkPreviewManager
         self.linkPreviewSettingStore = linkPreviewSettingStore

@@ -18,7 +18,7 @@ extension PreKey {
         typealias APIClient = _PreKey_APIClientMock
         typealias DateProvider = _PreKey_DateProviderMock
         typealias IdentityManager = _PreKey_IdentityManagerMock
-        typealias LinkedDevicePniKeyManager = _PreKey_LinkedDevicePniKeyManagerMock
+        typealias IdentityKeyMismatchManager = _PreKey_IdentityKeyMismatchManagerMock
     }
 }
 
@@ -54,14 +54,16 @@ class _PreKey_IdentityManagerMock: PreKey.Shims.IdentityManager {
     }
 }
 
-class _PreKey_LinkedDevicePniKeyManagerMock: LinkedDevicePniKeyManager {
-    var hasSuspectedIssue: Bool = false
-
+class _PreKey_IdentityKeyMismatchManagerMock: IdentityKeyMismatchManager {
     func recordSuspectedIssueWithPniIdentityKey(tx: DBWriteTransaction) {
-        hasSuspectedIssue = true
     }
 
     func validateLocalPniIdentityKeyIfNecessary() async {
+    }
+
+    var validateIdentityKeyMock: ((_ identity: OWSIdentity) async -> Void)!
+    func validateIdentityKey(for identity: OWSIdentity) async {
+        await validateIdentityKeyMock!(identity)
     }
 }
 

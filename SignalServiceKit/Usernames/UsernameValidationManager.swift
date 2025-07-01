@@ -152,12 +152,12 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
     private func validateLocalUsernameAgainstService(
         localUsername: String?
     ) async throws {
-        let whoamiResponse = try await self.context.whoAmIManager.makeWhoAmIRequest()
+        let whoAmIResponse = try await self.context.whoAmIManager.makeWhoAmIRequest()
 
         let validationSucceeded: Bool = {
-            self.logger.info("Comparing usernames; local: \(localUsername != nil), remote: \(whoamiResponse.usernameHash != nil)")
+            self.logger.info("Comparing usernames; local: \(localUsername != nil), remote: \(whoAmIResponse.usernameHash != nil)")
 
-            switch (localUsername, whoamiResponse.usernameHash) {
+            switch (localUsername, whoAmIResponse.usernameHash) {
             case (nil, nil):
                 // Both missing -> good
                 return true

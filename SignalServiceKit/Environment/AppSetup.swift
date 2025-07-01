@@ -941,17 +941,18 @@ public class AppSetup {
             versionedProfiles: versionedProfiles
         )
 
-        let pniIdentityKeyChecker = PniIdentityKeyCheckerImpl(
+        let identityKeyChecker = IdentityKeyCheckerImpl(
             db: db,
-            identityManager: PniIdentityKeyCheckerImpl.Wrappers.IdentityManager(identityManager),
-            profileFetcher: PniIdentityKeyCheckerImpl.Wrappers.ProfileFetcher(schedulers: schedulers)
+            identityManager: IdentityKeyCheckerImpl.Wrappers.IdentityManager(identityManager),
+            profileFetcher: IdentityKeyCheckerImpl.Wrappers.ProfileFetcher(networkManager: networkManager),
         )
-        let linkedDevicePniKeyManager = LinkedDevicePniKeyManagerImpl(
+        let identityKeyMismatchManager = IdentityKeyMismatchManagerImpl(
             db: db,
-            messageProcessor: LinkedDevicePniKeyManagerImpl.Wrappers.MessageProcessor(messageProcessor),
-            pniIdentityKeyChecker: pniIdentityKeyChecker,
+            identityKeyChecker: identityKeyChecker,
+            messageProcessor: IdentityKeyMismatchManagerImpl.Wrappers.MessageProcessor(messageProcessor),
             registrationStateChangeManager: registrationStateChangeManager,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
+            whoAmIManager: whoAmIManager,
         )
         let pniHelloWorldManager = PniHelloWorldManagerImpl(
             db: db,
@@ -978,8 +979,8 @@ public class AppSetup {
         let preKeyManager = PreKeyManagerImpl(
             dateProvider: dateProvider,
             db: db,
+            identityKeyMismatchManager: identityKeyMismatchManager,
             identityManager: PreKey.Wrappers.IdentityManager(identityManager),
-            linkedDevicePniKeyManager: linkedDevicePniKeyManager,
             messageProcessor: messageProcessor,
             preKeyTaskAPIClient: preKeyTaskAPIClient,
             protocolStoreManager: signalProtocolStoreManager,
@@ -1475,6 +1476,7 @@ public class AppSetup {
             groupMemberUpdater: groupMemberUpdater,
             groupSendEndorsementStore: groupSendEndorsementStore,
             groupUpdateInfoMessageInserter: groupUpdateInfoMessageInserter,
+            identityKeyMismatchManager: identityKeyMismatchManager,
             identityManager: identityManager,
             inactiveLinkedDeviceFinder: inactiveLinkedDeviceFinder,
             incomingCallEventSyncMessageManager: incomingCallEventSyncMessageManager,
@@ -1486,7 +1488,6 @@ public class AppSetup {
             interactionStore: interactionStore,
             lastVisibleInteractionStore: lastVisibleInteractionStore,
             learnMyOwnPniManager: learnMyOwnPniManager,
-            linkedDevicePniKeyManager: linkedDevicePniKeyManager,
             linkAndSyncManager: linkAndSyncManager,
             linkPreviewManager: linkPreviewManager,
             linkPreviewSettingStore: linkPreviewSettingStore,
