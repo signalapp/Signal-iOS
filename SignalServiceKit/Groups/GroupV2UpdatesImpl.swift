@@ -12,7 +12,7 @@ public class GroupV2UpdatesImpl {
     // revision.
     private static let groupRefreshStore = KeyValueStore(collection: "groupRefreshStore")
 
-    private var lastSuccessfulRefreshMap = LRUCache<Data, Date>(maxSize: 256)
+    private var lastSuccessfulRefreshMap = LRUCache<GroupIdentifier, Date>(maxSize: 256)
 
     private let operationQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
@@ -205,7 +205,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         source: GroupChangeActionFetchSource,
         options: TSGroupModelOptions
     ) async throws {
-        let groupId = try secretParams.getPublicParams().getGroupIdentifier().serialize()
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier()
 
         let isThrottled = { () -> Bool in
             guard options.contains(.throttle) else {
@@ -221,7 +221,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
 
         try SSKEnvironment.shared.databaseStorageRef.read { tx in
             // - If we're blocked, it's an immediate error
-            if SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: tx) {
+            if SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId.serialize(), transaction: tx) {
                 throw GroupsV2Error.groupBlocked
             }
         }
@@ -261,14 +261,14 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         }
     }
 
-    private func lastSuccessfulRefreshDate(forGroupId groupId: Data) -> Date? {
+    private func lastSuccessfulRefreshDate(forGroupId groupId: GroupIdentifier) -> Date? {
         lastSuccessfulRefreshMap[groupId]
     }
 
-    private func didUpdateGroupToLatestRevision(groupId: Data) async {
+    private func didUpdateGroupToLatestRevision(groupId: GroupIdentifier) async {
         lastSuccessfulRefreshMap[groupId] = Date()
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            Self.groupRefreshStore.setDate(Date(), key: groupId.hexadecimalString, transaction: tx)
+            Self.groupRefreshStore.setDate(Date(), key: groupId.serialize().hexadecimalString, transaction: tx)
         }
     }
 
