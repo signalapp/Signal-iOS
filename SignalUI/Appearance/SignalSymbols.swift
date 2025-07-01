@@ -294,7 +294,7 @@ public enum SignalSymbol: Character {
         dynamicTypeBaseSize: CGFloat,
         weight: Weight = .regular
     ) -> Text {
-        Text("\(self.rawValue)")
+        Text(verbatim: "\(self.rawValue)")
             .font(Font.custom(weight.fontName, size: dynamicTypeBaseSize))
     }
 }
