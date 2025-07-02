@@ -271,7 +271,7 @@ public class AudioSession: NSObject {
 }
 
 extension AVAudioSession.CategoryOptions {
-    #if !canImport(AVFoundation, _version: 2360.66.3)
+    #if !canImport(AVFoundation, _version: 2360.61.4.11.1)
     public static let allowBluetoothHFP = Self.allowBluetooth
     #endif
 }
