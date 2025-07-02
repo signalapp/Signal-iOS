@@ -411,7 +411,7 @@ public class OWSTabBar: UITabBar {
     }
 
     fileprivate func applyTheme() {
-        guard respectsTheme, !self.isHidden else {
+        guard !self.isHidden else {
             return
         }
 
@@ -466,43 +466,5 @@ public class OWSTabBar: UITabBar {
     @objc
     private func themeDidChange() {
         applyTheme()
-    }
-
-    public var respectsTheme: Bool = true {
-        didSet {
-            themeDidChange()
-        }
-    }
-
-    // MARK: Override Theme
-
-    public enum TabBarStyle: Int {
-        case `default`
-    }
-
-    private var currentStyle: TabBarStyle?
-
-    public func switchToStyle(_ style: TabBarStyle, animated: Bool = false) {
-        AssertIsOnMainThread()
-
-        guard currentStyle != style else { return }
-
-        if animated {
-            let animation = CATransition()
-            animation.duration = 0.35
-            animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-            animation.type = .fade
-            layer.add(animation, forKey: "ows_fade")
-        } else {
-            layer.removeAnimation(forKey: "ows_fade")
-        }
-
-        currentStyle = style
-
-        switch style {
-        case .default:
-            respectsTheme = true
-            applyTheme()
-        }
     }
 }
