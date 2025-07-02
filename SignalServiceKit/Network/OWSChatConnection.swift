@@ -734,7 +734,6 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
 
     fileprivate override func makeRequestInternal(_ request: TSRequest, requestId: UInt64) async throws -> any HTTPResponse {
         var httpHeaders = request.headers
-        httpHeaders.addDefaultHeaders()
         request.applyAuth(to: &httpHeaders, willSendViaWebSocket: true)
 
         let body: Data
@@ -911,7 +910,7 @@ internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSigna
     }
 
     override func connectChatService() async throws -> UnauthenticatedChatConnection {
-        return try await libsignalNet.connectUnauthenticatedChat()
+        return try await libsignalNet.connectUnauthenticatedChat(languages: Array(HttpHeaders.topPreferredLanguages()))
     }
 }
 
@@ -949,7 +948,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
             (accountManager.storedServerUsername(tx: tx), accountManager.storedServerAuthToken(tx: tx))
         }
         // Note that we still try to connect for an unregistered user, so that we get a consistent error thrown.
-        return try await libsignalNet.connectAuthenticatedChat(username: username ?? "", password: password ?? "", receiveStories: StoryManager.areStoriesEnabled)
+        return try await libsignalNet.connectAuthenticatedChat(username: username ?? "", password: password ?? "", receiveStories: StoryManager.areStoriesEnabled, languages: Array(HttpHeaders.topPreferredLanguages()))
     }
 
     fileprivate override var connection: ConnectionState {
@@ -993,11 +992,9 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
 
                     // Skip the full overhead of makeRequest(...).
                     // We don't need keepalives to count as background activity or anything like that.
-                    var httpHeaders = HttpHeaders()
-                    httpHeaders.addDefaultHeaders()
                     // This 30-second timeout doesn't inherently need to match the send interval above,
                     // but neither do we need an especially tight timeout here either.
-                    let request = ChatConnection.Request(method: "GET", pathAndQuery: "/v1/keepalive", headers: httpHeaders.headers, body: nil, timeout: 30)
+                    let request = ChatConnection.Request(method: "GET", pathAndQuery: "/v1/keepalive", timeout: 30)
                     Logger.debug("\(logPrefix) Sending /v1/keepalive")
                     _ = try await chat.send(request)
 

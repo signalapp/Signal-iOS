@@ -156,6 +156,20 @@ public struct HttpHeaders: Codable, CustomDebugStringConvertible, ExpressibleByD
     /// See [RFC4647](https://www.rfc-editor.org/rfc/rfc4647#section-2.2).
     private static let languageRangeRegex = try! NSRegularExpression(pattern: #"^(?:\*|[a-z]{1,8})(?:-(?:\*|(?:[a-z0-9]{1,8})))*$"#, options: .caseInsensitive)
 
+    /// Returns the top 10 languages preferred by the user, so they can be sent to the server.
+    ///
+    /// Languages are assumed to be in order of preference.
+    ///
+    /// Languages that aren't valid per [RFC4647][] are omitted, because the server also does this validation.
+    ///
+    /// [RFC4647]: https://www.rfc-editor.org/rfc/rfc4647#section-2.2
+    static func topPreferredLanguages(_ languages: [String] = Locale.preferredLanguages) -> some Sequence<String> {
+        return languages
+            .lazy
+            .filter { languageRangeRegex.hasMatch(input: $0) }
+            .prefix(10)
+    }
+
     /// Format languages for the `Accept-Language` header per [RFC9110][0].
     ///
     /// Languages should be passed in order of preference.
@@ -169,10 +183,7 @@ public struct HttpHeaders: Codable, CustomDebugStringConvertible, ExpressibleByD
     /// [1]: https://www.rfc-editor.org/rfc/rfc4647#section-2.2
     /// [2]: https://www.rfc-editor.org/rfc/rfc9110.html#quality.values
     static func formatAcceptLanguageHeader(_ languages: [String]) -> String {
-        let formattedLanguages = languages
-            .lazy
-            .filter { languageRangeRegex.hasMatch(input: $0) }
-            .prefix(10)
+        let formattedLanguages = topPreferredLanguages(languages)
             .enumerated()
             .map { idx, language -> String in
                 let q = 1.0 - (Float(idx) * 0.1)
