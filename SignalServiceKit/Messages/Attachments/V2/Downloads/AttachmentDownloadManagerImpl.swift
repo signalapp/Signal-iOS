@@ -714,7 +714,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 guard
                     let mediaTierInfo = attachment.mediaTierInfo,
                     let mediaName = attachment.mediaName,
-                    let encryptionMetadata = buildCdnEncryptionMetadata(mediaName: mediaName, type: .attachment),
+                    let encryptionMetadata = buildCdnEncryptionMetadata(mediaName: mediaName, type: .outerLayerFullsizeOrThumbnail),
                     let cdnCredential = await fetchBackupCdnReadCredential(for: cdnNumber)
                 else {
                     downloadMetadata = nil
@@ -740,12 +740,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // This is the outer encryption
                     let outerEncryptionMetadata = buildCdnEncryptionMetadata(
                         mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
-                        type: .attachment
+                        type: .outerLayerFullsizeOrThumbnail
                     ),
                     // inner encryption
                     let innerEncryptionMetadata = buildCdnEncryptionMetadata(
                         mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
-                        type: .thumbnail
+                        type: .transitTierThumbnail
                     ),
                     let cdnReadCredential = await fetchBackupCdnReadCredential(for: cdnNumber)
                 else {

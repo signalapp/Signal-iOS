@@ -302,7 +302,8 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     if record.record.isFullsize {
                         let mediaId = try backupKeyMaterial.mediaEncryptionMetadata(
                             mediaName: mediaName,
-                            type: .attachment,
+                            // Doesn't matter what we use, we just want the mediaId
+                            type: .outerLayerFullsizeOrThumbnail,
                             tx: tx
                         ).mediaId
                         try orphanedBackupAttachmentStore.removeFullsize(
@@ -313,7 +314,8 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     } else {
                         let mediaId = try backupKeyMaterial.mediaEncryptionMetadata(
                             mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
-                            type: .thumbnail,
+                            // Doesn't matter what we use, we just want the mediaId
+                            type: .outerLayerFullsizeOrThumbnail,
                             tx: tx
                         ).mediaId
                         try orphanedBackupAttachmentStore.removeThumbnail(

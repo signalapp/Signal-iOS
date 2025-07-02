@@ -34,7 +34,7 @@ public struct OrphanedBackupAttachment: Codable, FetchableRecord, MutablePersist
 
     /// WARNING: these values are hardcoded into triggers in the sql schema; if they
     /// change those triggers need to be recreated in a migration.
-    public enum `Type`: Int, Codable {
+    public enum `Type`: Int, Codable, CaseIterable {
         case fullsize = 0
         case thumbnail = 1
     }

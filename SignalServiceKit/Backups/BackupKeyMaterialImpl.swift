@@ -51,9 +51,9 @@ public struct BackupKeyMaterialImpl: BackupKeyMaterial {
         let keyBytes: Data
         do {
             switch type {
-            case .attachment:
+            case .outerLayerFullsizeOrThumbnail:
                 keyBytes = try backupKey.deriveMediaEncryptionKey(mediaId)
-            case .thumbnail:
+            case .transitTierThumbnail:
                 keyBytes = try backupKey.deriveThumbnailTransitEncryptionKey(mediaId)
             }
         } catch {

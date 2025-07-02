@@ -419,7 +419,6 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             cdnNumber =  try await self.copyToMediaTier(
                 localAci: localAci,
                 mediaName: mediaName,
-                encryptionType: .attachment,
                 uploadEra: uploadEra,
                 result: result,
                 logger: logger
@@ -503,7 +502,6 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         let cdnNumber =  try await self.copyToMediaTier(
             localAci: localAci,
             mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
-            encryptionType: .thumbnail,
             uploadEra: uploadEra,
             result: result,
             logger: logger
@@ -855,8 +853,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             let fileUrl = fileSystem.temporaryFileUrl()
             let encryptionKey = try db.read { tx in
                 try backupKeyMaterial.mediaEncryptionMetadata(
-                    mediaName: mediaName,
-                    type: .thumbnail,
+                    mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
+                    type: .transitTierThumbnail,
                     tx: tx
                 )
             }
@@ -1014,7 +1012,6 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     public func copyToMediaTier(
         localAci: Aci,
         mediaName: String,
-        encryptionType: MediaTierEncryptionType,
         uploadEra: String,
         result: Upload.AttachmentResult,
         logger: PrefixedLogger
@@ -1027,7 +1024,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         let mediaEncryptionMetadata = try db.read { tx in
             try backupKeyMaterial.mediaEncryptionMetadata(
                 mediaName: mediaName,
-                type: encryptionType,
+                type: .outerLayerFullsizeOrThumbnail,
                 tx: tx
             )
         }

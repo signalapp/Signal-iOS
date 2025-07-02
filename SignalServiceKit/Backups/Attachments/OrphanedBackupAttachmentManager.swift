@@ -90,19 +90,20 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         try! OrphanedBackupAttachment
             .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
             .deleteAll(tx.database)
-        for type in MediaTierEncryptionType.allCases {
+        for type in OrphanedBackupAttachment.SizeType.allCases {
             do {
                 let mediaId = try backupKeyMaterial.mediaEncryptionMetadata(
                     mediaName: {
                         switch type {
-                        case .attachment:
+                        case .fullsize:
                             mediaName
                         case .thumbnail:
                             AttachmentBackupThumbnail
                                 .thumbnailMediaName(fullsizeMediaName: mediaName)
                         }
                     }(),
-                    type: type,
+                    // Doesn't matter what we use, we just want the mediaId.
+                    type: .outerLayerFullsizeOrThumbnail,
                     tx: tx
                 ).mediaId
                 try! OrphanedBackupAttachment
@@ -258,14 +259,11 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
             if let recordMediaId = record.record.mediaId {
                 mediaId = recordMediaId
             } else if let type = record.record.type, let mediaName = record.record.mediaName {
-                let mediaTierEncryptionType: MediaTierEncryptionType
                 let mediaNameToUse: String
                 switch type {
                 case .fullsize:
-                    mediaTierEncryptionType = .attachment
                     mediaNameToUse = mediaName
                 case .thumbnail:
-                    mediaTierEncryptionType = .thumbnail
                     mediaNameToUse = AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName)
                 }
 
@@ -274,7 +272,8 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
                         (
                             try backupKeyMaterial.mediaEncryptionMetadata(
                                 mediaName: mediaNameToUse,
-                                type: mediaTierEncryptionType,
+                                // Doesn't matter what we use, we just want the mediaId.
+                                type: .outerLayerFullsizeOrThumbnail,
                                 tx: tx
                             ).mediaId
                         )

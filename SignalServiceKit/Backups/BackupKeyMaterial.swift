@@ -14,8 +14,8 @@ public enum BackupKeyMaterialError: Error {
 }
 
 public enum MediaTierEncryptionType: CaseIterable {
-    case attachment
-    case thumbnail
+    case outerLayerFullsizeOrThumbnail
+    case transitTierThumbnail
 }
 
 public struct MediaTierEncryptionMetadata: Equatable {
