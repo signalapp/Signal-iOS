@@ -487,6 +487,9 @@
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "语音消息不可用";
 
+/* Username for backup key autofill */
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Backups";
+
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "选择颜色";
 
@@ -510,6 +513,18 @@
 
 /* return to the previous screen */
 "BACK_BUTTON" = "返回";
+
+/* Action text for Backup Key reminder megaphone */
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+
+/* Body for Backup enablement reminder megaphone */
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "Never lose a message when you get a new phone or reinstall Signal.";
+
+/* Title for Backup enablement reminder megaphone */
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "Turn on encrypted backups";
+
+/* Snooze text for Backup enablement reminder megaphone */
+"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Not Now";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "备份密钥";
@@ -610,6 +625,9 @@
 /* Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "%1$@到期";
 
+/* Text explaining that a user's paid plan, which has been canceled, expired on a past date. Embeds {{ the formatted expiration date }}. */
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "%1$@到期";
+
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "文本 + 所有媒体备份";
 
@@ -698,13 +716,13 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "重新启用备份";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Upload paused: device has low battery";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "上传已暂停：设备电量不足";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Upload paused: waiting for Wi-Fi";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "上传已暂停：等待 Wi-Fi 连接";
 
 /* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the amount uploaded as a percentage, e.g. 10% }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Uploading %1$@ of %2$@ (%3$@)";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "正在上传 %1$@/%2$@ (%3$@)";
 
 /* Message for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "根据备份的大小，这可能需要很长时间。在备份过程中，您可以正常使用手机。";
@@ -5338,8 +5356,8 @@
 /* Description for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "您上一次备份的时间是 %1$@ %2$@。您的备份大小是 %3$@";
 
-/* Text for action button to explore other options. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "更多选项";
+/* Text for action button to skip the restore. */
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Skip Restore";
 
 /* Title for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "从备份还原";
@@ -6742,17 +6760,23 @@
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "设备电池电量不足";
 
+/* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
+"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "No internet…";
+
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
 "RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "恢复已暂停";
-
-/* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no wifi connection */
-"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "正在等待 Wi-Fi 连接…";
 
 /* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
 "RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ / %2$@ 匹配";
 
+/* Button title shown on chat list banner for restoring media from a backup when paused because the device needs WiFi to continue, to resume downloads without WiFi. */
+"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "Resume";
+
 /* Title shown on chat list banner for restoring media from a backup */
 "RESTORING_MEDIA_BANNER_TITLE" = "正在恢复媒体";
+
+/* Title shown on chat list banner for restoring media from a backup when waiting for wifi */
+"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "跳过恢复";

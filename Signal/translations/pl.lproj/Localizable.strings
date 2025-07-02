@@ -487,6 +487,9 @@
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "Wiadomość głosowa niedostępna";
 
+/* Username for backup key autofill */
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Backups";
+
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Wybierz kolor";
 
@@ -510,6 +513,18 @@
 
 /* return to the previous screen */
 "BACK_BUTTON" = "Wstecz";
+
+/* Action text for Backup Key reminder megaphone */
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+
+/* Body for Backup enablement reminder megaphone */
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "Never lose a message when you get a new phone or reinstall Signal.";
+
+/* Title for Backup enablement reminder megaphone */
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "Turn on encrypted backups";
+
+/* Snooze text for Backup enablement reminder megaphone */
+"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Not Now";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Kod kopii zapasowej";
@@ -610,6 +625,9 @@
 /* Text explaining that a user's paid plan, which has been canceled, will expire on a future date. Embeds {{ the formatted expiration date }}. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_FUTURE_EXPIRATION_FORMAT" = "Wygasa %1$@";
 
+/* Text explaining that a user's paid plan, which has been canceled, expired on a past date. Embeds {{ the formatted expiration date }}. */
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Wygasła %1$@";
+
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Wiadomości tekstowe i wszystkie multimedia";
 
@@ -698,13 +716,13 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Włącz z powrotem";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Upload paused: device has low battery";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Przesyłanie wstrzymane: niski poziom naładowania baterii";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Upload paused: waiting for Wi-Fi";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Przesyłanie wstrzymane: oczekiwanie na Wi-Fi";
 
 /* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the amount uploaded as a percentage, e.g. 10% }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Uploading %1$@ of %2$@ (%3$@)";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Przesyłanie %1$@ z %2$@ (%3$@%%)";
 
 /* Message for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "W przypadku dużej ilości danych tworzenie kopii zapasowej może zająć sporo czasu. Podczas gdy to się dzieje, możesz normalnie korzystać z telefonu.";
@@ -1385,7 +1403,7 @@
 "CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Usuń filtr";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
-"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrowane według nieprzeczytanych";
+"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrowanie według nieprzeczytanych";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Czaty";
@@ -2021,7 +2039,7 @@
 "CREATE_CALL_LINK_LABEL" = "Utwórz link do połączenia";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Wprowadzamy możliwość ukrycia numeru telefonu, opcjonalną nazwę użytkownika i linki.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Ukrywamy numery telefonu i wprowadzamy opcjonalną nazwę użytkownika oraz linki.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "Nawiązuj kontakt w nowy sposób";
@@ -3803,7 +3821,7 @@
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ odrzuca prośbę o przyjęcie do grupy, której nadawcą jest %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Odrzucono prośbę o przyjęcie do grupy, której nadawcą jest %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Prośba o przyjęcie do grupy, której nadawcą jest %1$@, zostaje odrzucona.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%1$@ prosi o przyjęcie do grupy przez link.";
@@ -3836,7 +3854,7 @@
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Usunąć grupę „%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Osoby, które należą do czatu grupowego „%1$@”, mogą wyświetlać relację i na nią odpowiadać. Listę tych osób możesz edytować w grupie.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Te relacje mogą wyświetlać, a także mogą na nie odpowiadać osoby, które należą do grupy %1$@. Listę tych osób możesz edytować w grupie.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Kto może wyświetlić te relacje";
@@ -5338,8 +5356,8 @@
 /* Description for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Ostatnia kopia zapasowa została utworzona %1$@ o godz. %2$@. Rozmiar kopii zapasowej to %3$@";
 
-/* Text for action button to explore other options. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_MORE_OPTIONS_ACTION" = "Więcej opcji";
+/* Text for action button to skip the restore. */
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Skip Restore";
 
 /* Title for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "Przywróć z kopii zapasowej";
@@ -6742,17 +6760,23 @@
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Niski poziom naładowania baterii";
 
+/* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
+"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "No internet…";
+
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
 "RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Przywracanie wstrzymane";
-
-/* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no wifi connection */
-"RESTORING_MEDIA_BANNER_PAUSED_WIFI_SUBTITLE" = "Oczekiwanie na Wi-Fi…";
 
 /* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
 "RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ z %2$@";
 
+/* Button title shown on chat list banner for restoring media from a backup when paused because the device needs WiFi to continue, to resume downloads without WiFi. */
+"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "Resume";
+
 /* Title shown on chat list banner for restoring media from a backup */
 "RESTORING_MEDIA_BANNER_TITLE" = "Przywracanie multimediów";
+
+/* Title shown on chat list banner for restoring media from a backup when waiting for wifi */
+"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Pomiń przywracanie";
@@ -7178,7 +7202,7 @@
 "SETTINGS_BACKUPS" = "Kopie zapasowe";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Dodaj zablokowanego użytkownika";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Zablokuj użytkownika";
 
 /* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Nie masz żadnych kontaktów w aplikacji Signal.";
@@ -7187,7 +7211,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Nic nie znaleziono";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Zablokowano";
+"SETTINGS_BLOCK_LIST_TITLE" = "Zablokowane kontakty";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Zawsze pośrednicz w połączeniach";
@@ -7301,7 +7325,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Znikające wiadomości";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Ustaw domyślny czas, po którym wiadomości znikają, we wszystkich nowych czatach rozpoczętych przez siebie.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Ustaw domyślny czas, po którym wiadomości znikają, we wszystkich nowych czatach rozpoczętych przez Ciebie.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Wesprzyj Signal darowizną";
@@ -7364,7 +7388,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Uwzględnij wyciszone czaty";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Plakietka z licznikiem";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Licznik nieodczytanych wiadomości";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Powiadomienia o połączeniach i wiadomościach mogą się pojawiać, gdy telefon jest zablokowany.";
@@ -8627,7 +8651,7 @@
 "THREAD_DETAILS_NO_MEMBERS" = "W grupie nie ma jeszcze innych osób";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "W tym czacie możesz robić notatki dla siebie. Jeśli z Twoim kontem są połączone jakieś urządzenia, nowe notatki będą synchronizowane.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "W tym czacie możesz robić notatki dla siebie. Jeśli z Twoim kontem są połączone jakieś inne urządzenia, nowe notatki będą synchronizowane.";
 
 /* Label for a group with one member (not counting yourself), displaying their name */
 "THREAD_DETAILS_ONE_MEMBER" = "%1$@";
@@ -8840,10 +8864,10 @@
 "USERNAME_EDUCATION_LINK_DESCRIPTION" = "Każda nazwa użytkownika jest powiązana z unikalnym kodem QR i unikalnym linkiem, które możesz udostępnić znajomym, aby szybko rozpocząć z nimi czat.";
 
 /* Title for the username links and QR codes section on the username education sheet */
-"USERNAME_EDUCATION_LINK_TITLE" = "Kody QR i linki";
+"USERNAME_EDUCATION_LINK_TITLE" = "Kod QR i link";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Numer telefonu nie jest już widoczny w oknie czatu. Wciąż będzie jednak widoczny dla tych znajomych, którzy mają Twój numer w kontaktach.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Twój numer telefonu nie jest już widoczny w czatach. Wciąż będzie jednak widoczny dla tych znajomych, którzy mają Twój numer w kontaktach.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Ukryty numer telefonu";
@@ -8945,7 +8969,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Zmiana nazwy użytkownika spowoduje zresetowanie kodu QR i linku. Chcesz kontynuować?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Nazwy użytkowników zawsze są parowane z zestawem liczb. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Nazwy użytkowników zawsze są parowane z zestawem cyfr. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Wybierz dla siebie nazwę użytkownika";
