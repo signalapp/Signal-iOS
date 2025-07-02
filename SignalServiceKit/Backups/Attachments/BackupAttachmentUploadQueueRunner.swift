@@ -103,6 +103,9 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
             self?.startObservingQueueStatus()
+            Task { [weak self] in
+                try await self?.backUpAllAttachments()
+            }
         }
     }
 
