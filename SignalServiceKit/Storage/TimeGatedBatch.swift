@@ -33,19 +33,19 @@ enum TimeGatedBatch {
     /// have elapsed since the transaction was opened. Note: This means the
     /// actual maximum transaction duration is unbounded because `block` may
     /// never return or may run extremely slow queries.
-    public static func enumerateObjects<T>(
+    public static func enumerateObjects<T, E>(
         _ objects: some Sequence<T>,
         db: any DB,
         yieldTxAfter: TimeInterval = 1.0,
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (T, DBWriteTransaction) throws -> Void
-    ) async rethrows {
+        block: (T, DBWriteTransaction) throws(E) -> Void
+    ) async throws(E) {
         var isDone = false
         var objectEnumerator = objects.makeIterator()
         while !isDone {
-            try await db.awaitableWrite(file: file, function: function, line: line) { tx in
+            try await db.awaitableWrite(file: file, function: function, line: line) { (tx) throws(E) -> Void in
                 let startTime = CACurrentMediaTime()
                 while true {
                     guard let object = objectEnumerator.next() else {
