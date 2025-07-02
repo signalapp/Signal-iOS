@@ -215,6 +215,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
 
         disableUnsupportedFeatures(callUpdate: update)
 
+        // TODO: Add proper Sendable support to these types.
+        let addCall = {
+            self.callManager.addCall(call)
+        }
+
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
             call.commonState.markPendingReportToSystem()
 
@@ -234,7 +239,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
 
                 completion(nil)
 
-                self.callManager.addCall(call)
+                addCall()
             }
         }
     }
