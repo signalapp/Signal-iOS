@@ -104,7 +104,9 @@ public class CLVBackupDownloadProgressView {
         let oldState = backupAttachmentDownloadProgressView.state
         backupAttachmentDownloadProgressView.state = state
         if (oldState == nil) != (state == nil) {
-            chatListViewController?.loadCoordinator.loadIfNecessary()
+            DispatchQueue.main.async { [weak self] in
+                self?.chatListViewController?.loadCoordinator.loadIfNecessary()
+            }
         }
     }
 
