@@ -47,13 +47,6 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
             backupSettingsStore.setBackupPlan(.disabled, tx: tx)
         }
 
-        let outgoingMessage = TSOutgoingMessage(in: contactThread!, messageBody: "good heavens")
-        db.write { transaction in
-            let db = transaction.database
-            try! contactThread!.asRecord().insert(db)
-            try! outgoingMessage.asRecord().insert(db)
-        }
-
         db.read { transaction in
             XCTAssertFalse(ExperienceUpgradeManifest.checkPreconditionsForBackupEnablementReminder(transaction: transaction), "Don't show reminder if user doesn't have enough messages")
         }

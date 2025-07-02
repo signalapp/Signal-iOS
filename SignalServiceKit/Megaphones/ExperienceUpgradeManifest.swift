@@ -458,7 +458,7 @@ extension ExperienceUpgradeManifest {
         case .backupKeyReminder:
             return 8 * .hour
         case .enableBackupsReminder:
-            return 8 * .hour
+            return 7 * .day
         case .unrecognized:
             return .infinity
         }
@@ -688,8 +688,7 @@ extension ExperienceUpgradeManifest {
             break
         }
 
-        // if user has sent/received 1000 messages
-        return InteractionFinder.outgoingAndIncomingMessageCount(transaction: transaction, limit: 1000) >= 1000
+        return InteractionFinder.outgoingAndIncomingMessageCount(transaction: transaction, limit: 1) >= 1
     }
 
     // MARK: Remote megaphone preconditions
