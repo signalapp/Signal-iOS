@@ -1,1 +1,1 @@
-• Statusikoner for beskeder (sendt, leveret osv.) fungerer nu med iOS VoiceOver for bedre tilgængelighed for blinde og svagsynede.
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

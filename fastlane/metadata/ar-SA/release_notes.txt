@@ -1,1 +1,1 @@
-• مُؤشرات حالة الرسائل (مُرسَلة، مُسلَّمة، إلخ) مدعومة الآن بميزة iOS VoiceOver لتحسين إمكانية الوصول للأفراد المكفوفين وأصحاب البصر الضعيف.
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

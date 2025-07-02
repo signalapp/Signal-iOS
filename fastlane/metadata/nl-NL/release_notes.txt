@@ -1,1 +1,1 @@
-• Berichtstatusindicatoren (verzonden, afgeleverd, enz.) worden nu ondersteund door de iOS VoiceOver-functie en voorgelezen om de toegankelijkheid voor blinde en slechtziende gebruikers te verbeteren.
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

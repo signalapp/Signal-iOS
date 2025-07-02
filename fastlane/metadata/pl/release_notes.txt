@@ -1,1 +1,1 @@
-• Poprawiliśmy dostępność aplikacji dla osób niewidzących lub niedowidzących za sprawą nowych opisów głosowych obsługiwanych przez funkcję VoiceOver systemu iOS, które informują o statusie wiadomości (na przykład „wysłano” lub „dostarczono”).
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

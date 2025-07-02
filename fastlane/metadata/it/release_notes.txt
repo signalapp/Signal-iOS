@@ -1,1 +1,1 @@
-• Gli indicatori dello stato dei messaggi (inviato, consegnato, e così via) hanno ora il supporto alla funzione di VoiceOver di iOS così da migliorare l'accessibilità per le persone ipovedenti o non vedenti.
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

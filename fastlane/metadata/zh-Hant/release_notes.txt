@@ -1,1 +1,1 @@
-• iOS 旁白功能現在可支援訊息狀態指示器（已傳送、已送達等），以方便盲人和弱視人士使用。
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

@@ -1,1 +1,1 @@
-• Nachrichtenstatus-Anzeigen (gesendet, zugestellt usw.) werden jetzt von der iOS-Funktion »VoiceOver« unterstützt, um die Barrierefreiheit für blinde und sehbehinderte Menschen zu verbessern.
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

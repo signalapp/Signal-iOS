@@ -1,1 +1,1 @@
-• Indikator status pesan (terkirim, dikirim, dll.) kini didukung oleh fitur iOS VoiceOver untuk meningkatkan aksesibilitas bagi pengguna disabilitas netra atau gangguan penglihatan lainnya.
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

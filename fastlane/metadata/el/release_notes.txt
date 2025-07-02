@@ -1,1 +1,1 @@
-• Οι ενδείξεις κατάστασης μηνυμάτων (αποστολή, παράδοση κ.λπ.) υποστηρίζονται πλέον από τη λειτουργία VoiceOver του iOS, προκειμένου να βελτιωθεί η προσβασιμότητα για τυφλά άτομα και άτομα με χαμηλή όραση.
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

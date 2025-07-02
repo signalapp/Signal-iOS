@@ -1,1 +1,1 @@
-• Indicatorii de stare a mesajelor (trimis, livrat etc.) sunt acum compatibili cu funcția VoiceOver din iOS pentru a îmbunătăți accesibilitatea pentru persoanele nevăzătoare și cu deficiențe de vedere.
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

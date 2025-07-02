@@ -1,1 +1,1 @@
-• Signal donne de la voix ! La fonction VoiceOver d'iOS prend désormais en charge les indicateurs d'état des messages (envoyé, distribué, etc.). Objectif : améliorer l'accessibilité de l'application pour les personnes aveugles et malvoyantes.
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

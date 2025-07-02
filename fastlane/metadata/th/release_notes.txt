@@ -1,1 +1,1 @@
-• พัฒนาความสามารถเพื่อรองรับการทำงานของ VoiceOver
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

@@ -1,1 +1,1 @@
-• Поліпшено доступність для людей з повною і частковою втратою зору: VoiceOver для iOS тепер озвучує статуси повідомлень (надіслано, доставлено тощо).
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

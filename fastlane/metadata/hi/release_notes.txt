@@ -1,1 +1,1 @@
-• संदेश की स्थिति बताने वाले संकेतकों (sent, delivered, etc.) को अब iOS VoiceOver फ़ीचर सपोर्ट करता है, ताकि नेत्रहीन और कमज़ोर नज़र वाले लोगों के लिए ऐक्सेसिबिलिटी बेहतर हो सके।
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

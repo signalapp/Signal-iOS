@@ -1,1 +1,1 @@
-• Os indicadores de status das mensagens (enviadas, entregues etc.) agora são compatíveis com o recurso VoiceOver do iOS para melhorar a acessibilidade de pessoas cegas e com baixa visão.
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

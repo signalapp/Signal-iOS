@@ -1,1 +1,1 @@
-• Индикаторы статуса сообщения (отправлено, доставлено и т. д.) теперь поддерживаются функцией iOS VoiceOver, чтобы они были доступнее для слепых и слабовидящих людей.
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.

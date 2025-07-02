@@ -1,1 +1,1 @@
-• VoiceOver 접근성 개선 사항.
+• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.
