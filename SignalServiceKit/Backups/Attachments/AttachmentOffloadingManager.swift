@@ -162,7 +162,10 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                 .filter(Column(Attachment.Record.CodingKeys.mediaTierUploadEra) == currentUploadEra)
                 .filter(Column(Attachment.Record.CodingKeys.mediaTierCdnNumber) != nil)
                 // Don't offload stuff viewed recently
-                .filter(Column(Attachment.Record.CodingKeys.lastFullscreenViewTimestamp) < viewedTimestampCutoff)
+                .filter(
+                    Column(Attachment.Record.CodingKeys.lastFullscreenViewTimestamp) == nil
+                    || Column(Attachment.Record.CodingKeys.lastFullscreenViewTimestamp) < viewedTimestampCutoff
+                )
 
             if let lastAttachmentId {
                 attachmentQuery = attachmentQuery
@@ -426,9 +429,14 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                     )
 
                     // Write the thumbnail to the reserved file location.
-                    try encryptedThumbnailData.write(
-                        to: AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: reservedThumbnailFilePath)
-                    )
+                    let fileUrl = AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: reservedThumbnailFilePath)
+                    guard OWSFileSystem.ensureDirectoryExists(fileUrl.deletingLastPathComponent().path) else {
+                        throw OWSAssertionError("Unable to create directory")
+                    }
+                    guard OWSFileSystem.ensureFileExists(fileUrl.path) else {
+                        throw OWSAssertionError("Unable to create file")
+                    }
+                    try encryptedThumbnailData.write(to: fileUrl)
                     return attachment.id
                 }
             }
