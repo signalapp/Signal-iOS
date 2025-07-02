@@ -19,6 +19,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
     private let backupAttachmentUploadTracker: BackupSettingsAttachmentUploadTracker
     private let backupDisablingManager: BackupDisablingManager
     private let backupEnablingManager: BackupEnablingManager
+    private let backupExportJob: BackupExportJob
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
@@ -37,6 +38,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
             backupAttachmentUploadQueueStatusReporter: DependenciesBridge.shared.backupAttachmentUploadQueueStatusReporter,
             backupDisablingManager: AppEnvironment.shared.backupDisablingManager,
             backupEnablingManager: AppEnvironment.shared.backupEnablingManager,
+            backupExportJob: DependenciesBridge.shared.backupExportJob,
             backupSettingsStore: BackupSettingsStore(),
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
@@ -50,6 +52,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter,
         backupDisablingManager: BackupDisablingManager,
         backupEnablingManager: BackupEnablingManager,
+        backupExportJob: BackupExportJob,
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
@@ -61,6 +64,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         )
         self.backupDisablingManager = backupDisablingManager
         self.backupEnablingManager = backupEnablingManager
+        self.backupExportJob = backupExportJob
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
@@ -368,7 +372,23 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
     // MARK: -
 
     fileprivate func performManualBackup() {
-        // TODO: [Backups] Implement
+        // TODO: [Backups] Implement nicer UI
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            asyncBlock: { [weak self, backupExportJob] modal in
+                do {
+                    try await backupExportJob.exportAndUploadBackup(progress: nil)
+                    guard let self else { return }
+                    self.db.read { tx in
+                        self.viewModel.lastBackupDate = self.backupSettingsStore.lastBackupDate(tx: tx)
+                        self.viewModel.lastBackupSizeBytes = self.backupSettingsStore.lastBackupSizeBytes(tx: tx)
+                    }
+                } catch {
+                    owsFailDebug("Unable to create backup!")
+                }
+                modal.dismiss()
+            }
+        )
     }
 
     fileprivate func setBackupFrequency(_ newBackupFrequency: BackupFrequency) {
