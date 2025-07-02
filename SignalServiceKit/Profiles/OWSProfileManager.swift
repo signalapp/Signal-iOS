@@ -410,7 +410,7 @@ extension OWSProfileManager: ProfileManager {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         if databaseStorage.read(block: localUserProfile(tx:)) == nil {
             databaseStorage.write { tx in
-                OWSUserProfile.getOrBuildUserProfileForLocalUser(userProfileWriter: .localUser, tx: tx)
+                _ = OWSUserProfile.getOrBuildUserProfileForLocalUser(userProfileWriter: .localUser, tx: tx)
             }
         }
     }
