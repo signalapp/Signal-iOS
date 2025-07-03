@@ -66,9 +66,9 @@ class RegistrationChoiceButton: OWSFlatButton
         let hStack = UIStackView(arrangedSubviews: [
             iconContainer,
             vStack,
-            UIView.hStretchingSpacer(),
             disclosureView,
         ])
+        hStack.setCustomSpacing(20, after: vStack)
         hStack.alignment = .center
         hStack.axis = .horizontal
         hStack.spacing = 12
