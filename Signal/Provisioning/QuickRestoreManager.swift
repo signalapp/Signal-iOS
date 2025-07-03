@@ -111,6 +111,7 @@ public class QuickRestoreManager {
             phoneNumber: myPhoneNumber,
             pin: pinCode,
             tier: backupTier,
+            backupVersion: BackupArchiveManagerImpl.Constants.supportedBackupVersion,
             backupTimestamp: lastBackupDate,
             backupSizeBytes: lastBackupSizeBytes,
             restoreMethodToken: restoreMethodToken

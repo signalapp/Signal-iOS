@@ -83,6 +83,8 @@ struct RegistrationProtos_RegistrationProvisionMessage: @unchecked Sendable {
 
   var pniIdentityKeyPrivate: Data = Data()
 
+  var backupVersion: UInt64 = 0
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Platform: SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -216,6 +218,7 @@ extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message
     11: .same(proto: "aciIdentityKeyPrivate"),
     12: .same(proto: "pniIdentityKeyPublic"),
     13: .same(proto: "pniIdentityKeyPrivate"),
+    14: .same(proto: "backupVersion"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -237,6 +240,7 @@ extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message
       case 11: try { try decoder.decodeSingularBytesField(value: &self.aciIdentityKeyPrivate) }()
       case 12: try { try decoder.decodeSingularBytesField(value: &self.pniIdentityKeyPublic) }()
       case 13: try { try decoder.decodeSingularBytesField(value: &self.pniIdentityKeyPrivate) }()
+      case 14: try { try decoder.decodeSingularUInt64Field(value: &self.backupVersion) }()
       default: break
       }
     }
@@ -286,6 +290,9 @@ extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message
     if !self.pniIdentityKeyPrivate.isEmpty {
       try visitor.visitSingularBytesField(value: self.pniIdentityKeyPrivate, fieldNumber: 13)
     }
+    if self.backupVersion != 0 {
+      try visitor.visitSingularUInt64Field(value: self.backupVersion, fieldNumber: 14)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -303,6 +310,7 @@ extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message
     if lhs.aciIdentityKeyPrivate != rhs.aciIdentityKeyPrivate {return false}
     if lhs.pniIdentityKeyPublic != rhs.pniIdentityKeyPublic {return false}
     if lhs.pniIdentityKeyPrivate != rhs.pniIdentityKeyPrivate {return false}
+    if lhs.backupVersion != rhs.backupVersion {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

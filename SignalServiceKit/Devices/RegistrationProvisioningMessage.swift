@@ -37,6 +37,7 @@ public struct RegistrationProvisioningMessage {
     public let pin: String?
     public let platform: Platform
     public let tier: BackupTier?
+    public let backupVersion: UInt64?
     public let backupTimestamp: UInt64?
     public let backupSizeBytes: UInt64?
     public let restoreMethodToken: String?
@@ -49,6 +50,7 @@ public struct RegistrationProvisioningMessage {
         phoneNumber: E164,
         pin: String?,
         tier: BackupTier?,
+        backupVersion: UInt64?,
         backupTimestamp: UInt64?,
         backupSizeBytes: UInt64?,
         restoreMethodToken: String?
@@ -61,6 +63,7 @@ public struct RegistrationProvisioningMessage {
         self.phoneNumber = phoneNumber
         self.pin = pin
         self.tier = tier
+        self.backupVersion = backupVersion
         self.backupTimestamp = backupTimestamp
         self.backupSizeBytes = backupSizeBytes
         self.restoreMethodToken = restoreMethodToken
@@ -99,6 +102,7 @@ public struct RegistrationProvisioningMessage {
         self.platform = proto.platform == .android ? .android : .ios
 
         self.tier = proto.tier == .paid ? .paid : .free
+        self.backupVersion = proto.backupVersion
         self.backupTimestamp = proto.backupTimestampMs
         self.backupSizeBytes = proto.backupSizeBytes
 
@@ -131,6 +135,10 @@ public struct RegistrationProvisioningMessage {
             case .paid: protoTier = .paid
             }
             messageBuilder.tier = protoTier
+        }
+
+        if let backupVersion {
+            messageBuilder.backupVersion = backupVersion
         }
 
         if let backupTimestamp {

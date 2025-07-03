@@ -18,16 +18,16 @@ public enum BackupImportError: Error {
 }
 
 public class BackupArchiveManagerImpl: BackupArchiveManager {
-    private enum Constants {
-        static let keyValueStoreCollectionName = "MessageBackupManager"
-        static let keyValueStoreHasReservedBackupKey = "HasReservedBackupKey"
-        static let keyValueStoreHasReservedMediaBackupKey = "HasReservedMediaBackupKey"
-        static let keyValueStoreHasRestoredBackupKey = "HasRestoredBackup"
+    public enum Constants {
+        fileprivate static let keyValueStoreCollectionName = "MessageBackupManager"
+        fileprivate static let keyValueStoreHasReservedBackupKey = "HasReservedBackupKey"
+        fileprivate static let keyValueStoreHasReservedMediaBackupKey = "HasReservedMediaBackupKey"
+        fileprivate static let keyValueStoreHasRestoredBackupKey = "HasRestoredBackup"
 
-        static let supportedBackupVersion: UInt64 = 1
+        public static let supportedBackupVersion: UInt64 = 1
 
         /// The ratio of frames processed for which to sample memory.
-        static let memorySamplerFrameRatio: Float = FeatureFlags.Backups.detailedBenchLogging ? 0.001 : 0
+        fileprivate static let memorySamplerFrameRatio: Float = FeatureFlags.Backups.detailedBenchLogging ? 0.001 : 0
     }
 
     private class NotImplementedError: Error {}
