@@ -294,6 +294,8 @@ public class BackupListMediaManagerTests {
 
     // MARK: - Helpers
 
+    typealias Attachment = SignalServiceKit.Attachment
+
     private func insertAttachment(
         mediaName: String,
         mediaTierInfo: Attachment.MediaTierInfo?,
