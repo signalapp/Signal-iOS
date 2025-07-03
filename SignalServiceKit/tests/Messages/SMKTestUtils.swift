@@ -136,7 +136,7 @@ class MockClient {
                                  sessionStore: sessionStore,
                                  identityStore: identityStore,
                                  context: NullContext(),
-                                 usePqRatchet: false)
+                                 usePqRatchet: true)
 
         // bobStore.storeSignedPreKey(2, bobSignedPreKey);
         // bobStore.storePreKey(1, new PreKeyRecord(1, bobPreKey));

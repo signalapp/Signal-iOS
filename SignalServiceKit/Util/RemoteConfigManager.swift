@@ -257,6 +257,10 @@ public class RemoteConfig {
         return !isEnabled(.notificationServiceWebSocketKillSwitch)
     }
 
+    public var usePqRatchet: Bool {
+        return isEnabled(.usePqRatchet)
+    }
+
     public var shouldVerifyPniAndPniIdentityKeyExist: Bool {
         return isEnabled(.shouldVerifyPniAndPniIdentityKeyExist)
     }
@@ -472,6 +476,7 @@ private enum IsEnabledFlag: String, FlagType {
     case shouldVerifyPniAndPniIdentityKeyExist = "ios.shouldVerifyPniAndPniIdentityKeyExist"
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
     case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
+    case usePqRatchet = "global.usePqRatchet"
 
     var isHotSwappable: Bool {
         switch self {
@@ -500,6 +505,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .shouldVerifyPniAndPniIdentityKeyExist: true
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true
         case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true
+        case .usePqRatchet: true
         }
     }
 }

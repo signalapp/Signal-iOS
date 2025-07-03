@@ -59,7 +59,7 @@ public struct TestProtocolRunner {
                                 sessionStore: senderClient.sessionStore,
                                 identityStore: senderClient.identityKeyStore,
                                 context: transaction,
-                                usePqRatchet: false)
+                                usePqRatchet: true)
 
         // Bob does the same:
         try recipientClient.preKeyStore.storePreKey(LibSignalClient.PreKeyRecord(id: prekeyId, privateKey: bobPreKey),
@@ -122,7 +122,7 @@ public struct TestProtocolRunner {
                                     signedPreKeyStore: recipientClient.signedPreKeyStore,
                                     kyberPreKeyStore: recipientClient.kyberPreKeyStore,
                                     context: transaction,
-                                    usePqRatchet: false)
+                                    usePqRatchet: true)
 
         // Finally, Bob sends a message back to acknowledge the pre-key.
         let bobMessage = try encrypt(Data(),

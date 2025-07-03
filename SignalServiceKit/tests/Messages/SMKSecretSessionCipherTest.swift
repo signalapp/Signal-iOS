@@ -9,7 +9,7 @@ import XCTest
 
 // https://github.com/signalapp/libsignal-metadata-java/blob/4a0e0c87ea733d5c007488671b74ace0dc5dcbef/tests/src/test/java/org/signal/libsignal/metadata/SealedSessionCipherTest.java
 // public class SecretSessionCipherTest extends TestCase {
-class SMKSecretSessionCipherTest: XCTestCase {
+class SMKSecretSessionCipherTest: SSKBaseTest {
 
     private lazy var aliceMockClient = MockClient(
         aci: Aci.constantForTesting("aaaaaaaa-7000-11eb-b32a-33b8a8a487a6"),

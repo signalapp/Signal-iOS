@@ -273,7 +273,7 @@ public class SMKSecretSessionCipher: NSObject {
                 signedPreKeyStore: currentSignedPreKeyStore,
                 kyberPreKeyStore: currentKyberPreKeyStore,
                 context: context,
-                usePqRatchet: false)
+                usePqRatchet: RemoteConfig.current.usePqRatchet)
         case .senderKey:
             plaintextData = try groupDecrypt(
                 messageContent.contents,

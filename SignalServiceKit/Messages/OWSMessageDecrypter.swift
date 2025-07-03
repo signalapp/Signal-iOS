@@ -424,7 +424,7 @@ public class OWSMessageDecrypter {
                     signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
                     kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
                     context: transaction,
-                    usePqRatchet: false
+                    usePqRatchet: RemoteConfig.current.usePqRatchet
                 )
             case .senderKey:
                 plaintext = try groupDecrypt(
