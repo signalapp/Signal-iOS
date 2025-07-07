@@ -544,14 +544,6 @@ extension BackupArchive.RestoreFrameError.ErrorType {
         _ error: OwnedAttachmentBackupPointerProto.CreationError
     ) -> Self {
         switch error {
-        case .missingTransitCdnKey:
-            return .invalidProtoData(.filePointerMissingTransitCdnKey)
-        case .missingMediaName:
-            return .invalidProtoData(.filePointerMissingMediaName)
-        case .missingEncryptionKey:
-            return .invalidProtoData(.filePointerMissingEncryptionKey)
-        case .missingDigest:
-            return .invalidProtoData(.filePointerMissingDigest)
         case .dbInsertionError(let error):
             return .databaseInsertionFailed(error)
         }
@@ -592,9 +584,6 @@ extension ReferencedAttachment {
             }
         }
 
-        // We set both kinds of locator for backwards compatibility.
-        // Eventually we should remove the oneOf variant.
-        proto.locator = self.asBackupFilePointerOneOfLocator(currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra)
         proto.locatorInfo = self.asBackupFilePointerLocatorInfo(currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra)
 
         if let incrementalMacInfo = attachment.mediaTierInfo?.incrementalMacInfo ?? attachment.transitTierInfo?.incrementalMacInfo {
@@ -619,86 +608,6 @@ extension ReferencedAttachment {
         // Notes:
         // * incrementalMac and incrementalMacChunkSize unsupported by iOS
         return proto
-    }
-
-    private func asBackupFilePointerOneOfLocator(
-        currentBackupAttachmentUploadEra: String
-    ) -> BackupProto_FilePointer.OneOf_Locator{
-        if
-            FeatureFlags.Backups.remoteExportAlpha,
-            let mediaName = attachment.mediaName,
-            let mediaTierDigest =
-                attachment.streamInfo?.digestSHA256Ciphertext,
-            let mediaTierUnencryptedByteCount =
-                attachment.mediaTierInfo?.unencryptedByteCount
-                ?? attachment.streamInfo?.unencryptedByteCount
-        {
-            var backupLocator = BackupProto_FilePointer.BackupLocator()
-            backupLocator.mediaName = mediaName
-            // Backups use the same encryption key we use locally, always.
-            backupLocator.key = attachment.encryptionKey
-            backupLocator.digest = mediaTierDigest
-            backupLocator.size = mediaTierUnencryptedByteCount
-
-            // We may not have uploaded yet, so we may not know the cdn number.
-            // Set it if we have it; its ok if we don't.
-            if
-                let mediaTierInfo = attachment.mediaTierInfo,
-                let cdnNumber = mediaTierInfo.cdnNumber,
-                // If the upload era has changed, that means our subscription
-                // lapsed and was restarted. Assume the old upload, and therefore
-                // old cdn number, is invalid, and let restoring clients discover
-                // the new cdn number themselves if its still uploaded.
-                mediaTierInfo.uploadEra == currentBackupAttachmentUploadEra
-            {
-                backupLocator.cdnNumber = cdnNumber
-            }
-
-            // Include the transit tier cdn info as a fallback, but only
-            // if the encryption key matches.
-            // When we need this: we create a backup and don't get to copy to
-            // media tier before the device dies; on restore the restoring device
-            // can't find the attachment on the media tier but its on the transit
-            // tier if its been less than 30 days.
-            // When encryption keys don't match: if we reupload (e.g. forward) an
-            // attachment after 3+ days, we rotate to a new encryption key; transit
-            // tier info uses this new random key and can't be the fallback here.
-            if
-                let transitTierInfo = attachment.transitTierInfo,
-                transitTierInfo.encryptionKey == attachment.encryptionKey
-            {
-                backupLocator.transitCdnKey = transitTierInfo.cdnKey
-                backupLocator.transitCdnNumber = transitTierInfo.cdnNumber
-            }
-
-            return .backupLocator(backupLocator)
-        } else if
-            let transitTierInfo = attachment.transitTierInfo
-        {
-            var transitTierLocator = BackupProto_FilePointer.AttachmentLocator()
-            transitTierLocator.cdnKey = transitTierInfo.cdnKey
-            transitTierLocator.cdnNumber = transitTierInfo.cdnNumber
-            BackupArchive.Timestamps.setTimestampIfValid(
-                from: transitTierInfo,
-                \.uploadTimestamp,
-                on: &transitTierLocator,
-                \.uploadTimestamp,
-                allowZero: false
-            )
-            transitTierLocator.key = transitTierInfo.encryptionKey
-            switch transitTierInfo.integrityCheck {
-            case .digestSHA256Ciphertext(let data):
-                transitTierLocator.digest = data
-            case .sha256ContentHash:
-                break
-            }
-            if let unencryptedByteCount = transitTierInfo.unencryptedByteCount {
-                transitTierLocator.size = unencryptedByteCount
-            }
-            return .attachmentLocator(transitTierLocator)
-        } else {
-            return .invalidAttachmentLocator(BackupProto_FilePointer.InvalidAttachmentLocator())
-        }
     }
 
     private func asBackupFilePointerLocatorInfo(
@@ -728,7 +637,6 @@ extension ReferencedAttachment {
             switch transitTierInfo.integrityCheck {
             case .digestSHA256Ciphertext(let data):
                 locatorInfo.integrityCheck = .encryptedDigest(data)
-                locatorInfo.legacyDigest = data
             case .sha256ContentHash(let data):
                 locatorInfo.integrityCheck = .plaintextHash(data)
             }
@@ -739,11 +647,6 @@ extension ReferencedAttachment {
             if let mediaTierCdnNumber = attachment.mediaTierInfo?.cdnNumber {
                 locatorInfo.mediaTierCdnNumber = mediaTierCdnNumber
             }
-            if
-                let mediaName = attachment.mediaName
-            {
-                locatorInfo.legacyMediaName = mediaName
-            }
         }
 
         // Set fields only if some cdn info is available.
@@ -751,11 +654,6 @@ extension ReferencedAttachment {
         case .plaintextHash, .encryptedDigest:
             locatorInfo.key = attachment.encryptionKey
 
-            if
-                let digest = attachment.streamInfo?.digestSHA256Ciphertext
-            {
-                locatorInfo.legacyDigest = digest
-            }
             if
                 let unencryptedByteCount = attachment.streamInfo?.unencryptedByteCount
                     ?? attachment.mediaTierInfo?.unencryptedByteCount

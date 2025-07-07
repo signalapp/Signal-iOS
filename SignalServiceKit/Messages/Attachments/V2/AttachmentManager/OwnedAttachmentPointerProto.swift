@@ -17,10 +17,6 @@ public struct OwnedAttachmentPointerProto {
 
 public struct OwnedAttachmentBackupPointerProto {
     public enum CreationError: Error {
-        case missingTransitCdnKey
-        case missingMediaName
-        case missingEncryptionKey
-        case missingDigest
         case dbInsertionError(Error)
     }
 

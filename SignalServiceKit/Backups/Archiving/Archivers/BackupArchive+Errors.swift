@@ -736,16 +736,6 @@ extension BackupArchive {
                 /// directionality as their parent.)
                 case revisionOfOutgoingMessageMissingOutgoingDetails
 
-                /// A ``BackupProto_FilePointer/AttachmentLocator`` was missing its cdn key.
-                case filePointerMissingTransitCdnKey
-                /// A ``BackupProto_FilePointer/BackupLocator`` was missing its media name.
-                case filePointerMissingMediaName
-                /// A ``BackupProto_FilePointer/AttachmentLocator`` or a
-                /// ``BackupProto_FilePointer/BackupLocator`` was missing the encryption key.
-                case filePointerMissingEncryptionKey
-                /// A ``BackupProto_FilePointer/AttachmentLocator`` or a
-                /// ``BackupProto_FilePointer/BackupLocator`` was missing the digest.
-                case filePointerMissingDigest
                 /// A ``BackupProto_MessageAttachment/clientUuid`` contained an invalid UUID.
                 case invalidAttachmentClientUUID
 
@@ -897,10 +887,6 @@ extension BackupArchive {
                         .learnedProfileUpdateNotFromContact,
                         .revisionOfIncomingMessageMissingIncomingDetails,
                         .revisionOfOutgoingMessageMissingOutgoingDetails,
-                        .filePointerMissingTransitCdnKey,
-                        .filePointerMissingMediaName,
-                        .filePointerMissingEncryptionKey,
-                        .filePointerMissingDigest,
                         .invalidAttachmentClientUUID,
                         .callLinkInvalidRootKey,
                         .callLinkUsedAsChatRecipient,
@@ -1000,10 +986,6 @@ extension BackupArchive {
                         .learnedProfileUpdateNotFromContact,
                         .revisionOfIncomingMessageMissingIncomingDetails,
                         .revisionOfOutgoingMessageMissingOutgoingDetails,
-                        .filePointerMissingTransitCdnKey,
-                        .filePointerMissingMediaName,
-                        .filePointerMissingEncryptionKey,
-                        .filePointerMissingDigest,
                         .invalidAttachmentClientUUID,
                         .callLinkInvalidRootKey,
                         .callLinkUsedAsChatRecipient,
