@@ -433,8 +433,13 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     // We reused a transit tier upload but the source couldn't be found.
                     // That transit tier upload is now invalid.
                     try await db.awaitableWrite { tx in
+                        // Refetch the attachment
+                        guard let attachment = attachmentStore.fetch(id: attachmentStream.id, tx: tx) else {
+                            return
+                        }
+
                         try self.attachmentUploadStore.markTransitTierUploadExpired(
-                            attachment: attachmentStream.attachment,
+                            attachment: attachment,
                             info: transitTierInfo,
                             tx: tx
                         )
@@ -449,6 +454,10 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         }
 
         try await db.awaitableWrite { tx in
+            // Refetch the attachment to ensure other fields are up-to-date.
+            guard let attachmentStream = attachmentStore.fetch(id: attachmentStream.id, tx: tx)?.asStream() else {
+                return
+            }
 
             let mediaTierInfo = Attachment.MediaTierInfo(
                 cdnNumber: cdnNumber,
@@ -508,6 +517,10 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         )
 
         try await db.awaitableWrite { tx in
+            // Refetch the attachment to ensure other fields are up-to-date.
+            guard let attachmentStream = attachmentStore.fetch(id: attachmentStream.id, tx: tx)?.asStream() else {
+                return
+            }
 
             let thumbnailInfo = Attachment.ThumbnailMediaTierInfo(
                 cdnNumber: cdnNumber,
