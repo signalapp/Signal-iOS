@@ -99,6 +99,12 @@ class SystemStoryManagerTest: SSKBaseTest {
         }
 
         try await manager.enqueueOnboardingStoryDownload().awaitable()
+
+        // The above code triggers unstructured asynchronous operations -- delay
+        // the test until those have had a chance to execute.
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { continuation.resume(returning: ()) }
+        }
     }
 
     @MainActor
@@ -168,6 +174,12 @@ class SystemStoryManagerTest: SSKBaseTest {
         try await firstDownload
         try await secondDownload
 
+        // The above code triggers unstructured asynchronous operations -- delay
+        // the test until those have had a chance to execute.
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { continuation.resume(returning: ()) }
+        }
+
         // After we've fulfilled, try again, which should't redownload.
 
         mockSignalService.mockUrlSessionBuilder = { _, _, _ in
@@ -176,6 +188,12 @@ class SystemStoryManagerTest: SSKBaseTest {
         }
 
         try await manager.enqueueOnboardingStoryDownload().awaitable()
+
+        // The above code triggers unstructured asynchronous operations -- delay
+        // the test until those have had a chance to execute.
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { continuation.resume(returning: ()) }
+        }
     }
 
     // MARK: - Viewed state
@@ -229,6 +247,12 @@ class SystemStoryManagerTest: SSKBaseTest {
 
         try await manager.enqueueOnboardingStoryDownload().awaitable()
 
+        // The above code triggers unstructured asynchronous operations -- delay
+        // the test until those have had a chance to execute.
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { continuation.resume(returning: ()) }
+        }
+
         // Mark all the stories viewed.
         let viewedDate = Date().addingTimeInterval(-SystemStoryManager.Constants.postViewingTimeout)
         write { transaction in
@@ -251,6 +275,12 @@ class SystemStoryManagerTest: SSKBaseTest {
                 ),
                 transaction: $0
             )
+        }
+
+        // The above code triggers unstructured asynchronous operations -- delay
+        // the test until those have had a chance to execute.
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { continuation.resume(returning: ()) }
         }
 
         try await manager.cleanUpOnboardingStoryIfNeeded().awaitable()
@@ -278,6 +308,12 @@ class SystemStoryManagerTest: SSKBaseTest {
 
         // Triggering a download should do the cleanup.
         try await manager.enqueueOnboardingStoryDownload().awaitable()
+
+        // The above code triggers unstructured asynchronous operations -- delay
+        // the test until those have had a chance to execute.
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { continuation.resume(returning: ()) }
+        }
 
         read { transaction in
             if let mockManager = SSKEnvironment.shared.systemStoryManagerRef as? SystemStoryManagerMock {
@@ -339,6 +375,12 @@ class SystemStoryManagerTest: SSKBaseTest {
 
         try await manager.enqueueOnboardingStoryDownload().awaitable()
 
+        // The above code triggers unstructured asynchronous operations -- delay
+        // the test until those have had a chance to execute.
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { continuation.resume(returning: ()) }
+        }
+
         // Mark all the stories viewed, but recently so they aren't timed out.
         let viewedDate = Date()
         write { transaction in
@@ -351,6 +393,12 @@ class SystemStoryManagerTest: SSKBaseTest {
                     transaction: transaction
                 )
             }
+        }
+
+        // The above code triggers unstructured asynchronous operations -- delay
+        // the test until those have had a chance to execute.
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { continuation.resume(returning: ()) }
         }
 
         try await manager.cleanUpOnboardingStoryIfNeeded().awaitable()
