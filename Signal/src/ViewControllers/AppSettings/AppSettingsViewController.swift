@@ -127,6 +127,12 @@ class AppSettingsViewController: OWSTableViewController2 {
     }
 
     func updateTableContents() {
+        let isPrimaryDevice = DependenciesBridge.shared.db.read { tx in
+            return DependenciesBridge.shared.tsAccountManager
+                .registrationState(tx: tx)
+                .isPrimaryDevice == true
+        }
+
         let contents = OWSTableContents()
 
         let profileSection = OWSTableSection(items: [
@@ -156,7 +162,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true {
+        if isPrimaryDevice {
             section1.add(.disclosureItem(
                 icon: .settingsLinkedDevices,
                 withText: OWSLocalizedString("LINKED_DEVICES_TITLE", comment: "Menu item and navbar title for the device manager"),
@@ -235,7 +241,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        if FeatureFlags.Backups.settings {
+        if isPrimaryDevice, FeatureFlags.Backups.settings {
             section2.add(.disclosureItem(
                 icon: .backup,
                 withText: OWSLocalizedString(

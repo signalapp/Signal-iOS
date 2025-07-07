@@ -225,6 +225,11 @@ class ExperienceUpgradeManager {
     }
 
     private static func megaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) -> MegaphoneView? {
+        let db = DependenciesBridge.shared.db
+        let deviceStore = DependenciesBridge.shared.deviceStore
+        let localUsernameManager = DependenciesBridge.shared.localUsernameManager
+        let inactiveLinkedDeviceFinder = DependenciesBridge.shared.inactiveLinkedDeviceFinder
+
         switch experienceUpgrade.manifest {
         case .introducingPins:
             return IntroducingPinsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
@@ -233,9 +238,8 @@ class ExperienceUpgradeManager {
         case .notificationPermissionReminder:
             return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .newLinkedDeviceNotification:
-            let mostRecentlyLinkedDeviceDetails = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                try? DependenciesBridge.shared.deviceStore
-                    .mostRecentlyLinkedDeviceDetails(tx: tx)
+            let mostRecentlyLinkedDeviceDetails = db.read { tx in
+                try? deviceStore.mostRecentlyLinkedDeviceDetails(tx: tx)
             }
 
             guard let mostRecentlyLinkedDeviceDetails else {
@@ -250,9 +254,8 @@ class ExperienceUpgradeManager {
                 mostRecentlyLinkedDeviceDetails: mostRecentlyLinkedDeviceDetails
             )
         case .createUsernameReminder:
-            let usernameIsUnset: Bool = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                return DependenciesBridge.shared.localUsernameManager
-                    .usernameState(tx: tx).isExplicitlyUnset
+            let usernameIsUnset: Bool = db.read { tx in
+                return localUsernameManager.usernameState(tx: tx).isExplicitlyUnset
             }
 
             guard usernameIsUnset else {
@@ -276,9 +279,8 @@ class ExperienceUpgradeManager {
                 fromViewController: fromViewController
             )
         case .inactiveLinkedDeviceReminder:
-            let inactiveLinkedDevice: InactiveLinkedDevice? = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                return DependenciesBridge.shared.inactiveLinkedDeviceFinder
-                    .findLeastActiveLinkedDevice(tx: tx)
+            let inactiveLinkedDevice: InactiveLinkedDevice? = db.read { tx in
+                return inactiveLinkedDeviceFinder.findLeastActiveLinkedDevice(tx: tx)
             }
 
             guard let inactiveLinkedDevice else {
@@ -302,7 +304,10 @@ class ExperienceUpgradeManager {
         case .backupKeyReminder:
             return BackupKeyReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .enableBackupsReminder:
-            return BackupEnablementMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+            return BackupEnablementMegaphone(
+                experienceUpgrade: experienceUpgrade,
+                fromViewController: fromViewController
+            )
         case .unrecognized:
             return nil
         }

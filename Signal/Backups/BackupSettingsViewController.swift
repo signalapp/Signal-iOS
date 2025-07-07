@@ -42,6 +42,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
             backupSettingsStore: BackupSettingsStore(),
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
     }
 
@@ -56,7 +57,13 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
+        tsAccountManager: TSAccountManager
     ) {
+        owsPrecondition(
+            db.read { tsAccountManager.registrationState(tx: $0).isPrimaryDevice == true },
+            "Unsafe to let a linked device access Backup Settings!"
+        )
+
         self.accountKeyStore = accountKeyStore
         self.backupAttachmentUploadTracker = BackupSettingsAttachmentUploadTracker(
             backupAttachmentUploadQueueStatusReporter: backupAttachmentUploadQueueStatusReporter,

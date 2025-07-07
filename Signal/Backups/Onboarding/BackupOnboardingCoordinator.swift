@@ -22,6 +22,7 @@ class BackupOnboardingCoordinator {
             backupEnablingManager: AppEnvironment.shared.backupEnablingManager,
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
     }
 
@@ -30,7 +31,13 @@ class BackupOnboardingCoordinator {
         backupEnablingManager: BackupEnablingManager,
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
+        tsAccountManager: TSAccountManager,
     ) {
+        owsPrecondition(
+            db.read { tsAccountManager.registrationState(tx: $0).isPrimaryDevice == true },
+            "Unsafe to let a linked device do Backups Onboarding!"
+        )
+
         self.accountKeyStore = accountKeyStore
         self.backupEnablingManager = backupEnablingManager
         self.backupSubscriptionManager = backupSubscriptionManager
