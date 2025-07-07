@@ -50,7 +50,7 @@ extension Attachment {
         // eligibility to offload.
         switch try mostRecentReference().owner {
         case .message(let messageSource):
-            return messageSource.receivedAtTimestamp + Self.offloadingThresholdMs > currentTimestamp
+            return messageSource.receivedAtTimestamp + Self.offloadingThresholdMs < currentTimestamp
         case .storyMessage:
             // Story messages expire on their own; never offload
             // any attachment owned by a story message.
