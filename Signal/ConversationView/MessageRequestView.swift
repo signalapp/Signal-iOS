@@ -32,6 +32,7 @@ public struct MessageRequestType: Equatable {
     let hasSentMessages: Bool
     let isThreadFromHiddenRecipient: Bool
     let hasReportedSpam: Bool
+    let isLocalUserInvitedMember: Bool
 }
 
 // MARK: -
@@ -151,13 +152,20 @@ class MessageRequestView: UIStackView {
         let finder = InteractionFinder(threadUniqueId: thread.uniqueId)
         let hasSentMessages = finder.existsOutgoingMessage(transaction: transaction)
         let hasReportedSpam = finder.hasUserReportedSpam(transaction: transaction)
+
+        var isLocalUserInvitedMember = false
+        if let groupThread = thread as? TSGroupThread, groupThread.isLocalUserInvitedMember {
+            isLocalUserInvitedMember = groupThread.isLocalUserInvitedMember
+        }
+
         return MessageRequestType(
             isGroupV1Thread: isGroupV1Thread,
             isGroupV2Thread: isGroupV2Thread,
             isThreadBlocked: isThreadBlocked,
             hasSentMessages: hasSentMessages,
             isThreadFromHiddenRecipient: isThreadFromHiddenRecipient,
-            hasReportedSpam: hasReportedSpam
+            hasReportedSpam: hasReportedSpam,
+            isLocalUserInvitedMember: isLocalUserInvitedMember
         )
     }
 
