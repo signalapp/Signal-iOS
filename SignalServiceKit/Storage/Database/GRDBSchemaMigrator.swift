@@ -331,6 +331,7 @@ public class GRDBSchemaMigrator {
         case refactorBackupAttachmentDownload
         case removeAttachmentMediaTierDigestColumn
         case addListMediaTable
+        case recomputeAttachmentMediaNames
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -394,7 +395,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 116
+    public static let grdbSchemaVersionLatest: UInt = 117
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4105,6 +4106,20 @@ public class GRDBSchemaMigrator {
                 index: "index_ListedBackupMediaObject_on_mediaId",
                 on: "ListedBackupMediaObject",
                 columns: ["mediaId"]
+            )
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.recomputeAttachmentMediaNames) { tx in
+            try tx.database.execute(sql: """
+                UPDATE Attachment
+                SET mediaName = CASE
+                    WHEN sha256ContentHash IS NOT NULL AND encryptionKey IS NOT NULL
+                        THEN lower(hex(sha256ContentHash || encryptionKey))
+                    ELSE NULL
+                END;
+                """
             )
 
             return .success(())
