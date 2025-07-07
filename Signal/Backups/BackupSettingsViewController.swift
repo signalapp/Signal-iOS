@@ -1179,7 +1179,6 @@ private extension BackupSettingsViewModel {
             }
             func upgradeFromFreeToPaidPlan() { print("Upgrading!") }
             func manageOrCancelPaidPlan() { print("Managing or canceling!") }
-            func resubscribeToPaidPlan() { print("Resubscribing!") }
 
             func performManualBackup() { print("Manually backing up!") }
             func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) { print("Cellular: \(newShouldAllowBackupUploadsOnCellular)") }
