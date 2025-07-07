@@ -85,7 +85,6 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
                 latestBackupAttachmentUploadUpdate: nil, // Default, loaded after init
                 lastBackupDate: backupSettingsStore.lastBackupDate(tx: tx),
                 lastBackupSizeBytes: backupSettingsStore.lastBackupSizeBytes(tx: tx),
-                backupFrequency: backupSettingsStore.backupFrequency(tx: tx),
                 shouldAllowBackupUploadsOnCellular: backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx)
             )
 
@@ -398,12 +397,6 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
         )
     }
 
-    fileprivate func setBackupFrequency(_ newBackupFrequency: BackupFrequency) {
-        db.write { tx in
-            backupSettingsStore.setBackupFrequency(newBackupFrequency, tx: tx)
-        }
-    }
-
     fileprivate func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) {
         db.write { tx in
             backupSettingsStore.setShouldAllowBackupUploadsOnCellular(newShouldAllowBackupUploadsOnCellular, tx: tx)
@@ -492,7 +485,6 @@ private class BackupSettingsViewModel: ObservableObject {
         func manageOrCancelPaidPlan()
 
         func performManualBackup()
-        func setBackupFrequency(_ newBackupFrequency: BackupFrequency)
         func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool)
 
         func showViewBackupKey()
@@ -525,7 +517,6 @@ private class BackupSettingsViewModel: ObservableObject {
 
     @Published var lastBackupDate: Date?
     @Published var lastBackupSizeBytes: UInt64?
-    @Published var backupFrequency: BackupFrequency
     @Published var shouldAllowBackupUploadsOnCellular: Bool
 
     weak var actionsDelegate: ActionsDelegate?
@@ -538,7 +529,6 @@ private class BackupSettingsViewModel: ObservableObject {
         latestBackupAttachmentUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?,
         lastBackupDate: Date?,
         lastBackupSizeBytes: UInt64?,
-        backupFrequency: BackupFrequency,
         shouldAllowBackupUploadsOnCellular: Bool,
     ) {
         self.backupEnabledState = backupEnabledState
@@ -546,7 +536,6 @@ private class BackupSettingsViewModel: ObservableObject {
         self.latestBackupAttachmentUploadUpdate = latestBackupAttachmentUploadUpdate
         self.lastBackupDate = lastBackupDate
         self.lastBackupSizeBytes = lastBackupSizeBytes
-        self.backupFrequency = backupFrequency
         self.shouldAllowBackupUploadsOnCellular = shouldAllowBackupUploadsOnCellular
 
         self.loadBackupPlanQueue = SerialTaskQueue()
@@ -635,11 +624,6 @@ private class BackupSettingsViewModel: ObservableObject {
 
     func performManualBackup() {
         actionsDelegate?.performManualBackup()
-    }
-
-    func setBackupFrequency(_ newBackupFrequency: BackupFrequency) {
-        backupFrequency = newBackupFrequency
-        actionsDelegate?.setBackupFrequency(newBackupFrequency)
     }
 
     func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) {
@@ -1138,40 +1122,6 @@ private struct BackupDetailsView: View {
             }
         }
 
-        Picker(
-            OWSLocalizedString(
-                "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL",
-                comment: "Label for a menu item explaining the frequency of automatic backups."
-            ),
-            selection: Binding(
-                get: { viewModel.backupFrequency },
-                set: { viewModel.setBackupFrequency($0) }
-            )
-        ) {
-            ForEach(BackupFrequency.allCases) { frequency in
-                let localizedString: String = switch frequency {
-                case .daily: OWSLocalizedString(
-                    "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY",
-                    comment: "Text describing that a user's backup will be automatically performed daily."
-                )
-                case .weekly: OWSLocalizedString(
-                    "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_WEEKLY",
-                    comment: "Text describing that a user's backup will be automatically performed weekly."
-                )
-                case .monthly: OWSLocalizedString(
-                    "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MONTHLY",
-                    comment: "Text describing that a user's backup will be automatically performed monthly."
-                )
-                case .manually: OWSLocalizedString(
-                    "BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MANUALLY",
-                    comment: "Text describing that a user's backup will only be performed manually."
-                )
-                }
-
-                Text(localizedString).tag(frequency)
-            }
-        }
-
         HStack {
             Toggle(
                 OWSLocalizedString(
@@ -1232,7 +1182,6 @@ private extension BackupSettingsViewModel {
             func resubscribeToPaidPlan() { print("Resubscribing!") }
 
             func performManualBackup() { print("Manually backing up!") }
-            func setBackupFrequency(_ newBackupFrequency: BackupFrequency) { print("Frequency: \(newBackupFrequency)") }
             func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) { print("Cellular: \(newShouldAllowBackupUploadsOnCellular)") }
 
             func showViewBackupKey() { print("Showing View Backup Key!") }
@@ -1250,7 +1199,6 @@ private extension BackupSettingsViewModel {
             },
             lastBackupDate: Date().addingTimeInterval(-1 * .day),
             lastBackupSizeBytes: 2_400_000_000,
-            backupFrequency: .daily,
             shouldAllowBackupUploadsOnCellular: false
         )
         let actionsDelegate = PreviewActionsDelegate(backupPlanLoadResult: backupPlanLoadResult)

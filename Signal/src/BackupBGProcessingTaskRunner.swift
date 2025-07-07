@@ -44,32 +44,12 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
                 break
             }
             let lastBackupDate = (backupSettingsStore.lastBackupDate(tx: tx) ?? Date(millisecondsSince1970: 0))
-            switch backupSettingsStore.backupFrequency(tx: tx) {
-            case .daily:
-                // Add in a little buffer, here and for all the others, so that
-                // we can roughly run at any time of day every day but aren't
-                // always creeping forward with a strict minimum. For example,
-                // if we run at 10pm one day 9pm the next is fine; we don't want
-                // to run at 10:30 then 11 then 3, then 4 etc with strict min dates.
-                return .after(lastBackupDate.addingTimeInterval(.day - (.hour * 4)))
-            case .weekly:
-                return .after(lastBackupDate.addingTimeInterval(.week - (.hour * 4)))
-            case .monthly:
-                if
-                    let oneMonthLater = Calendar.current.date(
-                        byAdding: .month,
-                        value: 1,
-                        to: lastBackupDate
-                    )
-                {
-                    return .after(oneMonthLater.addingTimeInterval(.hour * -4))
-                } else {
-                    owsFailDebug("Unable to add month to date")
-                    return .after(lastBackupDate.addingTimeInterval(.week * 4 - (.hour * 4)))
-                }
-            case .manually:
-                return .never
-            }
+
+            // Add in a little buffer so that we can roughly run at any time of
+            // day, every day, but aren't always creeping forward with a strict
+            // minimum. For example, if we run at 10pm one day then 9pm the next
+            // is fine.
+            return .after(lastBackupDate.addingTimeInterval(.day - (.hour * 4)))
         }
     }
 }

@@ -3,15 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public enum BackupFrequency: Int, CaseIterable, Identifiable {
-    case daily = 1
-    case weekly = 2
-    case monthly = 3
-    case manually = 4
-
-    public var id: Int { rawValue }
-}
-
 public enum BackupPlan: RawRepresentable {
     case disabled
     case free
@@ -60,7 +51,6 @@ public struct BackupSettingsStore {
         static let firstBackupDate = "firstBackupDate"
         static let lastBackupDate = "lastBackupDate"
         static let lastBackupSizeBytes = "lastBackupSizeBytes"
-        static let backupFrequency = "backupFrequency"
         static let isBackupAttachmentDownloadQueueSuspended = "isBackupAttachmentDownloadQueueSuspended"
         static let shouldAllowBackupDownloadsOnCellular = "shouldAllowBackupDownloadsOnCellular"
         static let shouldAllowBackupUploadsOnCellular = "shouldAllowBackupUploadsOnCellular"
@@ -141,23 +131,6 @@ public struct BackupSettingsStore {
 
     public func setLastBackupSizeBytes(_ lastBackupSizeBytes: UInt64, tx: DBWriteTransaction) {
         kvStore.setUInt64(lastBackupSizeBytes, key: Keys.lastBackupSizeBytes, transaction: tx)
-    }
-
-    // MARK: -
-
-    public func backupFrequency(tx: DBReadTransaction) -> BackupFrequency {
-        if
-            let persisted = kvStore.getInt(Keys.backupFrequency, transaction: tx)
-                .flatMap({ BackupFrequency(rawValue: $0) })
-        {
-            return persisted
-        }
-
-        return .daily
-    }
-
-    public func setBackupFrequency(_ backupFrequency: BackupFrequency, tx: DBWriteTransaction) {
-        kvStore.setInt(backupFrequency.rawValue, key: Keys.backupFrequency, transaction: tx)
     }
 
     // MARK: -
