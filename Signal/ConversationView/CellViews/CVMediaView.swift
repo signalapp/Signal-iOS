@@ -89,7 +89,11 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     }
 
     private func configureForUndownloadedMedia(_ attachment: Attachment) {
-        tryToConfigureForBlurHash(attachment: attachment)
+        if let thumbnail = attachment.asBackupThumbnail() {
+            configureForBackupThumbnail(attachmentBackupThumbnail: thumbnail)
+        } else {
+            tryToConfigureForBlurHash(attachment: attachment)
+        }
 
         _ = addProgressIfNecessary()
     }
