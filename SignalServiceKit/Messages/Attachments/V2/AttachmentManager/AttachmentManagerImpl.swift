@@ -567,18 +567,31 @@ public class AttachmentManagerImpl: AttachmentManager {
             }
 
             return .success(())
-        } catch let AttachmentInsertError.duplicateMediaName(existingAttachmentId) {
-            // We already have an attachment with the same mediaName (likely from this same
-            // backup). Just point the reference at the existing attachment.
-            do {
-                try attachmentStore.addOwner(
-                    referenceParams,
-                    for: existingAttachmentId,
-                    tx: tx
-                )
-                return .success(())
-            } catch {
-                return .failure(.dbInsertionError(error))
+        } catch let error as AttachmentInsertError {
+            switch error {
+            case .duplicatePlaintextHash(let existingAttachmentId):
+                // Ideally, exporting clients would dedupe by plaintext hash, merging
+                // any duplicates so every copy with the same plaintext hash in the
+                // backup also has the same encryption key (and therefore same mediaName).
+                // However, there have been bugs where this is not the case. We can treat
+                // duplicate plaintext hashes the same as duplicate media name (point the
+                // duplicate to the first attachment), but this does drop cdn info if,
+                // for example, this copy had valid cdn info and the older one did not.
+                // It is on the exporter to dedupe and merge as needed so this doesn't happen.
+                fallthrough
+            case .duplicateMediaName(let existingAttachmentId):
+                // We already have an attachment with the same mediaName (likely from this same
+                // backup). Just point the reference at the existing attachment.
+                do {
+                    try attachmentStore.addOwner(
+                        referenceParams,
+                        for: existingAttachmentId,
+                        tx: tx
+                    )
+                    return .success(())
+                } catch {
+                    return .failure(.dbInsertionError(error))
+                }
             }
         } catch {
             return .failure(.dbInsertionError(error))

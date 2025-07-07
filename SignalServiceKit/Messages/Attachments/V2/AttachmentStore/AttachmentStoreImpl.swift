@@ -695,9 +695,10 @@ public class AttachmentStoreImpl: AttachmentStore {
         tx: DBWriteTransaction
     ) throws {
         // Find if there is already an attachment with the same plaintext hash.
-        let existingRecord = try attachmentParams.streamInfo.map { streamInfo in
+        let sha256ContentHash = attachmentParams.sha256ContentHash ?? attachmentParams.streamInfo?.sha256ContentHash
+        let existingRecord = try sha256ContentHash.map {
             return try fetchAttachmentThrows(
-                sha256ContentHash: streamInfo.sha256ContentHash,
+                sha256ContentHash: $0,
                 tx: tx
             ).map(Attachment.Record.init(attachment:))
         } ?? nil
