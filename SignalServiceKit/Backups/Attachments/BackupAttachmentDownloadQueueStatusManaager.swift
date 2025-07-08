@@ -73,9 +73,9 @@ public protocol BackupAttachmentDownloadQueueStatusManager: BackupAttachmentDown
     func beginObservingIfNecessary() -> BackupAttachmentDownloadQueueStatus
 
     /// Synchronously check remaining disk space.
-    /// If there is sufficient space, early exit and return nil.
-    /// Otherwise, await a full state update and return the updated status.
-    nonisolated func quickCheckDiskSpaceForDownloads() async -> BackupAttachmentDownloadQueueStatus?
+    /// If there is sufficient space, early exit.
+    /// Otherwise, await a full state update.
+    nonisolated func quickCheckDiskSpaceForDownloads() async
 
     /// Checks if the error should change the status (e.g. out of disk space errors should stop subsequent downloads)
     /// Returns nil if the error has no effect on the status (though note the status may be changed for any other concurrent
@@ -132,16 +132,13 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         }
     }
 
-    public nonisolated func quickCheckDiskSpaceForDownloads() async -> BackupAttachmentDownloadQueueStatus? {
+    public nonisolated func quickCheckDiskSpaceForDownloads() async {
         let requiredDiskSpace = getRequiredDiskSpace()
         if
             let availableDiskSpace = getAvailableDiskSpace(),
             availableDiskSpace < requiredDiskSpace
         {
             await availableDiskSpaceMaybeDidChange()
-            return await state.asQueueStatus
-        } else {
-            return nil
         }
     }
 

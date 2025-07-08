@@ -463,18 +463,17 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             struct NeedsInternetError: Error {}
             struct NeedsToBeRegisteredError: Error {}
 
-            switch await statusManager.quickCheckDiskSpaceForDownloads() {
-            case nil:
-                // No state change, keep going.
-                break
-            case .suspended:
-                try? await loader.stop()
-                return .retryableError(SuspendedError())
+            await statusManager.quickCheckDiskSpaceForDownloads()
+
+            switch await statusManager.currentStatus() {
             case .running:
                 break
             case .empty:
                 // The queue will stop on its own, finish this task.
                 break
+            case .suspended:
+                try? await loader.stop()
+                return .retryableError(SuspendedError())
             case .lowDiskSpace:
                 try? await taskQueueLoader?.stop()
                 return .retryableError(NeedsDiskSpaceError())
