@@ -633,7 +633,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
         case .complete:
             OWSLocalizedString(
                 "RESTORING_MEDIA_BANNER_FINISHED_TITLE",
-                comment: "Title shown on chat list banner for restoring media from a backupis finished"
+                comment: "Title shown on chat list banner for restoring media from a backup is finished"
             )
         case nil:
             nil
@@ -800,15 +800,27 @@ private class BackupAttachmentDownloadProgressView: UIView {
     }
 
     private func presentSkipRestoreSheet() {
+        let backupPlan = chatListViewController?.viewState.backupDownloadProgressViewState.backupPlan
+
+        let message: String = switch backupPlan {
+        case nil, .disabled, .free, .paid:
+            OWSLocalizedString(
+                "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE",
+                comment: "Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space."
+            )
+        case .paidExpiringSoon:
+            OWSLocalizedString(
+                "RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE",
+                comment: "Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring."
+            )
+        }
+
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE",
                 comment: "Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space."
             ),
-            message: OWSLocalizedString(
-                "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE",
-                comment: "Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space."
-            )
+            message: message
         )
         actionSheet.addAction(.init(
             title: OWSLocalizedString(
