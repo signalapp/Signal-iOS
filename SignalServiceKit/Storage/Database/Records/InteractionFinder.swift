@@ -1152,7 +1152,7 @@ public class InteractionFinder: NSObject {
             SELECT COUNT(*)
             FROM (
              SELECT * FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
+            \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
             WHERE \(interactionColumn: .recordType) IN (?, ?)
             LIMIT ?)
             """
