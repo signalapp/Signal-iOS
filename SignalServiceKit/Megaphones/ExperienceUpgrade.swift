@@ -31,10 +31,10 @@ public class ExperienceUpgrade: SDSCodableModel, Decodable {
     public private(set) var firstViewedTimestamp: TimeInterval
 
     /// Timestamp when this upgrade was last snoozed.
-    public private(set) var lastSnoozedTimestamp: TimeInterval
+    public internal(set) var lastSnoozedTimestamp: TimeInterval
 
     /// Number of times this upgrade has been snoozed.
-    public private(set) var snoozeCount: UInt
+    public internal(set) var snoozeCount: UInt
 
     /// Whether this upgrade should be considered fully complete.
     public private(set) var isComplete: Bool

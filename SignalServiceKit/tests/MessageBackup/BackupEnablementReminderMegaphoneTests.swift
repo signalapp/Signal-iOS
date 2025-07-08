@@ -14,6 +14,7 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
     private let db = InMemoryDB()
     private let backupSettingsStore = BackupSettingsStore()
     private var contactThread: TSContactThread!
+    private var experienceUpgrade: ExperienceUpgrade!
 
     override func setUp() {
         super.setUp()
@@ -24,6 +25,7 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
             phoneNumber: testPhone.stringValue,
             cache: SignalServiceAddressCache()
         ))
+        experienceUpgrade = ExperienceUpgrade.makeNew(withManifest: ExperienceUpgradeManifest.enableBackupsReminder)
     }
 
     private func insertInteraction(thread: TSThread, db: Database) {
@@ -74,6 +76,23 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
             let shouldShowBackupEnablementReminder = ExperienceUpgradeManifest.checkPreconditionsForBackupEnablementReminder(transaction: transaction)
             XCTAssertTrue(shouldShowBackupEnablementReminder, "Should show reminder if user has enough messages")
         }
+    }
+
+    func testPreconditionsForBackupKeyMegaphone_snoozed() throws {
+        experienceUpgrade.snoozeCount = 1
+
+        experienceUpgrade.lastSnoozedTimestamp = Date().addingTimeInterval(-25 * TimeInterval.day).timeIntervalSince1970
+        XCTAssertTrue(experienceUpgrade.isSnoozed, "should still be snoozed if last snooze was recent")
+
+        experienceUpgrade.lastSnoozedTimestamp = Date().addingTimeInterval(-31 * TimeInterval.day).timeIntervalSince1970
+        XCTAssertFalse(experienceUpgrade.isSnoozed, "should not be snoozed if last snooze was long enough ago")
+
+        experienceUpgrade.snoozeCount = 2
+        experienceUpgrade.lastSnoozedTimestamp = Date().addingTimeInterval(-31 * TimeInterval.day).timeIntervalSince1970
+        XCTAssertTrue(experienceUpgrade.isSnoozed, "should still be snoozed if last snooze was recent")
+
+        experienceUpgrade.lastSnoozedTimestamp = Date().addingTimeInterval(-91 * TimeInterval.day).timeIntervalSince1970
+        XCTAssertFalse(experienceUpgrade.isSnoozed, "should not still be snoozed if last snooze was long enough ago")
     }
 }
 

@@ -395,10 +395,10 @@ extension ExperienceUpgradeManifest {
             }()
 
             return Double(daysToSnooze) * .day
-        case
-                .contactPermissionReminder,
-                .enableBackupsReminder:
+        case .contactPermissionReminder:
             return 30 * .day
+        case .enableBackupsReminder:
+            return snoozeCount == 1 ? 30 * .day : 90 * .day
         case .unrecognized:
             return .infinity
         }
