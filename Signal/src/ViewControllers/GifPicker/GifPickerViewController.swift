@@ -546,7 +546,11 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     public func tryToSearch() async {
         let query = searchBar.text!.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        await search(query: query)
+        if query.isEmpty {
+            await loadTrending()
+        } else {
+            await search(query: query)
+        }
     }
 
     private func loadTrending() async {
