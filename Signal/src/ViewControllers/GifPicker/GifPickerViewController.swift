@@ -143,8 +143,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self)
-
         progressiveSearchTimer?.invalidate()
     }
 
