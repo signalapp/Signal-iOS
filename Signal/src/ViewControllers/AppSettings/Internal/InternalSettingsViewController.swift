@@ -4,6 +4,7 @@
 //
 
 import AVFoundation
+import GRDB
 import SignalServiceKit
 import SignalUI
 
@@ -113,6 +114,46 @@ class InternalSettingsViewController: OWSTableViewController2 {
                             DispatchQueue.main.async { modalActivityIndicator.dismiss() }
                         }
                     }
+                }
+            }
+        ))
+        debugSection.add(.actionItem(
+            withText: "Check for orphaned attachments",
+            actionBlock: { [weak self] in
+                guard let self else { return }
+                ModalActivityIndicatorViewController.present(
+                    fromViewController: self
+                ) { modalActivityIndicator -> Void in
+                    var attachmentDirFiles = Set(try! OWSFileSystem.recursiveFilesInDirectory(AttachmentStream.attachmentsDirectory().path))
+                    DependenciesBridge.shared.db.read { tx in
+                        let cursor = try! Attachment.Record
+                            .filter(
+                                Column(Attachment.Record.CodingKeys.localRelativeFilePath) != nil
+                                || Column(Attachment.Record.CodingKeys.localRelativeFilePathThumbnail) != nil
+                                || Column(Attachment.Record.CodingKeys.audioWaveformRelativeFilePath) != nil
+                                || Column(Attachment.Record.CodingKeys.videoStillFrameRelativeFilePath) != nil
+                            )
+                            .fetchCursor(tx.database)
+                        while let attachmentRecord = try! cursor.next() {
+                            for relFilePath in attachmentRecord.allFilesRelativePaths {
+                                let absolutePath = AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: relFilePath).path
+                                attachmentDirFiles.remove(absolutePath)
+                            }
+                        }
+                    }
+                    if attachmentDirFiles.isEmpty {
+                        modalActivityIndicator.dismiss(animated: true, completion: {
+                            self.presentToast(text: "No orphans!")
+                        })
+                        return
+                    }
+                    var byteCount: UInt = 0
+                    for file in attachmentDirFiles {
+                        byteCount += OWSFileSystem.fileSize(ofPath: file)?.uintValue ?? 0
+                    }
+                    modalActivityIndicator.dismiss(animated: true, completion: {
+                        self.presentToast(text: "\(attachmentDirFiles.count) orphans totalling \(OWSFormat.formatFileSize(UInt(byteCount), maximumFractionalDigits: 0))")
+                    })
                 }
             }
         ))

@@ -50,6 +50,15 @@ extension Attachment {
         let transitTierIncrementalMacChunkSize: UInt32?
         let lastFullscreenViewTimestamp: UInt64?
 
+        public var allFilesRelativePaths: [String] {
+            return [
+                localRelativeFilePath,
+                localRelativeFilePathThumbnail,
+                videoStillFrameRelativeFilePath,
+                audioWaveformRelativeFilePath
+            ].compacted()
+        }
+
         // MARK: - Coding Keys
 
         public enum CodingKeys: String, CodingKey {
