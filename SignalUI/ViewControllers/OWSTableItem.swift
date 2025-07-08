@@ -250,6 +250,7 @@ public class OWSTableItem {
 
     public static func `switch`(
         withText text: String,
+        subtitle: String? = nil,
         accessibilityIdentifier: String? = nil,
         isOn: @escaping (() -> Bool),
         isEnabled: @escaping (() -> Bool) = { true },
@@ -258,6 +259,7 @@ public class OWSTableItem {
         return OWSTableItem(customCellBlock: {
             let cell = OWSTableItem.buildCell(
                 itemName: text,
+                subtitle: subtitle,
                 accessibilityIdentifier: accessibilityIdentifier
             )
 
@@ -506,6 +508,7 @@ public extension OWSTableItem {
         } else {
             let subtitleLabel = UILabel()
             subtitleLabel.text = subtitle
+            subtitleLabel.numberOfLines = 0
             subtitleLabel.textColor = accessoryGray()
             subtitleLabel.font = .dynamicTypeFootnoteClamped
 

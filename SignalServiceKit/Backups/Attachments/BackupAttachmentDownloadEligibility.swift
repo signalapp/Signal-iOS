@@ -8,7 +8,7 @@
 ///
 /// For any given attachment, it may be eligibile to download from the media tier (backup),
 /// transit tier, only eligibile to download its thumbnail, or not eligible at all.
-internal struct BackupAttachmentDownloadEligibility {
+public struct BackupAttachmentDownloadEligibility {
 
     /// nil = isn't on transit tier at all, can't be downloaded.
     let thumbnailMediaTierState: QueuedBackupAttachmentDownload.State?
@@ -261,6 +261,10 @@ internal struct BackupAttachmentDownloadEligibility {
                 fallthrough
             }
         case .free, .paid, .paidExpiringSoon:
+            if Self.disableTransitTierDownloadsOverride {
+                return nil
+            }
+
             // Download if the upload was < 45 days old,
             // otherwise don't bother trying automatically.
             // (The user could still try a manual download later).
@@ -273,6 +277,14 @@ internal struct BackupAttachmentDownloadEligibility {
             } else {
                 return nil
             }
+        }
+    }
+
+    public static var disableTransitTierDownloadsOverride: Bool {
+        get { DebugFlags.internalSettings && UserDefaults.standard.bool(forKey: "disableTransitTierDownloadsOverride") }
+        set {
+            guard DebugFlags.internalSettings else { return }
+            UserDefaults.standard.set(newValue, forKey: "disableTransitTierDownloadsOverride")
         }
     }
 }

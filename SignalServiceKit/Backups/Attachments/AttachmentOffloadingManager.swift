@@ -8,11 +8,25 @@ import GRDB
 extension Attachment {
     /// How long we keep attachment files locally by default when "optimize local storage"
     /// is enabled. Measured from the receive time of the most recent owning message.
-    public static let offloadingThresholdMs: UInt64 = .dayInMs * 30
+    public static var offloadingThresholdMs: UInt64 {
+        if offloadingThresholdOverride { return 0 }
+        return .dayInMs * 30
+    }
 
     /// How long we keep attachment files locally after viewing them when "optimize local storage"
     /// is enabled.
-    private static let offloadingViewThresholdMs: UInt64 = .dayInMs * 7
+    private static var offloadingViewThresholdMs: UInt64 {
+        if offloadingThresholdOverride { return 0 }
+        return .dayInMs * 7
+    }
+
+    public static var offloadingThresholdOverride: Bool {
+        get { DebugFlags.internalSettings && UserDefaults.standard.bool(forKey: "offloadingThresholdOverride") }
+        set {
+            guard DebugFlags.internalSettings else { return }
+            UserDefaults.standard.set(newValue, forKey: "offloadingThresholdOverride")
+        }
+    }
 
     /// Returns true if the given attachment should be offloaded (have its local file(s) deleted)
     /// because it has met the criteria to be stored exclusively in the backup media tier.

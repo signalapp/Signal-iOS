@@ -117,16 +117,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         ))
 
-        if mode != .registration {
-            debugSection.add(.actionItem(withText: "Validate Message Backup") {
-                self.validateMessageBackupProto()
-            })
-
-            debugSection.add(.actionItem(withText: "Export Message Backup proto") {
-                self.exportMessageBackupProto()
-            })
-        }
-
         if mode == .registration {
             debugSection.add(.actionItem(withText: "Submit debug logs") {
                 DebugLogs.submitLogs(supportTag: "Registration", dumper: .fromGlobals())
@@ -134,6 +124,40 @@ class InternalSettingsViewController: OWSTableViewController2 {
         }
 
         contents.add(debugSection)
+
+        let backupsSection = OWSTableSection(title: "Backups")
+
+        if mode != .registration {
+            backupsSection.add(.actionItem(withText: "Validate Message Backup") {
+                self.validateMessageBackupProto()
+            })
+
+            backupsSection.add(.actionItem(withText: "Export Message Backup proto") {
+                self.exportMessageBackupProto()
+            })
+        }
+
+        backupsSection.add(.switch(
+            withText: "Offload all attachments",
+            subtitle: "If on and \"Optimize Storage\" enabled, offload all attachments instead of only those >30d old",
+            isOn: { Attachment.offloadingThresholdOverride },
+            actionBlock: { _ in
+                Attachment.offloadingThresholdOverride = !Attachment.offloadingThresholdOverride
+            }
+        ))
+        backupsSection.add(.switch(
+            withText: "Disable transit tier downloads",
+            subtitle: "Only download backed-up media, never last 45 days free tier media",
+            isOn: { BackupAttachmentDownloadEligibility.disableTransitTierDownloadsOverride },
+            actionBlock: { _ in
+                BackupAttachmentDownloadEligibility.disableTransitTierDownloadsOverride =
+                    !BackupAttachmentDownloadEligibility.disableTransitTierDownloadsOverride
+            }
+        ))
+
+        if backupsSection.items.isEmpty.negated {
+            contents.add(backupsSection)
+        }
 
         let (
             contactThreadCount,
