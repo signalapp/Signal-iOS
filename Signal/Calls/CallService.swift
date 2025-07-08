@@ -202,7 +202,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     @MainActor
     private func rebuildCallUIAdapterIfNeeded() {
-        guard self.shouldRebuildCallUIAdapter else {
+        guard self.shouldRebuildCallUIAdapter, self.callServiceState.currentCall == nil else {
             return
         }
         self.shouldRebuildCallUIAdapter = false
@@ -267,10 +267,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             }
         }
 
-        if newValue == nil {
-            MainActor.assumeIsolated {
-                self.rebuildCallUIAdapterIfNeeded()
-            }
+        MainActor.assumeIsolated {
+            self.rebuildCallUIAdapterIfNeeded()
         }
 
         switch newValue?.mode {
