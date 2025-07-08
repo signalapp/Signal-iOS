@@ -248,6 +248,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     _outgoingMessageSchemaVersion = TSOutgoingMessageSchemaVersion;
     _changeActionsProtoData = outgoingMessageBuilder.groupChangeProtoData;
     _isVoiceMessage = outgoingMessageBuilder.isVoiceMessage;
+    _wasNotCreatedLocally = outgoingMessageBuilder.wasNotCreatedLocally;
 
     return self;
 }

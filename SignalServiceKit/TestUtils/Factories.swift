@@ -135,6 +135,7 @@ public class OutgoingMessageFactory: Factory {
             isViewOnceMessage: isViewOnceMessageBuilder(),
             isViewOnceComplete: false,
             wasRemotelyDeleted: false,
+            wasNotCreatedLocally: false,
             groupChangeProtoData: groupChangeProtoDataBuilder(),
             storyAuthorAci: storyAuthorAciBuilder(),
             storyTimestamp: storyTimestampBuilder(),

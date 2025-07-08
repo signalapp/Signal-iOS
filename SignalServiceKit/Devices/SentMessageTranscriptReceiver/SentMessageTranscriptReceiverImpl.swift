@@ -210,6 +210,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             isViewOnceMessage: messageParams.isViewOnceMessage,
             isViewOnceComplete: false,
             wasRemotelyDeleted: false,
+            wasNotCreatedLocally: true,
             groupChangeProtoData: nil,
             storyAuthorAci: messageParams.storyAuthorAci,
             storyTimestamp: messageParams.storyTimestamp,

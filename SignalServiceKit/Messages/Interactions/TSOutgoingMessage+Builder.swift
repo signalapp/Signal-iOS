@@ -10,6 +10,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
     public var isVoiceMessage: Bool
     public var groupMetaMessage: TSGroupMetaMessage
     public var groupChangeProtoData: Data?
+    public var wasNotCreatedLocally: Bool
 
     @nonobjc
     public init(
@@ -28,6 +29,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         isViewOnceMessage: Bool,
         isViewOnceComplete: Bool,
         wasRemotelyDeleted: Bool,
+        wasNotCreatedLocally: Bool,
         groupChangeProtoData: Data?,
         storyAuthorAci: Aci?,
         storyTimestamp: UInt64?,
@@ -41,6 +43,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         self.isVoiceMessage = isVoiceMessage
         self.groupMetaMessage = groupMetaMessage
         self.groupChangeProtoData = groupChangeProtoData
+        self.wasNotCreatedLocally = wasNotCreatedLocally
 
         super.init(
             thread: thread,
@@ -84,6 +87,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         isViewOnceMessage: Bool = false,
         isViewOnceComplete: Bool = false,
         wasRemotelyDeleted: Bool = false,
+        wasNotCreatedLocally: Bool = false,
         groupChangeProtoData: Data? = nil,
         storyAuthorAci: Aci? = nil,
         storyTimestamp: UInt64? = nil,
@@ -110,6 +114,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
             isViewOnceMessage: isViewOnceMessage,
             isViewOnceComplete: isViewOnceComplete,
             wasRemotelyDeleted: wasRemotelyDeleted,
+            wasNotCreatedLocally: wasNotCreatedLocally,
             groupChangeProtoData: groupChangeProtoData,
             storyAuthorAci: storyAuthorAci,
             storyTimestamp: storyTimestamp,

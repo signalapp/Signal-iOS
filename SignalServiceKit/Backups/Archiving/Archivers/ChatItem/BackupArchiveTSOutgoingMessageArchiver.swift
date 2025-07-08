@@ -530,6 +530,7 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchiveTSMessageEditHist
                 isViewOnceMessage: false,
                 isViewOnceComplete: false,
                 wasRemotelyDeleted: false,
+                wasNotCreatedLocally: true,
                 groupChangeProtoData: nil,
                 // We never restore stories.
                 storyAuthorAci: nil,
