@@ -544,13 +544,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     public func tryToSearch() async {
-        guard let text = searchBar.text else {
-            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("GIF_PICKER_VIEW_MISSING_QUERY",
-                                                           comment: "Alert message shown when user tries to search for GIFs without entering any search terms."))
-            return
-        }
-
-        let query = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let query = searchBar.text!.trimmingCharacters(in: .whitespacesAndNewlines)
 
         await search(query: query)
     }
