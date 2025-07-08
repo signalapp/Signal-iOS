@@ -673,6 +673,36 @@
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
 "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "You must be registered to disable Backups.";
 
+/* Title for a button shown in Backup Settings that lets a user cancel an in-progress download. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_CANCEL_DOWNLOAD" = "Cancel Download";
+
+/* Title for a button shown in Backup Settings that lets a user initiate an available download. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_INITIATE_DOWNLOAD" = "Download";
+
+/* Title for a button shown in Backup Settings that lets a user resume a download paused due to needing Wi-Fi. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_RESUME_DOWNLOAD_WITHOUT_WIFI" = "Resume Download";
+
+/* Subtitle for a progress bar tracking downloads that are paused because of low battery. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Download paused: device has low battery";
+
+/* Subtitle for a progress bar tracking downloads that are paused because they need more disk space available. Embeds {{ the amount of space needed as a file size, e.g. 100 MB }}. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_DISK_SPACE" = "Not enough space to download your media. To continue free up %1$@ of space.";
+
+/* Subtitle for a progress bar tracking downloads that are paused because they need internet. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Download paused: no internet…";
+
+/* Subtitle for a progress bar tracking downloads that are paused because they need WiFi. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Download paused: waiting for Wi-Fi";
+
+/* Subtitle for a progress bar tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_RUNNING" = "Downloading %1$@ of %2$@ (%3$@)";
+
+/* Subtitle for a view explaining that downloads are available but not running. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED" = "You have %1$@ of media that's not on this device.";
+
+/* Subtitle for a view explaining that downloads are available but not running, and the user's paid subscription is expiring. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "You have %1$@ of media that's not on this device. Without a paid subscription media can't be offloaded.";
+
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Back Up Using Cellular";
 
@@ -699,6 +729,15 @@
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Re-enable Backups";
+
+/* Title for an action in a sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+
+/* Message for a sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_MESSAGE" = "You have backup data that’s not on this device. Your media and attachments will be permanently deleted without a paid subscription.";
+
+/* Title for a sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "Skip Download?";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Upload paused: device has low battery";

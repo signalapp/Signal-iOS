@@ -65,7 +65,7 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
 
         let expectedUpdates: [ExpectedUpdate] = [
             ExpectedUpdate(
-                update: nil,
+                update: DownloadUpdate(.suspended, downloaded: 0, total: 4),
                 nextSteps: {
                     downloadQueueStatusReporter.currentStatusMock = .running
                 }

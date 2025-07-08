@@ -8,6 +8,7 @@ import SignalServiceKit
 final class BackupSettingsAttachmentDownloadTracker {
     struct DownloadUpdate: Equatable {
         enum State: Equatable {
+            case suspended
             case running
             case pausedLowBattery
             case pausedNeedsWifi
@@ -195,6 +196,8 @@ private class Tracker {
 
         let downloadUpdateState: DownloadUpdate.State? = {
             switch lastReportedDownloadQueueStatus {
+            case .suspended:
+                return .suspended
             case .running:
                 return .running
             case .noWifiReachability:
@@ -208,7 +211,7 @@ private class Tracker {
                     lastReportedDownloadProgress.remainingUnitCount,
                     backupAttachmentDownloadQueueStatusReporter.minimumRequiredDiskSpaceToCompleteDownloads()
                 ))
-            case .empty, .suspended, .notRegisteredAndReady:
+            case .empty, .notRegisteredAndReady:
                 return nil
             }
         }()

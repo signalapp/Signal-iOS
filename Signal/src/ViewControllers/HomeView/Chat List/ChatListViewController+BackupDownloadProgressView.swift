@@ -170,9 +170,9 @@ public class CLVBackupDownloadProgressView {
     }
 }
 
-public class BackupAttachmentDownloadProgressView: UIView {
+private class BackupAttachmentDownloadProgressView: UIView {
 
-    public enum State {
+    enum State {
         case restoring(progress: OWSProgress?)
         case wifiNotReachable
         case paused(reason: PauseReason)
@@ -187,7 +187,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
 
     weak var chatListViewController: ChatListViewController?
 
-    public var state: State? {
+    var state: State? {
         didSet {
             render()
         }
@@ -209,7 +209,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
 
-    public init(
+    init(
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
@@ -351,7 +351,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
         layout()
     }
 
-    public override var bounds: CGRect {
+    override var bounds: CGRect {
         get { super.bounds }
         set {
             super.bounds = newValue
@@ -359,7 +359,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
         }
     }
 
-    public override func layoutSubviews() {
+    override func layoutSubviews() {
         super.layoutSubviews()
         layout()
     }
@@ -838,7 +838,7 @@ public class BackupAttachmentDownloadProgressView: UIView {
             style: .default,
             handler: { _ in
                 CurrentAppContext().open(
-                    URL(string: "https://support.signal.org/hc/articles/36000732055")!,
+                    URL(string: "https://support.signal.org/hc/articles/360007059752")!,
                     completion: nil
                 )
             }
