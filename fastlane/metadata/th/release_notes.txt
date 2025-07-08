@@ -1,1 +1,1 @@
-• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.
+• แก้ไขบั๊กของการแสดงตัวอย่างลิงก์ในข้อความที่ถูกส่งต่อ

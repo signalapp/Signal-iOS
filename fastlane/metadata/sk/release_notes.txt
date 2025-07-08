@@ -1,1 +1,1 @@
-• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.
+• Oprava malej chyby v náhľadoch odkazov v preposlaných správach.

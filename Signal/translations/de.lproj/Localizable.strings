@@ -515,19 +515,19 @@
 "BACK_BUTTON" = "Zurück";
 
 /* Action text for Backup Key reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Einschalten";
 
 /* Body for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "Never lose a message when you get a new phone or reinstall Signal.";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "Verliere keine alten Nachrichten, wenn du ein neues Mobiltelefon hast bzw. Signal erneut installierst.";
 
 /* Title for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "Turn on encrypted backups";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "Verschlüsselte Backups aktivieren";
 
 /* Snooze text for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Not Now";
+"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Jetzt nicht";
 
 /* Text used as placeholder in backup key text view. */
-"BACKUP_KEY_PLACEHOLDER" = "Datensicherungsschlüssel";
+"BACKUP_KEY_PLACEHOLDER" = "Backup-Schlüssel";
 
 /* Title of button to tap if you forgot your backup key. */
 "BACKUP_KEY_REMINDER_FORGOT_KEY" = "Schlüssel vergessen?";
@@ -707,7 +707,7 @@
 "BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "Gestern um %1$@";
 
 /* Label for a menu item offering to show the user their backup key. */
-"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "Datensicherungsschlüssel anzeigen";
+"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "Backup-Schlüssel anzeigen";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Jetzt sichern";
@@ -5357,7 +5357,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Dein letztes Backup wurde am %1$@ um %2$@ durchgeführt. Die Größe deines Backups beträgt %3$@";
 
 /* Text for action button to skip the restore. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Skip Restore";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Wiederherstellen überspringen";
 
 /* Title for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "Aus Backup wiederherstellen";
@@ -6569,10 +6569,10 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Konto & Nachrichten übertragen";
 
 /* Description for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Dein Datensicherungsschlüssel ist ein 64-stelliger Code, mit dem du dein Konto und deine Daten wiederherstellen kannst.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Dein Backup-Schlüssel ist ein 64-stelliger Code, mit dem du dein Konto und deine Daten wiederherstellen kannst.";
 
 /* Title for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Gib deinen Datensicherungsschlüssel ein";
+"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Gib deinen Backup-Schlüssel ein";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Telefonnummer eingeben";
@@ -6596,13 +6596,13 @@
 "REGISTRATION_NETWORK_ERROR_TITLE" = "Verbindung überprüfen";
 
 /* Title of button to tap if you do not have a backup key during registration. */
-"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Kein Datensicherungsschlüssel?";
+"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Kein Backup-Schlüssel?";
 
 /* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups können ohne den 64-stelligen Code nicht wiederhergestellt werden. Wenn du deinen Datensicherungsschlüssel verloren hast, kann dir Signal nicht helfen, dein Backup wiederherzustellen.\n\nAuf deinem alten Gerät kannst du deinen Datensicherungsschlüssel in Einstellungen > Chats > Signal-Backups sehen. Tippe dann auf »Datensicherungsschlüssel anzeigen«.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups können ohne den 64-stelligen Code nicht wiederhergestellt werden. Wenn du deinen Backup-Schlüssel verloren hast, kann dir Signal nicht helfen, dein Backup wiederherzustellen.\n\nAuf deinem alten Gerät kannst du deinen Backup-Schlüssel in Einstellungen > Chats > Signal-Backups sehen. Tippe dann auf »Backup-Schlüssel anzeigen«.";
 
 /* Title for sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Kein Datensicherungsschlüssel?";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Keinen Backup-Schlüssel?";
 
 /* Title for button on sheet for when you don't have a backup key */
 "REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Überspringen und nicht wiederherstellen";
@@ -6761,7 +6761,7 @@
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Akkustand des Geräts ist niedrig";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
-"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "No internet…";
+"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "Kein Internet …";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
 "RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Wiederherstellung angehalten";
@@ -6770,13 +6770,13 @@
 "RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ von %2$@";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device needs WiFi to continue, to resume downloads without WiFi. */
-"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "Resume";
+"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "Fortsetzen";
 
 /* Title shown on chat list banner for restoring media from a backup */
 "RESTORING_MEDIA_BANNER_TITLE" = "Medien werden wiederhergestellt";
 
 /* Title shown on chat list banner for restoring media from a backup when waiting for wifi */
-"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
+"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Warte auf WLAN-Verbindung";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Wiederherstellen überspringen";

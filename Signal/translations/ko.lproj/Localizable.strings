@@ -488,7 +488,7 @@
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "음성 메시지를 사용할 수 없음";
 
 /* Username for backup key autofill */
-"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Backups";
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal 백업";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "색상 선택";
@@ -515,16 +515,16 @@
 "BACK_BUTTON" = "뒤로";
 
 /* Action text for Backup Key reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "켜기";
 
 /* Body for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "Never lose a message when you get a new phone or reinstall Signal.";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "새 휴대폰을 구매하거나 Signal을 다시 설치하는 경우에도 메시지를 손실할 염려가 없습니다.";
 
 /* Title for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "Turn on encrypted backups";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "암호화된 백업 켜기";
 
 /* Snooze text for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Not Now";
+"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "나중에";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "백업 키";
@@ -5357,7 +5357,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "마지막 백업이 완료된 시간은 %1$@ %2$@입니다. 백업 크기는 %3$@입니다";
 
 /* Text for action button to skip the restore. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Skip Restore";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "복원 건너뛰기";
 
 /* Title for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "백업에서 복원";
@@ -6761,7 +6761,7 @@
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "기기 배터리 부족";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
-"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "No internet…";
+"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "인터넷 연결 없음…";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
 "RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "복원을 일시 중지함";
@@ -6770,13 +6770,13 @@
 "RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%2$@ 중 %1$@";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device needs WiFi to continue, to resume downloads without WiFi. */
-"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "Resume";
+"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "계속하기";
 
 /* Title shown on chat list banner for restoring media from a backup */
 "RESTORING_MEDIA_BANNER_TITLE" = "미디어 복원 중";
 
 /* Title shown on chat list banner for restoring media from a backup when waiting for wifi */
-"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
+"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Wi-Fi를 기다리는 중…";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "복원 건너뛰기";

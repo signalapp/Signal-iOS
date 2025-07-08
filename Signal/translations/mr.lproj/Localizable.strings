@@ -488,7 +488,7 @@
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "व्हॉईस संदेश उपलब्ध नाही";
 
 /* Username for backup key autofill */
-"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Backups";
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal बॅकअप";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "रंग बदला";
@@ -515,16 +515,16 @@
 "BACK_BUTTON" = "मागे";
 
 /* Action text for Backup Key reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "चालू करा";
 
 /* Body for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "Never lose a message when you get a new phone or reinstall Signal.";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "तुम्हाला नवा फोन मिळाल्यावर किंवा Signal पुन्हा इन्स्टॉल केल्यावर एकही संदेश गमावू नका.";
 
 /* Title for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "Turn on encrypted backups";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "कूटबद्ध केलेले बॅकअप्स सुरु करा";
 
 /* Snooze text for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Not Now";
+"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "आता नाही";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "बॅकअप की";
@@ -5357,7 +5357,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "आपला शेवटचा बॅकअप %1$@ रोजी %2$@ वाजता घेतला होता. आपल्या बॅकअपचे माप %3$@ आहे";
 
 /* Text for action button to skip the restore. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Skip Restore";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "पुर्नस्थापित करणे वगळा";
 
 /* Title for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "बॅकअपवरून पुनर्स्थापित करा";
@@ -6761,7 +6761,7 @@
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "डिव्हाइसची बॅटरी कमी झाली आहे";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
-"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "No internet…";
+"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "इंटरनेट नाही…";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
 "RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "विराम दिलेले पुर्नस्थित करा";
@@ -6770,13 +6770,13 @@
 "RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ पैकी %2$@";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device needs WiFi to continue, to resume downloads without WiFi. */
-"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "Resume";
+"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "सुरु करा";
 
 /* Title shown on chat list banner for restoring media from a backup */
 "RESTORING_MEDIA_BANNER_TITLE" = "मिडीया पुर्नस्थापित करत आहे";
 
 /* Title shown on chat list banner for restoring media from a backup when waiting for wifi */
-"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
+"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Wi-Fi च्या प्रतीक्षेत";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "पुर्नस्थापित करणे वगळा";

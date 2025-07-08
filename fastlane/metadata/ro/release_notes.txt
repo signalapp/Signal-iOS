@@ -1,1 +1,1 @@
-• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.
+• Această actualizare remediază o eroare care împiedica afișarea previzualizării linkurilor pentru mesajele redirecționate, în anumite cazuri.

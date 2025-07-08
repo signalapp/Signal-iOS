@@ -1,1 +1,1 @@
-• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.
+• L'aperçu des liens ne s'affichait pas toujours dans les messages transférés, mais vous allez vous apercevoir que le problème est résolu !

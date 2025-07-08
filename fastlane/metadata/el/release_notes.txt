@@ -1,1 +1,1 @@
-• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.
+• Αυτή η ενημέρωση διορθώνει ένα σφάλμα που σε ορισμένες περιπτώσεις εμπόδιζε την εμφάνιση προεπισκοπήσεων συνδέσμων σε προωθημένα μηνύματα.

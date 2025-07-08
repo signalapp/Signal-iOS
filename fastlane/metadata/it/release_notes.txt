@@ -1,1 +1,1 @@
-• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.
+• Questo aggiornamento risolve un bug che a volte impediva la visualizzazione dell'anteprima link nei messaggi inoltrati.

@@ -488,7 +488,7 @@
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "ئاۋازلىق ئۇچۇرنى ئىشلەتكىلى بولمايدۇ";
 
 /* Username for backup key autofill */
-"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Backups";
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal زاپاسلانمىسى";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "رەڭ تاللاڭ";
@@ -515,16 +515,16 @@
 "BACK_BUTTON" = "قايت";
 
 /* Action text for Backup Key reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "ئاچ";
 
 /* Body for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "Never lose a message when you get a new phone or reinstall Signal.";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "يېڭى تېلېفون ئالغاندا ياكى Signalنى قايتا قاچىلىغاندا ھەرقانداق ئۇچۇرنى يۈتتۈرۈپ قويمايسىز.";
 
 /* Title for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "Turn on encrypted backups";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "شىفىرلانغان زاپاسلانمىلارنى قوزغىتىڭ";
 
 /* Snooze text for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Not Now";
+"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "ھازىر ئەمەس";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "زاپاسلاش ئاچقۇچى";
@@ -5357,7 +5357,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "ئاخىرقى قېتىملىق زاپاسلىشىڭىز %1$@ ، %2$@ دە ئېلىپ بېرىلغان. زاپاسلاش سىغىمىڭىز%3$@";
 
 /* Text for action button to skip the restore. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Skip Restore";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "ئەسلىگە كەلتۈرۈشتى ئاتلاڭ";
 
 /* Title for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "زاپاستىن ئەسلىگە كەلتۈرىدۇ";
@@ -6761,7 +6761,7 @@
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "ئۈسكۈنىنىڭ باتارېيەسى تۆۋەن";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
-"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "No internet…";
+"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "ئىنتېرنېت يوق…";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
 "RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "توختاشنى ئەسلىگە كەلتۈرۈڭ";
@@ -6770,13 +6770,13 @@
 "RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ نىڭ%2$@";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device needs WiFi to continue, to resume downloads without WiFi. */
-"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "Resume";
+"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "ئەسلىگە كەلتۈرۈش";
 
 /* Title shown on chat list banner for restoring media from a backup */
 "RESTORING_MEDIA_BANNER_TITLE" = "مېدىيانى ئەسلىگە كەلتۈرىۋاتىدۇ";
 
 /* Title shown on chat list banner for restoring media from a backup when waiting for wifi */
-"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
+"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Wi-Fi نى ساقلاۋاتىدۇ";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "ئەسلىگە كەلتۈرۈشتى ئاتلاڭ";

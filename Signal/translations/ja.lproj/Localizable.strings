@@ -488,7 +488,7 @@
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "ボイスメッセージを移行できません";
 
 /* Username for backup key autofill */
-"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Backups";
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Signalバックアップ";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "色を選択してください";
@@ -515,16 +515,16 @@
 "BACK_BUTTON" = "戻る";
 
 /* Action text for Backup Key reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "有効にする";
 
 /* Body for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "Never lose a message when you get a new phone or reinstall Signal.";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "スマートフォンを買い替えたりSignalを再インストールしたりしても、メッセージを失うことがないようにしましょう。";
 
 /* Title for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "Turn on encrypted backups";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "暗号化されたバックアップを有効にする";
 
 /* Snooze text for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Not Now";
+"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "今はしない";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "バックアップキー";
@@ -5357,7 +5357,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "最終バックアップは%1$@の%2$@におこなわれました。バックアップサイズは%3$@です。";
 
 /* Text for action button to skip the restore. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Skip Restore";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "復元をスキップする";
 
 /* Title for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "バックアップから復元";
@@ -6761,7 +6761,7 @@
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "端末のバッテリー残量が少なくなっています";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
-"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "No internet…";
+"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "インターネット接続がありません…";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
 "RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "復元が中断されました";
@@ -6770,13 +6770,13 @@
 "RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@/%2$@";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device needs WiFi to continue, to resume downloads without WiFi. */
-"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "Resume";
+"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "再開する";
 
 /* Title shown on chat list banner for restoring media from a backup */
 "RESTORING_MEDIA_BANNER_TITLE" = "メディアを復元中";
 
 /* Title shown on chat list banner for restoring media from a backup when waiting for wifi */
-"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
+"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Wi-Fi接続の待機中";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "復元をスキップする";

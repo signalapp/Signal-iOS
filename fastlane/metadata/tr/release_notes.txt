@@ -1,1 +1,1 @@
-• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.
+• İletilen mesajlarda bağlantı ön izlemeleri için ufak bir hata düzeltme.

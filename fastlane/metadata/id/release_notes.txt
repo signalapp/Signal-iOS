@@ -1,1 +1,1 @@
-• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.
+• Pembaruan kali ini memperbaiki bug yang membuat pratinjau tautan kadang tidak muncul dalam pesan yang diteruskan.

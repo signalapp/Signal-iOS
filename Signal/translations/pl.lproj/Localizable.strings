@@ -488,7 +488,7 @@
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "Wiadomość głosowa niedostępna";
 
 /* Username for backup key autofill */
-"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Backups";
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Kopie zapasowe Signal";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Wybierz kolor";
@@ -515,16 +515,16 @@
 "BACK_BUTTON" = "Wstecz";
 
 /* Action text for Backup Key reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Włącz";
 
 /* Body for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "Never lose a message when you get a new phone or reinstall Signal.";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "Dzięki temu nie stracisz historii wiadomości nawet po zmianie telefonu czy ponownej instalacji aplikacji Signal.";
 
 /* Title for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "Turn on encrypted backups";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "Włącz tworzenie szyfrowanych kopii zapasowych";
 
 /* Snooze text for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Not Now";
+"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Nie teraz";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Kod kopii zapasowej";
@@ -5357,7 +5357,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Ostatnia kopia zapasowa została utworzona %1$@ o godz. %2$@. Rozmiar kopii zapasowej to %3$@";
 
 /* Text for action button to skip the restore. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Skip Restore";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Pomiń przywracanie";
 
 /* Title for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "Przywróć z kopii zapasowej";
@@ -5681,7 +5681,7 @@
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Potwierdź płatność";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Zapłać";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Wyślij płatność";
 
 /* Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}. */
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
@@ -6359,7 +6359,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Możesz edytować profil tylko wtedy, gdy masz połączenie z internetem.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Twój profil i wprowadzane w nim zmiany są widoczne dla Twoich kontaktów, grup i rozmówców.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Twój profil oraz wprowadzane w nim zmiany są widoczne dla osób, z którymi wymieniasz wiadomości, a także Twoich kontaktów i grup.";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profil";
@@ -6761,7 +6761,7 @@
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Niski poziom naładowania baterii";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
-"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "No internet…";
+"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "Brak internetu…";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
 "RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Przywracanie wstrzymane";
@@ -6770,13 +6770,13 @@
 "RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ z %2$@";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device needs WiFi to continue, to resume downloads without WiFi. */
-"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "Resume";
+"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "Wznów";
 
 /* Title shown on chat list banner for restoring media from a backup */
 "RESTORING_MEDIA_BANNER_TITLE" = "Przywracanie multimediów";
 
 /* Title shown on chat list banner for restoring media from a backup when waiting for wifi */
-"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
+"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Oczekiwanie na Wi-Fi";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Pomiń przywracanie";
@@ -7625,7 +7625,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Szczegóły transakcji, w tym kwota i czas płatności, pochodzą z rejestru MobileCoin.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "\"Opłata za obsługę waluty\" jest naliczana, gdy monety w Twoim posiadaniu nie mogą zostać połączone, aby zakończyć transakcję. Obsługa pozwoli Ci kontynuować wysyłanie płatności.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Opłata za tzw. uporządkowanie coinów (ang. coin cleanup) jest naliczana, gdy Twoich coinów nie można ze sobą połączyć, aby dokończyć transakcję. Po ich uporządkowaniu możesz znów wysyłać płatności.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Nie masz wystarczająco dużo waluty MOB, aby wykonać tę płatność. Dostępne środki: %1$@.";
@@ -8264,7 +8264,7 @@
 "STORIES_SAVE_STORY_ACTION" = "Zapisz";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Relacje znikają automatycznie po 24 godzinach. Zdecyduj, kto może wyświetlać Twoje relacje, lub twórz relacje przeznaczone dla określonych odbiorców czy też ich grup.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Relacje znikają automatycznie po 24 godzinach. Zdecyduj, kto może wyświetlać Twoje relacje, lub utwórz relacje przeznaczone dla określonych odbiorców czy też ich grup.";
 
 /* Header for the 'Stories' section of the stories settings */
 "STORIES_SETTINGS_STORIES_HEADER" = "Relacje";
@@ -8861,7 +8861,7 @@
 "USE_PROXY_EXPLANATION" = "Używaj proxy tylko wtedy, gdy nie możesz połączyć się z usługą Signal przez sieć komórkową ani Wi-Fi.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Każda nazwa użytkownika jest powiązana z unikalnym kodem QR i unikalnym linkiem, które możesz udostępnić znajomym, aby szybko rozpocząć z nimi czat.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Każda nazwa użytkownika jest powiązana z unikalnym kodem QR i unikalnym linkiem. Udostępnij je znajomym, aby mogli szybko rozpocząć z Tobą czat.";
 
 /* Title for the username links and QR codes section on the username education sheet */
 "USERNAME_EDUCATION_LINK_TITLE" = "Kod QR i link";
@@ -8900,7 +8900,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Zresetuj";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Jeśli zresetujesz kod QR i link, obecny kod QR i obecny link przestaną działać.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Jeśli zresetujesz kod QR i link, te dotychczasowe przestaną działać.";
 
 /* Text presenting an action sheet notifying the user their QR code and link were reset. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Kod QR i link zostały zresetowane. Utworzono nowy kod QR i nowy link.";

@@ -1,1 +1,1 @@
-• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.
+• 転送メッセージのリンクプレビューに関する小さなバグを修正しました。

@@ -1,1 +1,1 @@
-• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.
+• Sửa lỗi nhỏ cho bản xem trước liên kết trong tin nhắn được chuyển tiếp.

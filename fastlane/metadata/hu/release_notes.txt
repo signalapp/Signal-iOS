@@ -1,1 +1,1 @@
-• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.
+• Egy kis hibajavítás a továbbított üzenetekben megtalálható linkek előnézetéhez.

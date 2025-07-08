@@ -1,1 +1,1 @@
-• This update fixes a bug that prevented link previews from appearing for forwarded messages in some cases.
+• इस अपडेट से वह गड़बड़ी ठीक होती है जिसकी वजह से कुछ मामलों में, फ़ॉरवर्ड किए गए संदेशों में लिंक प्रीव्यू नहीं दिखते थे।
