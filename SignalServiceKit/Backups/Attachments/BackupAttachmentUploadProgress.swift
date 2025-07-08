@@ -241,7 +241,7 @@ extension QueuedBackupAttachmentUpload: TableRecord {
 
 #if TESTABLE_BUILD
 
-open class BackuAttachmentUploadProgressMock: BackupAttachmentUploadProgress {
+open class BackupAttachmentUploadProgressMock: BackupAttachmentUploadProgress {
 
     init() {}
 

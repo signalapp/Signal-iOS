@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SwiftUI
 
-class BackupSettingsAttachmentUploadTracker {
+final class BackupSettingsAttachmentUploadTracker {
     struct UploadUpdate: Equatable {
         enum State {
             case running
@@ -32,6 +32,10 @@ class BackupSettingsAttachmentUploadTracker {
         fileprivate init(state: State, progress: OWSProgress) {
             self.state = state
             self.progress = progress
+        }
+
+        static func == (lhs: UploadUpdate, rhs: UploadUpdate) -> Bool {
+            return lhs.state == rhs.state && lhs.percentageUploaded == rhs.percentageUploaded
         }
     }
 
@@ -82,7 +86,8 @@ private class Tracker {
 
         var uploadQueueStatusObserver: NotificationCenter.Observer?
         var uploadProgressObserver: BackupAttachmentUploadProgress.Observer?
-        var streamContinuation: AsyncStream<UploadUpdate?>.Continuation?
+
+        let streamContinuation: AsyncStream<UploadUpdate?>.Continuation
     }
 
     private let backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter
@@ -118,11 +123,7 @@ private class Tracker {
                 await backupAttachmentUploadProgress.removeObserver(uploadProgressObserver)
             }
 
-            if let streamContinuation = _state.streamContinuation {
-                streamContinuation.finish()
-            }
-
-            _state = State()
+            _state.streamContinuation.finish()
         }
     }
 
@@ -202,21 +203,29 @@ private class Tracker {
     // MARK: -
 
     private func yieldCurrentUploadUpdate(state: State) {
-        guard let streamContinuation = state.streamContinuation else {
+        let streamContinuation = state.streamContinuation
+        let lastReportedUploadProgress = state.lastReportedUploadProgress
+
+        guard let lastReportedUploadQueueStatus = state.lastReportedUploadQueueStatus else {
             return
         }
 
-        let lastReportedUploadQueueStatus = state.lastReportedUploadQueueStatus
-        let lastReportedUploadProgress = state.lastReportedUploadProgress
+        let uploadUpdateState: UploadUpdate.State? = {
+            switch lastReportedUploadQueueStatus {
+            case .running:
+                return .running
+            case .noWifiReachability:
+                return .pausedNeedsWifi
+            case .lowBattery:
+                return .pausedLowBattery
+            case .empty, .notRegisteredAndReady:
+                return nil
+            }
+        }()
 
-        switch lastReportedUploadQueueStatus {
-        case .running:
-            streamContinuation.yield(UploadUpdate(state: .running, progress: lastReportedUploadProgress))
-        case .noWifiReachability:
-            streamContinuation.yield(UploadUpdate(state: .pausedNeedsWifi, progress: lastReportedUploadProgress))
-        case .lowBattery:
-            streamContinuation.yield(UploadUpdate(state: .pausedLowBattery, progress: lastReportedUploadProgress))
-        case nil, .empty, .notRegisteredAndReady:
+        if let uploadUpdateState {
+            streamContinuation.yield(UploadUpdate(state: uploadUpdateState, progress: lastReportedUploadProgress))
+        } else {
             streamContinuation.yield(nil)
         }
     }

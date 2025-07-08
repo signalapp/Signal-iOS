@@ -10,8 +10,8 @@
 		041A5F072E05B3F900FAED05 /* BackupEnablementMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041A5F062E05B3F000FAED05 /* BackupEnablementMegaphone.swift */; };
 		041C24ED2DF782AF0065B685 /* OutgoingGroupUpdateMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */; };
 		047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */; };
-		04BC94D22E061D8300446C52 /* BackupArchiveAttachmentByteCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BC94D12E061D7500446C52 /* BackupArchiveAttachmentByteCounter.swift */; };
 		04AA85BC2E0EFC5C0051C0A7 /* BackupEnablementReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */; };
+		04BC94D22E061D8300446C52 /* BackupArchiveAttachmentByteCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BC94D12E061D7500446C52 /* BackupArchiveAttachmentByteCounter.swift */; };
 		04E66D402DFC825B0059DBAC /* BackupKeyReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D3E2DFC81BC0059DBAC /* BackupKeyReminderMegaphone.swift */; };
 		04E66D422DFF3A4B0059DBAC /* BackupsReminderCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */; };
 		04E66D452E00AB6A0059DBAC /* BackupSettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */; };
@@ -1217,7 +1217,7 @@
 		66F6D6A52C7D0E0000EFAF75 /* ColorOrGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D6A42C7D0E0000EFAF75 /* ColorOrGradient.swift */; };
 		66F6D6A72C7D0FF300EFAF75 /* Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D6A62C7D0FF300EFAF75 /* Wallpaper.swift */; };
 		66F6D6A92C7D106100EFAF75 /* Wallpaper+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D6A82C7D106100EFAF75 /* Wallpaper+Constants.swift */; };
-		66F98DDE2DB7073F009F1A86 /* BackupAttachmentDownloadQueueStatusManaager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManaager.swift */; };
+		66F98DDE2DB7073F009F1A86 /* BackupAttachmentDownloadQueueStatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManager.swift */; };
 		66F98DE02DB710F8009F1A86 /* DeviceBatteryLevelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DDF2DB710EA009F1A86 /* DeviceBatteryLevelManager.swift */; };
 		66F98DE22DB71220009F1A86 /* DeviceBatteryLevelManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE12DB71219009F1A86 /* DeviceBatteryLevelManagerImpl.swift */; };
 		66F98DE62DBBED6C009F1A86 /* LineWrappingStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE52DBBED68009F1A86 /* LineWrappingStackView.swift */; };
@@ -2498,6 +2498,8 @@
 		D9317FD52A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD42A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift */; };
 		D9317FD82A4BC4FC00075A92 /* BitmapsRectTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD62A4BC4F000075A92 /* BitmapsRectTest.swift */; };
 		D9317FDC2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */; };
+		D9324F7C2E1492920095D104 /* BackupSettingsAttachmentTrackerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9324F7B2E1492820095D104 /* BackupSettingsAttachmentTrackerTest.swift */; };
+		D932C0EB2E13AD3F00FEF9C3 /* BackupSettingsAttachmentDownloadTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D932C0EA2E13AD3600FEF9C3 /* BackupSettingsAttachmentDownloadTracker.swift */; };
 		D93830722A703728006CDCDE /* UsernameApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830712A703727006CDCDE /* UsernameApiClient.swift */; };
 		D93830742A703969006CDCDE /* LocalUsernameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830732A703968006CDCDE /* LocalUsernameManager.swift */; };
 		D938307A2A704123006CDCDE /* UsernameLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830792A704123006CDCDE /* UsernameLinkManager.swift */; };
@@ -2623,6 +2625,7 @@
 		D962346D2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */; };
 		D96234702C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */; };
 		D96269D92C58407400152314 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D96269D82C58407400152314 /* README.md */; };
+		D962FC432E149ECF004DB623 /* BackupSettingsAttachmentDownloadTrackerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962FC422E149EC7004DB623 /* BackupSettingsAttachmentDownloadTrackerTest.swift */; };
 		D9680CF32DBB0B2D005DD5BE /* ChooseBackupPlanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9680CF22DBB0B28005DD5BE /* ChooseBackupPlanViewController.swift */; };
 		D9683D792D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D6B2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.binproto */; };
 		D9683D7B2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D702D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.txtproto */; };
@@ -5166,7 +5169,7 @@
 		66F6D6A42C7D0E0000EFAF75 /* ColorOrGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorOrGradient.swift; sourceTree = "<group>"; };
 		66F6D6A62C7D0FF300EFAF75 /* Wallpaper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallpaper.swift; sourceTree = "<group>"; };
 		66F6D6A82C7D106100EFAF75 /* Wallpaper+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Wallpaper+Constants.swift"; sourceTree = "<group>"; };
-		66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManaager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadQueueStatusManaager.swift; sourceTree = "<group>"; };
+		66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadQueueStatusManager.swift; sourceTree = "<group>"; };
 		66F98DDF2DB710EA009F1A86 /* DeviceBatteryLevelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceBatteryLevelManager.swift; sourceTree = "<group>"; };
 		66F98DE12DB71219009F1A86 /* DeviceBatteryLevelManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceBatteryLevelManagerImpl.swift; sourceTree = "<group>"; };
 		66F98DE52DBBED68009F1A86 /* LineWrappingStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWrappingStackView.swift; sourceTree = "<group>"; };
@@ -6447,6 +6450,8 @@
 		D9317FD42A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsImageCenteredDeadzoneTest.swift; sourceTree = "<group>"; };
 		D9317FD62A4BC4F000075A92 /* BitmapsRectTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsRectTest.swift; sourceTree = "<group>"; };
 		D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeColorPickerViewController.swift; sourceTree = "<group>"; };
+		D9324F7B2E1492820095D104 /* BackupSettingsAttachmentTrackerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSettingsAttachmentTrackerTest.swift; sourceTree = "<group>"; };
+		D932C0EA2E13AD3600FEF9C3 /* BackupSettingsAttachmentDownloadTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSettingsAttachmentDownloadTracker.swift; sourceTree = "<group>"; };
 		D93830712A703727006CDCDE /* UsernameApiClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsernameApiClient.swift; sourceTree = "<group>"; };
 		D93830732A703968006CDCDE /* LocalUsernameManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUsernameManager.swift; sourceTree = "<group>"; };
 		D93830752A70396E006CDCDE /* LocalUsernameManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUsernameManagerTests.swift; sourceTree = "<group>"; };
@@ -6575,6 +6580,7 @@
 		D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeMostRecentAddressableMessageCursor.swift; sourceTree = "<group>"; };
 		D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeMostRecentAddressableMessageCursorTest.swift; sourceTree = "<group>"; };
 		D96269D82C58407400152314 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D962FC422E149EC7004DB623 /* BackupSettingsAttachmentDownloadTrackerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSettingsAttachmentDownloadTrackerTest.swift; sourceTree = "<group>"; };
 		D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMessagingJobQueues.swift; sourceTree = "<group>"; };
 		D9680CF22DBB0B28005DD5BE /* ChooseBackupPlanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseBackupPlanViewController.swift; sourceTree = "<group>"; };
 		D9683D5D2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_00.binproto; sourceTree = "<group>"; };
@@ -9707,7 +9713,7 @@
 				6685FEED2DB06F740086CF3C /* BackupAttachmentDownloadEligibility.swift */,
 				66E257022CA3860B00100A08 /* BackupAttachmentDownloadManager.swift */,
 				6685FEEF2DB073F60086CF3C /* BackupAttachmentDownloadProgress.swift */,
-				66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManaager.swift */,
+				66F98DDD2DB70739009F1A86 /* BackupAttachmentDownloadQueueStatusManager.swift */,
 				667BB2072C580C1400E79B57 /* BackupAttachmentDownloadStore.swift */,
 				66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */,
 				D9C4C0842E0A75EF00B74696 /* BackupAttachmentUploadEraStore.swift */,
@@ -12522,6 +12528,7 @@
 				D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */,
 				D93FA5BE2DE77E440013879E /* BackupEnablingManager.swift */,
 				D98CA2B22DF2450E0060370E /* BackupRecordKeyViewController.swift */,
+				D932C0EA2E13AD3600FEF9C3 /* BackupSettingsAttachmentDownloadTracker.swift */,
 				D93964B52E038C7B00094117 /* BackupSettingsAttachmentUploadTracker.swift */,
 				D951F5302D9B236100C5EBF3 /* BackupSettingsViewController.swift */,
 				04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */,
@@ -12775,6 +12782,8 @@
 		D9A952442E0A1C3600C3D1F7 /* Backups */ = {
 			isa = PBXGroup;
 			children = (
+				D962FC422E149EC7004DB623 /* BackupSettingsAttachmentDownloadTrackerTest.swift */,
+				D9324F7B2E1492820095D104 /* BackupSettingsAttachmentTrackerTest.swift */,
 				D9A952452E0A1C3C00C3D1F7 /* BackupSettingsAttachmentUploadTrackerTest.swift */,
 			);
 			path = Backups;
@@ -16810,6 +16819,7 @@
 				D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroViewController.swift in Sources */,
 				D98CA2AD2DF14A890060370E /* BackupOnboardingKeyIntroViewController.swift in Sources */,
 				D98CA2B32DF245140060370E /* BackupRecordKeyViewController.swift in Sources */,
+				D932C0EB2E13AD3F00FEF9C3 /* BackupSettingsAttachmentDownloadTracker.swift in Sources */,
 				D93964B62E038C7B00094117 /* BackupSettingsAttachmentUploadTracker.swift in Sources */,
 				D951F5312D9B236700C5EBF3 /* BackupSettingsViewController.swift in Sources */,
 				04E66D422DFF3A4B0059DBAC /* BackupsReminderCoordinator.swift in Sources */,
@@ -17512,6 +17522,8 @@
 				F9B93CE028E246D900B3F8A0 /* AppDelegateTest.swift in Sources */,
 				F9B3A92F293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift in Sources */,
 				50B6BCB42AEC58250010FB3B /* AuthorMergeHelperBuilderTest.swift in Sources */,
+				D962FC432E149ECF004DB623 /* BackupSettingsAttachmentDownloadTrackerTest.swift in Sources */,
+				D9324F7C2E1492920095D104 /* BackupSettingsAttachmentTrackerTest.swift in Sources */,
 				D9A952462E0A1C4200C3D1F7 /* BackupSettingsAttachmentUploadTrackerTest.swift in Sources */,
 				F9A335CA282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift in Sources */,
 				F97A2EEA282578C000610669 /* BadgeIssueSheetStateTest.swift in Sources */,
@@ -17739,7 +17751,7 @@
 				6685FEEE2DB06F7C0086CF3C /* BackupAttachmentDownloadEligibility.swift in Sources */,
 				66E257032CA3861200100A08 /* BackupAttachmentDownloadManager.swift in Sources */,
 				6685FEF02DB073FD0086CF3C /* BackupAttachmentDownloadProgress.swift in Sources */,
-				66F98DDE2DB7073F009F1A86 /* BackupAttachmentDownloadQueueStatusManaager.swift in Sources */,
+				66F98DDE2DB7073F009F1A86 /* BackupAttachmentDownloadQueueStatusManager.swift in Sources */,
 				667BB2082C580C1400E79B57 /* BackupAttachmentDownloadStore.swift in Sources */,
 				D9C4C0852E0A75F200B74696 /* BackupAttachmentUploadEraStore.swift in Sources */,
 				668345502DCA9BEE00566AB3 /* BackupAttachmentUploadProgress.swift in Sources */,

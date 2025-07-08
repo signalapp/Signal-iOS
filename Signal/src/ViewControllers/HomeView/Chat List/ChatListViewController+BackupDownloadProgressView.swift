@@ -146,7 +146,7 @@ public class CLVBackupDownloadProgressView {
             let minRequiredDiskSpace = backupAttachmentDownloadQueueStatusReporter
                 .minimumRequiredDiskSpaceToCompleteDownloads()
             let requiredDiskSpace = viewState.downloadProgress.map {
-                $0.totalUnitCount - $0.completedUnitCount
+                $0.remainingUnitCount
             } ?? minRequiredDiskSpace
             return .outOfDiskSpace(
                 spaceRequired: max(minRequiredDiskSpace, requiredDiskSpace)

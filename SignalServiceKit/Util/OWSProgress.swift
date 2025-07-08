@@ -92,7 +92,7 @@ public struct OWSProgress: Equatable, SomeOWSProgress {
     }
 
     public static var zero: OWSProgress {
-        OWSProgress(completedUnitCount: 0, totalUnitCount: 0, sourceProgresses: [:])
+        return OWSProgress(completedUnitCount: 0, totalUnitCount: 0, sourceProgresses: [:])
     }
 
     /// Create a root sink, taking the single observer block of progress updates.
@@ -113,6 +113,19 @@ extension SomeOWSProgress {
     public var percentComplete: Float {
         guard totalUnitCount > 0 else { return 0 }
         return Float(completedUnitCount) / Float(totalUnitCount)
+    }
+
+    /// Unit count remaining measured as (totalUnitCount - completedUnitCount).
+    /// 0 if no children or sources have been added.
+    public var remainingUnitCount: UInt64 {
+        guard
+            totalUnitCount > 0,
+            totalUnitCount >= completedUnitCount
+        else {
+            return 0
+        }
+
+        return totalUnitCount - completedUnitCount
     }
 
     /// Percent = 1. False if no children or sources have been added.
