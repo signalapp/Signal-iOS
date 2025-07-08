@@ -21,6 +21,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
     private let backupDisablingManager: BackupDisablingManager
     private let backupEnablingManager: BackupEnablingManager
     private let backupExportJob: BackupExportJob
+    private let backupPlanManager: BackupPlanManager
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
@@ -42,6 +43,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
             backupDisablingManager: AppEnvironment.shared.backupDisablingManager,
             backupEnablingManager: AppEnvironment.shared.backupEnablingManager,
             backupExportJob: DependenciesBridge.shared.backupExportJob,
+            backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             backupSettingsStore: BackupSettingsStore(),
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
@@ -59,6 +61,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         backupDisablingManager: BackupDisablingManager,
         backupEnablingManager: BackupEnablingManager,
         backupExportJob: BackupExportJob,
+        backupPlanManager: BackupPlanManager,
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
@@ -81,6 +84,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         self.backupDisablingManager = backupDisablingManager
         self.backupEnablingManager = backupEnablingManager
         self.backupExportJob = backupExportJob
+        self.backupPlanManager = backupPlanManager
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
@@ -91,7 +95,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
             let viewModel = BackupSettingsViewModel(
                 backupEnabledState: .disabled, // Default, set below
                 backupSubscriptionLoadingState: .loading, // Default, loaded after init
-                backupPlan: backupSettingsStore.backupPlan(tx: tx),
+                backupPlan: backupPlanManager.backupPlan(tx: tx),
                 latestBackupAttachmentDownloadUpdate: nil, // Default, loaded after init
                 latestBackupAttachmentUploadUpdate: nil, // Default, loaded after init
                 lastBackupDate: backupSettingsStore.lastBackupDate(tx: tx),
@@ -102,7 +106,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
             if let disableBackupsRemotelyState = backupDisablingManager.currentDisableRemotelyState(tx: tx) {
                 viewModel.handleDisableBackupsRemoteState(disableBackupsRemotelyState)
             } else {
-                switch backupSettingsStore.backupPlan(tx: tx) {
+                switch backupPlanManager.backupPlan(tx: tx) {
                 case .disabled:
                     viewModel.backupEnabledState = .disabled
                 case .free, .paid, .paidExpiringSoon:
@@ -146,7 +150,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
                         guard let self else { return }
 
                         db.read { tx in
-                            self.viewModel.backupPlan = backupSettingsStore.backupPlan(tx: tx)
+                            self.viewModel.backupPlan = backupPlanManager.backupPlan(tx: tx)
                         }
                         viewModel.loadBackupSubscription()
                     }
@@ -329,7 +333,7 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
     // MARK: -
 
     fileprivate func loadBackupSubscription() async throws -> BackupSettingsViewModel.BackupSubscriptionLoadingState.LoadedBackupSubscription {
-        var currentBackupPlan = db.read { backupSettingsStore.backupPlan(tx: $0) }
+        var currentBackupPlan = db.read { backupPlanManager.backupPlan(tx: $0) }
 
         switch currentBackupPlan {
         case .free:
@@ -346,7 +350,7 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
         }
 
         // The subscription fetch may have updated our local Backup plan.
-        currentBackupPlan = db.read { backupSettingsStore.backupPlan(tx: $0) }
+        currentBackupPlan = db.read { backupPlanManager.backupPlan(tx: $0) }
 
         switch currentBackupPlan {
         case .free:
@@ -425,6 +429,74 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
             backupSettingsStore.setShouldAllowBackupUploadsOnCellular(newShouldAllowBackupUploadsOnCellular, tx: tx)
         }
     }
+
+    // MARK: -
+
+    fileprivate func setOptimizeLocalStorage(_ newOptimizeLocalStorage: Bool) {
+        do {
+            try db.writeWithRollbackIfThrows { tx in
+                let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
+                let newBackupPlan: BackupPlan
+
+                switch currentBackupPlan {
+                case .disabled, .free:
+                    owsFailDebug("Shouldn't be setting Optimize Local Storage: \(currentBackupPlan)")
+                    return
+                case .paid:
+                    newBackupPlan = .paid(optimizeLocalStorage: newOptimizeLocalStorage)
+                case .paidExpiringSoon:
+                    newBackupPlan = .paidExpiringSoon(optimizeLocalStorage: newOptimizeLocalStorage)
+                }
+
+                try backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
+            }
+        } catch {
+            owsFailDebug("Failed to set Optimize Local Storage: \(error)")
+            return
+        }
+
+        // If disabling Optimize Local Storage, offer to start downloads now.
+        if !newOptimizeLocalStorage {
+            showDownloadOffloadedMediaSheet()
+        }
+    }
+
+    private func showDownloadOffloadedMediaSheet() {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE",
+                comment: "Title for an action sheet allowing users to download their offloaded media."
+            ),
+            message: OWSLocalizedString(
+                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_MESSAGE",
+                comment: "Message for an action sheet allowing users to download their offloaded media."
+            ),
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_NOW_ACTION",
+                comment: "Action in an action sheet allowing users to download their offloaded media now."
+            ),
+            handler: { [weak self] _ in
+                guard let self else { return }
+
+                db.write { tx in
+                    self.backupSettingsStore.setIsBackupDownloadQueueSuspended(false, tx: tx)
+                }
+            }
+        ))
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_LATER_ACTION",
+                comment: "Action in an action sheet allowing users to download their offloaded media later."
+            ),
+            handler: { _ in }
+        ))
+
+        presentActionSheet(actionSheet)
+    }
+
+    // MARK: -
 
     fileprivate func setIsBackupDownloadQueueSuspended(_ isSuspended: Bool, backupPlan: BackupPlan) {
         if isSuspended {
@@ -565,6 +637,8 @@ private class BackupSettingsViewModel: ObservableObject {
 
         func performManualBackup()
         func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool)
+
+        func setOptimizeLocalStorage(_ newOptimizeLocalStorage: Bool)
 
         func setIsBackupDownloadQueueSuspended(_ isSuspended: Bool, backupPlan: BackupPlan)
         func setShouldAllowBackupDownloadsOnCellular()
@@ -724,6 +798,30 @@ private class BackupSettingsViewModel: ObservableObject {
 
     // MARK: -
 
+    var optimizeLocalStorageAvailable: Bool {
+        switch backupPlan {
+        case .disabled, .free:
+            false
+        case .paid, .paidExpiringSoon:
+            true
+        }
+    }
+
+    var optimizeLocalStorage: Bool {
+        switch backupPlan {
+        case .disabled, .free:
+            false
+        case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage):
+            optimizeLocalStorage
+        }
+    }
+
+    func setOptimizeLocalStorage(_ newOptimizeLocalStorage: Bool) {
+        actionsDelegate?.setOptimizeLocalStorage(newOptimizeLocalStorage)
+    }
+
+    // MARK: -
+
     func setIsBackupDownloadQueueSuspended(_ isSuspended: Bool) {
         actionsDelegate?.setIsBackupDownloadQueueSuspended(isSuspended, backupPlan: backupPlan)
     }
@@ -801,6 +899,34 @@ struct BackupSettingsView: View {
 
                 SignalSection {
                     BackupDetailsView(viewModel: viewModel)
+                }
+
+                SignalSection {
+                    Toggle(
+                        OWSLocalizedString(
+                            "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE",
+                            comment: "Title for a toggle allowing users to change the Optimize Local Storage setting."
+                        ),
+                        isOn: Binding(
+                            get: { viewModel.optimizeLocalStorage },
+                            set: { viewModel.setOptimizeLocalStorage($0) }
+                        )
+                    ).disabled(!viewModel.optimizeLocalStorageAvailable)
+                } footer: {
+                    let footerText = if viewModel.optimizeLocalStorageAvailable {
+                        OWSLocalizedString(
+                            "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE",
+                            comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available."
+                        )
+                    } else {
+                        OWSLocalizedString(
+                            "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE",
+                            comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable."
+                        )
+                    }
+
+                    Text(footerText)
+                        .foregroundStyle(Color.Signal.secondaryLabel)
                 }
 
                 SignalSection {
@@ -1369,18 +1495,16 @@ private struct BackupDetailsView: View {
             }
         }
 
-        HStack {
-            Toggle(
-                OWSLocalizedString(
-                    "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL",
-                    comment: "Label for a toggleable menu item describing whether to make backups on cellular data."
-                ),
-                isOn: Binding(
-                    get: { viewModel.shouldAllowBackupUploadsOnCellular },
-                    set: { viewModel.setShouldAllowBackupUploadsOnCellular($0) }
-                )
+        Toggle(
+            OWSLocalizedString(
+                "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL",
+                comment: "Label for a toggleable menu item describing whether to make backups on cellular data."
+            ),
+            isOn: Binding(
+                get: { viewModel.shouldAllowBackupUploadsOnCellular },
+                set: { viewModel.setShouldAllowBackupUploadsOnCellular($0) }
             )
-        }
+        )
 
         Button {
             viewModel.showViewBackupKey()
@@ -1430,6 +1554,8 @@ private extension BackupSettingsViewModel {
 
             func performManualBackup() { print("Manually backing up!") }
             func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) { print("Uploads on cellular: \(newShouldAllowBackupUploadsOnCellular)") }
+
+            func setOptimizeLocalStorage(_ newOptimizeLocalStorage: Bool) { print("Optimize local storage: \(newOptimizeLocalStorage)") }
 
             func setIsBackupDownloadQueueSuspended(_ isSuspended: Bool, backupPlan: BackupPlan) { print("Download queue suspended: \(isSuspended) \(backupPlan)") }
             func setShouldAllowBackupDownloadsOnCellular() { print("Downloads on cellular: true") }
