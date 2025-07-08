@@ -466,7 +466,15 @@ public class RegistrationNavigationController: OWSNavigationController {
 
     @objc
     private func didRequestToSubmitDebugLogs() {
-        DebugLogs.submitLogs(supportTag: "Registration", dumper: .fromGlobals())
+        if DebugFlags.internalSettings {
+            let navVc = UINavigationController(rootViewController: InternalSettingsViewController(
+                mode: .registration,
+                appReadiness: appReadiness
+            ))
+            self.present(navVc, animated: true)
+        } else {
+            DebugLogs.submitLogs(supportTag: "Registration", dumper: .fromGlobals())
+        }
     }
 }
 

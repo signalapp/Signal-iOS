@@ -9,9 +9,20 @@ import SignalUI
 
 class InternalSettingsViewController: OWSTableViewController2 {
 
+    enum Mode: Equatable {
+        case registration
+        case standard
+    }
+
+    private let mode: Mode
+
     private let appReadiness: AppReadinessSetter
 
-    init(appReadiness: AppReadinessSetter) {
+    init(
+        mode: Mode = .standard,
+        appReadiness: AppReadinessSetter
+    ) {
+        self.mode = mode
         self.appReadiness = appReadiness
         super.init()
     }
@@ -106,13 +117,21 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         ))
 
-        debugSection.add(.actionItem(withText: "Validate Message Backup") {
-            self.validateMessageBackupProto()
-        })
+        if mode != .registration {
+            debugSection.add(.actionItem(withText: "Validate Message Backup") {
+                self.validateMessageBackupProto()
+            })
 
-        debugSection.add(.actionItem(withText: "Export Message Backup proto") {
-            self.exportMessageBackupProto()
-        })
+            debugSection.add(.actionItem(withText: "Export Message Backup proto") {
+                self.exportMessageBackupProto()
+            })
+        }
+
+        if mode == .registration {
+            debugSection.add(.actionItem(withText: "Submit debug logs") {
+                DebugLogs.submitLogs(supportTag: "Registration", dumper: .fromGlobals())
+            })
+        }
 
         contents.add(debugSection)
 
@@ -199,19 +218,21 @@ class InternalSettingsViewController: OWSTableViewController2 {
             selector: #selector(spinCheckmarks(_:))))
         contents.add(otherSection)
 
-        let paymentsSection = OWSTableSection(title: "Payments")
-        paymentsSection.add(.copyableItem(label: "MobileCoin Environment", value: MobileCoinAPI.Environment.current.description))
-        paymentsSection.add(.copyableItem(label: "Enabled?", value: SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled ? "Yes" : "No"))
-        if SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled, let paymentsEntropy = SUIEnvironment.shared.paymentsSwiftRef.paymentsEntropy {
-            paymentsSection.add(.copyableItem(label: "Entropy", value: paymentsEntropy.hexadecimalString))
-            if let passphrase = SUIEnvironment.shared.paymentsSwiftRef.passphrase {
-                paymentsSection.add(.copyableItem(label: "Mnemonic", value: passphrase.asPassphrase))
+        if mode != .registration {
+            let paymentsSection = OWSTableSection(title: "Payments")
+            paymentsSection.add(.copyableItem(label: "MobileCoin Environment", value: MobileCoinAPI.Environment.current.description))
+            paymentsSection.add(.copyableItem(label: "Enabled?", value: SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled ? "Yes" : "No"))
+            if SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled, let paymentsEntropy = SUIEnvironment.shared.paymentsSwiftRef.paymentsEntropy {
+                paymentsSection.add(.copyableItem(label: "Entropy", value: paymentsEntropy.hexadecimalString))
+                if let passphrase = SUIEnvironment.shared.paymentsSwiftRef.passphrase {
+                    paymentsSection.add(.copyableItem(label: "Mnemonic", value: passphrase.asPassphrase))
+                }
+                if let walletAddressBase58 = SUIEnvironment.shared.paymentsSwiftRef.walletAddressBase58() {
+                    paymentsSection.add(.copyableItem(label: "B58", value: walletAddressBase58))
+                }
             }
-            if let walletAddressBase58 = SUIEnvironment.shared.paymentsSwiftRef.walletAddressBase58() {
-                paymentsSection.add(.copyableItem(label: "B58", value: walletAddressBase58))
-            }
+            contents.add(paymentsSection)
         }
-        contents.add(paymentsSection)
 
         self.contents = contents
     }
