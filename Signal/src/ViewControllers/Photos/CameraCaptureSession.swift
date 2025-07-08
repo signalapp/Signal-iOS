@@ -106,6 +106,15 @@ class CameraCaptureSession: NSObject {
         audioCaptureSession.automaticallyConfiguresApplicationAudioSession = false
         audioCaptureSession.usesApplicationAudioSession = true
 
+        if #available(iOS 16.0, *) {
+            if avCaptureSession.isMultitaskingCameraAccessSupported {
+                avCaptureSession.isMultitaskingCameraAccessEnabled = true
+            }
+            if audioCaptureSession.isMultitaskingCameraAccessSupported {
+                audioCaptureSession.isMultitaskingCameraAccessEnabled = true
+            }
+        }
+
         videoCapture.delegate = self
     }
 
