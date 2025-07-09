@@ -588,7 +588,7 @@ public extension PaymentsImpl {
             forPaymentAmount: paymentAmount,
             mobileCoinAPI: mobileCoinAPI,
             canDefragment: canDefragment,
-        ).awaitable()
+        )
         // prepareTransaction() will fail if local balance is not yet known.
         let shouldUpdateBalance = self.currentPaymentBalance == nil
         let preparedTransaction = try await mobileCoinAPI.prepareTransaction(
@@ -606,25 +606,22 @@ public extension PaymentsImpl {
         )
     }
 
-    private func defragmentIfNecessary(forPaymentAmount paymentAmount: TSPaymentAmount,
-                                       mobileCoinAPI: MobileCoinAPI,
-                                       canDefragment: Bool) -> Promise<Void> {
-        return firstly(on: DispatchQueue.global()) { () throws -> Promise<Bool> in
-            mobileCoinAPI.requiresDefragmentation(forPaymentAmount: paymentAmount)
-        }.then(on: DispatchQueue.global()) { (shouldDefragment: Bool) -> Promise<Void> in
-            guard shouldDefragment else {
-                return Promise.value(())
-            }
-            guard canDefragment else {
-                throw PaymentsError.defragmentationRequired
-            }
-            return self.defragment(forPaymentAmount: paymentAmount,
-                                   mobileCoinAPI: mobileCoinAPI)
+    private func defragmentIfNecessary(
+        forPaymentAmount paymentAmount: TSPaymentAmount,
+        mobileCoinAPI: MobileCoinAPI,
+        canDefragment: Bool,
+    ) async throws {
+        let shouldDefragment = try await mobileCoinAPI.requiresDefragmentation(forPaymentAmount: paymentAmount).awaitable()
+        guard shouldDefragment else {
+            return
         }
+        guard canDefragment else {
+            throw PaymentsError.defragmentationRequired
+        }
+        return try await self.defragment(forPaymentAmount: paymentAmount, mobileCoinAPI: mobileCoinAPI)
     }
 
-    private func defragment(forPaymentAmount paymentAmount: TSPaymentAmount,
-                            mobileCoinAPI: MobileCoinAPI) -> Promise<Void> {
+    private func defragment(forPaymentAmount paymentAmount: TSPaymentAmount, mobileCoinAPI: MobileCoinAPI) async throws {
         Logger.info("")
 
         // 1. Prepare defragmentation transactions.
@@ -632,56 +629,57 @@ public extension PaymentsImpl {
         //   3. Submit defragmentation transactions (payment processor will do this).
         //   4. Verify defragmentation transactions (payment processor will do this).
         // 5. Block on verification of defragmentation transactions.
-        return firstly(on: DispatchQueue.global()) { () throws -> Promise<[MobileCoin.Transaction]> in
-            mobileCoinAPI.prepareDefragmentationStepTransactions(forPaymentAmount: paymentAmount)
-        }.map(on: DispatchQueue.global()) { (mcTransactions: [MobileCoin.Transaction]) -> [TSPaymentModel] in
-            Logger.info("mcTransactions: \(mcTransactions.count)")
+        let mcTransactions = try await mobileCoinAPI.prepareDefragmentationStepTransactions(forPaymentAmount: paymentAmount).awaitable()
+        Logger.info("mcTransactions: \(mcTransactions.count)")
 
-            // To initiate the defragmentation transactions, all we need to do
-            // is save TSPaymentModels to the database. The PaymentsProcessor
-            // will observe this and take responsibility for their submission,
-            // verification.
-            return try SSKEnvironment.shared.databaseStorageRef.write { dbTransaction in
-                try mcTransactions.map { mcTransaction in
-                    let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: 0)
-                    let feeAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: mcTransaction.fee)
-                    let mcTransactionData = mcTransaction.serializedData
-                    let inputKeyImages = Array(Set(mcTransaction.inputKeyImages))
-                    owsAssertDebug(inputKeyImages.count == mcTransaction.inputKeyImages.count)
-                    let outputPublicKeys = Array(Set(mcTransaction.outputPublicKeys))
-                    owsAssertDebug(outputPublicKeys.count == mcTransaction.outputPublicKeys.count)
-                    let mobileCoin = MobileCoinPayment(recipientPublicAddressData: nil,
-                                                       transactionData: mcTransactionData,
-                                                       receiptData: nil,
-                                                       incomingTransactionPublicKeys: nil,
-                                                       spentKeyImages: inputKeyImages,
-                                                       outputPublicKeys: outputPublicKeys,
-                                                       ledgerBlockTimestamp: 0,
-                                                       ledgerBlockIndex: 0,
-                                                       feeAmount: feeAmount)
+        // To initiate the defragmentation transactions, all we need to do
+        // is save TSPaymentModels to the database. The PaymentsProcessor
+        // will observe this and take responsibility for their submission,
+        // verification.
+        let paymentModels = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { dbTransaction in
+            return try mcTransactions.map { mcTransaction in
+                let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: 0)
+                let feeAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: mcTransaction.fee)
+                let mcTransactionData = mcTransaction.serializedData
+                let inputKeyImages = Array(Set(mcTransaction.inputKeyImages))
+                owsAssertDebug(inputKeyImages.count == mcTransaction.inputKeyImages.count)
+                let outputPublicKeys = Array(Set(mcTransaction.outputPublicKeys))
+                owsAssertDebug(outputPublicKeys.count == mcTransaction.outputPublicKeys.count)
+                let mobileCoin = MobileCoinPayment(
+                    recipientPublicAddressData: nil,
+                    transactionData: mcTransactionData,
+                    receiptData: nil,
+                    incomingTransactionPublicKeys: nil,
+                    spentKeyImages: inputKeyImages,
+                    outputPublicKeys: outputPublicKeys,
+                    ledgerBlockTimestamp: 0,
+                    ledgerBlockIndex: 0,
+                    feeAmount: feeAmount,
+                )
 
-                    let paymentModel = TSPaymentModel(paymentType: .outgoingDefragmentation,
-                                                      paymentState: .outgoingUnsubmitted,
-                                                      paymentAmount: paymentAmount,
-                                                      createdDate: Date(),
-                                                      senderOrRecipientAci: nil,
-                                                      memoMessage: nil,
-                                                      isUnread: false,
-                                                      interactionUniqueId: nil,
-                                                      mobileCoin: mobileCoin)
+                let paymentModel = TSPaymentModel(
+                    paymentType: .outgoingDefragmentation,
+                    paymentState: .outgoingUnsubmitted,
+                    paymentAmount: paymentAmount,
+                    createdDate: Date(),
+                    senderOrRecipientAci: nil,
+                    memoMessage: nil,
+                    isUnread: false,
+                    interactionUniqueId: nil,
+                    mobileCoin: mobileCoin,
+                )
 
-                    guard paymentModel.isValid else {
-                        throw OWSAssertionError("Invalid paymentModel.")
-                    }
-
-                    try SSKEnvironment.shared.paymentsHelperRef.tryToInsertPaymentModel(paymentModel, transaction: dbTransaction)
-
-                    return paymentModel
+                guard paymentModel.isValid else {
+                    throw OWSAssertionError("Invalid paymentModel.")
                 }
+
+                try SSKEnvironment.shared.paymentsHelperRef.tryToInsertPaymentModel(paymentModel, transaction: dbTransaction)
+
+                return paymentModel
             }
-        }.then(on: DispatchQueue.global()) { (paymentModels: [TSPaymentModel]) -> Promise<Void> in
-            self.blockOnVerificationOfDefragmentation(paymentModels: paymentModels)
         }
+
+        return try await self.blockOnVerificationOfDefragmentation(paymentModels: paymentModels).awaitable()
     }
 
     func initiateOutgoingPayment(preparedPayment: PreparedPayment) -> Promise<TSPaymentModel> {
