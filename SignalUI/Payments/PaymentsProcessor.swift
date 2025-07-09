@@ -632,7 +632,7 @@ private class PaymentProcessingOperation {
 
         do {
             let mobileCoinAPI = try await SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI()
-            _ = try await mobileCoinAPI.submitTransaction(transaction: transaction).awaitable()
+            _ = try await mobileCoinAPI.submitTransaction(transaction: transaction)
             try await Self.updatePaymentStatePromise(paymentModel: paymentModel, fromState: .outgoingUnsubmitted, toState: .outgoingUnverified)
         } catch PaymentsError.inputsAlreadySpent {
             // e.g. if we double-submit a transaction, it should become unverified,

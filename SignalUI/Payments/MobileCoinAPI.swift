@@ -356,36 +356,25 @@ public class MobileCoinAPI {
         }
     }
 
-    func submitTransaction(transaction: MobileCoin.Transaction) -> Promise<Void> {
+    func submitTransaction(transaction: MobileCoin.Transaction) async throws -> Void {
         Logger.verbose("")
 
         guard !DebugFlags.paymentsFailOutgoingSubmission.get() else {
-            return Promise(error: OWSGenericError("Failed."))
+            throw OWSGenericError("Failed.")
         }
 
-        return firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
-            let (promise, future) = Promise<Void>.pending()
-            if DebugFlags.paymentsNoRequestsComplete.get() {
-                // Never resolve.
-                return promise
-            }
-            let client = self.client
-            client.submitTransaction(transaction: transaction) { (result: Result<UInt64, SubmitTransactionError>) in
-                switch result {
-                case .success:
-                    future.resolve()
-                case .failure(let error):
-                    future.reject(Self.convertMCError(error: error.submissionError))
+        return try await withTimeoutAndErrorConversion { [client] in
+            return try await withCheckedThrowingContinuation { continuation in
+                client.submitTransaction(transaction: transaction) { (result: Result<UInt64, SubmitTransactionError>) in
+                    switch result {
+                    case .success:
+                        Logger.verbose("Success.")
+                        continuation.resume(returning: ())
+                    case .failure(let error):
+                        continuation.resume(throwing: error.submissionError)
+                    }
                 }
             }
-            return promise
-        }.map(on: DispatchQueue.global()) { () -> Void in
-            Logger.verbose("Success.")
-        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<Void> in
-            owsFailDebugUnlessMCNetworkFailure(error)
-            throw error
-        }.timeout(seconds: Self.timeoutDuration, description: "submitTransaction") { () -> Error in
-            PaymentsError.timeout
         }
     }
 
