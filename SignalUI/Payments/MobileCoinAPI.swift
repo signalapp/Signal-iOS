@@ -100,25 +100,19 @@ public class MobileCoinAPI {
         return OWSAuthorization(username: username, password: password)
     }
 
-    public static func buildPromise(paymentsEntropy: Data) -> Promise<MobileCoinAPI> {
+    public static func build(paymentsEntropy: Data) async throws -> MobileCoinAPI {
         guard !CurrentAppContext().isNSE else {
-            return Promise(error: OWSAssertionError("Payments disabled in NSE."))
+            throw OWSAssertionError("Payments disabled in NSE.")
         }
-        return firstly(on: DispatchQueue.global()) { () -> Promise<SignalServiceKit.HTTPResponse> in
-            let request = OWSRequestFactory.paymentsAuthenticationCredentialRequest()
-            return SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response -> OWSAuthorization in
-            guard let json = response.responseBodyJson else {
-                throw OWSAssertionError("Missing or invalid JSON")
-            }
-            return try Self.parseAuthorizationResponse(responseObject: json)
-        }.map(on: DispatchQueue.global()) { (signalAuthorization: OWSAuthorization) -> MobileCoinAPI in
-            let localAccount = try Self.buildAccount(forPaymentsEntropy: paymentsEntropy)
-            let client = try localAccount.buildClient(signalAuthorization: signalAuthorization)
-            return try MobileCoinAPI(paymentsEntropy: paymentsEntropy,
-                                     localAccount: localAccount,
-                                     client: client)
+        let request = OWSRequestFactory.paymentsAuthenticationCredentialRequest()
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+        guard let json = response.responseBodyJson else {
+            throw OWSAssertionError("Missing or invalid JSON")
         }
+        let signalAuthorization = try Self.parseAuthorizationResponse(responseObject: json)
+        let localAccount = try Self.buildAccount(forPaymentsEntropy: paymentsEntropy)
+        let client = try localAccount.buildClient(signalAuthorization: signalAuthorization)
+        return try MobileCoinAPI(paymentsEntropy: paymentsEntropy, localAccount: localAccount, client: client)
     }
 
     // MARK: -

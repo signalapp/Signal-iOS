@@ -631,7 +631,7 @@ private class PaymentProcessingOperation {
         }
 
         do {
-            let mobileCoinAPI = try await SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI().awaitable()
+            let mobileCoinAPI = try await SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI()
             _ = try await mobileCoinAPI.submitTransaction(transaction: transaction).awaitable()
             try await Self.updatePaymentStatePromise(paymentModel: paymentModel, fromState: .outgoingUnsubmitted, toState: .outgoingUnverified)
         } catch PaymentsError.inputsAlreadySpent {
@@ -655,7 +655,7 @@ private class PaymentProcessingOperation {
             return
         }
 
-        let mobileCoinAPI = try await SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI().awaitable()
+        let mobileCoinAPI = try await SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI()
 
         guard
             let mcTransactionData = paymentModel.mcTransactionData,
@@ -746,7 +746,7 @@ private class PaymentProcessingOperation {
     private func verifyIncomingPayment(paymentModel: TSPaymentModel) async throws {
         owsAssertDebug(paymentModel.paymentState == .incomingUnverified)
 
-        let mobileCoinAPI = try await SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI().awaitable()
+        let mobileCoinAPI = try await SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI()
 
         guard let mcReceiptData = paymentModel.mcReceiptData, let receipt = MobileCoin.Receipt(serializedData: mcReceiptData) else {
             await Self.handleIndeterminatePayment(paymentModel: paymentModel)

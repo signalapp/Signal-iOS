@@ -102,7 +102,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
     }
 
-    private func getOrBuildCurrentApi(paymentsEntropy: Data) -> Promise<MobileCoinAPI> {
+    private func getOrBuildCurrentApi(paymentsEntropy: Data) async throws -> MobileCoinAPI {
         func getCurrentApi() -> MobileCoinAPI? {
             return Self.unfairLock.withLock { () -> MobileCoinAPI? in
                 if let handle = self.currentApiHandle,
@@ -120,29 +120,26 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
 
         if let api = getCurrentApi() {
-            return Promise.value(api)
-        }
-
-        return firstly(on: DispatchQueue.global()) {
-            MobileCoinAPI.buildPromise(paymentsEntropy: paymentsEntropy)
-        }.map(on: DispatchQueue.global()) { (api: MobileCoinAPI) -> MobileCoinAPI in
-            setCurrentApi(api)
             return api
         }
+
+        let api = try await MobileCoinAPI.build(paymentsEntropy: paymentsEntropy)
+        setCurrentApi(api)
+        return api
     }
 
     // Instances of MobileCoinAPI are slightly expensive to
     // build since we need to obtain authentication from
     // the service, so we cache and reuse instances.
-    func getMobileCoinAPI() -> Promise<MobileCoinAPI> {
+    func getMobileCoinAPI() async throws -> MobileCoinAPI {
         guard !CurrentAppContext().isNSE else {
-            return Promise(error: OWSAssertionError("Payments disabled in NSE."))
+            throw OWSAssertionError("Payments disabled in NSE.")
         }
         switch paymentsState {
         case .enabled(let paymentsEntropy):
-            return getOrBuildCurrentApi(paymentsEntropy: paymentsEntropy)
+            return try await getOrBuildCurrentApi(paymentsEntropy: paymentsEntropy)
         case .disabled, .disabledWithPaymentsEntropy:
-            return Promise(error: PaymentsError.notEnabled)
+            throw PaymentsError.notEnabled
         }
     }
 
@@ -497,7 +494,7 @@ public extension PaymentsImpl {
 
 public extension PaymentsImpl {
     func getCurrentBalance() async throws -> TSPaymentAmount {
-        let mobileCoinAPI = try await self.getMobileCoinAPI().awaitable()
+        let mobileCoinAPI = try await self.getMobileCoinAPI()
         return try await mobileCoinAPI.getLocalBalance().awaitable()
     }
 }
@@ -507,7 +504,7 @@ public extension PaymentsImpl {
 public extension PaymentsImpl {
 
     func maximumPaymentAmount() async throws -> TSPaymentAmount {
-        let mobileCoinAPI = try await self.getMobileCoinAPI().awaitable()
+        let mobileCoinAPI = try await self.getMobileCoinAPI()
         return try await mobileCoinAPI.maxTransactionAmount()
     }
 
@@ -516,7 +513,7 @@ public extension PaymentsImpl {
             throw OWSAssertionError("Invalid currency.")
         }
 
-        let mobileCoinAPI = try await self.getMobileCoinAPI().awaitable()
+        let mobileCoinAPI = try await self.getMobileCoinAPI()
         return try await mobileCoinAPI.getEstimatedFee(forPaymentAmount: paymentAmount)
     }
 
@@ -584,7 +581,7 @@ public extension PaymentsImpl {
             throw OWSAssertionError("Can't make payment to yourself.")
         }
 
-        let mobileCoinAPI = try await self.getMobileCoinAPI().awaitable()
+        let mobileCoinAPI = try await self.getMobileCoinAPI()
         // prepareTransaction() will fail if local balance is not yet known.
         _ = try await mobileCoinAPI.getLocalBalance().awaitable()
         _ = try await self.defragmentIfNecessary(
