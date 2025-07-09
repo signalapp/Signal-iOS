@@ -640,7 +640,9 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                     }
                 }
             }.then(on: DispatchQueue.global()) { (preparedPayment: PreparedPayment) in
-                SUIEnvironment.shared.paymentsSwiftRef.initiateOutgoingPayment(preparedPayment: preparedPayment)
+                return Promise.wrapAsync {
+                    try await SUIEnvironment.shared.paymentsSwiftRef.initiateOutgoingPayment(preparedPayment: preparedPayment)
+                }
             }.then { (paymentModel: TSPaymentModel) -> Promise<Void> in
                 // Try to wait (with a timeout) for submission and verification to complete.
                 let blockInterval: TimeInterval = .minute
