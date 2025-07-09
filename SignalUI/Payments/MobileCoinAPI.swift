@@ -465,36 +465,21 @@ public class MobileCoinAPI {
         }
     }
 
-    func getAccountActivity() -> Promise<MobileCoin.AccountActivity> {
+    func getAccountActivity() async throws -> MobileCoin.AccountActivity {
         Logger.verbose("")
 
         let client = self.client
 
-        return firstly(on: DispatchQueue.global()) { () throws -> Promise<MobileCoin.AccountActivity> in
-            let (promise, future) = Promise<MobileCoin.AccountActivity>.pending()
-            if DebugFlags.paymentsNoRequestsComplete.get() {
-                // Never resolve.
-                return promise
-            }
-            client.updateBalances { (result: Swift.Result<Balances, BalanceUpdateError>) in
-                switch result {
-                case .success:
-                    future.resolve(client.accountActivity(for: .MOB))
-                case .failure(let error):
-                    let error = Self.convertMCError(error: error)
-                    future.reject(error)
+        _ = try await withTimeoutAndErrorConversion {
+            return try await withCheckedThrowingContinuation { continuation in
+                client.updateBalances { (result: Swift.Result<Balances, BalanceUpdateError>) in
+                    continuation.resume(with: result)
                 }
             }
-            return promise
-        }.map(on: DispatchQueue.global()) { (accountActivity: MobileCoin.AccountActivity) -> MobileCoin.AccountActivity in
-            Logger.verbose("Success: \(accountActivity.blockCount)")
-            return accountActivity
-        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<MobileCoin.AccountActivity> in
-            owsFailDebugUnlessMCNetworkFailure(error)
-            throw error
-        }.timeout(seconds: Self.timeoutDuration, description: "getAccountActivity") { () -> Error in
-            PaymentsError.timeout
         }
+        let accountActivity = client.accountActivity(for: .MOB)
+        Logger.verbose("Success: \(accountActivity.blockCount)")
+        return accountActivity
     }
 }
 

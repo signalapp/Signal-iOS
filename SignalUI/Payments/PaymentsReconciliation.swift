@@ -72,7 +72,7 @@ public class PaymentsReconciliation {
             return
         }
         let mobileCoinAPI = try await SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI()
-        let accountActivity = try await mobileCoinAPI.getAccountActivity().awaitable()
+        let accountActivity = try await mobileCoinAPI.getAccountActivity()
         await Self.reconcileIfNecessary(transactionHistory: accountActivity)
     }
 
