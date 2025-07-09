@@ -532,28 +532,28 @@ class DeviceTransferService: NSObject {
         var progressLog = String(format: "Transfer progress %d%%", currentWholeNumberProgress)
 
         var remainingNumber = remainingBytes
-        var remainingUnits = "b"
+        var remainingUnits = "B"
         if remainingNumber / 1024 >= 1 {
             remainingNumber /= 1024
-            remainingUnits = "Kb"
+            remainingUnits = "KiB"
         }
         if remainingNumber / 1024 >= 1 {
             remainingNumber /= 1024
-            remainingUnits = "Mb"
+            remainingUnits = "MiB"
         }
         if remainingNumber / 1024 >= 1 {
             remainingNumber /= 1024
-            remainingUnits = "Gb"
+            remainingUnits = "GiB"
         }
 
         progressLog += String(format: " / %0.2f %@ remaining", remainingNumber, remainingUnits)
 
         if let throughput = progress.throughput {
             var transferSpeed = Double(throughput) / 1024
-            var transferUnits = "Kbps"
+            var transferUnits = "KiB/s"
             if transferSpeed / 1024 >= 1 {
                 transferSpeed /= 1024
-                transferUnits = "Mbps"
+                transferUnits = "MiB/s"
             }
 
             progressLog += String(format: " / %0.2f %@", transferSpeed, transferUnits)
