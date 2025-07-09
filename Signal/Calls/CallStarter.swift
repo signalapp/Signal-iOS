@@ -156,34 +156,50 @@ struct CallStarter {
         var localDeviceId: DeviceId
     }
 
+    enum PrepareToStartCallError: Error {
+        case notRegistered
+        case missingMicrophonePermission
+        case missingCameraPermission
+    }
+
     @MainActor
-    static func prepareToStartCall(from viewController: UIViewController, shouldAskForCameraPermission: Bool) async -> PrepareToStartCallResult? {
+    static func prepareToStartCall(from viewController: UIViewController, shouldAskForCameraPermission: Bool) async throws(PrepareToStartCallError) -> PrepareToStartCallResult {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard
             tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered,
             let localDeviceId = tsAccountManager.storedDeviceIdWithMaybeTransaction.ifValid
         else {
             Logger.warn("Can't start a call unless you're registered")
-            OWSActionSheets.showActionSheet(title: OWSLocalizedString(
-                "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
-                comment: "alert body shown when trying to use features in the app before completing registration-related setup."
-            ))
-            return nil
+            throw .notRegistered
         }
 
         guard await viewController.askForMicrophonePermissions() else {
             Logger.warn("aborting due to missing microphone permissions.")
-            viewController.ows_showNoMicrophonePermissionActionSheet()
-            return nil
+            throw .missingMicrophonePermission
         }
 
         if shouldAskForCameraPermission {
             guard await viewController.askForCameraPermissions() else {
                 Logger.warn("aborting due to missing camera permissions.")
-                return nil
+                throw .missingCameraPermission
             }
         }
 
         return PrepareToStartCallResult(localDeviceId: localDeviceId)
+    }
+
+    static func showPrepareToStartCallError(_ prepareToStartCallError: PrepareToStartCallError, from viewController: UIViewController) {
+        switch prepareToStartCallError {
+        case .notRegistered:
+            OWSActionSheets.showActionSheet(title: OWSLocalizedString(
+                "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
+                comment: "alert body shown when trying to use features in the app before completing registration-related setup."
+            ))
+        case .missingMicrophonePermission:
+            viewController.ows_showNoMicrophonePermissionActionSheet()
+        case .missingCameraPermission:
+            // The error is shown from askForCameraPermissions.
+            break
+        }
     }
 }

@@ -355,11 +355,16 @@ final class GroupCallViewController: UIViewController {
     }
 
     static func presentLobby(forGroupId groupId: GroupIdentifier, videoMuted: Bool = false) {
-        self._presentLobby { viewController in
-            let result = await self._prepareLobby(from: viewController, shouldAskForCameraPermission: !videoMuted) {
-                let callService = AppEnvironment.shared.callService!
-                return callService.buildAndConnectGroupCall(for: groupId, isVideoMuted: videoMuted)
-            }
+        self._presentLobby { viewController, modalViewController in
+            let result = await self._prepareLobby(
+                from: viewController,
+                modalViewController: modalViewController,
+                shouldAskForCameraPermission: !videoMuted,
+                buildAndStartConnecting: {
+                    let callService = AppEnvironment.shared.callService!
+                    return callService.buildAndConnectGroupCall(for: groupId, isVideoMuted: videoMuted)
+                }
+            )
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 // Dismiss the group call tooltip
                 SSKEnvironment.shared.preferencesRef.setWasGroupCallTooltipShown(tx: tx)
@@ -372,15 +377,20 @@ final class GroupCallViewController: UIViewController {
         for callLink: CallLink,
         callLinkStateRetrievalStrategy: CallService.CallLinkStateRetrievalStrategy = .fetch
     ) {
-        self._presentLobby { viewController in
+        self._presentLobby { viewController, modalViewController in
             do {
-                return try await self._prepareLobby(from: viewController, shouldAskForCameraPermission: true) {
-                    let callService = AppEnvironment.shared.callService!
-                    return try await callService.buildAndConnectCallLinkCall(
-                        callLink: callLink,
-                        callLinkStateRetrievalStrategy: callLinkStateRetrievalStrategy
-                    )
-                }
+                return try await self._prepareLobby(
+                    from: viewController,
+                    modalViewController: modalViewController,
+                    shouldAskForCameraPermission: true,
+                    buildAndStartConnecting: {
+                        let callService = AppEnvironment.shared.callService!
+                        return try await callService.buildAndConnectCallLinkCall(
+                            callLink: callLink,
+                            callLinkStateRetrievalStrategy: callLinkStateRetrievalStrategy
+                        )
+                    }
+                )
             } catch {
                 Logger.warn("Call link lobby presentation failed with error \(error)")
                 return {
@@ -397,7 +407,7 @@ final class GroupCallViewController: UIViewController {
     }
 
     private static func _presentLobby(
-        prepareLobby: @escaping @MainActor (UIViewController) async -> (() -> Void)?
+        prepareLobby: @escaping @MainActor (_ viewController: UIViewController, _ modalViewController: UIViewController) async -> (() -> Void)?
     ) {
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
             owsFail("Can't start a call if there's no view controller")
@@ -408,20 +418,27 @@ final class GroupCallViewController: UIViewController {
             canCancel: false,
             presentationDelay: 0.25,
             asyncBlock: { modal in
-                let presentLobby = await prepareLobby(frontmostViewController)
-                modal.dismissIfNotCanceled(completionIfNotCanceled: presentLobby ?? {})
+                let presentLobbyOrError = await prepareLobby(frontmostViewController, modal)
+                modal.dismissIfNotCanceled(completionIfNotCanceled: presentLobbyOrError ?? {})
             }
         )
     }
 
     private static func _prepareLobby(
         from viewController: UIViewController,
+        modalViewController: UIViewController,
         shouldAskForCameraPermission: Bool,
         buildAndStartConnecting: () async throws -> (SignalCall, GroupCall)?
     ) async rethrows -> (() -> Void)? {
-        let prepareResult = await CallStarter.prepareToStartCall(from: viewController, shouldAskForCameraPermission: shouldAskForCameraPermission)
-        guard prepareResult != nil else {
-            return nil
+        do throws(CallStarter.PrepareToStartCallError) {
+            _ = try await CallStarter.prepareToStartCall(
+                from: modalViewController,
+                shouldAskForCameraPermission: shouldAskForCameraPermission,
+            )
+        } catch {
+            return {
+                CallStarter.showPrepareToStartCallError(error, from: viewController)
+            }
         }
 
         guard let (call, groupCall) = try await buildAndStartConnecting() else {

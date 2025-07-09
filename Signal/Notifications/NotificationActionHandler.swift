@@ -100,8 +100,11 @@ public class NotificationActionHandler {
         guard let viewController = UIApplication.shared.frontmostViewController else {
             throw OWSAssertionError("Missing frontmostViewController.")
         }
-        let prepareResult = await CallStarter.prepareToStartCall(from: viewController, shouldAskForCameraPermission: false)
-        guard let prepareResult else {
+        let prepareResult: CallStarter.PrepareToStartCallResult
+        do throws(CallStarter.PrepareToStartCallError) {
+            prepareResult = try await CallStarter.prepareToStartCall(from: viewController, shouldAskForCameraPermission: false)
+        } catch {
+            CallStarter.showPrepareToStartCallError(error, from: viewController)
             return
         }
         callService.callUIAdapter.startAndShowOutgoingCall(thread: thread, prepareResult: prepareResult, hasLocalVideo: false)

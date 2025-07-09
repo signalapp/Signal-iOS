@@ -734,8 +734,11 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             owsFail("Can't start a call if there's no view controller")
         }
 
-        let prepareResult = await CallStarter.prepareToStartCall(from: frontmostViewController, shouldAskForCameraPermission: isVideo)
-        guard let prepareResult else {
+        let prepareResult: CallStarter.PrepareToStartCallResult
+        do throws(CallStarter.PrepareToStartCallError) {
+            prepareResult = try await CallStarter.prepareToStartCall(from: frontmostViewController, shouldAskForCameraPermission: isVideo)
+        } catch {
+            CallStarter.showPrepareToStartCallError(error, from: frontmostViewController)
             return
         }
 
