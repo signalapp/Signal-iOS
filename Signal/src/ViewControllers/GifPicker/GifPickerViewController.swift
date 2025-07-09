@@ -190,7 +190,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                                object: nil)
 
         taskQueue.enqueueCancellingPrevious(operation: { @MainActor in
-            await self.loadTrending(afterDelay: 0)
+            await self.tryToSearch(afterDelay: 0)
         })
     }
 
@@ -545,10 +545,12 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     private func tryToSearch(afterDelay delay: TimeInterval) async {
         let query = searchBar.text!.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        if query.isEmpty {
-            await loadTrending(afterDelay: delay)
-        } else {
-            await loadSearchResults(for: query, afterDelay: delay)
+        await loadResults(afterDelay: delay) {
+            if query.isEmpty {
+                return try await GiphyAPI.trending()
+            } else {
+                return try await GiphyAPI.search(query: query)
+            }
         }
     }
 
@@ -557,54 +559,22 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.viewMode = .searching
     }
 
-    private func loadTrending(afterDelay delay: TimeInterval) async {
-        assert(searchBar.text.isEmptyOrNil)
-
+    private func loadResults(afterDelay delay: TimeInterval, loadImageInfos: () async throws -> [GiphyImageInfo]) async {
         self.showLoading()
-
+        self.collectionView.contentOffset = .zero
         do {
             if delay > 0 {
                 try await Task.sleep(nanoseconds: delay.clampedNanoseconds)
             }
-
-            let imageInfos = try await GiphyAPI.trending()
-
-            Logger.info("showing trending")
-            if imageInfos.count > 0 {
-                self.imageInfos = imageInfos
-                self.viewMode = .results
-            } else {
-                owsFailDebug("trending results was unexpectedly empty")
-            }
-        } catch is CancellationError, URLError.cancelled {
-            // Do nothing.
-        } catch {
-            // Don't both showing error UI feedback for default "trending" results.
-            Logger.error("error: \(error)")
-        }
-    }
-
-    private func loadSearchResults(for query: String, afterDelay delay: TimeInterval) async {
-        self.showLoading()
-        self.collectionView.contentOffset = CGPoint.zero
-
-        do {
-            if delay > 0 {
-                try await Task.sleep(nanoseconds: delay.clampedNanoseconds)
-            }
-            imageInfos = try await GiphyAPI.search(query: query)
-            Logger.info("search complete")
-            if imageInfos.count > 0 {
-                viewMode = .results
-            } else {
-                viewMode = .noResults
-            }
+            let imageInfos = try await loadImageInfos()
+            try Task.checkCancellation()
+            self.imageInfos = imageInfos
+            self.viewMode = imageInfos.isEmpty ? .noResults : .results
+            Logger.info("Finished loading GIFs")
         } catch is CancellationError, URLError.cancelled {
             // Do nothing.
         } catch {
             owsFailDebugUnlessNetworkFailure(error)
-
-            Logger.warn("search failed.")
             // TODO: Present this error to the user.
             viewMode = .error
         }
