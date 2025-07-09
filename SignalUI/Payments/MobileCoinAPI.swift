@@ -87,6 +87,28 @@ public class MobileCoinAPI {
 
     // MARK: -
 
+    private func withTimeoutAndErrorConversion<T>(makeRequest: @escaping () async throws -> T) async throws -> T {
+        if DebugFlags.paymentsNoRequestsComplete.get() {
+            // Never resolve.
+            try! await Task.sleep(nanoseconds: TimeInterval.infinity.clampedNanoseconds)
+        }
+        do {
+            return try await withUncooperativeTimeout(seconds: Self.timeoutDuration) {
+                do {
+                    return try await makeRequest()
+                } catch {
+                    let convertedError = Self.convertMCError(error: error)
+                    owsFailDebugUnlessMCNetworkFailure(convertedError)
+                    throw convertedError
+                }
+            }
+        } catch is UncooperativeTimeoutError {
+            throw PaymentsError.timeout
+        }
+    }
+
+    // MARK: -
+
     static func buildLocalAccount(paymentsEntropy: Data) throws -> MobileCoinAccount {
         try Self.buildAccount(forPaymentsEntropy: paymentsEntropy)
     }
@@ -164,7 +186,7 @@ public class MobileCoinAPI {
             throw OWSAssertionError("Invalid amount.")
         }
 
-        return try await _getPaymentAmount(canBeEmpty: false, getPicoMob: { client in
+        return try await _getPaymentAmount(canBeEmpty: false, getPicoMob: { [client] in
             return try await withCheckedThrowingContinuation { continuation in
                 // We don't need to support amountPicoMobHigh.
                 let amount = Amount(paymentAmount.picoMob, in: .MOB)
@@ -176,7 +198,7 @@ public class MobileCoinAPI {
     }
 
     func maxTransactionAmount() async throws -> TSPaymentAmount {
-        return try await _getPaymentAmount(canBeEmpty: true, getPicoMob: { client in
+        return try await _getPaymentAmount(canBeEmpty: true, getPicoMob: { [client] in
             return try await withCheckedThrowingContinuation { continuation in
                 client.amountTransferable(tokenId: .MOB, feeLevel: Self.feeLevel) {
                     continuation.resume(with: $0)
@@ -185,38 +207,18 @@ public class MobileCoinAPI {
         })
     }
 
-    private func _getPaymentAmount(canBeEmpty: Bool, getPicoMob: @escaping (MobileCoinClient) async throws -> UInt64) async throws -> TSPaymentAmount {
+    private func _getPaymentAmount(canBeEmpty: Bool, getPicoMob: @escaping () async throws -> UInt64) async throws -> TSPaymentAmount {
         if DebugFlags.paymentsNoRequestsComplete.get() {
             // Never resolve.
             try! await Task.sleep(nanoseconds: TimeInterval.infinity.clampedNanoseconds)
         }
 
-        do {
-            return try await withUncooperativeTimeout(seconds: Self.timeoutDuration) { [client] in
-                do {
-                    let picoMob: UInt64
-                    do {
-                        picoMob = try await getPicoMob(client)
-                    } catch {
-                        throw Self.convertMCError(error: error)
-                    }
-                    let result = TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
-                    guard result.isValidAmount(canBeEmpty: canBeEmpty) else {
-                        throw OWSAssertionError("Invalid amount.")
-                    }
-                    return result
-                } catch {
-                    if case PaymentsError.insufficientFunds = error {
-                        Logger.warn("Error: \(error)")
-                    } else {
-                        owsFailDebugUnlessMCNetworkFailure(error)
-                    }
-                    throw error
-                }
-            }
-        } catch is UncooperativeTimeoutError {
-            throw PaymentsError.timeout
+        let picoMob = try await withTimeoutAndErrorConversion(makeRequest: getPicoMob)
+        let result = TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
+        guard result.isValidAmount(canBeEmpty: canBeEmpty) else {
+            throw OWSAssertionError("Invalid amount.")
         }
+        return result
     }
 
     struct PreparedTransaction: PreparedPayment {
