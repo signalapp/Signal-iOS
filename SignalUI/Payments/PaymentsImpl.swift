@@ -528,40 +528,36 @@ public extension PaymentsImpl {
         memoMessage: String?,
         isOutgoingTransfer: Bool,
         canDefragment: Bool
-    ) -> Promise<PreparedPayment> {
-
+    ) async throws -> PreparedPayment {
         guard !isKillSwitchActive else {
-            return Promise(error: PaymentsError.killSwitch)
+            throw PaymentsError.killSwitch
         }
         guard let recipient = recipient as? SendPaymentRecipientImpl else {
-            return Promise(error: OWSAssertionError("Invalid recipient."))
+            throw OWSAssertionError("Invalid recipient.")
         }
 
         switch recipient {
         case .address(let recipientAddress):
             // Cannot send "user-to-user" payment if kill switch is active.
             guard !SUIEnvironment.shared.paymentsRef.isKillSwitchActive else {
-                return Promise(error: PaymentsError.killSwitch)
+                throw PaymentsError.killSwitch
             }
 
             guard let recipientAci = recipientAddress.serviceId as? Aci else {
-                return Promise(error: PaymentsError.userHasNoPublicAddress)
+                throw PaymentsError.userHasNoPublicAddress
             }
 
-            return firstly(on: DispatchQueue.global()) { () -> Promise<MobileCoin.PublicAddress> in
-                self.fetchPublicAddress(for: recipientAci)
-            }.then(on: DispatchQueue.global()) { (recipientPublicAddress: MobileCoin.PublicAddress) -> Promise<PreparedPayment> in
-                self.prepareOutgoingPayment(
-                    recipientAci: recipientAci,
-                    recipientPublicAddress: recipientPublicAddress,
-                    paymentAmount: paymentAmount,
-                    memoMessage: memoMessage,
-                    isOutgoingTransfer: isOutgoingTransfer,
-                    canDefragment: canDefragment
-                )
-            }
+            let recipientPublicAddress = try await self.fetchPublicAddress(for: recipientAci).awaitable()
+            return try await self.prepareOutgoingPayment(
+                recipientAci: recipientAci,
+                recipientPublicAddress: recipientPublicAddress,
+                paymentAmount: paymentAmount,
+                memoMessage: memoMessage,
+                isOutgoingTransfer: isOutgoingTransfer,
+                canDefragment: canDefragment
+            )
         case .publicAddress(let recipientPublicAddress):
-            return prepareOutgoingPayment(
+            return try await prepareOutgoingPayment(
                 recipientAci: nil,
                 recipientPublicAddress: recipientPublicAddress,
                 paymentAmount: paymentAmount,
@@ -579,45 +575,40 @@ public extension PaymentsImpl {
         memoMessage: String?,
         isOutgoingTransfer: Bool,
         canDefragment: Bool
-    ) -> Promise<PreparedPayment> {
-
+    ) async throws -> PreparedPayment {
         guard !isKillSwitchActive else {
-            return Promise(error: PaymentsError.killSwitch)
+            throw PaymentsError.killSwitch
         }
         guard paymentAmount.currency == .mobileCoin else {
-            return Promise(error: OWSAssertionError("Invalid currency."))
+            throw OWSAssertionError("Invalid currency.")
         }
         guard recipientAci != DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-            return Promise(error: OWSAssertionError("Can't make payment to yourself."))
+            throw OWSAssertionError("Can't make payment to yourself.")
         }
 
-        return firstly(on: DispatchQueue.global()) { () -> Promise<MobileCoinAPI> in
-            self.getMobileCoinAPI()
-        }.then(on: DispatchQueue.global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<PreparedPayment> in
-            return firstly(on: DispatchQueue.global()) { () throws -> Promise<TSPaymentAmount> in
-                // prepareTransaction() will fail if local balance is not yet known.
-                mobileCoinAPI.getLocalBalance()
-            }.then(on: DispatchQueue.global()) { (balance: TSPaymentAmount) -> Promise<Void> in
-                return self.defragmentIfNecessary(forPaymentAmount: paymentAmount,
-                                                  mobileCoinAPI: mobileCoinAPI,
-                                                  canDefragment: canDefragment)
-            }.then(on: DispatchQueue.global()) { () -> Promise<MobileCoinAPI.PreparedTransaction> in
-                // prepareTransaction() will fail if local balance is not yet known.
-                let shouldUpdateBalance = self.currentPaymentBalance == nil
-                return mobileCoinAPI.prepareTransaction(paymentAmount: paymentAmount,
-                                                        recipientPublicAddress: recipientPublicAddress,
-                                                        shouldUpdateBalance: shouldUpdateBalance)
-            }.map(on: DispatchQueue.global()) { (preparedTransaction: MobileCoinAPI.PreparedTransaction) -> PreparedPayment in
-                PreparedPaymentImpl(
-                    recipientAci: recipientAci,
-                    recipientPublicAddress: recipientPublicAddress,
-                    paymentAmount: paymentAmount,
-                    memoMessage: memoMessage,
-                    isOutgoingTransfer: isOutgoingTransfer,
-                    preparedTransaction: preparedTransaction
-                )
-            }
-        }
+        let mobileCoinAPI = try await self.getMobileCoinAPI().awaitable()
+        // prepareTransaction() will fail if local balance is not yet known.
+        _ = try await mobileCoinAPI.getLocalBalance().awaitable()
+        _ = try await self.defragmentIfNecessary(
+            forPaymentAmount: paymentAmount,
+            mobileCoinAPI: mobileCoinAPI,
+            canDefragment: canDefragment,
+        ).awaitable()
+        // prepareTransaction() will fail if local balance is not yet known.
+        let shouldUpdateBalance = self.currentPaymentBalance == nil
+        let preparedTransaction = try await mobileCoinAPI.prepareTransaction(
+            paymentAmount: paymentAmount,
+            recipientPublicAddress: recipientPublicAddress,
+            shouldUpdateBalance: shouldUpdateBalance,
+        ).awaitable()
+        return PreparedPaymentImpl(
+            recipientAci: recipientAci,
+            recipientPublicAddress: recipientPublicAddress,
+            paymentAmount: paymentAmount,
+            memoMessage: memoMessage,
+            isOutgoingTransfer: isOutgoingTransfer,
+            preparedTransaction: preparedTransaction
+        )
     }
 
     private func defragmentIfNecessary(forPaymentAmount paymentAmount: TSPaymentAmount,

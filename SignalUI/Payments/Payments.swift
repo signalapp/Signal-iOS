@@ -49,7 +49,7 @@ public protocol PaymentsSwift: Payments {
         memoMessage: String?,
         isOutgoingTransfer: Bool,
         canDefragment: Bool
-    ) -> Promise<PreparedPayment>
+    ) async throws -> PreparedPayment
 
     func initiateOutgoingPayment(preparedPayment: PreparedPayment) -> Promise<TSPaymentModel>
 
@@ -169,7 +169,7 @@ extension MockPayments: PaymentsSwift {
         memoMessage: String?,
         isOutgoingTransfer: Bool,
         canDefragment: Bool
-    ) -> Promise<PreparedPayment> {
+    ) async throws -> PreparedPayment {
         owsFail("Not implemented.")
     }
 
