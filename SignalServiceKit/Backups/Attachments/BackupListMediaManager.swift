@@ -90,30 +90,26 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             inProgressUploadEra,
             needsToQuery,
             hasEverRunListMedia,
-            backupKey,
-            backupPlan
+            backupKey
         ) = try db.read { tx in
             let currentUploadEra = self.backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
+            let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
             return (
                 self.tsAccountManager.registrationState(tx: tx).isPrimaryDevice,
                 self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
                 currentUploadEra,
                 kvStore.getString(Constants.inProgressUploadEraKey, transaction: tx),
-                try self.needsToQueryListMedia(currentUploadEra: currentUploadEra, tx: tx),
+                try self.needsToQueryListMedia(
+                    currentUploadEra: currentUploadEra,
+                    currentBackupPlan: currentBackupPlan,
+                    tx: tx
+                ),
                 self.kvStore.getBool(Constants.hasEverRunListMediaKey, defaultValue: false, transaction: tx),
                 try backupKeyMaterial.backupKey(type: .media, tx: tx),
-                backupSettingsStore.backupPlan(tx: tx),
             )
         }
         guard needsToQuery else {
             return
-        }
-
-        switch backupPlan {
-        case .disabled:
-            return
-        case .free, .paid, .paidExpiringSoon:
-            break
         }
 
         guard let localAci, let isPrimaryDevice else {
@@ -260,7 +256,12 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         let needsToRunAgain = try await db.awaitableWrite { tx in
             self.didFinishListMedia(tx: tx)
             let currentUploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
-            return try self.needsToQueryListMedia(currentUploadEra: currentUploadEra, tx: tx)
+            let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
+            return try self.needsToQueryListMedia(
+                currentUploadEra: currentUploadEra,
+                currentBackupPlan: currentBackupPlan,
+                tx: tx
+            )
         }
         if needsToRunAgain {
             try await _queryListMediaIfNeeded()
@@ -891,7 +892,18 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
     // MARK: State
 
-    private func needsToQueryListMedia(currentUploadEra: String, tx: DBReadTransaction) throws -> Bool {
+    private func needsToQueryListMedia(
+        currentUploadEra: String,
+        currentBackupPlan: BackupPlan,
+        tx: DBReadTransaction
+    ) throws -> Bool {
+        switch currentBackupPlan {
+        case .disabled:
+            return false
+        case .free, .paid, .paidExpiringSoon:
+            break
+        }
+
         if kvStore.getString(Constants.inProgressUploadEraKey, transaction: tx) != nil {
             return true
         }
@@ -909,12 +921,21 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         if currentUploadEra != lastQueriedUploadEra {
             return true
         }
-        let nowMs = dateProvider().ows_millisecondsSince1970
-        let lastListMediaMs = kvStore.getUInt64(Constants.lastListMediaStartTimestampKey, defaultValue: 0, transaction: tx)
-        if nowMs > lastListMediaMs, nowMs - lastListMediaMs > Constants.refreshIntervalMs {
-            return true
+        switch currentBackupPlan {
+        case .disabled:
+            return false
+        case .free:
+            return false
+        case .paid, .paidExpiringSoon:
+            // If paid tier, query periodically as a catch-all to ensure local state
+            // stays in sync with the server.
+            let nowMs = dateProvider().ows_millisecondsSince1970
+            let lastListMediaMs = kvStore.getUInt64(Constants.lastListMediaStartTimestampKey, defaultValue: 0, transaction: tx)
+            if nowMs > lastListMediaMs, nowMs - lastListMediaMs > Constants.refreshIntervalMs {
+                return true
+            }
+            return false
         }
-        return false
     }
 
     private func willBeginQueryListMedia(
