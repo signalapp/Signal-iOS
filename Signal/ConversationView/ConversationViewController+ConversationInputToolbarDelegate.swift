@@ -424,6 +424,10 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
 
+        let hasViewOnceAttachment = attachments.contains(where: { $0.isViewOnceAttachment })
+        owsPrecondition(!hasViewOnceAttachment || messageBody == nil)
+        owsPrecondition(!hasViewOnceAttachment || inputToolbar.quotedReplyDraft == nil)
+
         ThreadUtil.enqueueMessage(
             body: messageBody,
             mediaAttachments: attachments,
@@ -522,14 +526,10 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         dismissKeyBoard()
 
-        var options = AttachmentApprovalViewControllerOptions()
-        if inputToolbar?.quotedReplyDraft != nil {
-            options.insert(.disallowViewOnce)
-        }
         let pickerModal = SendMediaNavigationController.showingApprovalWithPickedLibraryMedia(
             asset: asset,
             attachment: attachment,
-            options: options,
+            hasQuotedReplyDraft: inputToolbar?.quotedReplyDraft != nil,
             delegate: self,
             dataSource: self
         )
@@ -556,18 +556,7 @@ public extension ConversationViewController {
                                         message: errorMessage)
     }
 
-    func showApprovalDialog(forAttachment attachment: SignalAttachment?) {
-        AssertIsOnMainThread()
-
-        guard let attachment = attachment else {
-            owsFailDebug("attachment was unexpectedly nil")
-            showErrorAlert(forAttachment: attachment)
-            return
-        }
-        showApprovalDialog(forAttachments: [ attachment ])
-    }
-
-    func showApprovalDialog(forAttachments attachments: [SignalAttachment]) {
+    func showApprovalDialog(forAttachment attachment: SignalAttachment) {
         AssertIsOnMainThread()
 
         guard hasViewWillAppearEverBegun else {
@@ -580,8 +569,9 @@ public extension ConversationViewController {
         }
 
         let modal = AttachmentApprovalViewController.wrappedInNavController(
-            attachments: attachments,
+            attachments: [attachment],
             initialMessageBody: inputToolbar.messageBodyForSending,
+            hasQuotedReplyDraft: inputToolbar.quotedReplyDraft != nil,
             approvalDelegate: self,
             approvalDataSource: self,
             stickerSheetDelegate: self
@@ -654,7 +644,9 @@ fileprivate extension ConversationViewController {
                     // be silent.
                 }
 
-                let pickerModal = SendMediaNavigationController.showingCameraFirst()
+                let pickerModal = SendMediaNavigationController.showingCameraFirst(
+                    hasQuotedReplyDraft: self.inputToolbar?.quotedReplyDraft != nil,
+                )
                 pickerModal.sendMediaNavDelegate = self
                 pickerModal.sendMediaNavDataSource = self
                 pickerModal.modalPresentationStyle = .overFullScreen
@@ -678,7 +670,9 @@ fileprivate extension ConversationViewController {
     func chooseFromLibrary() {
         AssertIsOnMainThread()
 
-        let pickerModal = SendMediaNavigationController.showingNativePicker()
+        let pickerModal = SendMediaNavigationController.showingNativePicker(
+            hasQuotedReplyDraft: inputToolbar?.quotedReplyDraft != nil,
+        )
         pickerModal.sendMediaNavDelegate = self
         pickerModal.sendMediaNavDataSource = self
 
@@ -692,7 +686,10 @@ fileprivate extension ConversationViewController {
 
 public extension ConversationViewController {
     func showGifPicker() {
-        let gifModal = GifPickerNavigationViewController(initialMessageBody: inputToolbar?.messageBodyForSending)
+        let gifModal = GifPickerNavigationViewController(
+            initialMessageBody: inputToolbar?.messageBodyForSending,
+            hasQuotedReplyDraft: inputToolbar?.quotedReplyDraft != nil,
+        )
         gifModal.approvalDelegate = self
         gifModal.approvalDataSource = self
         gifModal.presentationController?.delegate = self

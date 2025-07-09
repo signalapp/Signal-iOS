@@ -120,8 +120,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     private var observingKeyboardNotifications = false
     private var keyboardHeight: CGFloat = 0
 
-    public init(options: AttachmentApprovalViewControllerOptions,
-                attachmentApprovalItems: [AttachmentApprovalItem]) {
+    public init(options: AttachmentApprovalViewControllerOptions, attachmentApprovalItems: [AttachmentApprovalItem]) {
         assert(attachmentApprovalItems.count > 0)
 
         self.receivedOptions = options
@@ -161,13 +160,19 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     public class func wrappedInNavController(
         attachments: [SignalAttachment],
         initialMessageBody: MessageBody?,
+        hasQuotedReplyDraft: Bool,
         approvalDelegate: AttachmentApprovalViewControllerDelegate,
         approvalDataSource: AttachmentApprovalViewControllerDataSource,
         stickerSheetDelegate: StickerPickerSheetDelegate?
     ) -> OWSNavigationController {
 
         let attachmentApprovalItems = attachments.map { AttachmentApprovalItem(attachment: $0, canSave: false) }
-        let vc = AttachmentApprovalViewController(options: [.hasCancel], attachmentApprovalItems: attachmentApprovalItems)
+        var options: AttachmentApprovalViewControllerOptions = []
+        options.insert(.hasCancel)
+        if hasQuotedReplyDraft {
+            options.insert(.disallowViewOnce)
+        }
+        let vc = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
         vc.setMessageBody(initialMessageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
         vc.approvalDelegate = approvalDelegate
         vc.approvalDataSource = approvalDataSource

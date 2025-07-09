@@ -44,8 +44,12 @@ class CameraFirstCaptureNavigationController: SendMediaNavigationController {
 
     private var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
 
-    class func cameraFirstModal(storiesOnly: Bool = false, delegate: CameraFirstCaptureDelegate) -> CameraFirstCaptureNavigationController {
-        let navController = CameraFirstCaptureNavigationController()
+    class func cameraFirstModal(
+        storiesOnly: Bool = false,
+        hasQuotedReplyDraft: Bool,
+        delegate: CameraFirstCaptureDelegate,
+    ) -> CameraFirstCaptureNavigationController {
+        let navController = CameraFirstCaptureNavigationController(hasQuotedReplyDraft: hasQuotedReplyDraft)
         navController.setViewControllers([navController.captureViewController], animated: false)
 
         let cameraFirstCaptureSendFlow = CameraFirstCaptureSendFlow(storiesOnly: storiesOnly, delegate: delegate)
@@ -68,6 +72,13 @@ class SendMediaNavigationController: OWSNavigationController {
     fileprivate var canSendToStories: Bool { false }
     fileprivate var storiesOnly: Bool = false
 
+    private let hasQuotedReplyDraft: Bool
+
+    fileprivate init(hasQuotedReplyDraft: Bool) {
+        self.hasQuotedReplyDraft = hasQuotedReplyDraft
+        super.init()
+    }
+
     // MARK: - Overrides
 
     override var childForStatusBarStyle: UIViewController? {
@@ -79,8 +90,8 @@ class SendMediaNavigationController: OWSNavigationController {
     weak var sendMediaNavDelegate: SendMediaNavDelegate?
     weak var sendMediaNavDataSource: SendMediaNavDataSource?
 
-    class func showingCameraFirst() -> SendMediaNavigationController {
-        let navController = SendMediaNavigationController()
+    class func showingCameraFirst(hasQuotedReplyDraft: Bool) -> SendMediaNavigationController {
+        let navController = SendMediaNavigationController(hasQuotedReplyDraft: hasQuotedReplyDraft)
         navController.setViewControllers([navController.captureViewController], animated: false)
         return navController
     }
@@ -95,13 +106,14 @@ class SendMediaNavigationController: OWSNavigationController {
         return config
     }
 
-    class func showingNativePicker() -> SendMediaNavigationController {
+    class func showingNativePicker(hasQuotedReplyDraft: Bool) -> SendMediaNavigationController {
         // We want to present the photo picker in a sheet and then have the
         // editor appear behind it after you select photos, so present this
         // navigation controller as transparent with an empty view, then when
         // you select photos, `showApprovalViewController` will make it appear
         // behind the dismissing sheet and transition to the editor.
-        let navController = SendMediaNavigationController(rootViewController: UIViewController())
+        let navController = SendMediaNavigationController(hasQuotedReplyDraft: hasQuotedReplyDraft)
+        navController.pushViewController(UIViewController(), animated: false)
         navController.view.layer.opacity = 0
         navController.modalPresentationStyle = .overCurrentContext
 
@@ -127,18 +139,17 @@ class SendMediaNavigationController: OWSNavigationController {
     class func showingApprovalWithPickedLibraryMedia(
         asset: PHAsset,
         attachment: SignalAttachment,
-        options: AttachmentApprovalViewControllerOptions = .init(),
+        hasQuotedReplyDraft: Bool,
         delegate: SendMediaNavDelegate,
         dataSource: SendMediaNavDataSource
     ) -> SendMediaNavigationController {
-        let navController = SendMediaNavigationController()
+        let navController = SendMediaNavigationController(hasQuotedReplyDraft: hasQuotedReplyDraft)
         navController.sendMediaNavDelegate = delegate
         navController.sendMediaNavDataSource = dataSource
         navController.modalPresentationStyle = .overCurrentContext
 
         let approvalItem = AttachmentApprovalItem(attachment: attachment, canSave: false)
-        let libraryMedia = MediaLibraryAttachment(asset: asset,
-                                                  attachmentApprovalItemPromise: .value(approvalItem))
+        let libraryMedia = MediaLibraryAttachment(asset: asset, attachmentApprovalItemPromise: .value(approvalItem))
         navController.attachmentDrafts.append(.picker(attachment: libraryMedia))
 
         navController.showApprovalViewController(
@@ -197,6 +208,9 @@ class SendMediaNavigationController: OWSNavigationController {
             options.insert(.isNotFinalScreen)
         }
         if canSendToStories, storiesOnly {
+            options.insert(.disallowViewOnce)
+        }
+        if hasQuotedReplyDraft {
             options.insert(.disallowViewOnce)
         }
         let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)

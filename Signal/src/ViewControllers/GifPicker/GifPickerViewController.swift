@@ -11,7 +11,9 @@ class GifPickerNavigationViewController: OWSNavigationController {
 
     weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
     weak var approvalDataSource: AttachmentApprovalViewControllerDataSource?
+
     private var initialMessageBody: MessageBody?
+    private let hasQuotedReplyDraft: Bool
 
     lazy var gifPickerViewController: GifPickerViewController = {
         let gifPickerViewController = GifPickerViewController()
@@ -19,8 +21,9 @@ class GifPickerNavigationViewController: OWSNavigationController {
         return gifPickerViewController
     }()
 
-    init(initialMessageBody: MessageBody?) {
+    init(initialMessageBody: MessageBody?, hasQuotedReplyDraft: Bool) {
         self.initialMessageBody = initialMessageBody
+        self.hasQuotedReplyDraft = hasQuotedReplyDraft
         super.init()
         pushViewController(gifPickerViewController, animated: false)
     }
@@ -31,7 +34,10 @@ extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
         AssertIsOnMainThread()
 
         let attachmentApprovalItem = AttachmentApprovalItem(attachment: attachment, canSave: false)
-        let attachmentApproval = AttachmentApprovalViewController(options: [], attachmentApprovalItems: [attachmentApprovalItem])
+        let attachmentApproval = AttachmentApprovalViewController(
+            options: self.hasQuotedReplyDraft ? [.disallowViewOnce] : [],
+            attachmentApprovalItems: [attachmentApprovalItem],
+        )
         attachmentApproval.setMessageBody(initialMessageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
         attachmentApproval.approvalDelegate = self
         attachmentApproval.approvalDataSource = self

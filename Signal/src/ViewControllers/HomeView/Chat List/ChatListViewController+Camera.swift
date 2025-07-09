@@ -25,7 +25,7 @@ extension ChatListViewController: CameraFirstCaptureDelegate {
                     Logger.warn("Proceeding with no microphone access.")
                 }
 
-                let cameraModal = CameraFirstCaptureNavigationController.cameraFirstModal(delegate: self)
+                let cameraModal = CameraFirstCaptureNavigationController.cameraFirstModal(hasQuotedReplyDraft: false, delegate: self)
                 cameraModal.modalPresentationStyle = .overFullScreen
 
                 // Defer hiding status bar until modal is fully onscreen
