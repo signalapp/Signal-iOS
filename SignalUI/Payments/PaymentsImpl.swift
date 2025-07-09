@@ -267,23 +267,23 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
             return
         }
 
-        firstly {
-            self.updateCurrentPaymentBalancePromise()
-        }.catch { error in
-            let paymentsError = error as? PaymentsError
-            let outdated = paymentsError == .outdatedClient || paymentsError == .attestationVerificationFailed
-            SSKEnvironment.shared.paymentsHelperRef.setPaymentsVersionOutdated(outdated)
-            owsFailDebugUnlessMCNetworkFailure(error)
+        Task { @MainActor in
+            do {
+                _ = try await _updateCurrentPaymentBalance()
+            } catch {
+                let paymentsError = error as? PaymentsError
+                let outdated = paymentsError == .outdatedClient || paymentsError == .attestationVerificationFailed
+                SSKEnvironment.shared.paymentsHelperRef.setPaymentsVersionOutdated(outdated)
+                owsFailDebugUnlessMCNetworkFailure(error)
+            }
         }
     }
 
-    public func updateCurrentPaymentBalancePromise() -> Promise<TSPaymentAmount> {
-        return firstly { () -> Promise<TSPaymentAmount> in
-            self.getCurrentBalance()
-        }.map { (balance: TSPaymentAmount) -> TSPaymentAmount in
-            self.setCurrentPaymentBalance(amount: balance)
-            return balance
-        }
+    @MainActor
+    private func _updateCurrentPaymentBalance() async throws -> TSPaymentAmount {
+        let balance = try await self.getCurrentBalance()
+        self.setCurrentPaymentBalance(amount: balance)
+        return balance
     }
 
     private func updateCurrentPaymentBalanceIfNecessary() {
@@ -498,12 +498,9 @@ public extension PaymentsImpl {
 // MARK: - Current Balance
 
 public extension PaymentsImpl {
-    func getCurrentBalance() -> Promise<TSPaymentAmount> {
-        firstly { () -> Promise<MobileCoinAPI> in
-            self.getMobileCoinAPI()
-        }.then(on: DispatchQueue.global()) { (mobileCoinAPI: MobileCoinAPI) in
-            return mobileCoinAPI.getLocalBalance()
-        }
+    func getCurrentBalance() async throws -> TSPaymentAmount {
+        let mobileCoinAPI = try await self.getMobileCoinAPI().awaitable()
+        return try await mobileCoinAPI.getLocalBalance().awaitable()
     }
 }
 
