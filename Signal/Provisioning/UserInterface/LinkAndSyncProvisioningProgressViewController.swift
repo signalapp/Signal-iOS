@@ -7,6 +7,7 @@ import Lottie
 import SwiftUI
 import SignalUI
 import SignalServiceKit
+import SafariServices
 
 // MARK: View Model
 
@@ -299,7 +300,8 @@ struct LinkAndSyncProvisioningProgressView: View {
                     comment: "Footer text when loading messages during linking process."
                 ))
                 .appendLink(CommonStrings.learnMore) {
-                    UIApplication.shared.open(URL(string: "https://support.signal.org/hc/articles/360007320551")!)
+                    let vc = SFSafariViewController(url: URL(string: "https://support.signal.org/hc/articles/360007320551")!)
+                    CurrentAppContext().frontmostViewController()?.present(vc, animated: true)
                 }
                 .font(.footnote)
                 .frame(maxWidth: 412)
