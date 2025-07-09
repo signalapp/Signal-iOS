@@ -378,42 +378,24 @@ public class MobileCoinAPI {
         }
     }
 
-    func getOutgoingTransactionStatus(transaction: MobileCoin.Transaction) -> Promise<MCOutgoingTransactionStatus> {
+    func getOutgoingTransactionStatus(transaction: MobileCoin.Transaction) async throws -> MCOutgoingTransactionStatus {
         Logger.verbose("")
 
         guard !DebugFlags.paymentsFailOutgoingVerification.get() else {
-            return Promise(error: OWSGenericError("Failed."))
+            throw OWSGenericError("Failed.")
         }
 
-        let client = self.client
-        return firstly(on: DispatchQueue.global()) { () -> Promise<MCOutgoingTransactionStatus> in
-            let (promise, future) = Promise<MCOutgoingTransactionStatus>.pending()
-            if DebugFlags.paymentsNoRequestsComplete.get() {
-                // Never resolve.
-                return promise
-            }
-            client.txOutStatus(
-                of: transaction
-            ) { (result: Swift.Result<MobileCoin.TransactionStatus, ConnectionError>) in
-                switch result {
-                case .success(let transactionStatus):
-                    future.resolve(MCOutgoingTransactionStatus(transactionStatus: transactionStatus))
-                    SUIEnvironment.shared.paymentsSwiftRef.clearCurrentPaymentBalance()
-                case .failure(let error):
-                    let error = Self.convertMCError(error: error)
-                    future.reject(error)
+        let transactionStatus = try await withTimeoutAndErrorConversion { [client] in
+            return try await withCheckedThrowingContinuation { continuation in
+                client.txOutStatus(of: transaction) { (result: Swift.Result<MobileCoin.TransactionStatus, ConnectionError>) in
+                    continuation.resume(with: result)
                 }
             }
-            return promise
-        }.map(on: DispatchQueue.global()) { (value: MCOutgoingTransactionStatus) -> MCOutgoingTransactionStatus in
-            Logger.verbose("Success: \(value)")
-            return value
-        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<MCOutgoingTransactionStatus> in
-            owsFailDebugUnlessMCNetworkFailure(error)
-            throw error
-        }.timeout(seconds: Self.timeoutDuration, description: "getOutgoingTransactionStatus") { () -> Error in
-            PaymentsError.timeout
         }
+        let outgoingTransactionStatus = MCOutgoingTransactionStatus(transactionStatus: transactionStatus)
+        Logger.verbose("Success: \(outgoingTransactionStatus)")
+        SUIEnvironment.shared.paymentsSwiftRef.clearCurrentPaymentBalance()
+        return outgoingTransactionStatus
     }
 
     func paymentAmount(forReceipt receipt: MobileCoin.Receipt) throws -> TSPaymentAmount {

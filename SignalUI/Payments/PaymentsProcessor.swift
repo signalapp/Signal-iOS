@@ -666,7 +666,7 @@ private class PaymentProcessingOperation {
             throw PaymentsError.indeterminateState
         }
 
-        let transactionStatus = try await mobileCoinAPI.getOutgoingTransactionStatus(transaction: transaction).awaitable()
+        let transactionStatus = try await mobileCoinAPI.getOutgoingTransactionStatus(transaction: transaction)
 
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             switch transactionStatus.transactionStatus {
