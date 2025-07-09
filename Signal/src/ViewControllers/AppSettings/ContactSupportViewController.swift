@@ -260,24 +260,25 @@ final class ContactSupportViewController: OWSTableViewController2 {
         }
         showSpinnerOnNextButton = true
 
-        firstly { () -> Promise<Void> in
-            let composeTask = Task {
-                try await ComposeSupportEmailOperation(model: emailRequest).perform()
+        Task { @MainActor in
+            do {
+                let composeTask = Task {
+                    try await ComposeSupportEmailOperation(model: emailRequest).perform()
+                }
+                self.currentEmailComposeTask = composeTask
+                try await composeTask.value
+                self.navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
+            } catch {
+                let alertTitle = error.userErrorDescription
+                let alertMessage = OWSLocalizedString(
+                    "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION",
+                    comment: "Message for alert dialog presented when a support email failed to send"
+                )
+                OWSActionSheets.showActionSheet(title: alertTitle, message: alertMessage)
             }
-            self.currentEmailComposeTask = composeTask
-            return Promise.wrapAsync { try await composeTask.value }
-        }.done(on: DispatchQueue.main) { _ in
-            self.navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
 
-        }.ensure(on: DispatchQueue.main) {
             self.currentEmailComposeTask = nil
             self.showSpinnerOnNextButton = false
-
-        }.catch(on: DispatchQueue.main) { error in
-            let alertTitle = error.userErrorDescription
-            let alertMessage = OWSLocalizedString("SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION",
-                                                 comment: "Message for alert dialog presented when a support email failed to send")
-            OWSActionSheets.showActionSheet(title: alertTitle, message: alertMessage)
         }
     }
 }
