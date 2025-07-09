@@ -530,8 +530,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         // Do progressive search after a delay.
         let kProgressiveSearchDelay: TimeInterval = 1.0
         taskQueue.enqueueCancellingPrevious(operation: { @MainActor in
-            try await Task.sleep(nanoseconds: kProgressiveSearchDelay.clampedNanoseconds)
-            await self.tryToSearch()
+            await self.tryToSearch(afterDelay: kProgressiveSearchDelay)
         })
     }
 
@@ -539,17 +538,17 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.searchBar.resignFirstResponder()
 
         taskQueue.enqueueCancellingPrevious(operation: { @MainActor in
-            await self.tryToSearch()
+            await self.tryToSearch(afterDelay: 0)
         })
     }
 
-    public func tryToSearch() async {
+    private func tryToSearch(afterDelay delay: TimeInterval) async {
         let query = searchBar.text!.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if query.isEmpty {
             await loadTrending()
         } else {
-            await search(query: query)
+            await loadSearchResults(for: query, afterDelay: delay)
         }
     }
 
@@ -574,12 +573,15 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
     }
 
-    private func search(query: String) async {
+    private func loadSearchResults(for query: String, afterDelay delay: TimeInterval) async {
         imageInfos = []
         viewMode = .searching
         self.collectionView.contentOffset = CGPoint.zero
 
         do {
+            if delay > 0 {
+                try await Task.sleep(nanoseconds: delay.clampedNanoseconds)
+            }
             imageInfos = try await GiphyAPI.search(query: query)
             Logger.info("search complete")
             if imageInfos.count > 0 {
@@ -615,7 +617,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             return
         }
         taskQueue.enqueueCancellingPrevious(operation: { @MainActor in
-            await self.tryToSearch()
+            await self.tryToSearch(afterDelay: 0)
         })
     }
 
