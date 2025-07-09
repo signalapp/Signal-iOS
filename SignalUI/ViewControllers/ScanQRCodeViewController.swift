@@ -247,6 +247,14 @@ public class QRCodeScanViewController: OWSViewController {
         tryToStartScanning()
     }
 
+    public override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        if let interfaceOrientation = self.view.window?.windowScene?.interfaceOrientation {
+            self.scanner?.updateVideoPreviewOrientation(interfaceOrientation)
+        }
+    }
+
     public override func viewDidDisappear(_ animated: Bool) {
         AssertIsOnMainThread()
 
@@ -285,7 +293,9 @@ public class QRCodeScanViewController: OWSViewController {
     private func didBecomeActive() {
         AssertIsOnMainThread()
 
-        tryToStartScanning()
+        if self.view.window != nil {
+            tryToStartScanning()
+        }
     }
 
     // MARK: - Scanning
@@ -410,8 +420,9 @@ public class QRCodeScanViewController: OWSViewController {
             uploadPhotoButton.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 16)
         }
 
+        let initialOrientation = self.view.window!.windowScene!.interfaceOrientation
         firstly {
-            scanner.startVideoCapture()
+            scanner.startVideoCapture(initialOrientation: initialOrientation)
         }.done {
             Logger.info("Ready.")
         }.catch { [weak self] error in
@@ -693,8 +704,6 @@ private class QRCodeScanner {
         }
     }
 
-    private var hasRequestedDeviceOrientationNotifications = false
-
     init(
         prefersFrontFacingCamera: Bool,
         sampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate
@@ -704,9 +713,6 @@ private class QRCodeScanner {
     }
 
     deinit {
-        if hasRequestedDeviceOrientationNotifications {
-            UIDevice.current.endGeneratingDeviceOrientationNotifications()
-        }
         sessionQueue.async(.promise) { [session] in
             session.stopRunning()
         }.done {
@@ -718,28 +724,26 @@ private class QRCodeScanner {
 
     // MARK: - Public
 
-    @objc
-    private func orientationDidChange(notification: Notification) {
-        AssertIsOnMainThread()
-
-        guard let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) else {
-            return
-        }
-
+    func updateVideoPreviewOrientation(_ newValue: UIInterfaceOrientation) {
         sessionQueue.async {
-            guard captureOrientation != self.captureOrientation else {
+            let captureOrientation = AVCaptureVideoOrientation(interfaceOrientation: newValue) ?? .portrait
+            if self.captureOrientation == captureOrientation {
                 return
             }
             self.captureOrientation = captureOrientation
+            self._updateVideoPreviewConnectionOrientation()
         }
     }
 
-    func updateVideoPreviewConnection(toOrientation orientation: AVCaptureVideoOrientation) {
+    private func _updateVideoPreviewConnectionOrientation() {
+        assertIsOnSessionQueue()
         guard let videoConnection = previewView.previewLayer.connection else {
             Logger.info("previewView hasn't completed setup yet.")
             return
         }
-        videoConnection.videoOrientation = orientation
+        if videoConnection.isVideoOrientationSupported {
+            videoConnection.videoOrientation = self.captureOrientation
+        }
     }
 
     public var prefersFrontFacingCamera: Bool {
@@ -756,7 +760,7 @@ private class QRCodeScanner {
         }
     }
 
-    public func startVideoCapture() -> Promise<Void> {
+    public func startVideoCapture(initialOrientation: UIInterfaceOrientation) -> Promise<Void> {
         AssertIsOnMainThread()
 
         guard !Platform.isSimulator else {
@@ -769,15 +773,7 @@ private class QRCodeScanner {
         // If the session is already running, no need to do anything.
         guard !self.session.isRunning else { return Promise.value(()) }
 
-        if !hasRequestedDeviceOrientationNotifications {
-            UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(orientationDidChange),
-                                                   name: UIDevice.orientationDidChangeNotification,
-                                                   object: UIDevice.current)
-            hasRequestedDeviceOrientationNotifications = true
-        }
-        let initialCaptureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) ?? .portrait
+        let initialCaptureOrientation = AVCaptureVideoOrientation(interfaceOrientation: initialOrientation) ?? .portrait
 
         return sessionQueue.async(.promise) { [weak self] in
             guard let self = self else { return }
@@ -805,6 +801,7 @@ private class QRCodeScanner {
             }
         }.done(on: sessionQueue) {
             self.session.startRunning()
+            self._updateVideoPreviewConnectionOrientation()
         }
     }
 
