@@ -190,7 +190,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                                object: nil)
 
         taskQueue.enqueueCancellingPrevious(operation: { @MainActor in
-            await self.loadTrending()
+            await self.loadTrending(afterDelay: 0)
         })
     }
 
@@ -546,16 +546,27 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         let query = searchBar.text!.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if query.isEmpty {
-            await loadTrending()
+            await loadTrending(afterDelay: delay)
         } else {
             await loadSearchResults(for: query, afterDelay: delay)
         }
     }
 
-    private func loadTrending() async {
+    private func showLoading() {
+        self.imageInfos = []
+        self.viewMode = .searching
+    }
+
+    private func loadTrending(afterDelay delay: TimeInterval) async {
         assert(searchBar.text.isEmptyOrNil)
 
+        self.showLoading()
+
         do {
+            if delay > 0 {
+                try await Task.sleep(nanoseconds: delay.clampedNanoseconds)
+            }
+
             let imageInfos = try await GiphyAPI.trending()
 
             Logger.info("showing trending")
@@ -574,8 +585,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     private func loadSearchResults(for query: String, afterDelay delay: TimeInterval) async {
-        imageInfos = []
-        viewMode = .searching
+        self.showLoading()
         self.collectionView.contentOffset = CGPoint.zero
 
         do {
