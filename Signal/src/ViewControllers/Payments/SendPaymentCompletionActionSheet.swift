@@ -644,10 +644,14 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             }.then { (paymentModel: TSPaymentModel) -> Promise<Void> in
                 // Try to wait (with a timeout) for submission and verification to complete.
                 let blockInterval: TimeInterval = .minute
-                return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-                    SUIEnvironment.shared.paymentsSwiftRef.blockOnOutgoingVerification(paymentModel: paymentModel).asVoid()
-                }.timeout(seconds: blockInterval, description: "Payments Verify Submission") {
-                    PaymentsError.outgoingVerificationTakingTooLong
+                return Promise.wrapAsync {
+                    do {
+                        try await withCooperativeTimeout(seconds: blockInterval) {
+                            _ = try await SUIEnvironment.shared.paymentsSwiftRef.blockOnOutgoingVerification(paymentModel: paymentModel)
+                        }
+                    } catch is CooperativeTimeoutError {
+                        throw PaymentsError.outgoingVerificationTakingTooLong
+                    }
                 }.recover(on: DispatchQueue.global()) { (error: Error) -> Guarantee<()> in
                     Logger.warn("Could not verify outgoing payment: \(error).")
                     if let paymentsError = error as? PaymentsError,
