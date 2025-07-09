@@ -321,30 +321,28 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
 public extension PaymentsImpl {
 
-    private func fetchPublicAddress(for recipientAci: Aci) -> Promise<MobileCoin.PublicAddress> {
-        return Promise.wrapAsync {
-            let profileFetcher = SSKEnvironment.shared.profileFetcherRef
-            let fetchedProfile = try await profileFetcher.fetchProfile(for: recipientAci)
+    private func fetchPublicAddress(for recipientAci: Aci) async throws -> MobileCoin.PublicAddress {
+        let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+        let fetchedProfile = try await profileFetcher.fetchProfile(for: recipientAci)
 
-            guard let decryptedProfile = fetchedProfile.decryptedProfile else {
-                throw PaymentsError.userHasNoPublicAddress
-            }
+        guard let decryptedProfile = fetchedProfile.decryptedProfile else {
+            throw PaymentsError.userHasNoPublicAddress
+        }
 
-            // We don't need to persist this value in the cache; the ProfileFetcher
-            // will take care of that.
-            guard
-                let paymentAddress = decryptedProfile.paymentAddress(identityKey: fetchedProfile.identityKey),
-                paymentAddress.isValid,
-                paymentAddress.currency == .mobileCoin
-            else {
-                throw PaymentsError.userHasNoPublicAddress
-            }
-            do {
-                return try paymentAddress.asPublicAddress()
-            } catch {
-                owsFailDebug("Can't parse public address: \(error)")
-                throw PaymentsError.userHasNoPublicAddress
-            }
+        // We don't need to persist this value in the cache; the ProfileFetcher
+        // will take care of that.
+        guard
+            let paymentAddress = decryptedProfile.paymentAddress(identityKey: fetchedProfile.identityKey),
+            paymentAddress.isValid,
+            paymentAddress.currency == .mobileCoin
+        else {
+            throw PaymentsError.userHasNoPublicAddress
+        }
+        do {
+            return try paymentAddress.asPublicAddress()
+        } catch {
+            owsFailDebug("Can't parse public address: \(error)")
+            throw PaymentsError.userHasNoPublicAddress
         }
     }
 
@@ -547,7 +545,7 @@ public extension PaymentsImpl {
                 throw PaymentsError.userHasNoPublicAddress
             }
 
-            let recipientPublicAddress = try await self.fetchPublicAddress(for: recipientAci).awaitable()
+            let recipientPublicAddress = try await self.fetchPublicAddress(for: recipientAci)
             return try await self.prepareOutgoingPayment(
                 recipientAci: recipientAci,
                 recipientPublicAddress: recipientPublicAddress,
