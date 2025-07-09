@@ -609,34 +609,42 @@ private class EmojiSearchIndex: NSObject {
         }
 
         let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates()
-        Promise.wrapAsync {
-            return try await urlSession.performRequest(self.remoteManifestURL.absoluteString, method: .get)
-        }.done { response in
-            guard response.responseStatusCode == 200 else {
-                throw OWSAssertionError("Bad response code for emoji manifest fetch")
-            }
-
-            guard let json = response.responseBodyJson as? [String: Any] else {
-                throw OWSAssertionError("Unable to generate JSON for emoji manifest from response body.")
-            }
-
-            guard let parser = ParamParser(responseObject: json) else {
-                throw OWSAssertionError("Unable to parse emoji manifest from response body.")
-            }
-
-            let remoteVersion: Int = try parser.required(key: "version")
-            let remoteLocalizations: [String] = try parser.required(key: "languages")
-            if remoteVersion != searchIndexVersion {
-                Logger.info("[Emoji Search] Invalidating search index, old version \(searchIndexVersion), new version \(remoteVersion)")
-                self.invalidateSearchIndex(newVersion: remoteVersion, localizationsToInvalidate: searchIndexLocalizations, newLocalizations: remoteLocalizations)
-                let localization = self.searchIndexLocalizationForLocale(NSLocale.current.identifier, searchIndexManifest: remoteLocalizations)
-                if let localization = localization {
-                    self.fetchEmojiSearchIndex(for: localization, version: remoteVersion)
+        Task {
+            do {
+                let response = try await urlSession.performRequest(self.remoteManifestURL.absoluteString, method: .get)
+                guard response.responseStatusCode == 200 else {
+                    throw OWSAssertionError("Bad response code for emoji manifest fetch")
                 }
-                NotificationCenter.default.postOnMainThread(name: self.EmojiSearchManifestFetchedNotification, object: nil)
+
+                guard let json = response.responseBodyJson as? [String: Any] else {
+                    throw OWSAssertionError("Unable to generate JSON for emoji manifest from response body.")
+                }
+
+                guard let parser = ParamParser(responseObject: json) else {
+                    throw OWSAssertionError("Unable to parse emoji manifest from response body.")
+                }
+
+                let remoteVersion: Int = try parser.required(key: "version")
+                let remoteLocalizations: [String] = try parser.required(key: "languages")
+                if remoteVersion != searchIndexVersion {
+                    Logger.info("[Emoji Search] Invalidating search index, old version \(searchIndexVersion), new version \(remoteVersion)")
+                    await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                        self.invalidateSearchIndex(
+                            newVersion: remoteVersion,
+                            localizationsToInvalidate: searchIndexLocalizations,
+                            newLocalizations: remoteLocalizations,
+                            tx: tx
+                        )
+                    }
+                    let localization = self.searchIndexLocalizationForLocale(NSLocale.current.identifier, searchIndexManifest: remoteLocalizations)
+                    if let localization = localization {
+                        self.fetchEmojiSearchIndex(for: localization, version: remoteVersion)
+                    }
+                    NotificationCenter.default.postOnMainThread(name: self.EmojiSearchManifestFetchedNotification, object: nil)
+                }
+            } catch {
+                owsFailDebug("Failed to download manifest \(error)")
             }
-        }.catch { error in
-            owsFailDebug("Failed to download manifest \(error)")
         }
     }
 
@@ -685,15 +693,17 @@ private class EmojiSearchIndex: NSObject {
         return index
     }
 
-    private static func invalidateSearchIndex(newVersion: Int, localizationsToInvalidate: [String], newLocalizations: [String]) {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            for localization in localizationsToInvalidate {
-                self.emojiSearchIndexKVS.removeValue(forKey: localization, transaction: transaction)
-            }
-
-            self.emojiSearchIndexKVS.setObject(newLocalizations, key: emojiSearchIndexAvailableLocalizationsKey, transaction: transaction)
-            self.emojiSearchIndexKVS.setInt(newVersion, key: emojiSearchIndexVersionKey, transaction: transaction)
+    private static func invalidateSearchIndex(
+        newVersion: Int,
+        localizationsToInvalidate: [String],
+        newLocalizations: [String],
+        tx: DBWriteTransaction
+    ) {
+        for localization in localizationsToInvalidate {
+            emojiSearchIndexKVS.removeValue(forKey: localization, transaction: tx)
         }
+        emojiSearchIndexKVS.setObject(newLocalizations, key: emojiSearchIndexAvailableLocalizationsKey, transaction: tx)
+        emojiSearchIndexKVS.setInt(newVersion, key: emojiSearchIndexVersionKey, transaction: tx)
     }
 
     private static func fetchEmojiSearchIndex(for localization: String, version: Int? = nil) {
@@ -712,26 +722,27 @@ private class EmojiSearchIndex: NSObject {
 
         let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates()
         let request = String(format: remoteSearchFormat, searchIndexVersion, localization)
-        Promise.wrapAsync {
-            return try await urlSession.performRequest(request, method: .get)
-        }.done { response in
-            guard response.responseStatusCode == 200 else {
-                throw OWSAssertionError("Bad response code for emoji index fetch")
+        Task {
+            do {
+                let response = try await urlSession.performRequest(request, method: .get)
+                guard response.responseStatusCode == 200 else {
+                    throw OWSAssertionError("Bad response code for emoji index fetch")
+                }
+
+                guard let json = response.responseBodyJson as? [[String: Any]] else {
+                    throw OWSAssertionError("Unable to generate JSON for emoji index from response body.")
+                }
+
+                let index = self.buildSearchIndexMap(for: json)
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+                    self.emojiSearchIndexKVS.setObject(index, key: localization, transaction: transaction)
+                }
+
+                NotificationCenter.default.postOnMainThread(name: self.EmojiSearchIndexFetchedNotification, object: nil)
+
+            } catch {
+                owsFailDebug("Failed to download manifest \(error)")
             }
-
-            guard let json = response.responseBodyJson as? [[String: Any]] else {
-                throw OWSAssertionError("Unable to generate JSON for emoji index from response body.")
-            }
-
-            let index = self.buildSearchIndexMap(for: json)
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                self.emojiSearchIndexKVS.setObject(index, key: localization, transaction: transaction)
-            }
-
-            NotificationCenter.default.postOnMainThread(name: self.EmojiSearchIndexFetchedNotification, object: nil)
-
-        }.catch { error in
-            owsFailDebug("Failed to download manifest \(error)")
         }
     }
 
