@@ -143,8 +143,23 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     private let sleepTimer: Upload.Shims.SleepTimer
     private let storyStore: StoryStore
 
+    private struct ActiveUploadKey: Hashable {
+        let attachmentId: Attachment.IDType
+        let isThumbnailUpload: Bool
+
+        init(attachmentId: Attachment.IDType, uploadType: UploadType) {
+            self.attachmentId = attachmentId
+            switch uploadType {
+            case .transitTier:
+                self.isThumbnailUpload = false
+            case .mediaTier(_, let isThumbnail):
+                self.isThumbnailUpload = isThumbnail
+            }
+        }
+    }
+
     // Map of active upload tasks.
-    private var activeUploads = [Attachment.IDType: Task<(AttachmentUploadRecord, Upload.AttachmentResult), Error>]()
+    private var activeUploads = [ActiveUploadKey: Task<(AttachmentUploadRecord, Upload.AttachmentResult), Error>]()
 
     private enum UploadType {
         case transitTier
@@ -556,8 +571,9 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         progress: OWSProgressSink?
     ) async throws -> (record: AttachmentUploadRecord, result: Upload.AttachmentResult) {
 
-        if let activeUpload = activeUploads[attachmentId] {
-            // If this fails, it means the internal retry logic has given up, so don't 
+        let activeUploadKey = ActiveUploadKey(attachmentId: attachmentId, uploadType: type)
+        if let activeUpload = activeUploads[activeUploadKey] {
+            // If this fails, it means the internal retry logic has given up, so don't
             // attempt any retries here
             do {
                 return try await activeUpload.value
@@ -578,7 +594,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         let uploadTask = Task {
             defer {
                 // Clear out the active upload task once it finishes running.
-                activeUploads[attachmentId] = nil
+                activeUploads[activeUploadKey] = nil
             }
 
             // This task will only fail if a non-recoverable error is encountered, or the
@@ -591,8 +607,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             )
         }
 
-        // Add the active task to allow any additional uploads to ta
-        activeUploads[attachmentId] = uploadTask
+        // Add the active task to allow any additional scheduled uploads to reuse the same upload
+        activeUploads[activeUploadKey] = uploadTask
         return try await uploadTask.value
     }
 
