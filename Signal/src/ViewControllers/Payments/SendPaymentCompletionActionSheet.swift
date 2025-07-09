@@ -596,13 +596,11 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
     }
 
     private func tryToSendPayment(paymentInfo: PaymentInfo) {
-
         self.currentStep = .progressPay(paymentInfo: paymentInfo)
 
-        ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: self) { [weak self] modalActivityIndicator in
-            guard let self = self else { return }
-
-            SSKEnvironment.shared.owsPaymentsLockRef.tryToUnlockPromise().then(on: DispatchQueue.main) { (authOutcome: OWSPaymentsLock.LocalAuthOutcome) -> Promise<PreparedPayment> in
+        ModalActivityIndicatorViewController.present(fromViewController: self, isInvisible: true, asyncBlock: { modalActivityIndicator in
+            do {
+                let authOutcome = await SSKEnvironment.shared.owsPaymentsLockRef.tryToUnlock()
                 switch authOutcome {
                 case .failure(let error):
                     throw PaymentsUIError.paymentsLockFailed(reason: "local authentication failed with error: \(error)")
@@ -619,64 +617,45 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 guard let task = self.preparedPaymentTask.get() else {
                     throw OWSAssertionError("Missing preparedPaymentTask.")
                 }
-                return Promise.wrapAsync {
-                    return try await task.value
-                }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<PreparedPayment> in
-                    if case PaymentsError.defragmentationRequired = error {
-                        // NOTE: We will always follow this code path if defragmentation
-                        // is required.
-                        Logger.info("Defragmentation required.")
-                        return Promise.wrapAsync {
-                            return try await SUIEnvironment.shared.paymentsSwiftRef.prepareOutgoingPayment(
-                                recipient: paymentInfo.recipient,
-                                paymentAmount: paymentInfo.paymentAmount,
-                                memoMessage: paymentInfo.memoMessage,
-                                isOutgoingTransfer: paymentInfo.isOutgoingTransfer,
-                                canDefragment: true
-                            )
-                        }
-                    } else {
-                        throw error
-                    }
+                let preparedPayment: PreparedPayment
+                do {
+                    preparedPayment = try await task.value
+                } catch PaymentsError.defragmentationRequired {
+                    // NOTE: We will always follow this code path if defragmentation
+                    // is required.
+                    Logger.info("Defragmentation required.")
+                    preparedPayment = try await SUIEnvironment.shared.paymentsSwiftRef.prepareOutgoingPayment(
+                        recipient: paymentInfo.recipient,
+                        paymentAmount: paymentInfo.paymentAmount,
+                        memoMessage: paymentInfo.memoMessage,
+                        isOutgoingTransfer: paymentInfo.isOutgoingTransfer,
+                        canDefragment: true,
+                    )
                 }
-            }.then(on: DispatchQueue.global()) { (preparedPayment: PreparedPayment) in
-                return Promise.wrapAsync {
-                    try await SUIEnvironment.shared.paymentsSwiftRef.initiateOutgoingPayment(preparedPayment: preparedPayment)
-                }
-            }.then { (paymentModel: TSPaymentModel) -> Promise<Void> in
+
+                let paymentModel = try await SUIEnvironment.shared.paymentsSwiftRef.initiateOutgoingPayment(preparedPayment: preparedPayment)
+
                 // Try to wait (with a timeout) for submission and verification to complete.
                 let blockInterval: TimeInterval = .minute
-                return Promise.wrapAsync {
-                    do {
-                        try await withCooperativeTimeout(seconds: blockInterval) {
-                            _ = try await SUIEnvironment.shared.paymentsSwiftRef.blockOnOutgoingVerification(paymentModel: paymentModel)
-                        }
-                    } catch is CooperativeTimeoutError {
-                        throw PaymentsError.outgoingVerificationTakingTooLong
+                do {
+                    try await withCooperativeTimeout(seconds: blockInterval) {
+                        _ = try await SUIEnvironment.shared.paymentsSwiftRef.blockOnOutgoingVerification(paymentModel: paymentModel)
                     }
-                }.recover(on: DispatchQueue.global()) { (error: Error) -> Guarantee<()> in
+                } catch is CooperativeTimeoutError {
+                    throw PaymentsError.outgoingVerificationTakingTooLong
+                } catch let error as PaymentsError where error.isNetworkFailureOrTimeout {
                     Logger.warn("Could not verify outgoing payment: \(error).")
-                    if let paymentsError = error as? PaymentsError,
-                       paymentsError.isNetworkFailureOrTimeout {
-                        return Guarantee.value(())
-                    } else {
-                        throw error
-                    }
+                    // This is fine.
                 }
-            }.done { _ in
-                AssertIsOnMainThread()
 
                 self.didSucceedPayment(paymentInfo: paymentInfo)
-
                 modalActivityIndicator.dismiss()
-            }.catch { error in
-                AssertIsOnMainThread()
+            } catch {
                 owsFailDebugUnlessMCNetworkFailure(error)
-
-                modalActivityIndicator.dismiss {}
+                modalActivityIndicator.dismiss()
                 self.didFailPayment(paymentInfo: paymentInfo, error: error)
             }
-        }
+        })
     }
 
     private static let autoDismissDelay: TimeInterval = 2.5

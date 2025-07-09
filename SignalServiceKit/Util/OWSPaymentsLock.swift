@@ -133,7 +133,7 @@ public class OWSPaymentsLock {
             Logger.error("could not determine if local authentication is supported: " +
                          "\(String(describing: authError))")
 
-            let outcome = outcomeForLAError(errorParam: authError)
+            let outcome = Self.outcomeForLAError(errorParam: authError)
             switch outcome {
             case .success:
                 owsFailDebug("local authentication unexpected success")
@@ -150,7 +150,7 @@ public class OWSPaymentsLock {
         ) { success, evaluateError in
 
             guard success else {
-                let outcome = self.outcomeForLAError(errorParam: evaluateError)
+                let outcome = Self.outcomeForLAError(errorParam: evaluateError)
                 switch outcome {
                 case .success:
                     owsFailDebug("local authentication unexpected success")
@@ -166,17 +166,16 @@ public class OWSPaymentsLock {
         }
     }
 
-    public func tryToUnlockPromise() -> Promise<OWSPaymentsLock.LocalAuthOutcome> {
-        Promise<OWSPaymentsLock.LocalAuthOutcome>(on: DispatchQueue.main) { future in
-            self.tryToUnlock { outcome in
-                future.resolve(outcome)
-            }
+    @MainActor
+    public func tryToUnlock() async -> OWSPaymentsLock.LocalAuthOutcome {
+        return await withCheckedContinuation { continuation in
+            self.tryToUnlock(completion: { continuation.resume(returning: $0) })
         }
     }
 
     // MARK: - Outcome
 
-    private func outcomeForLAError(errorParam: Error?) -> LocalAuthOutcome {
+    private static func outcomeForLAError(errorParam: Error?) -> LocalAuthOutcome {
         guard let error = errorParam,
               let laError = error as? LAError
         else {
