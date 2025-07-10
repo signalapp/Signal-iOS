@@ -1697,10 +1697,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return askForPinStep
         }
 
-        if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
+        if inMemoryState.needsToAskForDeviceTransfer && inMemoryState.restoreMethod == nil {
             if deps.featureFlags.backupFileAlphaRegistrationFlow {
                 return .value(.chooseRestoreMethod(.unspecified))
-            } else {
+            } else if !persistedState.hasDeclinedTransfer {
                 return .value(.transferSelection)
             }
         } else if
