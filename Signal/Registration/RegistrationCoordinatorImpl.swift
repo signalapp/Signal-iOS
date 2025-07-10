@@ -548,6 +548,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return resetRestoreMethodChoice()
     }
 
+    public func cancelBackupKeyEntry() -> Guarantee<RegistrationStep> {
+        inMemoryState.accountEntropyPool = nil
+        return resetRestoreMethodChoice()
+    }
+
     public func resetRestoreMethodChoice() -> Guarantee<RegistrationStep> {
         inMemoryState.restoreMethod = nil
         inMemoryState.needsToAskForDeviceTransfer = true

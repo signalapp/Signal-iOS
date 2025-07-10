@@ -164,6 +164,9 @@ public protocol RegistrationCoordinator {
 
     /// Additional step to have the user confirm restoring from backup.
     func confirmRestoreFromBackup() -> Guarantee<RegistrationStep>
+
+    /// Cancel from the backup entry screen and clear out any key that has been entered.
+    func cancelBackupKeyEntry() -> Guarantee<RegistrationStep>
 }
 
 public enum AcknowledgeReglockResult {
