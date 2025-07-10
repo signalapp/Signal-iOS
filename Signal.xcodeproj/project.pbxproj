@@ -1434,7 +1434,6 @@
 		76E08F3E2AE8763900032BC9 /* ContactShareField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E08F3D2AE8763900032BC9 /* ContactShareField.swift */; };
 		76E08F422AE879EB00032BC9 /* ContactShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E08F412AE879EB00032BC9 /* ContactShareViewController.swift */; };
 		76E54D69290B4E7800D03BA8 /* UIFont+TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */; };
-		76E7A20F2A01A50C00A8F538 /* OWSTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */; };
 		76E7A2112A01B6A500A8F538 /* DebugUITableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E7A2102A01B6A500A8F538 /* DebugUITableViewController.swift */; };
 		76E7A2192A01DD0500A8F538 /* DebugUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E7A2182A01DD0500A8F538 /* DebugUI.swift */; };
 		76ECBA922915B5BB00676507 /* ConversationScrollButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76ECBA912915B5BB00676507 /* ConversationScrollButton.swift */; };
@@ -5306,7 +5305,6 @@
 		76E08F3D2AE8763900032BC9 /* ContactShareField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareField.swift; sourceTree = "<group>"; };
 		76E08F412AE879EB00032BC9 /* ContactShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareViewController.swift; sourceTree = "<group>"; };
 		76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+TextStyle.swift"; sourceTree = "<group>"; };
-		76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableViewController.swift; sourceTree = "<group>"; };
 		76E7A2102A01B6A500A8F538 /* DebugUITableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUITableViewController.swift; sourceTree = "<group>"; };
 		76E7A2182A01DD0500A8F538 /* DebugUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUI.swift; sourceTree = "<group>"; };
 		76ECBA912915B5BB00676507 /* ConversationScrollButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationScrollButton.swift; sourceTree = "<group>"; };
@@ -8528,7 +8526,6 @@
 				765283B12A00D8EC004583A9 /* OWSTableItem.swift */,
 				765283AF2A00D8CE004583A9 /* OWSTableSection.swift */,
 				8868A08B287F4F81000E74A5 /* OWSTableSheetViewController.swift */,
-				76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */,
 				34A9558B271B510500B05242 /* OWSTableViewController2.swift */,
 				66F44B4A2909EEDA004CF66C /* OWSViewController.swift */,
 				34A95567271B510500B05242 /* OWSWindow.swift */,
@@ -16615,7 +16612,6 @@
 				765283B22A00D8EC004583A9 /* OWSTableItem.swift in Sources */,
 				765283B02A00D8CE004583A9 /* OWSTableSection.swift in Sources */,
 				8868A08C287F4F81000E74A5 /* OWSTableSheetViewController.swift in Sources */,
-				76E7A20F2A01A50C00A8F538 /* OWSTableViewController.swift in Sources */,
 				3402AA5A271D9DCD0084CBAE /* OWSTableViewController2.swift in Sources */,
 				F9C8CFD0293580D00094469C /* OWSTextField.swift in Sources */,
 				7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */,

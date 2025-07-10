@@ -8,7 +8,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUIFileBrowser: OWSTableViewController {
+class DebugUIFileBrowser: OWSTableViewController2 {
 
     // MARK: - Dependencies
 
@@ -38,8 +38,7 @@ class DebugUIFileBrowser: OWSTableViewController {
     }
 
     fileprivate func updateContents() {
-        self.contents = buildContents()
-        self.tableView.reloadData()
+        self.setContents(buildContents(), shouldReload: true)
     }
 
     override func viewWillAppear(_ animated: Bool) {

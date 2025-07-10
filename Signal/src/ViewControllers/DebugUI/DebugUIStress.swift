@@ -177,7 +177,7 @@ class DebugUIStress: DebugUIPage {
             }))
         }
 
-        return OWSTableSection(title: name, items: items)
+        return OWSTableSection(items: items)
     }
 
     // MARK: -
@@ -274,9 +274,7 @@ class DebugUIStress: DebugUIPage {
     }
 }
 
-// MARK: -
-
-private class GroupThreadPicker: OWSTableViewController {
+private class GroupThreadPicker: OWSTableViewController2 {
 
     private let groupThreads: [TSGroupThread]
     private let completion: (TSGroupThread) -> Void
@@ -295,7 +293,6 @@ private class GroupThreadPicker: OWSTableViewController {
 
         rebuildTableContents()
         setupNavigationBar()
-        applyTheme()
     }
 
     // MARK: - Data providers
@@ -328,7 +325,7 @@ private class GroupThreadPicker: OWSTableViewController {
             }
         }
         contents.add(section)
-        self.contents = contents
+        self.setContents(contents)
     }
 
     // MARK: - Actions

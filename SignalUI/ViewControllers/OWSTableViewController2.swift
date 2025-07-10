@@ -5,6 +5,10 @@
 
 import SignalServiceKit
 
+public protocol OWSTableViewControllerDelegate: AnyObject {
+    func tableViewWillBeginDragging(_ tableView: UITableView)
+}
+
 // This class offers a convenient way to build table views
 // when performance is not critical, e.g. when the table
 // only holds a screenful or two of cells and it's safe to

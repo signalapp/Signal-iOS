@@ -8,7 +8,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUITableViewController: OWSTableViewController {
+class DebugUITableViewController: OWSTableViewController2 {
 
     // MARK: Public
 
@@ -25,10 +25,10 @@ class DebugUITableViewController: OWSTableViewController {
             itemForSubsection(DebugUIPayments(), viewController: viewController),
             itemForSubsection(DebugUIMisc(appReadiness: appReadiness), viewController: viewController)
         ]
-        viewController.contents = OWSTableContents(
+        viewController.setContents(OWSTableContents(
             title: "Debug UI",
-            sections: [ OWSTableSection(title: "Sections", items: subsectionItems) ]
-        )
+            sections: [ OWSTableSection(items: subsectionItems) ]
+        ))
         viewController.present(fromViewController: fromViewController)
     }
 
@@ -71,18 +71,20 @@ class DebugUITableViewController: OWSTableViewController {
             itemForSubsection(DebugUIMisc(appReadiness: nil), viewController: viewController, thread: thread)
         ]
 
-        viewController.contents = OWSTableContents(
+        viewController.setContents(OWSTableContents(
             title: "Debug: Conversation",
-            sections: [OWSTableSection(title: "Sections", items: subsectionItems)]
-        )
+            sections: [OWSTableSection(items: subsectionItems)]
+        ))
         viewController.present(fromViewController: fromViewController)
     }
 
     // MARK: -
 
-    private func pushPageWithSection(_ section: OWSTableSection) {
+    private func pushPageWithSection(_ section: OWSTableSection, title: String) {
         let viewController = DebugUITableViewController()
-        viewController.contents = OWSTableContents(title: section.headerTitle, sections: [section])
+        viewController.setContents(
+            OWSTableContents(title: title, sections: [section])
+        )
         navigationController?.pushViewController(viewController, animated: true )
     }
 
@@ -95,7 +97,8 @@ class DebugUITableViewController: OWSTableViewController {
             withText: page.name,
             actionBlock: { [weak viewController] in
                 guard let viewController, let section = page.section(thread: thread) else { return }
-                viewController.pushPageWithSection(section)
+                section.headerTitle = nil // Updated the style. Too lazy to go through and change all of these to not set their own titles
+                viewController.pushPageWithSection(section, title: page.name)
             }
         )
     }
