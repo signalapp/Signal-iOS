@@ -134,7 +134,10 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                 return
             }
 
-            await viewModel.confirmTransfer()
+            guard await viewModel.confirmTransfer() else {
+                // TODO: [Backups] - Display an error
+                return
+            }
 
             // Show a sheet while fetching the transfer data
             await presentSheet()

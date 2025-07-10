@@ -48,8 +48,8 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
         self.provisioningURL = deviceProvisioningURL
     }
 
-    func confirmTransfer() async {
-        // TODO: [Backups] - Do Biometric Auth
+    func confirmTransfer() async -> Bool {
+        return await LocalDeviceAuthentication().performBiometricAuth()
     }
 
     /// This uses the QuickRestore path behind the scenes to bootstrap a device transfer between two devices.
