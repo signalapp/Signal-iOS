@@ -26,6 +26,7 @@ extension RegistrationCoordinatorImpl {
         typealias QuickRestoreManager = _RegistrationCoordinator_QuickRestoreManagerShim
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerShim
         public typealias StorageServiceManager = _RegistrationCoordinator_StorageServiceManagerShim
+        public typealias TimeoutProvider = _RegistrationCoordinator_TimeoutProviderShim
         public typealias UDManager = _RegistrationCoordinator_UDManagerShim
         public typealias UsernameApiClient = _RegistrationCoordinator_UsernameApiClientShim
     }
@@ -45,6 +46,7 @@ extension RegistrationCoordinatorImpl {
         typealias QuickRestoreManager = _RegistrationCoordinator_QuickRestoreManagerWrapper
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
         public typealias StorageServiceManager = _RegistrationCoordinator_StorageServiceManagerWrapper
+        public typealias TimeoutProvider = _RegistrationCoordinator_TimeoutProviderWrapper
         public typealias UDManager = _RegistrationCoordinator_UDManagerWrapper
         public typealias UsernameApiClient = _RegistrationCoordinator_UsernameApiClientWrapper
     }
@@ -543,6 +545,27 @@ public class _RegistrationCoordinator_StorageServiceManagerWrapper: _Registratio
     public func recordPendingLocalAccountUpdates() {
         manager.recordPendingLocalAccountUpdates()
     }
+}
+
+// MARK: - TimeoutProvider
+
+public protocol _RegistrationCoordinator_TimeoutProviderShim {
+    var pushTokenMinWaitTime: TimeInterval { get }
+    var pushTokenTimeout: TimeInterval { get }
+}
+
+public class _RegistrationCoordinator_TimeoutProviderWrapper: _RegistrationCoordinator_TimeoutProviderShim {
+    public enum Constants {
+        /// How long we wait for a push challenge to the exclusion of all else after requesting one.
+        /// Even if we have another challenge to fulfill, we will wait this long before proceeding.
+        static let pushTokenMinWaitTime: TimeInterval = 3
+        /// How long we block waiting for a push challenge after requesting one.
+        /// We might still fulfill the challenge after this, but we won't opportunistically block proceeding.
+        static let pushTokenTimeout: TimeInterval = 30
+    }
+
+    public var pushTokenMinWaitTime: TimeInterval { Constants.pushTokenMinWaitTime }
+    public var pushTokenTimeout: TimeInterval { Constants.pushTokenTimeout }
 }
 
 // MARK: - UDManager

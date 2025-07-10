@@ -70,7 +70,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.requestVerificationCode(
                 for: oldSession,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!
-            ).awaitable()
+            )
 
             XCTAssertEqual(result, .success(RegistrationSession(
                 id: "abcd",
@@ -106,7 +106,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.requestVerificationCode(
                 for: oldSession,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!
-            ).awaitable()
+            )
 
             XCTAssertEqual(result, .success(RegistrationSession(
                 id: "abcd",
@@ -145,7 +145,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.requestVerificationCode(
                 for: oldSession,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!
-            ).awaitable()
+            )
 
             XCTAssertEqual(result, .success(RegistrationSession(
                 id: "abcd",
@@ -186,7 +186,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.beginOrRestoreSession(
                 e164: e164,
                 apnsToken: apnsToken
-            ).awaitable()
+            )
             XCTAssertEqual(result, .success(responseSession))
         }
 
@@ -216,7 +216,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.beginOrRestoreSession(
                 e164: e164,
                 apnsToken: apnsToken
-            ).awaitable()
+            )
             XCTAssertEqual(result, .success(responseSession))
         }
 
@@ -250,7 +250,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.beginOrRestoreSession(
                 e164: e164,
                 apnsToken: apnsToken
-            ).awaitable()
+            )
             XCTAssertEqual(result, .success(responseSession))
         }
 
@@ -289,7 +289,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.beginOrRestoreSession(
                 e164: e164,
                 apnsToken: apnsToken
-            ).awaitable()
+            )
             XCTAssertEqual(result, .success(responseSession))
         }
 
@@ -316,7 +316,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.beginOrRestoreSession(
                 e164: newE164,
                 apnsToken: apnsToken
-            ).awaitable()
+            )
             XCTAssertEqual(result, .success(responseSession))
         }
 
@@ -368,7 +368,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
                     Registration.ChallengeFulfillment.captcha(captchaToken),
                     .pushChallenge(pushChallengeToken)
                 ].randomElement()!
-            ).awaitable()
+            )
             XCTAssertEqual(result, expectedResponse)
         }
     }
@@ -391,7 +391,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.fulfillChallenge(
                 for: oldSession,
                 fulfillment: .captcha(captchaToken)
-            ).awaitable()
+            )
             XCTAssertEqual(result, Registration.UpdateSessionResponse.genericError)
         }
     }
@@ -429,7 +429,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.requestVerificationCode(
                 for: oldSession,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!
-            ).awaitable()
+            )
             XCTAssertEqual(result, expectedResponse)
         }
     }
@@ -460,7 +460,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.requestVerificationCode(
                 for: oldSession,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!
-            ).awaitable()
+            )
             XCTAssertEqual(result, .serverFailure(Registration.ServerFailureResponse(
                 session: oldSession,
                 isPermanent: false,
@@ -485,7 +485,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.requestVerificationCode(
                 for: oldSession,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!
-            ).awaitable()
+            )
             XCTAssertEqual(result, .serverFailure(Registration.ServerFailureResponse(
                 session: oldSession,
                 isPermanent: false,
@@ -534,7 +534,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.submitVerificationCode(
                 for: oldSession,
                 code: code
-            ).awaitable()
+            )
             XCTAssertEqual(result, expectedResponse)
         }
     }

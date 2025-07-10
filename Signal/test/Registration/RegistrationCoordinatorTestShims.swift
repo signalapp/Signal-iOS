@@ -26,6 +26,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerMock
         public typealias QuickRestoreManager = _RegistrationCoordinator_QuickRestoreManagerMock
         public typealias StorageServiceManager = _RegistrationCoordinator_StorageServiceManagerMock
+        public typealias TimeoutProvider = _RegistrationCoordinator_TimeoutProviderMock
         public typealias UDManager = _RegistrationCoordinator_UDManagerMock
         public typealias UsernameApiClient = _RegistrationCoordinator_UsernameApiClientMock
     }
@@ -184,22 +185,33 @@ public class _RegistrationCoordinator_OWS2FAManagerMock: _RegistrationCoordinato
 // MARK: - PreKeyManager
 
 public class _RegistrationCoordinator_PreKeyManagerMock: _RegistrationCoordinator_PreKeyManagerShim {
-    public var createPreKeysMock: (() -> Promise<RegistrationPreKeyUploadBundles>)?
+    var run: RegistrationCoordinatorTest.RegistrationTestRun
+    init(run: RegistrationCoordinatorTest.RegistrationTestRun) {
+        self.run = run
+    }
 
+    public typealias CreatePreKeysMock = (() -> Promise<RegistrationPreKeyUploadBundles>)
+    private var createPreKeysMocks = [CreatePreKeysMock]()
+    public func addCreatePreKeysMock(_ mock: @escaping CreatePreKeysMock) { createPreKeysMocks.append(mock) }
     public func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles> {
-        return createPreKeysMock!()
+        run.addObservedStep(.createPreKeys)
+        return createPreKeysMocks.removeFirst()()
     }
 
-    public var finalizePreKeysMock: ((_ didSucceed: Bool) -> Promise<Void>)?
-
+    public typealias FinalizePreKeysMock = ((Bool) -> Promise<Void>)
+    private var finalizePreKeysMocks = [FinalizePreKeysMock]()
+    public func addFinalizePreKeyMock(_ mock: @escaping FinalizePreKeysMock) { finalizePreKeysMocks.append(mock) }
     public func finalizeRegistrationPreKeys(_ bundles: RegistrationPreKeyUploadBundles, uploadDidSucceed: Bool) -> Promise<Void> {
-        return finalizePreKeysMock!(uploadDidSucceed)
+        run.addObservedStep(.finalizePreKeys)
+        return finalizePreKeysMocks.removeFirst()(uploadDidSucceed)
     }
 
-    public var rotateOneTimePreKeysMock: ((ChatServiceAuth) -> Promise<Void>)?
-
+    public typealias RotateOneTimePreKeysMock = ((ChatServiceAuth) -> Promise<Void>)
+    private var rotateOneTimePreKeysMocks = [RotateOneTimePreKeysMock]()
+    public func addRotateOneTimePreKeyMock(_ mock: @escaping RotateOneTimePreKeysMock) { rotateOneTimePreKeysMocks.append(mock) }
     public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void> {
-        return rotateOneTimePreKeysMock!(auth)
+        run.addObservedStep(.rotateOneTimePreKeys)
+        return rotateOneTimePreKeysMocks.removeFirst()(auth)
     }
 }
 
@@ -244,7 +256,10 @@ public class _RegistrationCoordinator_ProfileManagerMock: _RegistrationCoordinat
 
 public class _RegistrationCoordinator_PushRegistrationManagerMock: _RegistrationCoordinator_PushRegistrationManagerShim {
 
-    public init() {}
+    var run: RegistrationCoordinatorTest.RegistrationTestRun
+    init(run: RegistrationCoordinatorTest.RegistrationTestRun) {
+        self.run = run
+    }
 
     public var doesNeedNotificationAuthorization = false
 
@@ -257,16 +272,23 @@ public class _RegistrationCoordinator_PushRegistrationManagerMock: _Registration
         return .value(())
     }
 
-    public var requestPushTokenMock: (() -> Guarantee<Registration.RequestPushTokensResult>)?
-
+    public typealias RequestPushTokenMock = (() -> Guarantee<Registration.RequestPushTokensResult>)
+    private var requestPushTokenMocks = [RequestPushTokenMock]()
+    public func addRequestPushTokenMock(_ mock: @escaping RequestPushTokenMock) {
+        requestPushTokenMocks.append(mock)
+    }
     public func requestPushToken() -> Guarantee<Registration.RequestPushTokensResult> {
-        return requestPushTokenMock!()
+        run.addObservedStep(.requestPushToken)
+        return requestPushTokenMocks.removeFirst()()
     }
 
-    public var receivePreAuthChallengeTokenMock: (() -> Guarantee<String>)!
-
+    public typealias RecevePreAuthChallengeTokenMock = (() -> Guarantee<String>)
+    private var receivePreAuthChallengeTokenMocks = [RecevePreAuthChallengeTokenMock]()
+    public func addReceivePreAuthChallengeTokenMock(_ mock: @escaping RecevePreAuthChallengeTokenMock) {
+        receivePreAuthChallengeTokenMocks.append(mock)
+    }
     public func receivePreAuthChallengeToken() -> Guarantee<String> {
-        return receivePreAuthChallengeTokenMock!()
+        return receivePreAuthChallengeTokenMocks.removeFirst()()
     }
 
     public var didClearPreAuthChallengeToken = false
@@ -310,19 +332,25 @@ public class _RegistrationCoordinator_QuickRestoreManagerMock: _RegistrationCoor
 
 // MARK: StorageService
 public class _RegistrationCoordinator_StorageServiceManagerMock: _RegistrationCoordinator_StorageServiceManagerShim {
-
-    public var rotateManifestMock: (StorageServiceManagerManifestRotationMode, AuthedDevice) -> Promise<Void> = { _, _ in
-        return .value(())
+    var run: RegistrationCoordinatorTest.RegistrationTestRun
+    init(run: RegistrationCoordinatorTest.RegistrationTestRun) {
+        self.run = run
     }
+
+    public typealias RotateManifestMock = (StorageServiceManagerManifestRotationMode, AuthedDevice) -> Promise<Void>
+    private var rotateManifestMocks = [RotateManifestMock]()
+    public func addRotateManifestMock(_ mock: @escaping RotateManifestMock) { rotateManifestMocks.append(mock) }
     public func rotateManifest(mode: StorageServiceManagerManifestRotationMode, authedDevice: AuthedDevice) -> Promise<Void> {
-        return rotateManifestMock(mode, authedDevice)
+        run.addObservedStep(.rotateManifest)
+        return rotateManifestMocks.removeFirst()(mode, authedDevice)
     }
 
-    public var restoreOrCreateManifestIfNecessaryMock: (AuthedDevice, StorageService.MasterKeySource) -> Promise<Void> = { _, _ in
-        return .value(())
-    }
+    public typealias RestoreOrCreateManifestIfNecessaryMock = (AuthedDevice, StorageService.MasterKeySource) -> Promise<Void>
+    private var restoreOrCreateManifestIfNecessaryMocks = [RestoreOrCreateManifestIfNecessaryMock]()
+    public func addRestoreOrCreateManifestIfNecessaryMock(_ mock: @escaping RestoreOrCreateManifestIfNecessaryMock) { restoreOrCreateManifestIfNecessaryMocks.append(mock) }
     public func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice, masterKeySource: StorageService.MasterKeySource) -> Promise<Void> {
-        return restoreOrCreateManifestIfNecessaryMock(authedDevice, masterKeySource)
+        run.addObservedStep(.restoreStorageService)
+        return restoreOrCreateManifestIfNecessaryMocks.removeFirst()(authedDevice, masterKeySource)
     }
 
     public var backupPendingChangesMock: ((SignalServiceKit.AuthedDevice) -> Void) = { _ in }
@@ -331,6 +359,13 @@ public class _RegistrationCoordinator_StorageServiceManagerMock: _RegistrationCo
     }
 
     public func recordPendingLocalAccountUpdates() { }
+}
+
+// MARK: TimeoutProvider
+
+public class _RegistrationCoordinator_TimeoutProviderMock: _RegistrationCoordinator_TimeoutProviderShim {
+    public var pushTokenMinWaitTime: TimeInterval = RegistrationCoordinatorImpl.Wrappers.TimeoutProvider.Constants.pushTokenMinWaitTime
+    public var pushTokenTimeout: TimeInterval = RegistrationCoordinatorImpl.Wrappers.TimeoutProvider.Constants.pushTokenTimeout
 }
 
 // MARK: UDManager

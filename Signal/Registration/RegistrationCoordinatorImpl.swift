@@ -1169,8 +1169,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             break
         }
 
-        let sessionGuarantee: Guarantee<Void> = deps.sessionManager.restoreSession()
-            .map(on: schedulers.main) { [weak self] session in
+        let sessionGuarantee: Guarantee<Void> = Guarantee.wrapAsync {
+                await self.deps.sessionManager.restoreSession()
+            } .map(on: schedulers.main) { [weak self] session in
                 self?.db.write { self?.processSession(session, $0) }
             }
 
@@ -2528,10 +2529,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case .pushUnsupported, .timeout, .genericError:
                     apnsToken = nil
                 }
-                return strongSelf.deps.sessionManager.beginOrRestoreSession(
-                    e164: e164,
-                    apnsToken: apnsToken
-                ).then(on: strongSelf.schedulers.main) { [weak self] response -> Guarantee<RegistrationStep> in
+                return Guarantee.wrapAsync {
+                    await strongSelf.deps.sessionManager.beginOrRestoreSession(
+                        e164: e164,
+                        apnsToken: apnsToken
+                    )
+                }.then(on: strongSelf.schedulers.main) { [weak self] response -> Guarantee<RegistrationStep> in
                     guard let strongSelf = self else {
                         return unretainedSelfError()
                     }
@@ -2597,10 +2600,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         transport: Registration.CodeTransport,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        return deps.sessionManager.requestVerificationCode(
-            for: session,
-            transport: transport
-        ).then(on: schedulers.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
+        return Guarantee.wrapAsync {
+            await self.deps.sessionManager.requestVerificationCode(
+                for: session,
+                transport: transport
+            )
+        }.then(on: schedulers.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
             guard let self else {
                 return unretainedSelfError()
             }
@@ -2859,7 +2864,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // Our fourth choice: a push challenge where we're still waiting for the challenge token.
             if
                 requestsPushChallenge,
-                let timeToWaitUntil = pushChallengeRequestDate?.addingTimeInterval(Constants.pushTokenTimeout),
+                let timeToWaitUntil = pushChallengeRequestDate?.addingTimeInterval(deps.timeoutProvider.pushTokenTimeout),
                 deps.dateProvider() < timeToWaitUntil
             {
                 let timeout = timeToWaitUntil.timeIntervalSince(deps.dateProvider())
@@ -2895,7 +2900,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }()
         if
             requestsPushChallenge,
-            let timeToWaitUntil = pushChallengeRequestDate?.addingTimeInterval(Constants.pushTokenMinWaitTime),
+            let timeToWaitUntil = pushChallengeRequestDate?.addingTimeInterval(deps.timeoutProvider.pushTokenMinWaitTime),
             deps.dateProvider() < timeToWaitUntil
         {
             let timeout = timeToWaitUntil.timeIntervalSince(deps.dateProvider())
@@ -2918,10 +2923,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             Logger.info("Submitting push challenge fulfillment")
         }
 
-        return deps.sessionManager.fulfillChallenge(
-            for: session,
-            fulfillment: fulfillment
-        ).then(on: schedulers.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
+        return Guarantee.wrapAsync {
+            await self.deps.sessionManager.fulfillChallenge(
+                for: session,
+                fulfillment: fulfillment
+            )
+        }.then(on: schedulers.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
             guard let self else {
                 return unretainedSelfError()
             }
@@ -3004,10 +3011,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
 
-        return deps.sessionManager.submitVerificationCode(
-            for: session,
-            code: code
-        ).then(on: schedulers.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
+        return Guarantee.wrapAsync {
+            await self.deps.sessionManager.submitVerificationCode(
+                for: session,
+                code: code
+            )
+        }.then(on: schedulers.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
             guard let self else {
                 return unretainedSelfError()
             }
@@ -4792,13 +4801,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // though. This is how many tries they have before we wipe our local state and make
         // them go through re-registration.
         static let maxLocalPINGuesses: UInt = 10
-
-        /// How long we wait for a push challenge to the exclusion of all else after requesting one.
-        /// Even if we have another challenge to fulfill, we will wait this long before proceeding.
-        static let pushTokenMinWaitTime: TimeInterval = 3
-        /// How long we block waiting for a push challenge after requesting one.
-        /// We might still fulfill the challenge after this, but we won't opportunistically block proceeding.
-        static let pushTokenTimeout: TimeInterval = 30
     }
 }
 

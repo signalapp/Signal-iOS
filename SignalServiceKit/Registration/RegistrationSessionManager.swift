@@ -9,23 +9,23 @@ public protocol RegistrationSessionManager {
 
     /// Restore any existing registration session that has not been completed and validate it with the server.
     /// If there is no session, or if the session is invalid, returns nil.
-    func restoreSession() -> Guarantee<RegistrationSession?>
+    func restoreSession() async -> RegistrationSession?
 
     /// Begins a new session, first attempting to restore any existing valid session for the same number.
     /// See `Registration.BeginSessionResponse` for possible responses, including errors.
-    func beginOrRestoreSession(e164: E164, apnsToken: String?) -> Guarantee<Registration.BeginSessionResponse>
+    func beginOrRestoreSession(e164: E164, apnsToken: String?) async -> Registration.BeginSessionResponse
 
     /// Fulfill a challenge for the session (e.g. a captcha).
     /// See `Registration.UpdateSessionResponse` for possible responses, including errors.
-    func fulfillChallenge(for session: RegistrationSession, fulfillment: Registration.ChallengeFulfillment) -> Guarantee<Registration.UpdateSessionResponse>
+    func fulfillChallenge(for session: RegistrationSession, fulfillment: Registration.ChallengeFulfillment) async -> Registration.UpdateSessionResponse
 
     /// Request a verification code be sent to the session's phone number, for some transport.
     /// See `Registration.UpdateSessionResponse` for possible responses, including errors.
-    func requestVerificationCode(for session: RegistrationSession, transport: Registration.CodeTransport) -> Guarantee<Registration.UpdateSessionResponse>
+    func requestVerificationCode(for session: RegistrationSession, transport: Registration.CodeTransport) async -> Registration.UpdateSessionResponse
 
     /// Submit a verification code that was previously requested.
     /// See `Registration.UpdateSessionResponse` for possible responses, including errors.
-    func submitVerificationCode(for session: RegistrationSession, code: String) -> Guarantee<Registration.UpdateSessionResponse>
+    func submitVerificationCode(for session: RegistrationSession, code: String) async -> Registration.UpdateSessionResponse
 
     /// Completes a session, wiping it from future restoration.
     /// Typically called once the session is verified and is used to complete registration.
