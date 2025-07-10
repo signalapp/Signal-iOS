@@ -683,7 +683,10 @@ extension RegistrationNavigationController: RegistrationEnterAccountEntropyPoolP
         pushNextController(guarantee)
     }
 
-    func forgotKeyAction() { }
+    func forgotKeyAction() {
+        let guarantee = coordinator.updateRestoreMethod(method: .declined)
+        pushNextController(guarantee)
+    }
 }
 
 extension RegistrationNavigationController: RegistrationChooseRestoreMethodPresenter {

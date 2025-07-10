@@ -104,8 +104,9 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
                 "REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE",
                 comment: "Title for button on sheet for when you don't have a backup key"
             )) { [weak self] _ in
-                // [Backups] TODO: Implement
-                self?.dismiss(animated: true)
+                self?.dismiss(animated: true) {
+                    self?.presenter?.forgotKeyAction()
+                }
             },
             secondaryButton: .init(title: CommonStrings.learnMore) { [weak self] _ in
                 // [Backups] TODO: Implement
