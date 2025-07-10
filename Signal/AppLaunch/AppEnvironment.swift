@@ -137,7 +137,6 @@ public class AppEnvironment: NSObject {
             let learnMyOwnPniManager = DependenciesBridge.shared.learnMyOwnPniManager
             let masterKeySyncManager = DependenciesBridge.shared.masterKeySyncManager
             let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
-            let pniHelloWorldManager = DependenciesBridge.shared.pniHelloWorldManager
             let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
             let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
             let threadStore = DependenciesBridge.shared.threadStore
@@ -168,7 +167,6 @@ public class AppEnvironment: NSObject {
                 Task {
                     do {
                         try await learnMyOwnPniManager.learnMyOwnPniIfNecessary()
-                        try await pniHelloWorldManager.sayHelloWorldIfNecessary()
                     } catch {
                         Logger.warn("Couldn't initialize PNI: \(error)")
                     }

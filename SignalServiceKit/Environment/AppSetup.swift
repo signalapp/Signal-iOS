@@ -954,16 +954,6 @@ public class AppSetup {
             tsAccountManager: tsAccountManager,
             whoAmIManager: whoAmIManager,
         )
-        let pniHelloWorldManager = PniHelloWorldManagerImpl(
-            db: db,
-            identityManager: identityManager,
-            networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
-            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
-            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
-            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
-            recipientDatabaseTable: recipientDatabaseTable,
-            tsAccountManager: tsAccountManager
-        )
 
         let chatConnectionManager = ChatConnectionManagerImpl(
             accountManager: tsAccountManager,
@@ -1506,7 +1496,6 @@ public class AppSetup {
             phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
             pinnedThreadManager: pinnedThreadManager,
             pinnedThreadStore: pinnedThreadStore,
-            pniHelloWorldManager: pniHelloWorldManager,
             preKeyManager: preKeyManager,
             privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
             quotedReplyManager: quotedReplyManager,

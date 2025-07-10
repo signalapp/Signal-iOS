@@ -274,24 +274,21 @@ public class SSKEnvironment: NSObject {
             return
         }
 
-        // If we can't send a PNI Hello World, there is no way to set a PNI
-        // Identity Key on our own account. If we don't have one or don't believe
-        // it to be correct, the only path forward will be to re-register.
-        let canSendPniHelloWorld = true
-        // So that the compiler makes you read this when deleting this type.
-        assert(PniHelloWorldManagerImpl.self == PniHelloWorldManagerImpl.self)
-
-        let mustHavePniAndPniIdentityKey: Bool
+        let mustHavePni: Bool
+        let mustHavePniIdentityKey: Bool
         switch tsAccountManager.registrationStateWithMaybeSneakyTransaction {
         case .provisioned:
-            mustHavePniAndPniIdentityKey = true
+            mustHavePni = true
+            mustHavePniIdentityKey = true
         case .registered:
-            mustHavePniAndPniIdentityKey = !canSendPniHelloWorld
+            mustHavePni = false
+            mustHavePniIdentityKey = true
         default:
-            mustHavePniAndPniIdentityKey = false
+            mustHavePni = false
+            mustHavePniIdentityKey = false
         }
 
-        guard mustHavePniAndPniIdentityKey else {
+        guard mustHavePni || mustHavePniIdentityKey else {
             return
         }
 
@@ -301,7 +298,7 @@ public class SSKEnvironment: NSObject {
             return (hasPni, hasPniIdentityKey)
         }
 
-        if !hasPni || !hasPniIdentityKey {
+        if (!hasPni && mustHavePni) || (!hasPniIdentityKey && mustHavePniIdentityKey) {
             Logger.warn("Deregistering because PNI state is missing (hasPni: \(hasPni); hasPniIdentityKey: \(hasPniIdentityKey))")
             databaseStorage.write { tx in
                 dependenciesBridge.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)

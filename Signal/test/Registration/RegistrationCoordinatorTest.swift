@@ -129,7 +129,6 @@ public class RegistrationCoordinatorTest {
             messageProcessor: mockMessageProcessor,
             ows2FAManager: ows2FAManagerMock,
             phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManagerMock,
-            pniHelloWorldManager: PniHelloWorldManagerMock(),
             preKeyManager: preKeyManagerMock,
             profileManager: profileManagerMock,
             pushRegistrationManager: pushRegistrationManagerMock,

@@ -1250,11 +1250,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         func finalizeRegistration(tx: DBWriteTransaction) {
-            /// Disable PNI Hello World operations – these aren't necessary
-            /// since we are the only device and know that our
-            /// just-generated our PNI identity key is correct.
-            deps.pniHelloWorldManager.markHelloWorldAsUnnecessary(tx: tx)
-
             persistLocalIdentifiers(tx: tx)
         }
 

@@ -138,7 +138,6 @@ public class DependenciesBridge {
     public let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
     public let pinnedThreadManager: PinnedThreadManager
     public let pinnedThreadStore: PinnedThreadStore
-    public let pniHelloWorldManager: PniHelloWorldManager
     public let preKeyManager: PreKeyManager
     public let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
     public let quotedReplyManager: QuotedReplyManager
@@ -269,7 +268,6 @@ public class DependenciesBridge {
         phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher,
         pinnedThreadManager: PinnedThreadManager,
         pinnedThreadStore: PinnedThreadStore,
-        pniHelloWorldManager: PniHelloWorldManager,
         preKeyManager: PreKeyManager,
         privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
         quotedReplyManager: QuotedReplyManager,
@@ -399,7 +397,6 @@ public class DependenciesBridge {
         self.phoneNumberVisibilityFetcher = phoneNumberVisibilityFetcher
         self.pinnedThreadManager = pinnedThreadManager
         self.pinnedThreadStore = pinnedThreadStore
-        self.pniHelloWorldManager = pniHelloWorldManager
         self.preKeyManager = preKeyManager
         self.privateStoryThreadDeletionManager = privateStoryThreadDeletionManager
         self.quotedReplyManager = quotedReplyManager
