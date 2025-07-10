@@ -598,14 +598,31 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 backupPurpose: .remoteBackup,
                 progress: nil
             )
+        }.then {
             self.inMemoryState.hasRestoredFromLocalMessageBackup = true
             Logger.info("Finished restore")
+            return Guarantee.value(())
         }.recover(on: schedulers.main) { error in
-            let (guarantee, future) = Guarantee<Void>.pending()
-            self.deps.backupArchiveErrorPresenter.presentOverTopmostViewController {
-                future.resolve()
+            let errorType = self.deps.registrationBackupErrorPresenter.mapToRegistrationError(error: error)
+            return Guarantee.wrapAsync {
+                await self.deps.registrationBackupErrorPresenter.presentError(
+                    error: errorType,
+                    isQuickRestore: self.persistedState.restoreMode == .quickRestore
+                )
             }
-            return guarantee
+            .then { result -> Guarantee<Void> in
+                switch result {
+                case .restartQuickRestore, .none:
+                    owsFailDebug("Invalid option returned from handlinge of registration error.")
+                    fallthrough
+                case .incorrectBackupKey, .skipRestore:
+                    // By this point, it's really too late to do anything but skip the backup and continue
+                    return Guarantee.value(())
+                case .tryAgain:
+                    // retry the backup restore
+                    return self.restoreFromMessageBackup(type: type, identity: identity)
+                }
+            }
         }
     }
 
@@ -1339,17 +1356,39 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 localIdentifiers: accountIdentity.localIdentifiers,
                 auth: accountIdentity.chatServiceAuth
             )
-        }.recover { error in
-            Logger.error("Can't fetch backup info: \(error.localizedDescription)")
-            return .value(nil)
-        }.map { cdnInfo -> RegistrationStep in
-            return .confirmRestoreFromBackup(
+        }
+        .then { cdnInfo -> Guarantee<RegistrationStep> in
+            return Guarantee.value(.confirmRestoreFromBackup(
                 RegistrationRestoreFromBackupConfirmationState(
                     mode: .manual,
                     tier: .free,
                     lastBackupDate: cdnInfo?.lastModified,
                     lastBackupSizeBytes: cdnInfo?.contentLength
-                ))
+                )))
+        }
+        .recover { error -> Guarantee<RegistrationStep> in
+            let errorType = self.deps.registrationBackupErrorPresenter.mapToRegistrationError(error: error)
+            Logger.error("Can't fetch backup info: \(error.localizedDescription)")
+            return Guarantee.wrapAsync {
+                await self.deps.registrationBackupErrorPresenter.presentError(
+                    error: errorType,
+                    isQuickRestore: self.persistedState.restoreMode == .quickRestore
+                )
+            }.then { step in
+                switch step {
+                case .incorrectBackupKey:
+                    if self.persistedState.restoreMode == .manualRestore {
+                        // If manual restore, there's not much of a recovery path here
+                        // so just skip restoring and continue
+                        return self.updateRestoreMethod(method: .declined)
+                    }
+                    return .value(.enterBackupKey)
+                case .skipRestore:
+                    return self.updateRestoreMethod(method: .declined)
+                case .tryAgain, .restartQuickRestore, .none:
+                    return self.nextStep()
+                }
+            }
         }
     }
 

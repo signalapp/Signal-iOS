@@ -8,7 +8,6 @@ public import SignalServiceKit
 
 public struct RegistrationCoordinatorDependencies {
     public let appExpiry: AppExpiry
-    public let backupArchiveErrorPresenter: BackupArchiveErrorPresenter
     public let backupArchiveManager: BackupArchiveManager
     public let backupKeyMaterial: BackupKeyMaterial
     public let changeNumberPniManager: ChangePhoneNumberPniManager
@@ -31,6 +30,7 @@ public struct RegistrationCoordinatorDependencies {
     public let pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager
     let quickRestoreManager: RegistrationCoordinatorImpl.Shims.QuickRestoreManager
     public let receiptManager: RegistrationCoordinatorImpl.Shims.ReceiptManager
+    public let registrationBackupErrorPresenter: RegistrationCoordinatorBackupErrorPresenter
     public let registrationStateChangeManager: RegistrationStateChangeManager
     public let schedulers: Schedulers
     public let sessionManager: RegistrationSessionManager
@@ -48,7 +48,6 @@ public struct RegistrationCoordinatorDependencies {
     public static func from(_ object: NSObject) -> RegistrationCoordinatorDependencies {
         return RegistrationCoordinatorDependencies(
             appExpiry: DependenciesBridge.shared.appExpiry,
-            backupArchiveErrorPresenter: DependenciesBridge.shared.backupArchiveErrorPresenter,
             backupArchiveManager: DependenciesBridge.shared.backupArchiveManager,
             backupKeyMaterial: DependenciesBridge.shared.backupKeyMaterial,
             changeNumberPniManager: DependenciesBridge.shared.changePhoneNumberPniManager,
@@ -73,6 +72,7 @@ public struct RegistrationCoordinatorDependencies {
             pushRegistrationManager: RegistrationCoordinatorImpl.Wrappers.PushRegistrationManager(AppEnvironment.shared.pushRegistrationManagerRef),
             quickRestoreManager: RegistrationCoordinatorImpl.Wrappers.QuickRestoreManager(AppEnvironment.shared.quickRestoreManager),
             receiptManager: RegistrationCoordinatorImpl.Wrappers.ReceiptManager(SSKEnvironment.shared.receiptManagerRef),
+            registrationBackupErrorPresenter: RegistrationCoordinatorBackupErrorPresenterImpl(),
             registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
             schedulers: DependenciesBridge.shared.schedulers,
             sessionManager: DependenciesBridge.shared.registrationSessionManager,

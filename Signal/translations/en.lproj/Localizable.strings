@@ -6586,6 +6586,63 @@
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_ERROR" = "You have tried too often. Please wait a minute before trying again.";
 
+/* Body for a sheet warning users about a missing backup. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "The backup key you entered is correct, but there is no backup associated with it. If you still have your old phone, make sure backups are enabled and that a backup has been completed and try again.";
+
+/* Title for a sheet warning users about a missing backup. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Backup Not Found";
+
+/* Check for update action label for backup restore error recovery. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_CHECK_UPDATE_ACTION" = "Check For Update";
+
+/* Body for a sheet informing users about contacting support due to an error during backup restore. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_BODY" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+
+/* Title for a sheet informing users about contacting support due to an error during backup restore. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_TITLE" = "Submit Debug Log?";
+
+/* Label for action to contact support with logs. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITH_LOGS_ACTION" = "Submit With Debug Log";
+
+/* Label for action to contact support without logs. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITHOUT_LOGS_ACTION" = "Submit Without Debug Log";
+
+/* Body for a sheet warning users about a generic backup manual restore failure. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_BODY" = "An error occurred and your account couldn’t be transferred.";
+
+/* Body for a sheet warning users about a generic backup restore failure. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "An error occurred and your account couldn’t be transferred. Try again by scanning the QR code and choosing your transfer method.";
+
+/* Title for a sheet warning users about a generic backup restore failure. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_TITLE" = "Couldn't Finish Transfer";
+
+/* Title for a sheet warning users about a generic backup manual restore failure. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Couldn't Finish Transfer";
+
+/* Body for a sheet warning users about an incorrect backup key. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-digit backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
+
+/* Title for a sheet warning users about an incorrect backup key. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Backup Key";
+
+/* Body for a sheet warning users about a network error during backup restore. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Your backup can’t be restored right now. Check your internet connection and try again.";
+
+/* Title for a sheet warning users about a network error during backup restore. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "Can't Restore Backup";
+
+/* Skip restore action label for backup restore error recovery. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "Skip Restore";
+
+/* Try again action label for backup restore error recovery. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Try Again";
+
+/* Body for a sheet warning users about an incompatible backup version. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "To restore your backup, make sure you’re on the latest version of Signal and try again. If this problem persists, contact support.";
+
+/* Title for a sheet warning users about an incompatible backup version. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_TITLE" = "Update required";
+
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Failed to re-register for push notifications.";
 

@@ -1731,6 +1731,7 @@
 		C14EC1A92BAA4B5F00A4D064 /* StreamTransformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */; };
 		C14EC1AB2BAB57B900A4D064 /* DecryptingStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */; };
 		C150D6452D70AD9400DA119B /* LinkingProvisioningMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C150D6442D70AD9400DA119B /* LinkingProvisioningMessage.swift */; };
+		C154CB942E0C6607009F878C /* RegistrationCoordinatorBackupErrorPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C154CB932E0C6607009F878C /* RegistrationCoordinatorBackupErrorPresenter.swift */; };
 		C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15837EE29A592BA00176927 /* UsernameValidationManager.swift */; };
 		C15C31152D9B3F7F0071E54C /* RegistrationChoiceButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15C31142D9B3F7F0071E54C /* RegistrationChoiceButton.swift */; };
 		C1661A1A2C3D939300AB887F /* ArchivedPaymentHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1661A192C3D939300AB887F /* ArchivedPaymentHistoryItem.swift */; };
@@ -5677,6 +5678,7 @@
 		C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTransformTests.swift; sourceTree = "<group>"; };
 		C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptingStreamTransform.swift; sourceTree = "<group>"; };
 		C150D6442D70AD9400DA119B /* LinkingProvisioningMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkingProvisioningMessage.swift; sourceTree = "<group>"; };
+		C154CB932E0C6607009F878C /* RegistrationCoordinatorBackupErrorPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorBackupErrorPresenter.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
 		C15C31142D9B3F7F0071E54C /* RegistrationChoiceButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationChoiceButton.swift; sourceTree = "<group>"; };
 		C15EE0902D5D53420070838C /* Registration.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = Registration.proto; path = SignalServiceKit/protobuf/Registration.proto; sourceTree = SOURCE_ROOT; };
@@ -9306,6 +9308,7 @@
 				4C5250D121E7BD7D00CE3D95 /* PhoneNumberValidator.swift */,
 				6600F39529919ECC00B1EDB7 /* RegistrationCoodinatorShims.swift */,
 				66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */,
+				C154CB932E0C6607009F878C /* RegistrationCoordinatorBackupErrorPresenter.swift */,
 				66F0F1DE29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift */,
 				66A93A7F29940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift */,
 				6600F38D29918A6100B1EDB7 /* RegistrationCoordinatorImpl.swift */,
@@ -17353,6 +17356,7 @@
 				6659CCB129CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift in Sources */,
 				6600F39629919ECC00B1EDB7 /* RegistrationCoodinatorShims.swift in Sources */,
 				66E3C8F62994634E00BB38ED /* RegistrationCoordinator.swift in Sources */,
+				C154CB942E0C6607009F878C /* RegistrationCoordinatorBackupErrorPresenter.swift in Sources */,
 				66F0F1DF29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift in Sources */,
 				66A93A8029940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift in Sources */,
 				6600F38E29918A6100B1EDB7 /* RegistrationCoordinatorImpl.swift in Sources */,

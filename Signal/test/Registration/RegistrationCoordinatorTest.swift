@@ -111,7 +111,6 @@ public class RegistrationCoordinatorTest {
 
         let dependencies = RegistrationCoordinatorDependencies(
             appExpiry: appExpiry,
-            backupArchiveErrorPresenter: NoOpBackupArchiveErrorPresenter(),
             backupArchiveManager: BackupArchiveManagerMock(),
             backupKeyMaterial: BackupKeyMaterialMock(),
             changeNumberPniManager: changeNumberPniManager,
@@ -134,6 +133,7 @@ public class RegistrationCoordinatorTest {
             pushRegistrationManager: pushRegistrationManagerMock,
             quickRestoreManager: RegistrationCoordinatorImpl.TestMocks.QuickRestoreManager(),
             receiptManager: receiptManagerMock,
+            registrationBackupErrorPresenter: RegistrationCoordinatorBackupErrorPresenterMock(),
             registrationStateChangeManager: registrationStateChangeManagerMock,
             schedulers: DispatchQueueSchedulers(),
             sessionManager: sessionManager,
