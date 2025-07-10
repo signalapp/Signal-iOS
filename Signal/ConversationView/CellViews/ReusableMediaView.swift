@@ -34,13 +34,8 @@ public protocol MediaViewAdapter {
     var shouldBeRenderedByYY: Bool { get }
 
     func applyMedia(_ media: AnyObject)
+    func loadMedia() async throws -> AnyObject
     func unloadMedia()
-}
-
-// MARK: -
-
-public protocol MediaViewAdapterSwift: MediaViewAdapter {
-    func loadMedia() -> Promise<AnyObject>
 }
 
 // MARK: -
@@ -52,9 +47,9 @@ public enum ReusableMediaError: Error {
 
 // MARK: -
 
-public class ReusableMediaView: NSObject {
+public class ReusableMediaView {
 
-    private let mediaViewAdapter: MediaViewAdapterSwift
+    private let mediaViewAdapter: MediaViewAdapter
     private let mediaCache: CVMediaCache
 
     public var mediaView: UIView {
@@ -91,7 +86,7 @@ public class ReusableMediaView: NSObject {
 
     public init(mediaViewAdapter: MediaViewAdapter,
                 mediaCache: CVMediaCache) {
-        self.mediaViewAdapter = mediaViewAdapter as! MediaViewAdapterSwift
+        self.mediaViewAdapter = mediaViewAdapter
         self.mediaCache = mediaCache
     }
 
@@ -124,8 +119,7 @@ public class ReusableMediaView: NSObject {
         mediaViewAdapter.unloadMedia()
     }
 
-    // TODO: It would be preferable to figure out some way to use ReverseDispatchQueue.
-    private static let serialQueue = DispatchQueue(label: "org.signal.reusable-media-view")
+    private static let serialQueue = SerialTaskQueue()
 
     private func tryToLoadMedia() {
         AssertIsOnMainThread()
@@ -179,31 +173,39 @@ public class ReusableMediaView: NSObject {
 
         let loadState = self._loadState
 
-        firstly(on: Self.serialQueue) { () -> Promise<AnyObject> in
-            guard loadState.get() == .loading else {
-                throw ReusableMediaError.redundantLoad
+        Self.serialQueue.enqueue {
+            do {
+                guard loadState.get() == .loading else {
+                    throw ReusableMediaError.redundantLoad
+                }
+                let media = try await mediaViewAdapter.loadMedia()
+                mediaCache.setMedia(
+                    media,
+                    forKey: cacheKey,
+                    isAnimated: mediaViewAdapter.shouldBeRenderedByYY
+                )
+                await MainActor.run {
+                    loadCompletion(media)
+                }
+            } catch {
+                switch error {
+                case ReusableMediaError.redundantLoad,
+                     ReusableMediaError.invalidMedia:
+                    Logger.warn("Error: \(error)")
+                default:
+                    owsFailDebug("Error: \(error)")
+                }
+                await MainActor.run {
+                    loadCompletion(nil)
+                }
             }
-            return mediaViewAdapter.loadMedia()
-        }.done(on: DispatchQueue.main) { (media: AnyObject) in
-            mediaCache.setMedia(media, forKey: cacheKey, isAnimated: mediaViewAdapter.shouldBeRenderedByYY)
-
-            loadCompletion(media)
-        }.catch(on: DispatchQueue.main) { (error: Error) in
-            switch error {
-            case ReusableMediaError.redundantLoad,
-                 ReusableMediaError.invalidMedia:
-                Logger.warn("Error: \(error)")
-            default:
-                owsFailDebug("Error: \(error)")
-            }
-            loadCompletion(nil)
         }
     }
 }
 
 // MARK: -
 
-class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
+class MediaViewAdapterBlurHash: MediaViewAdapter {
 
     public let shouldBeRenderedByYY = false
     let blurHash: String
@@ -227,11 +229,11 @@ class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
         .blurHash(blurHash)
     }
 
-    func loadMedia() -> Promise<AnyObject> {
+    func loadMedia() async throws -> AnyObject {
         guard let image = BlurHash.image(for: blurHash) else {
-            return Promise(error: OWSAssertionError("Missing image for blurHash."))
+            throw OWSAssertionError("Missing image for blurHash.")
         }
-        return Promise.value(image)
+        return image
     }
 
     func applyMedia(_ media: AnyObject) {
@@ -253,7 +255,7 @@ class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
 
 // MARK: - MediaViewAdapterLoopingVideo
 
-class MediaViewAdapterLoopingVideo: MediaViewAdapterSwift {
+class MediaViewAdapterLoopingVideo: MediaViewAdapter {
     let attachmentStream: AttachmentStream
     let videoView = LoopingVideoView()
 
@@ -266,11 +268,11 @@ class MediaViewAdapterLoopingVideo: MediaViewAdapterSwift {
     var isLoaded: Bool { videoView.video != nil }
     var cacheKey: CVMediaCache.CacheKey { .attachment(attachmentStream.id) }
 
-    func loadMedia() -> Promise<AnyObject> {
+    func loadMedia() async throws -> AnyObject {
         guard let video = LoopingVideo(attachmentStream) else {
-            return Promise(error: ReusableMediaError.invalidMedia)
+            throw ReusableMediaError.invalidMedia
         }
-        return Promise.value(video)
+        return video
     }
 
     func applyMedia(_ media: AnyObject) {
@@ -292,7 +294,7 @@ class MediaViewAdapterLoopingVideo: MediaViewAdapterSwift {
 
 // MARK: -
 
-class MediaViewAdapterAnimated: MediaViewAdapterSwift {
+class MediaViewAdapterAnimated: MediaViewAdapter {
 
     public let shouldBeRenderedByYY = true
     let attachmentStream: AttachmentStream
@@ -314,14 +316,14 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
         .attachment(attachmentStream.id)
     }
 
-    func loadMedia() -> Promise<AnyObject> {
+    func loadMedia() async throws -> AnyObject {
         guard attachmentStream.contentType.isAnimatedImage else {
-            return Promise(error: ReusableMediaError.invalidMedia)
+            throw ReusableMediaError.invalidMedia
         }
         guard let animatedImage = try? attachmentStream.decryptedYYImage() else {
-            return Promise(error: OWSAssertionError("Invalid animated image."))
+            throw OWSAssertionError("Invalid animated image.")
         }
-        return Promise.value(animatedImage)
+        return animatedImage
     }
 
     func applyMedia(_ media: AnyObject) {
@@ -343,7 +345,7 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
 
 // MARK: -
 
-class MediaViewAdapterStill: MediaViewAdapterSwift {
+class MediaViewAdapterStill: MediaViewAdapter {
 
     public let shouldBeRenderedByYY = false
     let attachmentStream: AttachmentStream
@@ -370,17 +372,15 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
         .attachmentThumbnail(attachmentStream.id, quality: thumbnailQuality)
     }
 
-    func loadMedia() -> Promise<AnyObject> {
+    func loadMedia() async throws -> AnyObject {
         guard attachmentStream.contentType.isImage else {
-            return Promise(error: ReusableMediaError.invalidMedia)
+            throw ReusableMediaError.invalidMedia
         }
-        return Promise.wrapAsync {
-            let image = await self.attachmentStream.thumbnailImage(quality: self.thumbnailQuality)
-            guard let image else {
-                throw OWSAssertionError("Could not load thumbnail")
-            }
-            return image
+        let image = await self.attachmentStream.thumbnailImage(quality: self.thumbnailQuality)
+        guard let image else {
+            throw OWSAssertionError("Could not load thumbnail")
         }
+        return image
     }
 
     func applyMedia(_ media: AnyObject) {
@@ -400,7 +400,7 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
     }
 }
 
-class MediaViewAdapterBackupThumbnail: MediaViewAdapterSwift {
+class MediaViewAdapterBackupThumbnail: MediaViewAdapter {
 
     public let shouldBeRenderedByYY = false
     let attachmentBackupThumbnail: AttachmentBackupThumbnail
@@ -422,13 +422,11 @@ class MediaViewAdapterBackupThumbnail: MediaViewAdapterSwift {
         .backupThumbnail(attachmentBackupThumbnail.id)
     }
 
-    func loadMedia() -> Promise<AnyObject> {
-        return Promise.wrapAsync {
-            guard let image = self.attachmentBackupThumbnail.image else {
-                throw OWSAssertionError("Could not load thumbnail")
-            }
-            return image
+    func loadMedia() async throws -> AnyObject {
+        guard let image = self.attachmentBackupThumbnail.image else {
+            throw OWSAssertionError("Could not load thumbnail")
         }
+        return image
     }
 
     func applyMedia(_ media: AnyObject) {
@@ -450,7 +448,7 @@ class MediaViewAdapterBackupThumbnail: MediaViewAdapterSwift {
 
 // MARK: -
 
-class MediaViewAdapterVideo: MediaViewAdapterSwift {
+class MediaViewAdapterVideo: MediaViewAdapter {
 
     public let shouldBeRenderedByYY = false
     let attachmentStream: AttachmentStream
@@ -477,17 +475,15 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
         .attachmentThumbnail(attachmentStream.id, quality: thumbnailQuality)
     }
 
-    func loadMedia() -> Promise<AnyObject> {
+    func loadMedia() async throws -> AnyObject {
         guard attachmentStream.contentType.isVideo else {
-            return Promise(error: ReusableMediaError.invalidMedia)
+            throw ReusableMediaError.invalidMedia
         }
-        return Promise.wrapAsync {
-            let image = await self.attachmentStream.thumbnailImage(quality: self.thumbnailQuality)
-            guard let image else {
-                throw OWSAssertionError("Could not load thumbnail")
-            }
-            return image
+        let image = await self.attachmentStream.thumbnailImage(quality: self.thumbnailQuality)
+        guard let image else {
+            throw OWSAssertionError("Could not load thumbnail")
         }
+        return image
     }
 
     func applyMedia(_ media: AnyObject) {
@@ -509,7 +505,7 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
 
 // MARK: -
 
-public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
+public class MediaViewAdapterSticker: MediaViewAdapter {
 
     public let shouldBeRenderedByYY: Bool
     let attachmentStream: AttachmentStream
@@ -540,23 +536,23 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
         .attachment(attachmentStream.id)
     }
 
-    public func loadMedia() -> Promise<AnyObject> {
+    public func loadMedia() async throws -> AnyObject {
         switch attachmentStream.contentType {
         case .image, .animatedImage:
             break
         case .video, .audio, .file, .invalid:
-            return Promise(error: ReusableMediaError.invalidMedia)
+            throw ReusableMediaError.invalidMedia
         }
         if shouldBeRenderedByYY {
             guard let animatedImage = try? attachmentStream.decryptedYYImage() else {
-                return Promise(error: OWSAssertionError("Invalid animated image."))
+                throw OWSAssertionError("Invalid animated image.")
             }
-            return Promise.value(animatedImage)
+            return animatedImage
         } else {
             guard let image = try? attachmentStream.decryptedImage() else {
-                return Promise(error: OWSAssertionError("Invalid image."))
+                throw OWSAssertionError("Invalid image.")
             }
-            return Promise.value(image)
+            return image
         }
     }
 
