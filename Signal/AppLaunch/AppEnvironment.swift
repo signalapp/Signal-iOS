@@ -134,7 +134,6 @@ public class AppEnvironment: NSObject {
             let identityKeyMismatchManager = DependenciesBridge.shared.identityKeyMismatchManager
             let inactiveLinkedDeviceFinder = DependenciesBridge.shared.inactiveLinkedDeviceFinder
             let interactionStore = DependenciesBridge.shared.interactionStore
-            let learnMyOwnPniManager = DependenciesBridge.shared.learnMyOwnPniManager
             let masterKeySyncManager = DependenciesBridge.shared.masterKeySyncManager
             let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
             let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
@@ -164,14 +163,6 @@ public class AppEnvironment: NSObject {
 
             // Things that should run on only the primary *or* linked devices.
             if isPrimaryDevice {
-                Task {
-                    do {
-                        try await learnMyOwnPniManager.learnMyOwnPniIfNecessary()
-                    } catch {
-                        Logger.warn("Couldn't initialize PNI: \(error)")
-                    }
-                }
-
                 Task {
                     do {
                         try await avatarDefaultColorStorageServiceMigrator.performMigrationIfNecessary()

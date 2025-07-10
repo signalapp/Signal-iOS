@@ -119,7 +119,6 @@ public class DependenciesBridge {
     public let interactionDeleteManager: InteractionDeleteManager
     public let interactionStore: InteractionStore
     public let lastVisibleInteractionStore: LastVisibleInteractionStore
-    public let learnMyOwnPniManager: LearnMyOwnPniManager
     public let linkAndSyncManager: LinkAndSyncManager
     public let linkPreviewManager: LinkPreviewManager
     public let linkPreviewSettingStore: LinkPreviewSettingStore
@@ -249,7 +248,6 @@ public class DependenciesBridge {
         interactionDeleteManager: InteractionDeleteManager,
         interactionStore: InteractionStore,
         lastVisibleInteractionStore: LastVisibleInteractionStore,
-        learnMyOwnPniManager: LearnMyOwnPniManager,
         linkAndSyncManager: LinkAndSyncManager,
         linkPreviewManager: LinkPreviewManager,
         linkPreviewSettingStore: LinkPreviewSettingStore,
@@ -378,7 +376,6 @@ public class DependenciesBridge {
         self.interactionDeleteManager = interactionDeleteManager
         self.interactionStore = interactionStore
         self.lastVisibleInteractionStore = lastVisibleInteractionStore
-        self.learnMyOwnPniManager = learnMyOwnPniManager
         self.linkAndSyncManager = linkAndSyncManager
         self.linkPreviewManager = linkPreviewManager
         self.linkPreviewSettingStore = linkPreviewSettingStore

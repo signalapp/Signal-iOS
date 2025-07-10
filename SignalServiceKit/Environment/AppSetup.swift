@@ -979,13 +979,6 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
-            db: db,
-            registrationStateChangeManager: registrationStateChangeManager,
-            tsAccountManager: tsAccountManager,
-            whoAmIManager: whoAmIManager
-        )
-
         let registrationSessionManager = RegistrationSessionManagerImpl(
             dateProvider: dateProvider,
             db: db,
@@ -1477,7 +1470,6 @@ public class AppSetup {
             interactionDeleteManager: interactionDeleteManager,
             interactionStore: interactionStore,
             lastVisibleInteractionStore: lastVisibleInteractionStore,
-            learnMyOwnPniManager: learnMyOwnPniManager,
             linkAndSyncManager: linkAndSyncManager,
             linkPreviewManager: linkPreviewManager,
             linkPreviewSettingStore: linkPreviewSettingStore,

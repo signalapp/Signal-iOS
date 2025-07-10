@@ -281,7 +281,7 @@ public class SSKEnvironment: NSObject {
             mustHavePni = true
             mustHavePniIdentityKey = true
         case .registered:
-            mustHavePni = false
+            mustHavePni = true
             mustHavePniIdentityKey = true
         default:
             mustHavePni = false
