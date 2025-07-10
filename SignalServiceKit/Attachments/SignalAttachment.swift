@@ -617,6 +617,10 @@ public class SignalAttachment: NSObject {
     /// NOTE: The attachment returned by this method may not be valid.
     ///       Check the attachment's error property.
     public class func attachmentFromPasteboard() async -> SignalAttachment? {
+        return await attachmentFromPasteboard(retrySinglePixelImages: true)
+    }
+
+    private class func attachmentFromPasteboard(retrySinglePixelImages: Bool) async -> SignalAttachment? {
         guard UIPasteboard.general.numberOfItems >= 1 else {
             return nil
         }
@@ -648,6 +652,14 @@ public class SignalAttachment: NSObject {
                     return nil
                 }
                 let dataSource = DataSourceValue(data, utiType: dataUTI)
+
+                // There is a known bug with the iOS pasteboard where it will randomly give a
+                // single green pixel, and nothing else. Work around this by refetching the
+                // pasteboard after a brief delay (once, then give up).
+                if dataSource?.imageMetadata.pixelSize == CGSize(square: 1), retrySinglePixelImages {
+                    try? await Task.sleep(nanoseconds: NSEC_PER_MSEC * 50)
+                    return await attachmentFromPasteboard(retrySinglePixelImages: false)
+                }
 
                 // If the data source is sticker like AND we're pasting the attachment,
                 // we want to make it borderless.
