@@ -89,19 +89,21 @@ final class ComposeSupportEmailOperation: NSObject {
     private var model: SupportEmailModel
     private var isCancelled: Bool = false
 
-    class func sendEmailWithDefaultErrorHandling(supportFilter: String, logUrl: URL? = nil) {
-        sendEmail(supportFilter: supportFilter, logUrl: logUrl).catch { error in
+    class func sendEmailWithDefaultErrorHandling(supportFilter: String, logUrl: URL? = nil) async {
+        do {
+            try await sendEmail(supportFilter: supportFilter, logUrl: logUrl)
+        } catch {
             OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
         }
     }
 
-    class func sendEmail(supportFilter: String, logUrl: URL? = nil) -> Promise<Void> {
+    class func sendEmail(supportFilter: String, logUrl: URL? = nil) async throws {
         var model = SupportEmailModel()
         model.supportFilter = supportFilter
         if let logUrl {
             model.debugLogPolicy = .link(logUrl)
         }
-        return Promise.wrapAsync { try await sendEmail(model: model) }
+        try await sendEmail(model: model)
     }
 
     class func sendEmail(model: SupportEmailModel) async throws(EmailError) {

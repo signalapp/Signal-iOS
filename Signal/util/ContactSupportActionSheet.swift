@@ -79,9 +79,12 @@ enum ContactSupportActionSheet {
         let submitWithoutLogTitle = OWSLocalizedString("CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG", comment: "Button text")
         let submitWithoutLogAction = ActionSheetAction(title: submitWithoutLogTitle, style: .default) { [weak fromViewController] _ in
             guard let fromViewController = fromViewController else { return }
-
-            ComposeSupportEmailOperation.sendEmail(supportFilter: emailFilter.asString).catch { error in
-                showError(error, emailFilter: emailFilter, logDumper: logDumper, fromViewController: fromViewController)
+            Task {
+                do {
+                    try await ComposeSupportEmailOperation.sendEmail(supportFilter: emailFilter.asString)
+                } catch {
+                    showError(error, emailFilter: emailFilter, logDumper: logDumper, fromViewController: fromViewController)
+                }
             }
         }
 

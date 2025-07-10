@@ -88,10 +88,12 @@ enum DebugLogs {
                     accessibilityIdentifier: "DebugLogs.send_email",
                     style: .default,
                     handler: { _ in
-                        ComposeSupportEmailOperation.sendEmailWithDefaultErrorHandling(
-                            supportFilter: supportFilter,
-                            logUrl: url
-                        )
+                        Task {
+                            await ComposeSupportEmailOperation.sendEmailWithDefaultErrorHandling(
+                                supportFilter: supportFilter,
+                                logUrl: url
+                            )
+                        }
                         submitLogsCompletion()
                     }
                 ))
