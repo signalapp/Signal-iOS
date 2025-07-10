@@ -415,6 +415,10 @@ public class OWSTabBar: UITabBar {
             return
         }
 
+        if #available(iOS 26, *) {
+            return
+        }
+
         if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true
             self.backgroundImage = UIImage.image(color: tabBarBackgroundColor)
