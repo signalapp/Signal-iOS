@@ -602,6 +602,7 @@ public extension OWSTableItem {
     /// The value to copy, if different than ``value``.
     static func copyableItem(
         label: String,
+        subtitle: String? = nil,
         value displayValue: String?,
         pasteboardValue: String? = nil,
         accessibilityIdentifier: String? = nil
@@ -611,6 +612,7 @@ public extension OWSTableItem {
 
         return .item(
             name: label,
+            subtitle: subtitle,
             accessoryText: displayValue,
             accessibilityIdentifier: accessibilityIdentifier,
             actionBlock: {

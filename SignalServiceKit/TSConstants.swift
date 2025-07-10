@@ -151,7 +151,9 @@ public struct MrEnclave: Equatable {
 
 // MARK: - Production
 
-private class TSConstantsProduction: TSConstantsProtocol {
+public class TSConstantsProduction: TSConstantsProtocol {
+
+    public init() {}
 
     public let mainServiceIdentifiedURL = "https://chat.signal.org"
     public let mainServiceUnidentifiedURL = "https://ud-chat.signal.org"
@@ -202,7 +204,9 @@ private class TSConstantsProduction: TSConstantsProtocol {
 
 // MARK: - Staging
 
-private class TSConstantsStaging: TSConstantsProtocol {
+public class TSConstantsStaging: TSConstantsProtocol {
+
+    public init() {}
 
     public let mainServiceIdentifiedURL = "https://chat.staging.signal.org"
     public let mainServiceUnidentifiedURL = "https://ud-chat.staging.signal.org"

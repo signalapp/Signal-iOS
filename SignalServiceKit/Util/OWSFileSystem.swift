@@ -213,6 +213,25 @@ public enum OWSFileSystem {
     public static func fileSize(of fileUrl: URL) -> NSNumber? {
         Self.fileSize(ofPath: fileUrl.path)
     }
+
+    public static func folderSizeRecursive(ofPath dirPath: String) -> NSNumber? {
+        do {
+            let filePaths = try Self.recursiveFilesInDirectory(dirPath)
+            var sum: UInt64 = 0
+            for filePath in filePaths {
+                guard let fileSize = fileSize(ofPath: filePath) else { return nil }
+                sum += fileSize.uint64Value
+            }
+            return NSNumber(value: sum)
+        } catch {
+            Logger.error("Couldn't fetch file sizes \(error)")
+            return nil
+        }
+    }
+
+    public static func folderSizeRecursive(of dirUrl: URL) -> NSNumber? {
+        return self.folderSizeRecursive(ofPath: dirUrl.path)
+    }
 }
 
 extension OWSFileSystem {

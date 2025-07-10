@@ -695,7 +695,7 @@ public class AvatarBuilder {
     // This cache never needs to be evacuated. The cache keys will change
     // whenever state in the content changes that would affect the image.
     private let contentToImageCache = LRUCache<String, UIImage>(maxSize: 128, nseMaxSize: 0)
-    private static let avatarCacheDirectory = URL(
+    public static let avatarCacheDirectory = URL(
         fileURLWithPath: "Library/Caches/AvatarBuilder",
         isDirectory: true,
         relativeTo: URL(
