@@ -82,7 +82,7 @@ final class RecipientPickerViewControllerTests: XCTestCase {
                 }),
                 phoneNumberUtil: PhoneNumberUtil()
             )
-            let lookupResult = try await finder.lookUp(phoneNumber: testCase.searchResult).awaitable()
+            let lookupResult = try await finder.lookUp(phoneNumber: testCase.searchResult)
             switch lookupResult {
             case .success:
                 XCTAssertTrue(testCase.isFound, context)

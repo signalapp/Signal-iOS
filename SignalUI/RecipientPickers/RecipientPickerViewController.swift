@@ -488,13 +488,12 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         AssertIsOnMainThread()
         Logger.info("Beginning refreshing")
 
-        let refreshPromise: Promise<Void>
-        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
-            refreshPromise = SSKEnvironment.shared.contactManagerImplRef.userRequestedSystemContactsRefresh()
-        } else {
-            refreshPromise = SSKEnvironment.shared.syncManagerRef.sendAllSyncRequestMessages(timeout: 20)
-        }
-        _ = refreshPromise.ensure {
+        Task { @MainActor in
+            if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
+                try? await SSKEnvironment.shared.contactManagerImplRef.userRequestedSystemContactsRefresh().awaitable()
+            } else {
+                try? await SSKEnvironment.shared.syncManagerRef.sendAllSyncRequestMessages(timeout: 20).awaitable()
+            }
             Logger.info("ending refreshing")
             refreshControl.endRefreshing()
         }
@@ -1235,7 +1234,7 @@ struct PhoneNumberFinder {
         case notValid(invalidE164: String)
     }
 
-    func lookUp(phoneNumber searchResult: SearchResult) -> Promise<LookupResult> {
+    func lookUp(phoneNumber searchResult: SearchResult) async throws -> LookupResult {
         let validE164ToLookUp: String
         switch searchResult {
         case .valid(validE164: let validE164):
@@ -1245,17 +1244,15 @@ struct PhoneNumberFinder {
                 let phoneNumber = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: maybeValidE164),
                 let validE164 = validE164(from: phoneNumber)
             else {
-                return .value(.notValid(invalidE164: maybeValidE164))
+                return .notValid(invalidE164: maybeValidE164)
             }
             validE164ToLookUp = validE164
         }
-        return Promise.wrapAsync { [contactDiscoveryManager] in
-            let signalRecipients = try await contactDiscoveryManager.lookUp(phoneNumbers: [validE164ToLookUp], mode: .oneOffUserRequest)
-            if let signalRecipient = signalRecipients.first {
-                return .success(signalRecipient)
-            } else {
-                return .notFound(validE164: validE164ToLookUp)
-            }
+        let signalRecipients = try await contactDiscoveryManager.lookUp(phoneNumbers: [validE164ToLookUp], mode: .oneOffUserRequest)
+        if let signalRecipient = signalRecipients.first {
+            return .success(signalRecipient)
+        } else {
+            return .notFound(validE164: validE164ToLookUp)
         }
     }
 }
@@ -1321,15 +1318,13 @@ extension RecipientPickerViewController {
     ///
     /// - Parameter phoneNumberResult: The search result the user tapped.
     private func findByNumber(_ phoneNumberResult: PhoneNumberFinder.SearchResult, using finder: PhoneNumberFinder) {
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { modal in
-            firstly {
-                finder.lookUp(phoneNumber: phoneNumberResult)
-            }.done(on: DispatchQueue.main) { [weak self] lookupResult in
+        ModalActivityIndicatorViewController.present(fromViewController: self) { modal in
+            do {
+                let lookupResult = try await finder.lookUp(phoneNumber: phoneNumberResult)
                 modal.dismissIfNotCanceled {
-                    guard let self = self else { return }
                     self.handlePhoneNumberLookupResult(lookupResult)
                 }
-            }.catch(on: DispatchQueue.main) { error in
+            } catch {
                 modal.dismissIfNotCanceled {
                     OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
                 }
