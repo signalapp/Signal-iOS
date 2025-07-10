@@ -488,7 +488,7 @@
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "Το ηχητικό μήνυμα δεν είναι διαθέσιμο";
 
 /* Username for backup key autofill */
-"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Backups";
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Αντίγραφα ασφαλείας Signal";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Επιλογή χρώματος";
@@ -515,16 +515,16 @@
 "BACK_BUTTON" = "Πίσω";
 
 /* Action text for Backup Key reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Ενεργοποίηση";
 
 /* Body for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "Never lose a message when you get a new phone or reinstall Signal.";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY" = "Δε θα χάσεις τα μηνύματά σου αν αγοράσεις νέο τηλέφωνο ή επανεγκαταστήσεις το Signal.";
 
 /* Title for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "Turn on encrypted backups";
+"BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_TITLE" = "Ενεργοποίηση κρυπτογραφημένων αντιγράφων ασφαλείας";
 
 /* Snooze text for Backup enablement reminder megaphone */
-"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Not Now";
+"BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Όχι τώρα";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Εφεδρικό κλειδί";
@@ -673,20 +673,35 @@
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
 "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "Πρέπει να έχεις εγγραφεί για να απενεργοποιήσεις τα Αντίγραφα ασφαλείας.";
 
-/* Text describing that a user's backup will be automatically performed daily. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_DAILY" = "Καθημερινά";
+/* Title for a button shown in Backup Settings that lets a user cancel an in-progress download. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_CANCEL_DOWNLOAD" = "Cancel Download";
 
-/* Label for a menu item explaining the frequency of automatic backups. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_LABEL" = "Συχνότητα αντιγράφου ασφαλείας";
+/* Title for a button shown in Backup Settings that lets a user initiate an available download. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_INITIATE_DOWNLOAD" = "Download";
 
-/* Text describing that a user's backup will only be performed manually. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MANUALLY" = "Μη αυτόματα";
+/* Title for a button shown in Backup Settings that lets a user resume a download paused due to needing Wi-Fi. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_RESUME_DOWNLOAD_WITHOUT_WIFI" = "Resume Download";
 
-/* Text describing that a user's backup will be automatically performed monthly. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_MONTHLY" = "Μηνιαία";
+/* Subtitle for a progress bar tracking downloads that are paused because of low battery. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Download paused: device has low battery";
 
-/* Text describing that a user's backup will be automatically performed weekly. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_FREQUENCY_WEEKLY" = "Κάθε εβδομάδα";
+/* Subtitle for a progress bar tracking downloads that are paused because they need more disk space available. Embeds {{ the amount of space needed as a file size, e.g. 100 MB }}. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_DISK_SPACE" = "Not enough space to download your media. To continue free up %1$@ of space.";
+
+/* Subtitle for a progress bar tracking downloads that are paused because they need internet. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Download paused: no internet…";
+
+/* Subtitle for a progress bar tracking downloads that are paused because they need WiFi. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Download paused: waiting for Wi-Fi";
+
+/* Subtitle for a progress bar tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_RUNNING" = "Downloading %1$@ of %2$@ (%3$@)";
+
+/* Subtitle for a view explaining that downloads are available but not running. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED" = "You have %1$@ of media that's not on this device.";
+
+/* Subtitle for a view explaining that downloads are available but not running, and the user's paid subscription is expiring. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "You have %1$@ of media that's not on this device. Without a paid subscription media can't be offloaded.";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Αντίγραφο ασφαλείας με δεδομένα κινητής";
@@ -712,8 +727,38 @@
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Δημιουργία αντίγραφου τώρα";
 
+/* Action in an action sheet allowing users to download their offloaded media later. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_LATER_ACTION" = "Download Later";
+
+/* Message for an action sheet allowing users to download their offloaded media. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. This may take a long time to download, keep Signal open to avoid interruptions to your download.";
+
+/* Action in an action sheet allowing users to download their offloaded media now. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_NOW_ACTION" = "Download Now";
+
+/* Title for an action sheet allowing users to download their offloaded media. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Download Offloaded Media?";
+
+/* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Unused media will be offloaded, but can be downloaded from your backup anytime.";
+
+/* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Storage optimization can only be used with the paid tier of Signal Backups. Upgrade your backup plan to start using this feature.";
+
+/* Title for a toggle allowing users to change the Optimize Local Storage setting. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize On-Device Storage";
+
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Ενεργοποίηση αντιγράφων ασφαλείας εκ νέου";
+
+/* Title for an action in a sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+
+/* Message for a sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_MESSAGE" = "You have backup data that’s not on this device. Your media and attachments will be permanently deleted without a paid subscription.";
+
+/* Title for a sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "Skip Download?";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Η μεταφόρτωση διακόπηκε: η μπαταρία της συσκευής είναι χαμηλή";
@@ -3205,9 +3250,6 @@
 /* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Αδυναμία επιλογής GIF";
 
-/* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Παρακαλώ γράψε τί ψάχνεις.";
-
 /* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "Αναζήτηση GIF";
 
@@ -3215,7 +3257,7 @@
 "GIF_VIEW_SEARCH_ERROR" = "Σφάλμα. Πάτα για επανάληψη.";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "Δεν υπάρχουν αποτελέσματα.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "No Results";
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Γράψε την αναζήτησή σου";
@@ -5357,7 +5399,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Το τελευταίο σου αντίγραφο ασφαλείας έγινε στις %1$@ στις %2$@. Το μέγεθος του αντιγράφου ασφαλείας είναι %3$@";
 
 /* Text for action button to skip the restore. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Skip Restore";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Παράλειψη επαναφοράς";
 
 /* Title for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE" = "Επαναφορά από αντίγραφο ασφαλείας";
@@ -6752,49 +6794,52 @@
 "RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Λεπτομέρειες";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Απελευθέρωσε έως %1$@ χώρου σε αυτήν τη συσκευή για να επαναφέρεις τα πολυμέσα σου.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up %1$@ of space on this device to download your media.";
 
-/* Title shown on chat list banner for restoring media from a backupis finished */
-"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Η επαναφορά ολοκληρώθηκε";
+/* Title shown on chat list banner for restoring media from a backup is finished */
+"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Download Complete";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Η συσκευή έχει χαμηλή μπαταρία";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
-"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "No internet…";
+"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "Χωρίς διαδίκτυο…";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
-"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Επαναφορά σε παύση";
+"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Download Paused";
 
 /* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
 "RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ από %2$@";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device needs WiFi to continue, to resume downloads without WiFi. */
-"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "Resume";
+"RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "Συνέχεια";
 
 /* Title shown on chat list banner for restoring media from a backup */
-"RESTORING_MEDIA_BANNER_TITLE" = "Επαναφορά πολυμέσων";
+"RESTORING_MEDIA_BANNER_TITLE" = "Downloading Media";
 
 /* Title shown on chat list banner for restoring media from a backup when waiting for wifi */
-"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
+"RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Αναμονή για Wi-Fi";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Παράλειψη επαναφοράς";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Skip Download";
 
 /* Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "Για να ολοκληρώσεις την επαναφορά των πολυμέσων σου, η συσκευή σου χρειάζεται %1$@ αποθηκευτικού χώρου.\n\nΓια να ελευθερώσεις χώρο, πήγαινε στις Ρυθμίσεις > Γενικά > Αποθηκευτικός χώρος iPhone. Μπορείς να επιλέξεις να αφαιρέσεις ή να διαγράψεις εφαρμογές ή περιεχόμενο που δεν χρησιμοποιείς.";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "To finish downloading your media your device needs %1$@ of storage space.\n\nTo free up space go to Settings > General > iPhone Storage. You can choose to offload or delete unused apps or content.";
 
 /* Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Απελευθέρωσε %1$@ σε αυτή τη συσκευή";
 
+/* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have backup data that’s not on this device. Your media and attachments will be permanently deleted without a paid subscription.";
+
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "Αν παραλείψεις την επαναφορά, τα υπόλοιπα πολυμέσα και τα συνημμένα στο αντίγραφο ασφαλείας σου μπορούν να ληφθούν αργότερα, όταν θα υπάρχει διαθέσιμος χώρος αποθήκευσης.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "If you skip downloading the remaining media and attachments in your backup can be downloaded at a later time when storage space becomes available.";
 
 /* Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Παράλειψη επαναφοράς";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Skip Download";
 
 /* Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Παράλειψη επαναφοράς;";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Skip Download?";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Επανάληψη";

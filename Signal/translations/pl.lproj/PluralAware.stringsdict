@@ -1363,13 +1363,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d wybrana</string>
+			<string>Zaznaczono %1$d</string>
 			<key>few</key>
-			<string>%1$d wybrane</string>
+			<string>Zaznaczono %1$d</string>
 			<key>many</key>
-			<string>%1$d wybranych</string>
+			<string>Zaznaczono %1$d</string>
 			<key>other</key>
-			<string>%1$d wybrane</string>
+			<string>Zaznaczono %1$d</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_REACTIONS_ACCESSIBILITY_LABEL_%d</key>

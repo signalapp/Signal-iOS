@@ -392,11 +392,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$dعناصر</string>
+			<string>%1$d عناصر</string>
 			<key>one</key>
 			<string>%1$d عنصر</string>
 			<key>two</key>
-			<string>%1$dعنصران</string>
+			<string>%1$d عنصران</string>
 			<key>few</key>
 			<string>%1$d عناصر</string>
 			<key>many</key>
@@ -2259,17 +2259,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>عضو في %1$@، %2$@، و %3$ld مجموعة أُخرى</string>
+			<string>عضو في %1$@، و%2$@، و%3$ld مجموعة أُخرى</string>
 			<key>one</key>
-			<string>عضو في %1$@، %2$@، ومجموعة واحدة أُخرى</string>
+			<string>عضو في %1$@، و%2$@، ومجموعة واحدة أُخرى</string>
 			<key>two</key>
-			<string>عضو في %1$@، %2$@، ومجموعتين %3$ld أُخريين</string>
+			<string>عضو في %1$@، و%2$@، ومجموعتين %3$ld أُخريين</string>
 			<key>few</key>
-			<string>عضو في %1$@، %2$@، و %3$ld مجموعات أُخرى</string>
+			<string>عضو في %1$@، و%2$@، و%3$ld مجموعات أُخرى</string>
 			<key>many</key>
-			<string>عضو في %1$@، %2$@، و %3$ld مجموعة أُخرى</string>
+			<string>عضو في %1$@، و%2$@، و%3$ld مجموعة أُخرى</string>
 			<key>other</key>
-			<string>عضو في %1$@، %2$@، و %3$ld مجموعة أُخرى</string>
+			<string>عضو في %1$@، و%2$@، و%3$ld مجموعة أُخرى</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld</key>
