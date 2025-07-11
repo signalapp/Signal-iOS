@@ -172,7 +172,6 @@ public class AudioSession: NSObject {
                 .playAndRecord,
                 mode: .default,
                 options: [
-                    .defaultToSpeaker,
                     .allowBluetoothHFP,
                     .allowBluetoothA2DP
                 ]
