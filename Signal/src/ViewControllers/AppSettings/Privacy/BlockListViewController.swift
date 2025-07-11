@@ -99,6 +99,7 @@ class BlockListViewController: OWSTableViewController2 {
                         address: address,
                         localUserDisplayMode: .asUser
                     )
+                    config.accessoryMessage = address.phoneNumber //Is there a function to prettify a phone number?
                     if self != nil {
                         SSKEnvironment.shared.databaseStorageRef.read { transaction in
                             cell.configure(configuration: config, transaction: transaction)
