@@ -476,7 +476,7 @@ private enum IsEnabledFlag: String, FlagType {
     case shouldVerifyPniAndPniIdentityKeyExist = "ios.shouldVerifyPniAndPniIdentityKeyExist"
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
     case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
-    case usePqRatchet = "global.usePqRatchet"
+    case usePqRatchet = "ios.usePqRatchet"
 
     var isHotSwappable: Bool {
         switch self {
