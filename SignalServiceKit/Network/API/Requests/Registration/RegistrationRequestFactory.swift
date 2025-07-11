@@ -178,7 +178,7 @@ public enum RegistrationRequestFactory {
         owsAssertDebug(!credentials.isEmpty)
 
         let urlPathComponents = URLPathComponents(
-            ["v2", "backup", "auth", "check"]
+            ["v2", "svr", "auth", "check"]
         )
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded

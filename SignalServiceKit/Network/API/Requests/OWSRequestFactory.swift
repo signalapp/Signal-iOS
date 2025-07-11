@@ -58,7 +58,7 @@ public enum OWSRequestFactory {
     }
 
     static func remoteAttestationAuthRequestForSVR2() -> TSRequest {
-        return TSRequest(url: URL(string: "v2/backup/auth")!, method: "GET", parameters: [:])
+        return TSRequest(url: URL(string: "v2/svr/auth")!, method: "GET", parameters: [:])
     }
 
     static func storageAuthRequest(auth: ChatServiceAuth) -> TSRequest {
