@@ -9,14 +9,14 @@ import LibSignalClient
 class AuthCredentialStore {
     private let callLinkAuthCredentialStore: KeyValueStore
     private let groupAuthCredentialStore: KeyValueStore
-    private let backupAuthCredentialStore: KeyValueStore
-    private let mediaAuthCredentialStore: KeyValueStore
+    private let backupMessagesAuthCredentialStore: KeyValueStore
+    private let backupMediaAuthCredentialStore: KeyValueStore
 
     init() {
         self.callLinkAuthCredentialStore = KeyValueStore(collection: "CallLinkAuthCredential")
         self.groupAuthCredentialStore = KeyValueStore(collection: "GroupsV2Impl.authCredentialStoreStore")
-        self.backupAuthCredentialStore = KeyValueStore(collection: "BackupAuthCredential")
-        self.mediaAuthCredentialStore = KeyValueStore(collection: "MediaAuthCredential")
+        self.backupMessagesAuthCredentialStore = KeyValueStore(collection: "BackupAuthCredential")
+        self.backupMediaAuthCredentialStore = KeyValueStore(collection: "MediaAuthCredential")
     }
 
     private static func callLinkAuthCredentialKey(for redemptionTime: UInt64) -> String {
@@ -98,7 +98,11 @@ class AuthCredentialStore {
         redemptionTime: UInt64,
         tx: DBReadTransaction
     ) -> BackupAuthCredential? {
-        let store = credentialType == .messages ? backupAuthCredentialStore : mediaAuthCredentialStore
+        let store: KeyValueStore = switch credentialType {
+        case .media: backupMediaAuthCredentialStore
+        case .messages: backupMessagesAuthCredentialStore
+        }
+
         do {
             return try store.getData(
                 Self.backupAuthCredentialKey(for: redemptionTime),
@@ -118,7 +122,11 @@ class AuthCredentialStore {
         redemptionTime: UInt64,
         tx: DBWriteTransaction
     ) {
-        let store = credentialType == .messages ? backupAuthCredentialStore : mediaAuthCredentialStore
+        let store: KeyValueStore = switch credentialType {
+        case .media: backupMediaAuthCredentialStore
+        case .messages: backupMessagesAuthCredentialStore
+        }
+
         store.setData(
             credential.serialize(),
             key: Self.backupAuthCredentialKey(for: redemptionTime),
@@ -127,7 +135,11 @@ class AuthCredentialStore {
     }
 
     func removeAllBackupAuthCredentials(ofType credentialType: BackupAuthCredentialType, tx: DBWriteTransaction) {
-        let store = credentialType == .messages ? backupAuthCredentialStore : mediaAuthCredentialStore
+        let store: KeyValueStore = switch credentialType {
+        case .media: backupMediaAuthCredentialStore
+        case .messages: backupMessagesAuthCredentialStore
+        }
+
         store.removeAll(transaction: tx)
     }
 

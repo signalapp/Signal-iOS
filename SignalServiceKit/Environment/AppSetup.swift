@@ -369,6 +369,7 @@ public class AppSetup {
                 db: db,
                 networkManager: networkManager
             ),
+            backupCDNCache: BackupCDNCache(),
             backupKeyMaterial: backupKeyMaterial,
             dateProvider: dateProvider,
             db: db,

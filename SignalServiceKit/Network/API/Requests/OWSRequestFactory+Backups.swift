@@ -60,7 +60,7 @@ extension OWSRequestFactory {
         return request
     }
 
-    public static func fetchCDNCredentials(auth: BackupServiceAuth, cdn: Int32) -> TSRequest {
+    public static func fetchBackupCDNCredentials(auth: BackupServiceAuth, cdn: Int32) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives/auth/read?cdn=\(cdn)")!,
             method: "GET",

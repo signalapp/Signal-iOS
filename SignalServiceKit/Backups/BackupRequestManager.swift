@@ -142,38 +142,8 @@ extension BackupRequestManager {
 
 public struct BackupRequestManagerImpl: BackupRequestManager {
 
-    private enum Constants {
-        static let keyValueStoreCollectionName = "BackupRequestManager"
-
-        static let cdnNumberOfDaysFetchIntervalInSeconds: TimeInterval = .day
-        private static let keyValueStoreCdn2CredentialKey = "Cdn2Credential:"
-        private static let keyValueStoreCdn3CredentialKey = "Cdn3Credential:"
-
-        static func cdnCredentialCacheKey(for cdn: Int32, auth: BackupServiceAuth) -> String {
-            switch cdn {
-            case 2:
-                return Constants.keyValueStoreCdn2CredentialKey + auth.type.rawValue
-            case 3:
-                return Constants.keyValueStoreCdn3CredentialKey + auth.type.rawValue
-            default:
-                owsFailDebug("Invalid CDN version requested")
-                return Constants.keyValueStoreCdn3CredentialKey + auth.type.rawValue
-            }
-        }
-
-        static let backupInfoNumberOfDaysFetchIntervalInSeconds: TimeInterval = .day
-        private static let keyValueStoreBackupInfoKeyPrefix = "BackupInfo:"
-        private static let keyValueStoreLastBackupInfoFetchTimeKeyPrefix = "LastBackupInfoFetchTime:"
-
-        static func backupInfoCacheInfo(for auth: BackupServiceAuth) -> (infoKey: String, lastfetchTimeKey: String) {
-            (
-                keyValueStoreBackupInfoKeyPrefix + auth.type.rawValue,
-                keyValueStoreLastBackupInfoFetchTimeKeyPrefix + auth.type.rawValue
-            )
-        }
-    }
-
     private let backupAuthCredentialManager: BackupAuthCredentialManager
+    private let backupCDNCache: BackupCDNCache
     private let backupKeyMaterial: BackupKeyMaterial
     private let dateProvider: DateProvider
     private let db: any DB
@@ -182,16 +152,18 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
 
     init(
         backupAuthCredentialManager: BackupAuthCredentialManager,
+        backupCDNCache: BackupCDNCache,
         backupKeyMaterial: BackupKeyMaterial,
         dateProvider: @escaping DateProvider,
         db: any DB,
         networkManager: NetworkManager
     ) {
         self.backupAuthCredentialManager = backupAuthCredentialManager
+        self.backupCDNCache = backupCDNCache
         self.backupKeyMaterial = backupKeyMaterial
         self.dateProvider = dateProvider
         self.db = db
-        self.kvStore = KeyValueStore(collection: Constants.keyValueStoreCollectionName)
+        self.kvStore = KeyValueStore(collection: "BackupRequestManager")
         self.networkManager = networkManager
     }
 
@@ -247,82 +219,32 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
 
     // MARK: - Backup Info
 
-    /// Backup info provided by the server that is cached locally, so this can be discarded and
-    /// refreshed at any time.
-    ///
-    /// `cdn`, `backupDir`, and `mediaDir` should be static as long as backup state doesn't
-    /// significantly change (e.g. - changing subscription level, re-enabling backups after the grace period)
-    fileprivate struct BackupRemoteInfo: Codable, Equatable {
-        /// The CDN type where the message backup is stored. Media may be stored elsewhere.
-        public let cdn: Int32
-
-        /// The base directory of your backup data on the cdn. The message backup can befound in the
-        /// returned cdn at /backupDir/backupName and stored media can be found at /backupDir/mediaDir/mediaId
-        public let backupDir: String
-
-        /// The prefix path component for media objects on a cdn. Stored media for mediaId
-        /// can be found at /backupDir/mediaDir/mediaId.
-        public let mediaDir: String
-
-        /// The name of the most recent message backup on the cdn. The backup is at /backupDir/backupName
-        public let backupName: String
-
-        /// The amount of space used to store media
-        let usedSpace: Int64
-    }
-
-    /// Fetch details about the current backup
-    private func fetchBackupInfo(auth: BackupServiceAuth) async throws -> BackupRemoteInfo {
-        let cacheInfo = Constants.backupInfoCacheInfo(for: auth)
-        let cachedBackupInfo = db.read { tx -> BackupRemoteInfo? in
-            let lastInfoFetchTime = kvStore.getDate(
-                cacheInfo.lastfetchTimeKey,
-                transaction: tx
-            ) ?? .distantPast
-
-            // Refresh backup info after 24 hours
-            if abs(lastInfoFetchTime.timeIntervalSinceNow) < Constants.backupInfoNumberOfDaysFetchIntervalInSeconds {
-                do {
-                    if let backupInfo: BackupRemoteInfo = try kvStore.getCodableValue(
-                        forKey: cacheInfo.infoKey,
-                        transaction: tx
-                    ) {
-                        return backupInfo
-                    }
-                } catch {
-                    // Failure to deserialize this object should be ok since it's simply
-                    // a cache of the remote info and can be refetched.  But still worth
-                    // a log entry in case something results in repeated errors.
-                    Logger.debug("Couldn't decode backup info, fetch remotely")
-                }
-            }
-            return nil
+    private func fetchBackupCDNMetadata(auth: BackupServiceAuth) async throws -> BackupCDNMetadata {
+        if let cachedCDNMetadata = db.read(block: { tx in
+            backupCDNCache.backupCDNMetadata(
+                authType: auth.type,
+                now: dateProvider(),
+                tx: tx
+            )
+        }) {
+            return cachedCDNMetadata
         }
 
-        if let cachedBackupInfo {
-            return cachedBackupInfo
-        }
-
-        let backupInfo: BackupRemoteInfo = try await executeBackupService(
+        let cdnMetadata: BackupCDNMetadata = try await executeBackupService(
             auth: auth,
             requestFactory: OWSRequestFactory.backupInfoRequest(auth:)
         )
 
-        try await db.awaitableWrite { tx in
-            try kvStore.setCodable(
-                backupInfo,
-                key: cacheInfo.infoKey,
-                transaction: tx
-            )
-
-            kvStore.setDate(
-                dateProvider(),
-                key: cacheInfo.lastfetchTimeKey,
-                transaction: tx
+        await db.awaitableWrite { tx in
+            backupCDNCache.setBackupCDNMetadata(
+                cdnMetadata,
+                authType: auth.type,
+                dateProvider: dateProvider,
+                tx: tx
             )
         }
 
-        return backupInfo
+        return cdnMetadata
     }
 
     // TODO: [Backups] Call this regularly, or move it somewhere it is called regularly
@@ -340,45 +262,39 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
     private func fetchCDNReadCredentials(
         cdn: Int32,
         auth: BackupServiceAuth
-    ) async throws -> CDNReadCredential {
-        let cacheKey = Constants.cdnCredentialCacheKey(for: cdn, auth: auth)
-        let result = db.read { tx -> CDNReadCredential? in
-            do {
-                if
-                    let backupAuthCredential: CDNReadCredential = try kvStore.getCodableValue(forKey: cacheKey, transaction: tx),
-                    backupAuthCredential.isExpired.negated
-                {
-                    return backupAuthCredential
-                }
-            } catch {
-                // Failure to deserialize this object should be ok since the credential
-                // can be refetched.  But still worth a log entry in case something
-                // results in repeated errors.
-                Logger.info("Couldn't decode backup info, fetch remotely")
-            }
-            return nil
+    ) async throws -> BackupCDNReadCredential {
+        if let cachedCDNReadCredential = db.read(block: { tx in
+            backupCDNCache.backupCDNReadCredential(
+                cdnNumber: cdn,
+                authType: auth.type,
+                now: dateProvider(),
+                tx: tx
+            )
+        }) {
+            return cachedCDNReadCredential
         }
 
-        if let result {
-            return result
-        }
-
-        let authCredential: CDNReadCredential = try await executeBackupService(
+        let cdnReadCredential: BackupCDNReadCredential = try await executeBackupService(
             auth: auth,
-            requestFactory: { OWSRequestFactory.fetchCDNCredentials(auth: $0, cdn: cdn) }
+            requestFactory: { OWSRequestFactory.fetchBackupCDNCredentials(auth: $0, cdn: cdn) }
         )
 
-        try await db.awaitableWrite { tx in
-            try kvStore.setCodable(authCredential, key: cacheKey, transaction: tx)
+        await db.awaitableWrite { tx in
+            backupCDNCache.setBackupCDNReadCredential(
+                cdnReadCredential,
+                cdnNumber: cdn,
+                authType: auth.type,
+                tx: tx
+            )
         }
 
-        return authCredential
+        return cdnReadCredential
     }
 
     public func fetchBackupRequestMetadata(auth: BackupServiceAuth) async throws -> BackupReadCredential {
-        let info = try await fetchBackupInfo(auth: auth)
-        let authCredential = try await fetchCDNReadCredentials(cdn: info.cdn, auth: auth)
-        return BackupReadCredential(credential: authCredential, info: info)
+        let metadata = try await fetchBackupCDNMetadata(auth: auth)
+        let authCredential = try await fetchCDNReadCredentials(cdn: metadata.cdn, auth: auth)
+        return BackupReadCredential(credential: authCredential, metadata: metadata)
     }
 
     public func fetchMediaTierCdnRequestMetadata(
@@ -386,9 +302,9 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
         auth: BackupServiceAuth
     ) async throws -> MediaTierReadCredential {
         owsAssertDebug(auth.type == .media)
-        let info = try await fetchBackupInfo(auth: auth)
+        let metadata = try await fetchBackupCDNMetadata(auth: auth)
         let authCredential = try await fetchCDNReadCredentials(cdn: cdn, auth: auth)
-        return MediaTierReadCredential(cdn: cdn, credential: authCredential, info: info)
+        return MediaTierReadCredential(cdn: cdn, credential: authCredential, metadata: metadata)
     }
 
     public func copyToMediaTier(
@@ -501,43 +417,24 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
     }
 }
 
-private struct CDNReadCredential: Codable {
-    private static let cdnCredentialLifetimeInSeconds: TimeInterval = .day
-
-    let createDate: Date
-    let headers: HttpHeaders
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.headers = try container.decode(HttpHeaders.self, forKey: .headers)
-
-        // createDate will default to current date, but can be overwritten during decodable initialization
-        self.createDate = try container.decodeIfPresent(Date.self, forKey: .createDate) ?? Date()
-    }
-
-    var isExpired: Bool {
-        return abs(createDate.timeIntervalSinceNow) >= CDNReadCredential.cdnCredentialLifetimeInSeconds
-    }
-}
-
 public struct MediaTierReadCredential {
 
     public let cdn: Int32
-    private let credential: CDNReadCredential
-    private let info: BackupRequestManagerImpl.BackupRemoteInfo
+    private let credential: BackupCDNReadCredential
+    private let metadata: BackupCDNMetadata
 
     fileprivate init(
         cdn: Int32,
-        credential: CDNReadCredential,
-        info: BackupRequestManagerImpl.BackupRemoteInfo
+        credential: BackupCDNReadCredential,
+        metadata: BackupCDNMetadata,
     ) {
         self.cdn = cdn
         self.credential = credential
-        self.info = info
+        self.metadata = metadata
     }
 
     var isExpired: Bool {
-        return credential.isExpired
+        return credential.isExpired(now: Date())
     }
 
     var cdnAuthHeaders: HttpHeaders {
@@ -545,29 +442,29 @@ public struct MediaTierReadCredential {
     }
 
     func mediaTierUrlPrefix() -> String {
-        return "backups/\(info.backupDir)/\(info.mediaDir)"
+        return "backups/\(metadata.backupDir)/\(metadata.mediaDir)"
     }
 }
 
 public struct BackupReadCredential {
 
-    private let credential: CDNReadCredential
-    private let info: BackupRequestManagerImpl.BackupRemoteInfo
+    private let credential: BackupCDNReadCredential
+    private let metadata: BackupCDNMetadata
 
     fileprivate init(
-        credential: CDNReadCredential,
-        info: BackupRequestManagerImpl.BackupRemoteInfo
+        credential: BackupCDNReadCredential,
+        metadata: BackupCDNMetadata
     ) {
         self.credential = credential
-        self.info = info
+        self.metadata = metadata
     }
 
     var isExpired: Bool {
-        return credential.isExpired
+        return credential.isExpired(now: Date())
     }
 
     var cdn: Int32 {
-        return info.cdn
+        return metadata.cdn
     }
 
     var cdnAuthHeaders: HttpHeaders {
@@ -575,6 +472,6 @@ public struct BackupReadCredential {
     }
 
     func backupLocationUrl() -> String {
-        return "backups/\(info.backupDir)/\(info.backupName)"
+        return "backups/\(metadata.backupDir)/\(metadata.backupName)"
     }
 }
