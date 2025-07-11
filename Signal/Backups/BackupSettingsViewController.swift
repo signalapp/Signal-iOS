@@ -763,8 +763,8 @@ private class BackupSettingsViewModel: ObservableObject {
 
             let newLoadingState: BackupSubscriptionLoadingState
             do {
-                let backupPlan = try await actionsDelegate.loadBackupSubscription()
-                newLoadingState = .loaded(backupPlan)
+                let backupSubscription = try await actionsDelegate.loadBackupSubscription()
+                newLoadingState = .loaded(backupSubscription)
             } catch let error where error.isNetworkFailureOrTimeout {
                 newLoadingState = .networkError
             } catch {
