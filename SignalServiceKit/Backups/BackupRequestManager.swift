@@ -123,10 +123,6 @@ public protocol BackupRequestManager {
         objects: [BackupArchive.Request.DeleteMediaTarget],
         auth: BackupServiceAuth
     ) async throws
-
-    func redeemReceipt(
-        receiptCredentialPresentation: Data
-    ) async throws
 }
 
 extension BackupRequestManager {
@@ -478,14 +474,6 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
                 )
             }
         )
-    }
-
-    // MARK: - Subscriptions
-
-    public func redeemReceipt(receiptCredentialPresentation: Data) async throws {
-        _ = OWSRequestFactory.redeemReceipt(receiptCredentialPresentation: receiptCredentialPresentation)
-        // TODO: Send the request built on the previous line to the server.
-        throw OWSAssertionError("Not implemented.")
     }
 
     // MARK: - Private utility methods
