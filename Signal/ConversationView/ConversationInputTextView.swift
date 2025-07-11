@@ -5,8 +5,12 @@
 
 public import SignalServiceKit
 import SignalUI
+import UIKit
+import MobileCoreServices
+import UniformTypeIdentifiers
 
 public protocol ConversationInputTextViewDelegate: AnyObject {
+    func didAttemptToDropAttachments(_ attachments: [SignalAttachment])
     func didAttemptAttachmentPaste()
     func inputTextViewSendMessagePressed()
     func textViewDidChange(_ textView: UITextView)
@@ -46,6 +50,10 @@ class ConversationInputTextView: BodyRangesTextView {
 
         contentMode = .redraw
         dataDetectorTypes = []
+        
+        //Drop Interaction for images
+        let dropInteraction = UIDropInteraction(delegate: self)
+        addInteraction(dropInteraction)
 
         placeholderView.text = OWSLocalizedString(
             "INPUT_TOOLBAR_MESSAGE_PLACEHOLDER",
@@ -220,4 +228,26 @@ class ConversationInputTextView: BodyRangesTextView {
         inputTextViewDelegate?.textViewDidChange(self)
         textViewToolbarDelegate?.textViewDidChange(self)
     }
+}
+
+extension ConversationInputTextView : UIDropInteractionDelegate {
+            
+    func dropInteraction(_ interaction: UIDropInteraction, canHandle session: any UIDropSession) -> Bool {
+        let inputUtiTypes = Array(MimeTypeUtil.supportedInputImageUtiTypes)
+        return session.hasItemsConforming(toTypeIdentifiers: inputUtiTypes)
+    }
+    
+    func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: any UIDropSession) -> UIDropProposal {
+        return UIDropProposal(operation: .copy)
+    }
+        
+    func dropInteraction(_ interaction: UIDropInteraction, performDrop session: any UIDropSession) {
+        //session.loadObject automatically runs on the main thread as per documentation
+        session.loadObjects(ofClass: SignalAttachment.self) { attachmentItems in
+            if let attachments = attachmentItems as? [SignalAttachment] {
+                self.inputTextViewDelegate?.didAttemptToDropAttachments(attachments)
+            }
+        }
+    }
+    
 }
