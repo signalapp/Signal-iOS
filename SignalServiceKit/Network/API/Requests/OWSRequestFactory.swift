@@ -131,6 +131,10 @@ public enum OWSRequestFactory {
         ]
 
         var request = TSRequest(url: URL(string: path)!, method: "PUT", parameters: parameters)
+        // Use 45 seconds (the maximum time allowed by the pinging logic) to
+        // support larger messages. Message sends have automatic retries, so short
+        // timeouts aren't useful because errors are invisible for ~24 hours.
+        request.timeoutInterval = 45
         if let auth {
             request.auth = .sealedSender(auth)
         }
@@ -157,6 +161,10 @@ public enum OWSRequestFactory {
         ]
 
         var request = TSRequest(url: components.url!, method: "PUT", parameters: nil)
+        // Use 45 seconds (the maximum time allowed by the pinging logic) to
+        // support larger messages. Message sends have automatic retries, so short
+        // timeouts aren't useful because errors are invisible for ~24 hours.
+        request.timeoutInterval = 45
         request.headers["Content-Type"] = "application/vnd.signal-messenger.mrm"
         request.auth = .sealedSender(auth)
         request.body = .data(ciphertext)
