@@ -195,6 +195,7 @@ public class AudioPlayer: NSObject {
         MainActor.assumeIsolated {
             DependenciesBridge.shared.deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
         }
+        teardownRemoteCommandCenter()
     }
 
     public func setupAudioPlayer() {
