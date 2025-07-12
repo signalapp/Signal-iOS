@@ -117,46 +117,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 }
             }
         ))
-        debugSection.add(.actionItem(
-            withText: "Check for orphaned attachments",
-            actionBlock: { [weak self] in
-                guard let self else { return }
-                ModalActivityIndicatorViewController.present(
-                    fromViewController: self
-                ) { modalActivityIndicator -> Void in
-                    var attachmentDirFiles = Set(try! OWSFileSystem.recursiveFilesInDirectory(AttachmentStream.attachmentsDirectory().path))
-                    DependenciesBridge.shared.db.read { tx in
-                        let cursor = try! Attachment.Record
-                            .filter(
-                                Column(Attachment.Record.CodingKeys.localRelativeFilePath) != nil
-                                || Column(Attachment.Record.CodingKeys.localRelativeFilePathThumbnail) != nil
-                                || Column(Attachment.Record.CodingKeys.audioWaveformRelativeFilePath) != nil
-                                || Column(Attachment.Record.CodingKeys.videoStillFrameRelativeFilePath) != nil
-                            )
-                            .fetchCursor(tx.database)
-                        while let attachmentRecord = try! cursor.next() {
-                            for relFilePath in attachmentRecord.allFilesRelativePaths {
-                                let absolutePath = AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: relFilePath).path
-                                attachmentDirFiles.remove(absolutePath)
-                            }
-                        }
-                    }
-                    if attachmentDirFiles.isEmpty {
-                        modalActivityIndicator.dismiss(animated: true, completion: {
-                            self.presentToast(text: "No orphans!")
-                        })
-                        return
-                    }
-                    var byteCount: UInt = 0
-                    for file in attachmentDirFiles {
-                        byteCount += OWSFileSystem.fileSize(ofPath: file)?.uintValue ?? 0
-                    }
-                    modalActivityIndicator.dismiss(animated: true, completion: {
-                        self.presentToast(text: "\(attachmentDirFiles.count) orphans totalling \(OWSFormat.formatFileSize(UInt(byteCount), maximumFractionalDigits: 0))")
-                    })
-                }
-            }
-        ))
 
         if mode == .registration {
             debugSection.add(.actionItem(withText: "Submit debug logs") {
@@ -253,90 +213,19 @@ class InternalSettingsViewController: OWSTableViewController2 {
         dbSection.add(.copyableItem(label: "Group Threads", value: numberFormatter.string(for: groupThreadCount)))
         dbSection.add(.copyableItem(label: "Messages", value: numberFormatter.string(for: messageCount)))
         dbSection.add(.copyableItem(label: "Attachments", value: numberFormatter.string(for: attachmentCount)))
-        contents.add(dbSection)
-
-        let byteCountFormatter = ByteCountFormatter()
-
-        let dbSize = UInt(SSKEnvironment.shared.databaseStorageRef.databaseFileSize)
-        let dbWalSize = UInt(SSKEnvironment.shared.databaseStorageRef.databaseWALFileSize)
-        let dbShmSize = UInt(SSKEnvironment.shared.databaseStorageRef.databaseSHMFileSize)
-        let attachmentSize = OWSFileSystem.folderSizeRecursive(of: AttachmentStream.attachmentsDirectory())?.uintValue
-        let emojiCacheSize = OWSFileSystem.folderSizeRecursive(of: Emoji.cacheUrl)?.uintValue
-        let stickerCacheSize = OWSFileSystem.folderSizeRecursive(of: StickerManager.cacheDirUrl())?.uintValue
-        let avatarCacheSize =
-            (OWSFileSystem.folderSizeRecursive(of: AvatarBuilder.avatarCacheDirectory)?.uintValue ?? 0)
-            + (OWSFileSystem.folderSizeRecursive(ofPath: OWSUserProfile.sharedDataProfileAvatarsDirPath)?.uintValue ?? 0)
-            + (OWSFileSystem.folderSizeRecursive(ofPath: OWSUserProfile.legacyProfileAvatarsDirPath)?.uintValue ?? 0)
-        let voiceMessageCacheSize = OWSFileSystem.folderSizeRecursive(of: VoiceMessageInterruptedDraftStore.draftVoiceMessageDirectory)?.uintValue
-        let librarySize = OWSFileSystem.folderSizeRecursive(ofPath: OWSFileSystem.appLibraryDirectoryPath())?.uintValue
-        let documentsSize = OWSFileSystem.folderSizeRecursive(ofPath: OWSFileSystem.appDocumentDirectoryPath())?.uintValue
-        let sharedDataSize = OWSFileSystem.folderSizeRecursive(ofPath: OWSFileSystem.appSharedDataDirectoryPath())?.uintValue
-
-        let knownFilesSize: UInt = [UInt?](
-            arrayLiteral:
-                dbSize,
-                dbWalSize,
-                dbShmSize,
-                attachmentSize,
-                emojiCacheSize,
-                stickerCacheSize,
-                avatarCacheSize,
-                voiceMessageCacheSize,
-                librarySize,
-            )
-            .compacted()
-            .reduce(0, +)
-        var totalFilesystemSize: UInt = [UInt?](
-            arrayLiteral:
-                librarySize,
-                documentsSize,
-                sharedDataSize
-            )
-            .compacted()
-            .reduce(0, +)
-
-        let diskUsageSection = OWSTableSection(title: "Disk Usage")
-        diskUsageSection.add(.copyableItem(label: "DB Size", value: byteCountFormatter.string(for: dbSize)))
-        diskUsageSection.add(.copyableItem(label: "DB WAL Size", value: byteCountFormatter.string(for: dbWalSize)))
-        diskUsageSection.add(.copyableItem(label: "DB SHM Size", value: byteCountFormatter.string(for: dbShmSize)))
-        diskUsageSection.add(.copyableItem(label: "Total attachments size", value: byteCountFormatter.string(for: attachmentSize)))
-        diskUsageSection.add(.copyableItem(label: "Emoji cache size", value: byteCountFormatter.string(for: emojiCacheSize)))
-        diskUsageSection.add(.copyableItem(label: "Sticker cache size", value: byteCountFormatter.string(for: stickerCacheSize)))
-        diskUsageSection.add(.copyableItem(label: "Avatar cache size", value: byteCountFormatter.string(for: avatarCacheSize)))
-        diskUsageSection.add(.copyableItem(label: "Voice message drafts size", value: byteCountFormatter.string(for: voiceMessageCacheSize)))
-        diskUsageSection.add(.copyableItem(label: "Library folder size", value: byteCountFormatter.string(for: librarySize)))
-        diskUsageSection.add(.copyableItem(label: "Ancillary files size", value: byteCountFormatter.string(for: totalFilesystemSize - knownFilesSize)))
-
-        if TSConstants.isUsingProductionService {
-            let stagingSharedDataSize = OWSFileSystem.folderSizeRecursive(
-                ofPath: FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: TSConstantsStaging().applicationGroup)!.path
-            )?.uintValue
-            diskUsageSection.add(.copyableItem(label: "Staging app group size", value: byteCountFormatter.string(for: stagingSharedDataSize)))
-            totalFilesystemSize += stagingSharedDataSize ?? 0
-        } else {
-            let prodSharedDataSize = OWSFileSystem.folderSizeRecursive(
-                ofPath: FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: TSConstantsProduction().applicationGroup)!.path
-            )?.uintValue
-            diskUsageSection.add(.copyableItem(label: "Prod app group size", value: byteCountFormatter.string(for: prodSharedDataSize)))
-            totalFilesystemSize += prodSharedDataSize ?? 0
-        }
-        diskUsageSection.add(.copyableItem(
-            label: "Total filesystem size",
-            subtitle: "Should match \"Documents & Data\" in Settings>General>Storage>Signal",
-            value: byteCountFormatter.string(for: totalFilesystemSize)
+        dbSection.add(.actionItem(
+            withText: "Disk Usage",
+            actionBlock: { [weak self] in
+                ModalActivityIndicatorViewController.present(
+                    fromViewController: self!,
+                    asyncBlock: { [weak self] modal in
+                        let vc = await InternalDiskUsageViewController.build()
+                        self?.navigationController?.pushViewController(vc, animated: true)
+                        modal.dismiss(animated: true)
+                    })
+            }
         ))
-        contents.add(diskUsageSection)
-
-        let bundleSize = OWSFileSystem.folderSizeRecursive(ofPath: Bundle.main.bundlePath)?.uintValue
-        let cachesSize = OWSFileSystem.folderSizeRecursive(ofPath: OWSFileSystem.cachesDirectoryPath())?.uintValue
-        let tmpSize = OWSFileSystem.folderSizeRecursive(ofPath: OWSTemporaryDirectory())?.uintValue
-
-        let otherDiskUsageSection = OWSTableSection(title: "Other Disk Usage")
-        otherDiskUsageSection.add(.copyableItem(label: "Cache size", value: byteCountFormatter.string(for: cachesSize)))
-        otherDiskUsageSection.add(.copyableItem(label: "Tmp size", value: byteCountFormatter.string(for: tmpSize)))
-        otherDiskUsageSection.add(.copyableItem(label: "Bundle size", value: byteCountFormatter.string(for: bundleSize)))
-
-        contents.add(otherDiskUsageSection)
+        contents.add(dbSection)
 
         let deviceSection = OWSTableSection(title: "Device")
         deviceSection.add(.copyableItem(label: "Model", value: AppVersionImpl.shared.hardwareInfoString))
