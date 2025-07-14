@@ -46,6 +46,9 @@ class ConversationInputTextView: BodyRangesTextView {
 
         contentMode = .redraw
         dataDetectorTypes = []
+        if #available(iOS 18.0, *) {
+            supportsAdaptiveImageGlyph = false
+        }
 
         placeholderView.text = OWSLocalizedString(
             "INPUT_TOOLBAR_MESSAGE_PLACEHOLDER",
