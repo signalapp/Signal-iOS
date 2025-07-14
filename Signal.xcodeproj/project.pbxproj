@@ -2517,7 +2517,6 @@
 		D93EDC042AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */; };
 		D93F4D5A2D800DD20042926C /* AvatarDefaultColorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93F4D552D7FAC3C0042926C /* AvatarDefaultColorManager.swift */; };
 		D93F4D5D2D801D750042926C /* AvatarDefaultColorManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93F4D5C2D801D700042926C /* AvatarDefaultColorManagerTest.swift */; };
-		D93FA5BF2DE77E470013879E /* BackupEnablingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93FA5BE2DE77E440013879E /* BackupEnablingManager.swift */; };
 		D941863C2ACE252D002FE2D3 /* CallRecordLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D941863B2ACE252D002FE2D3 /* CallRecordLogger.swift */; };
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
 		D94441312D55956B005B2A54 /* UUIDv7.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94441302D559567005B2A54 /* UUIDv7.swift */; };
@@ -2678,7 +2677,6 @@
 		D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979DA152B8D1FDD000EEAB8 /* BadgeCountFetcher.swift */; };
 		D97C43962D7F74F300BA41E0 /* recipient_contacts_05.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D97C43952D7F74F300BA41E0 /* recipient_contacts_05.txtproto */; };
 		D97C43972D7F74F300BA41E0 /* recipient_contacts_05.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D97C43942D7F74F300BA41E0 /* recipient_contacts_05.binproto */; };
-		D97C9FF22DD3FB7E00191CE2 /* BackupDisablingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */; };
 		D984F7242C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */; };
 		D985D86629B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */; };
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
@@ -2789,6 +2787,9 @@
 		D9DCFDB02A3BC4A400C73C0B /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAF2A3BC4A400C73C0B /* QRCodeGenerator.swift */; };
 		D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroViewController.swift */; };
 		D9DE35012DF0B89E005099D7 /* ScrollableContentPinnedFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DE35002DF0B886005099D7 /* ScrollableContentPinnedFooterView.swift */; };
+		D9DF21EB2E21BD2800A962B2 /* BackupDisablingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */; };
+		D9DF21EC2E21BD6600A962B2 /* BackupEnablingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93FA5BE2DE77E440013879E /* BackupEnablingManager.swift */; };
+		D9DF21EE2E21C12E00A962B2 /* BackupDisablingManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F027A12E2071D0002994C1 /* BackupDisablingManagerTest.swift */; };
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
 		D9E43AF62CC193D70001536E /* BackupSubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43AF32CC193D70001536E /* BackupSubscriptionManager.swift */; };
 		D9E43BE22CC194140001536E /* CallButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B932CC194140001536E /* CallButton.swift */; };
@@ -2882,7 +2883,6 @@
 		D9EB22222A4B636C00C73E1D /* Bitmaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */; };
 		D9EE790F2CF5232C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EE790E2CF5229C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift */; };
 		D9EE79112CF525A4007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EE79102CF5259D007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift */; };
-		D9F027A22E2071D4002994C1 /* BackupDisablingManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F027A12E2071D0002994C1 /* BackupDisablingManagerTest.swift */; };
 		D9F02BE72B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F02BE62B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift */; };
 		D9F399AD2A95798A001599EC /* IdentityKeyChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399AC2A95798A001599EC /* IdentityKeyChecker.swift */; };
 		D9F399B02A967664001599EC /* IdentityKeyCheckerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399AE2A96764A001599EC /* IdentityKeyCheckerTest.swift */; };
@@ -12504,6 +12504,7 @@
 		D9388C8F2DA4751A0048D4F9 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */,
 				D923DF9B2DC135A000CDAFC3 /* BackupIdManager.swift */,
 				D98ACAA82E0DA71700FA497F /* BackupPlanManager.swift */,
 				D9388C902DA4751F0048D4F9 /* BackupSettingsStore.swift */,
@@ -12531,7 +12532,6 @@
 			isa = PBXGroup;
 			children = (
 				D9DE34FB2DEE76E6005099D7 /* Onboarding */,
-				D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */,
 				D93FA5BE2DE77E440013879E /* BackupEnablingManager.swift */,
 				D98CA2B22DF2450E0060370E /* BackupRecordKeyViewController.swift */,
 				D932C0EA2E13AD3600FEF9C3 /* BackupSettingsAttachmentDownloadTracker.swift */,
@@ -12788,7 +12788,6 @@
 		D9A952442E0A1C3600C3D1F7 /* Backups */ = {
 			isa = PBXGroup;
 			children = (
-				D9F027A12E2071D0002994C1 /* BackupDisablingManagerTest.swift */,
 				D962FC422E149EC7004DB623 /* BackupSettingsAttachmentDownloadTrackerTest.swift */,
 				D9324F7B2E1492820095D104 /* BackupSettingsAttachmentTrackerTest.swift */,
 				D9A952452E0A1C3C00C3D1F7 /* BackupSettingsAttachmentUploadTrackerTest.swift */,
@@ -12854,6 +12853,7 @@
 			children = (
 				D90AA32E2CC9616A00021CB0 /* Signal-Message-Backup-Tests */,
 				D90AA6182CC961ED00021CB0 /* BackupArchiveIntegrationTests.swift */,
+				D9F027A12E2071D0002994C1 /* BackupDisablingManagerTest.swift */,
 				041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */,
 				047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */,
 				04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */,
@@ -16812,9 +16812,8 @@
 				B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */,
 				66485EB02CCC515A00B8613F /* BackupArchiveInternalErrorViewController.swift in Sources */,
 				66A1F4E62E03641D0095DE4B /* BackupBGProcessingTaskRunner.swift in Sources */,
-				D97C9FF22DD3FB7E00191CE2 /* BackupDisablingManager.swift in Sources */,
 				041A5F072E05B3F900FAED05 /* BackupEnablementMegaphone.swift in Sources */,
-				D93FA5BF2DE77E470013879E /* BackupEnablingManager.swift in Sources */,
+				D9DF21EC2E21BD6600A962B2 /* BackupEnablingManager.swift in Sources */,
 				04E66D402DFC825B0059DBAC /* BackupKeyReminderMegaphone.swift in Sources */,
 				D949C4052DF3A597007E095C /* BackupOnboardingConfirmKeyViewController.swift in Sources */,
 				D999345A2DE97BBC002C9196 /* BackupOnboardingCoordinator.swift in Sources */,
@@ -17526,7 +17525,6 @@
 				F9B93CE028E246D900B3F8A0 /* AppDelegateTest.swift in Sources */,
 				F9B3A92F293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift in Sources */,
 				50B6BCB42AEC58250010FB3B /* AuthorMergeHelperBuilderTest.swift in Sources */,
-				D9F027A22E2071D4002994C1 /* BackupDisablingManagerTest.swift in Sources */,
 				D962FC432E149ECF004DB623 /* BackupSettingsAttachmentDownloadTrackerTest.swift in Sources */,
 				D9324F7C2E1492920095D104 /* BackupSettingsAttachmentTrackerTest.swift in Sources */,
 				D9A952462E0A1C4200C3D1F7 /* BackupSettingsAttachmentUploadTrackerTest.swift in Sources */,
@@ -17768,6 +17766,7 @@
 				D9C96F752E21AA5800CA885A /* BackupCDNCache.swift in Sources */,
 				D9C96F772E21ADF000CA885A /* BackupCDNMetadata.swift in Sources */,
 				D9C96F712E21A6BE00CA885A /* BackupCDNReadCredential.swift in Sources */,
+				D9DF21EB2E21BD2800A962B2 /* BackupDisablingManager.swift in Sources */,
 				66A1F4E22E035C020095DE4B /* BackupExportJob.swift in Sources */,
 				D923DF9C2DC135D200CDAFC3 /* BackupIdManager.swift in Sources */,
 				C1A0F79D2B9F57340009DC0D /* BackupKeyMaterial.swift in Sources */,
@@ -18827,6 +18826,7 @@
 				D90AA6192CC961ED00021CB0 /* BackupArchiveIntegrationTests.swift in Sources */,
 				66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */,
 				66C795302C9B83A200C13937 /* BackupAttachmentUploadStoreTests.swift in Sources */,
+				D9DF21EE2E21C12E00A962B2 /* BackupDisablingManagerTest.swift in Sources */,
 				04AA85BC2E0EFC5C0051C0A7 /* BackupEnablementReminderMegaphoneTests.swift in Sources */,
 				047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */,
 				66A1F4EB2E07CEA50095DE4B /* BackupListMediaManagerTests.swift in Sources */,

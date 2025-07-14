@@ -3,16 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-
 /// Reponsible for "disabling Backups": making the relevant API calls and
 /// managing state.
-class BackupDisablingManager {
+public class BackupDisablingManager {
     private enum StoreKeys {
         static let remoteDisablingFailed = "remoteDisablingFailed"
     }
 
+    private let authCredentialStore: AuthCredentialStore
     private let backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager
+    private let backupCDNCache: BackupCDNCache
     private let backupIdManager: BackupIdManager
     private let backupPlanManager: BackupPlanManager
     private let db: DB
@@ -25,13 +25,17 @@ class BackupDisablingManager {
     private var disableRemotelyIfNecessaryTask: DebouncedTask<Void>!
 
     init(
+        authCredentialStore: AuthCredentialStore,
         backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager,
+        backupCDNCache: BackupCDNCache,
         backupIdManager: BackupIdManager,
         backupPlanManager: BackupPlanManager,
         db: DB,
         tsAccountManager: TSAccountManager,
     ) {
+        self.authCredentialStore = authCredentialStore
         self.backupAttachmentDownloadQueueStatusManager = backupAttachmentDownloadQueueStatusManager
+        self.backupCDNCache = backupCDNCache
         self.backupIdManager = backupIdManager
         self.backupPlanManager = backupPlanManager
         self.db = db
@@ -58,7 +62,7 @@ class BackupDisablingManager {
     /// The current status of downloading offloaded media. To learn the result
     /// of disabling remotely, callers should wait for `BackupPlan` to become
     /// `.disabled` and then consult ``disableRemotelyFailed(tx:)``.
-    func startDisablingBackups() async -> BackupAttachmentDownloadQueueStatus {
+    public func startDisablingBackups() async -> BackupAttachmentDownloadQueueStatus {
         logger.info("Disabling Backups...")
 
         do {
@@ -81,13 +85,13 @@ class BackupDisablingManager {
     /// Attempts to remotely disable Backups, if necessary. For example, a
     /// previous launch may have attempted but failed to remotely disable
     /// Backups.
-    func disableRemotelyIfNecessary() async {
+    public func disableRemotelyIfNecessary() async {
         // If we don't need to disable remotely, this will insta-complete.
         await disableRemotelyIfNecessaryTask.run().value
     }
 
     /// Whether a previous remote-disabling attempt failed terminally.
-    func disableRemotelyFailed(tx: DBReadTransaction) -> Bool {
+    public func disableRemotelyFailed(tx: DBReadTransaction) -> Bool {
         switch backupPlanManager.backupPlan(tx: tx) {
         case .disabled:
             return kvStore.hasValue(StoreKeys.remoteDisablingFailed, transaction: tx)
@@ -143,6 +147,11 @@ class BackupDisablingManager {
                 }
 
                 try backupPlanManager.setBackupPlan(.disabled, tx: tx)
+
+                // With Backups disabled, these credentials are no longer valid
+                // and are no longer safe to use.
+                authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
+                backupCDNCache.wipe(tx: tx)
             }
 
             logger.info("Successfully disabled Backups locally!")

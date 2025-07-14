@@ -41,7 +41,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
             backupAttachmentDownloadQueueStatusReporter: DependenciesBridge.shared.backupAttachmentDownloadQueueStatusReporter,
             backupAttachmentUploadProgress: DependenciesBridge.shared.backupAttachmentUploadProgress,
             backupAttachmentUploadQueueStatusReporter: DependenciesBridge.shared.backupAttachmentUploadQueueStatusReporter,
-            backupDisablingManager: AppEnvironment.shared.backupDisablingManager,
+            backupDisablingManager: DependenciesBridge.shared.backupDisablingManager,
             backupEnablingManager: AppEnvironment.shared.backupEnablingManager,
             backupExportJob: DependenciesBridge.shared.backupExportJob,
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,

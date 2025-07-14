@@ -5,7 +5,6 @@
 
 import Testing
 
-@testable import Signal
 @testable import SignalServiceKit
 
 @MainActor
@@ -19,7 +18,9 @@ struct BackupDisablingManagerTest {
         let mockTSAccountManager = MockTSAccountManager()
 
         let disablingManager = BackupDisablingManager(
+            authCredentialStore: AuthCredentialStore(),
             backupAttachmentDownloadQueueStatusManager: mockBackupAttachmentDownloadQueueStatusManager,
+            backupCDNCache: BackupCDNCache(),
             backupIdManager: mockBackupIdManager,
             backupPlanManager: mockBackupPlanManager,
             db: mockDB,

@@ -69,8 +69,17 @@ struct BackupCDNCache {
         _ backupCDNReadCredential: BackupCDNReadCredential,
         cdnNumber: Int32,
         authType: BackupAuthCredentialType,
+        currentBackupPlan: BackupPlan,
         tx: DBWriteTransaction,
     ) {
+        switch currentBackupPlan {
+        case .disabled:
+            owsFailDebug("Attempting to set BackupCDNReadCredential while Backups is disabled!")
+            return
+        case .disabling, .free, .paid, .paidExpiringSoon:
+            break
+        }
+
         do {
             try kvStore.setCodable(
                 backupCDNReadCredential,
@@ -123,14 +132,23 @@ struct BackupCDNCache {
     func setBackupCDNMetadata(
         _ backupCDNMetadata: BackupCDNMetadata,
         authType: BackupAuthCredentialType,
-        dateProvider: DateProvider,
+        now: Date,
+        currentBackupPlan: BackupPlan,
         tx: DBWriteTransaction,
     ) {
+        switch currentBackupPlan {
+        case .disabled:
+            owsFailDebug("Attempting to set BackupCDNMetadata while Backups is disabled!")
+            return
+        case .disabling, .free, .paid, .paidExpiringSoon:
+            break
+        }
+
         let (metadataKey, metadataSavedDateKey) = Self.backupCDNMetadataKeys(authType: authType)
 
         do {
             try kvStore.setCodable(backupCDNMetadata, key: metadataKey, transaction: tx)
-            kvStore.setDate(dateProvider(), key: metadataSavedDateKey, transaction: tx)
+            kvStore.setDate(now, key: metadataSavedDateKey, transaction: tx)
         } catch {
             Logger.warn("Failed to serialize BackupCDNMetadata! \(error)")
         }

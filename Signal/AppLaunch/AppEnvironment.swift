@@ -31,7 +31,6 @@ public class AppEnvironment: NSObject {
 
     private(set) var appIconBadgeUpdater: AppIconBadgeUpdater!
     private(set) var avatarHistoryManager: AvatarHistoryManager!
-    private(set) var backupDisablingManager: BackupDisablingManager!
     private(set) var backupEnablingManager: BackupEnablingManager!
     private(set) var badgeManager: BadgeManager!
     private(set) var callLinkProfileKeySharingManager: CallLinkProfileKeySharingManager!
@@ -52,13 +51,6 @@ public class AppEnvironment: NSObject {
 
     func setUp(appReadiness: AppReadiness, callService: CallService) {
         let backupSettingsStore = BackupSettingsStore()
-        let backupDisablingManager = BackupDisablingManager(
-            backupAttachmentDownloadQueueStatusManager: DependenciesBridge.shared.backupAttachmentDownloadQueueStatusManager,
-            backupIdManager: DependenciesBridge.shared.backupIdManager,
-            backupPlanManager: DependenciesBridge.shared.backupPlanManager,
-            db: DependenciesBridge.shared.db,
-            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-        )
         let badgeManager = BadgeManager(
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             mainScheduler: DispatchQueue.main,
@@ -75,9 +67,8 @@ public class AppEnvironment: NSObject {
             db: DependenciesBridge.shared.db
         )
         self.badgeManager = badgeManager
-        self.backupDisablingManager = backupDisablingManager
         self.backupEnablingManager = BackupEnablingManager(
-            backupDisablingManager: backupDisablingManager,
+            backupDisablingManager: DependenciesBridge.shared.backupDisablingManager,
             backupIdManager: DependenciesBridge.shared.backupIdManager,
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
@@ -126,6 +117,7 @@ public class AppEnvironment: NSObject {
         }
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            let backupDisablingManager = DependenciesBridge.shared.backupDisablingManager
             let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
             let callRecordStore = DependenciesBridge.shared.callRecordStore
             let callRecordQuerier = DependenciesBridge.shared.callRecordQuerier
@@ -194,7 +186,7 @@ public class AppEnvironment: NSObject {
             }
 
             Task { () async -> Void in
-                await self.backupDisablingManager.disableRemotelyIfNecessary()
+                await backupDisablingManager.disableRemotelyIfNecessary()
             }
 
             Task {

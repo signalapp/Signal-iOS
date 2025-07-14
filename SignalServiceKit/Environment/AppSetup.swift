@@ -358,6 +358,9 @@ public class AppSetup {
             twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager)
         )
 
+        let backupSettingsStore = BackupSettingsStore()
+        let backupCDNCache = BackupCDNCache()
+
         let backupKeyMaterial = BackupKeyMaterialImpl(
             accountKeyStore: accountKeyStore
         )
@@ -369,8 +372,9 @@ public class AppSetup {
                 db: db,
                 networkManager: networkManager
             ),
-            backupCDNCache: BackupCDNCache(),
+            backupCDNCache: backupCDNCache,
             backupKeyMaterial: backupKeyMaterial,
+            backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             db: db,
             networkManager: networkManager
@@ -411,7 +415,6 @@ public class AppSetup {
             storyStore: storyStore
         )
 
-        let backupSettingsStore = BackupSettingsStore()
         let backupAttachmentUploadEraStore = BackupAttachmentUploadEraStore()
         let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
         let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
@@ -917,6 +920,16 @@ public class AppSetup {
             networkManager: networkManager,
         )
 
+        let backupDisablingManager = BackupDisablingManager(
+            authCredentialStore: authCredentialStore,
+            backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
+            backupCDNCache: backupCDNCache,
+            backupIdManager: backupIdManager,
+            backupPlanManager: backupPlanManager,
+            db: db,
+            tsAccountManager: tsAccountManager,
+        )
+
         let registrationStateChangeManager = RegistrationStateChangeManagerImpl(
             appContext: appContext,
             authCredentialStore: authCredentialStore,
@@ -1419,11 +1432,11 @@ public class AppSetup {
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentDownloadProgress: backupAttachmentDownloadProgress,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-            backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
             backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusManager,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupAttachmentUploadQueueStatusReporter: backupAttachmentUploadQueueStatusManager,
+            backupDisablingManager: backupDisablingManager,
             backupExportJob: backupExportJob,
             backupIdManager: backupIdManager,
             backupKeyMaterial: backupKeyMaterial,

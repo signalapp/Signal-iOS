@@ -145,6 +145,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
     private let backupAuthCredentialManager: BackupAuthCredentialManager
     private let backupCDNCache: BackupCDNCache
     private let backupKeyMaterial: BackupKeyMaterial
+    private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
     private let db: any DB
     private let kvStore: KeyValueStore
@@ -154,6 +155,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
         backupAuthCredentialManager: BackupAuthCredentialManager,
         backupCDNCache: BackupCDNCache,
         backupKeyMaterial: BackupKeyMaterial,
+        backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
         networkManager: NetworkManager
@@ -161,6 +163,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
         self.backupAuthCredentialManager = backupAuthCredentialManager
         self.backupCDNCache = backupCDNCache
         self.backupKeyMaterial = backupKeyMaterial
+        self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
         self.db = db
         self.kvStore = KeyValueStore(collection: "BackupRequestManager")
@@ -239,7 +242,8 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
             backupCDNCache.setBackupCDNMetadata(
                 cdnMetadata,
                 authType: auth.type,
-                dateProvider: dateProvider,
+                now: dateProvider(),
+                currentBackupPlan: backupSettingsStore.backupPlan(tx: tx),
                 tx: tx
             )
         }
@@ -284,6 +288,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
                 cdnReadCredential,
                 cdnNumber: cdn,
                 authType: auth.type,
+                currentBackupPlan: backupSettingsStore.backupPlan(tx: tx),
                 tx: tx
             )
         }
