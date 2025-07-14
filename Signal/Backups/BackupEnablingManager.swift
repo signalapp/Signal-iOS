@@ -64,24 +64,41 @@ class BackupEnablingManager {
             ))
         }
 
+        do {
+            try await ModalActivityIndicatorViewController.presentAndPropagateResult(
+                from: fromViewController
+            ) { [self] in
+                try await _enableBackups(
+                    planSelection: planSelection,
+                    localIdentifiers: localIdentifiers
+                )
+            }
+        } catch let error as DisplayableError {
+            throw error
+        } catch {
+            owsFailDebug("Unexpected non-displayable error enabling Backups! \(error)")
+            throw .genericError
+        }
+    }
+
+    private func _enableBackups(
+        planSelection: ChooseBackupPlanViewController.PlanSelection,
+        localIdentifiers: LocalIdentifiers,
+    ) async throws(DisplayableError) {
         // First, reserve a Backup ID. We'll need this regardless of which plan
         // the user chose, and we want to be sure it's succeeded before we
         // attempt a potential purchase. (Redeeming a Backups subscription
         // without this step will fail!)
         do {
-            try await ModalActivityIndicatorViewController.presentAndPropagateResult(
-                from: fromViewController
-            ) {
-                // This is a no-op unless we're also actively *disabling* Backups
-                // remotely. If we are, we don't wanna race, so we'll wait for
-                // it to finish.
-                await self.backupDisablingManager.disableRemotelyIfNecessary()
+            // This is a no-op unless we're also actively *disabling* Backups
+            // remotely. If we are, we don't wanna race, so we'll wait for
+            // it to finish.
+            await self.backupDisablingManager.disableRemotelyIfNecessary()
 
-                _ = try await self.backupIdManager.registerBackupId(
-                    localIdentifiers: localIdentifiers,
-                    auth: .implicit()
-                )
-            }
+            _ = try await self.backupIdManager.registerBackupId(
+                localIdentifiers: localIdentifiers,
+                auth: .implicit()
+            )
         } catch where error.isNetworkFailureOrTimeout {
             throw .networkError
         } catch {
@@ -122,11 +139,7 @@ class BackupEnablingManager {
             switch purchaseResult {
             case .success:
                 do {
-                    try await ModalActivityIndicatorViewController.presentAndPropagateResult(
-                        from: fromViewController
-                    ) {
-                        try await self.backupSubscriptionManager.redeemSubscriptionIfNecessary()
-                    }
+                    try await self.backupSubscriptionManager.redeemSubscriptionIfNecessary()
                 } catch {
                     owsFailDebug("Unexpectedly failed to redeem subscription! \(error)")
                     throw DisplayableError(OWSLocalizedString(
