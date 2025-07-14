@@ -1589,4 +1589,20 @@ extension InteractionFinder {
             return "AND \(columnPrefix)\(interactionColumn: .editState) IS \(TSEditState.none.rawValue)"
         }
     }
+
+    public class func maxInteractionRowId(transaction: DBReadTransaction) -> UInt64 {
+        let sql = """
+            SELECT MAX(\(interactionColumn: .id))
+            FROM \(InteractionRecord.databaseTableName)
+            """
+        do {
+            return try UInt64.fetchOne(
+                transaction.database,
+                sql: sql
+            ) ?? 0
+        } catch {
+            owsFailDebug("Failed to find max transaction ID: \(error)")
+            return 0
+        }
+    }
 }

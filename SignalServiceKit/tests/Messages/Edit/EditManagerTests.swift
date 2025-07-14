@@ -25,6 +25,8 @@ class EditManagerTests: SSKBaseTest {
             editTargetTimestamp: nil,
             isArchivedObsolete: false,
             isMarkedUnreadObsolete: false,
+            lastDraftInteractionRowId: 0,
+            lastDraftUpdateTimestamp: 0,
             lastInteractionRowId: 0,
             lastSentStoryTimestamp: nil,
             lastVisibleSortIdObsolete: 0,

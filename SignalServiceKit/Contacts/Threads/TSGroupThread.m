@@ -29,6 +29,8 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
              editTargetTimestamp:(nullable NSNumber *)editTargetTimestamp
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
+       lastDraftInteractionRowId:(uint64_t)lastDraftInteractionRowId
+        lastDraftUpdateTimestamp:(uint64_t)lastDraftUpdateTimestamp
             lastInteractionRowId:(uint64_t)lastInteractionRowId
           lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
@@ -49,6 +51,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                editTargetTimestamp:editTargetTimestamp
                 isArchivedObsolete:isArchivedObsolete
             isMarkedUnreadObsolete:isMarkedUnreadObsolete
+         lastDraftInteractionRowId:lastDraftInteractionRowId
+          lastDraftUpdateTimestamp:lastDraftUpdateTimestamp
               lastInteractionRowId:lastInteractionRowId
             lastSentStoryTimestamp:lastSentStoryTimestamp
          lastVisibleSortIdObsolete:lastVisibleSortIdObsolete

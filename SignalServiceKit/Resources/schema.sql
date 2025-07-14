@@ -41,6 +41,8 @@ CREATE
             ,"addresses" BLOB
             ,"storyViewMode" INTEGER DEFAULT 0
             ,"editTargetTimestamp" INTEGER
+            ,"lastDraftInteractionRowId" INTEGER DEFAULT 0
+            ,"lastDraftUpdateTimestamp" INTEGER DEFAULT 0
         )
 ;
 

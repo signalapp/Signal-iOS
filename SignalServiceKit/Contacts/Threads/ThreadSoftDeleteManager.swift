@@ -221,6 +221,8 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         /// properties on the thread.
         thread.anyUpdate(transaction: sdsTx) { thread in
             thread.lastInteractionRowId = 0
+            thread.lastDraftInteractionRowId = 0
+            thread.lastDraftUpdateTimestamp = 0
         }
     }
 }

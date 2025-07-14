@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
                             editTargetTimestamp:(nullable NSNumber *)editTargetTimestamp
                              isArchivedObsolete:(BOOL)isArchivedObsolete
                          isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
+                      lastDraftInteractionRowId:(uint64_t)lastDraftInteractionRowId
+                       lastDraftUpdateTimestamp:(uint64_t)lastDraftUpdateTimestamp
                            lastInteractionRowId:(uint64_t)lastInteractionRowId
                          lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
                       lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
@@ -60,6 +62,8 @@ NS_ASSUME_NONNULL_BEGIN
              editTargetTimestamp:(nullable NSNumber *)editTargetTimestamp
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
+       lastDraftInteractionRowId:(uint64_t)lastDraftInteractionRowId
+        lastDraftUpdateTimestamp:(uint64_t)lastDraftUpdateTimestamp
             lastInteractionRowId:(uint64_t)lastInteractionRowId
           lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
@@ -74,7 +78,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
               contactPhoneNumber:(nullable NSString *)contactPhoneNumber
                      contactUUID:(nullable NSString *)contactUUID
               hasDismissedOffers:(BOOL)hasDismissedOffers
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNameObsolete:creationDate:editTargetTimestamp:isArchivedObsolete:isMarkedUnreadObsolete:lastInteractionRowId:lastSentStoryTimestamp:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestampObsolete:shouldThreadBeVisible:storyViewMode:contactPhoneNumber:contactUUID:hasDismissedOffers:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNameObsolete:creationDate:editTargetTimestamp:isArchivedObsolete:isMarkedUnreadObsolete:lastDraftInteractionRowId:lastDraftUpdateTimestamp:lastInteractionRowId:lastSentStoryTimestamp:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestampObsolete:shouldThreadBeVisible:storyViewMode:contactPhoneNumber:contactUUID:hasDismissedOffers:));
 
 // clang-format on
 

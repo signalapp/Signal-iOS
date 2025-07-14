@@ -332,6 +332,7 @@ public class GRDBSchemaMigrator {
         case removeAttachmentMediaTierDigestColumn
         case addListMediaTable
         case recomputeAttachmentMediaNames
+        case lastDraftInteractionRowID
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -395,7 +396,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 117
+    public static let grdbSchemaVersionLatest: UInt = 118
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4124,6 +4125,18 @@ public class GRDBSchemaMigrator {
 
             return .success(())
         }
+
+        migrator.registerMigration(.lastDraftInteractionRowID) { tx in
+            try tx.database.alter(table: "model_TSThread") { table in
+                table.add(column: "lastDraftInteractionRowId", .integer).defaults(to: 0)
+            }
+
+            try tx.database.alter(table: "model_TSThread") { table in
+                table.add(column: "lastDraftUpdateTimestamp", .integer).defaults(to: 0)
+            }
+
+              return .success(())
+          }
 
         // MARK: - Schema Migration Insertion Point
     }

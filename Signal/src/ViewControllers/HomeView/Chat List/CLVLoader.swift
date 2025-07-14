@@ -78,14 +78,26 @@ public class CLVLoader {
             .pinnedThreadIds(tx: transaction)
 
         let visibleThreadUniqueIds: [String]
-        if isViewingArchive {
-            visibleThreadUniqueIds = try threadFinder.visibleArchivedThreadIds(transaction: transaction)
+        if FeatureFlags.moveDraftsUpChatList {
+            if isViewingArchive {
+                visibleThreadUniqueIds = try threadFinder.internal_visibleArchivedThreadIds(transaction: transaction)
+            } else {
+                visibleThreadUniqueIds = try threadFinder.internal_visibleInboxThreadIds(
+                    filteredBy: viewInfo.inboxFilter,
+                    requiredVisibleThreadIds: viewInfo.requiredVisibleThreadIds,
+                    transaction: transaction
+                )
+            }
         } else {
-            visibleThreadUniqueIds = try threadFinder.visibleInboxThreadIds(
-                filteredBy: viewInfo.inboxFilter,
-                requiredVisibleThreadIds: viewInfo.requiredVisibleThreadIds,
-                transaction: transaction
-            )
+            if isViewingArchive {
+                visibleThreadUniqueIds = try threadFinder.visibleArchivedThreadIds(transaction: transaction)
+            } else {
+                visibleThreadUniqueIds = try threadFinder.visibleInboxThreadIds(
+                    filteredBy: viewInfo.inboxFilter,
+                    requiredVisibleThreadIds: viewInfo.requiredVisibleThreadIds,
+                    transaction: transaction
+                )
+            }
         }
 
         var pinnedThreadUniqueIdsToRender = Set<String>()

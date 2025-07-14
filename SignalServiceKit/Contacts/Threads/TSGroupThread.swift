@@ -206,6 +206,8 @@ extension TSGroupThread {
             editTargetTimestamp: nil,
             isArchivedObsolete: false,
             isMarkedUnreadObsolete: false,
+            lastDraftInteractionRowId: 0,
+            lastDraftUpdateTimestamp: 0,
             lastInteractionRowId: 1,
             lastSentStoryTimestamp: nil,
             lastVisibleSortIdObsolete: 0,

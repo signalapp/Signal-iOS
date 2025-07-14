@@ -62,6 +62,8 @@ NS_ASSUME_NONNULL_BEGIN
              editTargetTimestamp:(nullable NSNumber *)editTargetTimestamp
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
+       lastDraftInteractionRowId:(uint64_t)lastDraftInteractionRowId
+        lastDraftUpdateTimestamp:(uint64_t)lastDraftUpdateTimestamp
             lastInteractionRowId:(uint64_t)lastInteractionRowId
           lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
@@ -86,6 +88,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     _editTargetTimestamp = editTargetTimestamp;
     _isArchivedObsolete = isArchivedObsolete;
     _isMarkedUnreadObsolete = isMarkedUnreadObsolete;
+    _lastDraftInteractionRowId = lastDraftInteractionRowId;
+    _lastDraftUpdateTimestamp = lastDraftUpdateTimestamp;
     _lastInteractionRowId = lastInteractionRowId;
     _lastSentStoryTimestamp = lastSentStoryTimestamp;
     _lastVisibleSortIdObsolete = lastVisibleSortIdObsolete;
@@ -497,6 +501,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     if (self.messageDraft == nil) {
         self.messageDraft = otherThread.messageDraft;
         self.messageDraftBodyRanges = otherThread.messageDraftBodyRanges;
+        self.lastDraftInteractionRowId = otherThread.lastDraftInteractionRowId;
+        self.lastDraftUpdateTimestamp = otherThread.lastDraftUpdateTimestamp;
     }
 }
 

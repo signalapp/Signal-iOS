@@ -18,10 +18,22 @@ extension TSThread {
         editTargetTimestamp: UInt64?,
         transaction tx: DBWriteTransaction
     ) {
+        let mostRecentInteractionID = InteractionFinder.maxInteractionRowId(transaction: tx)
+
         anyUpdate(transaction: tx) { thread in
             thread.messageDraft = draftMessageBody?.text
             thread.messageDraftBodyRanges = draftMessageBody?.ranges
             thread.editTargetTimestamp = editTargetTimestamp.map { NSNumber(value: $0) }
+
+            if draftMessageBody?.text.nilIfEmpty == nil {
+                // 0 makes these values effectively irrelevant since they will
+                // be compared to the lastInteractionRowId, which will always be > 0.
+                thread.lastDraftInteractionRowId = 0
+                thread.lastDraftUpdateTimestamp = 0
+            } else {
+                thread.lastDraftInteractionRowId = mostRecentInteractionID
+                thread.lastDraftUpdateTimestamp = Date().ows_millisecondsSince1970
+            }
         }
 
         if let replyInfo {

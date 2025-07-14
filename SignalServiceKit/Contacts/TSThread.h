@@ -64,6 +64,14 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadStoryViewMode) {
 // The corresponding interaction may have been deleted.
 @property (nonatomic) uint64_t lastInteractionRowId;
 
+// These are used to maintain the ordering of drafts in the chat list.
+// When a draft is saved, the lastDraftInteractionRowId for that thread
+// should be set to the max lastInteractionRowId across all threads to
+// prioritize it in the chat list. lastDraftUpdateTimestamp
+// can be used to break ties between threads with the same lastDraftInteractionRowId.
+@property (nonatomic) uint64_t lastDraftInteractionRowId;
+@property (nonatomic) uint64_t lastDraftUpdateTimestamp;
+
 @property (nonatomic, nullable) NSNumber *editTargetTimestamp;
 
 @property (atomic, readonly) uint64_t mutedUntilTimestampObsolete;
@@ -89,6 +97,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadStoryViewMode) {
              editTargetTimestamp:(nullable NSNumber *)editTargetTimestamp
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
+       lastDraftInteractionRowId:(uint64_t)lastDraftInteractionRowId
+        lastDraftUpdateTimestamp:(uint64_t)lastDraftUpdateTimestamp
             lastInteractionRowId:(uint64_t)lastInteractionRowId
           lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
@@ -100,7 +110,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
      mutedUntilTimestampObsolete:(uint64_t)mutedUntilTimestampObsolete
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                    storyViewMode:(TSThreadStoryViewMode)storyViewMode
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNameObsolete:creationDate:editTargetTimestamp:isArchivedObsolete:isMarkedUnreadObsolete:lastInteractionRowId:lastSentStoryTimestamp:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestampObsolete:shouldThreadBeVisible:storyViewMode:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNameObsolete:creationDate:editTargetTimestamp:isArchivedObsolete:isMarkedUnreadObsolete:lastDraftInteractionRowId:lastDraftUpdateTimestamp:lastInteractionRowId:lastSentStoryTimestamp:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestampObsolete:shouldThreadBeVisible:storyViewMode:));
 
 // clang-format on
 

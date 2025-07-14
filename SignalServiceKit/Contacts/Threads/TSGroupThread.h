@@ -33,6 +33,8 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
                             editTargetTimestamp:(nullable NSNumber *)editTargetTimestamp
                              isArchivedObsolete:(BOOL)isArchivedObsolete
                          isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
+                      lastDraftInteractionRowId:(uint64_t)lastDraftInteractionRowId
+                       lastDraftUpdateTimestamp:(uint64_t)lastDraftUpdateTimestamp
                            lastInteractionRowId:(uint64_t)lastInteractionRowId
                          lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
                       lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
@@ -59,6 +61,8 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
              editTargetTimestamp:(nullable NSNumber *)editTargetTimestamp
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
+       lastDraftInteractionRowId:(uint64_t)lastDraftInteractionRowId
+        lastDraftUpdateTimestamp:(uint64_t)lastDraftUpdateTimestamp
             lastInteractionRowId:(uint64_t)lastInteractionRowId
           lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
@@ -71,7 +75,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                    storyViewMode:(TSThreadStoryViewMode)storyViewMode
                       groupModel:(TSGroupModel *)groupModel
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNameObsolete:creationDate:editTargetTimestamp:isArchivedObsolete:isMarkedUnreadObsolete:lastInteractionRowId:lastSentStoryTimestamp:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestampObsolete:shouldThreadBeVisible:storyViewMode:groupModel:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNameObsolete:creationDate:editTargetTimestamp:isArchivedObsolete:isMarkedUnreadObsolete:lastDraftInteractionRowId:lastDraftUpdateTimestamp:lastInteractionRowId:lastSentStoryTimestamp:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestampObsolete:shouldThreadBeVisible:storyViewMode:groupModel:));
 
 // clang-format on
 
