@@ -1419,6 +1419,7 @@ public class AppSetup {
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentDownloadProgress: backupAttachmentDownloadProgress,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
             backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusManager,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,

@@ -50,6 +50,13 @@ class BackupPlanManagerImpl: BackupPlanManager {
         let oldBackupPlan = backupPlan(tx: tx)
         let isBackupPlanChanging = oldBackupPlan != newBackupPlan
 
+        // Bail early on unexpected state transitions, before we persist state
+        // we later regret.
+        try validateBackupPlanStateTransition(
+            oldBackupPlan: oldBackupPlan,
+            newBackupPlan: newBackupPlan
+        )
+
         backupSettingsStore.setBackupPlan(newBackupPlan, tx: tx)
 
         if isBackupPlanChanging {
@@ -62,13 +69,51 @@ class BackupPlanManagerImpl: BackupPlanManager {
             switch newBackupPlan {
             case .paid, .paidExpiringSoon:
                 backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
-            case .disabled, .free:
+            case .disabling, .disabled, .free:
                 break
             }
 
             tx.addSyncCompletion {
                 NotificationCenter.default.post(name: .backupPlanChanged, object: nil)
             }
+        }
+    }
+
+    private func validateBackupPlanStateTransition(
+        oldBackupPlan: BackupPlan,
+        newBackupPlan: BackupPlan,
+    ) throws {
+        var illegalStateTransition: Bool = false
+
+        switch oldBackupPlan {
+        case .disabled:
+            switch newBackupPlan {
+            case .disabled, .free, .paid, .paidExpiringSoon:
+                break
+            case .disabling:
+                // We're already disabled; how are we starting disabling again?
+                illegalStateTransition = true
+            }
+        case .disabling:
+            switch newBackupPlan {
+            case .disabled, .disabling:
+                break
+            case .free, .paid, .paidExpiringSoon:
+                // Shouldn't be able to "enable" while we're disabling!
+                illegalStateTransition = true
+            }
+        case .free, .paid, .paidExpiringSoon:
+            switch newBackupPlan {
+            case .disabling, .free, .paid, .paidExpiringSoon:
+                break
+            case .disabled:
+                // Should've moved through .disabling first!
+                illegalStateTransition = true
+            }
+        }
+
+        if illegalStateTransition {
+            throw OWSAssertionError("Unexpected illegal BackupPlan state transition: \(oldBackupPlan) -> \(newBackupPlan).")
         }
     }
 }

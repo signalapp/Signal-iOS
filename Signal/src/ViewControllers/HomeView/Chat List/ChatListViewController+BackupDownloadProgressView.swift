@@ -134,7 +134,7 @@ public class CLVBackupDownloadProgressView {
         switch viewState.backupPlan {
         case nil, .disabled, .free:
             return .none
-        case .paid, .paidExpiringSoon:
+        case .disabling, .paid, .paidExpiringSoon:
             break
         }
         switch viewState.downloadQueueStatus {
@@ -803,7 +803,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
         let backupPlan = chatListViewController?.viewState.backupDownloadProgressViewState.backupPlan
 
         let message: String = switch backupPlan {
-        case nil, .disabled, .free, .paid:
+        case nil, .disabled, .disabling, .free, .paid:
             OWSLocalizedString(
                 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE",
                 comment: "Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space."

@@ -77,7 +77,7 @@ public class QuickRestoreManager {
             let backupTier: RegistrationProvisioningMessage.BackupTier? = switch backupSettingsStore.backupPlan(tx: tx) {
             case .free: .free
             case .paid, .paidExpiringSoon: .paid
-            case .disabled: nil
+            case .disabled, .disabling: nil
             }
 
             let lastBackupTime = backupSettingsStore.lastBackupDate(tx: tx)?.ows_millisecondsSince1970

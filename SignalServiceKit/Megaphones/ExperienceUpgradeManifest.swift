@@ -652,10 +652,12 @@ extension ExperienceUpgradeManifest {
         }
 
         let backupSettingsStore = BackupSettingsStore()
-        let backupPlan = backupSettingsStore.backupPlan(tx: transaction)
 
-        guard backupPlan != BackupPlan.disabled else {
+        switch backupSettingsStore.backupPlan(tx: transaction) {
+        case .disabled, .disabling:
             return false
+        case .free, .paid, .paidExpiringSoon:
+            break
         }
 
         guard let firstBackupDate = backupSettingsStore.firstBackupDate(tx: transaction) else {
@@ -682,7 +684,7 @@ extension ExperienceUpgradeManifest {
 
         let backupPlan = BackupSettingsStore().backupPlan(tx: transaction)
         switch backupPlan {
-        case .free, .paid, .paidExpiringSoon:
+        case .disabling, .free, .paid, .paidExpiringSoon:
             return false
         case .disabled:
             break

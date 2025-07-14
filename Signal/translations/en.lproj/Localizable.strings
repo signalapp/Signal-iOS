@@ -640,6 +640,9 @@
 /* Footer for a menu section related to settings for when Backups are disabled. */
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Backups have been turned off and your data has been deleted from Signal’s secure storage service.";
 
+/* Description for a progress view tracking media being downloaded in service of disabling Backups. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, any media that is not on device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
+
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
 
@@ -663,6 +666,21 @@
 
 /* Title for a button allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Turn Off & Delete Backup";
+
+/* Title for a button in an action sheet confirming the user wants to disable Backups. */
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_CONFIRM" = "Turn Off & Delete";
+
+/* Message for an action sheet confirming the user wants to disable Backups. */
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Your backup will be deleted and no new backups will be created.";
+
+/* Title for an action sheet confirming the user wants to disable Backups. */
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_TITLE" = "Turn Off and Delete Backups?";
+
+/* Message shown in an action sheet when the user disables Backups, explaining that their media is downloading first. */
+"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_MESSAGE" = "You have media in your backup that's not on this device. Your backup may take a long time to download, keep Signal open to avoid interruptions.";
+
+/* Title shown in an action sheet when the user disables Backups, explaining that their media is downloading first. */
+"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_TITLE" = "Downloading Your Backup";
 
 /* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "An error occurred when deleting your data from Signal's secure storage service.";

@@ -176,7 +176,7 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                             .paid(optimizeLocalStorage: false),
                             tx: tx
                         )
-                    case .disabled:
+                    case .disabled, .disabling:
                         // Don't sneakily enable Backups!
                         break
                     case .paid, .paidExpiringSoon:

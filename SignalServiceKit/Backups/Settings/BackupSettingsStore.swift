@@ -5,6 +5,7 @@
 
 public enum BackupPlan: RawRepresentable {
     case disabled
+    case disabling
     case free
     case paid(optimizeLocalStorage: Bool)
     case paidExpiringSoon(optimizeLocalStorage: Bool)
@@ -14,6 +15,7 @@ public enum BackupPlan: RawRepresentable {
     public init?(rawValue: Int) {
         switch rawValue {
         case 6: self = .disabled
+        case 7: self = .disabling
         case 1: self = .free
         case 2: self = .paid(optimizeLocalStorage: false)
         case 3: self = .paid(optimizeLocalStorage: true)
@@ -26,6 +28,7 @@ public enum BackupPlan: RawRepresentable {
     public var rawValue: Int {
         switch self {
         case .disabled: return 6
+        case .disabling: return 7
         case .free: return 1
         case .paid(let optimizeLocalStorage): return optimizeLocalStorage ? 3 : 2
         case .paidExpiringSoon(let optimizeLocalStorage): return optimizeLocalStorage ? 5 : 4

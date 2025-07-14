@@ -8,7 +8,7 @@ import Testing
 
 struct DebouncedTaskTest {
     @Test
-    func testDebounce() async throws {
+    func testDebounce() async {
         actor TestActor {
             var allowRunning = false
             var count = 0
@@ -39,43 +39,18 @@ struct DebouncedTaskTest {
 
         await testActor.setAllowRunning()
 
-        let countOne = try! await taskOne.value
-        let countTwo = try! await taskTwo.value
-        let countThree = try! await taskThree.value
+        let countOne = await taskOne.value
+        let countTwo = await taskTwo.value
+        let countThree = await taskThree.value
 
         #expect(countOne == 1)
         #expect(countTwo == 1)
         #expect(countThree == 1)
-        #expect(try await debouncedTask.run().value == 2)
+        #expect(await debouncedTask.run().value == 2)
     }
 
     @Test
-    func testFailureThenSuccess() async throws {
-        struct ExpectedError: Error {}
-
-        var runResults: [Result<Void, Error>] = [
-            .failure(ExpectedError()),
-            .success(()),
-        ]
-
-        let debouncedTask = DebouncedTask { () async throws in
-            guard let runResult = runResults.popFirst() else {
-                Issue.record("Missing run result!")
-                throw OWSAssertionError("Missing run result!")
-            }
-
-            return try runResult.get()
-        }
-
-        await #expect(throws: ExpectedError.self) {
-            try await debouncedTask.run().value
-        }
-
-        try await debouncedTask.run().value
-    }
-
-    @Test
-    func testIsCurrentlyRunning() async throws {
+    func testIsCurrentlyRunning() async {
         actor TestActor {
             var allowRunning = false
 
@@ -97,7 +72,7 @@ struct DebouncedTaskTest {
 
         await testActor.setAllowRunning()
 
-        try! await taskOne.value
+        await taskOne.value
         #expect(debouncedTask.isCurrentlyRunning() == nil)
     }
 }

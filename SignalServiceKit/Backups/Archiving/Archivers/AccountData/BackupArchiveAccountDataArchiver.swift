@@ -259,7 +259,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: context.tx) ?? []
         accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: context.tx)
         switch backupPlanManager.backupPlan(tx: context.tx) {
-        case .disabled:
+        case .disabling, .disabled:
             accountSettings.clearBackupTier()
             accountSettings.optimizeOnDeviceStorage = false
         case .free:

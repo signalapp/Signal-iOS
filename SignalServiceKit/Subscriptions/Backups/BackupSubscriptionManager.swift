@@ -299,14 +299,14 @@ public final class BackupSubscriptionManager {
                         return .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
                     case .paid:
                         break
-                    case .disabled, .free, .paidExpiringSoon:
+                    case .disabled, .disabling, .free, .paidExpiringSoon:
                         break
                     }
                 } else {
                     switch currentBackupPlan {
                     case .paid, .paidExpiringSoon:
                         return .free
-                    case .disabled, .free:
+                    case .disabled, .disabling, .free:
                         break
                     }
                 }

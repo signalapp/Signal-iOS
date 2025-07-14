@@ -53,6 +53,7 @@ public class AppEnvironment: NSObject {
     func setUp(appReadiness: AppReadiness, callService: CallService) {
         let backupSettingsStore = BackupSettingsStore()
         let backupDisablingManager = BackupDisablingManager(
+            backupAttachmentDownloadQueueStatusManager: DependenciesBridge.shared.backupAttachmentDownloadQueueStatusManager,
             backupIdManager: DependenciesBridge.shared.backupIdManager,
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             db: DependenciesBridge.shared.db,
@@ -193,7 +194,7 @@ public class AppEnvironment: NSObject {
             }
 
             Task { () async -> Void in
-                try? await self.backupDisablingManager.disableRemotelyIfNecessary()
+                await self.backupDisablingManager.disableRemotelyIfNecessary()
             }
 
             Task {

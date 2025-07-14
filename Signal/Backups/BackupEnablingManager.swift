@@ -75,7 +75,7 @@ class BackupEnablingManager {
                 // This is a no-op unless we're also actively *disabling* Backups
                 // remotely. If we are, we don't wanna race, so we'll wait for
                 // it to finish.
-                try? await self.backupDisablingManager.disableRemotelyIfNecessary()
+                await self.backupDisablingManager.disableRemotelyIfNecessary()
 
                 _ = try await self.backupIdManager.registerBackupId(
                     localIdentifiers: localIdentifiers,
@@ -137,7 +137,7 @@ class BackupEnablingManager {
 
                 try await setBackupPlan { currentBackupPlan in
                     let currentOptimizeLocalStorage = switch currentBackupPlan {
-                    case .disabled, .free:
+                    case .disabled, .disabling, .free:
                         false
                     case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage):
                         optimizeLocalStorage

@@ -217,7 +217,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             break
         case .paid, .paidExpiringSoon:
             backupSize += metadata.attachmentByteSize
-        case .disabled:
+        case .disabled, .disabling:
             owsFailDebug("Shouldn't generate backup when backups is disabled")
             backupSize = 0
         }

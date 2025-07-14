@@ -900,7 +900,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         switch currentBackupPlan {
         case .disabled:
             return false
-        case .free, .paid, .paidExpiringSoon:
+        case .disabling, .free, .paid, .paidExpiringSoon:
             break
         }
 
@@ -922,7 +922,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             return true
         }
         switch currentBackupPlan {
-        case .disabled:
+        case .disabled, .disabling:
             return false
         case .free:
             return false

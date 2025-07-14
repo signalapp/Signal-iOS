@@ -126,7 +126,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         }
 
         switch backupPlan {
-        case .disabled, .free:
+        case .disabled, .disabling, .free:
             return
         case .paid, .paidExpiringSoon:
             break
@@ -331,7 +331,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
             struct IsFreeTierError: Error {}
             switch backupPlan {
-            case .disabled, .free:
+            case .disabled, .disabling, .free:
                 try? await loader.stop()
                 return .retryableError(IsFreeTierError())
             case .paid, .paidExpiringSoon:

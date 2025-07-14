@@ -38,7 +38,7 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
 
         return db.read { (tx) -> BGProcessingTaskStartCondition in
             switch backupSettingsStore.backupPlan(tx: tx) {
-            case .disabled:
+            case .disabled, .disabling:
                 return .never
             case .free, .paid, .paidExpiringSoon:
                 break

@@ -16,33 +16,33 @@
 /// `DebouncedTask`. For example, running
 /// ```swift
 /// let debouncedTask = DebouncedTask { ... }
-/// let wrapperTask = Task { try await debouncedTask.run() }
+/// let wrapperTask = Task { await debouncedTask.run() }
 /// wrapperTask.cancel()
 /// ```
 /// will not automatically pass the cancellation through to the block being run
 /// by the `DebouncedTask`.
 public struct DebouncedTask<Value> {
     private struct State {
-        var task: Task<Value, Error>?
+        var task: Task<Value, Never>?
     }
 
-    private let block: () async throws -> Value
+    private let block: () async -> Value
     private let state: AtomicValue<State>
 
-    public init(block: @escaping () async throws -> Value) {
+    public init(block: @escaping () async -> Value) {
         self.block = block
         self.state = AtomicValue(State(), lock: .init())
     }
 
     /// Returns the currently-running `Task`, if present.
-    public func isCurrentlyRunning() -> Task<Value, Error>? {
+    public func isCurrentlyRunning() -> Task<Value, Never>? {
         return state.get().task
     }
 
     /// Returns a `Task` running the block, or an actively-running `Task` from
     /// an earlier call to this method.
-    public func run() -> Task<Value, Error> {
-        return state.update { _state -> Task<Value, Error> in
+    public func run() -> Task<Value, Never> {
+        return state.update { _state -> Task<Value, Never> in
             if let task = _state.task {
                 return task
             }
@@ -52,7 +52,7 @@ public struct DebouncedTask<Value> {
                     state.update { $0.task = nil }
                 }
 
-                return try await block()
+                return await block()
             }
             return _state.task!
         }

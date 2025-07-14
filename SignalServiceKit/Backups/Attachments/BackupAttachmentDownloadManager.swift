@@ -46,12 +46,6 @@ public protocol BackupAttachmentDownloadManager {
         to newPlan: BackupPlan,
         tx: DBWriteTransaction
     ) throws
-
-    /// Call this method regardless of the current ``BackupPlan`` state,
-    /// before disabling backups.
-    /// After calling this method, callers can wait on downloads by calling
-    /// `restoreAttachmentsIfNeeded`, or skip downloads by calling `backupPlanDidChange`.
-    func prepareToDisableBackups(currentBackupPlan: BackupPlan, tx: DBWriteTransaction) throws
 }
 
 public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManager {
@@ -256,9 +250,35 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
 
         switch (oldPlan, newPlan) {
-        case (.disabled, .disabled), (.free, .free):
+        case
+                (.disabling, .disabling),
+                (.disabled, .disabled),
+                (.free, .free):
             // No change.
             return
+        case
+                (.disabling, .free),
+                (.disabling, .paid),
+                (.disabling, .paidExpiringSoon),
+                (.disabled, .disabling):
+            throw OWSAssertionError("Unexpected BackupPlan transition: \(oldPlan) -> \(newPlan)")
+        case (.free, .disabling):
+            // While in free tier, we may have been continuing downloads
+            // from when you were previously paid tier. But that was nice
+            // to have; now that we're disabling backups cancel them all.
+            try backupAttachmentDownloadStore.markAllReadyIneligible(tx: tx)
+            try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
+        case
+                let (.paid(optimizeLocalStorage), .disabling),
+                let (.paidExpiringSoon(optimizeLocalStorage), .disabling):
+            try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
+            // Unsuspend; this is the user opt-in to trigger downloads.
+            backupSettingsStore.setIsBackupDownloadQueueSuspended(false, tx: tx)
+            if optimizeLocalStorage {
+                // If we had optimize enabled, make anything ineligible (offloaded
+                // attachments) now eligible.
+                try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
+            }
         case (_, .disabled):
             // When we disable, we mark everything ineligible and delete all
             // done rows. If we ever re-enable, we will mark those rows
@@ -288,8 +308,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             }
 
         case
-                (.paid(let wasOptimizeLocalStorageEnabled), .free),
-                (.paidExpiringSoon(let wasOptimizeLocalStorageEnabled), .free):
+                let (.paid(wasOptimizeLocalStorageEnabled), .free),
+                let (.paidExpiringSoon(wasOptimizeLocalStorageEnabled), .free):
             // We explicitly do nothing going from paid to free; we want to continue
             // any downloads that were already running (so we take advantage of the
             // media tier cdn TTL being longer than paid subscription lifetime) but
@@ -325,30 +345,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 try didEnableOptimizeStorage(tx: tx)
             } else {
                 try didDisableOptimizeStorage(backupPlan: newPlan, tx: tx)
-            }
-        }
-    }
-
-    public func prepareToDisableBackups(currentBackupPlan: BackupPlan, tx: DBWriteTransaction) throws {
-        switch currentBackupPlan {
-        case .disabled:
-            // huh?
-            owsFailDebug("Already disabled")
-            return
-        case .free:
-            // While in free tier, we may have been continuing downloads
-            // from when you were previously paid tier. But that was nice
-            // to have; now that we're disabling backups cancel them all.
-            try backupAttachmentDownloadStore.markAllReadyIneligible(tx: tx)
-            try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
-        case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage):
-            try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
-            // Unsuspend; this is the user opt-in to trigger downloads.
-            backupSettingsStore.setIsBackupDownloadQueueSuspended(false, tx: tx)
-            if optimizeLocalStorage {
-                // If we had optimize enabled, make anything ineligible (offloaded
-                // attachments) now eligible.
-                try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
             }
         }
     }
@@ -628,7 +624,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                             return false
                         }
                         switch backupSettingsStore.backupPlan(tx: tx) {
-                        case .disabled, .free:
+                        case .disabling, .disabled, .free:
                             // The primary would only be uploading if were paid tier.
                             // (this is inexact but the user can always tap to download)
                             return false

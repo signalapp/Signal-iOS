@@ -25,6 +25,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
+    private let tsAccountManager: TSAccountManager
 
     private var eventObservationTasks: [Task<Void, Never>]
     private let onLoadAction: OnLoadAction
@@ -88,31 +89,21 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
+        self.tsAccountManager = tsAccountManager
 
         self.eventObservationTasks = []
         self.onLoadAction = onLoadAction
         self.viewModel = db.read { tx in
             let viewModel = BackupSettingsViewModel(
-                backupEnabledState: .disabled, // Default, set below
                 backupSubscriptionLoadingState: .loading, // Default, loaded after init
                 backupPlan: backupPlanManager.backupPlan(tx: tx),
+                failedToDisableBackupsRemotely: backupDisablingManager.disableRemotelyFailed(tx: tx),
                 latestBackupAttachmentDownloadUpdate: nil, // Default, loaded after init
                 latestBackupAttachmentUploadUpdate: nil, // Default, loaded after init
                 lastBackupDate: backupSettingsStore.lastBackupDate(tx: tx),
                 lastBackupSizeBytes: backupSettingsStore.lastBackupSizeBytes(tx: tx),
                 shouldAllowBackupUploadsOnCellular: backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx)
             )
-
-            if let disableBackupsRemotelyState = backupDisablingManager.currentDisableRemotelyState(tx: tx) {
-                viewModel.handleDisableBackupsRemoteState(disableBackupsRemotelyState)
-            } else {
-                switch backupPlanManager.backupPlan(tx: tx) {
-                case .disabled:
-                    viewModel.backupEnabledState = .disabled
-                case .free, .paid, .paidExpiringSoon:
-                    viewModel.backupEnabledState = .enabled
-                }
-            }
 
             return viewModel
         }
@@ -149,10 +140,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
                     await MainActor.run { [weak self] in
                         guard let self else { return }
 
-                        db.read { tx in
-                            self.viewModel.backupPlan = backupPlanManager.backupPlan(tx: tx)
-                        }
-                        viewModel.loadBackupSubscription()
+                        _backupPlanDidChange()
                     }
                 }
             },
@@ -170,6 +158,25 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         case .presentWelcomeToBackupsSheet:
             presentWelcomeToBackupsSheet()
         }
+    }
+
+    private func _backupPlanDidChange() {
+        db.read { tx in
+            viewModel.backupPlan = backupPlanManager.backupPlan(tx: tx)
+            viewModel.failedToDisableBackupsRemotely = backupDisablingManager.disableRemotelyFailed(tx: tx)
+        }
+
+        // If we just disabled Backups locally but recorded a failure disabling
+        // remotely, show an action sheet. (We'll also show that we failed to
+        // disable remotely in BackupSettings.)
+        switch viewModel.backupPlan {
+        case .disabled where viewModel.failedToDisableBackupsRemotely:
+            showDisablingBackupsFailedSheet()
+        case .disabled, .disabling, .free, .paid, .paidExpiringSoon:
+            break
+        }
+
+        viewModel.loadBackupSubscription()
     }
 }
 
@@ -241,8 +248,6 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
             return
         }
 
-        // We know we're enabled now! Set state before popping so correct UI is shown.
-        viewModel.backupEnabledState = .enabled
         navigationController?.popToViewController(self, animated: true) { [self] in
             presentWelcomeToBackupsSheet()
         }
@@ -283,18 +288,39 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
     // MARK: -
 
     fileprivate func disableBackups() {
-        Task { await _disableBackups() }
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_TITLE",
+                comment: "Title for an action sheet confirming the user wants to disable Backups."
+            ),
+            message: OWSLocalizedString(
+                "BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_MESSAGE",
+                comment: "Message for an action sheet confirming the user wants to disable Backups."
+            )
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_CONFIRM",
+                comment: "Title for a button in an action sheet confirming the user wants to disable Backups."
+            ),
+            style: .destructive,
+            handler: { _ in
+                Task { [weak self] in
+                    guard let self else { return }
+                    await _disableBackups()
+                }
+            },
+        ))
+        actionSheet.addAction(.cancel)
+
+        presentActionSheet(actionSheet)
     }
 
     @MainActor
     private func _disableBackups() async {
-        do {
-            try await backupDisablingManager.startDisablingBackups()
-
-            if let disableRemotelyState = db.read(block: { backupDisablingManager.currentDisableRemotelyState(tx: $0) }) {
-                viewModel.handleDisableBackupsRemoteState(disableRemotelyState)
-            }
-        } catch is BackupDisablingManager.NotRegisteredError {
+        guard db.read(block: { tx in
+            tsAccountManager.localIdentifiers(tx: tx) != nil
+        }) else {
             OWSActionSheets.showActionSheet(
                 message: OWSLocalizedString(
                     "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED",
@@ -302,12 +328,33 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
                 ),
                 fromViewController: self
             )
-        } catch {
-            showDisablingBackupsFailedSheet()
+            return
+        }
+
+        // Start disabling Backups, which may result in us starting
+        // downloads. When disabling completes, we'll be notified via
+        // `BackupPlan` going from `.disabling` to `.disabled`.
+        let currentDownloadQueueStatus = await backupDisablingManager.startDisablingBackups()
+
+        switch currentDownloadQueueStatus {
+        case .empty, .suspended, .notRegisteredAndReady:
+            break
+        case .running, .noWifiReachability, .noReachability, .lowBattery, .lowDiskSpace:
+            OWSActionSheets.showActionSheet(
+                title: OWSLocalizedString(
+                    "BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_TITLE",
+                    comment: "Title shown in an action sheet when the user disables Backups, explaining that their media is downloading first."
+                ),
+                message: OWSLocalizedString(
+                    "BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_MESSAGE",
+                    comment: "Message shown in an action sheet when the user disables Backups, explaining that their media is downloading first."
+                ),
+                fromViewController: self
+            )
         }
     }
 
-    func showDisablingBackupsFailedSheet() {
+    private func showDisablingBackupsFailedSheet() {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE",
@@ -338,7 +385,7 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
         switch currentBackupPlan {
         case .free:
             return .free
-        case .disabled, .paid, .paidExpiringSoon:
+        case .disabling, .disabled, .paid, .paidExpiringSoon:
             break
         }
 
@@ -355,7 +402,7 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
         switch currentBackupPlan {
         case .free:
             return .free
-        case .disabled, .paid, .paidExpiringSoon:
+        case .disabling, .disabled, .paid, .paidExpiringSoon:
             break
         }
 
@@ -439,7 +486,7 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
                 let newBackupPlan: BackupPlan
 
                 switch currentBackupPlan {
-                case .disabled, .free:
+                case .disabled, .disabling, .free:
                     owsFailDebug("Shouldn't be setting Optimize Local Storage: \(currentBackupPlan)")
                     return
                 case .paid:
@@ -501,7 +548,7 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
     fileprivate func setIsBackupDownloadQueueSuspended(_ isSuspended: Bool, backupPlan: BackupPlan) {
         if isSuspended {
             switch backupPlan {
-            case .disabled, .free, .paid:
+            case .disabled, .disabling, .free, .paid:
                 db.write { tx in
                     backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
                 }
@@ -629,7 +676,6 @@ private class BackupSettingsViewModel: ObservableObject {
         func enableBackups(implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?)
 
         func disableBackups()
-        func showDisablingBackupsFailedSheet()
 
         func loadBackupSubscription() async throws -> BackupSubscriptionLoadingState.LoadedBackupSubscription
         func upgradeFromFreeToPaidPlan()
@@ -660,16 +706,9 @@ private class BackupSettingsViewModel: ObservableObject {
         case genericError
     }
 
-    enum BackupEnabledState {
-        case enabled
-        case disabled
-        case disabledLocallyStillDisablingRemotely
-        case disabledLocallyButDisableRemotelyFailed
-    }
-
-    @Published var backupEnabledState: BackupEnabledState
     @Published var backupSubscriptionLoadingState: BackupSubscriptionLoadingState
     @Published var backupPlan: BackupPlan
+    @Published var failedToDisableBackupsRemotely: Bool
 
     @Published var latestBackupAttachmentDownloadUpdate: BackupSettingsAttachmentDownloadTracker.DownloadUpdate?
     @Published var latestBackupAttachmentUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?
@@ -683,19 +722,19 @@ private class BackupSettingsViewModel: ObservableObject {
     private let loadBackupSubscriptionQueue: SerialTaskQueue
 
     init(
-        backupEnabledState: BackupEnabledState,
         backupSubscriptionLoadingState: BackupSubscriptionLoadingState,
         backupPlan: BackupPlan,
+        failedToDisableBackupsRemotely: Bool,
         latestBackupAttachmentDownloadUpdate: BackupSettingsAttachmentDownloadTracker.DownloadUpdate?,
         latestBackupAttachmentUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?,
         lastBackupDate: Date?,
         lastBackupSizeBytes: UInt64?,
         shouldAllowBackupUploadsOnCellular: Bool,
     ) {
-        self.backupEnabledState = backupEnabledState
         self.backupSubscriptionLoadingState = backupSubscriptionLoadingState
-
         self.backupPlan = backupPlan
+        self.failedToDisableBackupsRemotely = failedToDisableBackupsRemotely
+
         self.latestBackupAttachmentDownloadUpdate = latestBackupAttachmentDownloadUpdate
         self.latestBackupAttachmentUploadUpdate = latestBackupAttachmentUploadUpdate
 
@@ -714,41 +753,6 @@ private class BackupSettingsViewModel: ObservableObject {
 
     func disableBackups() {
         actionsDelegate?.disableBackups()
-    }
-
-    func handleDisableBackupsRemoteState(
-        _ disablingRemotelyState: BackupDisablingManager.DisableRemotelyState
-    ) {
-        let disableRemotelyTask: Task<Void, Error>
-        switch disablingRemotelyState {
-        case .inProgress(let task):
-            withAnimation {
-                backupEnabledState = .disabledLocallyStillDisablingRemotely
-            }
-
-            disableRemotelyTask = task
-        case .previouslyFailed:
-            withAnimation {
-                backupEnabledState = .disabledLocallyButDisableRemotelyFailed
-            }
-
-            return
-        }
-
-        Task { @MainActor in
-            let newBackupEnabledState: BackupEnabledState
-            do {
-                try await disableRemotelyTask.value
-                newBackupEnabledState = .disabled
-            } catch {
-                newBackupEnabledState = .disabledLocallyButDisableRemotelyFailed
-                actionsDelegate?.showDisablingBackupsFailedSheet()
-            }
-
-            withAnimation {
-                backupEnabledState = newBackupEnabledState
-            }
-        }
     }
 
     // MARK: -
@@ -800,7 +804,7 @@ private class BackupSettingsViewModel: ObservableObject {
 
     var optimizeLocalStorageAvailable: Bool {
         switch backupPlan {
-        case .disabled, .free:
+        case .disabled, .disabling, .free:
             false
         case .paid, .paidExpiringSoon:
             true
@@ -809,7 +813,7 @@ private class BackupSettingsViewModel: ObservableObject {
 
     var optimizeLocalStorage: Bool {
         switch backupPlan {
-        case .disabled, .free:
+        case .disabled, .disabling, .free:
             false
         case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage):
             optimizeLocalStorage
@@ -840,6 +844,35 @@ private class BackupSettingsViewModel: ObservableObject {
 // MARK: -
 
 struct BackupSettingsView: View {
+    private enum Contents {
+        case enabled
+        case disablingDownloadsRunning(BackupSettingsAttachmentDownloadTracker.DownloadUpdate)
+        case disabling
+        case disabledFailedToDisableRemotely
+        case disabled
+    }
+    private var contents: Contents {
+        switch viewModel.backupPlan {
+        case .free, .paid, .paidExpiringSoon:
+            return .enabled
+        case .disabled:
+            if viewModel.failedToDisableBackupsRemotely {
+                return .disabledFailedToDisableRemotely
+            } else {
+                return .disabled
+            }
+        case .disabling:
+            let latestDownloadUpdate = viewModel.latestBackupAttachmentDownloadUpdate
+
+            switch latestDownloadUpdate?.state {
+            case nil, .suspended:
+                return .disabling
+            case .running, .pausedLowBattery, .pausedNeedsWifi, .pausedNeedsInternet, .outOfDiskSpace:
+                return .disablingDownloadsRunning(latestDownloadUpdate!)
+            }
+        }
+    }
+
     @ObservedObject private var viewModel: BackupSettingsViewModel
 
     fileprivate init(viewModel: BackupSettingsViewModel) {
@@ -864,15 +897,21 @@ struct BackupSettingsView: View {
             }
 
             if let latestBackupAttachmentDownloadUpdate = viewModel.latestBackupAttachmentDownloadUpdate {
-                SignalSection {
-                    BackupAttachmentDownloadProgressView(
-                        latestDownloadUpdate: latestBackupAttachmentDownloadUpdate,
-                        viewModel: viewModel,
-                    )
+                switch contents {
+                case .disabling, .disablingDownloadsRunning:
+                    // We'll show a download progress bar below if necessary.
+                    EmptyView()
+                case .enabled, .disabled, .disabledFailedToDisableRemotely:
+                    SignalSection {
+                        BackupAttachmentDownloadProgressView(
+                            latestDownloadUpdate: latestBackupAttachmentDownloadUpdate,
+                            viewModel: viewModel,
+                        )
+                    }
                 }
             }
 
-            switch viewModel.backupEnabledState {
+            switch contents {
             case .enabled:
                 SignalSection {
                     Button {
@@ -946,18 +985,23 @@ struct BackupSettingsView: View {
                     ))
                     .foregroundStyle(Color.Signal.secondaryLabel)
                 }
-            case .disabled:
+
+            case .disablingDownloadsRunning(let lastDownloadUpdate):
                 SignalSection {
-                    reenableBackupsButton
+                    BackupAttachmentDownloadProgressView(
+                        latestDownloadUpdate: lastDownloadUpdate,
+                        viewModel: viewModel
+                    )
                 } header: {
                     Text(OWSLocalizedString(
-                        "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER",
-                        comment: "Footer for a menu section related to settings for when Backups are disabled."
+                        "BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION",
+                        comment: "Description for a progress view tracking media being downloaded in service of disabling Backups."
                     ))
                     .font(.subheadline)
                     .foregroundStyle(Color.Signal.secondaryLabel)
                 }
-            case .disabledLocallyStillDisablingRemotely:
+
+            case .disabling:
                 SignalSection {
                     VStack(alignment: .leading) {
                         LottieView(animation: .named("linear_indeterminate"))
@@ -985,7 +1029,20 @@ struct BackupSettingsView: View {
                     .font(.subheadline)
                     .foregroundStyle(Color.Signal.secondaryLabel)
                 }
-            case .disabledLocallyButDisableRemotelyFailed:
+
+            case .disabled:
+                SignalSection {
+                    reenableBackupsButton
+                } header: {
+                    Text(OWSLocalizedString(
+                        "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER",
+                        comment: "Footer for a menu section related to settings for when Backups are disabled."
+                    ))
+                    .font(.subheadline)
+                    .foregroundStyle(Color.Signal.secondaryLabel)
+                }
+
+            case .disabledFailedToDisableRemotely:
                 SignalSection {
                     VStack(alignment: .center) {
                         Text(OWSLocalizedString(
@@ -1081,7 +1138,7 @@ private struct BackupAttachmentDownloadProgressView: View {
                         ),
                         latestDownloadUpdate.totalBytesToDownload.formatted(.byteCount(style: .decimal))
                     )
-                case .paidExpiringSoon:
+                case .disabling, .paidExpiringSoon:
                     String(
                         format: OWSLocalizedString(
                             "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING",
@@ -1530,7 +1587,8 @@ private struct BackupDetailsView: View {
 
 private extension BackupSettingsViewModel {
     static func forPreview(
-        backupEnabledState: BackupEnabledState,
+        backupPlan: BackupPlan,
+        failedToDisableBackupsRemotely: Bool = false,
         latestBackupAttachmentDownloadUpdateState: BackupSettingsAttachmentDownloadTracker.DownloadUpdate.State? = nil,
         latestBackupAttachmentUploadUpdateState: BackupSettingsAttachmentUploadTracker.UploadUpdate.State? = nil,
         backupPlanLoadResult: Result<BackupSubscriptionLoadingState.LoadedBackupSubscription, Error>,
@@ -1543,7 +1601,6 @@ private extension BackupSettingsViewModel {
 
             func enableBackups(implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?) { print("Enabling! implicitPlanSelection: \(implicitPlanSelection as Any)") }
             func disableBackups() { print("Disabling!") }
-            func showDisablingBackupsFailedSheet() { print("Showing disabling-Backups-failed sheet!") }
 
             func loadBackupSubscription() async throws -> BackupSettingsViewModel.BackupSubscriptionLoadingState.LoadedBackupSubscription {
                 try! await Task.sleep(nanoseconds: 2.clampedNanoseconds)
@@ -1564,18 +1621,9 @@ private extension BackupSettingsViewModel {
         }
 
         let viewModel = BackupSettingsViewModel(
-            backupEnabledState: backupEnabledState,
             backupSubscriptionLoadingState: .loading,
-            backupPlan: {
-                switch backupPlanLoadResult {
-                case .success(.paid):
-                    return .paid(optimizeLocalStorage: false)
-                case .success(.paidButExpiring), .success(.paidButExpired):
-                    return .paidExpiringSoon(optimizeLocalStorage: false)
-                case .success(.free), .failure:
-                    return .free
-                }
-            }(),
+            backupPlan: backupPlan,
+            failedToDisableBackupsRemotely: failedToDisableBackupsRemotely,
             latestBackupAttachmentDownloadUpdate: latestBackupAttachmentDownloadUpdateState.map {
                 BackupSettingsAttachmentDownloadTracker.DownloadUpdate(
                     state: $0,
@@ -1605,7 +1653,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Plan: Paid") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .paid(optimizeLocalStorage: false),
         backupPlanLoadResult: .success(.paid(
             price: FiatMoney(currencyCode: "USD", value: 1.99),
             renewalDate: Date().addingTimeInterval(.week)
@@ -1615,14 +1663,14 @@ private extension BackupSettingsViewModel {
 
 #Preview("Plan: Free") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .free,
         backupPlanLoadResult: .success(.free)
     ))
 }
 
 #Preview("Plan: Expiring") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .paidExpiringSoon(optimizeLocalStorage: false),
         backupPlanLoadResult: .success(.paidButExpiring(
             expirationDate: Date().addingTimeInterval(.week)
         ))
@@ -1631,7 +1679,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Plan: Expired") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .paidExpiringSoon(optimizeLocalStorage: false),
         backupPlanLoadResult: .success(.paidButExpired(
             expirationDate: Date().addingTimeInterval(-1 * .week)
         ))
@@ -1640,21 +1688,21 @@ private extension BackupSettingsViewModel {
 
 #Preview("Plan: Network Error") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .paid(optimizeLocalStorage: false),
         backupPlanLoadResult: .failure(OWSHTTPError.networkFailure(.genericTimeout))
     ))
 }
 
 #Preview("Plan: Generic Error") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .paid(optimizeLocalStorage: false),
         backupPlanLoadResult: .failure(OWSGenericError(""))
     ))
 }
 
 #Preview("Downloads: Suspended") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .paid(optimizeLocalStorage: false),
         latestBackupAttachmentDownloadUpdateState: .suspended,
         backupPlanLoadResult: .success(.paid(
             price: FiatMoney(currencyCode: "USD", value: 1.99),
@@ -1665,7 +1713,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Downloads: Suspended w/o Paid Plan") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .suspended,
         backupPlanLoadResult: .success(.free)
     ))
@@ -1673,7 +1721,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Downloads: Running") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .running,
         backupPlanLoadResult: .success(.free)
     ))
@@ -1681,7 +1729,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Downloads: Paused (Battery)") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .pausedLowBattery,
         backupPlanLoadResult: .success(.free)
     ))
@@ -1689,7 +1737,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Downloads: Paused (WiFi)") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .pausedNeedsWifi,
         backupPlanLoadResult: .success(.free)
     ))
@@ -1697,7 +1745,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Downloads: Paused (Internet)") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .pausedNeedsInternet,
         backupPlanLoadResult: .success(.free)
     ))
@@ -1705,7 +1753,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Downloads: Disk Space Error") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .outOfDiskSpace(bytesRequired: 200_000_000),
         backupPlanLoadResult: .success(.free)
     ))
@@ -1713,7 +1761,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Uploads: Running") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .free,
         latestBackupAttachmentUploadUpdateState: .running,
         backupPlanLoadResult: .success(.free)
     ))
@@ -1721,7 +1769,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Uploads: Paused (WiFi)") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .free,
         latestBackupAttachmentUploadUpdateState: .pausedNeedsWifi,
         backupPlanLoadResult: .success(.free)
     ))
@@ -1729,7 +1777,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Uploads: Paused (Battery)") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .enabled,
+        backupPlan: .free,
         latestBackupAttachmentUploadUpdateState: .pausedLowBattery,
         backupPlanLoadResult: .success(.free)
     ))
@@ -1737,21 +1785,22 @@ private extension BackupSettingsViewModel {
 
 #Preview("Disabling: Success") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .disabled,
+        backupPlan: .disabled,
         backupPlanLoadResult: .success(.free),
     ))
 }
 
 #Preview("Disabling: Remotely") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .disabledLocallyStillDisablingRemotely,
+        backupPlan: .disabling,
         backupPlanLoadResult: .success(.free),
     ))
 }
 
 #Preview("Disabling: Remotely Failed") {
     BackupSettingsView(viewModel: .forPreview(
-        backupEnabledState: .disabledLocallyButDisableRemotelyFailed,
+        backupPlan: .disabled,
+        failedToDisableBackupsRemotely: true,
         backupPlanLoadResult: .success(.free),
     ))
 }
