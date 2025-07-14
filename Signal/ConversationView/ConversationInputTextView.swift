@@ -46,6 +46,12 @@ class ConversationInputTextView: BodyRangesTextView {
 
         contentMode = .redraw
         dataDetectorTypes = []
+        // Fixes https://github.com/signalapp/Signal-iOS/issues/5954
+        // Weird iOS undocumented behavior where it force enables stickers/memojis
+        // For reference https://stackoverflow.com/questions/79699798/uitextview-enabling-paste-force-enables-memojis-stickers/79700557#79700557
+        if #available(iOS 18.0, *) {
+            supportsAdaptiveImageGlyph = false
+        }
 
         placeholderView.text = OWSLocalizedString(
             "INPUT_TOOLBAR_MESSAGE_PLACEHOLDER",
