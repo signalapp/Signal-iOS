@@ -29,7 +29,12 @@ extension Usernames {
             libSignalUsername.value
         }
 
-        /// The hash of this username.
+        /// The hash of this username, as bytes.
+        var rawHash: Data {
+             libSignalUsername.hash
+         }
+
+        /// The hash of this username, base64url-encoded.
         lazy var hashString: String = {
             libSignalUsername.hash.asBase64Url
         }()

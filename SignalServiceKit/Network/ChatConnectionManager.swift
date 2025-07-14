@@ -28,6 +28,22 @@ public protocol ChatConnectionManager {
 
     func setRegistrationOverride(_ chatServiceAuth: ChatServiceAuth) async
     func clearRegistrationOverride() async
+
+    /// Access a libsignal "service" on the active unauthenticated connection.
+    ///
+    /// Intended to be used with code completion; ``UnauthServiceSelector``
+    /// has static members for each valid service. See the docs for that protocol
+    /// for under-the-hood information.
+    ///
+    /// This will attempt to hold the connection open until the operation
+    /// completes, so make sure to do any complex processing of the result
+    /// *outside* the callback.
+    ///
+    /// This method can be called from any thread.
+    func withUnauthService<Service, Output>(
+        _ service: Service,
+        do callback: (Service.Api) async throws -> Output,
+    ) async throws -> Output where Service: UnauthServiceSelector
 }
 
 extension ChatConnectionManager {
@@ -131,6 +147,17 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         return connectionUnidentified.currentState
     }
 
+    // This method can be called from any thread.
+    public func withUnauthService<Service, Output>(
+        _ service: Service,
+        do callback: (Service.Api) async throws -> Output,
+    ) async throws -> Output where Service: UnauthServiceSelector {
+        try await connectionUnidentified.withLibsignalConnection { connection in
+            // This force-cast is guaranteed by UnauthServiceSelector only being provided for valid service protocols.
+            try await callback(connection as! Service.Api)
+        }
+    }
+
     public var hasEmptiedInitialQueue: Bool {
         get async {
             return await connectionIdentified.hasEmptiedInitialQueue
@@ -193,6 +220,13 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
     }
 
     public func clearRegistrationOverride() async {
+    }
+
+    public func withUnauthService<Service, Output>(
+        _ service: Service,
+        do callback: (Service.Api) async throws -> Output,
+    ) async throws -> Output where Service: UnauthServiceSelector {
+        fatalError("must override for tests")
     }
 }
 
