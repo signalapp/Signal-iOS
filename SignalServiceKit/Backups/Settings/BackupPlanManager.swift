@@ -117,3 +117,20 @@ class BackupPlanManagerImpl: BackupPlanManager {
         }
     }
 }
+
+// MARK: -
+
+#if TESTABLE_BUILD
+
+class MockBackupPlanManager: BackupPlanManager {
+    var backupPlanMock: BackupPlan?
+    func backupPlan(tx: DBReadTransaction) -> BackupPlan {
+        backupPlanMock ?? .disabled
+    }
+
+    func setBackupPlan(_ plan: BackupPlan, tx: DBWriteTransaction) throws {
+        backupPlanMock = plan
+    }
+}
+
+#endif

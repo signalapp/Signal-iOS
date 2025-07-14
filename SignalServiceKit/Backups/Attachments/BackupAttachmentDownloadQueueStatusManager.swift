@@ -474,3 +474,40 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         return state.asQueueStatus
     }
 }
+
+// MARK: -
+
+#if TESTABLE_BUILD
+
+class MockBackupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager {
+    var currentStatusMock: BackupAttachmentDownloadQueueStatus?
+    func currentStatus() -> BackupAttachmentDownloadQueueStatus {
+        currentStatusMock ?? .empty
+    }
+
+    func minimumRequiredDiskSpaceToCompleteDownloads() -> UInt64 {
+        0
+    }
+
+    func reattemptDiskSpaceChecks() {
+        // Nothing
+    }
+
+    func beginObservingIfNecessary() -> BackupAttachmentDownloadQueueStatus {
+        return currentStatus()
+    }
+
+    func quickCheckDiskSpaceForDownloads() async {
+        // Nothing
+    }
+
+    func jobDidExperienceError(_ error: any Error) async -> BackupAttachmentDownloadQueueStatus? {
+        return nil
+    }
+
+    func didEmptyQueue() {
+        // Nothing
+    }
+}
+
+#endif

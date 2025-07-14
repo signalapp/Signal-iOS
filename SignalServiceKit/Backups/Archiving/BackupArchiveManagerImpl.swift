@@ -181,7 +181,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
     public func uploadEncryptedBackup(
         metadata: Upload.EncryptedBackupUploadMetadata,
-        registeredBackupIDToken: BackupIdManager.RegisteredBackupIDToken,
+        registeredBackupIDToken: RegisteredBackupIDToken,
         auth: ChatServiceAuth,
         progress: OWSProgressSink?
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {

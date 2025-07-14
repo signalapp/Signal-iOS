@@ -910,11 +910,11 @@ public class AppSetup {
             storyRecipientStore: storyRecipientStore
         )
 
-        let backupIdManager = BackupIdManager(
+        let backupIdManager = BackupIdManagerImpl(
             accountKeyStore: accountKeyStore,
-            api: BackupIdManager.NetworkAPI(networkManager: networkManager),
             backupRequestManager: backupRequestManager,
-            db: db
+            db: db,
+            networkManager: networkManager,
         )
 
         let registrationStateChangeManager = RegistrationStateChangeManagerImpl(

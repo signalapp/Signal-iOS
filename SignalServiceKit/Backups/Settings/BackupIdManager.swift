@@ -3,50 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import LibSignalClient
+import LibSignalClient
+
+/// An opaque token returned after registering a Backup ID, which can be
+/// required by APIs that require a Backup ID to have been previously
+/// registered in order to succeed.
+public struct RegisteredBackupIDToken {}
 
 /// Responsible for CRUD of the "Backup ID" and related keys, which are required
 /// for CRUD on Backup materials (archives, media) themselves.
-public class BackupIdManager {
-    public protocol API {
-        func reserveBackupId(
-            localAci: Aci,
-            messageBackupKey: BackupKey,
-            mediaBackupKey: BackupKey,
-            auth: ChatServiceAuth
-        ) async throws
-
-        func registerBackupKey(
-            backupAuth: BackupServiceAuth
-        ) async throws
-
-        func deleteBackupId(
-            backupAuth: BackupServiceAuth
-        ) async throws
-    }
-
-    /// An opaque token returned after registering a Backup ID, which can be
-    /// required by APIs that require a Backup ID to have been previously
-    /// registered in order to succeed.
-    public struct RegisteredBackupIDToken {}
-
-    private let accountKeyStore: AccountKeyStore
-    private let api: API
-    private let backupRequestManager: BackupRequestManager
-    private let db: DB
-
-    public init(
-        accountKeyStore: AccountKeyStore,
-        api: API,
-        backupRequestManager: BackupRequestManager,
-        db: DB
-    ) {
-        self.accountKeyStore = accountKeyStore
-        self.api = api
-        self.backupRequestManager = backupRequestManager
-        self.db = db
-    }
-
+public protocol BackupIdManager {
     /// Initialize Backups by reserving a "Backup ID" and registering a public
     /// key used to sign Backup auth credentials. This only needs to be done
     /// once for a given account while Backups remains enabled.
@@ -56,7 +22,53 @@ public class BackupIdManager {
     ///
     /// - Returns
     /// An opaque token indicating that a Backup ID has been registered.
-    public func registerBackupId(
+    func registerBackupId(
+        localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth
+    ) async throws -> RegisteredBackupIDToken
+
+    /// De-initialize Backups by deleting the "Backup ID". This is effectively a
+    /// "delete Backup" operation, as subsequent to this operation any
+    /// Backup-related objects for this account will be deleted from the server.
+    ///
+    /// - Important
+    /// This operation is key to, but not all of, "disabling Backups". Callers
+    /// interested in a user-level "disable Backups" operation should instead
+    /// refer to `BackupDisablingManager`.
+    func deleteBackupId(
+        localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth
+    ) async throws
+
+    /// See ``deleteBackupId(localIdentifiers:auth:)``. Similar, but with
+    /// Backup auth prepared ahead of time.
+    func deleteBackupId(
+        localIdentifiers: LocalIdentifiers,
+        backupAuth: BackupServiceAuth
+    ) async throws
+}
+
+// MARK: -
+
+final class BackupIdManagerImpl: BackupIdManager {
+    private let accountKeyStore: AccountKeyStore
+    private let api: NetworkAPI
+    private let backupRequestManager: BackupRequestManager
+    private let db: DB
+
+    init(
+        accountKeyStore: AccountKeyStore,
+        backupRequestManager: BackupRequestManager,
+        db: DB,
+        networkManager: NetworkManager,
+    ) {
+        self.accountKeyStore = accountKeyStore
+        self.api = NetworkAPI(networkManager: networkManager)
+        self.backupRequestManager = backupRequestManager
+        self.db = db
+    }
+
+    func registerBackupId(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
     ) async throws -> RegisteredBackupIDToken {
@@ -99,15 +111,7 @@ public class BackupIdManager {
         return RegisteredBackupIDToken()
     }
 
-    /// De-initialize Backups by deleting the "Backup ID". This is effectively a
-    /// "delete Backup" operation, as subsequent to this operation any
-    /// Backup-related objects for this account will be deleted from the server.
-    ///
-    /// - Important
-    /// This operation is key to, but not all of, "disabling Backups". Callers
-    /// interested in a user-level "disable Backups" operation should instead
-    /// refer to `BackupDisablingManager`.
-    public func deleteBackupId(
+    func deleteBackupId(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
     ) async throws {
@@ -125,7 +129,7 @@ public class BackupIdManager {
         }
     }
 
-    public func deleteBackupId(
+    func deleteBackupId(
         localIdentifiers: LocalIdentifiers,
         backupAuth: BackupServiceAuth
     ) async throws {
@@ -145,14 +149,14 @@ public class BackupIdManager {
 
     // MARK: -
 
-    public struct NetworkAPI: API {
+    private struct NetworkAPI {
         private let networkManager: NetworkManager
 
-        public init(networkManager: NetworkManager) {
+        init(networkManager: NetworkManager) {
             self.networkManager = networkManager
         }
 
-        public func registerBackupKey(
+        func registerBackupKey(
             backupAuth: BackupServiceAuth
         ) async throws {
             _ = try await networkManager.asyncRequest(
@@ -160,7 +164,7 @@ public class BackupIdManager {
             )
         }
 
-        public func reserveBackupId(
+        func reserveBackupId(
             localAci: Aci,
             messageBackupKey: BackupKey,
             mediaBackupKey: BackupKey,
@@ -187,7 +191,7 @@ public class BackupIdManager {
             )
         }
 
-        public func deleteBackupId(backupAuth: BackupServiceAuth) async throws {
+        func deleteBackupId(backupAuth: BackupServiceAuth) async throws {
             _ = try await networkManager.asyncRequest(
                 .deleteBackupRequest(backupAuth: backupAuth)
             )
@@ -239,3 +243,33 @@ private extension TSRequest {
         return request
     }
 }
+
+// MARK: -
+
+#if TESTABLE_BUILD
+
+class MockBackupIdManager: BackupIdManager {
+    var registerBackupIdMock: (() async throws -> RegisteredBackupIDToken)?
+    func registerBackupId(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> RegisteredBackupIDToken {
+        if let registerBackupIdMock {
+            return try await registerBackupIdMock()
+        }
+
+        throw OWSAssertionError("Mock not implemented!")
+    }
+
+    var deleteBackupIdMock: (() async throws -> Void)?
+    func deleteBackupId(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws {
+        if let deleteBackupIdMock {
+            return try await deleteBackupIdMock()
+        }
+
+        throw OWSAssertionError("Mock not implemented!")
+    }
+
+    func deleteBackupId(localIdentifiers: LocalIdentifiers, backupAuth: BackupServiceAuth) async throws {
+        throw OWSAssertionError("Mock not implemented!")
+    }
+}
+
+#endif

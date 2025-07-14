@@ -2882,6 +2882,7 @@
 		D9EB22222A4B636C00C73E1D /* Bitmaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */; };
 		D9EE790F2CF5232C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EE790E2CF5229C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift */; };
 		D9EE79112CF525A4007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EE79102CF5259D007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift */; };
+		D9F027A22E2071D4002994C1 /* BackupDisablingManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F027A12E2071D0002994C1 /* BackupDisablingManagerTest.swift */; };
 		D9F02BE72B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F02BE62B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift */; };
 		D9F399AD2A95798A001599EC /* IdentityKeyChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399AC2A95798A001599EC /* IdentityKeyChecker.swift */; };
 		D9F399B02A967664001599EC /* IdentityKeyCheckerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399AE2A96764A001599EC /* IdentityKeyCheckerTest.swift */; };
@@ -6854,6 +6855,7 @@
 		D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bitmaps.swift; sourceTree = "<group>"; };
 		D9EE790E2CF5229C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupReceiptCredentialRedemptionJobRecord.swift; sourceTree = "<group>"; };
 		D9EE79102CF5259D007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupReceiptCredentialRedemptionJobQueue.swift; sourceTree = "<group>"; };
+		D9F027A12E2071D0002994C1 /* BackupDisablingManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupDisablingManagerTest.swift; sourceTree = "<group>"; };
 		D9F02BE62B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallsListViewController+ViewModelLoaderTest.swift"; sourceTree = "<group>"; };
 		D9F399AC2A95798A001599EC /* IdentityKeyChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityKeyChecker.swift; sourceTree = "<group>"; };
 		D9F399AE2A96764A001599EC /* IdentityKeyCheckerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityKeyCheckerTest.swift; sourceTree = "<group>"; };
@@ -12786,6 +12788,7 @@
 		D9A952442E0A1C3600C3D1F7 /* Backups */ = {
 			isa = PBXGroup;
 			children = (
+				D9F027A12E2071D0002994C1 /* BackupDisablingManagerTest.swift */,
 				D962FC422E149EC7004DB623 /* BackupSettingsAttachmentDownloadTrackerTest.swift */,
 				D9324F7B2E1492820095D104 /* BackupSettingsAttachmentTrackerTest.swift */,
 				D9A952452E0A1C3C00C3D1F7 /* BackupSettingsAttachmentUploadTrackerTest.swift */,
@@ -17523,6 +17526,7 @@
 				F9B93CE028E246D900B3F8A0 /* AppDelegateTest.swift in Sources */,
 				F9B3A92F293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift in Sources */,
 				50B6BCB42AEC58250010FB3B /* AuthorMergeHelperBuilderTest.swift in Sources */,
+				D9F027A22E2071D4002994C1 /* BackupDisablingManagerTest.swift in Sources */,
 				D962FC432E149ECF004DB623 /* BackupSettingsAttachmentDownloadTrackerTest.swift in Sources */,
 				D9324F7C2E1492920095D104 /* BackupSettingsAttachmentTrackerTest.swift in Sources */,
 				D9A952462E0A1C4200C3D1F7 /* BackupSettingsAttachmentUploadTrackerTest.swift in Sources */,

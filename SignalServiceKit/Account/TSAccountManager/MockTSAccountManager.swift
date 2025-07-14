@@ -12,8 +12,6 @@ public class MockTSAccountManager: TSAccountManager {
 
     public init() {}
 
-    public func tmp_loadAccountState(tx: DBReadTransaction) {}
-
     public var warmCachesMock: (() -> Void)?
 
     open func warmCaches() {
