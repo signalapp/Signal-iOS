@@ -359,7 +359,7 @@ public class AppSetup {
         )
 
         let backupSettingsStore = BackupSettingsStore()
-        let backupCDNCache = BackupCDNCache()
+        let backupCDNCredentialStore = BackupCDNCredentialStore()
 
         let backupKeyMaterial = BackupKeyMaterialImpl(
             accountKeyStore: accountKeyStore
@@ -372,7 +372,7 @@ public class AppSetup {
                 db: db,
                 networkManager: networkManager
             ),
-            backupCDNCache: backupCDNCache,
+            backupCDNCredentialStore: backupCDNCredentialStore,
             backupKeyMaterial: backupKeyMaterial,
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
@@ -923,7 +923,7 @@ public class AppSetup {
         let backupDisablingManager = BackupDisablingManager(
             authCredentialStore: authCredentialStore,
             backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
-            backupCDNCache: backupCDNCache,
+            backupCDNCredentialStore: backupCDNCredentialStore,
             backupIdManager: backupIdManager,
             backupPlanManager: backupPlanManager,
             db: db,

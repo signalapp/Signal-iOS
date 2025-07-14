@@ -2763,7 +2763,7 @@
 		D9C964102BE451CE0058F143 /* TSMessageStorageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C9640F2BE451CE0058F143 /* TSMessageStorageTest.swift */; };
 		D9C964142BE45A030058F143 /* SignedPreKeyDeletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C964132BE45A030058F143 /* SignedPreKeyDeletionTests.swift */; };
 		D9C96F712E21A6BE00CA885A /* BackupCDNReadCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C96F702E21A6B900CA885A /* BackupCDNReadCredential.swift */; };
-		D9C96F752E21AA5800CA885A /* BackupCDNCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C96F742E21AA4900CA885A /* BackupCDNCache.swift */; };
+		D9C96F752E21AA5800CA885A /* BackupCDNCredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C96F742E21AA4900CA885A /* BackupCDNCredentialStore.swift */; };
 		D9C96F772E21ADF000CA885A /* BackupCDNMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C96F762E21ADBE00CA885A /* BackupCDNMetadata.swift */; };
 		D9CA61482C2E2D0000F99EA3 /* BackupArchiveAdHocCallArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA61472C2E2D0000F99EA3 /* BackupArchiveAdHocCallArchiver.swift */; };
 		D9CA614B2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA614A2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift */; };
@@ -6727,7 +6727,7 @@
 		D9C9640F2BE451CE0058F143 /* TSMessageStorageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSMessageStorageTest.swift; sourceTree = "<group>"; };
 		D9C964132BE45A030058F143 /* SignedPreKeyDeletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignedPreKeyDeletionTests.swift; sourceTree = "<group>"; };
 		D9C96F702E21A6B900CA885A /* BackupCDNReadCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupCDNReadCredential.swift; sourceTree = "<group>"; };
-		D9C96F742E21AA4900CA885A /* BackupCDNCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupCDNCache.swift; sourceTree = "<group>"; };
+		D9C96F742E21AA4900CA885A /* BackupCDNCredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupCDNCredentialStore.swift; sourceTree = "<group>"; };
 		D9C96F762E21ADBE00CA885A /* BackupCDNMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupCDNMetadata.swift; sourceTree = "<group>"; };
 		D9CA61472C2E2D0000F99EA3 /* BackupArchiveAdHocCallArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveAdHocCallArchiver.swift; sourceTree = "<group>"; };
 		D9CA614A2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateStoryThreadDeletionManager.swift; sourceTree = "<group>"; };
@@ -9636,7 +9636,7 @@
 				667BB2042C58073600E79B57 /* Attachments */,
 				66A1F4E02E035BE40095DE4B /* BackupExportJob */,
 				D9388C8F2DA4751A0048D4F9 /* Settings */,
-				D9C96F742E21AA4900CA885A /* BackupCDNCache.swift */,
+				D9C96F742E21AA4900CA885A /* BackupCDNCredentialStore.swift */,
 				D9C96F762E21ADBE00CA885A /* BackupCDNMetadata.swift */,
 				D9C96F702E21A6B900CA885A /* BackupCDNReadCredential.swift */,
 				C1A0F79C2B9F57340009DC0D /* BackupKeyMaterial.swift */,
@@ -17763,7 +17763,7 @@
 				66734F012CA1ED3F00558494 /* BackupAttachmentUploadScheduler.swift in Sources */,
 				66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */,
 				C18806342BD8080B0024044A /* BackupAuthCredentialManager.swift in Sources */,
-				D9C96F752E21AA5800CA885A /* BackupCDNCache.swift in Sources */,
+				D9C96F752E21AA5800CA885A /* BackupCDNCredentialStore.swift in Sources */,
 				D9C96F772E21ADF000CA885A /* BackupCDNMetadata.swift in Sources */,
 				D9C96F712E21A6BE00CA885A /* BackupCDNReadCredential.swift in Sources */,
 				D9DF21EB2E21BD2800A962B2 /* BackupDisablingManager.swift in Sources */,

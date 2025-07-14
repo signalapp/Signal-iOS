@@ -12,7 +12,7 @@ public class BackupDisablingManager {
 
     private let authCredentialStore: AuthCredentialStore
     private let backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager
-    private let backupCDNCache: BackupCDNCache
+    private let backupCDNCredentialStore: BackupCDNCredentialStore
     private let backupIdManager: BackupIdManager
     private let backupPlanManager: BackupPlanManager
     private let db: DB
@@ -27,7 +27,7 @@ public class BackupDisablingManager {
     init(
         authCredentialStore: AuthCredentialStore,
         backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager,
-        backupCDNCache: BackupCDNCache,
+        backupCDNCredentialStore: BackupCDNCredentialStore,
         backupIdManager: BackupIdManager,
         backupPlanManager: BackupPlanManager,
         db: DB,
@@ -35,7 +35,7 @@ public class BackupDisablingManager {
     ) {
         self.authCredentialStore = authCredentialStore
         self.backupAttachmentDownloadQueueStatusManager = backupAttachmentDownloadQueueStatusManager
-        self.backupCDNCache = backupCDNCache
+        self.backupCDNCredentialStore = backupCDNCredentialStore
         self.backupIdManager = backupIdManager
         self.backupPlanManager = backupPlanManager
         self.db = db
@@ -151,7 +151,7 @@ public class BackupDisablingManager {
                 // With Backups disabled, these credentials are no longer valid
                 // and are no longer safe to use.
                 authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
-                backupCDNCache.wipe(tx: tx)
+                backupCDNCredentialStore.wipe(tx: tx)
             }
 
             logger.info("Successfully disabled Backups locally!")

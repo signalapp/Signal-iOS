@@ -143,7 +143,7 @@ extension BackupRequestManager {
 public struct BackupRequestManagerImpl: BackupRequestManager {
 
     private let backupAuthCredentialManager: BackupAuthCredentialManager
-    private let backupCDNCache: BackupCDNCache
+    private let backupCDNCredentialStore: BackupCDNCredentialStore
     private let backupKeyMaterial: BackupKeyMaterial
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
@@ -153,7 +153,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
 
     init(
         backupAuthCredentialManager: BackupAuthCredentialManager,
-        backupCDNCache: BackupCDNCache,
+        backupCDNCredentialStore: BackupCDNCredentialStore,
         backupKeyMaterial: BackupKeyMaterial,
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
@@ -161,7 +161,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
         networkManager: NetworkManager
     ) {
         self.backupAuthCredentialManager = backupAuthCredentialManager
-        self.backupCDNCache = backupCDNCache
+        self.backupCDNCredentialStore = backupCDNCredentialStore
         self.backupKeyMaterial = backupKeyMaterial
         self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
@@ -224,7 +224,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
 
     private func fetchBackupCDNMetadata(auth: BackupServiceAuth) async throws -> BackupCDNMetadata {
         if let cachedCDNMetadata = db.read(block: { tx in
-            backupCDNCache.backupCDNMetadata(
+            backupCDNCredentialStore.backupCDNMetadata(
                 authType: auth.type,
                 now: dateProvider(),
                 tx: tx
@@ -239,7 +239,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
         )
 
         await db.awaitableWrite { tx in
-            backupCDNCache.setBackupCDNMetadata(
+            backupCDNCredentialStore.setBackupCDNMetadata(
                 cdnMetadata,
                 authType: auth.type,
                 now: dateProvider(),
@@ -268,7 +268,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
         auth: BackupServiceAuth
     ) async throws -> BackupCDNReadCredential {
         if let cachedCDNReadCredential = db.read(block: { tx in
-            backupCDNCache.backupCDNReadCredential(
+            backupCDNCredentialStore.backupCDNReadCredential(
                 cdnNumber: cdn,
                 authType: auth.type,
                 now: dateProvider(),
@@ -284,7 +284,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
         )
 
         await db.awaitableWrite { tx in
-            backupCDNCache.setBackupCDNReadCredential(
+            backupCDNCredentialStore.setBackupCDNReadCredential(
                 cdnReadCredential,
                 cdnNumber: cdn,
                 authType: auth.type,

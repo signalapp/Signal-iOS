@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-struct BackupCDNCache {
+struct BackupCDNCredentialStore {
     private enum Constants {
         static let cdnMetadataLifetime: TimeInterval = BackupCDNReadCredential.lifetime
     }
@@ -11,7 +11,7 @@ struct BackupCDNCache {
     private let kvStore: KeyValueStore
 
     init() {
-        self.kvStore = KeyValueStore(collection: "BackupCDNCache")
+        self.kvStore = KeyValueStore(collection: "BackupCDNCredentialStore")
     }
 
     // MARK: -
@@ -26,18 +26,7 @@ struct BackupCDNCache {
         cdnNumber: Int32,
         authType: BackupAuthCredentialType,
     ) -> String {
-        let cdn2 = "BackupCDN2:\(authType.rawValue)"
-        let cdn3 = "BackupCDN3:\(authType.rawValue)"
-
-        switch cdnNumber {
-        case 2:
-            return cdn2
-        case 3:
-            return cdn3
-        default:
-            owsFailDebug("Unexpected CDN number \(cdnNumber): assuming CDN3!")
-            return cdn3
-        }
+        return "BackupCDN\(cdnNumber):\(authType.rawValue)"
     }
 
     func backupCDNReadCredential(

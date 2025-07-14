@@ -20,7 +20,7 @@ struct BackupDisablingManagerTest {
         let disablingManager = BackupDisablingManager(
             authCredentialStore: AuthCredentialStore(),
             backupAttachmentDownloadQueueStatusManager: mockBackupAttachmentDownloadQueueStatusManager,
-            backupCDNCache: BackupCDNCache(),
+            backupCDNCredentialStore: BackupCDNCredentialStore(),
             backupIdManager: mockBackupIdManager,
             backupPlanManager: mockBackupPlanManager,
             db: mockDB,
