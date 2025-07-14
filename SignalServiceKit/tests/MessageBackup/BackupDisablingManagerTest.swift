@@ -14,6 +14,7 @@ struct BackupDisablingManagerTest {
         let mockBackupAttachmentDownloadQueueStatusManager = MockBackupAttachmentDownloadQueueStatusManager()
         let mockBackupIdManager = MockBackupIdManager()
         let mockBackupPlanManager = MockBackupPlanManager()
+        let mockBackupListMediaManager = MockBackupListMediaManager()
         let mockDB = InMemoryDB()
         let mockTSAccountManager = MockTSAccountManager()
 
@@ -22,6 +23,7 @@ struct BackupDisablingManagerTest {
             backupAttachmentDownloadQueueStatusManager: mockBackupAttachmentDownloadQueueStatusManager,
             backupCDNCredentialStore: BackupCDNCredentialStore(),
             backupIdManager: mockBackupIdManager,
+            backupListMediaManager: mockBackupListMediaManager,
             backupPlanManager: mockBackupPlanManager,
             db: mockDB,
             tsAccountManager: mockTSAccountManager

@@ -1015,3 +1015,19 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         static let hasCompletedEnumeratingAttachmentsKey = "hasCompletedEnumeratingAttachmentsKey"
     }
 }
+
+// MARK: -
+
+#if TESTABLE_BUILD
+
+class MockBackupListMediaManager: BackupListMediaManager {
+    func queryListMediaIfNeeded() async throws {
+        // Nothing
+    }
+
+    func setNeedsQueryListMedia(tx: DBWriteTransaction) {
+        // Nothing
+    }
+}
+
+#endif

@@ -14,6 +14,7 @@ public class BackupDisablingManager {
     private let backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager
     private let backupCDNCredentialStore: BackupCDNCredentialStore
     private let backupIdManager: BackupIdManager
+    private let backupListMediaManager: BackupListMediaManager
     private let backupPlanManager: BackupPlanManager
     private let db: DB
     private let kvStore: KeyValueStore
@@ -29,6 +30,7 @@ public class BackupDisablingManager {
         backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager,
         backupCDNCredentialStore: BackupCDNCredentialStore,
         backupIdManager: BackupIdManager,
+        backupListMediaManager: BackupListMediaManager,
         backupPlanManager: BackupPlanManager,
         db: DB,
         tsAccountManager: TSAccountManager,
@@ -37,6 +39,7 @@ public class BackupDisablingManager {
         self.backupAttachmentDownloadQueueStatusManager = backupAttachmentDownloadQueueStatusManager
         self.backupCDNCredentialStore = backupCDNCredentialStore
         self.backupIdManager = backupIdManager
+        self.backupListMediaManager = backupListMediaManager
         self.backupPlanManager = backupPlanManager
         self.db = db
         self.kvStore = KeyValueStore(collection: "BackupDisablingManager")
@@ -118,7 +121,24 @@ public class BackupDisablingManager {
 
         logger.info("Waiting for downloads before disabling...")
         await _waitForBackupAttachmentDownloads()
-        logger.info("Done waiting for downloads. Disabling Backups remotely...")
+        logger.info("Done waiting for downloads.")
+
+        do {
+            // If we skipped downloads, it's possible we're still in the middle
+            // of a list-media operation. If so, we don't want to delete stuff
+            // out from under it.
+            logger.info("Waiting for list-media before disabling...")
+
+            try await Retry.performWithIndefiniteNetworkRetries {
+                try await backupListMediaManager.queryListMediaIfNeeded()
+            }
+
+            logger.info("Done waiting for list-media.")
+        } catch {
+            logger.error("Failed to list-media! \(error)")
+            // Continue anyway – this isn't a retryable network error, and we
+            // really want to make sure we disable Backups.
+        }
 
         guard let localIdentifiers = db.read(block: { tx in
             tsAccountManager.localIdentifiers(tx: tx)
@@ -129,7 +149,13 @@ public class BackupDisablingManager {
 
         let successfullyDisabledRemotely: Bool
         do {
-            try await _disableRemotelyWithIndefiniteNetworkRetries(localIdentifiers: localIdentifiers)
+            logger.info("Disabling Backups remotely...")
+            try await Retry.performWithIndefiniteNetworkRetries {
+                try await backupIdManager.deleteBackupId(
+                    localIdentifiers: localIdentifiers,
+                    auth: .implicit()
+                )
+            }
 
             logger.info("Successfully disabled Backups remotely!")
             successfullyDisabledRemotely = true
@@ -180,19 +206,18 @@ public class BackupDisablingManager {
             }
         }
     }
+}
 
-    private func _disableRemotelyWithIndefiniteNetworkRetries(
-        localIdentifiers: LocalIdentifiers,
-    ) async throws {
+// MARK: -
+
+private extension Retry {
+    static func performWithIndefiniteNetworkRetries(block: () async throws -> Void) async throws {
         try await Retry.performWithBackoff(
             maxAttempts: .max,
             maxAverageBackoff: 2 * .minute,
             isRetryable: { $0.isNetworkFailureOrTimeout || $0.is5xxServiceResponse },
         ) {
-            try await backupIdManager.deleteBackupId(
-                localIdentifiers: localIdentifiers,
-                auth: .implicit()
-            )
+            try await block()
         }
     }
 }

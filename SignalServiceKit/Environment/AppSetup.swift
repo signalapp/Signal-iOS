@@ -925,6 +925,7 @@ public class AppSetup {
             backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
             backupCDNCredentialStore: backupCDNCredentialStore,
             backupIdManager: backupIdManager,
+            backupListMediaManager: backupListMediaManager,
             backupPlanManager: backupPlanManager,
             db: db,
             tsAccountManager: tsAccountManager,
