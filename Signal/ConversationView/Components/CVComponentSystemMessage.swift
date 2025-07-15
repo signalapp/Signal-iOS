@@ -1077,14 +1077,7 @@ extension CVComponentSystemMessage {
                               action: .didTapUnverifiedIdentityChange(address: address))
             }
         case .wrongTrustedIdentityKey:
-            guard let message = message as? TSInvalidIdentityKeyErrorMessage else {
-                owsFailDebug("Invalid interaction.")
-                return nil
-            }
-            return Action(title: OWSLocalizedString("SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
-                                                   comment: "Label for button to verify a user's safety number."),
-                          accessibilityIdentifier: "verify_safety_number",
-                          action: .didTapInvalidIdentityKeyErrorMessage(errorMessage: message))
+            return nil
         case .invalidKeyException,
              .missingKeyId,
              .noSession,

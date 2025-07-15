@@ -205,50 +205,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
 #pragma mark - Interactions
 
-/**
- * Iterate over this thread's interactions.
- */
-- (void)enumerateRecentInteractionsWithTransaction:(DBReadTransaction *)transaction
-                                        usingBlock:(void (^)(TSInteraction *interaction))block
-{
-    NSError *error;
-    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
-    [interactionFinder enumerateRecentInteractionsForConversationViewWithTransaction:transaction
-                                                                               error:&error
-                                                                               block:^BOOL(TSInteraction *interaction) {
-                                                                                   block(interaction);
-                                                                                   return YES;
-                                                                               }];
-    if (error != nil) {
-        OWSFailDebug(@"Error during enumeration: %@", error);
-    }
-}
-
-- (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key
-                                                                                     tx:(DBReadTransaction *)tx
-{
-    NSMutableArray *errorMessages = [NSMutableArray new];
-    [self enumerateRecentInteractionsWithTransaction:tx
-                                          usingBlock:^(TSInteraction *interaction) {
-                                              if ([interaction isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage
-                                                                                 class]]) {
-                                                  TSInvalidIdentityKeyReceivingErrorMessage *errorMessage
-                                                      = (TSInvalidIdentityKeyReceivingErrorMessage *)interaction;
-                                                  NSError *error;
-                                                  NSData *newIdentityKey = [errorMessage newIdentityKey:&error];
-                                                  if (newIdentityKey != nil) {
-                                                      if ([newIdentityKey isEqualToData:key]) {
-                                                          [errorMessages addObject:errorMessage];
-                                                      }
-                                                  } else {
-                                                      OWSFailDebug(@"error: %@", error);
-                                                  }
-                                              }
-                                          }];
-
-    return errorMessages;
-}
-
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(DBReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);

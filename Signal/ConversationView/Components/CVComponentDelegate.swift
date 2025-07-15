@@ -189,8 +189,6 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
 
     func didTapUnverifiedIdentityChange(_ address: SignalServiceAddress)
 
-    func didTapInvalidIdentityKeyErrorMessage(_ message: TSInvalidIdentityKeyErrorMessage)
-
     func didTapCorruptedMessage(_ message: TSErrorMessage)
 
     func didTapSessionRefreshMessage(_ message: TSErrorMessage)
@@ -267,7 +265,6 @@ struct CVMessageAction: Equatable {
         case none
         case didTapPreviouslyVerifiedIdentityChange(address: SignalServiceAddress)
         case didTapUnverifiedIdentityChange(address: SignalServiceAddress)
-        case didTapInvalidIdentityKeyErrorMessage(errorMessage: TSInvalidIdentityKeyErrorMessage)
         case didTapCorruptedMessage(errorMessage: TSErrorMessage)
         case didTapSessionRefreshMessage(errorMessage: TSErrorMessage)
         case didTapResendGroupUpdate(errorMessage: TSErrorMessage)
@@ -303,8 +300,6 @@ struct CVMessageAction: Equatable {
                 delegate.didTapPreviouslyVerifiedIdentityChange(address)
             case .didTapUnverifiedIdentityChange(let address):
                 delegate.didTapUnverifiedIdentityChange(address)
-            case .didTapInvalidIdentityKeyErrorMessage(let errorMessage):
-                delegate.didTapInvalidIdentityKeyErrorMessage(errorMessage)
             case .didTapCorruptedMessage(let errorMessage):
                 delegate.didTapCorruptedMessage(errorMessage)
             case .didTapSessionRefreshMessage(let errorMessage):

@@ -129,12 +129,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 #pragma mark Interactions
 
-/**
- * Get all messages in the thread we weren't able to decrypt
- */
-- (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key
-                                                                                     tx:(DBReadTransaction *)tx;
-
 - (BOOL)hasSafetyNumbers;
 
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(DBReadTransaction *)transaction

@@ -611,8 +611,6 @@ public enum EnvelopeSource {
     case websocketIdentified
     case websocketUnidentified
     case rest
-    // We re-decrypt incoming messages after accepting a safety number change.
-    case identityChangeError
     case debugUI
     case tests
 }

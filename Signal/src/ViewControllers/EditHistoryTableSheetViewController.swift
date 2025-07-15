@@ -431,8 +431,6 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
 
     func didTapUnverifiedIdentityChange(_ address: SignalServiceAddress) {}
 
-    func didTapInvalidIdentityKeyErrorMessage(_ message: TSInvalidIdentityKeyErrorMessage) {}
-
     func didTapCorruptedMessage(_ message: TSErrorMessage) {}
 
     func didTapSessionRefreshMessage(_ message: TSErrorMessage) {}

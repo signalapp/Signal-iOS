@@ -723,50 +723,6 @@ extension ConversationViewController: CVComponentDelegate {
         presentActionSheet(actionSheet)
     }
 
-    public func didTapInvalidIdentityKeyErrorMessage(_ message: TSInvalidIdentityKeyErrorMessage) {
-        AssertIsOnMainThread()
-
-        let keyOwner = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return SSKEnvironment.shared.contactManagerRef.displayName(for: message.theirSignalAddress(), tx: tx).resolvedValue()
-        }
-        let titleFormat = OWSLocalizedString("SAFETY_NUMBERS_ACTIONSHEET_TITLE", comment: "Action sheet heading")
-        let titleText = String(format: titleFormat, keyOwner)
-
-        let actionSheet = ActionSheetController(title: titleText, message: nil)
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-
-        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("SHOW_SAFETY_NUMBER_ACTION",
-                                                                         comment: "Action sheet item"),
-                                                accessibilityIdentifier: "show_safety_number",
-                                                style: .default) { [weak self] _ in
-            Logger.info("Remote Key Changed actions: Show fingerprint display")
-            self?.showFingerprint(address: message.theirSignalAddress())
-        })
-
-        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("ACCEPT_NEW_IDENTITY_ACTION",
-                                                                         comment: "Action sheet item"),
-                                                accessibilityIdentifier: "accept_safety_number",
-                                                style: .default) { _ in
-            Logger.info("Remote Key Changed actions: Accepted new identity key")
-
-            // DEPRECATED: we're no longer creating these incoming SN error's per message,
-            // but there will be some legacy ones in the wild, behind which await
-            // as-of-yet-undecrypted messages
-            if let errorMessage = message as? TSInvalidIdentityKeyReceivingErrorMessage {
-                do {
-                    _ = try errorMessage.acceptNewIdentityKey()
-                } catch {
-                    // Deliberately crash if the user fails to explicitly accept the new identity
-                    // key. In practice we haven't been creating these messages in over a year.
-                    owsFail("Error: \(error)")
-                }
-            }
-        })
-
-        dismissKeyBoard()
-        self.presentActionSheet(actionSheet)
-    }
-
     public func didTapCorruptedMessage(_ message: TSErrorMessage) {
         AssertIsOnMainThread()
 

@@ -1189,9 +1189,6 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapUnverifiedIdentityChange(_ address: SignalServiceAddress) {}
 
     // TODO:
-    func didTapInvalidIdentityKeyErrorMessage(_ message: TSInvalidIdentityKeyErrorMessage) {}
-
-    // TODO:
     func didTapCorruptedMessage(_ message: TSErrorMessage) {}
 
     // TODO:
