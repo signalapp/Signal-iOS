@@ -1,1 +1,1 @@
-• We fixed a bug where tapping on "Learn More" could interrupt the initial synchronization process after adding a new linked device, so now your desire for knowledge doesn't stand in the way of progress.
+• قمنا بإصلاح خطأ كان يُؤدي إلى تعطيل عملية المزامنة الأولية عند النقر على "اعرف المزيد" بعد إضافة جهاز مُرتبِط جديد. الآن، لم تعد رغبتك في المعرفة تعيق مسيرة التقدُّم.

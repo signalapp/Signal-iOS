@@ -1,1 +1,1 @@
-• We fixed a bug where tapping on "Learn More" could interrupt the initial synchronization process after adding a new linked device, so now your desire for knowledge doesn't stand in the way of progress.
+• हमने एक गड़बड़ी ठीक की है। इस गड़बड़ी के तहत, नए लिंक किए गए डिवाइस को जोड़ने पर अगर आप “ज़्यादा जानें” पर टैप करते, तो कई बार शुरुआती सिंक्रनाइजेशन की प्रक्रिया रुक जाती थी। अब सीखने के आपके जज़्बे के बीच यह रुकावट नहीं आएगी।

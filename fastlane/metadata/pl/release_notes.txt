@@ -1,1 +1,1 @@
-• We fixed a bug where tapping on "Learn More" could interrupt the initial synchronization process after adding a new linked device, so now your desire for knowledge doesn't stand in the way of progress.
+• Dotknięcie opcji „Dowiedz się więcej” nie przerwie już synchronizacji po tym, jak połączysz z kontem nowe urządzenie. Bo u nas ciekawość to pierwszy stopień do… wiedzy!

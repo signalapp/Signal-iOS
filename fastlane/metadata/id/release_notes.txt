@@ -1,1 +1,1 @@
-• We fixed a bug where tapping on "Learn More" could interrupt the initial synchronization process after adding a new linked device, so now your desire for knowledge doesn't stand in the way of progress.
+• Kami memperbaiki bug berikut: saat Anda mengetuk "Pelajari Selengkapnya", proses tersebut dapat menginterupsi proses sinkronisasi awal setelah menambahkan perangkat terhubung yang baru. Dengan diperbaikinya bug ini, kini Anda bisa mendapatkan info yang dibutuhkan tanpa mengganggu proses sinkronisasi yang berlangsung.

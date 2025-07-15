@@ -1,1 +1,1 @@
-• We fixed a bug where tapping on "Learn More" could interrupt the initial synchronization process after adding a new linked device, so now your desire for knowledge doesn't stand in the way of progress.
+• 새로 연결된 기기를 추가한 후 '자세히 알아보기'를 누르면 초기 동기화 프로세스가 중단되는 버그를 수정했습니다.

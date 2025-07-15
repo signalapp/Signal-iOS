@@ -1,1 +1,1 @@
-• We fixed a bug where tapping on "Learn More" could interrupt the initial synchronization process after adding a new linked device, so now your desire for knowledge doesn't stand in the way of progress.
+• Chúng tôi đã sửa lỗi khi nhấn vào "Tìm hiểu thêm" có thể làm gián đoạn quá trình đồng bộ hóa ban đầu sau khi thêm thiết bị được liên kết mới.

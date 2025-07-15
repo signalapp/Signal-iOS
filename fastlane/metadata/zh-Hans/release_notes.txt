@@ -1,1 +1,1 @@
-• We fixed a bug where tapping on "Learn More" could interrupt the initial synchronization process after adding a new linked device, so now your desire for knowledge doesn't stand in the way of progress.
+• 我们修复了一个漏洞，该漏洞会在用户添加新的已链接设备后点击“了解更多”时导致初始同步进程中断。

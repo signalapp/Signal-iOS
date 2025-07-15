@@ -1,1 +1,1 @@
-• We fixed a bug where tapping on "Learn More" could interrupt the initial synchronization process after adding a new linked device, so now your desire for knowledge doesn't stand in the way of progress.
+• Opravili sme chybu, ktorá spôsobovala, že ťuknutie na tlačidlo „Zistiť viac“ prerušilo počiatočný proces synchronizácie po pridaní nového prepojeného zariadenia.

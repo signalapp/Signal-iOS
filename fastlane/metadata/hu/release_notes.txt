@@ -1,1 +1,1 @@
-• We fixed a bug where tapping on "Learn More" could interrupt the initial synchronization process after adding a new linked device, so now your desire for knowledge doesn't stand in the way of progress.
+• Kijavítottunk egy hibát, amely miatt a „További információk” gombra koppintva megszakíthattad a kezdeti szinkronizálási folyamatot egy új, összekapcsolt eszköz hozzáadása után, így mostantól a tudásvágy nem áll a haladásod útjába.

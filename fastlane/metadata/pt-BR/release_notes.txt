@@ -1,1 +1,1 @@
-• We fixed a bug where tapping on "Learn More" could interrupt the initial synchronization process after adding a new linked device, so now your desire for knowledge doesn't stand in the way of progress.
+• Corrigimos um erro em que tocar em " Saiba mais " poderia interromper o processo inicial de sincronização após adicionar um novo dispositivo vinculado. 

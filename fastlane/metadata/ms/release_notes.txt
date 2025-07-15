@@ -1,1 +1,1 @@
-• We fixed a bug where tapping on "Learn More" could interrupt the initial synchronization process after adding a new linked device, so now your desire for knowledge doesn't stand in the way of progress.
+• Kami membetulkan pepijat di mana mengetik "Ketahui Lebih Lanjut" boleh mengganggu proses penyegerakan awal selepas menambah peranti terpaut baharu.
