@@ -301,7 +301,6 @@ extension ExperienceUpgradeManifest {
                 .newLinkedDeviceNotification,
                 .introducingPins,
                 .pinReminder,
-                .backupKeyReminder,
                 .unrecognized:
             return false
         case
@@ -310,6 +309,7 @@ extension ExperienceUpgradeManifest {
                 .inactiveLinkedDeviceReminder,
                 .remoteMegaphone,
                 .enableBackupsReminder,
+                .backupKeyReminder,
                 .contactPermissionReminder:
             return true
         }
