@@ -315,8 +315,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
         inMemoryState.askForPinDuringReregistration = false
 
-        deps.db.write { tx in
-            updateMasterKeyAndLocalState(masterKey: accountEntropyPool.getMasterKey(), tx: tx)
+        // If the master key has already been restored from SVR, this can mean two things
+        // 1) The user has gone through the basic restore flow that may ask for the PIN before prompting
+        //    the restore method.
+        // 2) The user previously entered an AEP, but attempting to use the AEP derived master key resulted
+        //    in a RRP failure from the server, which usually means a prior registration rotated the
+        //    AEP and/or the MasterKey. In this case, we'll restore the MasterKey from SVR and won't overwrite
+        //    the value with any further AEP derived keys. This should be fine in regular use since SVR
+        //    should always contain the most recent MasterKey, and, in the case of reglock, the most recent
+        //    reglock token.
+        if !persistedState.hasRestoredFromSVR {
+            deps.db.write { tx in
+                updateMasterKeyAndLocalState(masterKey: accountEntropyPool.getMasterKey(), tx: tx)
+            }
         }
         return self.nextStep()
     }
