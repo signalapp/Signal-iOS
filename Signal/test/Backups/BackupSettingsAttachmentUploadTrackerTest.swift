@@ -200,19 +200,19 @@ private extension OWSProgress {
 private class MockAttachmentUploadProgress: BackupAttachmentUploadProgressMock {
     var progressMock: OWSProgress {
         didSet {
-            mockObserverBlocks.forEach { $0(progressMock) }
+            mockObserverBlocks.get().forEach { $0(progressMock) }
         }
     }
 
-    private var mockObserverBlocks: [(OWSProgress) -> Void]
+    private let mockObserverBlocks: AtomicValue<[(OWSProgress) -> Void]>
 
     init(total: UInt64) {
-        self.mockObserverBlocks = []
+        self.mockObserverBlocks = AtomicValue([], lock: .init())
         self.progressMock = OWSProgress(completed: 0, total: total)
     }
 
     override func addObserver(_ block: @escaping (OWSProgress) -> Void) async throws -> BackupAttachmentUploadProgressObserver {
-        mockObserverBlocks.append(block)
+        mockObserverBlocks.update { $0.append(block) }
         return try await super.addObserver(block)
     }
 }
