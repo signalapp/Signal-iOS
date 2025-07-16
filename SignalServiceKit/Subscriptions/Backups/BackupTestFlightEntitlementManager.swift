@@ -560,7 +560,7 @@ private extension TSRequest {
     ) -> TSRequest {
         return TSRequest(
             url: URL(string: "v1/devicecheck/attest?keyId=\(keyId)")!,
-            method: "POST",
+            method: "PUT",
             body: .data(keyAttestation)
         )
     }
