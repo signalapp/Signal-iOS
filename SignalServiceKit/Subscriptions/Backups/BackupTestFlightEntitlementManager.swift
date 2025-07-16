@@ -210,13 +210,16 @@ private struct AppAttestManager {
             throw .notSupported
         }
 
+        logger.info("Getting attested key.")
         let attestedKey = try await getOrGenerateAttestedKey()
 
+        logger.info("Generating assertion.")
         let requestAssertion = try await generateAssertionForAction(
             action,
             attestedKey: attestedKey
         )
 
+        logger.info("Performing attestation action with assertion.")
         try await _performAttestationAction(
             keyId: attestedKey.identifier,
             requestAssertion: requestAssertion
@@ -237,7 +240,7 @@ private struct AppAttestManager {
         } catch where error.isNetworkFailureOrTimeout {
             throw .networkError
         } catch {
-            owsFailDebug("Failed to perform attestation action! \(error)", logger: logger)
+            owsFailDebug("Unexpected error performing attestation action! \(error)", logger: logger)
             throw .genericError
         }
 
@@ -257,6 +260,7 @@ private struct AppAttestManager {
     /// performed in the past.
     private func getOrGenerateAttestedKey() async throws(AttestationError) -> AttestedKey {
         if let attestedKeyIdentifier = readAttestedKeyIdentifier() {
+            logger.info("Using previously-attested key.")
             return AttestedKey(identifier: attestedKeyIdentifier)
         }
 
@@ -268,10 +272,11 @@ private struct AppAttestManager {
         } catch let dcError as DCError {
             throw parseDCError(dcError)
         } catch {
-            owsFailDebug("Unexpected generating key! \(error)", logger: logger)
+            owsFailDebug("Unexpected error generating key! \(error)", logger: logger)
             throw .genericError
         }
 
+        logger.info("Attesting and registering new key.")
         return try await attestAndRegisterKey(newKeyIdentifier: newKeyIdentifier)
     }
 
@@ -337,7 +342,7 @@ private struct AppAttestManager {
         } catch where error.isNetworkFailureOrTimeout {
             throw .networkError
         } catch {
-            owsFailDebug("Failed to get attestation challenge!", logger: logger)
+            owsFailDebug("Unexpected error fetching attestation challenge! \(error)", logger: logger)
             throw .genericError
         }
 
@@ -345,12 +350,12 @@ private struct AppAttestManager {
         case 200:
             break
         default:
-            owsFailDebug("Unexpected status code requesting attestation challenge! \(response.responseStatusCode)", logger: logger)
+            owsFailDebug("Unexpected status code fetching attestation challenge! \(response.responseStatusCode)", logger: logger)
             throw .genericError
         }
 
         guard let responseBodyData = response.responseBodyData else {
-            owsFailDebug("Missing response body data requesting attestation challenge!", logger: logger)
+            owsFailDebug("Missing response body data fetching attestation challenge!", logger: logger)
             throw .genericError
         }
 
@@ -364,7 +369,7 @@ private struct AppAttestManager {
                 from: responseBodyData
             )
         } catch {
-            owsFailDebug("Failed to decode response body requesting attestation challenge!", logger: logger)
+            owsFailDebug("Failed to decode response body fetching attestation challenge! \(error)", logger: logger)
             throw .genericError
         }
 
@@ -473,7 +478,7 @@ private struct AppAttestManager {
         }
 
         guard let responseBodyData = response.responseBodyData else {
-            owsFailDebug("Unexpectedly missing response body data fetching assertion challenge!", logger: logger)
+            owsFailDebug("Missing response body data fetching assertion challenge!", logger: logger)
             throw .genericError
         }
 
@@ -487,7 +492,7 @@ private struct AppAttestManager {
                 from: responseBodyData
             )
         } catch {
-            owsFailDebug("Failed to decode response body fetching assertion challenge!", logger: logger)
+            owsFailDebug("Failed to decode response body fetching assertion challenge! \(error)", logger: logger)
             throw .genericError
         }
 
