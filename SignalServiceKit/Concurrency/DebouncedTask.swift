@@ -12,15 +12,9 @@
 /// call to `.run()` after N seconds will start a new `Task`.
 ///
 /// - Important
-/// Cancellations do not pass through to the async block underlying a
-/// `DebouncedTask`. For example, running
-/// ```swift
-/// let debouncedTask = DebouncedTask { ... }
-/// let wrapperTask = Task { await debouncedTask.run() }
-/// wrapperTask.cancel()
-/// ```
-/// will not automatically pass the cancellation through to the block being run
-/// by the `DebouncedTask`.
+/// Debounced callers of `.run()` will all be returned the same `Task` instance.
+/// That means that if any caller cancels that `Task`, it will be canceled for
+/// all callers.
 public struct DebouncedTask<Value> {
     private struct State {
         var task: Task<Value, Never>?
@@ -32,11 +26,6 @@ public struct DebouncedTask<Value> {
     public init(block: @escaping () async -> Value) {
         self.block = block
         self.state = AtomicValue(State(), lock: .init())
-    }
-
-    /// Returns the currently-running `Task`, if present.
-    public func isCurrentlyRunning() -> Task<Value, Never>? {
-        return state.get().task
     }
 
     /// Returns a `Task` running the block, or an actively-running `Task` from

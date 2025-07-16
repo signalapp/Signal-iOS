@@ -50,12 +50,12 @@ struct DebouncedTaskTest {
     }
 
     @Test
-    func testIsCurrentlyRunning() async {
+    func testCancellation() async {
         actor TestActor {
             var allowRunning = false
 
-            func setAllowRunning() {
-                allowRunning = true
+            func setAllowRunning(_ value: Bool) {
+                allowRunning = value
             }
         }
 
@@ -65,14 +65,16 @@ struct DebouncedTaskTest {
             while await !testActor.allowRunning {
                 await Task.yield()
             }
+
+            #expect(throws: CancellationError.self) {
+                try Task.checkCancellation()
+            }
+            #expect(Task.isCancelled)
         }
 
-        let taskOne = debouncedTask.run()
-        #expect(debouncedTask.isCurrentlyRunning() != nil)
-
-        await testActor.setAllowRunning()
-
-        await taskOne.value
-        #expect(debouncedTask.isCurrentlyRunning() == nil)
+        let task = debouncedTask.run()
+        task.cancel()
+        await testActor.setAllowRunning(true)
+        await task.value
     }
 }
