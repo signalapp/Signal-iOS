@@ -4,9 +4,6 @@
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Signal बद्दल";
 
-/* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "नवीन सुरक्षितता क्रमांक स्वीकार करा";
-
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "संलग्न";
 
@@ -628,6 +625,12 @@
 /* Text explaining that a user's paid plan, which has been canceled, expired on a past date. Embeds {{ the formatted expiration date }}. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "%1$@ रोजी कालबाह्य";
 
+/* Title for a button allowing users to manage their backup plan as a tester. */
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Manage Plan";
+
+/* Text describing that the user's backup plan is paid, but free for them as a tester. */
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid, but free as long as you remain a tester";
+
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "मजकूर + सर्व मिडीया बॅकअप";
 
@@ -639,6 +642,9 @@
 
 /* Footer for a menu section related to settings for when Backups are disabled. */
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "बॅकअप बंद करण्यात आलेले आहेत आणि आपला डेटा Signal च्या सुरक्षित संग्रहण सेवेमधून हटवण्यात आला आहे.";
+
+/* Description for a progress view tracking media being downloaded in service of disabling Backups. */
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, any media that is not on device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "एक त्रुटी उद्भवली. कृपया सपोर्टशी संंपर्क साधा.";
@@ -664,6 +670,21 @@
 /* Title for a button allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "बंद करा आणि बॅकअप हटवा";
 
+/* Title for a button in an action sheet confirming the user wants to disable Backups. */
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_CONFIRM" = "Turn Off & Delete";
+
+/* Message for an action sheet confirming the user wants to disable Backups. */
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Your backup will be deleted and no new backups will be created.";
+
+/* Title for an action sheet confirming the user wants to disable Backups. */
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_TITLE" = "Turn Off and Delete Backups?";
+
+/* Message shown in an action sheet when the user disables Backups, explaining that their media is downloading first. */
+"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_MESSAGE" = "You have media in your backup that's not on this device. Your backup may take a long time to download, keep Signal open to avoid interruptions.";
+
+/* Title shown in an action sheet when the user disables Backups, explaining that their media is downloading first. */
+"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_TITLE" = "Downloading Your Backup";
+
 /* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "Signal च्या सुरक्षित संग्रहण सेवेमधून तुमचा डेटा हटवताना त्रुटी उद्भवली.";
 
@@ -674,34 +695,34 @@
 "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "बॅकअप बंद करण्यासाठी तुम्ही नोंदणी केलेली असणे आवश्यक आहे.";
 
 /* Title for a button shown in Backup Settings that lets a user cancel an in-progress download. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_CANCEL_DOWNLOAD" = "Cancel Download";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_CANCEL_DOWNLOAD" = "डाउनलोड रद्द करा";
 
 /* Title for a button shown in Backup Settings that lets a user initiate an available download. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_INITIATE_DOWNLOAD" = "Download";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_INITIATE_DOWNLOAD" = "डाऊनलोड करा";
 
 /* Title for a button shown in Backup Settings that lets a user resume a download paused due to needing Wi-Fi. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_RESUME_DOWNLOAD_WITHOUT_WIFI" = "Resume Download";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_RESUME_DOWNLOAD_WITHOUT_WIFI" = "थांबवलेले डाऊनलोड सुरु करा";
 
 /* Subtitle for a progress bar tracking downloads that are paused because of low battery. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Download paused: device has low battery";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "डाऊनलोड थांबले : डिव्हाईसची बॅटरी कमी आहे";
 
 /* Subtitle for a progress bar tracking downloads that are paused because they need more disk space available. Embeds {{ the amount of space needed as a file size, e.g. 100 MB }}. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_DISK_SPACE" = "Not enough space to download your media. To continue free up %1$@ of space.";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_DISK_SPACE" = "तुमचा मीडिया डाऊनलोड करण्यासाठी पुरेशी जागा नाही. पुढे सुरू ठेवण्यासाठी %1$@ जागा मोकळी करा.";
 
 /* Subtitle for a progress bar tracking downloads that are paused because they need internet. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Download paused: no internet…";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "डाऊनलोड थांबले : इंटरनेट नाही…";
 
 /* Subtitle for a progress bar tracking downloads that are paused because they need WiFi. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Download paused: waiting for Wi-Fi";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "डाऊनलोड थांबले : Wi-Fiच्या प्रतीक्षेत";
 
 /* Subtitle for a progress bar tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_RUNNING" = "Downloading %1$@ of %2$@ (%3$@)";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_RUNNING" = "%2$@ पैकी %1$@ (%3$@) डाउनलोड करत आहे";
 
 /* Subtitle for a view explaining that downloads are available but not running. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED" = "You have %1$@ of media that's not on this device.";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED" = "तुमच्याकडे %1$@ मीडिया आहे जो या डिव्हाईसवर नाही.";
 
 /* Subtitle for a view explaining that downloads are available but not running, and the user's paid subscription is expiring. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "You have %1$@ of media that's not on this device. Without a paid subscription media can't be offloaded.";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "तुमच्याकडे %1$@ मीडिया आहे जो या डिव्हाईसवर नाही. सशुल्क सदस्यत्व शिवाय मीडिया ऑफलोड करता येणार नाही.";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "मोबाइल वापरून बॅकअप करा";
@@ -728,37 +749,46 @@
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "आता बॅकअप करा";
 
 /* Action in an action sheet allowing users to download their offloaded media later. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_LATER_ACTION" = "Download Later";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_LATER_ACTION" = "नंतर डाउनलोड करा";
 
 /* Message for an action sheet allowing users to download their offloaded media. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. This may take a long time to download, keep Signal open to avoid interruptions to your download.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_MESSAGE" = "तुमच्या बॅकअपमध्ये असा मीडिया आहे जो या डिव्हाईसवर नाही. हे डाऊनलोड व्हायला वेळ लागू शकतो, तुमचे डाऊनलोड अखंडितपणे सुरु राहण्यासाठी Signal चालू ठेवा.";
 
 /* Action in an action sheet allowing users to download their offloaded media now. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_NOW_ACTION" = "Download Now";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_NOW_ACTION" = "आत्ताच डाऊनलोड करा";
 
 /* Title for an action sheet allowing users to download their offloaded media. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Download Offloaded Media?";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "ऑफलोड केलेला मीडिया डाऊनलोड करायचा?";
+
+/* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you remain a tester. Make sure to download all your media before leaving the test program.";
+
+/* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Testing Offloaded Media";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Unused media will be offloaded, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "न वापरलेला मिडीया ऑफलोड केला जाईल, परंतु त्याला आपल्या बॅकअप मधून कधीही डाउनलोड केले जाऊ शकते.";
+
+/* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you remain a tester.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Storage optimization can only be used with the paid tier of Signal Backups. Upgrade your backup plan to start using this feature.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "साठवण सुधारणा फक्त Signal बॅकअप्सच्या सशुल्क टीअरसह वापरता येते. हे वैशिष्ट्य वापरणे सुरू करण्यासाठी आपला बॅकअप प्लॅन अपग्रेड करा.";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize On-Device Storage";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "डिव्हाइस वरील संग्रहण सानुकूल करा";
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "बॅकअप पुन्हा सक्षम करा";
 
 /* Title for an action in a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "डाउनलोड वगळा";
 
 /* Message for a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_MESSAGE" = "You have backup data that’s not on this device. Your media and attachments will be permanently deleted without a paid subscription.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_MESSAGE" = "तुमच्याकडे बॅकअप डेटा आहे जो या डिव्हाईसवर नाही. तुमचा मीडिया आणि अटॅचमेंट्स हे सशुल्क सदस्यत्वाशिवाय कायमचे हटवले जातील.";
 
 /* Title for a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "डाउनलोड वगळायचे?";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "अपलोड थांबला आहे : डिव्हाईसची बॅटरी कमी आहे";
@@ -1494,6 +1524,9 @@
 
 /* Title for the free plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "विनामूल्य";
+
+/* Title for the paid plan option, when choosing a Backup plan as a tester. */
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_NO_PURCHASES_TITLE" = "Paid (but free for testers)";
 
 /* Subtitle for the paid plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "मजकूर + आपला सर्व मिडीया";
@@ -3257,7 +3290,7 @@
 "GIF_VIEW_SEARCH_ERROR" = "त्रुटी. पुन्हा प्रयत्न करण्यासाठी टॅप करा.";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "No Results";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "कुठलेही परिणाम नाहीत";
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "आपला शोध प्रविष्ट करा";
@@ -4173,6 +4206,18 @@
 
 /* Title for an in-app megaphone about a user's inactive linked device. */
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "असक्रिय लिंंक केलेली डिव्हाइसेस";
+
+/* Body for an in-app megaphone about a user's inactive primary device. */
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "Open Signal on your phone to keep your account active";
+
+/* Title for a button in an in-app megaphone about a user's inactive primary device, temporarily dismissing the megaphone. */
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_GOT_IT_BUTTON" = "Got It";
+
+/* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user wants to learn more. */
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_LEARN_MORE_BUTTON" = "Learn more";
+
+/* Title for an in-app megaphone about a user's inactive primary device. */
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Primary Device";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "नवीन संदेश येईल तेव्हा संग्रहित केलेले मूक चॅट्स हे अर्काईव्ह केलेलेच राहतील.";
@@ -5566,6 +5611,24 @@
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "पेमेंट्स वापरणे पुढे सुरु ठेवण्यासाठी Signal ला अद्ययावत करा. आपली शिल्लक कदाचित अद्ययावत नसेल.";
 
+/* Body of prompt notifying registration without restore completed on the new device. */
+"OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY" = "Your Signal account has been activated on your other device. Signal is now inactive on this device.";
+
+/* Title of prompt notifying registration without restore completed on the new device. */
+"OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Registration complete";
+
+/* Body of prompt notifying device restore started on the new device. */
+"OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Your Signal account and messages have started transferring to your other device. Signal is now inactive on this device.";
+
+/* Title of prompt notifying device restore started on the new device. */
+"OUTGOING_DEVICE_RESTORE_COMPLETE_TITLE" = "Restore complete";
+
+/* Body of prompt notifying that action is necessary on the other device. */
+"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_BODY" = "Continue transferring your account on your other device.";
+
+/* Title of prompt notifying that action is necessary on the other device. */
+"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_TITLE" = "Continue on your other device";
+
 /* Body text describing the outgoing transfer. */
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "आपला अकाऊंट नवीन डिव्हाईसवर फिरवला जाईल. हा डिव्हाईस आपले गट आणि संपर्क पाहू शकेल, आपल्या चॅट्समध्ये जाऊ शकेल, आणि आपल्या नावाने संदेश पाठवू शकेल.";
 
@@ -5577,6 +5640,12 @@
 
 /* Title text describing the outgoing transfer. */
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "खाते स्थानांतरित करा";
+
+/* Body of prompt notifying device transfer completed. */
+"OUTGOING_DEVICE_TRANSFER_COMPLETE_BODY" = "Your Signal account and messages have been transferred to your other device. Signal is now inactive on this device.";
+
+/* Title of prompt notifying device transfer completed. */
+"OUTGOING_DEVICE_TRANSFER_COMPLETE_TITLE" = "Transfer complete";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "अनुत्तरित व्हिडिओ कॉल";
@@ -6586,6 +6655,63 @@
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_ERROR" = "आपण खूप वारंवार प्रयत्न केले आहेत. कृपया पुन्हा प्रयत्न करण्यापूर्वी एक मिनिट थांबा.";
 
+/* Body for a sheet warning users about a missing backup. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "The backup key you entered is correct, but there is no backup associated with it. If you still have your old phone, make sure backups are enabled and that a backup has been completed and try again.";
+
+/* Title for a sheet warning users about a missing backup. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Backup Not Found";
+
+/* Check for update action label for backup restore error recovery. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_CHECK_UPDATE_ACTION" = "Check For Update";
+
+/* Body for a sheet informing users about contacting support due to an error during backup restore. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_BODY" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+
+/* Title for a sheet informing users about contacting support due to an error during backup restore. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_TITLE" = "Submit Debug Log?";
+
+/* Label for action to contact support with logs. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITH_LOGS_ACTION" = "Submit With Debug Log";
+
+/* Label for action to contact support without logs. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITHOUT_LOGS_ACTION" = "Submit Without Debug Log";
+
+/* Body for a sheet warning users about a generic backup manual restore failure. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_BODY" = "An error occurred and your account couldn’t be transferred.";
+
+/* Body for a sheet warning users about a generic backup restore failure. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "An error occurred and your account couldn’t be transferred. Try again by scanning the QR code and choosing your transfer method.";
+
+/* Title for a sheet warning users about a generic backup restore failure. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_TITLE" = "Couldn't Finish Transfer";
+
+/* Title for a sheet warning users about a generic backup manual restore failure. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Couldn't Finish Transfer";
+
+/* Body for a sheet warning users about an incorrect backup key. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-digit backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
+
+/* Title for a sheet warning users about an incorrect backup key. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Backup Key";
+
+/* Body for a sheet warning users about a network error during backup restore. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Your backup can’t be restored right now. Check your internet connection and try again.";
+
+/* Title for a sheet warning users about a network error during backup restore. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "Can't Restore Backup";
+
+/* Skip restore action label for backup restore error recovery. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "Skip Restore";
+
+/* Try again action label for backup restore error recovery. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Try Again";
+
+/* Body for a sheet warning users about an incompatible backup version. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "To restore your backup, make sure you’re on the latest version of Signal and try again. If this problem persists, contact support.";
+
+/* Title for a sheet warning users about an incompatible backup version. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_TITLE" = "Update required";
+
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "पुश सूचनांकरिता पुनर्नोंदणी करण्यात अयशस्वी.";
 
@@ -6794,10 +6920,10 @@
 "RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "तपशील";
 
 /* Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "Free up %1$@ of space on this device to download your media.";
+"RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT" = "तुमचा मीडिया डाऊनलोड करण्यासाठी या डिव्हाईसवर %1$@ जागा मोकळी करा.";
 
 /* Title shown on chat list banner for restoring media from a backup is finished */
-"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "Download Complete";
+"RESTORING_MEDIA_BANNER_FINISHED_TITLE" = "डाउनलोड पूर्ण झाले";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "डिव्हाइसची बॅटरी कमी झाली आहे";
@@ -6806,7 +6932,7 @@
 "RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "इंटरनेट नाही…";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
-"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Download Paused";
+"RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "डाऊनलोड थांबले";
 
 /* Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }} */
 "RESTORING_MEDIA_BANNER_PROGRESS_FORMAT" = "%1$@ पैकी %2$@";
@@ -6815,31 +6941,31 @@
 "RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON" = "सुरु करा";
 
 /* Title shown on chat list banner for restoring media from a backup */
-"RESTORING_MEDIA_BANNER_TITLE" = "Downloading Media";
+"RESTORING_MEDIA_BANNER_TITLE" = "मीडिया डाऊनलोड करत आहे";
 
 /* Title shown on chat list banner for restoring media from a backup when waiting for wifi */
 "RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Wi-Fi च्या प्रतीक्षेत";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Skip Download";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "डाउनलोड वगळा";
 
 /* Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "To finish downloading your media your device needs %1$@ of storage space.\n\nTo free up space go to Settings > General > iPhone Storage. You can choose to offload or delete unused apps or content.";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "तुमचा मीडिया डाऊनलोड करणे पूर्ण करण्यासाठी तुमच्या डिव्हाईसवर %1$@ साठवणीची जागा असणे गरजेचे आहे.\n\nजागा मोकळी करण्यासाठी सेटिंग्ज > General > iPhone Storage येथे जा. तुम्ही न वापरलेली ॲप्स किंवा मजकूर ऑफलोड करू शकता किंवा हटवू शकता.";
 
 /* Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "या डिव्हाईसवरील %1$@ जागा मोकळी करा";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have backup data that’s not on this device. Your media and attachments will be permanently deleted without a paid subscription.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "तुमच्याकडे बॅकअप डेटा आहे जो या डिव्हाईसवर नाही. तुमचा मीडिया आणि अटॅचमेंट्स हे सशुल्क सदस्यत्वाशिवाय कायमचे हटवले जातील.";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "If you skip downloading the remaining media and attachments in your backup can be downloaded at a later time when storage space becomes available.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "जर तुम्ही डाऊनलोड करायचे टाळलेत तर आपल्या बॅकअपमधील उरलेला मीडिया आणि अटॅचमेंट्स नंतर साठवणीसाठी जागा मिळाल्यावर डाऊनलोड करता येतात.";
 
 /* Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Skip Download";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "डाउनलोड वगळा";
 
 /* Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Skip Download?";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "डाउनलोड वगळायचे?";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "पुन्हा प्रयत्न करा";
@@ -6879,9 +7005,6 @@
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "आमचा Signal सुरक्षितता नंबर:\n%1$@";
-
-/* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "आपला %1$@ सोबतचा सुरक्षितता नंबर बदलला आहे. आपण त्यास सत्यापित करण्यास इच्छुक असू शकता.";
 
 /* Title for Safety Tips button in thread details. */
 "SAFETY_TIPS_BUTTON_ACTION_TITLE" = "सुरक्षिततेच्या टीपा";
@@ -8127,9 +8250,6 @@
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "शेअर करण्याच्या सूचना अक्षम करण्यात अयशस्वी.";
-
-/* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "सुरक्षितता नंबर दाखवा";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "चॅट दाखवा";
