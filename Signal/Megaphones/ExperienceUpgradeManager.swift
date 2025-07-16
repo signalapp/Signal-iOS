@@ -68,6 +68,9 @@ class ExperienceUpgradeManager {
                     case .inactiveLinkedDeviceReminder:
                         return ExperienceUpgradeManifest
                             .checkPreconditionsForInactiveLinkedDeviceReminder(tx: transaction)
+                    case .inactivePrimaryDeviceReminder:
+                        return ExperienceUpgradeManifest
+                            .checkPreconditionsForInactivePrimaryDeviceReminder(tx: transaction)
                     case .pinReminder:
                         return ExperienceUpgradeManifest
                             .checkPreconditionsForPinReminder(transaction: transaction)
@@ -210,6 +213,7 @@ class ExperienceUpgradeManager {
                 .newLinkedDeviceNotification,
                 .createUsernameReminder,
                 .inactiveLinkedDeviceReminder,
+                .inactivePrimaryDeviceReminder,
                 .contactPermissionReminder,
                 .backupKeyReminder,
                 .enableBackupsReminder:
@@ -293,6 +297,18 @@ class ExperienceUpgradeManager {
                 fromViewController: fromViewController,
                 experienceUpgrade: experienceUpgrade
             )
+        case .inactivePrimaryDeviceReminder:
+            let isPrimaryDevice = db.read { tx in
+                // If isPrimaryDevice is nil, it means we aren't registered yet, and shouldn't show the megaphone.
+                return DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? true
+            }
+
+            guard !isPrimaryDevice else {
+                owsFailDebug("Trying to show inactive primary device megaphone, but this is the primary device or an unregistered device")
+                return nil
+            }
+
+            return InactivePrimaryDeviceReminderMegaphone(fromViewController: fromViewController, experienceUpgrade: experienceUpgrade)
         case .contactPermissionReminder:
             return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .remoteMegaphone(let megaphone):

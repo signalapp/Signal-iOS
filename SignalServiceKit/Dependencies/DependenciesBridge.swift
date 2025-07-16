@@ -113,6 +113,7 @@ public class DependenciesBridge {
     public let identityKeyMismatchManager: IdentityKeyMismatchManager
     public let identityManager: OWSIdentityManager
     public let inactiveLinkedDeviceFinder: InactiveLinkedDeviceFinder
+    public let inactivePrimaryDeviceStore: InactivePrimaryDeviceStore
     let incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager
     let incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager
     public let incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor
@@ -244,6 +245,7 @@ public class DependenciesBridge {
         identityKeyMismatchManager: IdentityKeyMismatchManager,
         identityManager: OWSIdentityManager,
         inactiveLinkedDeviceFinder: InactiveLinkedDeviceFinder,
+        inactivePrimaryDeviceStore: InactivePrimaryDeviceStore,
         incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager,
         incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager,
         incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor,
@@ -374,6 +376,7 @@ public class DependenciesBridge {
         self.identityKeyMismatchManager = identityKeyMismatchManager
         self.identityManager = identityManager
         self.inactiveLinkedDeviceFinder = inactiveLinkedDeviceFinder
+        self.inactivePrimaryDeviceStore = inactivePrimaryDeviceStore
         self.incomingCallEventSyncMessageManager = incomingCallEventSyncMessageManager
         self.incomingCallLogEventSyncMessageManager = incomingCallLogEventSyncMessageManager
         self.incomingPniChangeNumberProcessor = incomingPniChangeNumberProcessor

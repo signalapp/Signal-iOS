@@ -12,6 +12,9 @@
 		043CC30E2E1EF79C00D9002E /* ThreadFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */; };
 		047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */; };
 		04AA85BC2E0EFC5C0051C0A7 /* BackupEnablementReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */; };
+		04BBBE902E259A6900E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BBBE8F2E259A5F00E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift */; };
+		04BBBE922E26C92D00E914B1 /* InactivePrimaryDeviceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BBBE912E26C92300E914B1 /* InactivePrimaryDeviceStore.swift */; };
+		04BBBE942E26F00900E914B1 /* InactivePrimaryDeviceStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BBBE932E26F00000E914B1 /* InactivePrimaryDeviceStoreTest.swift */; };
 		04BC94D22E061D8300446C52 /* BackupArchiveAttachmentByteCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BC94D12E061D7500446C52 /* BackupArchiveAttachmentByteCounter.swift */; };
 		04E66D402DFC825B0059DBAC /* BackupKeyReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D3E2DFC81BC0059DBAC /* BackupKeyReminderMegaphone.swift */; };
 		04E66D422DFF3A4B0059DBAC /* BackupsReminderCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */; };
@@ -3839,6 +3842,9 @@
 		041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupEnablementReminderMegaphoneTests.swift; sourceTree = "<group>"; };
 		043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadFinderTests.swift; sourceTree = "<group>"; };
 		047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphoneTests.swift; sourceTree = "<group>"; };
+		04BBBE8F2E259A5F00E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactivePrimaryDeviceReminderMegaphone.swift; sourceTree = "<group>"; };
+		04BBBE912E26C92300E914B1 /* InactivePrimaryDeviceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactivePrimaryDeviceStore.swift; sourceTree = "<group>"; };
+		04BBBE932E26F00000E914B1 /* InactivePrimaryDeviceStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactivePrimaryDeviceStoreTest.swift; sourceTree = "<group>"; };
 		04BC94D12E061D7500446C52 /* BackupArchiveAttachmentByteCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveAttachmentByteCounter.swift; sourceTree = "<group>"; };
 		04E66D3E2DFC81BC0059DBAC /* BackupKeyReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphone.swift; sourceTree = "<group>"; };
 		04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsReminderCoordinator.swift; sourceTree = "<group>"; };
@@ -10891,6 +10897,7 @@
 				8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */,
 				D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */,
 				D9C0AE682BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift */,
+				04BBBE8F2E259A5F00E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift */,
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
 				8837F74023DA0B0F00772A32 /* MegaphoneView.swift */,
 				B9B7BC642D41C61500C26E42 /* NewLinkedDeviceNotificationMegaphone.swift */,
@@ -13186,6 +13193,7 @@
 			isa = PBXGroup;
 			children = (
 				D9C0AE612BD7102500FCB05E /* InactiveLinkedDeviceFinderTest.swift */,
+				04BBBE932E26F00000E914B1 /* InactivePrimaryDeviceStoreTest.swift */,
 				D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */,
 				D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */,
 				F9FA363529F335E500C13830 /* ProvisioningCipherTests.swift */,
@@ -13609,6 +13617,7 @@
 				F9C5CAF8289453B200548EEE /* Util */,
 				503AECCC29B2B86200642F66 /* VoiceMessage */,
 				5013365D2B2BC2CD004119F1 /* ZkParams */,
+				04BBBE912E26C92300E914B1 /* InactivePrimaryDeviceStore.swift */,
 				F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */,
 				F9C5C899289451B900548EEE /* SignalServiceKit.h */,
 				50E642C829E4E9CD00566D5D /* SSKEnvironment.swift */,
@@ -17183,6 +17192,7 @@
 				8852572C27DD40870032073C /* HomeTabBarController.swift in Sources */,
 				B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */,
 				D9C0AE692BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift in Sources */,
+				04BBBE902E259A6900E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift in Sources */,
 				D9E43C052CC194140001536E /* IncomingCallControls.swift in Sources */,
 				D9E43C062CC194140001536E /* IncomingReactionsView.swift in Sources */,
 				66C1BF552D0CC88A002296F7 /* IncrementalMessageTSAttachmentMigrationRunner.swift in Sources */,
@@ -18045,6 +18055,7 @@
 				661BFE0A2C07FB950065435B /* ImageMetadata.swift in Sources */,
 				F9C5CDDF289453B400548EEE /* ImageQuality.swift in Sources */,
 				D9C0AE662BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift in Sources */,
+				04BBBE922E26C92D00E914B1 /* InactivePrimaryDeviceStore.swift in Sources */,
 				05412B3C2C22219E007AC9C7 /* InboxFilter.swift in Sources */,
 				505166D72BB37DAE00FF6B4A /* IncomingCallEventSyncMessageManager.swift in Sources */,
 				505166D62BB37DA700FF6B4A /* IncomingCallEventSyncMessageParams.swift in Sources */,
@@ -18891,6 +18902,7 @@
 				D9F399B02A967664001599EC /* IdentityKeyCheckerTest.swift in Sources */,
 				D9F399B42A96E54C001599EC /* IdentityKeyMismatchManagerTest.swift in Sources */,
 				D9C0AE672BD7162300FCB05E /* InactiveLinkedDeviceFinderTest.swift in Sources */,
+				04BBBE942E26F00900E914B1 /* InactivePrimaryDeviceStoreTest.swift in Sources */,
 				D979CC4F2AD4DECB006AAC49 /* IncomingCallEventSyncMessageManagerTest.swift in Sources */,
 				D958C67D2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift in Sources */,
 				D979CC4C2AD4DECB006AAC49 /* IndividualCallRecordManagerTest.swift in Sources */,

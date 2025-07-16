@@ -116,6 +116,7 @@ extension ExperienceUpgrade {
                 .newLinkedDeviceNotification,
                 .createUsernameReminder,
                 .inactiveLinkedDeviceReminder,
+                .inactivePrimaryDeviceReminder,
                 .pinReminder,
                 .contactPermissionReminder,
                 .backupKeyReminder,

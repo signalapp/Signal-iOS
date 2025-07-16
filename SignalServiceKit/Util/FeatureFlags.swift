@@ -68,6 +68,8 @@ public enum FeatureFlags {
     public static let notificationServiceWebSocket = build.includes(.internal)
 
     public static let moveDraftsUpChatList = build.includes(.internal)
+
+    public static let inactivePrimaryDeviceMegaphone = build.includes(.dev)
 }
 
 // MARK: -

@@ -977,6 +977,8 @@ public class AppSetup {
             whoAmIManager: whoAmIManager,
         )
 
+        let inactivePrimaryDeviceStore = InactivePrimaryDeviceStore()
+
         let chatConnectionManager = ChatConnectionManagerImpl(
             accountManager: tsAccountManager,
             appExpiry: appExpiry,
@@ -984,6 +986,7 @@ public class AppSetup {
             db: db,
             libsignalNet: libsignalNet,
             registrationStateChangeManager: registrationStateChangeManager,
+            inactivePrimaryDeviceStore: inactivePrimaryDeviceStore,
             userDefaults: appContext.appUserDefaults()
         )
 
@@ -1486,6 +1489,7 @@ public class AppSetup {
             identityKeyMismatchManager: identityKeyMismatchManager,
             identityManager: identityManager,
             inactiveLinkedDeviceFinder: inactiveLinkedDeviceFinder,
+            inactivePrimaryDeviceStore: inactivePrimaryDeviceStore,
             incomingCallEventSyncMessageManager: incomingCallEventSyncMessageManager,
             incomingCallLogEventSyncMessageManager: incomingCallLogEventSyncMessageManager,
             incomingPniChangeNumberProcessor: incomingPniChangeNumberProcessor,

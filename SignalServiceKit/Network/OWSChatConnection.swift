@@ -41,6 +41,10 @@ public enum OWSChatConnectionState: Int, CustomDebugStringConvertible {
 
 // MARK: -
 public class OWSChatConnection {
+    enum AlertType: String {
+        case idlePrimaryDevice = "idle-primary-device"
+    }
+
     // TODO: Should we use a higher-priority queue?
     fileprivate static let messageProcessingQueue = DispatchQueue(label: "org.signal.chat-connection.message-processing")
 
@@ -56,6 +60,7 @@ public class OWSChatConnection {
     fileprivate let db: any DB
     fileprivate let accountManager: TSAccountManager
     fileprivate let registrationStateChangeManager: RegistrationStateChangeManager
+    fileprivate let inactivePrimaryDeviceStore: InactivePrimaryDeviceStore
 
     // This var must be thread-safe.
     public var currentState: OWSChatConnectionState {
@@ -81,7 +86,8 @@ public class OWSChatConnection {
         appExpiry: AppExpiry,
         appReadiness: AppReadiness,
         db: any DB,
-        registrationStateChangeManager: RegistrationStateChangeManager
+        registrationStateChangeManager: RegistrationStateChangeManager,
+        inactivePrimaryDeviceStore: InactivePrimaryDeviceStore
     ) {
         AssertIsOnMainThread()
 
@@ -92,6 +98,7 @@ public class OWSChatConnection {
         self.db = db
         self.accountManager = accountManager
         self.registrationStateChangeManager = registrationStateChangeManager
+        self.inactivePrimaryDeviceStore = inactivePrimaryDeviceStore
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
             self?.appDidBecomeReady()
@@ -595,9 +602,9 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
         }
     }
 
-    internal init(libsignalNet: Net, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB, registrationStateChangeManager: RegistrationStateChangeManager) {
+    internal init(libsignalNet: Net, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB, registrationStateChangeManager: RegistrationStateChangeManager, inactivePrimaryDeviceStore: InactivePrimaryDeviceStore) {
         self.libsignalNet = libsignalNet
-        super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager)
+        super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager, inactivePrimaryDeviceStore: inactivePrimaryDeviceStore)
     }
 
     fileprivate func connectChatService() async throws -> Connection {
@@ -897,8 +904,8 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
 }
 
 internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<UnauthenticatedChatConnection> {
-    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB, registrationStateChangeManager: RegistrationStateChangeManager) {
-        super.init(libsignalNet: libsignalNet, type: .unidentified, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager)
+    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB, registrationStateChangeManager: RegistrationStateChangeManager, inactivePrimaryDeviceStore: InactivePrimaryDeviceStore) {
+        super.init(libsignalNet: libsignalNet, type: .unidentified, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager, inactivePrimaryDeviceStore: inactivePrimaryDeviceStore)
     }
 
     fileprivate override var connection: ConnectionState {
@@ -939,8 +946,8 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         }
     }
 
-    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB, registrationStateChangeManager: RegistrationStateChangeManager) {
-        super.init(libsignalNet: libsignalNet, type: .identified, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager)
+    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB, registrationStateChangeManager: RegistrationStateChangeManager, inactivePrimaryDeviceStore: InactivePrimaryDeviceStore) {
+        super.init(libsignalNet: libsignalNet, type: .identified, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager, inactivePrimaryDeviceStore: inactivePrimaryDeviceStore)
     }
 
     fileprivate override func connectChatService() async throws -> AuthenticatedChatConnection {
@@ -1019,15 +1026,39 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         }
     }
 
+    private func handleInactivePrimaryDeviceAlert(newInactivePrimaryDevice: Bool) {
+        let storedInactivePrimaryDevice = db.read { tx in
+            return inactivePrimaryDeviceStore.valueForInactivePrimaryDeviceAlert(transaction: tx)
+        }
+
+        guard storedInactivePrimaryDevice != newInactivePrimaryDevice else {
+            return
+        }
+
+        Logger.info("Received new value for inactive primary device alert: \(newInactivePrimaryDevice)")
+
+        db.write { transaction in
+            inactivePrimaryDeviceStore.setValueForInactivePrimaryDeviceAlert(value: newInactivePrimaryDevice, transaction: transaction)
+        }
+
+        // Megaphones might load before we setup the OWSChatConnection
+        // so we should notify the UI that the value has changed.
+        NotificationCenter.default.postOnMainThread(name: .inactivePrimaryDeviceChanged, object: nil)
+    }
+
     func chatConnection(_ chat: AuthenticatedChatConnection, didReceiveAlerts alerts: [String]) {
         self.serialQueue.async { [self] in
             guard self.connection.isActive(chat) else {
                 // We have since disconnected from the chat service instance that reported the alerts.
                 return
             }
+            var alertSet = Set(alerts)
 
-            if !alerts.isEmpty {
-                Logger.warn("ignoring \(alerts.count) alerts from the server")
+            handleInactivePrimaryDeviceAlert(newInactivePrimaryDevice: alertSet.contains(AlertType.idlePrimaryDevice.rawValue))
+
+            alertSet.remove(AlertType.idlePrimaryDevice.rawValue)
+            if !alertSet.isEmpty {
+                Logger.warn("ignoring \(alertSet.count) alerts from the server")
             }
         }
     }
