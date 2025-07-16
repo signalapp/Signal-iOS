@@ -524,7 +524,7 @@ private extension TSRequest {
         action: AppAttestManager.AttestationAction,
     ) -> TSRequest {
         return TSRequest(
-            url: URL(string: "/v1/devicecheck/attest?action=\(action.rawValue)")!,
+            url: URL(string: "/v1/devicecheck/assert?action=\(action.rawValue)")!,
             method: "GET",
         )
     }
