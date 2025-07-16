@@ -259,16 +259,16 @@ private struct AppAttestManager {
     /// key if necessary, or returns an existing key if attestation was
     /// performed in the past.
     private func getOrGenerateAttestedKey() async throws(AttestationError) -> AttestedKey {
-        if let attestedKeyIdentifier = readAttestedKeyIdentifier() {
+        if let attestedKeyId = readAttestedKeyId() {
             logger.info("Using previously-attested key.")
-            return AttestedKey(identifier: attestedKeyIdentifier)
+            return AttestedKey(identifier: attestedKeyId)
         }
 
         // Generate a new key that we'll then attempt to attest and register
         // with the Signal service.
-        let newKeyIdentifier: String
+        let newKeyId: String
         do {
-            newKeyIdentifier = try await attestationService.generateKey()
+            newKeyId = try await attestationService.generateKey()
         } catch let dcError as DCError {
             throw parseDCError(dcError)
         } catch {
@@ -277,7 +277,7 @@ private struct AppAttestManager {
         }
 
         logger.info("Attesting and registering new key.")
-        return try await attestAndRegisterKey(newKeyIdentifier: newKeyIdentifier)
+        return try await attestAndRegisterKey(newKeyId: newKeyId)
     }
 
     /// Perform attestation on a newly-generated key, and register it with
@@ -289,7 +289,7 @@ private struct AppAttestManager {
     ///
     /// Once a key has been attested and registered, it can be used to perform
     /// assertions on future requests.
-    private func attestAndRegisterKey(newKeyIdentifier: String) async throws(AttestationError) -> AttestedKey {
+    private func attestAndRegisterKey(newKeyId: String) async throws(AttestationError) -> AttestedKey {
         // Get a challenge from Signal servers.
         let keyAttestationChallenge: String = try await getKeyAttestationChallenge()
 
@@ -307,7 +307,7 @@ private struct AppAttestManager {
         let keyAttestation: Data
         do {
             keyAttestation = try await attestationService.attestKey(
-                newKeyIdentifier,
+                newKeyId,
                 clientDataHash: keyAttestationChallengeHash
             )
         } catch let dcError as DCError {
@@ -322,15 +322,15 @@ private struct AppAttestManager {
         // succeeds, the Signal servers will record this key so we can use it
         // to generate assertions for future requests.
         try await attestAndRegisterKey(
-            keyId: newKeyIdentifier,
+            keyId: newKeyId,
             keyAttestation: keyAttestation
         )
 
         // Hurray! The key is valid, and reigstered with Signal servers. We can
         // now save it, so we can use it to sign future requests.
-        await saveAttestedKeyIdentifier(newKeyIdentifier)
+        await saveAttestedKeyId(newKeyId)
 
-        return AttestedKey(identifier: newKeyIdentifier)
+        return AttestedKey(identifier: newKeyId)
     }
 
     /// Get a challenge from Signal servers that we can use to attest that a new
@@ -502,22 +502,22 @@ private struct AppAttestManager {
     // MARK: - Persistence
 
     private enum StoreKeys {
-        static let keyIdentifier = "keyIdentifier"
+        static let keyId = "keyId"
     }
 
     /// Returns the identifier of a key for this device that has previously
     /// passed attestation, if one exists.
-    private func readAttestedKeyIdentifier() -> String? {
+    private func readAttestedKeyId() -> String? {
         return db.read { tx in
-            return kvStore.getString(StoreKeys.keyIdentifier, transaction: tx)
+            return kvStore.getString(StoreKeys.keyId, transaction: tx)
         }
     }
 
-    /// Save the given key identifier, which represents a key for this device
+    /// Save the given key id, which represents a key for this device
     /// that has passed attestation.
-    private func saveAttestedKeyIdentifier(_ keyIdentifier: String) async {
+    private func saveAttestedKeyId(_ keyIdentifier: String) async {
         await db.awaitableWrite { tx in
-            kvStore.setString(keyIdentifier, key: StoreKeys.keyIdentifier, transaction: tx)
+            kvStore.setString(keyIdentifier, key: StoreKeys.keyId, transaction: tx)
         }
     }
 }
