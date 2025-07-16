@@ -155,6 +155,18 @@ class InternalSettingsViewController: OWSTableViewController2 {
                     !BackupAttachmentDownloadEligibility.disableTransitTierDownloadsOverride
             }
         ))
+        backupsSection.add(.actionItem(withText: "Acquire Backup entitlement sans StoreKit") { [weak self] in
+            Task {
+                let backupTestFlightEntitlementManager = DependenciesBridge.shared.backupTestFlightEntitlementManager
+
+                do {
+                    try await backupTestFlightEntitlementManager.acquireEntitlement()
+                    self?.presentToast(text: "Successfully acquired Backup entitlement!")
+                } catch {
+                    self?.presentToast(text: "Failed to acquired Backup entitlement! \(error)")
+                }
+            }
+        })
 
         if backupsSection.items.isEmpty.negated {
             contents.add(backupsSection)

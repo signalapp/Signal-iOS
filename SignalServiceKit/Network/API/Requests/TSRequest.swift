@@ -31,12 +31,16 @@ public struct TSRequest: CustomDebugStringConvertible {
     }
 
     public init(url: URL, method: String = "GET", parameters: [String: Any]? = [:]) {
+        self.init(url: url, method: method, body: .parameters(parameters ?? [:]))
+    }
+
+    public init(url: URL, method: String, body: Body) {
         owsAssertDebug(method.isEmpty.negated)
 
         self.url = url
         self.method = method
         self.headers = HttpHeaders()
-        self.body = .parameters(parameters ?? [:])
+        self.body = body
     }
 
     // MARK: - Authorization
