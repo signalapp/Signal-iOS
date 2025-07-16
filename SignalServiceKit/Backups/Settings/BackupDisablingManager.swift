@@ -5,7 +5,7 @@
 
 /// Reponsible for "disabling Backups": making the relevant API calls and
 /// managing state.
-public class BackupDisablingManager {
+public final class BackupDisablingManager {
     private enum StoreKeys {
         static let remoteDisablingFailed = "remoteDisablingFailed"
     }
@@ -98,7 +98,7 @@ public class BackupDisablingManager {
         switch backupPlanManager.backupPlan(tx: tx) {
         case .disabled:
             return kvStore.hasValue(StoreKeys.remoteDisablingFailed, transaction: tx)
-        case .disabling, .free, .paid, .paidExpiringSoon:
+        case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
             return false
         }
     }
@@ -111,7 +111,7 @@ public class BackupDisablingManager {
         let needsDisablingRemotely = db.read { tx in
             switch backupPlanManager.backupPlan(tx: tx) {
             case .disabling: true
-            case .disabled, .free, .paid, .paidExpiringSoon: false
+            case .disabled, .free, .paid, .paidExpiringSoon, .paidAsTester: false
             }
         }
 

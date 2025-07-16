@@ -215,7 +215,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         switch backupPlan {
         case .free:
             break
-        case .paid, .paidExpiringSoon:
+        case .paid, .paidExpiringSoon, .paidAsTester:
             backupSize += metadata.attachmentByteSize
         case .disabled, .disabling:
             owsFailDebug("Shouldn't generate backup when backups is disabled")

@@ -181,7 +181,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             switch backupPlan {
             case nil, .disabled, .disabling, .free:
                 return .empty
-            case .paid, .paidExpiringSoon:
+            case .paid, .paidExpiringSoon, .paidAsTester:
                 break
             }
 

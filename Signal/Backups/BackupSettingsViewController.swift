@@ -172,7 +172,7 @@ class BackupSettingsViewController: HostingController<BackupSettingsView> {
         switch viewModel.backupPlan {
         case .disabled where viewModel.failedToDisableBackupsRemotely:
             showDisablingBackupsFailedSheet()
-        case .disabled, .disabling, .free, .paid, .paidExpiringSoon:
+        case .disabled, .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
             break
         }
 
@@ -385,6 +385,8 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
         switch currentBackupPlan {
         case .free:
             return .free
+        case .paidAsTester:
+            return .paidButFreeForTesters
         case .disabling, .disabled, .paid, .paidExpiringSoon:
             break
         }
@@ -402,7 +404,7 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
         switch currentBackupPlan {
         case .free:
             return .free
-        case .disabling, .disabled, .paid, .paidExpiringSoon:
+        case .disabling, .disabled, .paid, .paidExpiringSoon, .paidAsTester:
             break
         }
 
@@ -449,6 +451,12 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
         }
     }
 
+    fileprivate func managePaidPlanAsTester() {
+        Task {
+            await showChooseBackupPlan(initialPlanSelection: .paid)
+        }
+    }
+
     // MARK: -
 
     fileprivate func performManualBackup() {
@@ -481,30 +489,39 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
 
     fileprivate func setOptimizeLocalStorage(_ newOptimizeLocalStorage: Bool) {
         do {
-            try db.writeWithRollbackIfThrows { tx in
+            let isPaidPlanTester: Bool = try db.writeWithRollbackIfThrows { tx in
                 let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
                 let newBackupPlan: BackupPlan
+                let isPaidPlanTester: Bool
 
                 switch currentBackupPlan {
                 case .disabled, .disabling, .free:
                     owsFailDebug("Shouldn't be setting Optimize Local Storage: \(currentBackupPlan)")
-                    return
+                    return false
                 case .paid:
                     newBackupPlan = .paid(optimizeLocalStorage: newOptimizeLocalStorage)
+                    isPaidPlanTester = false
                 case .paidExpiringSoon:
                     newBackupPlan = .paidExpiringSoon(optimizeLocalStorage: newOptimizeLocalStorage)
+                    isPaidPlanTester = false
+                case .paidAsTester:
+                    newBackupPlan = .paidAsTester(optimizeLocalStorage: newOptimizeLocalStorage)
+                    isPaidPlanTester = true
                 }
 
                 try backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
+                return isPaidPlanTester
+            }
+
+            // If disabling Optimize Local Storage, offer to start downloads now.
+            if !newOptimizeLocalStorage {
+                showDownloadOffloadedMediaSheet()
+            } else if isPaidPlanTester {
+                showOffloadedMediaForTestersWarningSheet(onAcknowledge: {})
             }
         } catch {
             owsFailDebug("Failed to set Optimize Local Storage: \(error)")
             return
-        }
-
-        // If disabling Optimize Local Storage, offer to start downloads now.
-        if !newOptimizeLocalStorage {
-            showDownloadOffloadedMediaSheet()
         }
     }
 
@@ -543,6 +560,29 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
         presentActionSheet(actionSheet)
     }
 
+    private func showOffloadedMediaForTestersWarningSheet(
+        onAcknowledge: @escaping () -> Void,
+    ) {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE",
+                comment: "Title for an action sheet warning users who are testers about the Optimize Local Storage feature."
+            ),
+            message: OWSLocalizedString(
+                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE",
+                comment: "Message for an action sheet warning users who are testers about the Optimize Local Storage feature."
+            ),
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.okButton,
+            handler: { _ in
+                onAcknowledge()
+            },
+        ))
+
+        presentActionSheet(actionSheet)
+    }
+
     // MARK: -
 
     fileprivate func setIsBackupDownloadQueueSuspended(_ isSuspended: Bool, backupPlan: BackupPlan) {
@@ -552,6 +592,12 @@ extension BackupSettingsViewController: BackupSettingsViewModel.ActionsDelegate 
                 db.write { tx in
                     backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
                 }
+            case .paidAsTester:
+                showOffloadedMediaForTestersWarningSheet(onAcknowledge: { [self] in
+                    db.write { tx in
+                        backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
+                    }
+                })
             case .paidExpiringSoon:
                 let warningSheet = ActionSheetController(
                     title: OWSLocalizedString(
@@ -680,6 +726,7 @@ private class BackupSettingsViewModel: ObservableObject {
         func loadBackupSubscription() async throws -> BackupSubscriptionLoadingState.LoadedBackupSubscription
         func upgradeFromFreeToPaidPlan()
         func manageOrCancelPaidPlan()
+        func managePaidPlanAsTester()
 
         func performManualBackup()
         func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool)
@@ -695,6 +742,7 @@ private class BackupSettingsViewModel: ObservableObject {
     enum BackupSubscriptionLoadingState {
         enum LoadedBackupSubscription {
             case free
+            case paidButFreeForTesters
             case paid(price: FiatMoney, renewalDate: Date)
             case paidButExpiring(expirationDate: Date)
             case paidButExpired(expirationDate: Date)
@@ -757,6 +805,15 @@ private class BackupSettingsViewModel: ObservableObject {
 
     // MARK: -
 
+    var isPaidPlanTester: Bool {
+        switch backupPlan {
+        case .disabled, .disabling, .free, .paid, .paidExpiringSoon:
+            false
+        case .paidAsTester:
+            true
+        }
+    }
+
     func loadBackupSubscription() {
         guard let actionsDelegate else { return }
 
@@ -789,6 +846,10 @@ private class BackupSettingsViewModel: ObservableObject {
         actionsDelegate?.manageOrCancelPaidPlan()
     }
 
+    func managePaidPlanAsTester() {
+        actionsDelegate?.managePaidPlanAsTester()
+    }
+
     // MARK: -
 
     func performManualBackup() {
@@ -806,7 +867,7 @@ private class BackupSettingsViewModel: ObservableObject {
         switch backupPlan {
         case .disabled, .disabling, .free:
             false
-        case .paid, .paidExpiringSoon:
+        case .paid, .paidExpiringSoon, .paidAsTester:
             true
         }
     }
@@ -815,7 +876,10 @@ private class BackupSettingsViewModel: ObservableObject {
         switch backupPlan {
         case .disabled, .disabling, .free:
             false
-        case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage):
+        case
+                .paid(let optimizeLocalStorage),
+                .paidExpiringSoon(let optimizeLocalStorage),
+                .paidAsTester(let optimizeLocalStorage):
             optimizeLocalStorage
         }
     }
@@ -853,7 +917,7 @@ struct BackupSettingsView: View {
     }
     private var contents: Contents {
         switch viewModel.backupPlan {
-        case .free, .paid, .paidExpiringSoon:
+        case .free, .paid, .paidExpiringSoon, .paidAsTester:
             return .enabled
         case .disabled:
             if viewModel.failedToDisableBackupsRemotely {
@@ -952,7 +1016,15 @@ struct BackupSettingsView: View {
                         )
                     ).disabled(!viewModel.optimizeLocalStorageAvailable)
                 } footer: {
-                    let footerText = if viewModel.optimizeLocalStorageAvailable {
+                    let footerText: String = if
+                        viewModel.optimizeLocalStorageAvailable,
+                        viewModel.isPaidPlanTester
+                    {
+                        OWSLocalizedString(
+                            "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS",
+                            comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester."
+                        )
+                    } else if viewModel.optimizeLocalStorageAvailable {
                         OWSLocalizedString(
                             "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE",
                             comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available."
@@ -1087,8 +1159,11 @@ struct BackupSettingsView: View {
             // Don't let them reenable until we know if they're already paying
             // or not.
             return AnyView(EmptyView())
+        case .loaded(.paidButFreeForTesters):
+            // Let them reenable with anything; there was no purchase.
+            implicitPlanSelection = nil
         case .loaded(.free), .loaded(.paidButExpired), .genericError:
-            // Let the reenable with anything.
+            // Let them reenable with anything.
             implicitPlanSelection = nil
         case .loaded(.paid), .loaded(.paidButExpiring):
             // Only let the user reenable with .paid, because they're already
@@ -1130,7 +1205,7 @@ private struct BackupAttachmentDownloadProgressView: View {
             let subtitleText: String = switch latestDownloadUpdate.state {
             case .suspended:
                 switch viewModel.backupPlan {
-                case .disabled, .free, .paid:
+                case .disabled, .free, .paid, .paidAsTester:
                     String(
                         format: OWSLocalizedString(
                             "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED",
@@ -1383,7 +1458,7 @@ private struct BackupSubscriptionView: View {
                             "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER",
                             comment: "Header describing what the free backup plan includes."
                         ))
-                    case .paid, .paidButExpiring, .paidButExpired:
+                    case .paid, .paidButExpiring, .paidButExpired, .paidButFreeForTesters:
                         Text(OWSLocalizedString(
                             "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER",
                             comment: "Header describing what the paid backup plan includes."
@@ -1421,7 +1496,7 @@ private struct BackupSubscriptionView: View {
                     ))
                 case .paidButExpiring(let expirationDate), .paidButExpired(let expirationDate):
                     let expirationDateFormatString = switch loadedBackupSubscription {
-                    case .free, .paid:
+                    case .free, .paid, .paidButFreeForTesters:
                         owsFail("Not possible")
                     case .paidButExpiring:
                         OWSLocalizedString(
@@ -1444,6 +1519,11 @@ private struct BackupSubscriptionView: View {
                         format: expirationDateFormatString,
                         DateFormatter.localizedString(from: expirationDate, dateStyle: .medium, timeStyle: .none)
                     ))
+                case .paidButFreeForTesters:
+                    Text(OWSLocalizedString(
+                        "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION",
+                        comment: "Text describing that the user's backup plan is paid, but free for them as a tester."
+                    ))
                 }
 
                 Spacer().frame(height: 16)
@@ -1454,6 +1534,8 @@ private struct BackupSubscriptionView: View {
                         viewModel.upgradeFromFreeToPaidPlan()
                     case .paid, .paidButExpiring, .paidButExpired:
                         viewModel.manageOrCancelPaidPlan()
+                    case .paidButFreeForTesters:
+                        viewModel.managePaidPlanAsTester()
                     }
                 } label: {
                     switch loadedBackupSubscription {
@@ -1471,6 +1553,11 @@ private struct BackupSubscriptionView: View {
                         Text(OWSLocalizedString(
                             "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE",
                             comment: "Title for a button allowing users to reenable a paid backup plan that has been canceled."
+                        ))
+                    case .paidButFreeForTesters:
+                        Text(OWSLocalizedString(
+                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE",
+                            comment: "Title for a button allowing users to manage their backup plan as a tester."
                         ))
                     }
                 }
@@ -1608,6 +1695,7 @@ private extension BackupSettingsViewModel {
             }
             func upgradeFromFreeToPaidPlan() { print("Upgrading!") }
             func manageOrCancelPaidPlan() { print("Managing or canceling!") }
+            func managePaidPlanAsTester() { print("Managing as tester!") }
 
             func performManualBackup() { print("Manually backing up!") }
             func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) { print("Uploads on cellular: \(newShouldAllowBackupUploadsOnCellular)") }
@@ -1665,6 +1753,13 @@ private extension BackupSettingsViewModel {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         backupPlanLoadResult: .success(.free)
+    ))
+}
+
+#Preview("Plan: Free For Testers") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupPlan: .paidAsTester(optimizeLocalStorage: false),
+        backupPlanLoadResult: .success(.paidButFreeForTesters)
     ))
 }
 

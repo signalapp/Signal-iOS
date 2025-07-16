@@ -342,7 +342,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
             // Don't offload if our subscription expires soon, regardless of the
             // optimizeLocalStorage setting.
             return false
-        case .paid(let optimizeLocalStorage):
+        case .paid(let optimizeLocalStorage), .paidAsTester(let optimizeLocalStorage):
             return optimizeLocalStorage
         }
     }

@@ -40,7 +40,7 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
             switch backupSettingsStore.backupPlan(tx: tx) {
             case .disabled, .disabling:
                 return .never
-            case .free, .paid, .paidExpiringSoon:
+            case .free, .paid, .paidExpiringSoon, .paidAsTester:
                 break
             }
             let lastBackupDate = (backupSettingsStore.lastBackupDate(tx: tx) ?? Date(millisecondsSince1970: 0))

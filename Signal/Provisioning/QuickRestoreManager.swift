@@ -76,7 +76,7 @@ public class QuickRestoreManager {
 
             let backupTier: RegistrationProvisioningMessage.BackupTier? = switch backupSettingsStore.backupPlan(tx: tx) {
             case .free: .free
-            case .paid, .paidExpiringSoon: .paid
+            case .paid, .paidExpiringSoon, .paidAsTester: .paid
             case .disabled, .disabling: nil
             }
 

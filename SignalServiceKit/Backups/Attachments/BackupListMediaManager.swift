@@ -900,7 +900,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         switch currentBackupPlan {
         case .disabled:
             return false
-        case .disabling, .free, .paid, .paidExpiringSoon:
+        case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
             break
         }
 
@@ -926,7 +926,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             return false
         case .free:
             return false
-        case .paid, .paidExpiringSoon:
+        case .paid, .paidExpiringSoon, .paidAsTester:
             // If paid tier, query periodically as a catch-all to ensure local state
             // stays in sync with the server.
             let nowMs = dateProvider().ows_millisecondsSince1970

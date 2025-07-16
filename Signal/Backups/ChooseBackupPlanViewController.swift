@@ -11,6 +11,11 @@ import SwiftUI
 class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
     typealias OnConfirmPlanSelectionBlock = (ChooseBackupPlanViewController, PlanSelection) -> Void
 
+    enum StoreKitAvailability {
+        case available(paidPlanDisplayPrice: String)
+        case unavailableForTesters
+    }
+
     enum PlanSelection {
         case free
         case paid
@@ -18,7 +23,6 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
 
     private let backupIdManager: BackupIdManager
     private let backupSettingsStore: BackupSettingsStore
-    private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
     private let tsAccountManager: TSAccountManager
 
@@ -27,24 +31,22 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
 
     init(
         initialPlanSelection: PlanSelection?,
-        paidPlanDisplayPrice: String,
+        storeKitAvailability: StoreKitAvailability,
         backupIdManager: BackupIdManager,
         backupSettingsStore: BackupSettingsStore,
-        backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
         tsAccountManager: TSAccountManager,
         onConfirmPlanSelectionBlock: @escaping OnConfirmPlanSelectionBlock,
     ) {
         self.backupIdManager = backupIdManager
         self.backupSettingsStore = backupSettingsStore
-        self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
         self.tsAccountManager = tsAccountManager
 
         self.onConfirmPlanSelectionBlock = onConfirmPlanSelectionBlock
         self.viewModel = ChooseBackupPlanViewModel(
             initialPlanSelection: initialPlanSelection,
-            paidPlanDisplayPrice: paidPlanDisplayPrice
+            storeKitAvailability: storeKitAvailability,
         )
 
         super.init(wrappedView: ChooseBackupPlanView(viewModel: viewModel))
@@ -57,24 +59,30 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         initialPlanSelection: PlanSelection?,
         onConfirmPlanSelectionBlock: @escaping OnConfirmPlanSelectionBlock,
     ) async throws(OWSAssertionError) -> ChooseBackupPlanViewController {
-        let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
+        let storeKitAvailability: StoreKitAvailability
+        if FeatureFlags.Backups.avoidStoreKitForTesters {
+            storeKitAvailability = .unavailableForTesters
+        } else {
+            let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
 
-        let paidPlanDisplayPrice: String
-        do {
-            paidPlanDisplayPrice = try await ModalActivityIndicatorViewController
-                .presentAndPropagateResult(from: fromViewController) {
-                    try await backupSubscriptionManager.subscriptionDisplayPrice()
-                }
-        } catch {
-            throw OWSAssertionError("Failed to get paidPlanDisplayPrice!")
+            let paidPlanDisplayPrice: String
+            do {
+                paidPlanDisplayPrice = try await ModalActivityIndicatorViewController
+                    .presentAndPropagateResult(from: fromViewController) {
+                        try await backupSubscriptionManager.subscriptionDisplayPrice()
+                    }
+            } catch {
+                throw OWSAssertionError("Failed to get paidPlanDisplayPrice!")
+            }
+
+            storeKitAvailability = .available(paidPlanDisplayPrice: paidPlanDisplayPrice)
         }
 
         return ChooseBackupPlanViewController(
             initialPlanSelection: initialPlanSelection,
-            paidPlanDisplayPrice: paidPlanDisplayPrice,
+            storeKitAvailability: storeKitAvailability,
             backupIdManager: DependenciesBridge.shared.backupIdManager,
             backupSettingsStore: BackupSettingsStore(),
-            backupSubscriptionManager: backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             onConfirmPlanSelectionBlock: onConfirmPlanSelectionBlock,
@@ -93,6 +101,7 @@ extension ChooseBackupPlanViewController: ChooseBackupPlanViewModel.ActionsDeleg
 // MARK: -
 
 private class ChooseBackupPlanViewModel: ObservableObject {
+    typealias StoreKitAvailability = ChooseBackupPlanViewController.StoreKitAvailability
     typealias PlanSelection = ChooseBackupPlanViewController.PlanSelection
 
     protocol ActionsDelegate: AnyObject {
@@ -100,18 +109,20 @@ private class ChooseBackupPlanViewModel: ObservableObject {
     }
 
     @Published var planSelection: PlanSelection
+
     let initialPlanSelection: PlanSelection?
-    let paidPlanDisplayPrice: String
+    let storeKitAvailability: StoreKitAvailability
 
     weak var actionsDelegate: ActionsDelegate?
 
     init(
         initialPlanSelection: PlanSelection?,
-        paidPlanDisplayPrice: String
+        storeKitAvailability: StoreKitAvailability,
     ) {
         self.planSelection = initialPlanSelection ?? .free
+
         self.initialPlanSelection = initialPlanSelection
-        self.paidPlanDisplayPrice = paidPlanDisplayPrice
+        self.storeKitAvailability = storeKitAvailability
     }
 
     // MARK: Actions
@@ -185,13 +196,23 @@ struct ChooseBackupPlanView: View {
                 Spacer().frame(height: 16)
 
                 PlanOptionView(
-                    title: String(
-                        format: OWSLocalizedString(
-                            "CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE",
-                            comment: "Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}."
-                        ),
-                        viewModel.paidPlanDisplayPrice
-                    ),
+                    title: {
+                        switch viewModel.storeKitAvailability {
+                        case .available(let paidPlanDisplayPrice):
+                            String(
+                                format: OWSLocalizedString(
+                                    "CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE",
+                                    comment: "Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}."
+                                ),
+                                paidPlanDisplayPrice
+                            )
+                        case .unavailableForTesters:
+                            OWSLocalizedString(
+                                "CHOOSE_BACKUP_PLAN_PAID_PLAN_NO_PURCHASES_TITLE",
+                                comment: "Title for the paid plan option, when choosing a Backup plan as a tester."
+                            )
+                        }
+                    }(),
                     subtitle: OWSLocalizedString(
                         "CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE",
                         comment: "Subtitle for the paid plan option, when choosing a Backup plan."
@@ -226,13 +247,18 @@ struct ChooseBackupPlanView: View {
                 case .free:
                     CommonStrings.continueButton
                 case .paid:
-                    String(
-                        format: OWSLocalizedString(
-                            "CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT",
-                            comment: "Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}."
-                        ),
-                        viewModel.paidPlanDisplayPrice
-                    )
+                    switch viewModel.storeKitAvailability {
+                    case .available(let paidPlanDisplayPrice):
+                        String(
+                            format: OWSLocalizedString(
+                                "CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT",
+                                comment: "Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}."
+                            ),
+                            paidPlanDisplayPrice
+                        )
+                    case .unavailableForTesters:
+                        CommonStrings.continueButton
+                    }
                 }
 
                 Text(text)
@@ -355,7 +381,9 @@ private struct PlanOptionView: View {
 #if DEBUG
 
 private extension ChooseBackupPlanViewModel {
-    static func forPreview() -> ChooseBackupPlanViewModel {
+    static func forPreview(
+        storeKitAvailability: StoreKitAvailability,
+    ) -> ChooseBackupPlanViewModel {
         class ChoosePlanActionsDelegate: ChooseBackupPlanViewModel.ActionsDelegate {
             func confirmSelection(_ planSelection: ChooseBackupPlanViewModel.PlanSelection) {
                 print("Confirming \(planSelection)")
@@ -364,7 +392,7 @@ private extension ChooseBackupPlanViewModel {
 
         let viewModel = ChooseBackupPlanViewModel(
             initialPlanSelection: .free,
-            paidPlanDisplayPrice: "$2.99"
+            storeKitAvailability: storeKitAvailability
         )
         let actionsDelegate = ChoosePlanActionsDelegate()
         ObjectRetainer.retainObject(actionsDelegate, forLifetimeOf: viewModel)
@@ -374,8 +402,16 @@ private extension ChooseBackupPlanViewModel {
     }
 }
 
-#Preview {
-    ChooseBackupPlanView(viewModel: .forPreview())
+#Preview("Purchases") {
+    ChooseBackupPlanView(viewModel: .forPreview(
+        storeKitAvailability: .available(paidPlanDisplayPrice: "$1.99")
+    ))
+}
+
+#Preview("No Purchases") {
+    ChooseBackupPlanView(viewModel: .forPreview(
+        storeKitAvailability: .unavailableForTesters
+    ))
 }
 
 #endif

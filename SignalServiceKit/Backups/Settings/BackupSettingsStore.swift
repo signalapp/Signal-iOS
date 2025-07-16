@@ -9,6 +9,7 @@ public enum BackupPlan: RawRepresentable {
     case free
     case paid(optimizeLocalStorage: Bool)
     case paidExpiringSoon(optimizeLocalStorage: Bool)
+    case paidAsTester(optimizeLocalStorage: Bool)
 
     // MARK: RawRepresentable
 
@@ -21,6 +22,8 @@ public enum BackupPlan: RawRepresentable {
         case 3: self = .paid(optimizeLocalStorage: true)
         case 4: self = .paidExpiringSoon(optimizeLocalStorage: false)
         case 5: self = .paidExpiringSoon(optimizeLocalStorage: true)
+        case 8: self = .paidAsTester(optimizeLocalStorage: false)
+        case 9: self = .paidAsTester(optimizeLocalStorage: true)
         default: return nil
         }
     }
@@ -32,6 +35,7 @@ public enum BackupPlan: RawRepresentable {
         case .free: return 1
         case .paid(let optimizeLocalStorage): return optimizeLocalStorage ? 3 : 2
         case .paidExpiringSoon(let optimizeLocalStorage): return optimizeLocalStorage ? 5 : 4
+        case .paidAsTester(let optimizeLocalStorage): return optimizeLocalStorage ? 9 : 8
         }
     }
 }

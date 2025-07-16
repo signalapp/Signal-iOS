@@ -179,12 +179,16 @@ public struct BackupAttachmentDownloadEligibility {
             // but for eligibility purposes "free" is the same as paid with optimize off.
             return .ready
         case
-                .paid(let optimizeLocalStorage) where optimizeLocalStorage == false,
-                .paidExpiringSoon(let optimizeLocalStorage) where optimizeLocalStorage == false:
+                .paid(optimizeLocalStorage: false),
+                .paidExpiringSoon(optimizeLocalStorage: false),
+                .paidAsTester(optimizeLocalStorage: false):
             // Everything is eligible for download when optimize is off.
             return .ready
 
-        case .paid, .paidExpiringSoon:
+        case
+                .paid(optimizeLocalStorage: true),
+                .paidExpiringSoon(optimizeLocalStorage: true),
+                .paidAsTester(optimizeLocalStorage: true):
             guard let attachmentTimestamp = try getAttachmentTimestamp() else {
                 // Nil timestamps are used for thread wallpapers, which we never offload.
                 return .ready
@@ -215,7 +219,7 @@ public struct BackupAttachmentDownloadEligibility {
         switch backupPlan {
         case .disabled:
             return .ineligible
-        case .disabling, .free, .paid, .paidExpiringSoon:
+        case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
             if attachment.mediaName == nil {
                 return nil
             }
@@ -264,7 +268,7 @@ public struct BackupAttachmentDownloadEligibility {
             } else {
                 fallthrough
             }
-        case .disabling, .free, .paid, .paidExpiringSoon:
+        case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
             if Self.disableTransitTierDownloadsOverride {
                 return nil
             }

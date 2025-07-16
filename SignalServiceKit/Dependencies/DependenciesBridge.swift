@@ -78,6 +78,7 @@ public class DependenciesBridge {
     public let backupRequestManager: BackupRequestManager
     public let backupPlanManager: BackupPlanManager
     public let backupSubscriptionManager: BackupSubscriptionManager
+    public let backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager
     public let badgeCountFetcher: BadgeCountFetcher
     public let callLinkStore: any CallLinkRecordStore
     public let callRecordDeleteManager: any CallRecordDeleteManager
@@ -208,6 +209,7 @@ public class DependenciesBridge {
         backupRequestManager: BackupRequestManager,
         backupPlanManager: BackupPlanManager,
         backupSubscriptionManager: BackupSubscriptionManager,
+        backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager,
         badgeCountFetcher: BadgeCountFetcher,
         callLinkStore: any CallLinkRecordStore,
         callRecordDeleteManager: CallRecordDeleteManager,
@@ -337,6 +339,7 @@ public class DependenciesBridge {
         self.backupRequestManager = backupRequestManager
         self.backupPlanManager = backupPlanManager
         self.backupSubscriptionManager = backupSubscriptionManager
+        self.backupTestFlightEntitlementManager = backupTestFlightEntitlementManager
         self.badgeCountFetcher = badgeCountFetcher
         self.callLinkStore = callLinkStore
         self.callRecordDeleteManager = callRecordDeleteManager

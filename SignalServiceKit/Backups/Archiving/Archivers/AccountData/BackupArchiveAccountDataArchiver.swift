@@ -265,7 +265,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         case .free:
             accountSettings.backupTier = UInt64(BackupLevel.free.rawValue)
             accountSettings.optimizeOnDeviceStorage = false
-        case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage):
+        case .paid(let optimizeLocalStorage), .paidExpiringSoon(let optimizeLocalStorage), .paidAsTester(let optimizeLocalStorage):
             accountSettings.backupTier = UInt64(BackupLevel.paid.rawValue)
             accountSettings.optimizeOnDeviceStorage = optimizeLocalStorage
         }
@@ -332,8 +332,6 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             donationSubscriptionManager.setUserManuallyCancelledSubscription(value: donationSubscriberData.manuallyCancelled, tx: context.tx)
         }
 
-        let backupPlan: BackupPlan
-        let uploadEra: String
         if
             accountData.hasBackupsSubscriberData,
             let subscriberID = accountData.backupsSubscriberData.subscriberID.nilIfEmpty,
@@ -373,12 +371,22 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             // Backups disabled
             backupLevel = nil
         }
+
+        let backupPlan: BackupPlan
+        let uploadEra: String
         switch backupLevel {
         case .paid:
             uploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: context.tx)
-            backupPlan = .paid(
-                optimizeLocalStorage: accountData.accountSettings.optimizeOnDeviceStorage
-            )
+
+            let optimizeLocalStorage = accountData.accountSettings.optimizeOnDeviceStorage
+            if FeatureFlags.Backups.avoidStoreKitForTesters {
+                // If we're importing into a build that can't make purchases,
+                // opt ourselves into "paid as tester" mode. We'll manage IAP
+                // data, if there is any, separately.
+                backupPlan = .paidAsTester(optimizeLocalStorage: optimizeLocalStorage)
+            } else {
+                backupPlan = .paid(optimizeLocalStorage: optimizeLocalStorage)
+            }
         case .free:
             // The exporting client was not subscribed at export time.
             // It may have subscribed after, or not. We don't know, and we don't

@@ -67,7 +67,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
             )
 
             switch newBackupPlan {
-            case .paid, .paidExpiringSoon:
+            case .paid, .paidExpiringSoon, .paidAsTester:
                 backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
             case .disabling, .disabled, .free:
                 break
@@ -88,7 +88,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
         switch oldBackupPlan {
         case .disabled:
             switch newBackupPlan {
-            case .disabled, .free, .paid, .paidExpiringSoon:
+            case .disabled, .free, .paid, .paidExpiringSoon, .paidAsTester:
                 break
             case .disabling:
                 // We're already disabled; how are we starting disabling again?
@@ -98,13 +98,13 @@ class BackupPlanManagerImpl: BackupPlanManager {
             switch newBackupPlan {
             case .disabled, .disabling:
                 break
-            case .free, .paid, .paidExpiringSoon:
+            case .free, .paid, .paidExpiringSoon, .paidAsTester:
                 // Shouldn't be able to "enable" while we're disabling!
                 illegalStateTransition = true
             }
-        case .free, .paid, .paidExpiringSoon:
+        case .free, .paid, .paidExpiringSoon, .paidAsTester:
             switch newBackupPlan {
-            case .disabling, .free, .paid, .paidExpiringSoon:
+            case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
                 break
             case .disabled:
                 // Should've moved through .disabling first!

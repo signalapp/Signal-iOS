@@ -656,7 +656,7 @@ extension ExperienceUpgradeManifest {
         switch backupSettingsStore.backupPlan(tx: transaction) {
         case .disabled, .disabling:
             return false
-        case .free, .paid, .paidExpiringSoon:
+        case .free, .paid, .paidExpiringSoon, .paidAsTester:
             break
         }
 
@@ -684,7 +684,7 @@ extension ExperienceUpgradeManifest {
 
         let backupPlan = BackupSettingsStore().backupPlan(tx: transaction)
         switch backupPlan {
-        case .disabling, .free, .paid, .paidExpiringSoon:
+        case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
             return false
         case .disabled:
             break

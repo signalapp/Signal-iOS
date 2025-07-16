@@ -569,6 +569,13 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let backupTestFlightEntitlementManager = BackupTestFlightEntitlementManager(
+            backupPlanManager: backupPlanManager,
+            dateProvider: dateProvider,
+            db: db,
+            networkManager: networkManager
+        )
+
         let attachmentManager = AttachmentManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentStore: attachmentStore,
@@ -1444,6 +1451,7 @@ public class AppSetup {
             backupRequestManager: backupRequestManager,
             backupPlanManager: backupPlanManager,
             backupSubscriptionManager: backupSubscriptionManager,
+            backupTestFlightEntitlementManager: backupTestFlightEntitlementManager,
             badgeCountFetcher: badgeCountFetcher,
             callLinkStore: callLinkStore,
             callRecordDeleteManager: callRecordDeleteManager,

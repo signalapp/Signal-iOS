@@ -179,7 +179,7 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                     case .disabled, .disabling:
                         // Don't sneakily enable Backups!
                         break
-                    case .paid, .paidExpiringSoon:
+                    case .paid, .paidExpiringSoon, .paidAsTester:
                         break
                     }
 

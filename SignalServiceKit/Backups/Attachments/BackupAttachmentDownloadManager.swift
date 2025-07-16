@@ -260,6 +260,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 (.disabling, .free),
                 (.disabling, .paid),
                 (.disabling, .paidExpiringSoon),
+                (.disabling, .paidAsTester),
                 (.disabled, .disabling):
             throw OWSAssertionError("Unexpected BackupPlan transition: \(oldPlan) -> \(newPlan)")
         case (.free, .disabling):
@@ -270,7 +271,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
         case
                 let (.paid(optimizeLocalStorage), .disabling),
-                let (.paidExpiringSoon(optimizeLocalStorage), .disabling):
+                let (.paidExpiringSoon(optimizeLocalStorage), .disabling),
+                let (.paidAsTester(optimizeLocalStorage), .disabling):
             try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
             // Unsuspend; this is the user opt-in to trigger downloads.
             backupSettingsStore.setIsBackupDownloadQueueSuspended(false, tx: tx)
@@ -296,7 +298,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         case
                 let (.disabled, .paid(optimizeStorage)),
-                let (.disabled, .paidExpiringSoon(optimizeStorage)):
+                let (.disabled, .paidExpiringSoon(optimizeStorage)),
+                let (.disabled, .paidAsTester(optimizeStorage)):
             try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
             // Suspend the queue so the user has to explicitly opt-in to download.
             backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
@@ -309,7 +312,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         case
                 let (.paid(wasOptimizeLocalStorageEnabled), .free),
-                let (.paidExpiringSoon(wasOptimizeLocalStorageEnabled), .free):
+                let (.paidExpiringSoon(wasOptimizeLocalStorageEnabled), .free),
+                let (.paidAsTester(wasOptimizeLocalStorageEnabled), .free):
             // We explicitly do nothing going from paid to free; we want to continue
             // any downloads that were already running (so we take advantage of the
             // media tier cdn TTL being longer than paid subscription lifetime) but
@@ -321,7 +325,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         case
                 let (.free, .paid(optimizeStorage)),
-                let (.free, .paidExpiringSoon(optimizeStorage)):
+                let (.free, .paidExpiringSoon(optimizeStorage)),
+                let (.free, .paidAsTester(optimizeStorage)):
             // We explicitly do nothing when going from free to paid; any state
             // changes that will happen will be triggered by list media request
             // handling which will always run at the start of a new upload era.
@@ -336,8 +341,13 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 // Downloads don't care if expiring soon or not
                 let (.paid(oldOptimize), .paid(newOptimize)),
                 let (.paid(oldOptimize), .paidExpiringSoon(newOptimize)),
+                let (.paid(oldOptimize), .paidAsTester(newOptimize)),
                 let (.paidExpiringSoon(oldOptimize), .paid(newOptimize)),
-                let (.paidExpiringSoon(oldOptimize), .paidExpiringSoon(newOptimize)):
+                let (.paidExpiringSoon(oldOptimize), .paidExpiringSoon(newOptimize)),
+                let (.paidExpiringSoon(oldOptimize), .paidAsTester(newOptimize)),
+                let (.paidAsTester(oldOptimize), .paid(newOptimize)),
+                let (.paidAsTester(oldOptimize), .paidExpiringSoon(newOptimize)),
+                let (.paidAsTester(oldOptimize), .paidAsTester(newOptimize)):
             if oldOptimize == newOptimize {
                 // Nothing changed.
                 break
@@ -628,7 +638,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                             // The primary would only be uploading if were paid tier.
                             // (this is inexact but the user can always tap to download)
                             return false
-                        case .paid, .paidExpiringSoon:
+                        case .paid, .paidExpiringSoon, .paidAsTester:
                             break
                         }
                         guard let attachment = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx) else {

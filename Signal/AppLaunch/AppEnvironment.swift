@@ -72,6 +72,7 @@ public class AppEnvironment: NSObject {
             backupIdManager: DependenciesBridge.shared.backupIdManager,
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
+            backupTestFlightEntitlementManager: DependenciesBridge.shared.backupTestFlightEntitlementManager,
             db: DependenciesBridge.shared.db,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
@@ -119,6 +120,7 @@ public class AppEnvironment: NSObject {
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             let backupDisablingManager = DependenciesBridge.shared.backupDisablingManager
             let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
+            let backupTestFlightEntitlementManager = DependenciesBridge.shared.backupTestFlightEntitlementManager
             let callRecordStore = DependenciesBridge.shared.callRecordStore
             let callRecordQuerier = DependenciesBridge.shared.callRecordQuerier
             let db = DependenciesBridge.shared.db
@@ -201,7 +203,15 @@ public class AppEnvironment: NSObject {
                 do {
                     try await backupSubscriptionManager.redeemSubscriptionIfNecessary()
                 } catch {
-                    owsFailDebug("Failed to redeem subscription in launch job: \(error)")
+                    owsFailDebug("Failed to redeem Backup subscription in launch job: \(error)")
+                }
+            }
+
+            Task {
+                do {
+                    try await backupTestFlightEntitlementManager.renewEntitlementIfNecessary()
+                } catch {
+                    owsFailDebug("Failed to renew Backup entitlement for TestFlight in launch job: \(error)")
                 }
             }
 

@@ -130,25 +130,16 @@ public final class BackupSubscriptionManager {
         struct MissingProductError: Error {}
 
         do {
-            /// For reasons unknown, the `Product.products(for:)` API sometimes
-            /// returns an empty list. (In sandbox testing, it'd happen ~50% of
-            /// the time.)
-            return try await Retry.performWithBackoff(
-                maxAttempts: 5,
-                isRetryable: { $0 is MissingProductError },
-                block: {
-                    guard let product = try await Product.products(
-                        for: [Constants.paidTierBackupsProductId]
-                    ).first else {
-                        throw MissingProductError()
-                    }
+            guard let product = try await Product.products(
+                for: [Constants.paidTierBackupsProductId]
+            ).first else {
+                throw MissingProductError()
+            }
 
-                    return product
-                }
-            )
+            return product
         } catch is MissingProductError {
             throw OWSAssertionError(
-                "Paid-tier product repeatedly missing from StoreKit!",
+                "Paid-tier product missing from StoreKit!",
                 logger: logger
             )
         } catch {
@@ -299,14 +290,14 @@ public final class BackupSubscriptionManager {
                         return .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
                     case .paid:
                         break
-                    case .disabled, .disabling, .free, .paidExpiringSoon:
+                    case .disabled, .disabling, .free, .paidExpiringSoon, .paidAsTester:
                         break
                     }
                 } else {
                     switch currentBackupPlan {
                     case .paid, .paidExpiringSoon:
                         return .free
-                    case .disabled, .disabling, .free:
+                    case .disabled, .disabling, .free, .paidAsTester:
                         break
                     }
                 }
@@ -330,6 +321,8 @@ public final class BackupSubscriptionManager {
 
     /// Returns the price for a Backups subscription, formatted for display.
     public func subscriptionDisplayPrice() async throws -> String {
+        owsPrecondition(!FeatureFlags.Backups.avoidStoreKitForTesters)
+
         return try await getPaidTierProduct().displayPrice
     }
 
@@ -346,6 +339,8 @@ public final class BackupSubscriptionManager {
     /// Backups subscription, StoreKit handles already-subscribed users
     /// gracefully by showing explanatory UI.
     public func purchaseNewSubscription() async throws -> PurchaseResult {
+        owsPrecondition(!FeatureFlags.Backups.avoidStoreKitForTesters)
+
         switch try await getPaidTierProduct().purchase() {
         case .success(let purchaseResult):
             switch purchaseResult {
