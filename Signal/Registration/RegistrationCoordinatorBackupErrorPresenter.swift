@@ -43,6 +43,7 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
     private enum Constants {
         static let incompatibleVersionFAQURL = URL(string: "https://support.signal.org/hc/articles/360007059752")!
         static let backupKeyFAQURL = URL(string: "https://support.signal.org/hc/articles/360007059752")!
+        static let itunesStoreUrl = URL(string: "https://itunes.apple.com/app/id874139669")!
     }
 
     public func mapToRegistrationError(error: Error) -> RegistrationBackupRestoreError {
@@ -199,7 +200,14 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
             )
 
             actions.append(ActionSheetAction(title: checkUpdateString) { _ in
-                // TODO: [Backups] - Show the app store page
+                self.presentAppStorePage {
+                    self.presentError(
+                        error: error,
+                        isQuickRestore: isQuickRestore,
+                        from: presenter,
+                        continuation: continuation
+                    )
+                }
             })
             if !isQuickRestore {
                 actions.append(ActionSheetAction(title: skipRestoreString) { _ in
@@ -311,6 +319,14 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
         vc.delegate = self
         presentSupportCompletion = completion
         presenter.present(vc, animated: true, completion: nil)
+    }
+
+    private func presentAppStorePage(
+        completion: @escaping () -> Void
+    ) {
+        UIApplication.shared.open(Constants.itunesStoreUrl) { _ in
+            completion()
+        }
     }
 
     @objc
