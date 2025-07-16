@@ -5581,6 +5581,24 @@
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
 
+/* Body of prompt notifying registration without restore completed on the new device. */
+"OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY" = "Your Signal account has been activated on your other device. Signal is now inactive on this device.";
+
+/* Title of prompt notifying registration without restore completed on the new device. */
+"OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Registration complete";
+
+/* Body of prompt notifying device restore started on the new device. */
+"OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Your Signal account and messages have started transferring to your other device. Signal is now inactive on this device.";
+
+/* Title of prompt notifying device restore started on the new device. */
+"OUTGOING_DEVICE_RESTORE_COMPLETE_TITLE" = "Restore complete";
+
+/* Body of prompt notifying that action is necessary on the other device. */
+"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_BODY" = "Continue transferring your account on your other device.";
+
+/* Title of prompt notifying that action is necessary on the other device. */
+"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_TITLE" = "Continue on your other device";
+
 /* Body text describing the outgoing transfer. */
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Your account will be transferred to a new device. This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
 
@@ -5592,6 +5610,12 @@
 
 /* Title text describing the outgoing transfer. */
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Transfer Account";
+
+/* Body of prompt notifying device transfer completed. */
+"OUTGOING_DEVICE_TRANSFER_COMPLETE_BODY" = "Your Signal account and messages have been transferred to your other device. Signal is now inactive on this device.";
+
+/* Title of prompt notifying device transfer completed. */
+"OUTGOING_DEVICE_TRANSFER_COMPLETE_TITLE" = "Transfer complete";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Unanswered video call";

@@ -47,7 +47,6 @@ class RegistrationTransferStatusViewController: HostingController<TransferStatus
                 primaryButton: .init(
                     title: CommonStrings.okayButton
                 ) { _ in
-                    // TODO: [Backups] - This should be handled through the presenter
                     Task {
                         SSKEnvironment.shared.notificationPresenterRef.notifyUserToRelaunchAfterTransfer {
                             Logger.info("Deliberately terminating app post-transfer.")

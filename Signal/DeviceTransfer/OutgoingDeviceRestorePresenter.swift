@@ -56,9 +56,14 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
     private func presentSheet() {
         let sheet = HeroSheetViewController(
             hero: .image(UIImage(named: "other-device")!),
-            // TODO: [Backups] - Localize
-            title: LocalizationNotNeeded("Continue on your other device"),
-            body: LocalizationNotNeeded("Continue transferring your account on your other device."),
+            title: OWSLocalizedString(
+                "OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_TITLE",
+                comment: "Title of prompt notifying that action is necessary on the other device."
+            ),
+            body: OWSLocalizedString(
+                "OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_BODY",
+                comment: "Body of prompt notifying that action is necessary on the other device."
+            ),
             primary: .hero(.animation(named: "circular_indeterminate", height: 60))
         )
         sheet.modalPresentationStyle = .formSheet
@@ -82,10 +87,15 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
     private func displayTransferComplete(presentingViewController: UIViewController) async {
         let sheet = HeroSheetViewController(
             hero: .image(UIImage(resource: .checkCircle)),
-            // TODO: [Backups] - Localize
-            title: LocalizationNotNeeded("Transfer complete"),
-            body: LocalizationNotNeeded("Your Signal account and messages have been transferred to your other device. Signal is now inactive on this device."),
-            primaryButton: .dismissing(title: "Okay")
+            title: OWSLocalizedString(
+                "OUTGOING_DEVICE_TRANSFER_COMPLETE_TITLE",
+                comment: "Title of prompt notifying device transfer completed."
+            ),
+            body: OWSLocalizedString(
+                "OUTGOING_DEVICE_TRANSFER_COMPLETE_BODY",
+                comment: "Body of prompt notifying device transfer completed."
+            ),
+            primaryButton: .dismissing(title: CommonStrings.okayButton)
         )
         sheet.modalPresentationStyle = .formSheet
         await presentingViewController.awaitablePresent(sheet, animated: true)
@@ -94,16 +104,27 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
     @MainActor
     private func displayRestoreMessage(isBackup: Bool, presentingViewController: UIViewController) async {
 
-        // TODO: [Backups] - Localize
         let (title, body) = if isBackup {
             (
-                LocalizationNotNeeded("Restore complete"),
-                LocalizationNotNeeded("Your Signal account and messages have started transferring to your other device. Signal is now inactive on this device.")
+                OWSLocalizedString(
+                    "OUTGOING_DEVICE_RESTORE_COMPLETE_TITLE",
+                    comment: "Title of prompt notifying device restore started on the new device."
+                ),
+                OWSLocalizedString(
+                    "OUTGOING_DEVICE_RESTORE_COMPLETE_BODY",
+                    comment: "Body of prompt notifying device restore started on the new device."
+                )
             )
         } else {
             (
-                LocalizationNotNeeded("Registration complete"),
-                LocalizationNotNeeded("Your Signal account has been activated on your other device. Signal is now inactive on this device.")
+                OWSLocalizedString(
+                    "OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE",
+                    comment: "Title of prompt notifying registration without restore completed on the new device."
+                ),
+                OWSLocalizedString(
+                    "OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY",
+                    comment: "Body of prompt notifying registration without restore completed on the new device."
+                )
             )
         }
 
