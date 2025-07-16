@@ -529,7 +529,7 @@ private extension TSRequest {
         action: AppAttestManager.AttestationAction,
     ) -> TSRequest {
         return TSRequest(
-            url: URL(string: "/v1/devicecheck/assert?action=\(action.rawValue)")!,
+            url: URL(string: "v1/devicecheck/assert?action=\(action.rawValue)")!,
             method: "GET",
         )
     }
@@ -540,7 +540,7 @@ private extension TSRequest {
         assertion: Data,
     ) -> TSRequest {
         return TSRequest(
-            url: URL(string: "/v1/devicecheck/assert?keyId=\(keyId)&request=\(assertedRequestData.asBase64Url)")!,
+            url: URL(string: "v1/devicecheck/assert?keyId=\(keyId)&request=\(assertedRequestData.asBase64Url)")!,
             method: "POST",
             body: .data(assertion)
         )
@@ -548,7 +548,7 @@ private extension TSRequest {
 
     static func getAttestationChallenge() -> TSRequest {
         return TSRequest(
-            url: URL(string: "/v1/devicecheck/attest")!,
+            url: URL(string: "v1/devicecheck/attest")!,
             method: "GET",
             parameters: nil
         )
@@ -559,7 +559,7 @@ private extension TSRequest {
         keyAttestation: Data,
     ) -> TSRequest {
         return TSRequest(
-            url: URL(string: "/v1/devicecheck/attest?keyId=\(keyId)")!,
+            url: URL(string: "v1/devicecheck/attest?keyId=\(keyId)")!,
             method: "POST",
             body: .data(keyAttestation)
         )
