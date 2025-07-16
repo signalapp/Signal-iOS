@@ -24,17 +24,14 @@ public enum DarwinNotificationCenter {
     /// - Parameter observer: The token returned by ``addObserver(name:queue:block:)``
     /// - Returns: `true` iff the given `observer` is valid
     public static func isValid(_ observer: ObserverToken) -> Bool {
-        notify_is_valid_token(observer)
+        return notify_is_valid_token(observer)
     }
 
     /// Post a darwin notification that can be listened for from other processes.
     ///
     /// - Parameter name: The name of the notification to post.
     public static func postNotification(name: DarwinNotificationName) {
-        owsAssertDebug(name.isValid)
-        name.withCString { cName in
-            _ = notify_post(cName)
-        }
+        _ = notify_post(name.rawValue)
     }
 
     /// Add an observer for a darwin notification of the given name.
@@ -45,12 +42,8 @@ public enum DarwinNotificationCenter {
     /// removing the observer after receipt.
     /// - Returns: An ``ObserverToken`` that can be used to remove this observer.
     public static func addObserver(name: DarwinNotificationName, queue: DispatchQueue, block: @escaping (ObserverToken) -> Void) -> ObserverToken {
-        owsAssertDebug(name.isValid)
-
         var observer = Self.invalidObserverToken
-        name.withCString { cName in
-            _ = notify_register_dispatch(cName, &observer, queue, block)
-        }
+        _ = notify_register_dispatch(name.rawValue, &observer, queue, block)
         return observer
     }
 
@@ -63,8 +56,7 @@ public enum DarwinNotificationCenter {
             owsFailDebug("Invalid observer token.")
             return
         }
-
-        notify_cancel(observer)
+        _ = notify_cancel(observer)
     }
 
     /// Retrieves the state for a given observer. This value can be set and read from
@@ -80,7 +72,7 @@ public enum DarwinNotificationCenter {
         }
 
         var result: UInt64 = 0
-        notify_get_state(observer, &result)
+        _ = notify_get_state(observer, &result)
         return result
     }
 }
