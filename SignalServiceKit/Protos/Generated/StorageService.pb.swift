@@ -1663,15 +1663,11 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     var _note: String = String()
     var _avatarColor: StorageServiceProtos_AvatarColor? = nil
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -1910,9 +1906,12 @@ extension StorageServiceProtos_ContactRecord.Name: SwiftProtobuf.Message, SwiftP
 
 extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupV1Record"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [2..<7],
+      numberNameMappings: [
+        1: .same(proto: "id"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2040,42 +2039,45 @@ extension StorageServiceProtos_GroupV2Record.StorySendMode: SwiftProtobuf._Proto
 
 extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AccountRecord"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "profileKey"),
-    2: .same(proto: "givenName"),
-    3: .same(proto: "familyName"),
-    4: .same(proto: "avatarUrl"),
-    5: .same(proto: "noteToSelfArchived"),
-    6: .same(proto: "readReceipts"),
-    7: .same(proto: "sealedSenderIndicators"),
-    8: .same(proto: "typingIndicators"),
-    9: .same(proto: "proxiedLinkPreviews"),
-    10: .same(proto: "noteToSelfMarkedUnread"),
-    11: .same(proto: "linkPreviews"),
-    12: .same(proto: "phoneNumberSharingMode"),
-    13: .same(proto: "notDiscoverableByPhoneNumber"),
-    14: .same(proto: "pinnedConversations"),
-    15: .same(proto: "preferContactAvatars"),
-    16: .same(proto: "payments"),
-    17: .same(proto: "universalExpireTimer"),
-    19: .same(proto: "e164"),
-    20: .same(proto: "preferredReactionEmoji"),
-    21: .same(proto: "donorSubscriberID"),
-    22: .same(proto: "donorSubscriberCurrencyCode"),
-    23: .same(proto: "displayBadgesOnProfile"),
-    24: .same(proto: "donorSubscriptionManuallyCancelled"),
-    25: .same(proto: "keepMutedChatsArchived"),
-    26: .same(proto: "myStoryPrivacyHasBeenSet"),
-    27: .same(proto: "viewedOnboardingStory"),
-    29: .same(proto: "storiesDisabled"),
-    30: .same(proto: "storyViewReceiptsEnabled"),
-    31: .same(proto: "readOnboardingStory"),
-    33: .same(proto: "username"),
-    34: .same(proto: "completedUsernameOnboarding"),
-    35: .same(proto: "usernameLink"),
-    41: .same(proto: "backupSubscriberData"),
-    42: .same(proto: "avatarColor"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [18..<19, 28..<29, 32..<33, 36..<39],
+      numberNameMappings: [
+        1: .same(proto: "profileKey"),
+        2: .same(proto: "givenName"),
+        3: .same(proto: "familyName"),
+        4: .same(proto: "avatarUrl"),
+        5: .same(proto: "noteToSelfArchived"),
+        6: .same(proto: "readReceipts"),
+        7: .same(proto: "sealedSenderIndicators"),
+        8: .same(proto: "typingIndicators"),
+        9: .same(proto: "proxiedLinkPreviews"),
+        10: .same(proto: "noteToSelfMarkedUnread"),
+        11: .same(proto: "linkPreviews"),
+        12: .same(proto: "phoneNumberSharingMode"),
+        13: .same(proto: "notDiscoverableByPhoneNumber"),
+        14: .same(proto: "pinnedConversations"),
+        15: .same(proto: "preferContactAvatars"),
+        16: .same(proto: "payments"),
+        17: .same(proto: "universalExpireTimer"),
+        19: .same(proto: "e164"),
+        20: .same(proto: "preferredReactionEmoji"),
+        21: .same(proto: "donorSubscriberID"),
+        22: .same(proto: "donorSubscriberCurrencyCode"),
+        23: .same(proto: "displayBadgesOnProfile"),
+        24: .same(proto: "donorSubscriptionManuallyCancelled"),
+        25: .same(proto: "keepMutedChatsArchived"),
+        26: .same(proto: "myStoryPrivacyHasBeenSet"),
+        27: .same(proto: "viewedOnboardingStory"),
+        29: .same(proto: "storiesDisabled"),
+        30: .same(proto: "storyViewReceiptsEnabled"),
+        31: .same(proto: "readOnboardingStory"),
+        33: .same(proto: "username"),
+        34: .same(proto: "completedUsernameOnboarding"),
+        35: .same(proto: "usernameLink"),
+        41: .same(proto: "backupSubscriberData"),
+        42: .same(proto: "avatarColor"),
+  ])
 
   fileprivate class _StorageClass {
     var _profileKey: Data = Data()
@@ -2113,15 +2115,11 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _backupSubscriberData: StorageServiceProtos_AccountRecord.IAPSubscriberData? = nil
     var _avatarColor: StorageServiceProtos_AvatarColor? = nil
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 

@@ -38,7 +38,7 @@ PODS:
   - SQLCipher/common (4.6.1)
   - SQLCipher/standard (4.6.1):
     - SQLCipher/common
-  - SwiftProtobuf (1.29.0)
+  - SwiftProtobuf (1.30.0)
   - YYImage (1.0.4):
     - YYImage/Core (= 1.0.4)
   - YYImage/Core (1.0.4)
@@ -63,7 +63,7 @@ DEPENDENCIES:
   - Reachability
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.54.0`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.1-f_barrierfsync`)
-  - SwiftProtobuf (= 1.29.0)
+  - SwiftProtobuf (= 1.30.0)
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - YYImage/libwebp (from `https://github.com/signalapp/YYImage`)
 
@@ -155,9 +155,9 @@ SPEC CHECKSUMS:
   Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
   SignalRingRTC: 5ed6c1605743fa83aa892577bdec665fd79abef8
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
-  SwiftProtobuf: b7aa08087e2ab6d162862d143020091254095f69
+  SwiftProtobuf: 3697407f0d5b23bedeba9c2eaaf3ec6fdff69349
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 1fb24a364de5410598d3e62b6ac60ae71d844656
+PODFILE CHECKSUM: e584334a5d1e4453078e96a94f621cf284ca36b1
 
 COCOAPODS: 1.15.2

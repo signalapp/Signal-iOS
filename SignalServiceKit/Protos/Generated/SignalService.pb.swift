@@ -4222,20 +4222,23 @@ fileprivate let _protobuf_package = "SignalServiceProtos"
 
 extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Envelope"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "type"),
-    7: .same(proto: "sourceDevice"),
-    13: .same(proto: "destinationServiceId"),
-    5: .same(proto: "timestamp"),
-    8: .same(proto: "content"),
-    9: .same(proto: "serverGuid"),
-    10: .same(proto: "serverTimestamp"),
-    11: .same(proto: "sourceServiceId"),
-    14: .same(proto: "urgent"),
-    15: .same(proto: "updatedPni"),
-    16: .same(proto: "story"),
-    17: .same(proto: "spamReportingToken"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [2..<4, 6..<7],
+      numberNameMappings: [
+        1: .same(proto: "type"),
+        7: .same(proto: "sourceDevice"),
+        13: .same(proto: "destinationServiceId"),
+        5: .same(proto: "timestamp"),
+        8: .same(proto: "content"),
+        9: .same(proto: "serverGuid"),
+        10: .same(proto: "serverTimestamp"),
+        11: .same(proto: "sourceServiceId"),
+        14: .same(proto: "urgent"),
+        15: .same(proto: "updatedPni"),
+        16: .same(proto: "story"),
+        17: .same(proto: "spamReportingToken"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4407,15 +4410,11 @@ extension SignalServiceProtos_StoryMessage: SwiftProtobuf.Message, SwiftProtobuf
     var _allowsReplies: Bool? = nil
     var _bodyRanges: [SignalServiceProtos_BodyRange] = []
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -4521,15 +4520,11 @@ extension SignalServiceProtos_Preview: SwiftProtobuf.Message, SwiftProtobuf._Mes
     var _previewDescription: String? = nil
     var _date: UInt64? = nil
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -4784,15 +4779,11 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     var _pniSignatureMessage: SignalServiceProtos_PniSignatureMessage? = nil
     var _editMessage: SignalServiceProtos_EditMessage? = nil
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -4913,16 +4904,19 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".CallMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "offer"),
-    2: .same(proto: "answer"),
-    3: .same(proto: "iceUpdate"),
-    5: .same(proto: "busy"),
-    6: .same(proto: "profileKey"),
-    7: .same(proto: "hangup"),
-    9: .same(proto: "destinationDeviceId"),
-    10: .same(proto: "opaque"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [4..<5, 8..<9],
+      numberNameMappings: [
+        1: .same(proto: "offer"),
+        2: .same(proto: "answer"),
+        3: .same(proto: "iceUpdate"),
+        5: .same(proto: "busy"),
+        6: .same(proto: "profileKey"),
+        7: .same(proto: "hangup"),
+        9: .same(proto: "destinationDeviceId"),
+        10: .same(proto: "opaque"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4991,11 +4985,14 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Offer"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-    3: .same(proto: "type"),
-    4: .same(proto: "opaque"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [2..<3],
+      numberNameMappings: [
+        1: .same(proto: "id"),
+        3: .same(proto: "type"),
+        4: .same(proto: "opaque"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5046,10 +5043,13 @@ extension SignalServiceProtos_CallMessage.Offer.TypeEnum: SwiftProtobuf._ProtoNa
 
 extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Answer"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-    3: .same(proto: "opaque"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [2..<3],
+      numberNameMappings: [
+        1: .same(proto: "id"),
+        3: .same(proto: "opaque"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5088,10 +5088,13 @@ extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftPr
 
 extension SignalServiceProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".IceUpdate"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-    5: .same(proto: "opaque"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [2..<5],
+      numberNameMappings: [
+        1: .same(proto: "id"),
+        5: .same(proto: "opaque"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5273,29 +5276,32 @@ extension SignalServiceProtos_CallMessage.Opaque.Urgency: SwiftProtobuf._ProtoNa
 
 extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DataMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "body"),
-    2: .same(proto: "attachments"),
-    15: .same(proto: "groupV2"),
-    4: .same(proto: "flags"),
-    5: .same(proto: "expireTimer"),
-    23: .same(proto: "expireTimerVersion"),
-    6: .same(proto: "profileKey"),
-    7: .same(proto: "timestamp"),
-    8: .same(proto: "quote"),
-    9: .same(proto: "contact"),
-    10: .same(proto: "preview"),
-    11: .same(proto: "sticker"),
-    12: .same(proto: "requiredProtocolVersion"),
-    14: .same(proto: "isViewOnce"),
-    16: .same(proto: "reaction"),
-    17: .same(proto: "delete"),
-    18: .same(proto: "bodyRanges"),
-    19: .same(proto: "groupCallUpdate"),
-    20: .same(proto: "payment"),
-    21: .same(proto: "storyContext"),
-    22: .same(proto: "giftBadge"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [3..<4],
+      numberNameMappings: [
+        1: .same(proto: "body"),
+        2: .same(proto: "attachments"),
+        15: .same(proto: "groupV2"),
+        4: .same(proto: "flags"),
+        5: .same(proto: "expireTimer"),
+        23: .same(proto: "expireTimerVersion"),
+        6: .same(proto: "profileKey"),
+        7: .same(proto: "timestamp"),
+        8: .same(proto: "quote"),
+        9: .same(proto: "contact"),
+        10: .same(proto: "preview"),
+        11: .same(proto: "sticker"),
+        12: .same(proto: "requiredProtocolVersion"),
+        14: .same(proto: "isViewOnce"),
+        16: .same(proto: "reaction"),
+        17: .same(proto: "delete"),
+        18: .same(proto: "bodyRanges"),
+        19: .same(proto: "groupCallUpdate"),
+        20: .same(proto: "payment"),
+        21: .same(proto: "storyContext"),
+        22: .same(proto: "giftBadge"),
+  ])
 
   fileprivate class _StorageClass {
     var _body: String? = nil
@@ -5320,15 +5326,11 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _storyContext: SignalServiceProtos_DataMessage.StoryContext? = nil
     var _giftBadge: SignalServiceProtos_DataMessage.GiftBadge? = nil
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -5530,14 +5532,17 @@ extension SignalServiceProtos_DataMessage.ProtocolVersion: SwiftProtobuf._ProtoN
 
 extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Quote"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-    5: .same(proto: "authorAci"),
-    3: .same(proto: "text"),
-    4: .same(proto: "attachments"),
-    6: .same(proto: "bodyRanges"),
-    7: .same(proto: "type"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [2..<3],
+      numberNameMappings: [
+        1: .same(proto: "id"),
+        5: .same(proto: "authorAci"),
+        3: .same(proto: "text"),
+        4: .same(proto: "attachments"),
+        6: .same(proto: "bodyRanges"),
+        7: .same(proto: "type"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5614,15 +5619,11 @@ extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.
     var _fileName: String? = nil
     var _thumbnail: SignalServiceProtos_AttachmentPointer? = nil
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -5761,13 +5762,16 @@ extension SignalServiceProtos_DataMessage.Contact: SwiftProtobuf.Message, SwiftP
 
 extension SignalServiceProtos_DataMessage.Contact.Name: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Contact.protoMessageName + ".Name"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "givenName"),
-    2: .same(proto: "familyName"),
-    3: .same(proto: "prefix"),
-    4: .same(proto: "suffix"),
-    5: .same(proto: "middleName"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [6..<7],
+      numberNameMappings: [
+        1: .same(proto: "givenName"),
+        2: .same(proto: "familyName"),
+        3: .same(proto: "prefix"),
+        4: .same(proto: "suffix"),
+        5: .same(proto: "middleName"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6036,15 +6040,11 @@ extension SignalServiceProtos_DataMessage.Contact.Avatar: SwiftProtobuf.Message,
     var _avatar: SignalServiceProtos_AttachmentPointer? = nil
     var _isProfile: Bool? = nil
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -6126,15 +6126,11 @@ extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftP
     var _data: SignalServiceProtos_AttachmentPointer? = nil
     var _emoji: String? = nil
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -6219,12 +6215,15 @@ extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftP
 
 extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Reaction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "emoji"),
-    2: .same(proto: "remove"),
-    4: .same(proto: "targetAuthorAci"),
-    5: .same(proto: "timestamp"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [3..<4],
+      numberNameMappings: [
+        1: .same(proto: "emoji"),
+        2: .same(proto: "remove"),
+        4: .same(proto: "targetAuthorAci"),
+        5: .same(proto: "timestamp"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6345,10 +6344,13 @@ extension SignalServiceProtos_DataMessage.GroupCallUpdate: SwiftProtobuf.Message
 
 extension SignalServiceProtos_DataMessage.Payment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Payment"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "notification"),
-    2: .same(proto: "activation"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [1002..<1004],
+      numberNameMappings: [
+        1: .same(proto: "notification"),
+        2: .same(proto: "activation"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6459,10 +6461,13 @@ extension SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin: SwiftProtob
 
 extension SignalServiceProtos_DataMessage.Payment.Notification: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.protoMessageName + ".Notification"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "mobileCoin"),
-    2: .same(proto: "note"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [1003..<1004],
+      numberNameMappings: [
+        1: .same(proto: "mobileCoin"),
+        2: .same(proto: "note"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6744,12 +6749,15 @@ extension SignalServiceProtos_ReceiptMessage.TypeEnum: SwiftProtobuf._ProtoNameP
 
 extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Verified"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    5: .same(proto: "destinationAci"),
-    2: .same(proto: "identityKey"),
-    3: .same(proto: "state"),
-    4: .same(proto: "nullMessage"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [1..<2],
+      numberNameMappings: [
+        5: .same(proto: "destinationAci"),
+        2: .same(proto: "identityKey"),
+        3: .same(proto: "state"),
+        4: .same(proto: "nullMessage"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6806,29 +6814,32 @@ extension SignalServiceProtos_Verified.State: SwiftProtobuf._ProtoNameProviding 
 
 extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SyncMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "sent"),
-    2: .same(proto: "contacts"),
-    4: .same(proto: "request"),
-    5: .same(proto: "read"),
-    6: .same(proto: "blocked"),
-    7: .same(proto: "verified"),
-    9: .same(proto: "configuration"),
-    8: .same(proto: "padding"),
-    10: .same(proto: "stickerPackOperation"),
-    11: .same(proto: "viewOnceOpen"),
-    12: .same(proto: "fetchLatest"),
-    13: .same(proto: "keys"),
-    14: .same(proto: "messageRequestResponse"),
-    15: .same(proto: "outgoingPayment"),
-    16: .same(proto: "viewed"),
-    18: .same(proto: "pniChangeNumber"),
-    19: .same(proto: "callEvent"),
-    20: .same(proto: "callLinkUpdate"),
-    21: .same(proto: "callLogEvent"),
-    22: .same(proto: "deleteForMe"),
-    23: .same(proto: "deviceNameChange"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [3..<4, 17..<18],
+      numberNameMappings: [
+        1: .same(proto: "sent"),
+        2: .same(proto: "contacts"),
+        4: .same(proto: "request"),
+        5: .same(proto: "read"),
+        6: .same(proto: "blocked"),
+        7: .same(proto: "verified"),
+        9: .same(proto: "configuration"),
+        8: .same(proto: "padding"),
+        10: .same(proto: "stickerPackOperation"),
+        11: .same(proto: "viewOnceOpen"),
+        12: .same(proto: "fetchLatest"),
+        13: .same(proto: "keys"),
+        14: .same(proto: "messageRequestResponse"),
+        15: .same(proto: "outgoingPayment"),
+        16: .same(proto: "viewed"),
+        18: .same(proto: "pniChangeNumber"),
+        19: .same(proto: "callEvent"),
+        20: .same(proto: "callLinkUpdate"),
+        21: .same(proto: "callLogEvent"),
+        22: .same(proto: "deleteForMe"),
+        23: .same(proto: "deviceNameChange"),
+  ])
 
   fileprivate class _StorageClass {
     var _sent: SignalServiceProtos_SyncMessage.Sent? = nil
@@ -6853,15 +6864,11 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _deleteForMe: SignalServiceProtos_SyncMessage.DeleteForMe? = nil
     var _deviceNameChange: SignalServiceProtos_SyncMessage.DeviceNameChange? = nil
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -7132,10 +7139,13 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
 
 extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.Sent.protoMessageName + ".UnidentifiedDeliveryStatus"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    3: .same(proto: "destinationServiceId"),
-    2: .same(proto: "unidentified"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [1..<2],
+      numberNameMappings: [
+        3: .same(proto: "destinationServiceId"),
+        2: .same(proto: "unidentified"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7231,15 +7241,11 @@ extension SignalServiceProtos_SyncMessage.Contacts: SwiftProtobuf.Message, Swift
     var _blob: SignalServiceProtos_AttachmentPointer? = nil
     var _isComplete: Bool? = nil
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -7396,10 +7402,13 @@ extension SignalServiceProtos_SyncMessage.Request.TypeEnum: SwiftProtobuf._Proto
 
 extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Read"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    3: .same(proto: "senderAci"),
-    2: .same(proto: "timestamp"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [1..<2],
+      numberNameMappings: [
+        3: .same(proto: "senderAci"),
+        2: .same(proto: "timestamp"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7438,10 +7447,13 @@ extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProt
 
 extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Viewed"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    3: .same(proto: "senderAci"),
-    2: .same(proto: "timestamp"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [1..<2],
+      numberNameMappings: [
+        3: .same(proto: "senderAci"),
+        2: .same(proto: "timestamp"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7480,13 +7492,16 @@ extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftPr
 
 extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Configuration"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "readReceipts"),
-    2: .same(proto: "unidentifiedDeliveryIndicators"),
-    3: .same(proto: "typingIndicators"),
-    5: .same(proto: "provisioningVersion"),
-    6: .same(proto: "linkPreviews"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [4..<5],
+      numberNameMappings: [
+        1: .same(proto: "readReceipts"),
+        2: .same(proto: "unidentifiedDeliveryIndicators"),
+        3: .same(proto: "typingIndicators"),
+        5: .same(proto: "provisioningVersion"),
+        6: .same(proto: "linkPreviews"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7595,10 +7610,13 @@ extension SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum: SwiftPr
 
 extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".ViewOnceOpen"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    3: .same(proto: "senderAci"),
-    2: .same(proto: "timestamp"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [1..<2],
+      numberNameMappings: [
+        3: .same(proto: "senderAci"),
+        2: .same(proto: "timestamp"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7682,11 +7700,14 @@ extension SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum: SwiftProtobuf._P
 
 extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Keys"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    2: .same(proto: "master"),
-    3: .same(proto: "accountEntropyPool"),
-    4: .same(proto: "mediaRootBackupKey"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [1..<2],
+      numberNameMappings: [
+        2: .same(proto: "master"),
+        3: .same(proto: "accountEntropyPool"),
+        4: .same(proto: "mediaRootBackupKey"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7730,11 +7751,14 @@ extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProt
 
 extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".MessageRequestResponse"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    2: .same(proto: "threadAci"),
-    3: .same(proto: "groupId"),
-    4: .same(proto: "type"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [1..<2],
+      numberNameMappings: [
+        2: .same(proto: "threadAci"),
+        3: .same(proto: "groupId"),
+        4: .same(proto: "type"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8524,9 +8548,12 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelet
 
 extension SignalServiceProtos_SyncMessage.DeviceNameChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".DeviceNameChange"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    2: .same(proto: "deviceId"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [1..<2],
+      numberNameMappings: [
+        2: .same(proto: "deviceId"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8742,15 +8769,18 @@ extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message, SwiftProtob
 
 extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ContactDetails"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "contactE164"),
-    9: .same(proto: "aci"),
-    2: .same(proto: "name"),
-    3: .same(proto: "avatar"),
-    8: .same(proto: "expireTimer"),
-    12: .same(proto: "expireTimerVersion"),
-    10: .same(proto: "inboxPosition"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [4..<8, 11..<12],
+      numberNameMappings: [
+        1: .same(proto: "contactE164"),
+        9: .same(proto: "aci"),
+        2: .same(proto: "name"),
+        3: .same(proto: "avatar"),
+        8: .same(proto: "expireTimer"),
+        12: .same(proto: "expireTimerVersion"),
+        10: .same(proto: "inboxPosition"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

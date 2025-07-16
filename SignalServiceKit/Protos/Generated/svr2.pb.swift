@@ -440,12 +440,15 @@ fileprivate let _protobuf_package = "SVR2Proto"
 
 extension SVR2Proto_Request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Request"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    2: .same(proto: "backup"),
-    5: .same(proto: "expose"),
-    3: .same(proto: "restore"),
-    4: .same(proto: "delete"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
+      reservedNames: [],
+      reservedRanges: [1..<2],
+      numberNameMappings: [
+        2: .same(proto: "backup"),
+        5: .same(proto: "expose"),
+        3: .same(proto: "restore"),
+        4: .same(proto: "delete"),
+  ])
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
