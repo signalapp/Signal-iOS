@@ -138,21 +138,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
                                                  transaction:(DBReadTransaction *)transaction
     NS_SWIFT_NAME(firstInteraction(atOrAroundSortId:transaction:));
 
-/**
- *  Updates the thread's caches of the latest interaction.
- *
- *  @param message Latest Interaction to take into consideration.
- *  @param transaction Database transaction.
- */
-- (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(DBWriteTransaction *)transaction;
-- (void)updateWithUpdatedMessage:(TSInteraction *)message transaction:(DBWriteTransaction *)transaction;
-- (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(DBWriteTransaction *)transaction;
-
-- (void)updateOnInteractionsRemovedWithNeedsToUpdateLastInteractionRowId:(BOOL)needsToUpdateLastInteractionRowId
-                                          needsToUpdateLastVisibleSortId:(BOOL)needsToUpdateLastVisibleSortId
-                                                             transaction:(DBWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateOnInteractionsRemoved(needsToUpdateLastInteractionRowId:needsToUpdateLastVisibleSortId:transaction:));
-
 #pragma mark - Merging
 
 - (void)mergeFrom:(TSThread *)otherThread;

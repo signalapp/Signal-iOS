@@ -7,6 +7,28 @@ import Foundation
 
 extension TSInteraction {
 
+    public override func anyDidInsert(with tx: DBWriteTransaction) {
+        super.anyDidInsert(with: tx)
+
+        if let thread = thread(tx: tx) {
+            thread.updateWithInsertedInteraction(self, tx: tx)
+        }
+    }
+
+    public override func anyDidUpdate(with tx: DBWriteTransaction) {
+        let interactionReadCache = SSKEnvironment.shared.modelReadCachesRef.interactionReadCache
+
+        super.anyDidUpdate(with: tx)
+
+        if let thread = thread(tx: tx) {
+            thread.updateWithUpdatedInteraction(self, tx: tx)
+        }
+
+        interactionReadCache.didUpdate(interaction: self, transaction: tx)
+    }
+
+    // MARK: -
+
     @objc
     public func fillInMissingSortIdForJustInsertedInteraction(transaction: DBReadTransaction) {
         guard self.sortId == 0 else {

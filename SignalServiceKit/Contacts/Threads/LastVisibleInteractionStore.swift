@@ -69,7 +69,6 @@ public class LastVisibleInteractionStore {
 
 extension TSThread {
 
-    @objc
     func hasLastVisibleInteraction(transaction: DBReadTransaction) -> Bool {
         return DependenciesBridge.shared.lastVisibleInteractionStore.hasLastVisibleInteraction(
             for: self,
@@ -77,7 +76,6 @@ extension TSThread {
         )
     }
 
-    @objc
     func clearLastVisibleInteraction(transaction: DBWriteTransaction) {
         return DependenciesBridge.shared.lastVisibleInteractionStore.clearLastVisibleInteraction(
             for: self,
@@ -85,18 +83,16 @@ extension TSThread {
         )
     }
 
-    @objc
-    func lastVisibleSortId(transaction: DBReadTransaction) -> NSNumber? {
+    func lastVisibleSortId(transaction: DBReadTransaction) -> UInt64? {
         guard
             let lastVisibleInteraction = DependenciesBridge.shared.lastVisibleInteractionStore
                 .lastVisibleInteraction(for: self, tx: transaction)
         else {
             return nil
         }
-        return NSNumber(value: lastVisibleInteraction.sortId)
+        return lastVisibleInteraction.sortId
     }
 
-    @objc
     func setLastVisibleInteraction(
         sortId: UInt64,
         onScreenPercentage: CGFloat,

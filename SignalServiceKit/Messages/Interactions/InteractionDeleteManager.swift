@@ -296,7 +296,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
         switch sideEffects.updateThreadOnInteractionDelete {
         case .updateOnEachDeletedInteraction:
             if let associatedThread = interaction.thread(tx: tx) {
-                associatedThread.update(withRemovedMessage: interaction, transaction: tx)
+                associatedThread.updateWithRemovedInteraction(interaction, tx: tx)
             }
         case .doNotUpdate:
             break

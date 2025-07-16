@@ -135,16 +135,16 @@ extension TSGroupThread {
 
     // MARK: -
 
-    override open func update(
-        withInsertedMessage message: TSInteraction,
-        transaction tx: DBWriteTransaction
+    override open func updateWithInsertedInteraction(
+        _ interaction: TSInteraction,
+        tx: DBWriteTransaction
     ) {
-        super.update(withInsertedMessage: message, transaction: tx)
+        super.updateWithInsertedInteraction(interaction, tx: tx)
 
         let senderAddress: SignalServiceAddress? = {
-            if message is TSOutgoingMessage {
+            if interaction is TSOutgoingMessage {
                 return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress
-            } else if let incomingMessage = message as? TSIncomingMessage {
+            } else if let incomingMessage = interaction as? TSIncomingMessage {
                 return incomingMessage.authorAddress
             }
 
@@ -161,7 +161,7 @@ extension TSGroupThread {
         }
 
         groupMember.anyUpdateWith(
-            lastInteractionTimestamp: message.timestamp,
+            lastInteractionTimestamp: interaction.timestamp,
             transaction: tx
         )
     }

@@ -194,29 +194,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
         stringWithFormat:@"%@ in thread: %@ timestamp: %llu", [super description], self.uniqueThreadId, self.timestamp];
 }
 
-#pragma mark - Any Transaction Hooks
-
-- (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction
-{
-    [super anyDidInsertWithTransaction:transaction];
-
-    TSThread *fetchedThread = [self threadWithTx:transaction];
-    [fetchedThread updateWithInsertedMessage:self transaction:transaction];
-
-    // Don't update interactionReadCache; this instance's sortId isn't
-    // populated yet.
-}
-
-- (void)anyDidUpdateWithTransaction:(DBWriteTransaction *)transaction
-{
-    [super anyDidUpdateWithTransaction:transaction];
-
-    TSThread *fetchedThread = [self threadWithTx:transaction];
-    [fetchedThread updateWithUpdatedMessage:self transaction:transaction];
-
-    [SSKEnvironment.shared.modelReadCachesRef.interactionReadCache didUpdateInteraction:self transaction:transaction];
-}
-
 #pragma mark -
 
 - (BOOL)isDynamicInteraction

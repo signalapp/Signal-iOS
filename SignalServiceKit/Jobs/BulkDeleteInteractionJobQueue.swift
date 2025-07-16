@@ -197,8 +197,6 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
         anchorMessageRowId: Int64,
         tx: DBWriteTransaction
     ) -> Int {
-        let sdsTx: DBWriteTransaction = SDSDB.shimOnlyBridge(tx)
-
         let interactionsToDelete: [TSInteraction]
         do {
             interactionsToDelete = try InteractionFinder(
@@ -206,7 +204,7 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
             ).fetchAllInteractions(
                 rowIdFilter: .atOrBefore(anchorMessageRowId),
                 limit: Constants.deletionBatchSize,
-                tx: sdsTx
+                tx: tx
             )
         } catch {
             owsFailDebug("Failed to get interactions to delete!")
@@ -233,15 +231,15 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
         /// know how many interactions will be deleted in a single transaction).
         /// This will ensure that anyone who opens a transaction between our
         /// time-gated batches sees a thread with appropriately-updated values.
-        sdsTx.addFinalizationBlock(key: "BulkDeleteInteractionJobQueue") { finalizingTx in
+        tx.addFinalizationBlock(key: "BulkDeleteInteractionJobQueue") { tx in
             if let thread = self.threadStore.fetchThread(
                 uniqueId: threadUniqueId,
-                tx: finalizingTx
+                tx: tx
             ) {
                 thread.updateOnInteractionsRemoved(
                     needsToUpdateLastInteractionRowId: true,
                     needsToUpdateLastVisibleSortId: true,
-                    transaction: finalizingTx
+                    tx: tx
                 )
             }
         }
