@@ -552,6 +552,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     public func resetRestoreMode() -> Guarantee<RegistrationStep> {
         db.write { tx in
             self.updatePersistedState(tx) {
+                $0.shouldSkipRegistrationSplash = false
                 $0.hasShownSplash = false
                 $0.restoreMode = nil
             }
