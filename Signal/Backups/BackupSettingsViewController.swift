@@ -485,7 +485,8 @@ class BackupSettingsViewController:
     // MARK: -
 
     fileprivate func performManualBackup() {
-        // TODO: [Backups] Implement nicer UI
+        // TODO: [Backups] Implement nicer UI, and handle needs wifi error
+        // when upload on cellular is disabled.
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
             asyncBlock: { [weak self, backupExportJob] modal in

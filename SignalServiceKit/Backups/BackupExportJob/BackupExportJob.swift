@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 public enum BackupExportProgressStep: String {
     case registerBackupId
     case backupExport
@@ -33,6 +35,16 @@ public enum BackupExportProgressStep: String {
     }
 }
 
+public enum BackupExportJobError: Error {
+    case cancellationError
+    case unregistered
+    case needsWifi
+    case backupKeyError(BackupKeyMaterialError)
+    // catch-all for errors thrown by backup steps
+    case backupError(Error)
+    case networkFailureOrTimeout(Error)
+}
+
 public protocol BackupExportJob {
 
     /// Export and upload a backup, then run all ancillary jobs
@@ -41,7 +53,7 @@ public protocol BackupExportJob {
     /// Cooperatively cancellable.
     func exportAndUploadBackup(
         progress: OWSProgressSink?
-    ) async throws
+    ) async throws(BackupExportJobError)
 }
 
 public class BackupExportJobImpl: BackupExportJob {
@@ -53,9 +65,11 @@ public class BackupExportJobImpl: BackupExportJob {
     private let backupIdManager: BackupIdManager
     private let backupKeyMaterial: BackupKeyMaterial
     private let backupListMediaManager: BackupListMediaManager
+    private let backupSettingsStore: BackupSettingsStore
     private let db: DB
     private let messageProcessor: MessageProcessor
     private let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
+    private let reachabilityManager: SSKReachabilityManager
     private let tsAccountManager: TSAccountManager
 
     private let logger = PrefixedLogger(prefix: "[BackupExportJob]")
@@ -68,9 +82,11 @@ public class BackupExportJobImpl: BackupExportJob {
         backupIdManager: BackupIdManager,
         backupKeyMaterial: BackupKeyMaterial,
         backupListMediaManager: BackupListMediaManager,
+        backupSettingsStore: BackupSettingsStore,
         db: DB,
         messageProcessor: MessageProcessor,
         orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
+        reachabilityManager: SSKReachabilityManager,
         tsAccountManager: TSAccountManager
     ) {
         self.attachmentOffloadingManager = attachmentOffloadingManager
@@ -80,27 +96,47 @@ public class BackupExportJobImpl: BackupExportJob {
         self.backupIdManager = backupIdManager
         self.backupKeyMaterial = backupKeyMaterial
         self.backupListMediaManager = backupListMediaManager
+        self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.messageProcessor = messageProcessor
         self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
+        self.reachabilityManager = reachabilityManager
         self.tsAccountManager = tsAccountManager
     }
 
     public func exportAndUploadBackup(
         progress: OWSProgressSink?
-    ) async throws {
+    ) async throws(BackupExportJobError) {
         let (
             localIdentifiers,
             backupKey,
-        ) = try db.read { tx in
+            shouldAllowBackupUploadsOnCellular,
+        ) = try db.read { (tx) throws(BackupExportJobError) in
+            let backupKey: BackupKey
+            do throws(BackupKeyMaterialError) {
+                backupKey = try backupKeyMaterial.backupKey(type: .messages, tx: tx)
+            } catch {
+                throw .backupKeyError(error)
+            }
             return (
                 tsAccountManager.localIdentifiers(tx: tx),
-                try backupKeyMaterial.backupKey(type: .messages, tx: tx),
+                backupKey,
+                backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx),
             )
         }
 
         guard let localIdentifiers else {
-            throw OWSAssertionError("Creating a backup when unregistered?")
+            owsFailDebug("Creating a backup when unregistered?")
+            throw .unregistered
+        }
+
+        if !shouldAllowBackupUploadsOnCellular {
+            // The job requires uploading the backup; if we're not on wifi
+            // and therefore can't upload don't even bother generating the backup.
+            if !reachabilityManager.isReachable(via: .wifi) {
+                logger.info("Giving up; not connected to wifi & cellular uploads disabled")
+                throw .needsWifi
+            }
         }
 
         logger.info("Waiting on message processing...")
@@ -109,7 +145,11 @@ public class BackupExportJobImpl: BackupExportJob {
         // This is especially important for users with notifications disabled;
         // the launch of the BGProcessingTask may be the first chance we get
         // to fetch messages in a while, and its good practice to back those up.
-        try await messageProcessor.waitForFetchingAndProcessing()
+        do throws(CancellationError) {
+            try await messageProcessor.waitForFetchingAndProcessing()
+        } catch {
+            throw .cancellationError
+        }
 
         logger.info("Starting...")
 
@@ -121,80 +161,88 @@ public class BackupExportJobImpl: BackupExportJob {
         let attachmentUploadProgress = await progress?.addSource(.attachmentUpload)
         let offloadingProgress = await progress?.addSource(.offloading)
 
-        let registeredBackupIDToken = try await withEstimatedProgressUpdates(
-            estimatedTimeToCompletion: 0.5,
-            progress: registerBackupIdProgress,
-        ) { [backupIdManager] in
-            try await backupIdManager.registerBackupId(
-                localIdentifiers: localIdentifiers,
-                auth: .implicit()
-            )
-        }
-
-        logger.info("Exporting backup...")
-
-        let uploadMetadata = try await backupArchiveManager.exportEncryptedBackup(
-            localIdentifiers: localIdentifiers,
-            backupKey: backupKey,
-            backupPurpose: .remoteBackup,
-            progress: backupExportProgress
-        )
-
-        logger.info("Uploading backup...")
-
-        _ = try await backupArchiveManager.uploadEncryptedBackup(
-            metadata: uploadMetadata,
-            registeredBackupIDToken: registeredBackupIDToken,
-            auth: .implicit(),
-            progress: backupUploadProgress,
-        )
-
-        logger.info("Listing media...")
-
-        try await withEstimatedProgressUpdates(
-            estimatedTimeToCompletion: 5,
-            progress: listMediaProgress,
-        ) { [backupListMediaManager] in
-            try await backupListMediaManager.queryListMediaIfNeeded()
-        }
-
-        logger.info("Deleting orphaned attachments...")
-
-        try await withEstimatedProgressUpdates(
-            estimatedTimeToCompletion: 2,
-            progress: attachmentOrphaningProgress,
-        ) { [orphanedBackupAttachmentManager] in
-            try await orphanedBackupAttachmentManager.runIfNeeded()
-        }
-
-        logger.info("Uploading attachments...")
-
-        var uploadObserver: BackupAttachmentUploadProgress.Observer?
-        if let attachmentUploadProgress {
-            uploadObserver = try await backupAttachmentUploadProgress.addObserver({ progress in
-                let newUnitCount = UInt64((Float(attachmentUploadProgress.totalUnitCount) * progress.percentComplete).rounded())
-                guard newUnitCount > attachmentUploadProgress.completedUnitCount else {
-                    return
-                }
-                attachmentUploadProgress.incrementCompletedUnitCount(
-                    by: newUnitCount - attachmentUploadProgress.completedUnitCount
+        do {
+            let registeredBackupIDToken = try await withEstimatedProgressUpdates(
+                estimatedTimeToCompletion: 0.5,
+                progress: registerBackupIdProgress,
+            ) { [backupIdManager] in
+                try await backupIdManager.registerBackupId(
+                    localIdentifiers: localIdentifiers,
+                    auth: .implicit()
                 )
-            })
+            }
+
+            logger.info("Exporting backup...")
+
+            let uploadMetadata = try await backupArchiveManager.exportEncryptedBackup(
+                localIdentifiers: localIdentifiers,
+                backupKey: backupKey,
+                backupPurpose: .remoteBackup,
+                progress: backupExportProgress
+            )
+
+            logger.info("Uploading backup...")
+
+            _ = try await backupArchiveManager.uploadEncryptedBackup(
+                metadata: uploadMetadata,
+                registeredBackupIDToken: registeredBackupIDToken,
+                auth: .implicit(),
+                progress: backupUploadProgress,
+            )
+
+            logger.info("Listing media...")
+
+            try await withEstimatedProgressUpdates(
+                estimatedTimeToCompletion: 5,
+                progress: listMediaProgress,
+            ) { [backupListMediaManager] in
+                try await backupListMediaManager.queryListMediaIfNeeded()
+            }
+
+            logger.info("Deleting orphaned attachments...")
+
+            try await withEstimatedProgressUpdates(
+                estimatedTimeToCompletion: 2,
+                progress: attachmentOrphaningProgress,
+            ) { [orphanedBackupAttachmentManager] in
+                try await orphanedBackupAttachmentManager.runIfNeeded()
+            }
+
+            logger.info("Uploading attachments...")
+
+            var uploadObserver: BackupAttachmentUploadProgress.Observer?
+            if let attachmentUploadProgress {
+                uploadObserver = try await backupAttachmentUploadProgress.addObserver({ progress in
+                    let newUnitCount = UInt64((Float(attachmentUploadProgress.totalUnitCount) * progress.percentComplete).rounded())
+                    guard newUnitCount > attachmentUploadProgress.completedUnitCount else {
+                        return
+                    }
+                    attachmentUploadProgress.incrementCompletedUnitCount(
+                        by: newUnitCount - attachmentUploadProgress.completedUnitCount
+                    )
+                })
+            }
+            try await backupAttachmentUploadQueueRunner.backUpAllAttachments()
+            _ = uploadObserver.take()
+            uploadObserver = nil
+
+            logger.info("Offloading attachments...")
+
+            try await withEstimatedProgressUpdates(
+                estimatedTimeToCompletion: 2,
+                progress: offloadingProgress,
+            ) { [attachmentOffloadingManager] in
+                try await attachmentOffloadingManager.offloadAttachmentsIfNeeded()
+            }
+
+            logger.info("Done!")
+        } catch let error {
+            if error.isNetworkFailureOrTimeout {
+                throw .networkFailureOrTimeout(error)
+            } else {
+                throw .backupError(error)
+            }
         }
-        try await backupAttachmentUploadQueueRunner.backUpAllAttachments()
-        _ = uploadObserver.take()
-        uploadObserver = nil
-
-        logger.info("Offloading attachments...")
-
-        try await withEstimatedProgressUpdates(
-            estimatedTimeToCompletion: 2,
-            progress: offloadingProgress,
-        ) { [attachmentOffloadingManager] in
-            try await attachmentOffloadingManager.offloadAttachmentsIfNeeded()
-        }
-
-        logger.info("Done!")
     }
 
     private func withEstimatedProgressUpdates<T>(
