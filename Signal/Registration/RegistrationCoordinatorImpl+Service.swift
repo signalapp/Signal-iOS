@@ -334,34 +334,32 @@ extension RegistrationCoordinatorImpl {
             auth: ChatServiceAuth,
             signalService: OWSSignalServiceProtocol,
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
-        ) -> Guarantee<WhoAmIResponse> {
+        ) async -> WhoAmIResponse {
             let request = WhoAmIRequestFactory.whoAmIRequest(auth: auth)
-            return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
-                .map(on: SyncScheduler()) { response in
-                    guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
-                        return .genericError
-                    }
-                    guard let bodyData = response.responseBodyData else {
-                        Logger.error("Got empty whoami response")
-                        return .genericError
-                    }
-                    guard let response = try? JSONDecoder().decode(WhoAmIRequestFactory.Responses.WhoAmI.self, from: bodyData) else {
-                        Logger.error("Unable to parse whoami response from response")
-                        return .genericError
-                    }
-
-                    return .success(response)
+            do {
+                let response = try await signalService.urlSessionForMainSignalService().performRequest(request)
+                guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
+                    return .genericError
                 }
-                .recover(on: SyncScheduler()) { error -> Guarantee<WhoAmIResponse> in
-                    if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
-                        return makeWhoAmIRequest(
-                            auth: auth,
-                            signalService: signalService,
-                            retriesLeft: retriesLeft - 1
-                        )
-                    }
-                    return .value(error.isNetworkFailureOrTimeout ? .networkError : .genericError)
+                guard let bodyData = response.responseBodyData else {
+                    Logger.error("Got empty whoami response")
+                    return .genericError
                 }
+                guard let response = try? JSONDecoder().decode(WhoAmIRequestFactory.Responses.WhoAmI.self, from: bodyData) else {
+                    Logger.error("Unable to parse whoami response from response")
+                    return .genericError
+                }
+                return .success(response)
+            } catch {
+                if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
+                    return await makeWhoAmIRequest(
+                        auth: auth,
+                        signalService: signalService,
+                        retriesLeft: retriesLeft - 1,
+                    )
+                }
+                return error.isNetworkFailureOrTimeout ? .networkError : .genericError
+            }
         }
 
         private static func makeRequest<ResponseType>(

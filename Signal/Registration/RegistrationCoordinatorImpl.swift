@@ -4082,10 +4082,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .changingNumber(let changeNumberState):
             if let pniState = changeNumberState.pniState {
                 // We had an in flight change number that was interrupted, recover.
-                return recoverPendingPniChangeNumberState(
-                    changeNumberState: changeNumberState,
-                    pniState: pniState
-                )
+                return Guarantee.wrapAsync {
+                    return await self.recoverPendingPniChangeNumberState(
+                        changeNumberState: changeNumberState,
+                        pniState: pniState
+                    )
+                }
             }
             return self.generatePniStateAndMakeChangeNumberRequest(
                 e164: e164,
@@ -4345,62 +4347,58 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
     }
 
+    @MainActor
     private func recoverPendingPniChangeNumberState(
         changeNumberState: Mode.ChangeNumberState,
         pniState: Mode.ChangeNumberState.PendingPniState
-    ) -> Guarantee<RegistrationStep> {
+    ) async -> RegistrationStep {
         Logger.info("")
 
-        return Service
-            .makeWhoAmIRequest(
-                auth: ChatServiceAuth.explicit(
-                    aci: changeNumberState.localAci,
-                    deviceId: .primary,
-                    password: changeNumberState.oldAuthToken
-                ),
-                signalService: deps.signalService,
-            )
-            .then(on: DispatchQueue.main) { [weak self] whoAmIResult -> Guarantee<RegistrationStep> in
-                guard let strongSelf = self else {
-                    return unretainedSelfError()
+        let whoAmIResult = await Service.makeWhoAmIRequest(
+            auth: ChatServiceAuth.explicit(
+                aci: changeNumberState.localAci,
+                deviceId: .primary,
+                password: changeNumberState.oldAuthToken
+            ),
+            signalService: deps.signalService,
+        )
+
+        switch whoAmIResult {
+        case .networkError, .genericError:
+            return .showErrorSheet(.genericError)
+        case .success(let whoAmIResponse):
+            if whoAmIResponse.e164 == pniState.newE164 {
+                // Success! Fake us getting the success response.
+                db.write { tx in
+                    handleSuccessfulAccountResponse(
+                        identity: AccountIdentity(
+                            aci: whoAmIResponse.aci,
+                            pni: whoAmIResponse.pni,
+                            e164: whoAmIResponse.e164,
+                            hasPreviouslyUsedSVR: inMemoryState.didHaveSVRBackupsPriorToReg,
+                            authPassword: changeNumberState.oldAuthToken
+                        ),
+                        tx
+                    )
                 }
-                switch whoAmIResult {
-                case .networkError, .genericError:
-                    return .value(.showErrorSheet(.genericError))
-                case .success(let whoAmIResponse):
-                    if whoAmIResponse.e164 == pniState.newE164 {
-                        // Success! Fake us getting the success response.
-                        strongSelf.db.write { tx in
-                            strongSelf.handleSuccessfulAccountResponse(
-                                identity: AccountIdentity(
-                                    aci: whoAmIResponse.aci,
-                                    pni: whoAmIResponse.pni,
-                                    e164: whoAmIResponse.e164,
-                                    hasPreviouslyUsedSVR: strongSelf.inMemoryState.didHaveSVRBackupsPriorToReg,
-                                    authPassword: changeNumberState.oldAuthToken
-                                ),
-                                tx
-                            )
-                        }
-                        return strongSelf.nextStep()
-                    } else {
-                        // We had an in progress change number, but we arent on that number now.
-                        // pretend it never happened.
-                        do {
-                            try strongSelf.db.write { tx in
-                                strongSelf._unsafeToModify_mode = .changingNumber(try strongSelf.loader.savePendingChangeNumber(
-                                    oldState: changeNumberState,
-                                    pniState: nil,
-                                    transaction: tx
-                                ))
-                            }
-                        } catch {
-                            return .value(.showErrorSheet(.genericError))
-                        }
-                        return strongSelf.nextStep()
+                return await nextStep().awaitable()
+            } else {
+                // We had an in progress change number, but we arent on that number now.
+                // pretend it never happened.
+                do {
+                    try db.write { tx in
+                        _unsafeToModify_mode = .changingNumber(try loader.savePendingChangeNumber(
+                            oldState: changeNumberState,
+                            pniState: nil,
+                            transaction: tx
+                        ))
                     }
+                } catch {
+                    return .showErrorSheet(.genericError)
                 }
+                return await nextStep().awaitable()
             }
+        }
     }
 
     private func handleSuccessfulAccountResponse(
