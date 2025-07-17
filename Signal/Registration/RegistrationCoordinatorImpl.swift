@@ -2128,58 +2128,58 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // credential candidates to check, enter it now.
             return .value(.phoneNumberEntry(phoneNumberEntryState()))
         }
-        return makeSVR2AuthCredentialCheckRequest(
-            svr2AuthCredentialCandidates: svr2AuthCredentialCandidates,
-            e164: e164
-        )
-    }
-
-    private func makeSVR2AuthCredentialCheckRequest(
-        svr2AuthCredentialCandidates: [SVR2AuthCredential],
-        e164: E164,
-        retriesLeft: Int = Constants.networkErrorRetries
-    ) -> Guarantee<RegistrationStep> {
-        return Service.makeSVR2AuthCheckRequest(
-            e164: e164,
-            candidateCredentials: svr2AuthCredentialCandidates,
-            signalService: deps.signalService,
-        ).then(on: DispatchQueue.main) { [weak self] response in
-            guard let self else {
-                return unretainedSelfError()
-            }
-            return self.handleSVR2AuthCredentialCheckResponse(
-                response,
+        return Guarantee.wrapAsync {
+            return await self.makeSVR2AuthCredentialCheckRequest(
                 svr2AuthCredentialCandidates: svr2AuthCredentialCandidates,
-                e164: e164,
-                retriesLeft: retriesLeft
+                e164: e164
             )
         }
     }
 
+    @MainActor
+    private func makeSVR2AuthCredentialCheckRequest(
+        svr2AuthCredentialCandidates: [SVR2AuthCredential],
+        e164: E164,
+        retriesLeft: Int = Constants.networkErrorRetries
+    ) async -> RegistrationStep {
+        let response = await Service.makeSVR2AuthCheckRequest(
+            e164: e164,
+            candidateCredentials: svr2AuthCredentialCandidates,
+            signalService: deps.signalService,
+        )
+        return await self.handleSVR2AuthCredentialCheckResponse(
+            response,
+            svr2AuthCredentialCandidates: svr2AuthCredentialCandidates,
+            e164: e164,
+            retriesLeft: retriesLeft
+        )
+    }
+
+    @MainActor
     private func handleSVR2AuthCredentialCheckResponse(
         _ response: Service.SVR2AuthCheckResponse,
         svr2AuthCredentialCandidates: [SVR2AuthCredential],
         e164: E164,
         retriesLeft: Int
-    ) -> Guarantee<RegistrationStep> {
+    ) async -> RegistrationStep {
         var matchedCredential: SVR2AuthCredential?
         var credentialsToDelete = [SVR2AuthCredential]()
         switch response {
         case .networkError:
             if retriesLeft > 0 {
-                return makeSVR2AuthCredentialCheckRequest(
+                return await makeSVR2AuthCredentialCheckRequest(
                     svr2AuthCredentialCandidates: svr2AuthCredentialCandidates,
                     e164: e164,
                     retriesLeft: retriesLeft - 1
                 )
             }
             self.inMemoryState.svr2AuthCredentialCandidates = nil
-            return self.nextStep()
+            return await self.nextStep().awaitable()
         case .genericError:
             // If we failed to verify, wipe the candidates so we don't try again
             // and keep going.
             self.inMemoryState.svr2AuthCredentialCandidates = nil
-            return self.nextStep()
+            return await self.nextStep().awaitable()
         case .success(let response):
             for candidate in svr2AuthCredentialCandidates {
                 let result: RegistrationServiceResponses.SVR2AuthCheckResponse.Result? = response.result(for: candidate)
@@ -2203,7 +2203,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         self.db.write { tx in
             self.deps.svrAuthCredentialStore.deleteInvalidCredentials(credentialsToDelete, tx)
         }
-        return self.nextStep()
+        return await self.nextStep().awaitable()
     }
 
     // MARK: - RegistrationSession Pathway
@@ -4216,47 +4216,48 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 guard let prekeyBundles else {
                     return .value(.showErrorSheet(.genericError))
                 }
-                return Service
-                    .makeCreateAccountRequest(
+                let shouldSkipDeviceTransfer = self.shouldSkipDeviceTransfer()
+                let signalService = self.deps.signalService
+                return Guarantee.wrapAsync { @MainActor [weak self] () -> RegistrationStep in
+                    let accountResponse = await Service.makeCreateAccountRequest(
                         method,
                         e164: e164,
                         authPassword: authPassword,
                         accountAttributes: accountAttributes,
-                        skipDeviceTransfer: self.shouldSkipDeviceTransfer(),
+                        skipDeviceTransfer: shouldSkipDeviceTransfer,
                         apnRegistrationId: apnRegistrationId,
                         prekeyBundles: prekeyBundles,
-                        signalService: self.deps.signalService,
+                        signalService: signalService,
                     )
-                    .then(on: DispatchQueue.main) { [weak self] (accountResponse: AccountResponse) -> Guarantee<RegistrationStep> in
-                        guard let self else {
-                            return unretainedSelfError()
-                        }
-                        let isPrekeyUploadSuccess: Bool
-                        switch accountResponse {
-                        case .success:
-                            isPrekeyUploadSuccess = true
-                        case
-                                .retryAfter,
-                                .rejectedVerificationMethod,
-                                .reglockFailure,
-                                .networkError,
-                                .genericError,
-                                .deviceTransferPossible:
-                            isPrekeyUploadSuccess = false
-                        }
-                        return self.deps.preKeyManager
-                            .finalizeRegistrationPreKeys(
-                                prekeyBundles,
-                                uploadDidSucceed: isPrekeyUploadSuccess
-                            ).recover(on: SyncScheduler()) { error in
-                                // Finalizing is best effort.
-                                Logger.error("Unable to finalize prekeys, ignoring and continuing")
-                                return .value(())
-                            }
-                            .then(on: DispatchQueue.main) { () -> Guarantee<RegistrationStep> in
-                                return responseHandler(accountResponse)
-                            }
+                    guard let self else {
+                        return unretainedSelfErrorStep()
                     }
+                    let isPrekeyUploadSuccess: Bool
+                    switch accountResponse {
+                    case .success:
+                        isPrekeyUploadSuccess = true
+                    case
+                            .retryAfter,
+                            .rejectedVerificationMethod,
+                            .reglockFailure,
+                            .networkError,
+                            .genericError,
+                            .deviceTransferPossible:
+                        isPrekeyUploadSuccess = false
+                    }
+                    return await self.deps.preKeyManager
+                        .finalizeRegistrationPreKeys(
+                            prekeyBundles,
+                            uploadDidSucceed: isPrekeyUploadSuccess
+                        ).recover(on: SyncScheduler()) { error in
+                            // Finalizing is best effort.
+                            Logger.error("Unable to finalize prekeys, ignoring and continuing")
+                            return .value(())
+                        }
+                        .then(on: DispatchQueue.main) { () -> Guarantee<RegistrationStep> in
+                            return responseHandler(accountResponse)
+                        }.awaitable()
+                }
             }
     }
 
@@ -4339,16 +4340,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case .v1, .none:
                     reglockToken = nil
                 }
-                return Service
-                    .makeChangeNumberRequest(
+                return Guarantee.wrapAsync {
+                    return .serviceResponse(await Service.makeChangeNumberRequest(
                         verificationMethod,
                         e164: e164,
                         reglockToken: reglockToken,
                         authPassword: changeNumberState.oldAuthToken,
                         pniChangeNumberParameters: pniParams,
                         signalService: strongSelf.deps.signalService,
-                    )
-                    .map(on: SyncScheduler()) { .serviceResponse($0) }
+                    ))
+                }
             }
     }
 

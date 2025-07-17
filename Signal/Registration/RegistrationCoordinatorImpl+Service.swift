@@ -20,12 +20,12 @@ extension RegistrationCoordinatorImpl {
             e164: E164,
             candidateCredentials: [SVR2AuthCredential],
             signalService: OWSSignalServiceProtocol,
-        ) -> Guarantee<SVR2AuthCheckResponse> {
+        ) async -> SVR2AuthCheckResponse {
             let request = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
                 e164: e164,
                 credentials: candidateCredentials
             )
-            return makeRequest(
+            return await makeRequest(
                 request,
                 signalService: signalService,
                 handler: self.handleSVR2AuthCheckResponse(statusCode:retryAfterHeader:bodyData:),
@@ -69,7 +69,7 @@ extension RegistrationCoordinatorImpl {
             apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
             prekeyBundles: RegistrationPreKeyUploadBundles,
             signalService: OWSSignalServiceProtocol,
-        ) -> Guarantee<AccountResponse> {
+        ) async -> AccountResponse {
             let request = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: method,
                 e164: e164,
@@ -79,7 +79,7 @@ extension RegistrationCoordinatorImpl {
                 apnRegistrationId: apnRegistrationId,
                 prekeyBundles: prekeyBundles
             )
-            return makeRequest(
+            return await makeRequest(
                 request,
                 signalService: signalService,
                 handler: {
@@ -178,14 +178,14 @@ extension RegistrationCoordinatorImpl {
             authPassword: String,
             pniChangeNumberParameters: PniDistribution.Parameters,
             signalService: OWSSignalServiceProtocol,
-        ) -> Guarantee<AccountResponse> {
+        ) async -> AccountResponse {
             let request = RegistrationRequestFactory.changeNumberRequest(
                 verificationMethod: method,
                 e164: e164,
                 reglockToken: reglockToken,
                 pniChangeNumberParameters: pniChangeNumberParameters
             )
-            return makeRequest(
+            return await makeRequest(
                 request,
                 signalService: signalService,
                 handler: {
@@ -363,32 +363,28 @@ extension RegistrationCoordinatorImpl {
         private static func makeRequest<ResponseType>(
             _ request: TSRequest,
             signalService: OWSSignalServiceProtocol,
-            handler: @escaping (_ statusCode: Int, _ retryAfterHeader: String?, _ bodyData: Data?) -> ResponseType,
+            handler: (_ statusCode: Int, _ retryAfterHeader: String?, _ bodyData: Data?) -> ResponseType,
             fallbackError: ResponseType,
             networkFailureError: ResponseType
-        ) -> Guarantee<ResponseType> {
-            return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
-                .map(on: DispatchQueue.global()) { (response: HTTPResponse) -> ResponseType in
-                    return handler(
-                        response.responseStatusCode,
-                        response.headers[Constants.retryAfterHeader],
-                        response.responseBodyData
-                    )
-                }
-                .recover(on: DispatchQueue.global()) { (error: Error) -> Guarantee<ResponseType> in
-                    if error.isNetworkFailureOrTimeout {
-                        return .value(networkFailureError)
-                    }
-                    guard let error = error as? OWSHTTPError else {
-                        return .value(fallbackError)
-                    }
-                    let response = handler(
-                        error.responseStatusCode,
-                        error.responseHeaders?[Constants.retryAfterHeader],
-                        error.httpResponseData
-                    )
-                    return .value(response)
-                }
+        ) async -> ResponseType {
+            do {
+                let response = try await signalService.urlSessionForMainSignalService().performRequest(request)
+                return handler(
+                    response.responseStatusCode,
+                    response.headers[Constants.retryAfterHeader],
+                    response.responseBodyData
+                )
+            } catch where error.isNetworkFailureOrTimeout {
+                return networkFailureError
+            } catch let error as OWSHTTPError {
+                return handler(
+                    error.responseStatusCode,
+                    error.responseHeaders?[Constants.retryAfterHeader],
+                    error.httpResponseData
+                )
+            } catch {
+                return fallbackError
+            }
         }
 
         enum Constants {
