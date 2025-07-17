@@ -1005,7 +1005,12 @@ struct BackupSettingsView: View {
                 }
 
                 SignalSection {
-                    BackupDetailsView(viewModel: viewModel)
+                    BackupDetailsView(
+                        lastBackupDate: viewModel.lastBackupDate,
+                        lastBackupSizeBytes: viewModel.lastBackupSizeBytes,
+                        shouldAllowBackupUploadsOnCellular: viewModel.shouldAllowBackupUploadsOnCellular,
+                        viewModel: viewModel,
+                    )
                 }
 
                 SignalSection {
@@ -1584,12 +1589,15 @@ private struct BackupSubscriptionView: View {
 // MARK: -
 
 private struct BackupDetailsView: View {
-    @ObservedObject var viewModel: BackupSettingsViewModel
+    let lastBackupDate: Date?
+    let lastBackupSizeBytes: UInt64?
+    let shouldAllowBackupUploadsOnCellular: Bool
+    let viewModel: BackupSettingsViewModel
 
     var body: some View {
         HStack {
             let lastBackupMessage: String? = {
-                guard let lastBackupDate = viewModel.lastBackupDate else {
+                guard let lastBackupDate else {
                     return nil
                 }
 
@@ -1637,7 +1645,7 @@ private struct BackupDetailsView: View {
                 comment: "Label for a menu item explaining the size of the user's backup."
             ))
             Spacer()
-            if let lastBackupSizeBytes = viewModel.lastBackupSizeBytes {
+            if let lastBackupSizeBytes {
                 Text(lastBackupSizeBytes.formatted(.byteCount(style: .decimal)))
                     .foregroundStyle(Color.Signal.secondaryLabel)
             }
@@ -1649,7 +1657,7 @@ private struct BackupDetailsView: View {
                 comment: "Label for a toggleable menu item describing whether to make backups on cellular data."
             ),
             isOn: Binding(
-                get: { viewModel.shouldAllowBackupUploadsOnCellular },
+                get: { shouldAllowBackupUploadsOnCellular },
                 set: { viewModel.setShouldAllowBackupUploadsOnCellular($0) }
             )
         )
