@@ -1584,7 +1584,7 @@ private struct BackupSubscriptionView: View {
 // MARK: -
 
 private struct BackupDetailsView: View {
-    let viewModel: BackupSettingsViewModel
+    @ObservedObject var viewModel: BackupSettingsViewModel
 
     var body: some View {
         HStack {
