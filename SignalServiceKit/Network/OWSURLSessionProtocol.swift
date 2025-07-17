@@ -121,8 +121,6 @@ public protocol OWSURLSessionProtocol: AnyObject {
 
     // MARK: Tasks
 
-    func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse>
-
     func performRequest(_ rawRequest: TSRequest) async throws -> HTTPResponse
 
     func performUpload(
@@ -186,12 +184,6 @@ extension OWSURLSessionProtocol {
 // MARK: -
 
 public extension OWSURLSessionProtocol {
-    // MARK: - Promise Shims
-
-    func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse> {
-        return Promise.wrapAsync { try await self.performRequest(rawRequest) }.map(on: DispatchQueue.global(), { $0 })
-    }
-
     // MARK: - Upload Tasks Convenience
 
     func performUpload(

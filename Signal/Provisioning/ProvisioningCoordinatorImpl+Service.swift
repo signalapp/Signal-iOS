@@ -36,9 +36,7 @@ extension ProvisioningCoordinatorImpl {
             )
 
             do {
-                let response = try await signalService.urlSessionForMainSignalService()
-                    .promiseForTSRequest(request)
-                    .awaitable()
+                let response = try await signalService.urlSessionForMainSignalService().performRequest(request)
                 return handleVerifySecondaryDeviceResponse(
                     statusCode: response.responseStatusCode,
                     retryAfterHeader: response.headers[Constants.retryAfterHeader],
@@ -103,9 +101,7 @@ extension ProvisioningCoordinatorImpl {
             )
 
             // Don't care what the response is.
-            _ = try await signalService.urlSessionForMainSignalService()
-                .promiseForTSRequest(request)
-                .awaitable()
+            _ = try await signalService.urlSessionForMainSignalService().performRequest(request)
         }
 
         enum Constants {

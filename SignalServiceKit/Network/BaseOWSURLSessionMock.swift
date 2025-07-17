@@ -79,11 +79,6 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
         return URLRequest(url: URL(string: urlString)!)
     }
 
-    public func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse> {
-        // Want different behavior? Write a custom mock class
-        return Promise.wrapAsync { try await self.performRequest(rawRequest) }
-    }
-
     public func performRequest(_ rawRequest: TSRequest) async throws -> any HTTPResponse {
         // Want different behavior? Write a custom mock class
         return HTTPResponseImpl(

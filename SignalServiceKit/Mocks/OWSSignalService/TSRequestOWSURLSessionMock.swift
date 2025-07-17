@@ -150,24 +150,6 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         }
     }
 
-    public override func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse> {
-        guard let responseIndex = responses.firstIndex(where: { $0.0.matcher(rawRequest) }) else {
-            fatalError("Got a request with no response set up!")
-        }
-        let response = responses.remove(at: responseIndex)
-        return response.1.then(on: SyncScheduler()) { response throws -> Promise<HTTPResponse> in
-            if let error = response.error {
-                throw error
-            }
-            return .value(HTTPResponseImpl(
-                requestUrl: rawRequest.url,
-                status: response.statusCode,
-                headers: response.headers,
-                bodyData: response.bodyData
-            ))
-        }
-    }
-
     public override func performRequest(_ rawRequest: TSRequest) async throws -> any HTTPResponse {
         guard let responseIndex = responses.firstIndex(where: { $0.0.matcher(rawRequest) }) else {
             fatalError("Got a request with no response set up!")
