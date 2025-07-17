@@ -42,7 +42,7 @@ public enum BackupExportJobError: Error {
     case backupKeyError(BackupKeyMaterialError)
     // catch-all for errors thrown by backup steps
     case backupError(Error)
-    case networkFailureOrTimeout(Error)
+    case networkRequestError(Error)
 }
 
 public protocol BackupExportJob {
@@ -183,12 +183,14 @@ public class BackupExportJobImpl: BackupExportJob {
 
             logger.info("Uploading backup...")
 
-            _ = try await backupArchiveManager.uploadEncryptedBackup(
-                metadata: uploadMetadata,
-                registeredBackupIDToken: registeredBackupIDToken,
-                auth: .implicit(),
-                progress: backupUploadProgress,
-            )
+            try await Retry.performWithBackoffForNetworkRequest(maxAttempts: 3) {
+                _ = try await backupArchiveManager.uploadEncryptedBackup(
+                    metadata: uploadMetadata,
+                    registeredBackupIDToken: registeredBackupIDToken,
+                    auth: .implicit(),
+                    progress: backupUploadProgress,
+                )
+            }
 
             logger.info("Listing media...")
 
@@ -196,7 +198,9 @@ public class BackupExportJobImpl: BackupExportJob {
                 estimatedTimeToCompletion: 5,
                 progress: listMediaProgress,
             ) { [backupListMediaManager] in
-                try await backupListMediaManager.queryListMediaIfNeeded()
+                try await Retry.performWithBackoffForNetworkRequest(maxAttempts: 3) {
+                    try await backupListMediaManager.queryListMediaIfNeeded()
+                }
             }
 
             logger.info("Deleting orphaned attachments...")
@@ -237,8 +241,8 @@ public class BackupExportJobImpl: BackupExportJob {
 
             logger.info("Done!")
         } catch let error {
-            if error.isNetworkFailureOrTimeout {
-                throw .networkFailureOrTimeout(error)
+            if error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {
+                throw .networkRequestError(error)
             } else {
                 throw .backupError(error)
             }
@@ -265,5 +269,20 @@ fileprivate extension OWSProgressSink {
 
     func addChild(_ step: BackupExportProgressStep) async -> OWSProgressSink {
         return await self.addChild(withLabel: step.rawValue, unitCount: step.percentAllocation)
+    }
+}
+
+// MARK: -
+
+private extension Retry {
+    static func performWithBackoffForNetworkRequest<T>(
+        maxAttempts: Int,
+        block: () async throws -> T
+    ) async throws -> T {
+        return try await performWithBackoff(
+            maxAttempts: maxAttempts,
+            isRetryable: { $0.isNetworkFailureOrTimeout || $0.is5xxServiceResponse },
+            block: block
+        )
     }
 }
