@@ -940,7 +940,7 @@ public class SignalAttachment: NSObject {
             // transparent pixels (all screenshots fall into this bucket)
             // and there is not a simple, performant way, to check if there
             // are any transparent pixels in an image.
-            if dataSource.hasStickerLikeProperties {
+            if dataSource.hasStickerLikeProperties || attachment.fileExtension == "png" {
                 dataFileExtension = "png"
                 dataType = .png
             } else {
