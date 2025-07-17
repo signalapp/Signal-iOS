@@ -274,21 +274,22 @@ extension RegistrationCoordinatorImpl {
             auth: ChatServiceAuth,
             signalService: OWSSignalServiceProtocol,
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
-        ) -> Promise<Void> {
+        ) async throws {
             var request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken)
             request.auth = .identified(auth)
-            return signalService.urlSessionForMainSignalService().promiseForTSRequest(request).asVoid()
-                .recover(on: SyncScheduler()) { error in
-                    if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
-                        return makeEnableReglockRequest(
-                            reglockToken: reglockToken,
-                            auth: auth,
-                            signalService: signalService,
-                            retriesLeft: retriesLeft - 1
-                        )
-                    }
-                    return .init(error: error)
+            do {
+                _ = try await signalService.urlSessionForMainSignalService().performRequest(request)
+            } catch {
+                if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
+                    return try await makeEnableReglockRequest(
+                        reglockToken: reglockToken,
+                        auth: auth,
+                        signalService: signalService,
+                        retriesLeft: retriesLeft - 1
+                    )
                 }
+                throw error
+            }
         }
 
         /// Returns nil error if success.

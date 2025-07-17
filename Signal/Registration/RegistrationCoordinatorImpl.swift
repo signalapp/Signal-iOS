@@ -3515,7 +3515,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 guard inMemoryState.hasSetReglock.negated else {
                     break
                 }
-                return enableReglock(accountIdentity: accountIdentity, reglockToken: reglockToken)
+                return Guarantee.wrapAsync {
+                    return await self.enableReglock(accountIdentity: accountIdentity, reglockToken: reglockToken)
+                }
             }
         }
         return nil
@@ -3825,35 +3827,34 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    @MainActor
     private func enableReglock(
         accountIdentity: AccountIdentity,
         reglockToken: String
-    ) -> Guarantee<RegistrationStep> {
+    ) async -> RegistrationStep {
         Logger.info("Attempting to enable reglock")
 
-        return Service.makeEnableReglockRequest(
-            reglockToken: reglockToken,
-            auth: accountIdentity.chatServiceAuth,
-            signalService: deps.signalService,
-        ).recover(on: SyncScheduler()) { _ -> Guarantee<Void> in
+        do {
+            try await Service.makeEnableReglockRequest(
+                reglockToken: reglockToken,
+                auth: accountIdentity.chatServiceAuth,
+                signalService: deps.signalService,
+            )
+        } catch {
             // This isn't immediately catastrophic; this user already had reglock
             // enabled, so while it may now be out of date, its still there and
             // preventing others from getting in. We defer updating this until
             // later (when we update account attributes).
             // This matches legacy registration behavior.
             Logger.error("Unable to set reglock, so old reglock password will remain enforced.")
-            return .value(())
-        }.then(on: DispatchQueue.main) { [weak self] () -> Guarantee<RegistrationStep> in
-            guard let self else {
-                return unretainedSelfError()
-            }
-            self.inMemoryState.hasSetReglock = true
-            self.inMemoryState.wasReglockEnabledBeforeStarting = true
-            self.db.write { tx in
-                self.deps.ows2FAManager.markRegistrationLockEnabled(tx)
-            }
-            return self.nextStep()
         }
+
+        self.inMemoryState.hasSetReglock = true
+        self.inMemoryState.wasReglockEnabledBeforeStarting = true
+        self.db.write { tx in
+            self.deps.ows2FAManager.markRegistrationLockEnabled(tx)
+        }
+        return await self.nextStep().awaitable()
     }
 
     private func scheduleReuploadProfileStateAsync(accountIdentity: AccountIdentity) {
