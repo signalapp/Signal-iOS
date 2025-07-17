@@ -200,7 +200,21 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             localAci: localIdentifiers.aci,
             auth: auth
         )
-        let form = try await backupRequestManager.fetchBackupUploadForm(auth: backupAuth)
+        let form: Upload.Form
+        do {
+            form = try await backupRequestManager.fetchBackupUploadForm(
+                backupByteLength: metadata.encryptedDataLength,
+                auth: backupAuth
+            )
+        } catch let error {
+            switch (error as? BackupArchive.Response.BackupUploadFormError) {
+            case .tooLarge:
+                Logger.warn("Backup too large! \(metadata.encryptedDataLength)")
+            default:
+                break
+            }
+            throw error
+        }
         let result = try await attachmentUploadManager.uploadBackup(
             localUploadMetadata: metadata,
             form: form,

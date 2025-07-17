@@ -124,6 +124,11 @@ public enum Upload {
         /// Does NOT take into account current backup plan state; just per-attachment
         /// backup eligibility.
         public let attachmentByteSize: UInt64
+
+        /// We don't enforce a size limit locally for backups; we let the server
+        /// enforce the limit and fail the upload if we surpass it.
+        public static var maxUploadSizeBytes: UInt { .max }
+        public static var maxPlaintextSizeBytes: UInt { .max }
     }
 
     public struct LocalUploadMetadata: AttachmentUploadMetadata, Codable {
@@ -143,6 +148,9 @@ public enum Upload {
         public let plaintextDataLength: UInt32
 
         public var isReusedTransitTierUpload: Bool { false }
+
+        public static var maxUploadSizeBytes: UInt { OWSMediaUtils.kMaxAttachmentUploadSizeBytes }
+        public static var maxPlaintextSizeBytes: UInt { OWSMediaUtils.kMaxFileSizeGeneric }
     }
 
     public struct LinkNSyncUploadMetadata: UploadMetadata {
@@ -150,6 +158,11 @@ public enum Upload {
         public let fileUrl: URL
         /// The length of the file.
         public let encryptedDataLength: UInt32
+
+        /// We don't enforce a size limit locally for backups; we let the server
+        /// enforce the limit and fail the upload if we surpass it.
+        public static var maxUploadSizeBytes: UInt { .max }
+        public static var maxPlaintextSizeBytes: UInt { .max }
     }
 
     public struct ReusedUploadMetadata: AttachmentUploadMetadata {
@@ -170,6 +183,9 @@ public enum Upload {
         public let encryptedDataLength: UInt32
 
         public var isReusedTransitTierUpload: Bool { false }
+
+        public static var maxUploadSizeBytes: UInt { OWSMediaUtils.kMaxAttachmentUploadSizeBytes }
+        public static var maxPlaintextSizeBytes: UInt { OWSMediaUtils.kMaxFileSizeGeneric }
     }
 
     public struct Result<Metadata: UploadMetadata> {
@@ -234,8 +250,8 @@ extension Upload.LocalUploadMetadata {
         let plaintextLength = UInt32(plaintextLengthRaw)
 
         guard
-            plaintextLength <= OWSMediaUtils.kMaxFileSizeGeneric,
-            length <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes
+            plaintextLength <= Self.maxPlaintextSizeBytes,
+            length <= Self.maxUploadSizeBytes
         else {
             throw OWSAssertionError("Data is too large: \(length).")
         }

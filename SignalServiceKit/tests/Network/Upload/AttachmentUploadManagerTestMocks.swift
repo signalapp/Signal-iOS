@@ -130,7 +130,10 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
 
     func registerBackupKeys(localAci: Aci, auth: ChatServiceAuth) async throws {}
 
-    func fetchBackupUploadForm(auth: BackupServiceAuth) async throws -> Upload.Form {
+    func fetchBackupUploadForm(
+        backupByteLength: UInt32,
+        auth: BackupServiceAuth
+    ) async throws -> Upload.Form {
         fatalError("Unimplemented for tests")
     }
 

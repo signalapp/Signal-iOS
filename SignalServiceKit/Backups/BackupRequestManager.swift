@@ -76,6 +76,15 @@ public extension BackupArchive {
             case outOfCapacity = 413
             case rateLimited = 429
         }
+
+        public enum BackupUploadFormError: Int, Error {
+            case badArgument = 400
+            case invalidAuth = 401
+            case forbidden = 403
+            /// The backup file is too large (as reported by us in `backupByteLength`.
+            case tooLarge = 413
+            case rateLimited = 429
+        }
     }
 }
 
@@ -95,7 +104,11 @@ public protocol BackupRequestManager {
         forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> BackupServiceAuth
 
-    func fetchBackupUploadForm(auth: BackupServiceAuth) async throws -> Upload.Form
+    /// - parameter backupByteLength: length in bytes of the encrypted backup file we will upload
+    func fetchBackupUploadForm(
+        backupByteLength: UInt32,
+        auth: BackupServiceAuth
+    ) async throws -> Upload.Form
 
     func fetchBackupMediaAttachmentUploadForm(auth: BackupServiceAuth) async throws -> Upload.Form
 
@@ -203,12 +216,31 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
     // MARK: - Upload Forms
 
     /// CDN upload form for uploading a backup
-    public func fetchBackupUploadForm(auth: BackupServiceAuth) async throws -> Upload.Form {
+    public func fetchBackupUploadForm(
+        backupByteLength: UInt32,
+        auth: BackupServiceAuth
+    ) async throws -> Upload.Form {
         owsAssertDebug(auth.type == .messages)
-        return try await executeBackupService(
-            auth: auth,
-            requestFactory: OWSRequestFactory.backupUploadFormRequest(auth:)
-        )
+        do {
+            return try await executeBackupService(
+                auth: auth,
+                requestFactory: { auth in
+                    OWSRequestFactory.backupUploadFormRequest(
+                        backupByteLength: backupByteLength,
+                        auth: auth
+                    )
+                }
+            )
+        } catch let error {
+            if
+                let httpStatusCode = error.httpStatusCode,
+                let error = BackupArchive.Response.BackupUploadFormError(rawValue: httpStatusCode)
+            {
+                throw error
+            } else {
+                throw error
+            }
+        }
     }
 
     /// CDN upload form for uploading backup media

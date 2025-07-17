@@ -20,9 +20,15 @@ extension OWSRequestFactory {
         return request
     }
 
-    public static func backupUploadFormRequest(auth: BackupServiceAuth) -> TSRequest {
+    /// - parameter backupByteLength: length in bytes of the encrypted backup file we will upload
+    public static func backupUploadFormRequest(
+        backupByteLength: UInt32,
+        auth: BackupServiceAuth
+    ) -> TSRequest {
+        var urlComps = URLComponents(string: "v1/archives/upload/form")!
+        urlComps.queryItems = [URLQueryItem(name: "uploadLength", value: "\(backupByteLength)")]
         var request = TSRequest(
-            url: URL(string: "v1/archives/upload/form")!,
+            url: urlComps.url!,
             method: "GET",
             parameters: nil
         )

@@ -391,6 +391,7 @@ private class BackupRequestManagerMock: BackupRequestManager {
     }
 
     func fetchBackupUploadForm(
+        backupByteLength: UInt32,
         auth: SignalServiceKit.BackupServiceAuth
     ) async throws -> SignalServiceKit.Upload.Form {
         fatalError("Unimplemented")
