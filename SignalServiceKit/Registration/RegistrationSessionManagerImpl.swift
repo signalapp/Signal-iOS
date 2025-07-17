@@ -11,19 +11,16 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
     private let dateProvider: DateProvider
     private let db: any DB
     private let kvStore: KeyValueStore
-    private let schedulers: Schedulers
     private let signalService: OWSSignalServiceProtocol
 
     public init(
         dateProvider: @escaping DateProvider = Date.provider,
         db: any DB,
-        schedulers: Schedulers,
         signalService: OWSSignalServiceProtocol
     ) {
         self.dateProvider = dateProvider
         self.db = db
         self.kvStore = KeyValueStore(collection: KvStore.collectionName)
-        self.schedulers = schedulers
         self.signalService = signalService
     }
 

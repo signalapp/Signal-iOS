@@ -10,7 +10,6 @@ class UsernameSelectionCoordinator {
     struct Context {
         let databaseStorage: SDSDatabaseStorage
         let networkManager: NetworkManager
-        let schedulers: Schedulers
         let storageServiceManager: StorageServiceManager
         let usernameEducationManager: UsernameEducationManager
         let localUsernameManager: LocalUsernameManager
@@ -80,7 +79,6 @@ class UsernameSelectionCoordinator {
                 networkManager: context.networkManager,
                 databaseStorage: context.databaseStorage,
                 localUsernameManager: context.localUsernameManager,
-                schedulers: context.schedulers,
                 storageServiceManager: context.storageServiceManager
             )
         )

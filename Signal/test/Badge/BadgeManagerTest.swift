@@ -16,12 +16,10 @@ class BadgeManagerTest: XCTestCase {
         }
     }
 
-    func testMultipleRequestsReuseResults() {
-        let scheduler = TestScheduler()
+    @MainActor
+    func testMultipleRequestsReuseResults() async {
         var fetchCount: UInt = 0
         let badgeManager = BadgeManager(
-            mainScheduler: scheduler,
-            serialScheduler: scheduler,
             fetchIntBadgeValue: {
                 fetchCount += 1
                 return fetchCount
@@ -32,45 +30,43 @@ class BadgeManagerTest: XCTestCase {
         badgeManager.addObserver(observer1)
         let observer2 = MockBadgeObserver()
         badgeManager.addObserver(observer2)
-        scheduler.runUntilIdle()
+        await badgeManager.flush()
         XCTAssertEqual(observer1.badgeValues, [1])
         XCTAssertEqual(observer2.badgeValues, [1])
         XCTAssertEqual(fetchCount, 1)
 
         let observer3 = MockBadgeObserver()
         badgeManager.addObserver(observer3)
-        scheduler.runUntilIdle()
+        await badgeManager.flush()
         XCTAssertEqual(observer1.badgeValues, [1])
         XCTAssertEqual(observer2.badgeValues, [1])
         XCTAssertEqual(observer3.badgeValues, [1])
         XCTAssertEqual(fetchCount, 1)
     }
 
-    func testPendingRequestsCoalesce() {
-        let mainScheduler = TestScheduler()
-        let serialScheduler = TestScheduler()
+    @MainActor
+    func testPendingRequestsCoalesce() async {
         var fetchCount: UInt = 0
         let badgeManager = BadgeManager(
-            mainScheduler: mainScheduler,
-            serialScheduler: serialScheduler,
             fetchIntBadgeValue: {
                 fetchCount += 1
                 return fetchCount
             }
         )
 
-        serialScheduler.start()
-
         let observer = MockBadgeObserver()
         badgeManager.addObserver(observer)
-        mainScheduler.runUntilIdle()
+        await badgeManager.flush()
         XCTAssertEqual(observer.badgeValues, [1])
 
-        badgeManager.invalidateBadgeValue()
-        badgeManager.invalidateBadgeValue()
-        badgeManager.invalidateBadgeValue()
+        badgeManager.serialQueue.sync {
+            badgeManager.invalidateBadgeValue()
+            badgeManager.invalidateBadgeValue()
+            badgeManager.invalidateBadgeValue()
+        }
 
-        mainScheduler.runUntilIdle()
+        await badgeManager.flush()
+        await badgeManager.flush()
 
         XCTAssertEqual(observer.badgeValues, [1, 2, 3])
         XCTAssertEqual(fetchCount, 3)
@@ -79,14 +75,20 @@ class BadgeManagerTest: XCTestCase {
 
 private extension BadgeManager {
     convenience init(
-        mainScheduler: Scheduler,
-        serialScheduler: Scheduler,
         fetchIntBadgeValue: @escaping () -> UInt
     ) {
         self.init(
-            mainScheduler: mainScheduler,
-            serialScheduler: serialScheduler,
             fetchBadgeCountBlock: { BadgeCount(unreadChatCount: fetchIntBadgeValue(), unreadCallsCount: 0) }
         )
+    }
+
+    func flush() async {
+        await withCheckedContinuation { continuation in
+            self.serialQueue.async {
+                DispatchQueue.main.async {
+                    continuation.resume()
+                }
+            }
+        }
     }
 }

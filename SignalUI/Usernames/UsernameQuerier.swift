@@ -14,7 +14,6 @@ public struct UsernameQuerier {
     private let profileManager: ProfileManager
     private let recipientManager: any SignalRecipientManager
     private let recipientFetcher: RecipientFetcher
-    private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
     private let usernameApiClient: UsernameApiClient
@@ -30,7 +29,6 @@ public struct UsernameQuerier {
             profileManager: SSKEnvironment.shared.profileManagerRef,
             recipientManager: DependenciesBridge.shared.recipientManager,
             recipientFetcher: DependenciesBridge.shared.recipientFetcher,
-            schedulers: DependenciesBridge.shared.schedulers,
             storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             usernameApiClient: DependenciesBridge.shared.usernameApiClient,
@@ -47,7 +45,6 @@ public struct UsernameQuerier {
         profileManager: ProfileManager,
         recipientManager: any SignalRecipientManager,
         recipientFetcher: RecipientFetcher,
-        schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
         usernameApiClient: UsernameApiClient,
@@ -61,7 +58,6 @@ public struct UsernameQuerier {
         self.profileManager = profileManager
         self.recipientManager = recipientManager
         self.recipientFetcher = recipientFetcher
-        self.schedulers = schedulers
         self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
         self.usernameApiClient = usernameApiClient
@@ -190,7 +186,7 @@ public struct UsernameQuerier {
         tx _: DBReadTransaction
     ) {
         // Dispatch asynchronously, since we are inside a transaction.
-        schedulers.main.async {
+        DispatchQueue.main.async {
             onSuccess(localAci)
         }
     }

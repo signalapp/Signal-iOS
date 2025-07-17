@@ -534,7 +534,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             context: .init(
                 databaseStorage: SSKEnvironment.shared.databaseStorageRef,
                 networkManager: SSKEnvironment.shared.networkManagerRef,
-                schedulers: context.schedulers,
                 storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
                 usernameEducationManager: context.usernameEducationManager,
                 localUsernameManager: context.localUsernameManager
@@ -602,7 +601,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 rootViewController: UsernameLinkQRCodeContentController(
                     db: DependenciesBridge.shared.db,
                     localUsernameManager: DependenciesBridge.shared.localUsernameManager,
-                    schedulers: DependenciesBridge.shared.schedulers,
                     username: username,
                     usernameLink: usernameLink,
                     changeDelegate: self,

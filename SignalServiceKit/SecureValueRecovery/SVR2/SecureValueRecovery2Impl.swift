@@ -19,7 +19,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let db: any DB
     private let accountKeyStore: AccountKeyStore
     private let localStorage: SVRLocalStorageInternal
-    private let schedulers: Schedulers
+    private let scheduler: Scheduler
     private let storageServiceManager: StorageServiceManager
     private let syncManager: SyncManagerProtocolSwift
     private let tsAccountManager: TSAccountManager
@@ -35,7 +35,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         credentialStorage: SVRAuthCredentialStorage,
         db: any DB,
         accountKeyStore: AccountKeyStore,
-        schedulers: Schedulers,
+        scheduler: Scheduler,
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorageInternal,
         syncManager: SyncManagerProtocolSwift,
@@ -53,7 +53,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             credentialStorage: credentialStorage,
             db: db,
             accountKeyStore: accountKeyStore,
-            schedulers: schedulers,
+            scheduler: scheduler,
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
@@ -62,8 +62,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             twoFAManager: twoFAManager
         )
     }
-
-    private let scheduler: Scheduler
 
     internal init(
         accountAttributesUpdater: AccountAttributesUpdater,
@@ -75,7 +73,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         credentialStorage: SVRAuthCredentialStorage,
         db: any DB,
         accountKeyStore: AccountKeyStore,
-        schedulers: Schedulers,
+        scheduler: Scheduler,
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorageInternal,
         syncManager: SyncManagerProtocolSwift,
@@ -93,14 +91,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.db = db
         self.accountKeyStore = accountKeyStore
         self.localStorage = svrLocalStorage
-        self.schedulers = schedulers
+        self.scheduler = scheduler
         self.storageServiceManager = storageServiceManager
         self.syncManager = syncManager
         self.tsAccountManager = tsAccountManager
         self.tsConstants = tsConstants
         self.twoFAManager = twoFAManager
-
-        self.scheduler = schedulers.queue(label: "org.signal.svr2", qos: .userInitiated)
     }
 
     public func warmCaches() {
@@ -182,7 +178,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         // have a fresh credential to back up.
         Logger.info("Refreshing auth credential for periodic backup")
         return RemoteAttestation.authForSVR2(chatServiceAuth: .implicit())
-            .map(on: schedulers.main) { [weak self] credential -> Void in
+            .map(on: DispatchQueue.main) { [weak self] credential -> Void in
                 Logger.info("Storing refreshed credential")
                 self?.db.write { tx in
                     self?.credentialStorage.storeAuthCredentialForCurrentUsername(
@@ -318,10 +314,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     public func verifyPin(_ pin: String, resultHandler: @escaping (Bool) -> Void) {
         Logger.info("")
         // Kick off to a background thread to do expensive cryptography operations.
-        schedulers.global().async { [schedulers, localStorage, db] in
+        DispatchQueue.global().async { [localStorage, db] in
             var isValid = false
             defer {
-                schedulers.main.async { resultHandler(isValid) }
+                DispatchQueue.main.async { resultHandler(isValid) }
             }
 
             guard let encodedVerificationString = db.read(block: { tx in
@@ -347,7 +343,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         // When we restore, we remember which enclave it was from. On some future app startup, we check
         // this enclave, and migrate to a new one if available. This code path relies on that happening
         // asynchronously.
-        return doRestore(pin: pin, authMethod: authMethod).map(on: schedulers.sync, \.asSVRResult)
+        return doRestore(pin: pin, authMethod: authMethod).map(on: SyncScheduler(), \.asSVRResult)
     }
 
     public func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
@@ -372,7 +368,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                             masterKey: masterKey,
                             authMethod: authMethod
                         )
-                        .map(on: self.schedulers.sync) { [weak self] masterKey in
+                        .map(on: SyncScheduler()) { [weak self] masterKey in
                             // If the backup succeeds, and the restore was from some old enclave,
                             // delete from that older enclave.
                             if enclaveWeRestoredFrom.stringValue != self?.tsConstants.svr2Enclave.stringValue {
@@ -387,7 +383,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                             }
                             return .success(masterKey)
                         }
-                        .recover(on: self.schedulers.sync) { error in
+                        .recover(on: SyncScheduler()) { error in
                             if error.isNetworkFailureOrTimeout {
                                 return .value(.networkError(error))
                             }
@@ -585,7 +581,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                             authedAccount: authMethod.authedAccount,
                             connection: connection
                         )
-                        .then(on: self.schedulers.sync) { result -> Promise<MasterKey> in
+                        .then(on: SyncScheduler()) { result -> Promise<MasterKey> in
                             switch result {
                             case .success:
                                 do {
@@ -726,7 +722,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     return .serverError
                 }
             }
-            .recover(on: self.schedulers.sync) { error in
+            .recover(on: SyncScheduler()) { error in
                 Logger.error("Backup failed with closed connection")
                 if error.isNetworkFailureOrTimeout {
                     return .value(.networkError)
@@ -836,7 +832,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     return .serverError
                 }
             }
-            .recover(on: self.schedulers.sync) { error in
+            .recover(on: SyncScheduler()) { error in
                 Logger.error("Expose failed with closed connection")
                 if error.isNetworkFailureOrTimeout {
                     return .value(.networkError)
@@ -1006,7 +1002,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     }
                 }
             }
-            .recover(on: self.schedulers.sync) { error -> Guarantee<RestoreResult> in
+            .recover(on: SyncScheduler()) { error -> Guarantee<RestoreResult> in
                 Logger.error("Restore failed with closed connection")
                 if error.isNetworkFailureOrTimeout {
                     return .value(.networkError(error))
@@ -1070,7 +1066,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 Logger.info("Delete success!")
                 return .success
             }
-            .recover(on: self.schedulers.sync) { error -> Guarantee<DeleteResult> in
+            .recover(on: SyncScheduler()) { error -> Guarantee<DeleteResult> in
                 Logger.error("Delete failed with closed connection")
                 if error.isNetworkFailureOrTimeout {
                     return .value(.networkError(error))
@@ -1304,7 +1300,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                         // no need to kick it off here.
                     }
                 }
-                .catch(on: self.schedulers.sync) { _ in
+                .catch(on: SyncScheduler()) { _ in
                     owsFailDebug("Failed to migrate SVR2 enclave")
                 }
         }
@@ -1537,7 +1533,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
                     return .value(connection)
                 }
-                .recover(on: self.schedulers.sync) { [weak self] (error: Error) -> Promise<WebsocketConnection?> in
+                .recover(on: SyncScheduler()) { [weak self] (error: Error) -> Promise<WebsocketConnection?> in
                     Logger.error("Failed to open websocket connection and complete handshake")
                     innerError = error
                     guard let self else {
@@ -1565,7 +1561,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         return openConnectionChainedPromise.enqueue(recoverValue: nil) { (_: WebsocketConnection?) -> Promise<WebsocketConnection?> in
             innerConnectAndPerformHandshake()
-        }.then(on: schedulers.sync) { connection -> Promise<WebsocketConnection> in
+        }.then(on: SyncScheduler()) { connection -> Promise<WebsocketConnection> in
             if let connection {
                 return .value(connection)
             } else {

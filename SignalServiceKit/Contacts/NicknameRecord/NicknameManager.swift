@@ -24,18 +24,15 @@ public struct NicknameManagerImpl: NicknameManager {
     private let nicknameRecordStore: any NicknameRecordStore
     private let searchableNameIndexer: any SearchableNameIndexer
     private let storageServiceManager: any StorageServiceManager
-    private let schedulers: any Schedulers
 
     public init(
         nicknameRecordStore: any NicknameRecordStore,
         searchableNameIndexer: any SearchableNameIndexer,
         storageServiceManager: any StorageServiceManager,
-        schedulers: any Schedulers
     ) {
         self.nicknameRecordStore = nicknameRecordStore
         self.searchableNameIndexer = searchableNameIndexer
         self.storageServiceManager = storageServiceManager
-        self.schedulers = schedulers
     }
 
     private func notifyContactChanges(tx: DBWriteTransaction) {

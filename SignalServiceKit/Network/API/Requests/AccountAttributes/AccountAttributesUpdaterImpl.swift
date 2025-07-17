@@ -14,7 +14,6 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
     private let kvStore: KeyValueStore
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
-    private let schedulers: Schedulers
     private let svrLocalStorage: SVRLocalStorage
     private let syncManager: SyncManagerProtocol
     private let tsAccountManager: TSAccountManager
@@ -27,7 +26,6 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         db: any DB,
         networkManager: NetworkManager,
         profileManager: ProfileManager,
-        schedulers: Schedulers,
         svrLocalStorage: SVRLocalStorage,
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager
@@ -40,7 +38,6 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         self.kvStore = KeyValueStore(collection: "AccountAttributesUpdater")
         self.networkManager = networkManager
         self.profileManager = profileManager
-        self.schedulers = schedulers
         self.svrLocalStorage = svrLocalStorage
         self.syncManager = syncManager
         self.tsAccountManager = tsAccountManager

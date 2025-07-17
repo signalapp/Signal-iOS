@@ -135,7 +135,6 @@ public class RegistrationCoordinatorTest {
             receiptManager: receiptManagerMock,
             registrationBackupErrorPresenter: RegistrationCoordinatorBackupErrorPresenterMock(),
             registrationStateChangeManager: registrationStateChangeManagerMock,
-            schedulers: DispatchQueueSchedulers(),
             sessionManager: sessionManager,
             signalService: mockSignalService,
             storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStoreImpl(),

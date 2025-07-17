@@ -34,7 +34,6 @@ public class RegistrationSessionManagerTest: XCTestCase {
         registrationSessionManager = RegistrationSessionManagerImpl(
             dateProvider: { self.date },
             db: db,
-            schedulers: DispatchQueueSchedulers(),
             signalService: mockSignalService
         )
     }

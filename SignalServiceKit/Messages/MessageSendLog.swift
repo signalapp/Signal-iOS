@@ -356,12 +356,12 @@ public class MessageSendLog {
         }
     }
 
-    public func cleanUpAndScheduleNextOccurrence(on schedulers: Schedulers) {
+    public func cleanUpAndScheduleNextOccurrence() {
         AssertIsOnMainThread()
         let backgroundTask = OWSBackgroundTask(label: #function)
-        schedulers.global(qos: .utility).async {
+        DispatchQueue.global(qos: .utility).async {
             defer {
-                schedulers.main.async(backgroundTask.end)
+                DispatchQueue.main.async(backgroundTask.end)
             }
 
             do {
@@ -370,8 +370,8 @@ public class MessageSendLog {
                 Logger.warn("Couldn't prune stale MSL entries \(error)")
             }
 
-            schedulers.main.asyncAfter(wallDeadline: .now() + .day) { [weak self] in
-                self?.cleanUpAndScheduleNextOccurrence(on: schedulers)
+            DispatchQueue.main.asyncAfter(wallDeadline: .now() + .day) { [weak self] in
+                self?.cleanUpAndScheduleNextOccurrence()
             }
         }
     }

@@ -530,7 +530,6 @@ class AppSettingsViewController: OWSTableViewController2 {
             let usernameLinkController = UsernameLinkQRCodeContentController(
                 db: DependenciesBridge.shared.db,
                 localUsernameManager: DependenciesBridge.shared.localUsernameManager,
-                schedulers: DependenciesBridge.shared.schedulers,
                 username: localUsername,
                 usernameLink: localUsernameLink,
                 changeDelegate: self,

@@ -54,7 +54,6 @@ class UsernameLinkQRCodeContentController: OWSViewController, OWSNavigationChild
     init(
         db: any DB,
         localUsernameManager: LocalUsernameManager,
-        schedulers: Schedulers,
         username: String,
         usernameLink: Usernames.UsernameLink?,
         changeDelegate: UsernameChangeDelegate,
@@ -63,7 +62,6 @@ class UsernameLinkQRCodeContentController: OWSViewController, OWSNavigationChild
         presentQRCodeViewController = UsernameLinkPresentQRCodeViewController(
             db: db,
             localUsernameManager: localUsernameManager,
-            schedulers: schedulers,
             username: username,
             usernameLink: usernameLink,
             usernameChangeDelegate: changeDelegate

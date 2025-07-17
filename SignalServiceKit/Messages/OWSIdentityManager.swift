@@ -207,7 +207,6 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
     private let recipientIdFinder: RecipientIdFinder
-    private let schedulers: Schedulers
     private let shareMyPhoneNumberStore: KeyValueStore
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
@@ -224,7 +223,6 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientIdFinder: RecipientIdFinder,
-        schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager
     ) {
@@ -245,7 +243,6 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.recipientIdFinder = recipientIdFinder
-        self.schedulers = schedulers
         self.shareMyPhoneNumberStore = KeyValueStore(
             collection: "OWSIdentityManager.shareMyPhoneNumberStore"
         )
@@ -581,7 +578,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     private func enqueueSyncMessage(for recipientUniqueId: RecipientUniqueId, tx: DBWriteTransaction) {
         queuedVerificationStateSyncMessagesKeyValueStore.setObject(true, key: recipientUniqueId, transaction: tx)
-        schedulers.main.async { self.tryToSyncQueuedVerificationStates() }
+        DispatchQueue.main.async { self.tryToSyncQueuedVerificationStates() }
     }
 
     private func clearSyncMessage(for key: String, tx: DBWriteTransaction) {
@@ -591,7 +588,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     public func tryToSyncQueuedVerificationStates() {
         AssertIsOnMainThread()
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            self.schedulers.global().async { self.syncQueuedVerificationStates() }
+            DispatchQueue.global().async { self.syncQueuedVerificationStates() }
         }
     }
 
@@ -718,7 +715,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             )
         }
 
-        nullMessagePromise.done(on: schedulers.global()) {
+        nullMessagePromise.done(on: DispatchQueue.global()) {
             Logger.info("Successfully sent verification state NullMessage")
             let syncMessagePromise = self.db.write { tx in
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
@@ -731,13 +728,13 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                     transaction: tx
                 )
             }
-            syncMessagePromise.done(on: self.schedulers.global()) {
+            syncMessagePromise.done(on: DispatchQueue.global()) {
                 Logger.info("Successfully sent verification state sync message")
                 self.db.write { tx in self.clearSyncMessage(for: recipientUniqueId, tx: tx) }
-            }.catch(on: self.schedulers.global()) { error in
+            }.catch(on: DispatchQueue.global()) { error in
                 Logger.error("Failed to send verification state sync message: \(error)")
             }
-        }.catch(on: schedulers.global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             Logger.error("Failed to send verification state NullMessage: \(error)")
             if error is MessageSenderNoSuchSignalRecipientError {
                 Logger.info("Removing retries for syncing verification for unregistered user: \(address)")

@@ -9,15 +9,12 @@ public class MediaBandwidthPreferenceStoreImpl: MediaBandwidthPreferenceStore {
 
     private let kvStore: KeyValueStore
     private let reachabilityManager: SSKReachabilityManager
-    private let schedulers: Schedulers
 
     public init(
         reachabilityManager: SSKReachabilityManager,
-        schedulers: Schedulers
     ) {
         self.kvStore = KeyValueStore(collection: "MediaBandwidthPreferences")
         self.reachabilityManager = reachabilityManager
-        self.schedulers = schedulers
     }
 
     public func preference(

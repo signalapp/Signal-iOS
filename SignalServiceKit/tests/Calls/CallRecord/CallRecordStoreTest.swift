@@ -21,7 +21,6 @@ final class CallRecordStoreTest: XCTestCase {
 
         callRecordStore = ExplainingCallRecordStoreImpl(
             deletedCallRecordStore: mockDeletedCallRecordStore,
-            schedulers: TestSchedulers(scheduler: TestScheduler())
         )
     }
 

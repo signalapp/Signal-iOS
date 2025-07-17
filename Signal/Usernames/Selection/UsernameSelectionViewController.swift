@@ -25,7 +25,6 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         let networkManager: NetworkManager
         let databaseStorage: SDSDatabaseStorage
         let localUsernameManager: LocalUsernameManager
-        let schedulers: Schedulers
         let storageServiceManager: StorageServiceManager
     }
 
@@ -645,7 +644,7 @@ private extension UsernameSelectionViewController {
 
             Guarantee.wrapAsync {
                 await self.context.localUsernameManager.updateVisibleCaseOfExistingUsername(newUsername: newUsername.reassembled)
-            }.map(on: self.context.schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Void> in
+            }.map(on: DispatchQueue.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Void> in
                 let newState = self.context.databaseStorage.read { tx in
                     return self.context.localUsernameManager.usernameState(tx: tx)
                 }
@@ -653,7 +652,7 @@ private extension UsernameSelectionViewController {
                 self.usernameChangeDelegate?.usernameStateDidChange(newState: newState)
 
                 return remoteMutationResult
-            }.done(on: self.context.schedulers.main) { remoteMutationResult -> Void in
+            }.done(on: DispatchQueue.main) { remoteMutationResult -> Void in
                 switch remoteMutationResult {
                 case .success:
                     UsernameLogger.shared.info("Changed username case!")
@@ -705,7 +704,7 @@ private extension UsernameSelectionViewController {
 
             Guarantee.wrapAsync {
                 await self.context.localUsernameManager.confirmUsername(reservedUsername: reservedUsername)
-            }.map(on: self.context.schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Usernames.ConfirmationResult> in
+            }.map(on: DispatchQueue.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Usernames.ConfirmationResult> in
                 let newState = self.context.databaseStorage.read { tx in
                     return self.context.localUsernameManager.usernameState(tx: tx)
                 }
@@ -713,7 +712,7 @@ private extension UsernameSelectionViewController {
                 self.usernameChangeDelegate?.usernameStateDidChange(newState: newState)
 
                 return remoteMutationResult
-            }.done(on: self.context.schedulers.main) { remoteMutationResult -> Void in
+            }.done(on: DispatchQueue.main) { remoteMutationResult -> Void in
                 switch remoteMutationResult {
                 case .success(.success):
                     UsernameLogger.shared.info("Confirmed username!")
@@ -853,7 +852,7 @@ private extension UsernameSelectionViewController {
                 let debounceId = UUID()
                 currentUsernameState = .pending(id: debounceId)
 
-                Guarantee.after(wallInterval: Constants.tooShortDebounceTimeInterval).done(on: context.schedulers.main) {
+                Guarantee.after(wallInterval: Constants.tooShortDebounceTimeInterval).done(on: DispatchQueue.main) {
                     if
                         case let .pending(id) = self.currentUsernameState,
                         debounceId == id
@@ -899,7 +898,7 @@ private extension UsernameSelectionViewController {
 
         self.currentUsernameState = .pending(id: thisAttemptId)
         // Delay to detect multiple rapid consecutive edits.
-        Guarantee.after(wallInterval: Constants.reservationDebounceTimeInternal).then(on: self.context.schedulers.main) { () -> Guarantee<ReservationResult> in
+        Guarantee.after(wallInterval: Constants.reservationDebounceTimeInternal).then(on: DispatchQueue.main) { () -> Guarantee<ReservationResult> in
             // If this attempt is no longer current after debounce, we should
             // bail out without firing a reservation.
             guard
@@ -913,7 +912,7 @@ private extension UsernameSelectionViewController {
 
             return Guarantee.wrapAsync {
                 await self.context.localUsernameManager.reserveUsername(usernameCandidates: usernameCandidates)
-            }.map(on: self.context.schedulers.sync) { remoteMutationResult -> ReservationResult in
+            }.map(on: SyncScheduler()) { remoteMutationResult -> ReservationResult in
                 switch remoteMutationResult {
                 case .success(let reservationResult):
                     return .success(reservationResult)
@@ -923,7 +922,7 @@ private extension UsernameSelectionViewController {
                     return .unknownError
                 }
             }
-        }.done(on: self.context.schedulers.main) { (reservationResult: ReservationResult) -> Void in
+        }.done(on: DispatchQueue.main) { (reservationResult: ReservationResult) -> Void in
             // If the reservation we just attempted is not current, we should
             // drop it and bail out.
             guard

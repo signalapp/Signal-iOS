@@ -119,10 +119,6 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         responses.append((response, .value(response)))
     }
 
-    public func addResponse(_ response: Response, atTime t: Int, on scheduler: TestScheduler) {
-        responses.append((response, scheduler.guarantee(resolvingWith: response, atTime: t)))
-    }
-
     public func addResponse(
         matcher: @escaping (TSRequest) -> Bool,
         statusCode: Int = 200,

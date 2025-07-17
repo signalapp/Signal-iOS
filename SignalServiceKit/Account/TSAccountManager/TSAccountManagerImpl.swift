@@ -11,7 +11,6 @@ public class TSAccountManagerImpl: TSAccountManager {
     private let appReadiness: AppReadiness
     private let dateProvider: DateProvider
     private let db: any DB
-    private let schedulers: Schedulers
 
     private let kvStore: KeyValueStore
 
@@ -23,12 +22,10 @@ public class TSAccountManagerImpl: TSAccountManager {
         dateProvider: @escaping DateProvider,
         databaseChangeObserver: DatabaseChangeObserver,
         db: any DB,
-        schedulers: Schedulers
     ) {
         self.appReadiness = appReadiness
         self.dateProvider = dateProvider
         self.db = db
-        self.schedulers = schedulers
 
         let kvStore = KeyValueStore(
             collection: "TSStorageUserAccountCollection"

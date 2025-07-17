@@ -159,14 +159,11 @@ public protocol CallRecordStore {
 
 class CallRecordStoreImpl: CallRecordStore {
     private let deletedCallRecordStore: DeletedCallRecordStore
-    private let schedulers: Schedulers
 
     init(
         deletedCallRecordStore: DeletedCallRecordStore,
-        schedulers: Schedulers
     ) {
         self.deletedCallRecordStore = deletedCallRecordStore
-        self.schedulers = schedulers
     }
 
     // MARK: - Protocol methods
@@ -191,11 +188,9 @@ class CallRecordStoreImpl: CallRecordStore {
         tx.addFinalizationBlock(key: "CallRecordStore") { _ in
             let deletedCallRecordIds = self.deletedCallRecordIds
             self.deletedCallRecordIds = []
-            self.schedulers.main.async {
-                NotificationCenter.default.post(
-                    CallRecordStoreNotification(updateType: .deleted(recordIds: deletedCallRecordIds)).asNotification
-                )
-            }
+            NotificationCenter.default.postOnMainThread(
+                CallRecordStoreNotification(updateType: .deleted(recordIds: deletedCallRecordIds)).asNotification
+            )
         }
     }
 

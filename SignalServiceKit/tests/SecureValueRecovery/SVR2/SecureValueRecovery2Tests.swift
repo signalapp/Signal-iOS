@@ -14,7 +14,6 @@ class SecureValueRecovery2Tests: XCTestCase {
     private var svr: SecureValueRecovery2Impl!
 
     private var credentialStorage: SVRAuthCredentialStorageMock!
-    private var scheduler: TestScheduler!
 
     private var mockAccountAttributesUpdater: MockAccountAttributesUpdater!
     private var mock2FAManager: SVR2.TestMocks.OWS2FAManager!
@@ -28,9 +27,6 @@ class SecureValueRecovery2Tests: XCTestCase {
     override func setUp() {
         self.db = InMemoryDB()
         self.credentialStorage = SVRAuthCredentialStorageMock()
-        self.scheduler = TestScheduler()
-        // Start the scheduler so everything executes synchronously.
-        self.scheduler.start()
 
         mock2FAManager = SVR2.TestMocks.OWS2FAManager()
         accountKeyStore = AccountKeyStore()
@@ -55,7 +51,7 @@ class SecureValueRecovery2Tests: XCTestCase {
             credentialStorage: credentialStorage,
             db: db,
             accountKeyStore: accountKeyStore,
-            schedulers: TestSchedulers(scheduler: scheduler),
+            scheduler: DispatchQueue(label: ""),
             storageServiceManager: FakeStorageServiceManager(),
             svrLocalStorage: localStorage,
             syncManager: OWSMockSyncManager(),
@@ -65,7 +61,8 @@ class SecureValueRecovery2Tests: XCTestCase {
         )
     }
 
-    func testMigration() {
+    @MainActor
+    func testMigration() async throws {
         // Set up the connections to both the old and new enclaves.
         let mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
         let oldEnclave = MrEnclave("0000000000000000000000000000000000000000000000000000000000000000")
@@ -153,7 +150,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         }
 
         // Kick off the migration.
-        _ = svr.performStartupMigrationsIfNecessary()
+        _ = try await svr.performStartupMigrationsIfNecessary().awaitable()
 
         XCTAssertEqual(newEnclaveRequestCount, 2)
         XCTAssertEqual(oldEnclaveRequestCount, 1)
@@ -163,12 +160,13 @@ class SecureValueRecovery2Tests: XCTestCase {
         }
 
         // If we try to migrate again, it does nothing because we are at the newest enclave.
-        _ = svr.performStartupMigrationsIfNecessary()
+        _ = try await svr.performStartupMigrationsIfNecessary().awaitable()
         XCTAssertEqual(newEnclaveRequestCount, 2)
         XCTAssertEqual(oldEnclaveRequestCount, 1)
     }
 
-    func testMigration_forgottenEnclave() {
+    @MainActor
+    func testMigration_forgottenEnclave() async throws {
         // Set up the connections to both the old and new enclaves.
         let mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
         let oldEnclave = MrEnclave("0000000000000000000000000000000000000000000000000000000000000000")
@@ -238,7 +236,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         // NOTE: the old enclave should get no requests, its considered dead.
 
         // Kick off the migration.
-        _ = svr.performStartupMigrationsIfNecessary()
+        _ = try await svr.performStartupMigrationsIfNecessary().awaitable()
 
         XCTAssertEqual(newEnclaveRequestCount, 2)
 
@@ -247,7 +245,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         }
 
         // If we try to migrate again, it does nothing because we are at the newest enclave.
-        _ = svr.performStartupMigrationsIfNecessary()
+        _ = try await svr.performStartupMigrationsIfNecessary().awaitable()
         XCTAssertEqual(newEnclaveRequestCount, 2)
     }
 

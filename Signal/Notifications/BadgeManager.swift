@@ -15,32 +15,21 @@ public protocol BadgeObserver {
 public class BadgeManager {
     public typealias FetchBadgeCountBlock = () -> BadgeCount
 
-    private let mainScheduler: Scheduler
-    private let serialScheduler: Scheduler
+    let serialQueue = DispatchQueue(label: "badge-manager")
     private let fetchBadgeCountBlock: FetchBadgeCountBlock
 
-    public init(
-        mainScheduler: Scheduler,
-        serialScheduler: Scheduler,
-        fetchBadgeCountBlock: @escaping FetchBadgeCountBlock
-    ) {
-        self.mainScheduler = mainScheduler
-        self.serialScheduler = serialScheduler
+    public init(fetchBadgeCountBlock: @escaping FetchBadgeCountBlock) {
         self.fetchBadgeCountBlock = fetchBadgeCountBlock
     }
 
     public convenience init(
+        badgeCountFetcher: any BadgeCountFetcher,
         databaseStorage: SDSDatabaseStorage,
-        mainScheduler: Scheduler,
-        serialScheduler: Scheduler
     ) {
         self.init(
-            mainScheduler: mainScheduler,
-            serialScheduler: serialScheduler,
             fetchBadgeCountBlock: {
                 return databaseStorage.read { tx -> BadgeCount in
-                    return DependenciesBridge.shared.badgeCountFetcher
-                        .fetchBadgeCount(tx: tx)
+                    return badgeCountFetcher.fetchBadgeCount(tx: tx)
                 }
             }
         )
@@ -58,9 +47,9 @@ public class BadgeManager {
         isFetching = true
         shouldFetch = false
         let backgroundTask = OWSBackgroundTask(label: #function)
-        serialScheduler.async {
+        serialQueue.async {
             let badgeCount = self.fetchBadgeCountBlock()
-            self.mainScheduler.async {
+            DispatchQueue.main.async {
                 self.isFetching = false
                 self.observers.removeAll(where: { $0.value == nil })
                 if self.observers.isEmpty {

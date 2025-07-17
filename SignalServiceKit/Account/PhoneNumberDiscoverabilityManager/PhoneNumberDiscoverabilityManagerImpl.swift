@@ -10,18 +10,15 @@ public class PhoneNumberDiscoverabilityManagerImpl: PhoneNumberDiscoverabilityMa
     public typealias TSAccountManager = SignalServiceKit.TSAccountManager & PhoneNumberDiscoverabilitySetter
 
     private let accountAttributesUpdater: AccountAttributesUpdater
-    private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
 
     public init(
         accountAttributesUpdater: AccountAttributesUpdater,
-        schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager
     ) {
         self.accountAttributesUpdater = accountAttributesUpdater
-        self.schedulers = schedulers
         self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
     }

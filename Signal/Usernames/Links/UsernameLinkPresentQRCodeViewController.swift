@@ -42,7 +42,6 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
 
     private let db: any DB
     private let localUsernameManager: LocalUsernameManager
-    private let schedulers: Schedulers
 
     private let username: String
     private let originalUsernameLink: Usernames.UsernameLink?
@@ -71,14 +70,12 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     init(
         db: any DB,
         localUsernameManager: LocalUsernameManager,
-        schedulers: Schedulers,
         username: String,
         usernameLink: Usernames.UsernameLink?,
         usernameChangeDelegate: UsernameChangeDelegate
     ) {
         self.db = db
         self.localUsernameManager = localUsernameManager
-        self.schedulers = schedulers
 
         self.username = username
         self.originalUsernameLink = usernameLink
@@ -611,7 +608,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
 
         Guarantee.wrapAsync {
             await self.localUsernameManager.rotateUsernameLink()
-        }.map(on: schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Usernames.UsernameLink> in
+        }.map(on: DispatchQueue.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Usernames.UsernameLink> in
             let latestUsernameState: Usernames.LocalUsernameState = self.db.read { tx in
                 self.localUsernameManager.usernameState(tx: tx)
             }
@@ -631,7 +628,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             )
 
             return remoteMutationResult
-        }.done(on: schedulers.main) { remoteMutationResult in
+        }.done(on: DispatchQueue.main) { remoteMutationResult in
             switch remoteMutationResult {
             case .success:
                 OWSActionSheets.showActionSheet(

@@ -48,16 +48,3 @@ public extension Scheduler {
         return promise
     }
 }
-
-public extension Optional where Wrapped == Scheduler {
-    func asyncIfNecessary(
-        execute work: @escaping @convention(block) () -> Void
-    ) {
-        switch self {
-        case .some(let scheduler):
-            scheduler.asyncIfNecessary(execute: work)
-        case .none:
-            work()
-        }
-    }
-}

@@ -42,7 +42,7 @@ class SVR2ConcurrencyTests: XCTestCase {
             credentialStorage: credentialStorage,
             db: db,
             accountKeyStore: accountKeyStore,
-            schedulers: Schedulers(queue),
+            scheduler: AlwaysAsyncScheduler(queue),
             storageServiceManager: FakeStorageServiceManager(),
             svrLocalStorage: localStorage,
             syncManager: OWSMockSyncManager(),
@@ -348,7 +348,7 @@ class SVR2ConcurrencyTests: XCTestCase {
                 credentialStorage: credentialStorage,
                 db: db,
                 accountKeyStore: accountKeyStore,
-                schedulers: Schedulers(queue),
+                scheduler: AlwaysAsyncScheduler(queue),
                 storageServiceManager: FakeStorageServiceManager(),
                 svrLocalStorage: localStorage,
                 syncManager: OWSMockSyncManager(),
@@ -406,39 +406,6 @@ class SVR2ConcurrencyTests: XCTestCase {
         expose.status = .ok
         response.expose = expose
         return response
-    }
-
-    private class Schedulers: SignalServiceKit.Schedulers {
-
-        let scheduler: AlwaysAsyncScheduler
-
-        init(_ queue: DispatchQueue) {
-            self.scheduler = AlwaysAsyncScheduler(queue)
-        }
-
-        var sync: SignalServiceKit.Scheduler { SyncScheduler() }
-
-        var main: SignalServiceKit.Scheduler { scheduler }
-
-        var sharedUserInteractive: SignalServiceKit.Scheduler { scheduler }
-
-        var sharedUserInitiated: SignalServiceKit.Scheduler { scheduler }
-
-        var sharedUtility: SignalServiceKit.Scheduler { scheduler }
-
-        var sharedBackground: SignalServiceKit.Scheduler { scheduler }
-
-        func sharedQueue(at qos: DispatchQoS) -> SignalServiceKit.Scheduler {
-            return scheduler
-        }
-
-        func global(qos: DispatchQoS.QoSClass) -> SignalServiceKit.Scheduler {
-            return scheduler
-        }
-
-        func queue(label: String, qos: DispatchQoS, attributes: DispatchQueue.Attributes, autoreleaseFrequency: DispatchQueue.AutoreleaseFrequency, target: DispatchQueue?) -> SignalServiceKit.Scheduler {
-            return scheduler
-        }
     }
 
     class AlwaysAsyncScheduler: Scheduler {

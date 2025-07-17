@@ -161,7 +161,6 @@ public class CLVReminderViews {
             context: .init(
                 databaseStorage: SSKEnvironment.shared.databaseStorageRef,
                 networkManager: SSKEnvironment.shared.networkManagerRef,
-                schedulers: DependenciesBridge.shared.schedulers,
                 storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
                 usernameEducationManager: DependenciesBridge.shared.usernameEducationManager,
                 localUsernameManager: DependenciesBridge.shared.localUsernameManager

@@ -24,7 +24,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let paymentsEvents: Shims.PaymentsEvents
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: RecipientMerger
-    private let schedulers: Schedulers
     private let senderKeyStore: Shims.SenderKeyStore
     private let signalProtocolStoreManager: SignalProtocolStoreManager
     private let signalService: OWSSignalServiceProtocol
@@ -48,7 +47,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         paymentsEvents: Shims.PaymentsEvents,
         recipientManager: any SignalRecipientManager,
         recipientMerger: RecipientMerger,
-        schedulers: Schedulers,
         senderKeyStore: Shims.SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
@@ -71,7 +69,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         self.paymentsEvents = paymentsEvents
         self.recipientManager = recipientManager
         self.recipientMerger = recipientMerger
-        self.schedulers = schedulers
         self.senderKeyStore = senderKeyStore
         self.signalProtocolStoreManager = signalProtocolStoreManager
         self.signalService = signalService
@@ -289,7 +286,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         do {
             try await signalService.urlSessionForMainSignalService()
                 .promiseForTSRequest(request)
-                .asVoid(on: schedulers.sync)
+                .asVoid(on: SyncScheduler())
                 .awaitable()
         } catch {
             owsFailDebugUnlessNetworkFailure(error)

@@ -7,11 +7,9 @@ public import LibSignalClient
 
 public class UsernameApiClientImpl: UsernameApiClient {
     private let networkManager: Shims.NetworkManager
-    private let schedulers: Schedulers
 
-    init(networkManager: Shims.NetworkManager, schedulers: Schedulers) {
+    init(networkManager: Shims.NetworkManager) {
         self.networkManager = networkManager
-        self.schedulers = schedulers
     }
 
     private func performRequest(

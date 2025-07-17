@@ -279,10 +279,7 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
 
 // MARK: - PreKeyManager
 
-// Unfortunately this shim needs to exist because of tests; Promise.wrapAsync starts a Task,
-// which is unavoidably asynchronous, which does not play nice with TestScheduler and general
-// synchronous, single-threaded test setups. To avoid this, we need to push down the
-// Promise.wrapAsync call into the shim, so that we can avoid the call entirely in tests.
+// TODO: Remove this layer of abstraction; it's no longer necessary.
 public protocol _RegistrationCoordinator_PreKeyManagerShim {
 
     func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles>

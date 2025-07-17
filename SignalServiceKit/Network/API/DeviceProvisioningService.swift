@@ -31,11 +31,9 @@ public protocol DeviceProvisioningService {
 
 public class DeviceProvisioningServiceImpl: DeviceProvisioningService {
     private let networkManager: NetworkManager
-    private let schedulers: Schedulers
 
-    public init(networkManager: NetworkManager, schedulers: Schedulers) {
+    public init(networkManager: NetworkManager) {
         self.networkManager = networkManager
-        self.schedulers = schedulers
     }
 
     public func requestDeviceProvisioningCode() async throws -> DeviceProvisioningCodeResponse {

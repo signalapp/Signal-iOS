@@ -52,7 +52,6 @@ public class GroupCallManager {
     private var groupCallRecordManager: GroupCallRecordManager { DependenciesBridge.shared.groupCallRecordManager }
     private var interactionStore: InteractionStore { DependenciesBridge.shared.interactionStore }
     private var notificationPresenter: any NotificationPresenter { SSKEnvironment.shared.notificationPresenterRef }
-    private var schedulers: Schedulers { DependenciesBridge.shared.schedulers }
     private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
     private let logger = GroupCallPeekLogger.shared

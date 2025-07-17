@@ -20,7 +20,6 @@ extension RegistrationCoordinatorImpl {
             e164: E164,
             candidateCredentials: [SVR2AuthCredential],
             signalService: OWSSignalServiceProtocol,
-            schedulers: Schedulers
         ) -> Guarantee<SVR2AuthCheckResponse> {
             let request = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
                 e164: e164,
@@ -29,7 +28,6 @@ extension RegistrationCoordinatorImpl {
             return makeRequest(
                 request,
                 signalService: signalService,
-                schedulers: schedulers,
                 handler: self.handleSVR2AuthCheckResponse(statusCode:retryAfterHeader:bodyData:),
                 fallbackError: .genericError,
                 networkFailureError: .networkError
@@ -71,7 +69,6 @@ extension RegistrationCoordinatorImpl {
             apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
             prekeyBundles: RegistrationPreKeyUploadBundles,
             signalService: OWSSignalServiceProtocol,
-            schedulers: Schedulers
         ) -> Guarantee<AccountResponse> {
             let request = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: method,
@@ -85,7 +82,6 @@ extension RegistrationCoordinatorImpl {
             return makeRequest(
                 request,
                 signalService: signalService,
-                schedulers: schedulers,
                 handler: {
                     self.handleCreateAccountResponse(
                         authPassword: authPassword,
@@ -182,7 +178,6 @@ extension RegistrationCoordinatorImpl {
             authPassword: String,
             pniChangeNumberParameters: PniDistribution.Parameters,
             signalService: OWSSignalServiceProtocol,
-            schedulers: Schedulers
         ) -> Guarantee<AccountResponse> {
             let request = RegistrationRequestFactory.changeNumberRequest(
                 verificationMethod: method,
@@ -193,7 +188,6 @@ extension RegistrationCoordinatorImpl {
             return makeRequest(
                 request,
                 signalService: signalService,
-                schedulers: schedulers,
                 handler: {
                     return self.handleChangeNumberResponse(authPassword: authPassword, statusCode: $0, retryAfterHeader: $1, bodyData: $2)
                 },
@@ -279,19 +273,17 @@ extension RegistrationCoordinatorImpl {
             reglockToken: String,
             auth: ChatServiceAuth,
             signalService: OWSSignalServiceProtocol,
-            schedulers: Schedulers,
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
         ) -> Promise<Void> {
             var request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken)
             request.auth = .identified(auth)
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request).asVoid()
-                .recover(on: schedulers.sync) { error in
+                .recover(on: SyncScheduler()) { error in
                     if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
                         return makeEnableReglockRequest(
                             reglockToken: reglockToken,
                             auth: auth,
                             signalService: signalService,
-                            schedulers: schedulers,
                             retriesLeft: retriesLeft - 1
                         )
                     }
@@ -304,7 +296,6 @@ extension RegistrationCoordinatorImpl {
             _ attributes: AccountAttributes,
             auth: ChatServiceAuth,
             signalService: OWSSignalServiceProtocol,
-            schedulers: Schedulers,
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
         ) -> Guarantee<Error?> {
             let request = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
@@ -312,7 +303,7 @@ extension RegistrationCoordinatorImpl {
                 auth: auth
             )
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
-                .map(on: schedulers.sync) { response in
+                .map(on: SyncScheduler()) { response in
                     guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
                         // Errors are undifferentiated; the only actual error we can get is an unauthenticated
                         // one and there isn't any way to handle that as different from a, say server 500.
@@ -320,13 +311,12 @@ extension RegistrationCoordinatorImpl {
                     }
                     return nil
                 }
-                .recover(on: schedulers.sync) { error in
+                .recover(on: SyncScheduler()) { error in
                     if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
                         return makeUpdateAccountAttributesRequest(
                             attributes,
                             auth: auth,
                             signalService: signalService,
-                            schedulers: schedulers,
                             retriesLeft: retriesLeft - 1
                         )
                     }
@@ -343,12 +333,11 @@ extension RegistrationCoordinatorImpl {
         public static func makeWhoAmIRequest(
             auth: ChatServiceAuth,
             signalService: OWSSignalServiceProtocol,
-            schedulers: Schedulers,
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
         ) -> Guarantee<WhoAmIResponse> {
             let request = WhoAmIRequestFactory.whoAmIRequest(auth: auth)
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
-                .map(on: schedulers.sync) { response in
+                .map(on: SyncScheduler()) { response in
                     guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
                         return .genericError
                     }
@@ -363,12 +352,11 @@ extension RegistrationCoordinatorImpl {
 
                     return .success(response)
                 }
-                .recover(on: schedulers.sync) { error -> Guarantee<WhoAmIResponse> in
+                .recover(on: SyncScheduler()) { error -> Guarantee<WhoAmIResponse> in
                     if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
                         return makeWhoAmIRequest(
                             auth: auth,
                             signalService: signalService,
-                            schedulers: schedulers,
                             retriesLeft: retriesLeft - 1
                         )
                     }
@@ -379,20 +367,19 @@ extension RegistrationCoordinatorImpl {
         private static func makeRequest<ResponseType>(
             _ request: TSRequest,
             signalService: OWSSignalServiceProtocol,
-            schedulers: Schedulers,
             handler: @escaping (_ statusCode: Int, _ retryAfterHeader: String?, _ bodyData: Data?) -> ResponseType,
             fallbackError: ResponseType,
             networkFailureError: ResponseType
         ) -> Guarantee<ResponseType> {
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
-                .map(on: schedulers.global()) { (response: HTTPResponse) -> ResponseType in
+                .map(on: DispatchQueue.global()) { (response: HTTPResponse) -> ResponseType in
                     return handler(
                         response.responseStatusCode,
                         response.headers[Constants.retryAfterHeader],
                         response.responseBodyData
                     )
                 }
-                .recover(on: schedulers.global()) { (error: Error) -> Guarantee<ResponseType> in
+                .recover(on: DispatchQueue.global()) { (error: Error) -> Guarantee<ResponseType> in
                     if error.isNetworkFailureOrTimeout {
                         return .value(networkFailureError)
                     }

@@ -52,13 +52,11 @@ public class AppEnvironment: NSObject {
     func setUp(appReadiness: AppReadiness, callService: CallService) {
         let backupSettingsStore = BackupSettingsStore()
         let badgeManager = BadgeManager(
+            badgeCountFetcher: DependenciesBridge.shared.badgeCountFetcher,
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-            mainScheduler: DispatchQueue.main,
-            serialScheduler: DispatchQueue.sharedUtility
         )
         let deviceProvisioningService = DeviceProvisioningServiceImpl(
             networkManager: SSKEnvironment.shared.networkManagerRef,
-            schedulers: DependenciesBridge.shared.schedulers
         )
 
         self.appIconBadgeUpdater = AppIconBadgeUpdater(badgeManager: badgeManager)

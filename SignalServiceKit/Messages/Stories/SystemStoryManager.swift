@@ -64,7 +64,6 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
 
     private let fileSystem: OnboardingStoryManagerFilesystem.Type
     private let messageProcessor: any Shims.MessageProcessor
-    private let schedulers: Schedulers
     private let storyMessageFactory: OnboardingStoryManagerStoryMessageFactory.Type
 
     private let kvStore = KeyValueStore(collection: "OnboardingStory")
@@ -79,7 +78,6 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
             appReadiness: appReadiness,
             fileSystem: OnboardingStoryManagerFilesystem.self,
             messageProcessor: Wrappers.MessageProcessor(messageProcessor),
-            schedulers: DispatchQueueSchedulers(),
             storyMessageFactory: OnboardingStoryManagerStoryMessageFactory.self
         )
     }
@@ -88,14 +86,12 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         appReadiness: AppReadiness,
         fileSystem: OnboardingStoryManagerFilesystem.Type,
         messageProcessor: any Shims.MessageProcessor,
-        schedulers: Schedulers,
         storyMessageFactory: OnboardingStoryManagerStoryMessageFactory.Type
     ) {
         self.fileSystem = fileSystem
         self.messageProcessor = messageProcessor
-        self.schedulers = schedulers
         self.storyMessageFactory = storyMessageFactory
-        self.queue = schedulers.queue(label: "org.signal.story.onboarding", qos: .utility)
+        self.queue = DispatchQueue(label: "org.signal.story.onboarding", qos: .utility)
         self.chainedPromise = ChainedPromise<Void>(scheduler: self.queue)
 
         if CurrentAppContext().isMainApp {
@@ -227,7 +223,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
     public func setSystemStoriesHidden(_ hidden: Bool, transaction: DBWriteTransaction) {
         var changedRowIds = [Int64]()
         defer {
-            schedulers.main.async {
+            DispatchQueue.main.async {
                 self.stateChangeObservers.forEach { $0.systemStoryHiddenStateDidChange(rowIds: changedRowIds) }
             }
         }
@@ -472,7 +468,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
             return status
         }
 
-        schedulers.main.async {
+        DispatchQueue.main.async {
             self.beginObservingOnboardingStoryEventsIfNeeded(downloadStatus: status)
         }
         return .value(status)

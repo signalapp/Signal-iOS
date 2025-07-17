@@ -165,8 +165,6 @@ public class AppSetup {
 
         let avatarDefaultColorManager = AvatarDefaultColorManager()
 
-        let schedulers = DispatchQueueSchedulers()
-
         let appExpiry = AppExpiry(
             appVersion: appVersion,
         )
@@ -179,7 +177,6 @@ public class AppSetup {
             dateProvider: dateProvider,
             databaseChangeObserver: databaseStorage.databaseChangeObserver,
             db: db,
-            schedulers: schedulers
         )
 
         let networkManager = testDependencies.networkManager ?? NetworkManager(
@@ -259,7 +256,6 @@ public class AppSetup {
             nicknameRecordStore: nicknameRecordStore,
             searchableNameIndexer: searchableNameIndexer,
             storageServiceManager: storageServiceManager,
-            schedulers: schedulers
         )
         let contactManager = testDependencies.contactManager ?? OWSContactsManager(
             appReadiness: appReadiness,
@@ -290,7 +286,6 @@ public class AppSetup {
 
         let mediaBandwidthPreferenceStore = MediaBandwidthPreferenceStoreImpl(
             reachabilityManager: reachabilityManager,
-            schedulers: schedulers
         )
 
         let interactionStore = InteractionStoreImpl()
@@ -327,7 +322,6 @@ public class AppSetup {
             db: db,
             networkManager: networkManager,
             profileManager: profileManager,
-            schedulers: schedulers,
             svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager
@@ -335,7 +329,6 @@ public class AppSetup {
 
         let phoneNumberDiscoverabilityManager = PhoneNumberDiscoverabilityManagerImpl(
             accountAttributesUpdater: accountAttributesUpdater,
-            schedulers: schedulers,
             storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager
         )
@@ -349,7 +342,7 @@ public class AppSetup {
             credentialStorage: svrCredentialStorage,
             db: db,
             accountKeyStore: accountKeyStore,
-            schedulers: schedulers,
+            scheduler: DispatchQueue(label: "org.signal.svr2", qos: .userInitiated),
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
@@ -638,7 +631,6 @@ public class AppSetup {
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientIdFinder: recipientIdFinder,
-            schedulers: schedulers,
             storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager
         )
@@ -737,7 +729,6 @@ public class AppSetup {
         )
         let callRecordStore = CallRecordStoreImpl(
             deletedCallRecordStore: deletedCallRecordStore,
-            schedulers: schedulers
         )
         let callRecordSyncMessageConversationIdAdapater = CallRecordSyncMessageConversationIdAdapterImpl(
             callLinkStore: callLinkStore,
@@ -953,7 +944,6 @@ public class AppSetup {
             paymentsEvents: RegistrationStateChangeManagerImpl.Wrappers.PaymentsEvents(paymentsEvents),
             recipientManager: recipientManager,
             recipientMerger: recipientMerger,
-            schedulers: schedulers,
             senderKeyStore: RegistrationStateChangeManagerImpl.Wrappers.SenderKeyStore(senderKeyStore),
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
@@ -1007,7 +997,6 @@ public class AppSetup {
         let registrationSessionManager = RegistrationSessionManagerImpl(
             dateProvider: dateProvider,
             db: db,
-            schedulers: schedulers,
             signalService: signalService
         )
 
@@ -1022,7 +1011,6 @@ public class AppSetup {
 
         let usernameApiClient = UsernameApiClientImpl(
             networkManager: UsernameApiClientImpl.Wrappers.NetworkManager(networkManager: networkManager),
-            schedulers: schedulers
         )
         let usernameEducationManager = UsernameEducationManagerImpl()
         let usernameLinkManager = UsernameLinkManagerImpl(
@@ -1530,7 +1518,6 @@ public class AppSetup {
             recipientMerger: recipientMerger,
             registrationSessionManager: registrationSessionManager,
             registrationStateChangeManager: registrationStateChangeManager,
-            schedulers: schedulers,
             searchableNameIndexer: searchableNameIndexer,
             sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
             signalProtocolStoreManager: signalProtocolStoreManager,
