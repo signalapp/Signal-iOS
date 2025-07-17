@@ -1443,7 +1443,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<RegistrationStep> {
         Logger.info("")
 
-        return updateAccountAttributes(accountIdentity)
+        return Guarantee.wrapAsync { await self.updateAccountAttributes(accountIdentity) }
             .then(on: DispatchQueue.main) { [weak self] error -> Guarantee<RegistrationStep> in
                 guard let self else {
                     return unretainedSelfError()
@@ -3886,10 +3886,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         inMemoryState.udAccessKey = udAccessKey
     }
 
-    private func updateAccountAttributes(_ accountIdentity: AccountIdentity) -> Guarantee<Error?> {
+    private func updateAccountAttributes(_ accountIdentity: AccountIdentity) async -> Error? {
         Logger.info("")
-        return Service
-            .makeUpdateAccountAttributesRequest(
+        do {
+            try await Service.makeUpdateAccountAttributesRequest(
                 makeAccountAttributes(
                     isManualMessageFetchEnabled: inMemoryState.isManualMessageFetchEnabled,
                     twoFAMode: self.attributes2FAMode(e164: accountIdentity.e164)
@@ -3897,6 +3897,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 auth: accountIdentity.chatServiceAuth,
                 signalService: deps.signalService,
             )
+            return nil
+        } catch {
+            return error
+        }
     }
 
     private func updatePhoneNumberDiscoverability(accountIdentity: AccountIdentity, phoneNumberDiscoverability: PhoneNumberDiscoverability) {

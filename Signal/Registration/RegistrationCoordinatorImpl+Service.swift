@@ -292,37 +292,34 @@ extension RegistrationCoordinatorImpl {
             }
         }
 
-        /// Returns nil error if success.
         public static func makeUpdateAccountAttributesRequest(
             _ attributes: AccountAttributes,
             auth: ChatServiceAuth,
             signalService: OWSSignalServiceProtocol,
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
-        ) -> Guarantee<Error?> {
+        ) async throws {
             let request = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
                 attributes,
                 auth: auth
             )
-            return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
-                .map(on: SyncScheduler()) { response in
-                    guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
-                        // Errors are undifferentiated; the only actual error we can get is an unauthenticated
-                        // one and there isn't any way to handle that as different from a, say server 500.
-                        return OWSAssertionError("Got unexpected response code from update attributes request: \(response.responseStatusCode).")
-                    }
-                    return nil
+            do {
+                let response = try await signalService.urlSessionForMainSignalService().performRequest(request)
+                guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
+                    // Errors are undifferentiated; the only actual error we can get is an unauthenticated
+                    // one and there isn't any way to handle that as different from a, say server 500.
+                    throw OWSAssertionError("Got unexpected response code from update attributes request: \(response.responseStatusCode).")
                 }
-                .recover(on: SyncScheduler()) { error in
-                    if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
-                        return makeUpdateAccountAttributesRequest(
-                            attributes,
-                            auth: auth,
-                            signalService: signalService,
-                            retriesLeft: retriesLeft - 1
-                        )
-                    }
-                    return .value(error)
+            } catch {
+                if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
+                    return try await makeUpdateAccountAttributesRequest(
+                        attributes,
+                        auth: auth,
+                        signalService: signalService,
+                        retriesLeft: retriesLeft - 1
+                    )
                 }
+                throw error
+            }
         }
 
         enum WhoAmIResponse {
