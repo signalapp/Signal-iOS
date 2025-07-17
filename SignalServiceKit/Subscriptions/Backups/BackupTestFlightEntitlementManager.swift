@@ -230,10 +230,15 @@ private struct AppAttestManager {
         keyId: String,
         requestAssertion: RequestAssertion,
     ) async throws(AttestationError) {
+        guard let keyIdData = keyId.data(using: .utf8) else {
+            owsFailDebug("Failed to convert keyId to data performing attestation action!")
+            throw .genericError
+        }
+
         let response: HTTPResponse
         do {
             response = try await networkManager.asyncRequest(.performAttestationAction(
-                keyId: keyId,
+                keyIdData: keyIdData,
                 assertedRequestData: requestAssertion.requestData,
                 assertion: requestAssertion.assertion
             ))
@@ -321,7 +326,7 @@ private struct AppAttestManager {
         // the signature/attestation (and therefore the key) is valid. If this
         // succeeds, the Signal servers will record this key so we can use it
         // to generate assertions for future requests.
-        try await attestAndRegisterKey(
+        try await _attestAndRegisterKey(
             keyId: newKeyId,
             keyAttestation: keyAttestation
         )
@@ -379,14 +384,19 @@ private struct AppAttestManager {
     /// Validate an attestation, or challenge signed by a new key, with Signal
     /// servers. If this succeeds, Signal servers will record this key so it can
     /// be used to generate assertions for future requests.
-    private func attestAndRegisterKey(
+    private func _attestAndRegisterKey(
         keyId: String,
         keyAttestation: Data,
     ) async throws(AttestationError) {
+        guard let keyIdData = keyId.data(using: .utf8) else {
+            owsFailDebug("Failed to convert keyId to data validating key attestation!")
+            throw .genericError
+        }
+
         let response: HTTPResponse
         do {
             response = try await networkManager.asyncRequest(.attestAndRegisterKey(
-                keyId: keyId,
+                keyIdData: keyIdData,
                 keyAttestation: keyAttestation
             ))
         } catch where error.isNetworkFailureOrTimeout {
@@ -535,12 +545,12 @@ private extension TSRequest {
     }
 
     static func performAttestationAction(
-        keyId: String,
+        keyIdData: Data,
         assertedRequestData: Data,
         assertion: Data,
     ) -> TSRequest {
         var request = TSRequest(
-            url: URL(string: "v1/devicecheck/assert?keyId=\(keyId)&request=\(assertedRequestData.asBase64Url)")!,
+            url: URL(string: "v1/devicecheck/assert?keyId=\(keyIdData.asBase64Url)&request=\(assertedRequestData.asBase64Url)")!,
             method: "POST",
             body: .data(assertion)
         )
@@ -557,11 +567,11 @@ private extension TSRequest {
     }
 
     static func attestAndRegisterKey(
-        keyId: String,
+        keyIdData: Data,
         keyAttestation: Data,
     ) -> TSRequest {
         var request = TSRequest(
-            url: URL(string: "v1/devicecheck/attest?keyId=\(keyId)")!,
+            url: URL(string: "v1/devicecheck/attest?keyId=\(keyIdData.asBase64Url)")!,
             method: "PUT",
             body: .data(keyAttestation)
         )
