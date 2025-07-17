@@ -14,6 +14,45 @@ class BackupSettingsAttachmentTrackerTest<Update: Equatable> {
         let nextSteps: () async -> Void
     }
 
+    actor ExpectedUpdateCompletionTracker {
+        private let expectedUpdates: [ExpectedUpdate]
+        private var completedExpectedUpdateIndexes: [UUID: Int]
+
+        init(_ expectedUpdates: [ExpectedUpdate]) {
+            self.expectedUpdates = expectedUpdates
+            self.completedExpectedUpdateIndexes = [:]
+        }
+
+        func addNewExpectedUpdateConsumer() -> UUID {
+            let uuid = UUID()
+            completedExpectedUpdateIndexes[uuid] = -1
+            return uuid
+        }
+
+        func incrementExpectedUpdate(forConsumer consumer: UUID) async -> ExpectedUpdate {
+            let nextIndex = completedExpectedUpdateIndexes[consumer]! + 1
+            completedExpectedUpdateIndexes[consumer] = nextIndex
+
+            switch completedExpectedUpdateIndexes.values.areAllEqual() {
+            case .no:
+                break
+            case .yes(let completedIndex):
+                await expectedUpdates[completedIndex].nextSteps()
+            }
+
+            return expectedUpdates[nextIndex]
+        }
+
+        func areAllExpectedUpdatesComplete() -> Bool {
+            switch completedExpectedUpdateIndexes.values.areAllEqual() {
+            case .no:
+                return false
+            case .yes(let completedIndex):
+                return completedIndex == expectedUpdates.count - 1
+            }
+        }
+    }
+
     func runTest(
         updateStream: AsyncStream<Update?>,
         expectedUpdates: [ExpectedUpdate]
@@ -25,26 +64,21 @@ class BackupSettingsAttachmentTrackerTest<Update: Equatable> {
         updateStreams: [AsyncStream<Update?>],
         expectedUpdates: [ExpectedUpdate]
     ) async {
-        let completedExpectedUpdateIndexes: AtomicValue<[UUID: Int]> = AtomicValue(
-            [:],
-            lock: .init()
-        )
+        let expectedUpdateCompletionTracker = ExpectedUpdateCompletionTracker(expectedUpdates)
+        var streamIds: [UUID] = []
         var streamTasks: [Task<Void, Never>] = []
 
-        for updateStream in updateStreams {
-            let uuid = UUID()
+        for _ in updateStreams {
+            streamIds.append(await expectedUpdateCompletionTracker.addNewExpectedUpdateConsumer())
+        }
 
-            completedExpectedUpdateIndexes.update { $0[uuid] = -1 }
+        for (updateStream, id) in zip(updateStreams, streamIds) {
             streamTasks.append(Task {
-                for await trackedUploadUpdate in updateStream {
-                    let nextExpectedUpdateIndex = completedExpectedUpdateIndexes.update {
-                        let nextValue = $0[uuid]! + 1
-                        $0[uuid] = nextValue
-                        return nextValue
-                    }
-                    let nextExpectedUpdate = expectedUpdates[nextExpectedUpdateIndex]
+                for await trackedUpdate in updateStream {
+                    let nextExpectedUpdate = await expectedUpdateCompletionTracker
+                        .incrementExpectedUpdate(forConsumer: id)
 
-                    #expect(trackedUploadUpdate == nextExpectedUpdate.update)
+                    #expect(trackedUpdate == nextExpectedUpdate.update)
                 }
 
                 if Task.isCancelled {
@@ -55,30 +89,15 @@ class BackupSettingsAttachmentTrackerTest<Update: Equatable> {
             })
         }
 
-        let exhaustedExpectedUpdatesTask = Task {
-            var lastCompletedIndex = -1
-
-            while true {
-                switch completedExpectedUpdateIndexes.get().values.areAllEqual() {
-                case .no:
-                    break
-                case .yes(let completedIndex) where lastCompletedIndex == completedIndex:
-                    break
-                case .yes(let completedIndex):
-                    if completedIndex == expectedUpdates.count - 1 {
-                        streamTasks.forEach { $0.cancel() }
-                        return
-                    }
-
-                    await expectedUpdates[completedIndex].nextSteps()
-                    lastCompletedIndex = completedIndex
-                }
-
+        let expectedUpdatesCompletedTask = Task {
+            while await !expectedUpdateCompletionTracker.areAllExpectedUpdatesComplete() {
                 await Task.yield()
             }
+
+            streamTasks.forEach { $0.cancel() }
         }
 
-        await exhaustedExpectedUpdatesTask.value
+        await expectedUpdatesCompletedTask.value
         for streamTask in streamTasks {
             await streamTask.value
         }
