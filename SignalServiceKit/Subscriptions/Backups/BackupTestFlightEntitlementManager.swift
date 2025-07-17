@@ -539,11 +539,13 @@ private extension TSRequest {
         assertedRequestData: Data,
         assertion: Data,
     ) -> TSRequest {
-        return TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/devicecheck/assert?keyId=\(keyId)&request=\(assertedRequestData.asBase64Url)")!,
             method: "POST",
             body: .data(assertion)
         )
+        request.headers["Content-Type"] = "application/octet-stream"
+        return request
     }
 
     static func getAttestationChallenge() -> TSRequest {
@@ -558,10 +560,12 @@ private extension TSRequest {
         keyId: String,
         keyAttestation: Data,
     ) -> TSRequest {
-        return TSRequest(
+        var request = TSRequest(
             url: URL(string: "v1/devicecheck/attest?keyId=\(keyId)")!,
             method: "PUT",
             body: .data(keyAttestation)
         )
+        request.headers["Content-Type"] = "application/octet-stream"
+        return request
     }
 }
