@@ -194,52 +194,33 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
 
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
-            canCancel: true
-        ) { [weak self] modal in
-            guard let self else {
-                modal.dismissIfNotCanceled()
-                return
-            }
-
-            SSKEnvironment.shared.signalServiceRef.urlSessionForMainSignalService()
-                .promiseForTSRequest(request)
-                .then(on: DispatchQueue.sharedUserInitiated) { response -> Promise<AccountDataReport> in
+            canCancel: true,
+            asyncBlock: { modal in
+                do {
+                    let response = try await SSKEnvironment.shared.signalServiceRef.urlSessionForMainSignalService().performRequest(request)
                     let status = response.responseStatusCode
                     guard status == 200 else {
-                        return .init(
-                            error: OWSGenericError("Received a \(status) status code. The request failed")
-                        )
+                        throw OWSGenericError("Received a \(status) status code. The request failed")
                     }
-
                     guard let rawData = response.responseBodyData else {
-                        return .init(error: OWSGenericError("Received an empty response"))
+                        throw OWSGenericError("Received an empty response")
                     }
-
                     guard let report = try? AccountDataReport(rawData: rawData) else {
-                        return .init(
-                            error: OWSGenericError("Couldn't parse account data report, presumably due to a bug")
-                        )
+                        throw OWSGenericError("Couldn't parse account data report, presumably due to a bug")
                     }
-
-                    return .value(report)
-                }.done(on: DispatchQueue.main) { report in
-                    modal.dismiss { [weak self] in
-                        if modal.wasCancelled { return }
-
-                        self?.confirmExport { [weak self] in
+                    modal.dismissIfNotCanceled(completionIfNotCanceled: { [weak self] in
+                        self?.confirmExport {
                             self?.didConfirmExport(of: report)
                         }
-                    }
-                }.catch(on: DispatchQueue.main) { error in
-                    modal.dismiss { [weak self] in
-                        if modal.wasCancelled { return }
-
-                        Logger.warn("\(error)")
-
+                    })
+                } catch {
+                    Logger.warn("\(error)")
+                    modal.dismissIfNotCanceled(completionIfNotCanceled: { [weak self] in
                         self?.didRequestFail()
-                    }
+                    })
                 }
-        }
+            },
+        )
     }
 
     private func didRequestFail() {
