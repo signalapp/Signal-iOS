@@ -322,6 +322,14 @@ private struct AppAttestManager {
             throw .genericError
         }
 
+        // TODO: Remove once API calls are succeeding.
+        logger.info("""
+            Attesting and registering new key:
+            keyId: \(newKeyId)
+            keyAttestationChallenge: \(keyAttestationChallenge)
+            keyAttestation: \(keyAttestation.base64EncodedString())
+        """)
+
         // Give the signed challenge to Signal servers, who will validate that
         // the signature/attestation (and therefore the key) is valid. If this
         // succeeds, the Signal servers will record this key so we can use it
