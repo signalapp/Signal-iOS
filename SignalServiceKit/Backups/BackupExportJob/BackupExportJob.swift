@@ -240,6 +240,8 @@ public class BackupExportJobImpl: BackupExportJob {
             }
 
             logger.info("Done!")
+        } catch is CancellationError {
+            throw .cancellationError
         } catch let error {
             if error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {
                 throw .networkRequestError(error)
