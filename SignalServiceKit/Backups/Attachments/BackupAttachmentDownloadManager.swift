@@ -58,6 +58,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private let dateProvider: DateProvider
     private let db: any DB
     private let listMediaManager: BackupListMediaManager
+    private let logger: PrefixedLogger
     private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
     private let progress: BackupAttachmentDownloadProgress
     private let remoteConfigProvider: RemoteConfigProvider
@@ -88,6 +89,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.attachmentStore = attachmentStore
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.listMediaManager = backupListMediaManager
+        self.logger = PrefixedLogger(prefix: "[Backups]")
         self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
         self.db = db
@@ -106,6 +108,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             db: db,
+            logger: logger,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             progress: progress,
             remoteConfigProvider: remoteConfigProvider,
@@ -198,19 +201,19 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             try await taskQueue.stop()
             return
         case .noWifiReachability:
-            Logger.info("Skipping backup attachment downloads while not reachable by wifi")
+            logger.info("Skipping backup attachment downloads while not reachable by wifi")
             try await taskQueue.stop()
             return
         case .noReachability:
-            Logger.info("Skipping backup attachment downloads while not reachable at all")
+            logger.info("Skipping backup attachment downloads while not reachable at all")
             try await taskQueue.stop()
             return
         case .lowBattery:
-            Logger.info("Skipping backup attachment downloads while low battery")
+            logger.info("Skipping backup attachment downloads while low battery")
             try await taskQueue.stop()
             return
         case .lowDiskSpace:
-            Logger.info("Skipping backup attachment downloads while low on disk space")
+            logger.info("Skipping backup attachment downloads while low on disk space")
             try await taskQueue.stop()
             return
         }
@@ -417,6 +420,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         private let backupSettingsStore: BackupSettingsStore
         private let dateProvider: DateProvider
         private let db: any DB
+        private let logger: PrefixedLogger
         private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
         private let progress: BackupAttachmentDownloadProgress
         private let remoteConfigProvider: RemoteConfigProvider
@@ -436,6 +440,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             backupSettingsStore: BackupSettingsStore,
             dateProvider: @escaping DateProvider,
             db: any DB,
+            logger: PrefixedLogger,
             mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
             progress: BackupAttachmentDownloadProgress,
             remoteConfigProvider: RemoteConfigProvider,
@@ -450,6 +455,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.backupSettingsStore = backupSettingsStore
             self.dateProvider = dateProvider
             self.db = db
+            self.logger = logger
             self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
             self.progress = progress
             self.remoteConfigProvider = remoteConfigProvider
@@ -678,7 +684,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                         let delay = UInt64(pow(2.0, max(0, Double(record.record.numRetries) - 1))) * initialDelay
                         if delay > UInt64.dayInMs * 30 {
                             // Don't go more than 30 days; stop retrying.
-                            Logger.info("Giving up retrying attachment download")
+                            logger.info("Giving up retrying attachment download")
                             return nil
                         }
                         return delay
@@ -702,7 +708,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
 
         func didSucceed(record: Store.Record, tx: DBWriteTransaction) throws {
-            Logger.info("Finished restoring attachment \(record.id)")
+            logger.info("Finished restoring attachment \(record.record.attachmentRowId), download \(record.id)")
             // Mark the record done when we succeed; this will filter it out
             // from future queue pop/peek operations.
             try backupAttachmentDownloadStore.markDone(
@@ -725,7 +731,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
 
         func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
-            Logger.warn("Failed restoring attachment \(record.id), isRetryable: \(isRetryable), error: \(error)")
+            logger.warn("Failed restoring attachment \(record.id), isRetryable: \(isRetryable), error: \(error)")
 
             if
                 isRetryable,
@@ -811,7 +817,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
 
         func didCancel(record: Store.Record, tx: DBWriteTransaction) throws {
-            Logger.warn("Cancelled restoring attachment \(record.id)")
+            logger.warn("Cancelled restoring attachment \(record.record.attachmentRowId), download \(record.id)")
             try backupAttachmentDownloadStore.remove(
                 attachmentId: record.record.attachmentRowId,
                 thumbnail: record.record.isThumbnail,

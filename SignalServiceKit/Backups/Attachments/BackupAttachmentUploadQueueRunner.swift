@@ -44,6 +44,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
     private let db: any DB
+    private let logger: PrefixedLogger
     private let listMediaManager: BackupListMediaManager
     private let progress: BackupAttachmentUploadProgress
     private let statusManager: BackupAttachmentUploadQueueStatusManager
@@ -74,6 +75,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
+        self.logger = PrefixedLogger(prefix: "[Backups]")
         self.listMediaManager = backupListMediaManager
         self.progress = progress
         self.statusManager = statusManager
@@ -89,6 +91,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             db: db,
+            logger: logger,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
             progress: progress,
             statusManager: statusManager,
@@ -148,7 +151,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             switch error {
             case .noExistingBackupId:
                 // If we have no backup, we sure won't be uploading.
-                Logger.info("Bailing on attachment backups when backup id not registered")
+                logger.info("Bailing on attachment backups when backup id not registered")
                 return
             }
         } catch let error {
@@ -172,18 +175,19 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
         switch await statusManager.beginObservingIfNecessary() {
         case .running:
-            Logger.info("Running Backup uploads.")
+            logger.info("Running Backup uploads.")
             try await taskQueue.loadAndRunTasks()
         case .empty:
+            logger.info("Skipping Backup uploads: queue is empty.")
             return
         case .notRegisteredAndReady:
-            Logger.warn("Skipping Backup uploads: not registered and ready.")
+            logger.warn("Skipping Backup uploads: not registered and ready.")
             try await taskQueue.stop()
         case .noWifiReachability:
-            Logger.warn("Skipping Backup uploads: need wifi.")
+            logger.warn("Skipping Backup uploads: need wifi.")
             try await taskQueue.stop()
         case .lowBattery:
-            Logger.warn("Skipping Backup uploads: low battery.")
+            logger.warn("Skipping Backup uploads: low battery.")
             try await taskQueue.stop()
         }
     }
@@ -220,6 +224,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         private let backupSettingsStore: BackupSettingsStore
         private let dateProvider: DateProvider
         private let db: any DB
+        private let logger: PrefixedLogger
         private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
         private let progress: BackupAttachmentUploadProgress
         private let statusManager: BackupAttachmentUploadQueueStatusManager
@@ -238,6 +243,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             backupSettingsStore: BackupSettingsStore,
             dateProvider: @escaping DateProvider,
             db: any DB,
+            logger: PrefixedLogger,
             orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
             progress: BackupAttachmentUploadProgress,
             statusManager: BackupAttachmentUploadQueueStatusManager,
@@ -253,6 +259,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             self.backupSettingsStore = backupSettingsStore
             self.dateProvider = dateProvider
             self.db = db
+            self.logger = logger
             self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
             self.progress = progress
             self.statusManager = statusManager
@@ -452,7 +459,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     } else {
                         // Ignore the error if we e.g. fail to generate a thumbnail;
                         // just upload the fullsize.
-                        Logger.error("Failed to upload thumbnail; proceeding")
+                        logger.error("Failed to upload thumbnail; proceeding")
                         await progress.didFinishUploadOfAttachment(
                             uploadRecord: record.record
                         )
@@ -469,15 +476,15 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         }
 
         func didSucceed(record: Store.Record, tx: DBWriteTransaction) throws {
-            Logger.info("Finished backing up attachment \(record.id)")
+            logger.info("Finished backing up attachment \(record.record.attachmentRowId), upload \(record.id)")
         }
 
         func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
-            Logger.warn("Failed backing up attachment \(record.id), isRetryable: \(isRetryable), error: \(error)")
+            logger.warn("Failed backing up attachment \(record.record.attachmentRowId), upload \(record.id), isRetryable: \(isRetryable), error: \(error)")
         }
 
         func didCancel(record: Store.Record, tx: DBWriteTransaction) throws {
-            Logger.warn("Cancelled backing up attachment \(record.id)")
+            logger.warn("Cancelled backing up attachment \(record.record.attachmentRowId), upload \(record.id)")
         }
 
         func didDrainQueue() async {
