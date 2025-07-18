@@ -925,6 +925,7 @@ public class AppSetup {
             backupIdManager: backupIdManager,
             backupListMediaManager: backupListMediaManager,
             backupPlanManager: backupPlanManager,
+            backupSettingsStore: backupSettingsStore,
             db: db,
             tsAccountManager: tsAccountManager,
         )

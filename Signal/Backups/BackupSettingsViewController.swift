@@ -167,6 +167,9 @@ class BackupSettingsViewController:
         db.read { tx in
             viewModel.backupPlan = backupPlanManager.backupPlan(tx: tx)
             viewModel.failedToDisableBackupsRemotely = backupDisablingManager.disableRemotelyFailed(tx: tx)
+            viewModel.lastBackupDate = backupSettingsStore.lastBackupDate(tx: tx)
+            viewModel.lastBackupSizeBytes = backupSettingsStore.lastBackupSizeBytes(tx: tx)
+            viewModel.shouldAllowBackupUploadsOnCellular = backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx)
         }
 
         // If we just disabled Backups locally but recorded a failure disabling
@@ -272,6 +275,7 @@ class BackupSettingsViewController:
                 ),
                 action: { _ in
                     self.viewModel.performManualBackup()
+                    self.dismiss(animated: true)
                 }
             )),
             secondary: .button(.dismissing(

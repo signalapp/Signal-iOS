@@ -25,6 +25,7 @@ struct BackupDisablingManagerTest {
             backupIdManager: mockBackupIdManager,
             backupListMediaManager: mockBackupListMediaManager,
             backupPlanManager: mockBackupPlanManager,
+            backupSettingsStore: BackupSettingsStore(),
             db: mockDB,
             tsAccountManager: mockTSAccountManager
         )

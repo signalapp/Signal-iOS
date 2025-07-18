@@ -16,6 +16,7 @@ public final class BackupDisablingManager {
     private let backupIdManager: BackupIdManager
     private let backupListMediaManager: BackupListMediaManager
     private let backupPlanManager: BackupPlanManager
+    private let backupSettingsStore: BackupSettingsStore
     private let db: DB
     private let kvStore: KeyValueStore
     private let logger: PrefixedLogger
@@ -32,6 +33,7 @@ public final class BackupDisablingManager {
         backupIdManager: BackupIdManager,
         backupListMediaManager: BackupListMediaManager,
         backupPlanManager: BackupPlanManager,
+        backupSettingsStore: BackupSettingsStore,
         db: DB,
         tsAccountManager: TSAccountManager,
     ) {
@@ -41,6 +43,7 @@ public final class BackupDisablingManager {
         self.backupIdManager = backupIdManager
         self.backupListMediaManager = backupListMediaManager
         self.backupPlanManager = backupPlanManager
+        self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.kvStore = KeyValueStore(collection: "BackupDisablingManager")
         self.logger = PrefixedLogger(prefix: "[Backups]")
@@ -173,6 +176,11 @@ public final class BackupDisablingManager {
                 }
 
                 try backupPlanManager.setBackupPlan(.disabled, tx: tx)
+
+                // Wipe these, which are now outdated.
+                backupSettingsStore.resetLastBackupDate(tx: tx)
+                backupSettingsStore.resetLastBackupSizeBytes(tx: tx)
+                backupSettingsStore.resetShouldAllowBackupUploadsOnCellular(tx: tx)
 
                 // With Backups disabled, these credentials are no longer valid
                 // and are no longer safe to use.
