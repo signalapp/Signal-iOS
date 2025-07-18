@@ -812,6 +812,8 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
                 throw OWSHTTPError.networkFailure(.genericTimeout)
             case SignalError.webSocketError(_), SignalError.connectionFailed(_):
                 throw OWSHTTPError.networkFailure(.genericFailure)
+            case SignalError.connectionInvalidated(_):
+                throw OWSHTTPError.networkFailure(.wrappedFailure(error))
             case is CancellationError:
                 throw error
             default:

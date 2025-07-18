@@ -20,13 +20,13 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
     private let identityManager: OWSIdentityManager
+    private let networkManager: NetworkManager
     private let notificationPresenter: any NotificationPresenter
     private let paymentsEvents: Shims.PaymentsEvents
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: RecipientMerger
     private let senderKeyStore: Shims.SenderKeyStore
     private let signalProtocolStoreManager: SignalProtocolStoreManager
-    private let signalService: OWSSignalServiceProtocol
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
     private let udManager: OWSUDManager
@@ -43,13 +43,13 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         groupsV2: GroupsV2,
         identityManager: OWSIdentityManager,
+        networkManager: NetworkManager,
         notificationPresenter: any NotificationPresenter,
         paymentsEvents: Shims.PaymentsEvents,
         recipientManager: any SignalRecipientManager,
         recipientMerger: RecipientMerger,
         senderKeyStore: Shims.SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
-        signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
@@ -65,13 +65,13 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         self.dmConfigurationStore = dmConfigurationStore
         self.groupsV2 = groupsV2
         self.identityManager = identityManager
+        self.networkManager = networkManager
         self.notificationPresenter = notificationPresenter
         self.paymentsEvents = paymentsEvents
         self.recipientManager = recipientManager
         self.recipientMerger = recipientMerger
         self.senderKeyStore = senderKeyStore
         self.signalProtocolStoreManager = signalProtocolStoreManager
-        self.signalService = signalService
         self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
         self.udManager = udManager
@@ -153,7 +153,11 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         Logger.warn("Updating isDeregisteredOrDelinked \(isDeregisteredOrDelinked)")
 
         if isDeregisteredOrDelinked {
-            notificationPresenter.notifyUserOfDeregistration(tx: tx)
+            if self.isUnregisteringFromService.get() {
+                Logger.warn("Skipping notification because we're unregistering ourselves.")
+            } else {
+                notificationPresenter.notifyUserOfDeregistration(tx: tx)
+            }
             // Ensure when we reregister, we will query list media.
             backupListMediaManager.setNeedsQueryListMedia(tx: tx)
             // On linked devices, reset all DM timer versions. If the user
@@ -248,7 +252,9 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         tsAccountManager.cleanUpTransferStateOnAppLaunchIfNeeded()
     }
 
-    public func unregisterFromService(auth: ChatServiceAuth) async throws {
+    private let isUnregisteringFromService = AtomicValue(false, lock: .init())
+
+    public func unregisterFromService() async throws -> Never {
         owsAssertBeta(appContext.isMainAppAndActive)
 
         let localIdentifiers: LocalIdentifiers? = db.read { tx in
@@ -281,13 +287,26 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             backupAuths = nil
         }
 
-        var request = OWSRequestFactory.unregisterAccountRequest()
-        request.auth = .identified(auth)
+        self.isUnregisteringFromService.set(true)
+        defer { self.isUnregisteringFromService.set(false) }
+
+        let request = OWSRequestFactory.unregisterAccountRequest()
         do {
-            try await signalService.urlSessionForMainSignalService()
-                .promiseForTSRequest(request)
-                .asVoid(on: SyncScheduler())
-                .awaitable()
+            _ = try await networkManager.asyncRequest(request)
+        } catch OWSHTTPError.networkFailure(.wrappedFailure(SignalError.connectionInvalidated)) {
+            Logger.warn("Connection was invalidated -- we probably deleted our account.")
+            // We should try to reconnect and should learn that we're no longer
+            // registered. This should happen immediately, but if it doesn't, the
+            // account *might* still exist, and we should inform the user that
+            // something may have gone wrong.
+            try await withCooperativeTimeout(seconds: 30, operation: { [tsAccountManager] in
+                try await Preconditions([
+                    NotificationPrecondition(notificationName: .registrationStateDidChange, isSatisfied: {
+                        return !tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+                    }),
+                ]).waitUntilSatisfied()
+            })
+            // If we get past this point, the account is gone.
         } catch {
             owsFailDebugUnlessNetworkFailure(error)
             throw error

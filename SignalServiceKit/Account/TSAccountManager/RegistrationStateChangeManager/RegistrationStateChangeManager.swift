@@ -161,5 +161,5 @@ public protocol RegistrationStateChangeManager {
     /**
      * Unregisters with the server, resetting all app data after completion (if successful).
      */
-    func unregisterFromService(auth: ChatServiceAuth) async throws
+    func unregisterFromService() async throws -> Never
 }

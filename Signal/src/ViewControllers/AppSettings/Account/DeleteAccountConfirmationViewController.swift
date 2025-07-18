@@ -343,9 +343,9 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         return try await DonationSubscriptionManager.cancelSubscription(for: activeSubscriptionId)
     }
 
-    private func unregisterAccount() async throws {
+    private func unregisterAccount() async throws -> Never {
         Logger.info("Unregistering...")
-        try await DependenciesBridge.shared.registrationStateChangeManager.unregisterFromService(auth: .implicit())
+        try await DependenciesBridge.shared.registrationStateChangeManager.unregisterFromService()
     }
 
     var hasEnteredLocalNumber: Bool {
