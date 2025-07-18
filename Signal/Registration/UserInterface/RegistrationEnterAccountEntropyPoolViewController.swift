@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SafariServices
 import SignalServiceKit
 import SignalUI
 import SwiftUI
@@ -15,6 +16,10 @@ protocol RegistrationEnterAccountEntropyPoolPresenter: AnyObject {
 
 class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPoolViewController {
     private weak var presenter: RegistrationEnterAccountEntropyPoolPresenter?
+
+    private enum Constants {
+        static let backupKeyupportUrl = URL(string: "https://support.signal.org/hc/articles/360007059752")!
+    }
 
     init(
         presenter: RegistrationEnterAccountEntropyPoolPresenter,
@@ -108,9 +113,12 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
                     self?.presenter?.forgotKeyAction()
                 }
             },
-            secondaryButton: .init(title: CommonStrings.learnMore) { [weak self] _ in
-                // [Backups] TODO: Implement
-                self?.dismiss(animated: true)
+            secondaryButton: .init(title: CommonStrings.learnMore) { [weak self] sheet in
+                guard let self else { return }
+                let vc = SFSafariViewController(url: Constants.backupKeyupportUrl)
+                self.dismiss(animated: true) {
+                    self.present(vc, animated: true, completion: nil)
+                }
             }
         )
         self.present(sheet, animated: true)
