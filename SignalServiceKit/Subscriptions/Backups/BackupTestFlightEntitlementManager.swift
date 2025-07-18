@@ -230,7 +230,7 @@ private struct AppAttestManager {
         keyId: String,
         requestAssertion: RequestAssertion,
     ) async throws(AttestationError) {
-        guard let keyIdData = keyId.data(using: .utf8) else {
+        guard let keyIdData = Data(base64Encoded: keyId) else {
             owsFailDebug("Failed to convert keyId to data performing attestation action!")
             throw .genericError
         }
@@ -322,14 +322,6 @@ private struct AppAttestManager {
             throw .genericError
         }
 
-        // TODO: Remove once API calls are succeeding.
-        logger.info("""
-            Attesting and registering new key:
-            keyId: \(newKeyId)
-            keyAttestationChallenge: \(keyAttestationChallenge)
-            keyAttestation: \(keyAttestation.base64EncodedString())
-        """)
-
         // Give the signed challenge to Signal servers, who will validate that
         // the signature/attestation (and therefore the key) is valid. If this
         // succeeds, the Signal servers will record this key so we can use it
@@ -396,8 +388,8 @@ private struct AppAttestManager {
         keyId: String,
         keyAttestation: Data,
     ) async throws(AttestationError) {
-        guard let keyIdData = keyId.data(using: .utf8) else {
-            owsFailDebug("Failed to convert keyId to data validating key attestation!")
+        guard let keyIdData = Data(base64Encoded: keyId) else {
+            owsFailDebug("Failed to base64-decode keyId validating key attestation!")
             throw .genericError
         }
 
