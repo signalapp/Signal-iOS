@@ -64,6 +64,7 @@ class ProvisioningController: NSObject {
         super.init()
     }
 
+    @MainActor
     static func presentProvisioningFlow(appReadiness: AppReadinessSetter) {
         let provisioningSocketManager = ProvisioningSocketManager(linkType: .linkDevice)
         let provisioningController = ProvisioningController(
@@ -72,6 +73,25 @@ class ProvisioningController: NSObject {
         )
         let navController = ProvisioningNavigationController(provisioningController: provisioningController)
         provisioningController.setUpDebugLogsGesture(on: navController)
+
+        let (backupRestoreState, registrationState) = DependenciesBridge.shared.db.read { tx in
+            (
+                DependenciesBridge.shared.backupArchiveManager.backupRestoreState(tx: tx),
+                DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx),
+            )
+        }
+
+        switch (backupRestoreState, registrationState) {
+        case (.unfinalized, .unregistered), (.finalized, .unregistered):
+            // If we started a link'n'sync and terminated after committing
+            // the restored backup but before finishing, reset the app data
+            // and start over.
+            SignalApp.resetAppDataAndExit(
+                keyFetcher: SSKEnvironment.shared.databaseStorageRef.keyFetcher
+            )
+        default:
+            break
+        }
 
         let vc = ProvisioningSplashViewController(provisioningController: provisioningController)
         navController.setViewControllers([vc], animated: false)

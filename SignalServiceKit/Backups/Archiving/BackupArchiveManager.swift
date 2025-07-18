@@ -6,6 +6,15 @@
 import Foundation
 public import LibSignalClient
 
+public enum BackupRestoreState: Int, Codable {
+    /// Has never restored from a backup in this database's history
+    case none = 0
+    /// Finished restoring a backup but still has post-restore steps to complete.
+    case unfinalized = 100
+    /// Backup restore is complete, nothing else to do.
+    case finalized = 200
+}
+
 public protocol BackupArchiveManager {
 
     // MARK: - Interact with remotes
@@ -53,9 +62,9 @@ public protocol BackupArchiveManager {
 
     // MARK: - Import
 
-    /// Returns true if this device has ever successfully restored from a backup
+    /// Returns whether this device has ever successfully restored from a backup
     /// and committed the contents to the database.
-    func hasRestoredFromBackup(tx: DBReadTransaction) -> Bool
+    func backupRestoreState(tx: DBReadTransaction) -> BackupRestoreState
 
     /// Import a backup from the encrypted binary file at the given local URL.
     /// - SeeAlso ``downloadEncryptedBackup(localIdentifiers:auth:)``
@@ -76,6 +85,13 @@ public protocol BackupArchiveManager {
         backupPurpose: MessageBackupPurpose,
         progress: OWSProgressSink?
     ) async throws
+
+    /// Call this if ``backupRestoreState(tx:)`` returns ``BackupRestoreState/unfinalized``.
+    /// ``importEncryptedBackup(fileUrl:localIdentifiers:isPrimaryDevice:backupKey:backupPurpose:progress:)``
+    /// and ``importPlaintextBackup(fileUrl:localIdentifiers:isPrimaryDevice:backupPurpose:progress:)`` will
+    /// finalize on their own; however if this process is interrupted (by e.g. cancellation or app termination) callers MUST NOT import again
+    /// but MUST call this method to finish the in-progress import finalization steps. This method is idempotent; import is not.
+    func finalizeBackupImport(progress: OWSProgressSink?) async throws
 
     // MARK: -
 

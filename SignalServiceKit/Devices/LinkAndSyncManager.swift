@@ -310,11 +310,29 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     ) async throws(SecondaryLinkNSyncError) {
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice != true)
 
-        let hasPreviouslyRestored = db.read { backupArchiveManager.hasRestoredFromBackup(tx: $0) }
-        if hasPreviouslyRestored {
+        let restoreState = db.read { backupArchiveManager.backupRestoreState(tx: $0) }
+        switch restoreState {
+        case .finalized:
             // Assume this was from a link'n'sync that was subsequently interrupted
             Logger.info("Skipping link'n'sync; already restored from backup")
             return
+        case .unfinalized:
+            Logger.info("Finalizing unfinished link'n'sync")
+            let blockObject = DeviceSleepBlockObject(blockReason: Constants.sleepBlockingDescription)
+            await deviceSleepManager?.addBlock(blockObject: blockObject)
+            do {
+                try await backupArchiveManager.finalizeBackupImport(progress: progress)
+                await deviceSleepManager?.removeBlock(blockObject: blockObject)
+            } catch {
+                await deviceSleepManager?.removeBlock(blockObject: blockObject)
+                if error is CancellationError {
+                    throw SecondaryLinkNSyncError.cancelled
+                }
+                owsFailDebug("Unable to finalize link'n'sync backup restore: \(error)")
+                throw SecondaryLinkNSyncError.errorRestoringBackup
+            }
+        case .none:
+            break
         }
 
         let blockObject = DeviceSleepBlockObject(blockReason: Constants.sleepBlockingDescription)

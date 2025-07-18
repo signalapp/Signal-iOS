@@ -358,6 +358,7 @@ extension SignalApp {
 
 extension SignalApp {
 
+    @MainActor
     func showSecondaryProvisioning(appReadiness: AppReadinessSetter) {
         ProvisioningController.presentProvisioningFlow(appReadiness: appReadiness)
         conversationSplitViewController = nil

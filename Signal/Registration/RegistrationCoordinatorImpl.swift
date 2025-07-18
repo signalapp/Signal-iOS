@@ -587,7 +587,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         identity: AccountIdentity
     ) -> Guarantee<Void> {
         Logger.info("")
-        return Promise.wrapAsync {
+        return _doBackupRestoreStep {
             let fileUrl: URL
             switch type {
             case .local(let localFileUrl):
@@ -610,10 +610,34 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 backupPurpose: .remoteBackup,
                 progress: nil
             )
+        }
+    }
+
+    private func finalizeRestoreFromMessageBackup(
+        identity: AccountIdentity
+    ) -> Guarantee<Void> {
+        Logger.info("")
+        return _doBackupRestoreStep {
+            try await self.deps.backupArchiveManager.finalizeBackupImport(progress: nil)
+        }
+    }
+
+    private func _doBackupRestoreStep(
+        _ block: @escaping () async throws -> Void
+    ) -> Guarantee<Void> {
+        return Promise.wrapAsync {
+            try await block()
         }.then {
-            self.inMemoryState.hasRestoredFromLocalMessageBackup = true
-            Logger.info("Finished restore")
-            return Guarantee.value(())
+            self.inMemoryState.backupRestoreState = self.db.read { tx in
+                self.deps.backupArchiveManager.backupRestoreState(tx: tx)
+            }
+            switch self.inMemoryState.backupRestoreState {
+            case .none, .unfinalized:
+                throw OWSAssertionError("Hasn't restored despite no thrown error!")
+            case .finalized:
+                Logger.info("Finished restore")
+                return Guarantee.value(())
+            }
         }.recover(on: DispatchQueue.main) { error in
             let errorType = self.deps.registrationBackupErrorPresenter.mapToRegistrationError(error: error)
             return Guarantee.wrapAsync {
@@ -632,7 +656,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return Guarantee.value(())
                 case .tryAgain:
                     // retry the backup restore
-                    return self.restoreFromMessageBackup(type: type, identity: identity)
+                    return self._doBackupRestoreStep(block)
                 }
             }
         }
@@ -815,7 +839,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var hasProfileName = false
 
         // Message Backup state
-        var hasRestoredFromLocalMessageBackup = false
+        var backupRestoreState: BackupRestoreState = .none
         var hasSkippedRestoreFromMessageBackup = false
 
         // Once we have our SVR master key locally,
@@ -1176,6 +1200,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             inMemoryState.allowUnrestrictedUD = deps.udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
 
             inMemoryState.wasReglockEnabledBeforeStarting = deps.ows2FAManager.isReglockEnabled(tx)
+
+            inMemoryState.backupRestoreState = deps.backupArchiveManager.backupRestoreState(tx: tx)
         }
 
         switch mode {
@@ -1225,7 +1251,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             if
                 inMemoryState.hasBackedUpToSVR
                 || inMemoryState.didHaveSVRBackupsPriorToReg
-                || inMemoryState.hasRestoredFromLocalMessageBackup
+                || inMemoryState.backupRestoreState == .finalized
             {
                 // No need to show the experience if we made the pin
                 // and backed up.
@@ -1254,16 +1280,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         func restoreBackupIfNecessary() -> Guarantee<Void> {
-            if inMemoryState.hasRestoredFromLocalMessageBackup {
+            switch inMemoryState.backupRestoreState {
+            case .finalized:
                 return .value(())
+            case .unfinalized:
+                // Unconditionally finalize
+                return finalizeRestoreFromMessageBackup(
+                    identity: accountIdentity
+                ).asVoid()
+            case .none:
+                guard let backupType = inMemoryState.restoreMethod?.backupType else {
+                    return .value(())
+                }
+                return restoreFromMessageBackup(
+                    type: backupType,
+                    identity: accountIdentity
+                ).asVoid()
             }
-            guard let backupType = inMemoryState.restoreMethod?.backupType else {
-                return .value(())
-            }
-            return restoreFromMessageBackup(
-                type: backupType,
-                identity: accountIdentity
-            ).asVoid()
+
         }
 
         func persistLocalIdentifiers(tx: DBWriteTransaction) {
@@ -4749,7 +4783,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 deps.featureFlags.backupFileAlphaRegistrationFlow
                 && inMemoryState.accountEntropyPool != nil
                 && inMemoryState.hasBackedUpToSVR
-                && !inMemoryState.hasRestoredFromLocalMessageBackup
+                && inMemoryState.backupRestoreState == .none
                 && !inMemoryState.hasSkippedRestoreFromMessageBackup
         case .changingNumber, .reRegistering:
             return false
