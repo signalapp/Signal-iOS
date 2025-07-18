@@ -72,6 +72,13 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
 
     var body: some View {
         VStack {
+
+            if state.mode == .manual {
+                Image(.backupsLogo)
+                    .resizable()
+                    .frame(width: 48, height: 48)
+            }
+
             Text(OWSLocalizedString(
                 "ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE",
                 comment: "Title for form confirming restore from backup."
@@ -88,44 +95,57 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
 
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(OWSLocalizedString(
-                        "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1",
-                        comment: "Header text describing what the backup includes."
-                    ))
-                    .font(.headline.weight(.semibold))
+            if state.mode == .manual {
+                Text(OWSLocalizedString(
+                    "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL",
+                    comment: "Details confirming manual restore from backup."
+                ))
+                .dynamicTypeSize(...DynamicTypeSize.accessibility1)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(Color.Signal.secondaryLabel)
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+                Spacer()
+            } else {
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(OWSLocalizedString(
+                            "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1",
+                            comment: "Header text describing what the backup includes."
+                        ))
+                        .font(.headline.weight(.semibold))
 
-                    BulletPoint(
-                        image: .thread,
-                        text: OWSLocalizedString(
-                            "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_2",
-                            comment: "Backup content list item describing all messages."
+                        BulletPoint(
+                            image: .thread,
+                            text: OWSLocalizedString(
+                                "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_2",
+                                comment: "Backup content list item describing all messages."
+                            )
                         )
-                    )
 
-                    let backupPeriodString = if state.tier == .free {
-                        OWSLocalizedString(
-                            "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE",
-                            comment: "Backup content list item describing paid media."
-                        )
-                    } else {
-                        OWSLocalizedString(
-                            "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID",
-                            comment: "Backup content list item describing free media."
-                        )
+                        let backupPeriodString = if state.tier == .free {
+                            OWSLocalizedString(
+                                "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE",
+                                comment: "Backup content list item describing paid media."
+                            )
+                        } else {
+                            OWSLocalizedString(
+                                "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID",
+                                comment: "Backup content list item describing free media."
+                            )
+                        }
+                        BulletPoint(image: .albumTilt, text: backupPeriodString)
                     }
-                    BulletPoint(image: .albumTilt, text: backupPeriodString)
+                    .padding(20) // add padding before applying the background
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.Signal.secondaryBackground)
+                    .cornerRadius(10)
+                    .padding(.vertical, 12) // add padding after applying the background
+                    .padding(.horizontal, 20) // add padding after applying the background
                 }
-                .padding(20) // add padding before applying the background
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.Signal.secondaryBackground)
-                .cornerRadius(10)
-                .padding(.vertical, 12) // add padding after applying the background
-                .padding(.horizontal, 20) // add padding after applying the background
+                .background(Color.Signal.background)
+                .scrollBounceBehaviorIfAvailable(.basedOnSize)
             }
-            .background(Color.Signal.background)
-            .scrollBounceBehaviorIfAvailable(.basedOnSize)
 
             Button(OWSLocalizedString(
                 "ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION",
@@ -155,20 +175,38 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
     }
 
     private func bodyText() -> Text {
-        var formattedString = OWSLocalizedString(
-            "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION",
-            comment: "Description for form confirming restore from backup."
-        )
-        if
-            let date = state.lastBackupDate,
-            let size = state.lastBackupSizeBytes,
-            let formattedDate = DateUtil.dateFormatter.string(for: date),
-            let formattedTime = DateUtil.timeFormatter.string(for: date)
-        {
-            formattedString = String(format: formattedString, formattedDate, formattedTime, OWSFormat.formatFileSize(size))
-            return Text(formattedString)
-        } else {
-            return Text("")
+        switch state.mode {
+        case .manual:
+            var formattedString = OWSLocalizedString(
+                "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE",
+                comment: "Description for form confirming restore from backup without size detail."
+            )
+            if
+                let date = state.lastBackupDate,
+                let formattedDate = DateUtil.dateFormatter.string(for: date),
+                let formattedTime = DateUtil.timeFormatter.string(for: date)
+            {
+                formattedString = String(format: formattedString, formattedDate, formattedTime)
+                return Text(formattedString)
+            } else {
+                return Text("")
+            }
+        case .quickRestore:
+            var formattedString = OWSLocalizedString(
+                "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION",
+                comment: "Description for form confirming restore from backup."
+            )
+            if
+                let date = state.lastBackupDate,
+                let size = state.lastBackupSizeBytes,
+                let formattedDate = DateUtil.dateFormatter.string(for: date),
+                let formattedTime = DateUtil.timeFormatter.string(for: date)
+            {
+                formattedString = String(format: formattedString, formattedDate, formattedTime, OWSFormat.formatFileSize(size))
+                return Text(formattedString)
+            } else {
+                return Text("")
+            }
         }
     }
 
