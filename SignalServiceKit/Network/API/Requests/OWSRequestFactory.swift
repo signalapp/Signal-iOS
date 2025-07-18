@@ -31,8 +31,12 @@ public enum OWSRequestFactory {
         return TSRequest(url: URL(string: "v1/payments/conversions")!, method: "GET", parameters: [:])
     }
 
-    static func getRemoteConfigRequest() -> TSRequest {
-        return TSRequest(url: URL(string: "v1/config/")!, method: "GET", parameters: [:])
+    static func getRemoteConfigRequest(eTag: String?) -> TSRequest {
+        var request = TSRequest(url: URL(string: "v2/config/")!, method: "GET", parameters: [:])
+        if let eTag {
+            request.headers["If-None-Match"] = eTag
+        }
+        return request
     }
 
     public static func callingRelaysRequest() -> TSRequest {

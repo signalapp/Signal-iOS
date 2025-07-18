@@ -21,11 +21,9 @@ public class RemoteConfig {
     /// time to get to us, so really this represents the time on the server when
     /// it crafted its response, not when we got it. And of course the local
     /// clock can change.
-    fileprivate let lastKnownClockSkew: TimeInterval
+    let lastKnownClockSkew: TimeInterval
 
-    fileprivate let isEnabledFlags: [String: Bool]
     fileprivate let valueFlags: [String: String]
-    fileprivate let timeGatedFlags: [String: Date]
 
     public let paymentsDisabledRegions: PhoneNumberRegions
     public let applePayDisabledRegions: PhoneNumberRegions
@@ -36,14 +34,10 @@ public class RemoteConfig {
 
     init(
         clockSkew: TimeInterval,
-        isEnabledFlags: [String: Bool],
         valueFlags: [String: String],
-        timeGatedFlags: [String: Date]
     ) {
         self.lastKnownClockSkew = clockSkew
-        self.isEnabledFlags = isEnabledFlags
         self.valueFlags = valueFlags
-        self.timeGatedFlags = timeGatedFlags
         self.paymentsDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .paymentsDisabledRegions)
         self.applePayDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .applePayDisabledRegions)
         self.creditAndDebitCardDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .creditAndDebitCardDisabledRegions)
@@ -53,31 +47,36 @@ public class RemoteConfig {
     }
 
     fileprivate static var emptyConfig: RemoteConfig {
-        RemoteConfig(clockSkew: 0, isEnabledFlags: [:], valueFlags: [:], timeGatedFlags: [:])
+        RemoteConfig(clockSkew: 0, valueFlags: [:])
     }
 
-    fileprivate func mergingHotSwappableFlags(from newConfig: RemoteConfig) -> RemoteConfig {
-        var isEnabledFlags = self.isEnabledFlags
-        for flag in IsEnabledFlag.allCases {
-            guard flag.isHotSwappable else { continue }
-            isEnabledFlags[flag.rawValue] = newConfig.isEnabledFlags[flag.rawValue]
+    /// Merges new values into an existing config.
+    ///
+    /// - Parameter newValueFlags: If nil, `valueFlags` aren't changed (e.g.,
+    /// the server gave us an HTTP 304 and we're reusing the existing config).
+    /// If nonnil, non-hot-swappable flags are taken from `self.valueFlags` and
+    /// all others are taken from `newValueFlags`.
+    ///
+    /// - Parameter newClockSkew: The new clock skew; always used. Even when
+    /// `newValueFlags` is nil, the HTTP 304 response has a new clock skew.
+    func merging(newValueFlags: [String: String]?, newClockSkew: TimeInterval) -> RemoteConfig {
+        if var newValueFlags = newValueFlags {
+            for flag in IsEnabledFlag.allCases {
+                if flag.isHotSwappable { continue }
+                newValueFlags[flag.rawValue] = self.valueFlags[flag.rawValue]
+            }
+            for flag in ValueFlag.allCases {
+                if flag.isHotSwappable { continue }
+                newValueFlags[flag.rawValue] = self.valueFlags[flag.rawValue]
+            }
+            for flag in TimeGatedFlag.allCases {
+                if flag.isHotSwappable { continue }
+                newValueFlags[flag.rawValue] = self.valueFlags[flag.rawValue]
+            }
+            return RemoteConfig(clockSkew: newClockSkew, valueFlags: newValueFlags)
+        } else {
+            return RemoteConfig(clockSkew: newClockSkew, valueFlags: self.valueFlags)
         }
-        var valueFlags = self.valueFlags
-        for flag in ValueFlag.allCases {
-            guard flag.isHotSwappable else { continue }
-            valueFlags[flag.rawValue] = newConfig.valueFlags[flag.rawValue]
-        }
-        var timeGatedFlags = self.timeGatedFlags
-        for flag in TimeGatedFlag.allCases {
-            guard flag.isHotSwappable else { continue }
-            timeGatedFlags[flag.rawValue] = newConfig.timeGatedFlags[flag.rawValue]
-        }
-        return RemoteConfig(
-            clockSkew: newConfig.lastKnownClockSkew,
-            isEnabledFlags: isEnabledFlags,
-            valueFlags: valueFlags,
-            timeGatedFlags: timeGatedFlags
-        )
     }
 
     public var maxGroupSizeRecommended: UInt {
@@ -277,6 +276,30 @@ public class RemoteConfig {
         return isEnabled(.shouldValidatePrimaryPniIdentityKey)
     }
 
+    #if TESTABLE_BUILD
+    public var testHotSwappable: Bool? {
+        if self.valueFlags[IsEnabledFlag.hotSwappable.rawValue] != nil {
+            return isEnabled(.hotSwappable)
+        }
+        return nil
+    }
+
+    public var testNonSwappable: Bool? {
+        if self.valueFlags[IsEnabledFlag.nonSwappable.rawValue] != nil {
+            return isEnabled(.nonSwappable)
+        }
+        return nil
+    }
+
+    public var testHotSwappableValue: String? {
+        return value(.hotSwappable)
+    }
+
+    public var testNonSwappableValue: String? {
+        return value(.nonSwappable)
+    }
+    #endif
+
     // MARK: UInt values
 
     private func getUIntValue(
@@ -411,34 +434,36 @@ public class RemoteConfig {
         return interval
     }
 
-    private func isEnabled(_ flag: IsEnabledFlag, defaultValue: Bool = false) -> Bool {
-        return isEnabledFlags[flag.rawValue] ?? defaultValue
+    fileprivate func isEnabled(_ flag: IsEnabledFlag, defaultValue: Bool = false) -> Bool {
+        switch valueFlags[flag.rawValue] {
+        case nil:
+            return defaultValue
+        case "1", "true", "TRUE":
+            return true
+        default:
+            return false
+        }
     }
 
     private func isEnabled(_ flag: TimeGatedFlag, defaultValue: Bool = false) -> Bool {
-        guard let dateThreshold = timeGatedFlags[flag.rawValue] else {
+        guard let rawValue = valueFlags[flag.rawValue] else {
             return defaultValue
         }
+        guard let epochValue = TimeInterval(rawValue) else {
+            owsFailDebug("Invalid value: \(rawValue)")
+            return defaultValue
+        }
+        let dateThreshold = Date(timeIntervalSince1970: epochValue)
         let correctedDate = Date().addingTimeInterval(self.lastKnownClockSkew)
         return correctedDate >= dateThreshold
     }
 
-    private func value(_ flag: ValueFlag) -> String? {
+    fileprivate func value(_ flag: ValueFlag) -> String? {
         return valueFlags[flag.rawValue]
     }
 
     public func debugDescriptions() -> [String: String] {
-        var result = [String: String]()
-        for (key, value) in isEnabledFlags {
-            result[key] = "\(value)"
-        }
-        for (key, value) in valueFlags {
-            result[key] = "\(value)"
-        }
-        for (key, value) in timeGatedFlags {
-            result[key] = "\(value)"
-        }
-        return result
+        return self.valueFlags
     }
 
     public func logFlags() {
@@ -478,6 +503,11 @@ private enum IsEnabledFlag: String, FlagType {
     case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
     case usePqRatchet = "ios.usePqRatchet"
 
+    #if TESTABLE_BUILD
+    case hotSwappable = "test.hotSwappable.enabled"
+    case nonSwappable = "test.nonSwappable.enabled"
+    #endif
+
     var isHotSwappable: Bool {
         switch self {
         case .applePayGiftDonationKillSwitch: false
@@ -490,14 +520,14 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
         case .lazyDatabaseMigratorKillSwitch: true
-        case .libsignalEnforceMinTlsVersion: false
+        case .libsignalEnforceMinTlsVersion: true // cached during launch, so not hot-swapped in practice
         case .messageResendKillSwitch: false
         case .notificationServiceWebSocketKillSwitch: true
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
         case .paypalMonthlyDonationKillSwitch: false
         case .paypalOneTimeDonationKillSwitch: false
-        case .ringrtcNwPathMonitorTrialKillSwitch: false
+        case .ringrtcNwPathMonitorTrialKillSwitch: true // cached during launch, so not hot-swapped in practice
         case .serviceExtensionFailureKillSwitch: true
         case .shouldValidateLinkedAciIdentityKey: true
         case .shouldValidatePrimaryAciIdentityKey: true
@@ -506,6 +536,11 @@ private enum IsEnabledFlag: String, FlagType {
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true
         case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true
         case .usePqRatchet: true
+
+        #if TESTABLE_BUILD
+        case .hotSwappable: true
+        case .nonSwappable: false
+        #endif
         }
     }
 }
@@ -536,6 +571,11 @@ private enum ValueFlag: String, FlagType {
     case standardMediaQualityLevel = "ios.standardMediaQualityLevel"
     case tsAttachmentMigrationBatchDelayMs = "ios.tsAttachmentMigrationBatchDelayMs"
 
+    #if TESTABLE_BUILD
+    case hotSwappable = "test.hotSwappable.value"
+    case nonSwappable = "test.nonSwappable.value"
+    #endif
+
     var isHotSwappable: Bool {
         switch self {
         case .applePayDisabledRegions: true
@@ -562,6 +602,11 @@ private enum ValueFlag: String, FlagType {
         case .sepaEnabledRegions: true
         case .standardMediaQualityLevel: false
         case .tsAttachmentMigrationBatchDelayMs: true
+
+        #if TESTABLE_BUILD
+        case .hotSwappable: true
+        case .nonSwappable: false
+        #endif
         }
     }
 }
@@ -659,7 +704,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         return cachedConfig ?? .emptyConfig
     }
 
-    @discardableResult
     private func updateCachedConfig(_ updateBlock: (RemoteConfig?) -> RemoteConfig) -> RemoteConfig {
         return _cachedConfig.update { mutableValue in
             let newValue = updateBlock(mutableValue)
@@ -710,44 +754,27 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     public func warmCaches() -> RemoteConfig {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
-        // swiftlint:disable large_tuple
-        let (
-            lastKnownClockSkew,
-            isEnabledFlags,
-            valueFlags,
-            timeGatedFlags,
-            registrationState
-        ): (TimeInterval, [String: Bool]?, [String: String]?, [String: Date]?, TSRegistrationState) = db.read { tx in
-            return (
-                self.keyValueStore.getLastKnownClockSkew(transaction: tx),
-                self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: tx),
-                self.keyValueStore.getRemoteConfigValueFlags(transaction: tx),
-                self.keyValueStore.getRemoteConfigTimeGatedFlags(transaction: tx),
-                DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx)
-            )
+        let (clockSkew, valueFlags) = db.read { (tx) -> (TimeInterval?, [String: String]?) in
+            guard self.tsAccountManager.registrationState(tx: tx).isRegistered else {
+                return (nil, nil)
+            }
+            let valueFlags = RemoteConfigStore(keyValueStore: self.keyValueStore).loadValueFlags(tx: tx)
+            guard let valueFlags else {
+                return (nil, nil)
+            }
+            let clockSkew = self.keyValueStore.getLastKnownClockSkew(transaction: tx)
+            return (clockSkew, valueFlags)
         }
-        // swiftlint:enable large_tuple
-        let remoteConfig: RemoteConfig
-        if registrationState.isRegistered, (isEnabledFlags != nil || valueFlags != nil || timeGatedFlags != nil) {
-            remoteConfig = RemoteConfig(
-                clockSkew: lastKnownClockSkew,
-                isEnabledFlags: isEnabledFlags ?? [:],
-                valueFlags: valueFlags ?? [:],
-                timeGatedFlags: timeGatedFlags ?? [:]
-            )
-        } else {
-            // If we're not registered or haven't saved one, use an empty one.
-            remoteConfig = .emptyConfig
-        }
+
         return updateCachedConfig { oldConfig in
             if let oldConfig {
                 // If we're calling warmCaches for the second or later time, we can only
                 // update the flags that are hot-swappable.
-                return oldConfig.mergingHotSwappableFlags(from: remoteConfig)
+                return oldConfig.merging(newValueFlags: valueFlags ?? [:], newClockSkew: clockSkew ?? 0)
             } else {
                 // If we're calling warmCaches for first time, we can set hot swappable and
                 // non-hot swappable flags.
-                return remoteConfig
+                return RemoteConfig(clockSkew: clockSkew ?? 0, valueFlags: valueFlags ?? [:])
             }
         }
     }
@@ -818,118 +845,79 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
     /// should only be called within `refreshTaskQueue`
     private func _refresh() async throws {
-        let fetchedConfig = try await fetchRemoteConfig()
+        let (valueFlags, headers) = try await fetchRemoteConfig()
+
+        if valueFlags == nil {
+            Logger.info("Fetched a new remote config but the values haven't changed.")
+        }
+
+        let serverEpochTimeMs = headers["x-signal-timestamp"].flatMap(UInt64.init(_:))
+        owsAssertDebug(serverEpochTimeMs != nil, "Must have X-Signal-Timestamp.")
 
         let clockSkew: TimeInterval
-        if let serverEpochTimeMs = fetchedConfig.serverEpochTimeMs {
+        if let serverEpochTimeMs = serverEpochTimeMs {
             let dateAccordingToServer = Date(timeIntervalSince1970: TimeInterval(serverEpochTimeMs) / 1000)
             clockSkew = dateAccordingToServer.timeIntervalSince(Date())
         } else {
             clockSkew = 0
         }
 
-        // We filter the received config down to just the supported flags. This
-        // ensures if we have a sticky flag, it doesn't get inadvertently set
-        // because we cached a value before it went public. e.g. if we set a sticky
-        // flag to 100% in beta then turn it back to 0% before going to production.
-        var isEnabledFlags = [String: Bool]()
-        var valueFlags = [String: String]()
-        var timeGatedFlags = [String: Date]()
-        fetchedConfig.items.forEach { config in
-            if IsEnabledFlag(rawValue: config.name) != nil {
-                isEnabledFlags[config.name] = (config.value == "1" || config.value == "true" || config.value == "TRUE" || config.enabled == true)
-                return
-            }
-            if ValueFlag(rawValue: config.name) != nil {
-                valueFlags[config.name] = config.value
-                return
-            }
-            if TimeGatedFlag(rawValue: config.name) != nil {
-                if let value = config.value {
-                    if let secondsSinceEpoch = TimeInterval(value) {
-                        timeGatedFlags[config.name] = Date(timeIntervalSince1970: secondsSinceEpoch)
-                    } else {
-                        owsFailDebug("Invalid value: \(value) \(type(of: value))")
-                    }
-                }
-                return
-            }
-        }
-
         // Persist all flags in the database to be applied on next launch.
 
         await self.db.awaitableWrite { transaction in
             self.keyValueStore.setClockSkew(clockSkew, transaction: transaction)
-            self.keyValueStore.setRemoteConfigIsEnabledFlags(isEnabledFlags, transaction: transaction)
-            self.keyValueStore.setRemoteConfigValueFlags(valueFlags, transaction: transaction)
-            self.keyValueStore.setRemoteConfigTimeGatedFlags(timeGatedFlags, transaction: transaction)
+            if let valueFlags {
+                self.keyValueStore.removeRemoteConfigIsEnabledFlags(tx: transaction)
+                self.keyValueStore.setRemoteConfigValueFlags(valueFlags, transaction: transaction)
+                self.keyValueStore.removeRemoteConfigTimeGatedFlags(tx: transaction)
+                self.keyValueStore.setETag(headers["etag"], tx: transaction)
+            }
             self.keyValueStore.setLastFetched(Date(), transaction: transaction)
+        }
+
+        // This has hot-swappable new values and non-hot-swappable old values.
+        let mergedConfig = updateCachedConfig { oldConfig in
+            return (oldConfig ?? .emptyConfig).merging(newValueFlags: valueFlags, newClockSkew: clockSkew)
         }
 
         // As a special case, persist RingRTC field trials. See comments in
         // ``RingrtcFieldTrials`` for details.
         RingrtcFieldTrials.saveNwPathMonitorTrialState(
             isEnabled: {
-                let flag = IsEnabledFlag.ringrtcNwPathMonitorTrialKillSwitch
-                let isKilled = isEnabledFlags[flag.rawValue] ?? false
+                let isKilled = mergedConfig.isEnabled(.ringrtcNwPathMonitorTrialKillSwitch, defaultValue: false)
                 return !isKilled
             }(),
             in: CurrentAppContext().appUserDefaults()
         )
 
-        let libsignalEnforceMinTlsVersion = isEnabledFlags[IsEnabledFlag.libsignalEnforceMinTlsVersion.rawValue] ?? FeatureFlags.libsignalEnforceMinTlsVersion
+        let libsignalEnforceMinTlsVersion = mergedConfig.isEnabled(.libsignalEnforceMinTlsVersion, defaultValue: FeatureFlags.libsignalEnforceMinTlsVersion)
 
         LibsignalUserDefaults.saveShouldEnforceMinTlsVersion(libsignalEnforceMinTlsVersion, in: CurrentAppContext().appUserDefaults())
 
-        // This has *all* the new values, even those that can't be hot-swapped.
-        let newConfig = RemoteConfig(
-            clockSkew: clockSkew,
-            isEnabledFlags: isEnabledFlags,
-            valueFlags: valueFlags,
-            timeGatedFlags: timeGatedFlags
-        )
+        await checkClientExpiration(valueFlag: mergedConfig.value(.clientExpiration))
 
-        // This has hot-swappable new values and non-hot-swappable old values.
-        let mergedConfig = self.updateCachedConfig { oldConfig in
-            return (oldConfig ?? .emptyConfig).mergingHotSwappableFlags(from: newConfig)
-        }
-
-        await checkClientExpiration(valueFlag: mergedConfig.valueFlags[ValueFlag.clientExpiration.rawValue])
-
-        newConfig.logFlags()
+        mergedConfig.logFlags()
     }
 
     // MARK: -
 
-    private struct UserRemoteConfigList: Decodable {
-        var config: [UserRemoteConfig]
+    private struct RemoteConfigurationResponse: Decodable {
+        var config: [String: String]
     }
 
-    private struct UserRemoteConfig: Decodable {
-        var name: String
-        var enabled: Bool?
-        var value: String?
-    }
+    private func fetchRemoteConfig() async throws -> ([String: String]?, HttpHeaders) {
+        let oldETag = self.db.read { tx in self.keyValueStore.getETag(tx: tx) }
 
-    private struct FetchedRemoteConfigResponse {
-        let items: [UserRemoteConfig]
-        let serverEpochTimeMs: UInt64?
-    }
+        let request = OWSRequestFactory.getRemoteConfigRequest(eTag: oldETag)
+        do {
+            let response = try await networkManager.asyncRequest(request)
 
-    private func fetchRemoteConfig() async throws -> FetchedRemoteConfigResponse {
-        let request = OWSRequestFactory.getRemoteConfigRequest()
+            let result = try JSONDecoder().decode(RemoteConfigurationResponse.self, from: response.responseBodyData ?? Data())
 
-        let response = try await networkManager.asyncRequest(request)
-
-        let result = try JSONDecoder().decode(UserRemoteConfigList.self, from: response.responseBodyData ?? Data())
-
-        let serverEpochTimeMs = response.headers["x-signal-timestamp"].flatMap(UInt64.init(_:))
-        owsAssertDebug(serverEpochTimeMs != nil, "Must have X-Signal-Timestamp.")
-
-        return FetchedRemoteConfigResponse(
-            items: result.config,
-            serverEpochTimeMs: serverEpochTimeMs
-        )
+            return (result.config, response.headers)
+        } catch OWSHTTPError.serviceResponse(let serviceResponse) where serviceResponse.responseStatus == 304 {
+            return (nil, serviceResponse.headers)
+        }
     }
 
     // MARK: - Client Expiration
@@ -982,7 +970,43 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
 // MARK: -
 
+struct RemoteConfigStore {
+    private let keyValueStore: KeyValueStore
+
+    init(keyValueStore: KeyValueStore) {
+        self.keyValueStore = keyValueStore
+    }
+
+    func loadValueFlags(tx: DBReadTransaction) -> [String: String]? {
+        var result = self.keyValueStore.getRemoteConfigValueFlags(transaction: tx)
+
+        // TODO: Remove these IsEnabled/TimeGated fallbacks after a while.
+        // (Doing so will reset "IsEnabled" flags for long-inactive users, but
+        // that's fine because they should fetch new ones immediately.)
+        if let isEnabledFlags = self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: tx) {
+            result = result ?? [:]
+            isEnabledFlags.forEach { result?[$0] = $1 ? "true" : "false" }
+        }
+        if let timeGatedFlags = self.keyValueStore.getRemoteConfigTimeGatedFlags(transaction: tx) {
+            result = result ?? [:]
+            timeGatedFlags.forEach { result?[$0] = String($1.timeIntervalSince1970) }
+        }
+
+        return result
+    }
+}
+
+// MARK: -
+
 private extension KeyValueStore {
+
+    func removeRemoteConfigIsEnabledFlags(tx: DBWriteTransaction) {
+        removeValue(forKey: Self.remoteConfigIsEnabledFlagsKey, transaction: tx)
+    }
+
+    func removeRemoteConfigTimeGatedFlags(tx: DBWriteTransaction) {
+        removeValue(forKey: Self.remoteConfigTimeGatedFlagsKey, transaction: tx)
+    }
 
     // MARK: - Remote Config Enabled Flags
 
@@ -996,10 +1020,6 @@ private extension KeyValueStore {
             transaction: transaction
         ) as [String: NSNumber]?
         return decodedValue?.mapValues { $0.boolValue }
-    }
-
-    func setRemoteConfigIsEnabledFlags(_ newValue: [String: Bool], transaction: DBWriteTransaction) {
-        return setObject(newValue, key: Self.remoteConfigIsEnabledFlagsKey, transaction: transaction)
     }
 
     // MARK: - Remote Config Value Flags
@@ -1032,10 +1052,6 @@ private extension KeyValueStore {
         ) as [String: Date]?
     }
 
-    func setRemoteConfigTimeGatedFlags(_ newValue: [String: Date], transaction: DBWriteTransaction) {
-        return setObject(newValue, key: Self.remoteConfigTimeGatedFlagsKey, transaction: transaction)
-    }
-
     // MARK: - Last Fetched
 
     var lastFetchedKey: String { "lastFetchedKey" }
@@ -1058,6 +1074,18 @@ private extension KeyValueStore {
 
     func setClockSkew(_ newValue: TimeInterval, transaction: DBWriteTransaction) {
         return setDouble(newValue, key: clockSkewKey, transaction: transaction)
+    }
+
+    // MARK: - ETag
+
+    private var eTagKey: String { "eTag" }
+
+    func getETag(tx: DBReadTransaction) -> String? {
+        return getString(eTagKey, transaction: tx)
+    }
+
+    func setETag(_ newValue: String?, tx: DBWriteTransaction) {
+        setString(newValue, key: eTagKey, transaction: tx)
     }
 }
 
