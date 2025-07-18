@@ -1780,15 +1780,23 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        let appReadiness: AppReadinessSetter = self.appReadiness
-        appReadiness.runNowOrWhenAppDidBecomeReadySync {
-            Task { @MainActor in
-                await NotificationActionHandler.handleNotificationResponse(
-                    response,
-                    appReadiness: appReadiness
-                )
-                completionHandler()
-            }
+        Task { @MainActor [appReadiness] () -> Void in
+            defer { completionHandler() }
+
+            try await self.appReadiness.waitForAppReady()
+
+            let backgroundMessageFetcherFactory = DependenciesBridge.shared.backgroundMessageFetcherFactory
+            let backgroundMessageFetcher = backgroundMessageFetcherFactory.buildFetcher(useWebSocket: true)
+            // So that we open up a connection for replies.
+            await backgroundMessageFetcher.start()
+            await NotificationActionHandler.handleNotificationResponse(response, appReadiness: appReadiness)
+            let result = await Result(catching: {
+                // So that we wait for any enqueued messages to be sent.
+                try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
+            })
+            // So that we tear down gracefully.
+            await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
+            try result.get()
         }
     }
 }
