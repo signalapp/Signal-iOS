@@ -307,6 +307,7 @@ public extension DatabaseRecovery {
             "AvatarDefaultColor",
             GroupMessageProcessorJob.databaseTableName,
             "ListedBackupMediaObject",
+            "BackupOversizeTextCache",
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

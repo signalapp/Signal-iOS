@@ -2378,3 +2378,17 @@ CREATE
         ON "ListedBackupMediaObject"("mediaId"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "BackupOversizeTextCache" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            ,"attachmentRowId" INTEGER NOT NULL UNIQUE REFERENCES "Attachment"("id"
+        )
+            ON DELETE
+                CASCADE
+                ,"text" TEXT NOT NULL CHECK (
+                    LENGTH( "text" ) < 131072
+                )
+)
+;

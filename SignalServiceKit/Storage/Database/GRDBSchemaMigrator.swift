@@ -333,6 +333,7 @@ public class GRDBSchemaMigrator {
         case addListMediaTable
         case recomputeAttachmentMediaNames
         case lastDraftInteractionRowID
+        case addBackupOversizeText
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -396,7 +397,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 118
+    public static let grdbSchemaVersionLatest: UInt = 119
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4135,8 +4136,26 @@ public class GRDBSchemaMigrator {
                 table.add(column: "lastDraftUpdateTimestamp", .integer).defaults(to: 0)
             }
 
-              return .success(())
-          }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addBackupOversizeText) { tx in
+            try tx.database.create(table: "BackupOversizeTextCache") { table in
+                table.autoIncrementedPrimaryKey("id")
+                // Row id of the associated Attachment.
+                table.column("attachmentRowId", .integer)
+                    .unique()
+                    .references("Attachment", column: "id", onDelete: .cascade)
+                    .notNull()
+                table.column("text", .text)
+                    .notNull()
+                    // Text length is limited to 128 kibibytes.
+                    // enforce at SQL level to prevent ambiguity.
+                    .check({ length($0) < (128 * 1024) })
+            }
+
+            return .success(())
+        }
 
         // MARK: - Schema Migration Insertion Point
     }

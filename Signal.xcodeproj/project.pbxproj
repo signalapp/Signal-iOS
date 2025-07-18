@@ -927,6 +927,7 @@
 		664E8D882BD6D87700C4968A /* SignalAttachmentCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */; };
 		664E8D942BD86AFB00C4968A /* AttachmentDownloadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D932BD86AFB00C4968A /* AttachmentDownloadState.swift */; };
 		665229892E218D5F002C14A0 /* InternalDiskUsageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665229882E218D53002C14A0 /* InternalDiskUsageViewController.swift */; };
+		6652298B2E26E7D4002C14A0 /* BackupOversizeTextCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652298A2E26E7D1002C14A0 /* BackupOversizeTextCache.swift */; };
 		6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */; };
 		6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */; };
 		6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */; };
@@ -4874,6 +4875,7 @@
 		664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAttachmentCloner.swift; sourceTree = "<group>"; };
 		664E8D932BD86AFB00C4968A /* AttachmentDownloadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadState.swift; sourceTree = "<group>"; };
 		665229882E218D53002C14A0 /* InternalDiskUsageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalDiskUsageViewController.swift; sourceTree = "<group>"; };
+		6652298A2E26E7D1002C14A0 /* BackupOversizeTextCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOversizeTextCache.swift; sourceTree = "<group>"; };
 		6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBody.swift; sourceTree = "<group>"; };
 		6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBodyTests.swift; sourceTree = "<group>"; };
 		6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryMessageAttachment.swift; sourceTree = "<group>"; };
@@ -10202,6 +10204,7 @@
 				66CD25922B0EC55100139E17 /* BackupArchiveTSMessageContentsArchiver.swift */,
 				D9FC1C902C6FE5A50023AB87 /* BackupArchiveTSMessageEditHistoryArchiver.swift */,
 				66CD25942B0EC5EC00139E17 /* BackupArchiveTSOutgoingMessageArchiver.swift */,
+				6652298A2E26E7D1002C14A0 /* BackupOversizeTextCache.swift */,
 			);
 			path = ChatItem;
 			sourceTree = "<group>";
@@ -17746,6 +17749,7 @@
 				C1A0F79D2B9F57340009DC0D /* BackupKeyMaterial.swift in Sources */,
 				C1A0F79F2B9F59920009DC0D /* BackupKeyMaterialImpl.swift in Sources */,
 				66B5451A2DD5B9A00016289B /* BackupListMediaManager.swift in Sources */,
+				6652298B2E26E7D4002C14A0 /* BackupOversizeTextCache.swift in Sources */,
 				D970541F2CFE4D0200AC7954 /* BackupPaymentMethod.swift in Sources */,
 				D97054202CFE4D0200AC7954 /* BackupPaymentProcessor.swift in Sources */,
 				D98ACAA92E0DA71B00FA497F /* BackupPlanManager.swift in Sources */,
