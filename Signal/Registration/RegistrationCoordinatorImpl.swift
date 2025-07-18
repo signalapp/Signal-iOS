@@ -1521,10 +1521,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return .quickRestore
                 }
             case .manualRestore:
-                if
+                if inMemoryState.restoreMethod == nil {
+                    // If the restore method is nil, we need to ask for it,
+                    // regardless of if the AEP is present or not.
+                    return .manualRestore
+                } else if
                     inMemoryState.accountEntropyPool == nil,
                     inMemoryState.restoreMethod != .declined
                 {
+                    // If the restore method is anything but declined, we need
+                    // to ensure the AEP is present.
+                    // (Otherwise, if the user has selected the normal registration
+                    // path (restoreMethod == .declined), the AEP isn't necessarily required.
+                    // If present, the AEP _can_ be used, otherwise PIN or SMS
+                    // based registration will happen. 
                     return .manualRestore
                 }
             case .none:
