@@ -15,6 +15,10 @@ public struct DarwinNotificationName: ExpressibleByStringLiteral {
         DarwinNotificationName("org.signal.sdscrossprocess.\(type)")
     }
 
+    static func connectionLock(for priority: Int) -> DarwinNotificationName {
+        return DarwinNotificationName("org.signal.connection.\(priority)")
+    }
+
     public typealias StringLiteralType = String
 
     public let rawValue: String

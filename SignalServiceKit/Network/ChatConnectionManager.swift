@@ -31,10 +31,37 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     private let connectionUnidentified: OWSChatConnection
     private var connections: [OWSChatConnection] { [ connectionIdentified, connectionUnidentified ]}
 
-    public init(accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB, libsignalNet: Net, registrationStateChangeManager: RegistrationStateChangeManager, inactivePrimaryDeviceStore: InactivePrimaryDeviceStore, userDefaults: UserDefaults) {
+    public init(
+        accountManager: TSAccountManager,
+        appContext: any AppContext,
+        appExpiry: AppExpiry,
+        appReadiness: AppReadiness,
+        db: any DB,
+        libsignalNet: Net,
+        registrationStateChangeManager: RegistrationStateChangeManager,
+        inactivePrimaryDeviceStore: InactivePrimaryDeviceStore,
+        userDefaults: UserDefaults,
+    ) {
         AssertIsOnMainThread()
-        self.connectionIdentified = OWSAuthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager, inactivePrimaryDeviceStore: inactivePrimaryDeviceStore)
-        self.connectionUnidentified = OWSUnauthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager, inactivePrimaryDeviceStore: inactivePrimaryDeviceStore)
+        self.connectionIdentified = OWSAuthConnectionUsingLibSignal(
+            libsignalNet: libsignalNet,
+            accountManager: accountManager,
+            appContext: appContext,
+            appExpiry: appExpiry,
+            appReadiness: appReadiness,
+            db: db,
+            registrationStateChangeManager: registrationStateChangeManager,
+            inactivePrimaryDeviceStore: inactivePrimaryDeviceStore,
+        )
+        self.connectionUnidentified = OWSUnauthConnectionUsingLibSignal(
+            libsignalNet: libsignalNet,
+            accountManager: accountManager,
+            appExpiry: appExpiry,
+            appReadiness: appReadiness,
+            db: db,
+            registrationStateChangeManager: registrationStateChangeManager,
+            inactivePrimaryDeviceStore: inactivePrimaryDeviceStore,
+        )
 
         SwiftSingletons.register(self)
     }

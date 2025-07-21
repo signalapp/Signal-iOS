@@ -972,6 +972,7 @@ public class AppSetup {
 
         let chatConnectionManager = ChatConnectionManagerImpl(
             accountManager: tsAccountManager,
+            appContext: appContext,
             appExpiry: appExpiry,
             appReadiness: appReadiness,
             db: db,

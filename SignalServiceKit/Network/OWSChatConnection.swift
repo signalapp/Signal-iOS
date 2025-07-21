@@ -409,10 +409,14 @@ public class OWSChatConnection {
 
     // This method must be thread-safe.
     fileprivate func cycleSocket() {
-        serialQueue.async {
-            self.disconnectIfNeeded()
-            self._applyDesiredSocketState()
-        }
+        serialQueue.async(self._cycleSocket)
+    }
+
+    fileprivate func _cycleSocket() {
+        assertOnQueue(serialQueue)
+
+        disconnectIfNeeded()
+        _applyDesiredSocketState()
     }
 
     fileprivate func ensureWebsocketExists() {
@@ -621,6 +625,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
     fileprivate override func ensureWebsocketExists() {
         assertOnQueue(serialQueue)
 
+        let disconnectTask: Task<Void, Never>?
         switch connection {
         case .open(_):
             return
@@ -628,13 +633,17 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
             // The most recent transition was attempting to connect, and we have not yet observed a failure.
             // That's as good as we're going to get.
             return
-        case .closed(_):
-            break
+        case .closed(let task):
+            disconnectTask = task
         }
 
         // Unique while live.
         let token = NSObject()
         connection = .connecting(token: token, task: Task { [token] () -> Connection? in
+            // We need to wait until the prior connection releases the connection lock
+            // before we try to acquire it again. This happens as part of this Task.
+            await disconnectTask?.value
+
             func connectionAttemptCompleted(_ state: ConnectionState) async -> Connection? {
                 // We're not done until self.connection has been updated.
                 // (Otherwise, we might try to send requests before calling start(listener:).)
@@ -948,11 +957,33 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         }
     }
 
-    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB, registrationStateChangeManager: RegistrationStateChangeManager, inactivePrimaryDeviceStore: InactivePrimaryDeviceStore) {
+    init(
+        libsignalNet: Net,
+        accountManager: TSAccountManager,
+        appContext: any AppContext,
+        appExpiry: AppExpiry,
+        appReadiness: AppReadiness,
+        db: any DB,
+        registrationStateChangeManager: RegistrationStateChangeManager,
+        inactivePrimaryDeviceStore: InactivePrimaryDeviceStore,
+    ) {
+        let priority: Int
+        switch appContext.type {
+        case .share: priority = 1
+        case .main: priority = 2
+        case .nse: priority = 3
+        }
+        let priorityCount = 3
+        self.connectionLock = ConnectionLock(filePath: appContext.appSharedDataDirectoryPath().appendingPathComponent("chat-connection.lock"), priority: priority, of: priorityCount)
         super.init(libsignalNet: libsignalNet, type: .identified, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager, inactivePrimaryDeviceStore: inactivePrimaryDeviceStore)
     }
 
+    deinit {
+        self.connectionLock.close()
+    }
+
     fileprivate override func connectChatService() async throws -> AuthenticatedChatConnection {
+        try await self.acquireConnectionLock()
         let (username, password) = db.read { tx in
             (accountManager.storedServerUsername(tx: tx), accountManager.storedServerAuthToken(tx: tx))
         }
@@ -961,10 +992,22 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
     }
 
     fileprivate override var connection: ConnectionState {
-        didSet {
+        get {
+            return super.connection
+        }
+        set {
             assertOnQueue(serialQueue)
-
-            switch connection {
+            let updatedValue: ConnectionState
+            if case .closed(let task) = newValue {
+                updatedValue = .closed(task: Task {
+                    await task?.value
+                    self.releaseConnectionLock()
+                })
+            } else {
+                updatedValue = newValue
+            }
+            super.connection = updatedValue
+            switch updatedValue {
             case .connecting(token: _, task: _):
                 break
             case .open(let service):
@@ -976,10 +1019,32 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
                     }
                 }
                 keepaliveSenderTask = makeKeepaliveTask(service)
-            case .closed:
+            case .closed(task: _):
                 keepaliveSenderTask = nil
                 _hasEmptiedInitialQueue = false
             }
+        }
+    }
+
+    private let connectionLock: ConnectionLock
+    private let heldConnectionLock = AtomicValue<ConnectionLock.HeldLock?>(nil, lock: .init())
+
+    private func acquireConnectionLock() async throws {
+        owsPrecondition(self.heldConnectionLock.get() == nil)
+        let newValue = try await self.connectionLock.lock(onInterrupt: (self.serialQueue, {
+            Logger.warn("Cycling the socket because the connection lock was interrupted")
+            self._cycleSocket()
+        }))
+        let oldValue = self.heldConnectionLock.swap(newValue)
+        owsPrecondition(oldValue == nil)
+    }
+
+    private func releaseConnectionLock() {
+        let oldValue = self.heldConnectionLock.swap(nil)
+        // We might be canceled while trying to acquire the lock, and we won't have
+        // a lock that needs to be released in that case.
+        if let oldValue {
+            self.connectionLock.unlock(oldValue)
         }
     }
 

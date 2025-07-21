@@ -7,7 +7,7 @@ import Foundation
 
 public enum Retry {
     /// Performs `block` repeatedly until `onError` throws an error (or until cancellation).
-    public static func performRepeatedly<T>(block: () async throws -> T, onError: (any Error, _ attemptCount: Int) async throws -> Void) async throws -> T {
+    public static func performRepeatedly<T, E>(block: () async throws(E) -> T, onError: (E, _ attemptCount: Int) async throws -> Void) async throws -> T {
         var attemptCount = 0
         while true {
             try Task.checkCancellation()
@@ -26,11 +26,12 @@ public enum Retry {
     /// the error from the final attempt. If `block` throws an error where
     /// `isRetryable` returns false, that error will be propagated immediately.
     /// This method supports cancellation.
-    public static func performWithBackoff<T>(
+    public static func performWithBackoff<T, E>(
         maxAttempts: Int,
+        minAverageBackoff: TimeInterval = 2,
         maxAverageBackoff: TimeInterval = .infinity,
-        isRetryable: (any Error) -> Bool = { !$0.isFatalError && $0.isRetryable },
-        block: () async throws -> T
+        isRetryable: (E) -> Bool = { !$0.isFatalError && $0.isRetryable },
+        block: () async throws(E) -> T
     ) async throws -> T {
         return try await performRepeatedly(
             block: block,
@@ -38,7 +39,11 @@ public enum Retry {
                 if attemptCount >= maxAttempts || !isRetryable(error) {
                     throw error
                 }
-                let retryDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: attemptCount, maxAverageBackoff: maxAverageBackoff)
+                let retryDelay = OWSOperation.retryIntervalForExponentialBackoff(
+                    failureCount: attemptCount,
+                    minAverageBackoff: minAverageBackoff,
+                    maxAverageBackoff: maxAverageBackoff,
+                )
                 try await Task.sleep(nanoseconds: retryDelay.clampedNanoseconds)
             }
         )
