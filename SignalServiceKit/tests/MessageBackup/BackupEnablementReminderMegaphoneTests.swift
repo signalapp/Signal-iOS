@@ -55,10 +55,6 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
     }
 
     func testPreconditionsForBackupKeyMegaphone_hasRequiredMessages() throws {
-        db.write { tx in
-            backupSettingsStore.setBackupPlan(.disabled, tx: tx)
-        }
-
         db.write { transaction in
             let db = transaction.database
             try! contactThread!.asRecord().insert(db)
@@ -75,6 +71,31 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
         db.read { transaction in
             let shouldShowBackupEnablementReminder = ExperienceUpgradeManifest.checkPreconditionsForBackupEnablementReminder(transaction: transaction)
             XCTAssertTrue(shouldShowBackupEnablementReminder, "Should show reminder if user has enough messages")
+        }
+    }
+
+    func testPreconditionsForBackupKeyMegaphone_backupsHasPreviouslyBeenEnabled() throws {
+
+        // Enable then disable backups
+        db.write { tx in backupSettingsStore.setBackupPlan(.free, tx: tx) }
+        db.write { tx in backupSettingsStore.setBackupPlan(.disabled, tx: tx) }
+
+        db.write { transaction in
+            let db = transaction.database
+            try! contactThread!.asRecord().insert(db)
+        }
+
+        for i in 0..<2000 {
+            let outgoingMessage = TSOutgoingMessage(in: contactThread!, messageBody: "good heavens + \(i)")
+            db.write { transaction in
+                let db = transaction.database
+                try! outgoingMessage.asRecord().insert(db)
+            }
+        }
+
+        db.read { transaction in
+            let shouldShowBackupEnablementReminder = ExperienceUpgradeManifest.checkPreconditionsForBackupEnablementReminder(transaction: transaction)
+            XCTAssertFalse(shouldShowBackupEnablementReminder, "Should not show reminder if user has enabled then disabled backups, even if they have enough messages")
         }
     }
 

@@ -710,12 +710,8 @@ extension ExperienceUpgradeManifest {
             return false
         }
 
-        let backupPlan = BackupSettingsStore().backupPlan(tx: transaction)
-        switch backupPlan {
-        case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
+        guard !BackupSettingsStore().haveBackupsEverBeenEnabled(tx: transaction) else {
             return false
-        case .disabled:
-            break
         }
 
         return InteractionFinder.outgoingAndIncomingMessageCount(transaction: transaction, limit: 1) >= 1
