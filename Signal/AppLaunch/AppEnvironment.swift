@@ -51,6 +51,8 @@ public class AppEnvironment: NSObject {
 
     func setUp(appReadiness: AppReadiness, callService: CallService) {
         let backupSettingsStore = BackupSettingsStore()
+        let backupAttachmentUploadEraStore = BackupAttachmentUploadEraStore()
+
         let badgeManager = BadgeManager(
             badgeCountFetcher: DependenciesBridge.shared.badgeCountFetcher,
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
@@ -66,6 +68,7 @@ public class AppEnvironment: NSObject {
         )
         self.badgeManager = badgeManager
         self.backupEnablingManager = BackupEnablingManager(
+            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupDisablingManager: DependenciesBridge.shared.backupDisablingManager,
             backupIdManager: DependenciesBridge.shared.backupIdManager,
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,
