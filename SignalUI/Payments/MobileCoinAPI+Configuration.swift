@@ -377,32 +377,32 @@ extension MobileCoinAPI {
         static var signalMainNet: OWSAttestationConfig {
             // We need the old and new enclave values here.
             let mrEnclaveConsensus: [AttestationRawInfo] = [
-                // ~May 30th, 2023
-                .of(Data.data(fromHex: "cd86d300c78f74ec23558cdaf734f90dd3e1bcdf8ae43fc827c6b4734ccb8862")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
                 // ~May 6th, 2024
-                .of(Data.data(fromHex: "82c14d06951a2168763c8ddb9c34174f7d2059564146650661da26ab62224b8a")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
+                .of(Data.data(fromHex: "82c14d06951a2168763c8ddb9c34174f7d2059564146650661da26ab62224b8a")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
+                // ~July 20th, 2025
+                .of(Data.data(fromHex: "b7b40b173c6e42db3d4ab54b8080440238726581ab2f4235e27c1475cf494592")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
 
             let mrEnclaveFogView: [AttestationRawInfo] = [
-                // ~May 30th, 2023
-                .of(Data.data(fromHex: "e94f6e6557b3fb85b27d804e2d005ee14a564cc50fc477797f2e5f9984b0bd79")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
                 // ~May 6th, 2024
-                .of(Data.data(fromHex: "2f542dcd8f682b72e8921d87e06637c16f4aa4da27dce55b561335326731fa73")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
+                .of(Data.data(fromHex: "2f542dcd8f682b72e8921d87e06637c16f4aa4da27dce55b561335326731fa73")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
+                // ~July 20th, 2025
+                .of(Data.data(fromHex: "57f5ba050d15d3e9c1cf19222e44a370fb64d8a683c9b33f3d433699ca2d58f2")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
 
             // Report aka Ingest.
             let mrEnclaveFogReport: [AttestationRawInfo] = [
-                // ~May 30th, 2023
-                .of(Data.data(fromHex: "7d10f5e72cacc87a6027b2be42ed4a74a6370a03c3476be754933eb18c404b0b")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
                 // ~May 6th, 2024
-                .of(Data.data(fromHex: "34881106254a626842fa8557e27d07cdf863083e9e6f888d5a492a456720916f")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
+                .of(Data.data(fromHex: "34881106254a626842fa8557e27d07cdf863083e9e6f888d5a492a456720916f")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
+                // ~July 20th, 2025
+                .of(Data.data(fromHex: "0578f62dd30d92e31cb8d2df8e84ca216aaf12a5ffdea011042282b53a9e9a7a")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
 
             let mrEnclaveFogLedger: [AttestationRawInfo] = [
-                // ~May 30th, 2023
-                .of(Data.data(fromHex: "1dee8e2e98b7dc684506991d62856b2e572a0c23f5a7d698086e62f08fb997cc")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
                 // ~May 6th, 2024
-                .of(Data.data(fromHex: "2494f1542f30a6962707d0bf2aa6c8c08d7bed35668c9db1e5c61d863a0176d1")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
+                .of(Data.data(fromHex: "2494f1542f30a6962707d0bf2aa6c8c08d7bed35668c9db1e5c61d863a0176d1")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
+                // ~July 20th, 2025
+                .of(Data.data(fromHex: "3892a844d9ed7dd0f41027a43910935429bd36d82cc8dc1db2aba98ba7929dd1")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
 
             return buildAttestationConfig(consensus: mrEnclaveConsensus,
@@ -419,29 +419,29 @@ extension MobileCoinAPI {
         static var signalTestNet: OWSAttestationConfig {
             // We need the old and new enclave values here.
             let mrEnclaveConsensus: [AttestationRawInfo] = [
-                // ~May 30, 2023
-                .of(Data.data(fromHex: "5341c6702a3312243c0f049f87259352ff32aa80f0f6426351c3dd063d817d7a")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
                 // ~May 6, 2024
-                .of(Data.data(fromHex: "ae7930646f37e026806087d2a3725d3f6d75a8e989fb320e6ecb258eb829057a")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
+                .of(Data.data(fromHex: "ae7930646f37e026806087d2a3725d3f6d75a8e989fb320e6ecb258eb829057a")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
+                // ~July 8, 2025
+                .of(Data.data(fromHex: "b31e1d01939df31d51855317eed5ab7be4e7c77bf13d51230e38c3f5cb9af332")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
             let mrEnclaveFogView: [AttestationRawInfo] = [
-                // ~May 30, 2023
-                .of(Data.data(fromHex: "ac292a1ad27c0338a5159d5fab2bed3917ea144536cb13b5c1226d09a2fbc648")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
                 // ~May 6, 2024
-                .of(Data.data(fromHex: "44de03c2ba34c303e6417480644f9796161eacbe5af4f2092e413b4ebf5ccf6a")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
+                .of(Data.data(fromHex: "44de03c2ba34c303e6417480644f9796161eacbe5af4f2092e413b4ebf5ccf6a")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
+                // ~July 8, 2025
+                .of(Data.data(fromHex: "57f5ba050d15d3e9c1cf19222e44a370fb64d8a683c9b33f3d433699ca2d58f2")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
             // Report aka Ingest.
             let mrEnclaveFogReport: [AttestationRawInfo]  = [
-                // ~May 30, 2023
-                .of(Data.data(fromHex: "248356aa0d3431abc45da1773cfd6191a4f2989a4a99da31f450bd7c461e312b")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
                 // ~May 6, 2024
-                .of(Data.data(fromHex: "4a5daa23db5efa4b18071291cfa24a808f58fb0cedce7da5de804b011e87cfde")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
+                .of(Data.data(fromHex: "4a5daa23db5efa4b18071291cfa24a808f58fb0cedce7da5de804b011e87cfde")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
+                // ~July 8, 2025
+                .of(Data.data(fromHex: "0578f62dd30d92e31cb8d2df8e84ca216aaf12a5ffdea011042282b53a9e9a7a")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
             let mrEnclaveFogLedger: [AttestationRawInfo]  = [
-                // ~May 30, 2023
-                .of(Data.data(fromHex: "b61188a6c946557f32e612eff5615908abd1b72ec11d8b7070595a92d4abbbf1")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
                 // ~May 6, 2024
-                .of(Data.data(fromHex: "065b1e17e95f2c356d4d071d434cea7eb6b95bc797f94954146736efd47057a7")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
+                .of(Data.data(fromHex: "065b1e17e95f2c356d4d071d434cea7eb6b95bc797f94954146736efd47057a7")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"]),
+                // ~July 8, 2025
+                .of(Data.data(fromHex: "3892a844d9ed7dd0f41027a43910935429bd36d82cc8dc1db2aba98ba7929dd1")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
 
             return buildAttestationConfig(consensus: mrEnclaveConsensus,
