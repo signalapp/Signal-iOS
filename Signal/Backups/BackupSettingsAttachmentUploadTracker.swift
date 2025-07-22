@@ -92,7 +92,7 @@ private class Tracker {
 
     private let backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
-    private let state: AsyncAtomic<State>
+    private let state: SeriallyAccessedState<State>
 
     init(
         backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter,
@@ -101,7 +101,7 @@ private class Tracker {
     ) {
         self.backupAttachmentUploadQueueStatusReporter = backupAttachmentUploadQueueStatusReporter
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
-        self.state = AsyncAtomic(State(
+        self.state = SeriallyAccessedState(State(
             streamContinuation: continuation
         ))
     }

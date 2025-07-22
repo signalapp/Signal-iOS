@@ -6,7 +6,7 @@
 /// A wrapper around arbitrary state that asynchronously serializes access to
 /// that state, allowing callers to perform async work while maintaining
 /// exclusive access.
-public class AsyncAtomic<State> {
+public class SeriallyAccessedState<State> {
     private var state: State
     private let updatesQueue: SerialTaskQueue
 

@@ -52,11 +52,11 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
     }
 
     private let backupExportJob: BackupExportJob
-    private let state: AsyncAtomic<State>
+    private let state: SeriallyAccessedState<State>
 
     init(backupExportJob: BackupExportJob) {
         self.backupExportJob = backupExportJob
-        self.state = AsyncAtomic(State())
+        self.state = SeriallyAccessedState(State())
     }
 
     // MARK: -

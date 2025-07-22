@@ -94,7 +94,7 @@ private class Tracker {
 
     private let backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter
     private let backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress
-    private let state: AsyncAtomic<State>
+    private let state: SeriallyAccessedState<State>
 
     init(
         backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter,
@@ -103,7 +103,7 @@ private class Tracker {
     ) {
         self.backupAttachmentDownloadQueueStatusReporter = backupAttachmentDownloadQueueStatusReporter
         self.backupAttachmentDownloadProgress = backupAttachmentDownloadProgress
-        self.state = AsyncAtomic(State(streamContinuation: continuation))
+        self.state = SeriallyAccessedState(State(streamContinuation: continuation))
     }
 
     func start() {
