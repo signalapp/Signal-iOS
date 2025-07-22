@@ -10,7 +10,7 @@ class FlagsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "Flags"
+        title = "Remote Configs"
 
         updateTableContents()
     }

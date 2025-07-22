@@ -63,7 +63,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
         }
 
         debugSection.add(.disclosureItem(
-            withText: "Flags",
+            withText: "Remote Configs",
             actionBlock: { [weak self] in
                 let vc = FlagsViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
