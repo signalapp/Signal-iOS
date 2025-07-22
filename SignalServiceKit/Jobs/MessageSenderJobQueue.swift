@@ -202,6 +202,7 @@ public class MessageSenderJobQueue {
         let rawValue: Int
 
         static let networkBecameReachable = ExternalRetryTriggers(rawValue: 1 << 0)
+        static let chatConnectionOpened = ExternalRetryTriggers(rawValue: 1 << 1)
     }
 
     private enum JobPriority: Hashable {
@@ -330,6 +331,7 @@ public class MessageSenderJobQueue {
     }
 
     public func setUp() {
+        let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager
         let jobRecordFinder = JobRecordFinderImpl<MessageSenderJobRecord>(db: DependenciesBridge.shared.db)
         Task {
             if CurrentAppContext().isMainApp {
@@ -365,6 +367,20 @@ public class MessageSenderJobQueue {
                     becameReachableBlock()
                 }
             }
+            let chatConnectionOpenedBlock = { [unowned self] in
+                self.reportExternalRetryTrigger(.chatConnectionOpened)
+            }
+            NotificationCenter.default.addObserver(
+                forName: OWSChatConnection.chatConnectionStateDidChange,
+                object: nil,
+                queue: nil,
+                using: { note in
+                    let connectionState = note.userInfo![OWSChatConnection.chatConnectionStateKey]! as! OWSChatConnectionState
+                    if connectionState == .open {
+                        chatConnectionOpenedBlock()
+                    }
+                },
+            )
 
             // No matter what, mark it as loaded. This keeps things semi-functional.
             self.updateStateAndNotify { $0.isLoaded = true }
@@ -373,10 +389,14 @@ public class MessageSenderJobQueue {
     }
 
     func becameReachable() {
+        self.reportExternalRetryTrigger(.networkBecameReachable)
+    }
+
+    private func reportExternalRetryTrigger(_ externalRetryTrigger: ExternalRetryTriggers) {
         self.state.update {
             for (_, queueState) in $0.queueStates {
                 for activeOperation in queueState.activeOperations {
-                    activeOperation.reportExternalRetryTrigger(.networkBecameReachable)
+                    activeOperation.reportExternalRetryTrigger(externalRetryTrigger)
                 }
             }
         }
@@ -476,8 +496,19 @@ public class MessageSenderJobQueue {
                     }
                 }
                 var externalRetryTriggers: ExternalRetryTriggers = []
-                // If there's a network failure, we can retry when we reconnect.
-                if error.isNetworkFailureOrTimeout {
+                // If there's a network failure, this is an external error, so we want to
+                // retry as soon as we reconnect.
+                if error.isNetworkFailure {
+                    externalRetryTriggers.insert(.chatConnectionOpened)
+                    // TODO: Remove this after REST is gone -- it'll no longer be relevant.
+                    externalRetryTriggers.insert(.networkBecameReachable)
+                }
+                // If there's a timeout, we interrupted the request ourselves, and sending
+                // the same request again on a new connection will typically result in the
+                // same outcome, so we want to perform exponential backoff before retrying.
+                // However, if Reachability indicates that something has changed, we might
+                // be on a better network, and it may be worth retrying immediately.
+                if error.isTimeout {
                     externalRetryTriggers.insert(.networkBecameReachable)
                 }
                 try? await withCooperativeTimeout(

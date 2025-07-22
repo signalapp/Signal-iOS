@@ -49,6 +49,7 @@ public class OWSChatConnection {
     fileprivate static let messageProcessingQueue = DispatchQueue(label: "org.signal.chat-connection.message-processing")
 
     public static let chatConnectionStateDidChange = Notification.Name("chatConnectionStateDidChange")
+    public static let chatConnectionStateKey: String = "chatConnectionState"
 
     fileprivate let serialQueue: DispatchQueue
 
@@ -172,7 +173,11 @@ public class OWSChatConnection {
         if newState != oldState {
             Logger.info("\(logPrefix): \(oldState) -> \(newState)")
         }
-        NotificationCenter.default.postOnMainThread(name: Self.chatConnectionStateDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(
+            name: Self.chatConnectionStateDidChange,
+            object: nil,
+            userInfo: [Self.chatConnectionStateKey: newState],
+        )
     }
 
     fileprivate var cachedCurrentState: OWSChatConnectionState {
