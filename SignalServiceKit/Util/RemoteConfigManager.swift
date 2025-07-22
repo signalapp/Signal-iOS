@@ -268,14 +268,6 @@ public class RemoteConfig {
         return isEnabled(.shouldVerifyPniAndPniIdentityKeyExist)
     }
 
-    public var shouldValidateLinkedAciIdentityKey: Bool {
-        return isEnabled(.shouldValidateLinkedAciIdentityKey)
-    }
-
-    public var shouldValidatePrimaryAciIdentityKey: Bool {
-        return isEnabled(.shouldValidatePrimaryAciIdentityKey)
-    }
-
     public var shouldValidatePrimaryPniIdentityKey: Bool {
         return isEnabled(.shouldValidatePrimaryPniIdentityKey)
     }
@@ -500,8 +492,6 @@ private enum IsEnabledFlag: String, FlagType {
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
     case shareExtensionWebSocketKillSwitch = "ios.shareExtensionWebSocketKillSwitch"
-    case shouldValidateLinkedAciIdentityKey = "ios.shouldValidateLinkedAciIdentityKey"
-    case shouldValidatePrimaryAciIdentityKey = "ios.shouldValidatePrimaryAciIdentityKey"
     case shouldValidatePrimaryPniIdentityKey = "ios.shouldValidatePrimaryPniIdentityKey"
     case shouldVerifyPniAndPniIdentityKeyExist = "ios.shouldVerifyPniAndPniIdentityKeyExist"
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
@@ -535,8 +525,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .ringrtcNwPathMonitorTrialKillSwitch: true // cached during launch, so not hot-swapped in practice
         case .serviceExtensionFailureKillSwitch: true
         case .shareExtensionWebSocketKillSwitch: true
-        case .shouldValidateLinkedAciIdentityKey: true
-        case .shouldValidatePrimaryAciIdentityKey: true
         case .shouldValidatePrimaryPniIdentityKey: true
         case .shouldVerifyPniAndPniIdentityKeyExist: true
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true

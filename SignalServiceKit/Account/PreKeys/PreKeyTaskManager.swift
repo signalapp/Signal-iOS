@@ -518,11 +518,11 @@ internal struct PreKeyTaskManager {
             case (.some(false), .pni):
                 shouldValidate = true
             case (.some(false), .aci):
-                shouldValidate = remoteConfigProvider.currentConfig().shouldValidateLinkedAciIdentityKey
+                shouldValidate = true
             case (.some(true), .pni):
                 shouldValidate = remoteConfigProvider.currentConfig().shouldValidatePrimaryPniIdentityKey
             case (.some(true), .aci):
-                shouldValidate = remoteConfigProvider.currentConfig().shouldValidatePrimaryAciIdentityKey
+                shouldValidate = true
             case (.none, _):
                 shouldValidate = false
             }
