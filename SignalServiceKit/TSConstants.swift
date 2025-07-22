@@ -180,14 +180,15 @@ public class TSConstantsProduction: TSConstantsProtocol {
     public let storageServiceCensorshipPrefix = "storage"
     public let svr2CensorshipPrefix = "svr2"
 
-    public let svr2Enclave = MrEnclave("093be9ea32405e85ae28dbb48eb668aebeb7dbe29517b9b86ad4bec4dfe0e6a6")
+    public let svr2Enclave = MrEnclave("29cd63c87bea751e3bfd0fbd401279192e2e5c99948b4ee9437eafc4968355fb")
 
     // An array of previously used enclaves that we should try and restore
     // key material from during registration. These must be ordered from
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
     public let svr2PreviousEnclaves: [MrEnclave] = [
-        MrEnclave("9314436a9a144992bb3680770ea5fd7934a7ffd29257844a33763a238903d570")
+        MrEnclave("9314436a9a144992bb3680770ea5fd7934a7ffd29257844a33763a238903d570"),
+        MrEnclave("093be9ea32405e85ae28dbb48eb668aebeb7dbe29517b9b86ad4bec4dfe0e6a6")
     ]
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group"
@@ -235,14 +236,15 @@ public class TSConstantsStaging: TSConstantsProtocol {
     public let storageServiceCensorshipPrefix = "storage-staging"
     public let svr2CensorshipPrefix = "svr2-staging"
 
-    public let svr2Enclave = MrEnclave("2e8cefe6e3f389d8426adb24e9b7fb7adf10902c96f06f7bbcee36277711ed91")
+    public let svr2Enclave = MrEnclave("a75542d82da9f6914a1e31f8a7407053b99cc99a0e7291d8fbd394253e19b036")
 
     // An array of previously used enclaves that we should try and restore
     // key material from during registration. These must be ordered from
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
     public let svr2PreviousEnclaves: [MrEnclave] = [
-        MrEnclave("38e01eff4fe357dc0b0e8ef7a44b4abc5489fbccba3a78780f3872c277f62bf3")
+        MrEnclave("38e01eff4fe357dc0b0e8ef7a44b4abc5489fbccba3a78780f3872c277f62bf3"),
+        MrEnclave("2e8cefe6e3f389d8426adb24e9b7fb7adf10902c96f06f7bbcee36277711ed91"),
     ]
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group.staging"
