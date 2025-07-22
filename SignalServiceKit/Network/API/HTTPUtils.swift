@@ -134,8 +134,7 @@ public class HTTPUtils {
     // This DRYs up handling of main service errors so that
     // REST and websocket errors are handled in the same way.
     public static func applyHTTPError(_ httpError: OWSHTTPError) async {
-
-        if httpError.isNetworkConnectivityError {
+        if httpError.isNetworkFailureImpl || httpError.isTimeoutImpl {
             OutageDetection.shared.reportConnectionFailure()
         }
 
@@ -234,8 +233,22 @@ public extension Error {
         }
     }
 
+    /// Does this error represent a transient networking issue?
+    ///
+    /// a.k.a. "the internet gave up" (see also `isTimeout`)
+    var isNetworkFailure: Bool {
+        return HTTPUtils.isNetworkFailureError(self)
+    }
+
+    /// Does this error represent a self-induced timeout?
+    ///
+    /// a.k.a. "we gave up" (see also `isNetworkFailure`)
+    var isTimeout: Bool {
+        return HTTPUtils.isTimeoutError(self)
+    }
+
     var isNetworkFailureOrTimeout: Bool {
-        HTTPUtils.isNetworkFailureOrTimeout(forError: self)
+        return isNetworkFailure || isTimeout
     }
 
     var is5xxServiceResponse: Bool {
@@ -306,12 +319,8 @@ fileprivate extension HTTPUtils {
         return statusCode
     }
 
-    static func isNetworkFailureOrTimeout(forError error: Error?) -> Bool {
-        guard let error else {
-            return false
-        }
+    static func isNetworkFailureError(_ error: Error) -> Bool {
         switch error {
-        case URLError.timedOut: return true
         case URLError.cannotConnectToHost: return true
         case URLError.networkConnectionLost: return true
         case URLError.dnsLookupFailed: return true
@@ -321,12 +330,20 @@ fileprivate extension HTTPUtils {
         case URLError.cannotFindHost: return true
         case URLError.badURL: return true
         case POSIXError.EPROTO: return true
-        case let httpError as OWSHTTPError: return httpError.isNetworkConnectivityError
+        case let httpError as OWSHTTPError: return httpError.isNetworkFailureImpl
+        case SignalError.connectionFailed: return true
+        case StorageService.StorageError.networkError: return true
+        default: return false
+        }
+    }
+
+    static func isTimeoutError(_ error: Error) -> Bool {
+        switch error {
+        case URLError.timedOut: return true
+        case let httpError as OWSHTTPError: return httpError.isTimeoutImpl
         case GroupsV2Error.timeout: return true
         case PaymentsError.timeout: return true
         case SignalError.connectionTimeoutError: return true
-        case SignalError.connectionFailed: return true
-        case StorageService.StorageError.networkError: return true
         default: return false
         }
     }

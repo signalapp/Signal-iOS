@@ -202,7 +202,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
                 throw Upload.Error.uploadFailure(recovery: .resume(retryMode))
             case .networkFailure(let wrappedError):
                 let debugMessage = DebugFlags.internalLogging ? " Error: \(wrappedError.debugDescription)" : ""
-                if wrappedError.isTimeout {
+                if wrappedError.isTimeoutImpl {
                     attempt.logger.warn("Network timeout during upload.\(debugMessage)")
                     throw Upload.Error.networkTimeout
                 } else {

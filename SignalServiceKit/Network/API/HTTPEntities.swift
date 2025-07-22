@@ -60,14 +60,14 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
         case genericFailure
         case wrappedFailure(any Error)
 
-        public var isTimeout: Bool {
+        public var isTimeoutImpl: Bool {
             switch self {
             case .invalidResponseStatus, .unknownNetworkFailure, .genericFailure:
                 return false
             case .genericTimeout:
                 return true
-            case .wrappedFailure(let wrappedError):
-                return wrappedError.isNetworkFailureOrTimeout
+            case .wrappedFailure:
+                return true
             }
         }
 
@@ -80,11 +80,7 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
             case .genericTimeout: return "Generic timeout"
             case .genericFailure: return "Generic failure"
             case .wrappedFailure(let wrappedError):
-                if wrappedError.isNetworkFailureOrTimeout {
-                    return "Timeout [Error: \(wrappedError.localizedDescription)]"
-                } else {
-                    return "Error: \(wrappedError.localizedDescription)"
-                }
+                return "networkFailureOrTimeout(\(wrappedError.localizedDescription))"
             }
         }
     }
@@ -156,7 +152,7 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
     // MARK: - IsRetryableProvider
 
     public var isRetryableProvider: Bool {
-        if isNetworkConnectivityError {
+        if isNetworkFailureImpl || isTimeoutImpl {
             return true
         }
         switch self {
@@ -243,16 +239,43 @@ extension OWSHTTPError {
         }
     }
 
-    // NOTE: This function should only be called from NetworkManager.isSwiftNetworkConnectivityError.
-    public var isNetworkConnectivityError: Bool {
+    public var isNetworkFailureImpl: Bool {
         switch self {
         case .invalidAppState, .invalidRequest, .wrappedFailure:
             return false
-        case .networkFailure:
-            return true
+        case .networkFailure(let wrappedError):
+            switch wrappedError {
+            case .invalidResponseStatus, .unknownNetworkFailure, .genericFailure:
+                return true
+            case .genericTimeout:
+                return false
+            case .wrappedFailure(let wrappedError):
+                return wrappedError.isNetworkFailure
+            }
         case .serviceResponse(let serviceResponse):
             if let responseError = serviceResponse.responseError {
-                return responseError.isNetworkFailureOrTimeout
+                return responseError.isNetworkFailure
+            }
+            return false
+        }
+    }
+
+    public var isTimeoutImpl: Bool {
+        switch self {
+        case .invalidAppState, .invalidRequest, .wrappedFailure:
+            return false
+        case .networkFailure(let wrappedError):
+            switch wrappedError {
+            case .invalidResponseStatus, .unknownNetworkFailure, .genericFailure:
+                return false
+            case .genericTimeout:
+                return true
+            case .wrappedFailure(let wrappedError):
+                return wrappedError.isTimeout
+            }
+        case .serviceResponse(let serviceResponse):
+            if let responseError = serviceResponse.responseError {
+                return responseError.isTimeout
             }
             return false
         }
