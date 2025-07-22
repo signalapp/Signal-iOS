@@ -253,11 +253,11 @@ public class RemoteConfig {
     }
 
     public var isNotificationServiceWebSocketEnabled: Bool {
-        return !isEnabled(.notificationServiceWebSocketKillSwitch)
+        return isEnabled(.notificationServiceWebSocket)
     }
 
     public var isShareExtensionWebSocketEnabled: Bool {
-        return !isEnabled(.shareExtensionWebSocketKillSwitch)
+        return isEnabled(.shareExtensionWebSocket)
     }
 
     public var usePqRatchet: Bool {
@@ -484,14 +484,14 @@ private enum IsEnabledFlag: String, FlagType {
     case lazyDatabaseMigratorKillSwitch = "ios.lazyDatabaseMigratorKillSwitch"
     case libsignalEnforceMinTlsVersion = "ios.libsignalEnforceMinTlsVersion"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
-    case notificationServiceWebSocketKillSwitch = "ios.notificationServiceWebSocketKillSwitch"
+    case notificationServiceWebSocket = "ios.notificationServiceWebSocket"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
     case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
     case paypalMonthlyDonationKillSwitch = "ios.paypalMonthlyDonationKillSwitch"
     case paypalOneTimeDonationKillSwitch = "ios.paypalOneTimeDonationKillSwitch"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
-    case shareExtensionWebSocketKillSwitch = "ios.shareExtensionWebSocketKillSwitch"
+    case shareExtensionWebSocket = "ios.shareExtensionWebSocket"
     case shouldValidatePrimaryPniIdentityKey = "ios.shouldValidatePrimaryPniIdentityKey"
     case shouldVerifyPniAndPniIdentityKeyExist = "ios.shouldVerifyPniAndPniIdentityKeyExist"
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
@@ -517,14 +517,14 @@ private enum IsEnabledFlag: String, FlagType {
         case .lazyDatabaseMigratorKillSwitch: true
         case .libsignalEnforceMinTlsVersion: true // cached during launch, so not hot-swapped in practice
         case .messageResendKillSwitch: false
-        case .notificationServiceWebSocketKillSwitch: true
+        case .notificationServiceWebSocket: true
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
         case .paypalMonthlyDonationKillSwitch: false
         case .paypalOneTimeDonationKillSwitch: false
         case .ringrtcNwPathMonitorTrialKillSwitch: true // cached during launch, so not hot-swapped in practice
         case .serviceExtensionFailureKillSwitch: true
-        case .shareExtensionWebSocketKillSwitch: true
+        case .shareExtensionWebSocket: true
         case .shouldValidatePrimaryPniIdentityKey: true
         case .shouldVerifyPniAndPniIdentityKeyExist: true
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true

@@ -229,9 +229,9 @@ public class OWSChatConnection {
         case .main:
             return true
         case .nse:
-            return FeatureFlags.notificationServiceWebSocket && RemoteConfig.current.isNotificationServiceWebSocketEnabled
+            return RemoteConfig.current.isNotificationServiceWebSocketEnabled
         case .share:
-            return FeatureFlags.shareExtensionWebSocket && RemoteConfig.current.isShareExtensionWebSocketEnabled
+            return RemoteConfig.current.isShareExtensionWebSocketEnabled
         }
     }
 
