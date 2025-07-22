@@ -1,1 +1,1 @@
-• If you've disabled emoji stickers in your iOS keyboard settings, you're no longer stuck continuing to see the sticker/memoji tabs in the iOS keyboard in Signal.
+• Якщо ви вимкнули стікери емоджі в налаштуваннях клавіатури iOS, то більше не бачитимете вкладки стікерів/мемоджі на клавіатурі iOS у Signal.

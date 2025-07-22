@@ -1,1 +1,1 @@
-• If you've disabled emoji stickers in your iOS keyboard settings, you're no longer stuck continuing to see the sticker/memoji tabs in the iOS keyboard in Signal.
+• Ha kikapcsoltad az emoji matricákat az iOS billentyűzetbeállításaiban, ez a beállítás mostantól a Signalra is vonatkozik.
