@@ -215,7 +215,13 @@ public enum OWSRequestFactory {
     static let batchIdentityCheckElementsLimit = 1000
     static func batchIdentityCheckRequest(elements: [[String: String]]) -> TSRequest {
         precondition(elements.count <= batchIdentityCheckElementsLimit)
-        return .init(url: .init(string: "v1/profile/identity_check/batch")!, method: HTTPMethod.post.methodName, parameters: ["elements": elements])
+        var request = TSRequest(
+            url: .init(string: "v1/profile/identity_check/batch")!,
+            method: HTTPMethod.post.methodName,
+            parameters: ["elements": elements],
+        )
+        request.auth = .anonymous
+        return request
     }
 
     // MARK: - Devices
