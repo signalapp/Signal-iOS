@@ -79,7 +79,7 @@ public class MessageFetcherJob {
                 throw OWSAssertionError("Can't ACK message without serverGuid.")
             }
             let request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(serverGuid: serverGuid)
-            _ = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request, canUseWebSocket: false).awaitable()
+            _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: false)
         }
     }
 

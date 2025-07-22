@@ -558,9 +558,9 @@ public final class BackupSubscriptionManager {
 
         /// First, we tell the server (unauthenticated) that a new subscriber ID
         /// exists. At this point, it won't be associated with anything.
-        let registerSubscriberIdResponse = try await networkManager.makePromise(
-            request: .registerSubscriberId(subscriberId: newSubscriberId)
-        ).awaitable()
+        let registerSubscriberIdResponse = try await networkManager.asyncRequest(
+            .registerSubscriberId(subscriberId: newSubscriberId)
+        )
 
         guard registerSubscriberIdResponse.responseStatusCode == 200 else {
             throw OWSAssertionError(
@@ -574,12 +574,12 @@ public final class BackupSubscriptionManager {
         ///
         /// Importantly, this request is safe to make repeatedly, with any
         /// combination of `subscriberId` and `originalTransactionId`.
-        let associateIdsResponse = try await networkManager.makePromise(
-            request: .associateSubscriberId(
+        let associateIdsResponse = try await networkManager.asyncRequest(
+            .associateSubscriberId(
                 newSubscriberId,
                 withOriginalTransactionId: originalTransactionId
             )
-        ).awaitable()
+        )
 
         guard associateIdsResponse.responseStatusCode == 200 else {
             throw OWSAssertionError(

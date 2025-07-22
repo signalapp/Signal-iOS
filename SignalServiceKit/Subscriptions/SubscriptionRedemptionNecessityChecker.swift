@@ -229,9 +229,9 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
 
     /// Let the server know that a client still cares about this subscriberId.
     private func performSubscriberIdHeartbeat(_ subscriberId: Data) async throws {
-        let registerSubscriberIdResponse = try await networkManager.makePromise(
-            request: OWSRequestFactory.setSubscriberID(subscriberId)
-        ).awaitable()
+        let registerSubscriberIdResponse = try await networkManager.asyncRequest(
+            OWSRequestFactory.setSubscriberID(subscriberId)
+        )
 
         guard registerSubscriberIdResponse.responseStatusCode == 200 else {
             throw OWSAssertionError(
