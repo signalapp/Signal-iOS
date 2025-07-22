@@ -6,6 +6,21 @@
 import SignalServiceKit
 import SignalUI
 
+extension ActionSheetAction {
+    static func contactSupport(
+        emailFilter: ContactSupportActionSheet.EmailFilter,
+        fromViewController: UIViewController,
+    ) -> ActionSheetAction {
+        ActionSheetAction(title: CommonStrings.contactSupport) { _ in
+            ContactSupportActionSheet.present(
+                emailFilter: emailFilter,
+                logDumper: .fromGlobals(),
+                fromViewController: fromViewController,
+            )
+        }
+    }
+}
+
 enum ContactSupportActionSheet {
     enum EmailFilter: Equatable {
         enum RegistrationPINMode: String {
@@ -19,6 +34,7 @@ enum ContactSupportActionSheet {
         case deviceTransfer
         case backupExportFailed
         case backupImportFailed
+        case backupDisableFailed
         case custom(String)
 
         fileprivate var asString: String {
@@ -30,6 +46,7 @@ enum ContactSupportActionSheet {
             case .deviceTransfer: "Signal iOS Transfer"
             case .backupExportFailed: "iOS Backup Export Failed"
             case .backupImportFailed: "iOS Backup Import Failed"
+            case .backupDisableFailed: "iOS Backup Disable Failed"
             case .custom(let string): string
             }
         }

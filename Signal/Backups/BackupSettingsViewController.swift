@@ -149,8 +149,17 @@ class BackupSettingsViewController:
                 ) {
                     await MainActor.run { [weak self] in
                         guard let self else { return }
-
                         _backupPlanDidChange()
+                    }
+                }
+            },
+            Task.detached { [weak self] in
+                for await _ in NotificationCenter.default.notifications(
+                    named: .shouldAllowBackupUploadsOnCellularChanged
+                ) {
+                    await MainActor.run { [weak self] in
+                        guard let self else { return }
+                        _shouldAllowBackupUploadsOnCellularDidChange()
                     }
                 }
             },
@@ -190,6 +199,12 @@ class BackupSettingsViewController:
         }
 
         loadBackupSubscription()
+    }
+
+    private func _shouldAllowBackupUploadsOnCellularDidChange() {
+        db.read { tx in
+            viewModel.shouldAllowBackupUploadsOnCellular = backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx)
+        }
     }
 
     // MARK: - BackupSettingsViewModel.ActionsDelegate
@@ -377,16 +392,13 @@ class BackupSettingsViewController:
                 comment: "Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error."
             ),
         )
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.contactSupport) { _ in
-            ContactSupportActionSheet.present(
-                emailFilter: .custom("iOS Disable Backups Failed"),
-                logDumper: .fromGlobals(),
-                fromViewController: self
-            )
-        })
+        actionSheet.addAction(.contactSupport(
+            emailFilter: .backupDisableFailed,
+            fromViewController: self
+        ))
         actionSheet.addAction(.okay)
 
-        OWSActionSheets.showActionSheet(actionSheet, fromViewController: self)
+        presentActionSheet(actionSheet)
     }
 
     // MARK: -
@@ -500,7 +512,7 @@ class BackupSettingsViewController:
             do throws(BackupExportJobError) {
                 try await backupExportJobRunner.run()
             } catch .cancellationError {
-                Logger.warn("Canceled manual backup!")
+                self?.showSheetForBackupExportJobError(.needsWifi)
             } catch {
                 owsFailDebug("Failed to perform manual backup! \(error)")
                 self?.showSheetForBackupExportJobError(error)
@@ -520,19 +532,61 @@ class BackupSettingsViewController:
     }
 
     private func showSheetForBackupExportJobError(_ error: BackupExportJobError) {
+        let actionSheet: ActionSheetController
         switch error {
         case .cancellationError:
             return
+
         case .needsWifi:
-            // TODO: [Backups] Sheet allowing export overriding the WiFi requirement
-            break
+            actionSheet = ActionSheetController(
+                title: OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE",
+                    comment: "Title for an action sheet explaining that performing a backup failed because WiFi is required."
+                ),
+                message: OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE",
+                    comment: "Message for an action sheet explaining that performing a backup failed because WiFi is required."
+                ),
+            )
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION",
+                    comment: "Title for a button in an action sheet allowing users to perform a backup, ignoring that WiFi is required."
+                ),
+                handler: { [weak self] _ in
+                    guard let self else { return }
+
+                    setShouldAllowBackupUploadsOnCellular(true)
+                    performManualBackup()
+                }
+            ))
+            actionSheet.addAction(.cancel)
+
         case .networkRequestError:
-            // TODO: [Backups] "Check your connection and try again" sheet
-            break
+            actionSheet = ActionSheetController(
+                message: OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR",
+                    comment: "Message for an action sheet explaining that performing a backup failed with a network error."
+                )
+            )
+            actionSheet.addAction(.okay)
+
         case .unregistered, .backupKeyError, .backupError:
-            // TODO: [Backups] Generic "something went wrong, contact support" sheet
-            break
+            actionSheet = ActionSheetController(
+                message: OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR",
+                    comment: "Message for an action sheet explaining that performing a backup failed with a generic error."
+                )
+            )
+            actionSheet.addAction(.contactSupport(
+                emailFilter: .backupExportFailed,
+                fromViewController: self
+            ))
+            actionSheet.addAction(.okay)
+
         }
+
+        presentActionSheet(actionSheet)
     }
 
     // MARK: -
@@ -904,7 +958,6 @@ private class BackupSettingsViewModel: ObservableObject {
     // MARK: -
 
     func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) {
-        shouldAllowBackupUploadsOnCellular = newShouldAllowBackupUploadsOnCellular
         actionsDelegate?.setShouldAllowBackupUploadsOnCellular(newShouldAllowBackupUploadsOnCellular)
     }
 
