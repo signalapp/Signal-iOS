@@ -27,6 +27,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
     private lazy var appReadiness = AppReadinessImpl()
 
+    private var connectionTokens = [OWSChatConnection.ConnectionToken]()
+
     override open func loadView() {
         super.loadView()
 
@@ -134,6 +136,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             } catch {
                 self.presentAttachmentError(error)
                 return
+            }
+
+            // We need the unidentified connection for bulk identity key lookups.
+            if OWSChatConnection.canAppUseSocketsToMakeRequests {
+                let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager
+                self.connectionTokens.append(chatConnectionManager.requestUnidentifiedConnection(shouldReconnectIfConnectedElsewhere: true))
             }
 
             let conversationPicker: SharingThreadPickerViewController
@@ -279,6 +287,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     // MARK: ShareViewDelegate, SAEFailedViewDelegate
+
+    public func shareViewWillSend() {
+        if OWSChatConnection.canAppUseSocketsToMakeRequests {
+            let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager
+            self.connectionTokens.append(chatConnectionManager.requestIdentifiedConnection(shouldReconnectIfConnectedElsewhere: true))
+        }
+    }
 
     public func shareViewWasCompleted() {
         Logger.info("")

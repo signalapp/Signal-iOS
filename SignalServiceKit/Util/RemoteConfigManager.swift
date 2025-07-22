@@ -256,6 +256,10 @@ public class RemoteConfig {
         return !isEnabled(.notificationServiceWebSocketKillSwitch)
     }
 
+    public var isShareExtensionWebSocketEnabled: Bool {
+        return !isEnabled(.shareExtensionWebSocketKillSwitch)
+    }
+
     public var usePqRatchet: Bool {
         return isEnabled(.usePqRatchet)
     }
@@ -495,6 +499,7 @@ private enum IsEnabledFlag: String, FlagType {
     case paypalOneTimeDonationKillSwitch = "ios.paypalOneTimeDonationKillSwitch"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
+    case shareExtensionWebSocketKillSwitch = "ios.shareExtensionWebSocketKillSwitch"
     case shouldValidateLinkedAciIdentityKey = "ios.shouldValidateLinkedAciIdentityKey"
     case shouldValidatePrimaryAciIdentityKey = "ios.shouldValidatePrimaryAciIdentityKey"
     case shouldValidatePrimaryPniIdentityKey = "ios.shouldValidatePrimaryPniIdentityKey"
@@ -529,6 +534,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalOneTimeDonationKillSwitch: false
         case .ringrtcNwPathMonitorTrialKillSwitch: true // cached during launch, so not hot-swapped in practice
         case .serviceExtensionFailureKillSwitch: true
+        case .shareExtensionWebSocketKillSwitch: true
         case .shouldValidateLinkedAciIdentityKey: true
         case .shouldValidatePrimaryAciIdentityKey: true
         case .shouldValidatePrimaryPniIdentityKey: true

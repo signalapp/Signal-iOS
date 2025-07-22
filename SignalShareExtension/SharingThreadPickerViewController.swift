@@ -188,6 +188,8 @@ extension SharingThreadPickerViewController {
         // Start presenting empty; the attachments will get set later.
         self.presentOrUpdateSendProgressSheet(attachmentIds: [])
 
+        self.shareViewDelegate?.shareViewWillSend()
+
         Task {
             switch await tryToSend(
                 selectedConversations: selectedConversations,

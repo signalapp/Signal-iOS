@@ -215,7 +215,7 @@ public class OWSChatConnection {
         case .nse:
             return false // because there is a kill switch
         case .share:
-            return false
+            return false // because there is a kill switch
         }
     }
 
@@ -226,7 +226,7 @@ public class OWSChatConnection {
         case .nse:
             return FeatureFlags.notificationServiceWebSocket && RemoteConfig.current.isNotificationServiceWebSocketEnabled
         case .share:
-            return false
+            return FeatureFlags.shareExtensionWebSocket && RemoteConfig.current.isShareExtensionWebSocketEnabled
         }
     }
 

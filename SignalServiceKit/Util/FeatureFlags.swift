@@ -66,6 +66,7 @@ public enum FeatureFlags {
     public static let libsignalEnforceMinTlsVersion = false
 
     public static let notificationServiceWebSocket = build.includes(.internal)
+    public static let shareExtensionWebSocket = build.includes(.internal)
 
     public static let moveDraftsUpChatList = build.includes(.internal)
 
