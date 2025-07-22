@@ -3487,7 +3487,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             !persistedState.hasGivenUpTryingToRestoreWithSVR
         {
             // If we have no SVR data, fetch it.
-            return restoreSVRBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
+            return Guarantee.wrapAsync {
+                await self.restoreSVRBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
+            }
         }
         return nil
     }
@@ -3505,7 +3507,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         if !persistedState.hasSkippedPinEntry {
             if inMemoryState.shouldBackUpToSVR {
                 // If we haven't backed up, do so now.
-                return backupToSVR(pin: pin, accountIdentity: accountIdentity)
+                return Guarantee.wrapAsync {
+                    await self.backupToSVR(pin: pin, accountIdentity: accountIdentity)
+                }
             }
 
             switch attributes2FAMode(e164: accountIdentity.e164) {
@@ -3523,11 +3527,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return nil
     }
 
+    @MainActor
     private func restoreSVRBackupPostRegistration(
         pin: String,
         accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
-    ) -> Guarantee<RegistrationStep> {
+    ) async -> RegistrationStep {
         Logger.info("")
 
         let backupAuthMethod = SVR.AuthMethod.chatServerAuth(accountIdentity.authedAccount)
@@ -3537,82 +3542,78 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         } else {
             authMethod = backupAuthMethod
         }
-        return deps.svr
-            .restoreKeys(
-                pin: pin,
-                authMethod: authMethod
-            )
-            .then(on: DispatchQueue.main) { [weak self] result -> Guarantee<RegistrationStep> in
-                guard let self else {
-                    return unretainedSelfError()
-                }
-                switch result {
-                case .success(let masterKey):
-                    self.inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
-                    self.db.write { tx in
-                        self.updatePersistedState(tx) { $0.recoveredSVRMasterKey = masterKey }
-                    }
-                    return self.nextStep()
-                case let .invalidPin(remainingAttempts):
-                    return .value(.pinEntry(RegistrationPinState(
-                        operation: .enteringExistingPin(
-                            skippability: .canSkipAndCreateNew,
-                            remainingAttempts: UInt(remainingAttempts)
-                        ),
-                        error: .wrongPin(wrongPin: pin),
-                        contactSupportMode: self.contactSupportRegistrationPINMode(),
-                        exitConfiguration: self.pinCodeEntryExitConfiguration()
-                    )))
-                case .backupMissing:
-                    // If we are unable to talk to SVR, it got wiped and we can't
-                    // recover. Keep going like if nothing happened.
-                    self.inMemoryState.pinFromUser = nil
-                    self.inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
-                    self.db.write { tx in
-                        self.updatePersistedState(tx) { $0.hasGivenUpTryingToRestoreWithSVR = true }
-                    }
-                    return .value(.pinAttemptsExhaustedWithoutReglock(
-                        .init(mode: .restoringBackup)
-                    ))
-                case .networkError:
-                    if retriesLeft > 0 {
-                        return self.restoreSVRBackupPostRegistration(
-                            pin: pin,
-                            accountIdentity: accountIdentity,
-                            retriesLeft: retriesLeft - 1
-                        )
-                    }
-                    return .value(.showErrorSheet(.networkError))
-                case .genericError(let error):
-                    if error.isPostRegDeregisteredError {
-                        return self.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
-                    } else if retriesLeft > 0 {
-                        return self.restoreSVRBackupPostRegistration(
-                            pin: pin,
-                            accountIdentity: accountIdentity,
-                            retriesLeft: retriesLeft - 1
-                        )
-                    } else {
-                        self.inMemoryState.pinFromUser = nil
-                        return .value(.pinEntry(RegistrationPinState(
-                            operation: .enteringExistingPin(
-                                skippability: .canSkipAndCreateNew,
-                                remainingAttempts: nil
-                            ),
-                            error: .serverError,
-                            contactSupportMode: self.contactSupportRegistrationPINMode(),
-                            exitConfiguration: self.pinCodeEntryExitConfiguration()
-                        )))
-                    }
-                }
+        let result = await deps.svr.restoreKeys(
+            pin: pin,
+            authMethod: authMethod
+        ).awaitable()
+
+        switch result {
+        case .success(let masterKey):
+            inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
+            await db.awaitableWrite { tx in
+                updatePersistedState(tx) { $0.recoveredSVRMasterKey = masterKey }
             }
+            return await nextStep().awaitable()
+        case let .invalidPin(remainingAttempts):
+            return .pinEntry(RegistrationPinState(
+                operation: .enteringExistingPin(
+                    skippability: .canSkipAndCreateNew,
+                    remainingAttempts: UInt(remainingAttempts)
+                ),
+                error: .wrongPin(wrongPin: pin),
+                contactSupportMode: contactSupportRegistrationPINMode(),
+                exitConfiguration: pinCodeEntryExitConfiguration()
+            ))
+        case .backupMissing:
+            // If we are unable to talk to SVR, it got wiped and we can't
+            // recover. Keep going like if nothing happened.
+            inMemoryState.pinFromUser = nil
+            inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
+            await db.awaitableWrite { tx in
+                updatePersistedState(tx) { $0.hasGivenUpTryingToRestoreWithSVR = true }
+            }
+            return .pinAttemptsExhaustedWithoutReglock(
+                .init(mode: .restoringBackup)
+            )
+        case .networkError:
+            if retriesLeft > 0 {
+                return await restoreSVRBackupPostRegistration(
+                    pin: pin,
+                    accountIdentity: accountIdentity,
+                    retriesLeft: retriesLeft - 1
+                )
+            }
+            return .showErrorSheet(.networkError)
+        case .genericError(let error):
+            if error.isPostRegDeregisteredError {
+                return await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity).awaitable()
+            } else if retriesLeft > 0 {
+                return await restoreSVRBackupPostRegistration(
+                    pin: pin,
+                    accountIdentity: accountIdentity,
+                    retriesLeft: retriesLeft - 1
+                )
+            } else {
+                self.inMemoryState.pinFromUser = nil
+                return .pinEntry(RegistrationPinState(
+                    operation: .enteringExistingPin(
+                        skippability: .canSkipAndCreateNew,
+                        remainingAttempts: nil
+                    ),
+                    error: .serverError,
+                    contactSupportMode: self.contactSupportRegistrationPINMode(),
+                    exitConfiguration: self.pinCodeEntryExitConfiguration()
+                ))
+            }
+        }
     }
 
+    @MainActor
     private func backupToSVR(
         pin: String,
         accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
-    ) -> Guarantee<RegistrationStep> {
+    ) async -> RegistrationStep {
         Logger.info("")
 
         let authMethod: SVR.AuthMethod
@@ -3628,50 +3629,44 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         guard let masterKey else {
             Logger.error("Failed to back up to SVR due to missing root key")
             self.inMemoryState.didSkipSVRBackup = true
-            return .value(.showErrorSheet(.genericError))
+            return .showErrorSheet(.genericError)
         }
 
-        return deps.svr
-            .backupMasterKey(
+        do {
+            let masterKey = try await deps.svr.backupMasterKey(
                 pin: pin,
                 masterKey: masterKey,
                 authMethod: authMethod
-            )
-            .then(on: DispatchQueue.main) { [weak self] masterKey -> Guarantee<RegistrationStep>  in
-                guard let strongSelf = self else {
-                    return unretainedSelfError()
-                }
-                strongSelf.inMemoryState.hasBackedUpToSVR = true
-                strongSelf.db.write { tx in
-                    Logger.info("Setting pin code after SVR backup")
-                    strongSelf.updateMasterKeyAndLocalState(
-                        masterKey: masterKey,
-                        tx: tx
+            ).awaitable()
+
+            inMemoryState.hasBackedUpToSVR = true
+            await db.awaitableWrite { tx in
+                Logger.info("Setting pin code after SVR backup")
+                updateMasterKeyAndLocalState(
+                    masterKey: masterKey,
+                    tx: tx
+                )
+                deps.ows2FAManager.markPinEnabled(pin, tx)
+            }
+
+            return await nextStep().awaitable()
+        } catch {
+            if error.isNetworkFailureOrTimeout {
+                if retriesLeft > 0 {
+                    return await backupToSVR(
+                        pin: pin,
+                        accountIdentity: accountIdentity,
+                        retriesLeft: retriesLeft - 1
                     )
-                    strongSelf.deps.ows2FAManager.markPinEnabled(pin, tx)
                 }
-                return strongSelf.nextStep()
+                return .showErrorSheet(.networkError)
             }
-            .recover(on: DispatchQueue.main) { [weak self] error -> Guarantee<RegistrationStep> in
-                guard let self else {
-                    return unretainedSelfError()
-                }
-                if error.isNetworkFailureOrTimeout {
-                    if retriesLeft > 0 {
-                        return self.backupToSVR(
-                            pin: pin,
-                            accountIdentity: accountIdentity,
-                            retriesLeft: retriesLeft - 1
-                        )
-                    }
-                    return .value(.showErrorSheet(.networkError))
-                }
-                Logger.error("Failed to back up to SVR with error: \(error)")
-                // We want to let people get through registration even if backups
-                // go wrong. Show an error but let the user continue when they try the next step.
-                self.inMemoryState.didSkipSVRBackup = true
-                return .value(.showErrorSheet(.genericError))
-            }
+            Logger.error("Failed to back up to SVR with error: \(error)")
+            // We want to let people get through registration even if backups
+            // go wrong. Show an error but let the user continue when they try the next step.
+            inMemoryState.didSkipSVRBackup = true
+            return .showErrorSheet(.genericError)
+        }
     }
 
     private func restoreFromStorageService(
