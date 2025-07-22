@@ -5,34 +5,38 @@
 
 import LibSignalClient
 
-public enum BackupExportProgressStep: String {
-    case registerBackupId
-    case backupExport
-    case backupUpload
-    case listMedia
-    case attachmentOrphaning
-    case attachmentUpload
-    case offloading
+public struct BackupExportJobProgress {
+    public enum Step: String {
+        case registerBackupId
+        case backupExport
+        case backupUpload
+        case listMedia
+        case attachmentOrphaning
+        case attachmentUpload
+        case offloading
 
-    /// Out of 100 (all must add to 100)
-    var percentAllocation: UInt64 {
-        switch self {
-        case .registerBackupId:
-            return 1
-        case .backupExport:
-            return 40
-        case .backupUpload:
-            return 10
-        case .listMedia:
-            return 5
-        case .attachmentOrphaning:
-            return 2
-        case .attachmentUpload:
-            return 40
-        case .offloading:
-            return 2
+        /// Out of 100 (all must add to 100)
+        fileprivate var percentAllocation: UInt64 {
+            switch self {
+            case .registerBackupId: 1
+            case .backupExport: 40
+            case .backupUpload: 10
+            case .listMedia: 5
+            case .attachmentOrphaning: 2
+            case .attachmentUpload: 40
+            case .offloading: 2
+            }
         }
     }
+
+    public fileprivate(set) var step: Step
+    public fileprivate(set) var overallProgress: OWSProgress
+
+#if DEBUG
+    public static func forPreview(_ step: Step, _ percentComplete: Float) -> BackupExportJobProgress {
+        return BackupExportJobProgress(step: step, overallProgress: .forPreview(percentComplete))
+    }
+#endif
 }
 
 public enum BackupExportJobError: Error {
@@ -45,6 +49,14 @@ public enum BackupExportJobError: Error {
     case networkRequestError(Error)
 }
 
+// MARK: -
+
+/// Responsible for performing direct and ancillary steps to "export a Backup".
+///
+/// - Important
+/// Callers should be careful about the possibility of running overlapping
+/// Backup export jobs, and may prefer to call ``BackupExportJobRunner`` rather
+/// than this type directly.
 public protocol BackupExportJob {
 
     /// Export and upload a backup, then run all ancillary jobs
@@ -52,12 +64,13 @@ public protocol BackupExportJob {
     ///
     /// Cooperatively cancellable.
     func exportAndUploadBackup(
-        progress: OWSProgressSink?
+        onProgressUpdate: ((BackupExportJobProgress) -> Void)?
     ) async throws(BackupExportJobError)
 }
 
-public class BackupExportJobImpl: BackupExportJob {
+// MARK: -
 
+class BackupExportJobImpl: BackupExportJob {
     private let attachmentOffloadingManager: AttachmentOffloadingManager
     private let backupArchiveManager: BackupArchiveManager
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
@@ -67,12 +80,11 @@ public class BackupExportJobImpl: BackupExportJob {
     private let backupListMediaManager: BackupListMediaManager
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
+    private let logger: PrefixedLogger
     private let messageProcessor: MessageProcessor
     private let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
     private let reachabilityManager: SSKReachabilityManager
     private let tsAccountManager: TSAccountManager
-
-    private let logger = PrefixedLogger(prefix: "[BackupExportJob]")
 
     public init(
         attachmentOffloadingManager: AttachmentOffloadingManager,
@@ -98,14 +110,15 @@ public class BackupExportJobImpl: BackupExportJob {
         self.backupListMediaManager = backupListMediaManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
+        self.logger = PrefixedLogger(prefix: "[BackupExportJob]")
         self.messageProcessor = messageProcessor
         self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
         self.reachabilityManager = reachabilityManager
         self.tsAccountManager = tsAccountManager
     }
 
-    public func exportAndUploadBackup(
-        progress: OWSProgressSink?
+    func exportAndUploadBackup(
+        onProgressUpdate: ((BackupExportJobProgress) -> Void)?
     ) async throws(BackupExportJobError) {
         let (
             localIdentifiers,
@@ -151,7 +164,40 @@ public class BackupExportJobImpl: BackupExportJob {
             throw .cancellationError
         }
 
-        logger.info("Starting...")
+        class ProgressUpdater {
+            private let onProgressUpdate: (BackupExportJobProgress) -> Void
+            var latestProgress: BackupExportJobProgress {
+                didSet {
+                    onProgressUpdate(latestProgress)
+                }
+            }
+
+            init(
+                onProgressUpdate: @escaping (BackupExportJobProgress) -> Void,
+                latestProgress: BackupExportJobProgress
+            ) {
+                self.onProgressUpdate = onProgressUpdate
+                self.latestProgress = latestProgress
+            }
+        }
+        let progressUpdater: ProgressUpdater? = onProgressUpdate.map {
+            ProgressUpdater(
+                onProgressUpdate: $0,
+                latestProgress: BackupExportJobProgress(
+                    step: .registerBackupId,
+                    overallProgress: .zero
+                )
+            )
+        }
+
+        let progress: OWSProgressSink?
+        if let progressUpdater {
+            progress = OWSProgress.createSink { progressUpdate in
+                progressUpdater.latestProgress.overallProgress = progressUpdate
+            }
+        } else {
+            progress = nil
+        }
 
         let registerBackupIdProgress = await progress?.addSource(.registerBackupId)
         let backupExportProgress = await progress?.addChild(.backupExport)
@@ -162,6 +208,8 @@ public class BackupExportJobImpl: BackupExportJob {
         let offloadingProgress = await progress?.addSource(.offloading)
 
         do {
+            logger.info("Starting...")
+
             let registeredBackupIDToken = try await withEstimatedProgressUpdates(
                 estimatedTimeToCompletion: 0.5,
                 progress: registerBackupIdProgress,
@@ -173,6 +221,7 @@ public class BackupExportJobImpl: BackupExportJob {
             }
 
             logger.info("Exporting backup...")
+            progressUpdater?.latestProgress.step = .backupExport
 
             let uploadMetadata = try await backupArchiveManager.exportEncryptedBackup(
                 localIdentifiers: localIdentifiers,
@@ -182,6 +231,7 @@ public class BackupExportJobImpl: BackupExportJob {
             )
 
             logger.info("Uploading backup...")
+            progressUpdater?.latestProgress.step = .backupUpload
 
             try await Retry.performWithBackoffForNetworkRequest(maxAttempts: 3) {
                 _ = try await backupArchiveManager.uploadEncryptedBackup(
@@ -193,6 +243,7 @@ public class BackupExportJobImpl: BackupExportJob {
             }
 
             logger.info("Listing media...")
+            progressUpdater?.latestProgress.step = .listMedia
 
             try await withEstimatedProgressUpdates(
                 estimatedTimeToCompletion: 5,
@@ -204,6 +255,7 @@ public class BackupExportJobImpl: BackupExportJob {
             }
 
             logger.info("Deleting orphaned attachments...")
+            progressUpdater?.latestProgress.step = .attachmentOrphaning
 
             try await withEstimatedProgressUpdates(
                 estimatedTimeToCompletion: 2,
@@ -213,8 +265,9 @@ public class BackupExportJobImpl: BackupExportJob {
             }
 
             logger.info("Uploading attachments...")
+            progressUpdater?.latestProgress.step = .attachmentUpload
 
-            var uploadObserver: BackupAttachmentUploadProgress.Observer?
+            var uploadObserver: BackupAttachmentUploadProgressObserver?
             if let attachmentUploadProgress {
                 uploadObserver = try await backupAttachmentUploadProgress.addObserver({ progress in
                     let newUnitCount = UInt64((Float(attachmentUploadProgress.totalUnitCount) * progress.percentComplete).rounded())
@@ -231,6 +284,7 @@ public class BackupExportJobImpl: BackupExportJob {
             uploadObserver = nil
 
             logger.info("Offloading attachments...")
+            progressUpdater?.latestProgress.step = .offloading
 
             try await withEstimatedProgressUpdates(
                 estimatedTimeToCompletion: 2,
@@ -265,11 +319,11 @@ public class BackupExportJobImpl: BackupExportJob {
 
 fileprivate extension OWSProgressSink {
 
-    func addSource(_ step: BackupExportProgressStep) async -> OWSProgressSource {
+    func addSource(_ step: BackupExportJobProgress.Step) async -> OWSProgressSource {
         return await self.addSource(withLabel: step.rawValue, unitCount: step.percentAllocation)
     }
 
-    func addChild(_ step: BackupExportProgressStep) async -> OWSProgressSink {
+    func addChild(_ step: BackupExportJobProgress.Step) async -> OWSProgressSink {
         return await self.addChild(withLabel: step.rawValue, unitCount: step.percentAllocation)
     }
 }

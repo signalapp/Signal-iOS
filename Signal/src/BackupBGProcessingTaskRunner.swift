@@ -28,7 +28,7 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
     public static let requiresNetworkConnectivity = true
 
     func run() async throws {
-        try await exportJob().exportAndUploadBackup(progress: nil)
+        try await exportJob().exportAndUploadBackup(onProgressUpdate: nil)
     }
 
     public func startCondition() -> BGProcessingTaskStartCondition {

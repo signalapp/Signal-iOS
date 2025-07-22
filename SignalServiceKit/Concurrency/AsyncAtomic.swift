@@ -20,4 +20,16 @@ public class AsyncAtomic<State> {
             await update(&state)
         }
     }
+
+    public func awaitUpdate<T>(_ update: @escaping (inout State) async -> T) async throws(CancellationError) -> T {
+        do {
+            return try await updatesQueue.enqueue { [self] in
+                return await update(&state)
+            }.value
+        } catch let cancellationError as CancellationError {
+            throw cancellationError
+        } catch {
+            owsFail("Unexpected error from enqueued task with non-throwing block! \(error)")
+        }
+    }
 }

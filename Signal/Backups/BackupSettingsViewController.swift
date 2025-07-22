@@ -23,16 +23,17 @@ class BackupSettingsViewController:
     private let backupAttachmentUploadTracker: BackupSettingsAttachmentUploadTracker
     private let backupDisablingManager: BackupDisablingManager
     private let backupEnablingManager: BackupEnablingManager
-    private let backupExportJob: BackupExportJob
+    private let backupExportJobRunner: BackupExportJobRunner
     private let backupPlanManager: BackupPlanManager
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
     private let tsAccountManager: TSAccountManager
 
-    private var eventObservationTasks: [Task<Void, Never>]
     private let onLoadAction: OnLoadAction
     private let viewModel: BackupSettingsViewModel
+
+    private var eventObservationTasks: [Task<Void, Never>] = []
 
     convenience init(
         onLoadAction: OnLoadAction,
@@ -46,7 +47,7 @@ class BackupSettingsViewController:
             backupAttachmentUploadQueueStatusReporter: DependenciesBridge.shared.backupAttachmentUploadQueueStatusReporter,
             backupDisablingManager: DependenciesBridge.shared.backupDisablingManager,
             backupEnablingManager: AppEnvironment.shared.backupEnablingManager,
-            backupExportJob: DependenciesBridge.shared.backupExportJob,
+            backupExportJobRunner: DependenciesBridge.shared.backupExportJobRunner,
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             backupSettingsStore: BackupSettingsStore(),
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
@@ -64,7 +65,7 @@ class BackupSettingsViewController:
         backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter,
         backupDisablingManager: BackupDisablingManager,
         backupEnablingManager: BackupEnablingManager,
-        backupExportJob: BackupExportJob,
+        backupExportJobRunner: BackupExportJobRunner,
         backupPlanManager: BackupPlanManager,
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
@@ -87,22 +88,22 @@ class BackupSettingsViewController:
         )
         self.backupDisablingManager = backupDisablingManager
         self.backupEnablingManager = backupEnablingManager
-        self.backupExportJob = backupExportJob
+        self.backupExportJobRunner = backupExportJobRunner
         self.backupPlanManager = backupPlanManager
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
         self.tsAccountManager = tsAccountManager
 
-        self.eventObservationTasks = []
         self.onLoadAction = onLoadAction
         self.viewModel = db.read { tx in
             let viewModel = BackupSettingsViewModel(
-                backupSubscriptionLoadingState: .loading, // Default, loaded async
+                backupSubscriptionLoadingState: .loading,
                 backupPlan: backupPlanManager.backupPlan(tx: tx),
                 failedToDisableBackupsRemotely: backupDisablingManager.disableRemotelyFailed(tx: tx),
-                latestBackupAttachmentDownloadUpdate: nil, // Default, loaded async
-                latestBackupAttachmentUploadUpdate: nil, // Default, loaded async
+                latestBackupExportProgressUpdate: nil,
+                latestBackupAttachmentDownloadUpdate: nil,
+                latestBackupAttachmentUploadUpdate: nil,
                 lastBackupDate: backupSettingsStore.lastBackupDate(tx: tx),
                 lastBackupSizeBytes: backupSettingsStore.lastBackupSizeBytes(tx: tx),
                 shouldAllowBackupUploadsOnCellular: backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx)
@@ -124,6 +125,12 @@ class BackupSettingsViewController:
         loadBackupSubscription()
 
         eventObservationTasks = [
+            Task { [weak self, backupExportJobRunner] in
+                for await exportProgressUpdate in backupExportJobRunner.updates() {
+                    guard let self else { return }
+                    viewModel.latestBackupExportProgressUpdate = exportProgressUpdate
+                }
+            },
             Task { [weak self, backupAttachmentDownloadTracker] in
                 for await downloadUpdate in backupAttachmentDownloadTracker.updates() {
                     guard let self else { return }
@@ -489,25 +496,46 @@ class BackupSettingsViewController:
     // MARK: -
 
     fileprivate func performManualBackup() {
-        // TODO: [Backups] Implement nicer UI, and handle needs wifi error
-        // when upload on cellular is disabled.
-        ModalActivityIndicatorViewController.present(
-            fromViewController: self,
-            asyncBlock: { [weak self, backupExportJob] modal in
-                do {
-                    try await backupExportJob.exportAndUploadBackup(progress: nil)
-                    guard let self else { return }
-                    self.db.read { tx in
-                        self.viewModel.lastBackupDate = self.backupSettingsStore.lastBackupDate(tx: tx)
-                        self.viewModel.lastBackupSizeBytes = self.backupSettingsStore.lastBackupSizeBytes(tx: tx)
-                    }
-                } catch {
-                    owsFailDebug("Unable to create backup!")
-                }
-                modal.dismiss()
+        Task { [weak self, backupExportJobRunner] in
+            do throws(BackupExportJobError) {
+                try await backupExportJobRunner.run()
+            } catch .cancellationError {
+                Logger.warn("Canceled manual backup!")
+            } catch {
+                owsFailDebug("Failed to perform manual backup! \(error)")
+                self?.showSheetForBackupExportJobError(error)
             }
-        )
+
+            guard let self else { return }
+
+            db.read { tx in
+                self.viewModel.lastBackupDate = self.backupSettingsStore.lastBackupDate(tx: tx)
+                self.viewModel.lastBackupSizeBytes = self.backupSettingsStore.lastBackupSizeBytes(tx: tx)
+            }
+        }
     }
+
+    fileprivate func cancelManualBackup() {
+        backupExportJobRunner.cancelIfRunning()
+    }
+
+    private func showSheetForBackupExportJobError(_ error: BackupExportJobError) {
+        switch error {
+        case .cancellationError:
+            return
+        case .needsWifi:
+            // TODO: [Backups] Sheet allowing export overriding the WiFi requirement
+            break
+        case .networkRequestError:
+            // TODO: [Backups] "Check your connection and try again" sheet
+            break
+        case .unregistered, .backupKeyError, .backupError:
+            // TODO: [Backups] Generic "something went wrong, contact support" sheet
+            break
+        }
+    }
+
+    // MARK: -
 
     fileprivate func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) {
         db.write { tx in
@@ -759,6 +787,8 @@ private class BackupSettingsViewModel: ObservableObject {
         func managePaidPlanAsTester()
 
         func performManualBackup()
+        func cancelManualBackup()
+
         func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool)
 
         func setOptimizeLocalStorage(_ newOptimizeLocalStorage: Bool)
@@ -788,6 +818,7 @@ private class BackupSettingsViewModel: ObservableObject {
     @Published var backupPlan: BackupPlan
     @Published var failedToDisableBackupsRemotely: Bool
 
+    @Published var latestBackupExportProgressUpdate: BackupExportJobProgress?
     @Published var latestBackupAttachmentDownloadUpdate: BackupSettingsAttachmentDownloadTracker.DownloadUpdate?
     @Published var latestBackupAttachmentUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?
 
@@ -801,6 +832,7 @@ private class BackupSettingsViewModel: ObservableObject {
         backupSubscriptionLoadingState: BackupSubscriptionLoadingState,
         backupPlan: BackupPlan,
         failedToDisableBackupsRemotely: Bool,
+        latestBackupExportProgressUpdate: BackupExportJobProgress?,
         latestBackupAttachmentDownloadUpdate: BackupSettingsAttachmentDownloadTracker.DownloadUpdate?,
         latestBackupAttachmentUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?,
         lastBackupDate: Date?,
@@ -811,6 +843,7 @@ private class BackupSettingsViewModel: ObservableObject {
         self.backupPlan = backupPlan
         self.failedToDisableBackupsRemotely = failedToDisableBackupsRemotely
 
+        self.latestBackupExportProgressUpdate = latestBackupExportProgressUpdate
         self.latestBackupAttachmentDownloadUpdate = latestBackupAttachmentDownloadUpdate
         self.latestBackupAttachmentUploadUpdate = latestBackupAttachmentUploadUpdate
 
@@ -863,6 +896,12 @@ private class BackupSettingsViewModel: ObservableObject {
     func performManualBackup() {
         actionsDelegate?.performManualBackup()
     }
+
+    func cancelManualBackup() {
+        actionsDelegate?.cancelManualBackup()
+    }
+
+    // MARK: -
 
     func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) {
         shouldAllowBackupUploadsOnCellular = newShouldAllowBackupUploadsOnCellular
@@ -986,21 +1025,28 @@ struct BackupSettingsView: View {
             switch contents {
             case .enabled:
                 SignalSection {
-                    Button {
-                        viewModel.performManualBackup()
-                    } label: {
-                        Label {
-                            Text(OWSLocalizedString(
-                                "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE",
-                                comment: "Title for a button allowing users to trigger a manual backup."
-                            ))
-                        } icon: {
-                            Image(uiImage: .backup)
-                                .resizable()
-                                .frame(width: 24, height: 24)
+                    if let latestBackupExportProgressUpdate = viewModel.latestBackupExportProgressUpdate {
+                        BackupExportProgressView(
+                            latestProgressUpdate: latestBackupExportProgressUpdate,
+                            viewModel: viewModel
+                        )
+                    } else {
+                        Button {
+                            viewModel.performManualBackup()
+                        } label: {
+                            Label {
+                                Text(OWSLocalizedString(
+                                    "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE",
+                                    comment: "Title for a button allowing users to trigger a manual backup."
+                                ))
+                            } icon: {
+                                Image(uiImage: .backup)
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                            }
                         }
+                        .foregroundStyle(Color.Signal.label)
                     }
-                    .foregroundStyle(Color.Signal.label)
                 } header: {
                     Text(OWSLocalizedString(
                         "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER",
@@ -1195,6 +1241,66 @@ struct BackupSettingsView: View {
             }
                 .buttonStyle(.plain)
         )
+    }
+}
+
+// MARK: -
+
+private struct BackupExportProgressView: View {
+    let latestProgressUpdate: BackupExportJobProgress
+    let viewModel: BackupSettingsViewModel
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            let percentComplete = latestProgressUpdate.overallProgress.percentComplete
+
+            ProgressView(value: percentComplete)
+                .progressViewStyle(.linear)
+                .tint(.Signal.accent)
+                .scaleEffect(x: 1, y: 1.5)
+                .padding(.vertical, 12)
+
+            Group {
+                Text(String(
+                    format: OWSLocalizedString(
+                        "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION",
+                        comment: "Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}."
+                    ),
+                    percentComplete.formatted(.percent.precision(.fractionLength(0))),
+                ))
+
+                let stepDescription = switch latestProgressUpdate.step {
+                case .registerBackupId, .backupExport:
+                    OWSLocalizedString(
+                        "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP",
+                        comment: "Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup."
+                    )
+                case .backupUpload:
+                    OWSLocalizedString(
+                        "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP",
+                        comment: "Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup."
+                    )
+                case .listMedia, .attachmentOrphaning, .attachmentUpload, .offloading:
+                    OWSLocalizedString(
+                        "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA",
+                        comment: "Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media."
+                    )
+                }
+                Text(stepDescription)
+            }
+            .font(.subheadline)
+            .foregroundStyle(Color.Signal.secondaryLabel)
+        }
+
+        Button {
+            viewModel.cancelManualBackup()
+        } label: {
+            Text(OWSLocalizedString(
+                "BACKUP_SETTINGS_MANUAL_BACKUP_CANCEL_BUTTON",
+                comment: "Title for a button shown under a progress bar tracking a manual backup, which lets the user cancel the backup."
+            ))
+        }
+        .foregroundStyle(Color.Signal.label)
     }
 }
 
@@ -1692,6 +1798,7 @@ private extension BackupSettingsViewModel {
     static func forPreview(
         backupPlan: BackupPlan,
         failedToDisableBackupsRemotely: Bool = false,
+        latestBackupExportProgressUpdate: BackupExportJobProgress? = nil,
         latestBackupAttachmentDownloadUpdateState: BackupSettingsAttachmentDownloadTracker.DownloadUpdate.State? = nil,
         latestBackupAttachmentUploadUpdateState: BackupSettingsAttachmentUploadTracker.UploadUpdate.State? = nil,
         backupSubscriptionLoadingState: BackupSubscriptionLoadingState,
@@ -1706,6 +1813,8 @@ private extension BackupSettingsViewModel {
             func managePaidPlanAsTester() { print("Managing as tester!") }
 
             func performManualBackup() { print("Manually backing up!") }
+            func cancelManualBackup() { print("Canceling manual backup!") }
+
             func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) { print("Uploads on cellular: \(newShouldAllowBackupUploadsOnCellular)") }
 
             func setOptimizeLocalStorage(_ newOptimizeLocalStorage: Bool) { print("Optimize local storage: \(newOptimizeLocalStorage)") }
@@ -1720,6 +1829,7 @@ private extension BackupSettingsViewModel {
             backupSubscriptionLoadingState: backupSubscriptionLoadingState,
             backupPlan: backupPlan,
             failedToDisableBackupsRemotely: failedToDisableBackupsRemotely,
+            latestBackupExportProgressUpdate: latestBackupExportProgressUpdate,
             latestBackupAttachmentDownloadUpdate: latestBackupAttachmentDownloadUpdateState.map {
                 BackupSettingsAttachmentDownloadTracker.DownloadUpdate(
                     state: $0,
@@ -1799,6 +1909,30 @@ private extension BackupSettingsViewModel {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .paid(optimizeLocalStorage: false),
         backupSubscriptionLoadingState: .genericError
+    ))
+}
+
+#Preview("Manual Backup: Backup Export") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupPlan: .free,
+        latestBackupExportProgressUpdate: .forPreview(.backupExport, 0.33),
+        backupSubscriptionLoadingState: .loaded(.free)
+    ))
+}
+
+#Preview("Manual Backup: Backup Upload") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupPlan: .free,
+        latestBackupExportProgressUpdate: .forPreview(.backupUpload, 0.45),
+        backupSubscriptionLoadingState: .loaded(.free)
+    ))
+}
+
+#Preview("Manual Backup: Media Upload") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupPlan: .free,
+        latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
     ))
 }
 

@@ -1411,6 +1411,9 @@ public class AppSetup {
             reachabilityManager: reachabilityManager,
             tsAccountManager: tsAccountManager
         )
+        let backupExportJobRunner = BackupExportJobRunnerImpl(
+            backupExportJob: backupExportJob
+        )
 
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
@@ -1441,6 +1444,7 @@ public class AppSetup {
             backupAttachmentUploadQueueStatusReporter: backupAttachmentUploadQueueStatusManager,
             backupDisablingManager: backupDisablingManager,
             backupExportJob: backupExportJob,
+            backupExportJobRunner: backupExportJobRunner,
             backupIdManager: backupIdManager,
             backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,

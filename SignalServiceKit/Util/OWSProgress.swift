@@ -91,6 +91,12 @@ public struct OWSProgress: Equatable, SomeOWSProgress {
         self.sourceProgresses = sourceProgresses
     }
 
+#if DEBUG
+    public static func forPreview(_ percentComplete: Float) -> OWSProgress {
+        return OWSProgress(completedUnitCount: UInt64(percentComplete * 100), totalUnitCount: 100, sourceProgresses: [:])
+    }
+#endif
+
     public static var zero: OWSProgress {
         return OWSProgress(completedUnitCount: 0, totalUnitCount: 0, sourceProgresses: [:])
     }
@@ -547,8 +553,6 @@ private class OWSProgressSourceNode: OWSProgressSource, OWSProgressChildNode {
     }
 
     func incrementCompletedUnitCount(by increment: UInt64) {
-        owsAssertDebug(increment > 0)
-
         let incrementedUnitCount: UInt64 = {
             if UInt64.max - increment < completedUnitCount {
                 // Avoid UInt64 overflow, if necessary.
