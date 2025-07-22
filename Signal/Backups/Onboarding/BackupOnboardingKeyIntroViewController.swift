@@ -8,19 +8,14 @@ import SignalUI
 import SwiftUI
 
 class BackupOnboardingKeyIntroViewController: HostingController<BackupOnboardingKeyIntroView> {
-    private var debouncedBiometricAuthTask: DebouncedTask<Void>!
+    private let onDeviceAuthSucceeded: () -> Void
     private let viewModel: BackupsOnboardingKeyIntroViewModel
 
     init(onDeviceAuthSucceeded: @escaping () -> Void) {
-        viewModel = BackupsOnboardingKeyIntroViewModel()
+        self.onDeviceAuthSucceeded = onDeviceAuthSucceeded
+        self.viewModel = BackupsOnboardingKeyIntroViewModel()
 
         super.init(wrappedView: BackupOnboardingKeyIntroView(viewModel: viewModel))
-
-        debouncedBiometricAuthTask = DebouncedTask {
-            if await LocalDeviceAuthentication().performBiometricAuth() {
-                onDeviceAuthSucceeded()
-            }
-        }
 
         viewModel.actionsDelegate = self
     }
@@ -30,7 +25,11 @@ class BackupOnboardingKeyIntroViewController: HostingController<BackupOnboarding
 
 extension BackupOnboardingKeyIntroViewController: BackupsOnboardingKeyIntroViewModel.ActionsDelegate {
     fileprivate func onContinue() {
-        _ = debouncedBiometricAuthTask.run()
+        Task {
+            if await LocalDeviceAuthentication().performBiometricAuth() {
+                onDeviceAuthSucceeded()
+            }
+        }
     }
 }
 

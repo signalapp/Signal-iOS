@@ -20,11 +20,8 @@ public final class BackupDisablingManager {
     private let db: DB
     private let kvStore: KeyValueStore
     private let logger: PrefixedLogger
+    private let taskQueue: ConcurrentTaskQueue
     private let tsAccountManager: TSAccountManager
-
-    /// Tracks async work to disable remotely, if necessary. Calls to `.run()`
-    /// will (almost-)insta-complete if disabling remotely is not necessary.
-    private var disableRemotelyIfNecessaryTask: DebouncedTask<Void>!
 
     init(
         authCredentialStore: AuthCredentialStore,
@@ -47,12 +44,8 @@ public final class BackupDisablingManager {
         self.db = db
         self.kvStore = KeyValueStore(collection: "BackupDisablingManager")
         self.logger = PrefixedLogger(prefix: "[Backups]")
+        self.taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
         self.tsAccountManager = tsAccountManager
-
-        self.disableRemotelyIfNecessaryTask = DebouncedTask { [weak self] in
-            guard let self else { return }
-            await _disableRemotelyIfNecessary()
-        }
     }
 
     // MARK: -
@@ -77,7 +70,9 @@ public final class BackupDisablingManager {
             }
 
             logger.info("Backups set locally as disabling. Starting async disabling work...")
-            _ = disableRemotelyIfNecessaryTask.run()
+            Task {
+                await disableRemotelyIfNecessary()
+            }
         } catch {
             logger.error("Failed to mark Backups disabling locally! \(error)")
         }
@@ -92,8 +87,9 @@ public final class BackupDisablingManager {
     /// previous launch may have attempted but failed to remotely disable
     /// Backups.
     public func disableRemotelyIfNecessary() async {
-        // If we don't need to disable remotely, this will insta-complete.
-        await disableRemotelyIfNecessaryTask.run().value
+        await taskQueue.runWithoutTaskCancellationHandler {
+            await _disableRemotelyIfNecessary()
+        }
     }
 
     /// Whether a previous remote-disabling attempt failed terminally.
