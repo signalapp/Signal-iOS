@@ -10,7 +10,7 @@ import Foundation
 /// This is useful when there is no operation that needs to be canceled. For
 /// example, when waiting for an event to occur, "cancellation" means "stop
 /// waiting for the event to occur" and not "stop the event from occurring".
-public struct CancellableContinuation<T> {
+public struct CancellableContinuation<T>: Sendable {
     private enum State {
         case initial
         case waiting(CheckedContinuation<T, Error>)
