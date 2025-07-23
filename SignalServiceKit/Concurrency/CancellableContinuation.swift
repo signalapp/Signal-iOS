@@ -10,7 +10,7 @@ import Foundation
 /// This is useful when there is no operation that needs to be canceled. For
 /// example, when waiting for an event to occur, "cancellation" means "stop
 /// waiting for the event to occur" and not "stop the event from occurring".
-struct CancellableContinuation<T> {
+public struct CancellableContinuation<T> {
     private enum State {
         case initial
         case waiting(CheckedContinuation<T, Error>)
@@ -18,6 +18,9 @@ struct CancellableContinuation<T> {
         case consumed
     }
     private let state = AtomicValue<State>(State.initial, lock: .init())
+
+    public init() {
+    }
 
     func cancel() {
         self.resume(with: .failure(CancellationError()))
@@ -27,7 +30,7 @@ struct CancellableContinuation<T> {
     ///
     /// It's safe (and harmless) to call `resume` multiple times; redundant
     /// invocations are ignored.
-    func resume(with result: Result<T, Error>) {
+    public func resume(with result: Result<T, Error>) {
         let continuation = self.state.update { state -> CheckedContinuation<T, Error>? in
             switch state {
             case .initial:
@@ -47,7 +50,7 @@ struct CancellableContinuation<T> {
     }
 
     /// Waits for the result. Should only be called once per instance!
-    func wait() async throws -> T {
+    public func wait() async throws -> T {
         try await withTaskCancellationHandler(
             operation: {
                 return try await withCheckedThrowingContinuation { continuation in

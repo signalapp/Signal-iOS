@@ -1466,11 +1466,23 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             let backgroundMessageFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher(useWebSocket: true)
             await backgroundMessageFetcher.start()
-            let result = await Result(catching: {
+
+            // If we get canceled, we want to ignore the contact sync in this method
+            // and return control to the caller.
+            let syncContacts = CancellableContinuation<Void>()
+            Task {
                 // If the main app gets woken to process messages in the background, check
                 // for any pending NSE requests to fulfill.
-                async let _ = SSKEnvironment.shared.syncManagerRef.syncAllContactsIfFullSyncRequested().awaitable()
+                let result = await Result(catching: {
+                    try await SSKEnvironment.shared.syncManagerRef.syncAllContactsIfFullSyncRequested().awaitable()
+                })
+                syncContacts.resume(with: result)
+            }
 
+            let result = await Result(catching: {
+                // If the contact sync fails, ignore it. In this method, we care about the
+                // result of fetching messages, not sending opportunistic contact syncs.
+                try? await syncContacts.wait()
                 try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
             })
             await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
