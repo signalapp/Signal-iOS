@@ -25,7 +25,7 @@ final class InactivePrimaryDeviceReminderMegaphone: MegaphoneView {
             comment: "Body for an in-app megaphone about a user's inactive primary device."
         )
 
-        imageName = "inactive-linked-device-reminder-megaphone"
+        imageName = "phone-warning"
         imageContentMode = .center
 
         let viewControllerRef = fromViewController

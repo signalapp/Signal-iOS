@@ -649,11 +649,7 @@ extension ExperienceUpgradeManifest {
     }
 
     public static func checkPreconditionsForInactivePrimaryDeviceReminder(tx: DBReadTransaction) -> Bool {
-        if FeatureFlags.inactivePrimaryDeviceMegaphone {
-            return DependenciesBridge.shared.inactivePrimaryDeviceStore.valueForInactivePrimaryDeviceAlert(transaction: tx)
-        }
-
-        return false
+        return DependenciesBridge.shared.inactivePrimaryDeviceStore.valueForInactivePrimaryDeviceAlert(transaction: tx)
     }
 
     public static func checkPreconditionsForPinReminder(transaction: DBReadTransaction) -> Bool {

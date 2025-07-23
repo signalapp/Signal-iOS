@@ -61,8 +61,6 @@ public enum FeatureFlags {
     public static let libsignalEnforceMinTlsVersion = false
 
     public static let moveDraftsUpChatList = build.includes(.internal)
-
-    public static let inactivePrimaryDeviceMegaphone = build.includes(.dev)
 }
 
 // MARK: -
