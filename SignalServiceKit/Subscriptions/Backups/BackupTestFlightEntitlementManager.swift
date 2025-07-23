@@ -48,6 +48,7 @@ public final class BackupTestFlightEntitlementManager {
         guard TSConstants.isUsingProductionService else {
             // If we're on Staging, no need to do anything – all accounts on
             // Staging get the entitlement automatically.
+            logger.info("Skipping acquiring Backup entitlement: on Staging!")
             return
         }
 

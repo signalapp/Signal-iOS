@@ -34,6 +34,7 @@ final class BackupEnablingManager {
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager
     private let db: DB
+    private let remoteConfigManager: RemoteConfigManager
     private let tsAccountManager: TSAccountManager
 
     init(
@@ -44,6 +45,7 @@ final class BackupEnablingManager {
         backupSubscriptionManager: BackupSubscriptionManager,
         backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager,
         db: DB,
+        remoteConfigManager: RemoteConfigManager,
         tsAccountManager: TSAccountManager
     ) {
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
@@ -53,6 +55,7 @@ final class BackupEnablingManager {
         self.backupSubscriptionManager = backupSubscriptionManager
         self.backupTestFlightEntitlementManager = backupTestFlightEntitlementManager
         self.db = db
+        self.remoteConfigManager = remoteConfigManager
         self.tsAccountManager = tsAccountManager
     }
 
@@ -185,6 +188,15 @@ final class BackupEnablingManager {
     }
 
     private func enablePaidPlanWithoutStoreKit() async throws(DisplayableError) {
+        if remoteConfigManager.currentConfig().allowBackupSettings {
+            // AppAttest doesn't work yet. For the time being, accounts that are
+            // opted-in to Backup Settings should ensure they have a Backup
+            // entitlement on their account before enabling the paid plan, or
+            // things won't work so good.
+            Logger.warn("[Backups] Enabling paid-tier Backups without acquiring an entitlement automatically!")
+            return
+        }
+
         do {
             try await backupTestFlightEntitlementManager.acquireEntitlement()
         } catch where error.isNetworkFailureOrTimeout {
