@@ -63,10 +63,10 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         throw OWSAssertionError("Unimplemented")
     }
 
-    open func prepareOversizeTextIfNeeded(
-        from messageBody: MessageBody
-    ) throws -> ValidatedMessageBody? {
-        return .inline(messageBody)
+    open func prepareOversizeTextsIfNeeded<Key: Hashable>(
+        from texts: [Key: MessageBody]
+    ) throws -> [Key: ValidatedMessageBody] {
+        return texts.mapValues { .inline($0) }
     }
 
     open func prepareQuotedReplyThumbnail(

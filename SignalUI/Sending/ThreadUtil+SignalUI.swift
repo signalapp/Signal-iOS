@@ -25,7 +25,8 @@ extension ThreadUtil {
             do {
                 let messageBody = try messageBody.map {
                     try DependenciesBridge.shared.attachmentContentValidator
-                        .prepareOversizeTextIfNeeded(from: $0)
+                        .prepareOversizeTextsIfNeeded(from: ["": $0])
+                        .values.first
                 } ?? nil
                 let linkPreviewDataSource = try linkPreviewDraft.map {
                     try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
@@ -80,7 +81,8 @@ extension ThreadUtil {
             do {
                 let messageBody = try messageBody.map {
                     try DependenciesBridge.shared.attachmentContentValidator
-                        .prepareOversizeTextIfNeeded(from: $0)
+                        .prepareOversizeTextsIfNeeded(from: ["": $0])
+                        .values.first
                 } ?? nil
                 let linkPreviewDataSource = try linkPreviewDraft.map {
                     try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)

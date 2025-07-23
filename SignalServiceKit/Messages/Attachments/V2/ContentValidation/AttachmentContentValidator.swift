@@ -144,9 +144,9 @@ public protocol AttachmentContentValidator {
     /// If the provided message body is large enough to require an oversize text
     /// attachment, creates a pending one, alongside the truncated message body.
     /// If not, just returns the message body as is.
-    func prepareOversizeTextIfNeeded(
-        from messageBody: MessageBody
-    ) throws -> ValidatedMessageBody?
+    func prepareOversizeTextsIfNeeded<Key: Hashable>(
+        from texts: [Key: MessageBody]
+    ) throws -> [Key: ValidatedMessageBody]
 
     /// Build a `QuotedReplyAttachmentDataSource` for a reply to a message with the provided attachment.
     /// Throws an error if the provided attachment is non-visual, or if data reading/writing fails.
