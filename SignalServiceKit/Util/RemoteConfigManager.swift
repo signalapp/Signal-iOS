@@ -253,11 +253,15 @@ public class RemoteConfig {
     }
 
     public var isNotificationServiceWebSocketEnabled: Bool {
-        return isEnabled(.notificationServiceWebSocket)
+        return isEnabled(.notificationServiceWebSocket) && isConnectionLockEnabled
     }
 
     public var isShareExtensionWebSocketEnabled: Bool {
-        return isEnabled(.shareExtensionWebSocket)
+        return isEnabled(.shareExtensionWebSocket) && isConnectionLockEnabled
+    }
+
+    public var isConnectionLockEnabled: Bool {
+        return !isEnabled(.connectionLockKillSwitch)
     }
 
     public var usePqRatchet: Bool {
@@ -488,6 +492,7 @@ private enum IsEnabledFlag: String, FlagType {
     case cardGiftDonationKillSwitch = "ios.cardGiftDonationKillSwitch"
     case cardMonthlyDonationKillSwitch = "ios.cardMonthlyDonationKillSwitch"
     case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
+    case connectionLockKillSwitch = "ios.connectionLockKillSwitch"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
     case lazyDatabaseMigratorKillSwitch = "ios.lazyDatabaseMigratorKillSwitch"
@@ -522,6 +527,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .cardGiftDonationKillSwitch: false
         case .cardMonthlyDonationKillSwitch: false
         case .cardOneTimeDonationKillSwitch: false
+        case .connectionLockKillSwitch: true
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
         case .lazyDatabaseMigratorKillSwitch: true

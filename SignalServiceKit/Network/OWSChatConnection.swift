@@ -1035,6 +1035,9 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
     private let heldConnectionLock = AtomicValue<ConnectionLock.HeldLock?>(nil, lock: .init())
 
     private func acquireConnectionLock() async throws {
+        guard RemoteConfig.current.isConnectionLockEnabled else {
+            return
+        }
         owsPrecondition(self.heldConnectionLock.get() == nil)
         let newValue = try await self.connectionLock.lock(onInterrupt: (self.serialQueue, {
             Logger.warn("Cycling the socket because the connection lock was interrupted")
