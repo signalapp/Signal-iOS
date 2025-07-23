@@ -37,8 +37,8 @@ final class SgxWebsocketConnectionFactoryImpl: SgxWebsocketConnectionFactory {
         on scheduler: Scheduler
     ) -> Promise<SgxWebsocketConnection<Configurator>> {
         let websocketFactory = self.websocketFactory
-        return firstly {
-            return configurator.fetchAuth()
+        return Promise.wrapAsync {
+            return try await configurator.fetchAuth()
         }.then(on: scheduler) { (auth) -> Promise<SgxWebsocketConnection<Configurator>> in
             return try SgxWebsocketConnectionImpl<Configurator>.connectAndPerformHandshake(
                 configurator: configurator,

@@ -31,7 +31,7 @@ public protocol SgxWebsocketConfigurator {
 
     /// Called internally in order to fetch authentication to include in the header
     /// when establishing the initial websocket connection.
-    func fetchAuth() -> Promise<RemoteAttestation.Auth>
+    func fetchAuth() async throws -> RemoteAttestation.Auth
 
     /// Called just after starting a websocket connection in order to use the
     /// client for the handshake and subsequent messages.

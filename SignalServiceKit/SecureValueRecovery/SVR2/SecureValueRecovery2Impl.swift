@@ -177,7 +177,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         // Force refresh a credential, even if we have one cached, to ensure we
         // have a fresh credential to back up.
         Logger.info("Refreshing auth credential for periodic backup")
-        return RemoteAttestation.authForSVR2(chatServiceAuth: .implicit())
+        return Promise.wrapAsync { try await RemoteAttestation.authForSVR2(chatServiceAuth: .implicit()) }
             .map(on: DispatchQueue.main) { [weak self] credential -> Void in
                 Logger.info("Storing refreshed credential")
                 self?.db.write { tx in

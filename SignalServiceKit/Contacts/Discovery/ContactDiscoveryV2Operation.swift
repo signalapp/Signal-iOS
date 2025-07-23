@@ -133,7 +133,7 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
 
     func perform() async throws -> [ContactDiscoveryResult] {
         do {
-            let cdsiAuth = try await self.remoteAttestation.authForCDSI().awaitable()
+            let cdsiAuth = try await self.remoteAttestation.authForCDSI()
             let request = try self.buildRequest()
             let auth = LibSignalClient.Auth(username: cdsiAuth.username, password: cdsiAuth.password)
             let tokenResult = try await self.connectionImpl.performRequest(request, auth: auth)
@@ -350,13 +350,13 @@ class _ContactDiscoveryV2Operation_UDManagerWrapper: _ContactDiscoveryV2Operatio
 }
 
 protocol _ContactDiscoveryV2Operation_RemoteAttestationShim {
-    func authForCDSI() -> Promise<RemoteAttestation.Auth>
+    func authForCDSI() async throws -> RemoteAttestation.Auth
 }
 
 class _ContactDiscoveryV2Operation_RemoteAttestationWrapper: _ContactDiscoveryV2Operation_RemoteAttestationShim {
     init() {}
 
-    func authForCDSI() -> Promise<RemoteAttestation.Auth> {
-        return RemoteAttestation.authForCDSI()
+    func authForCDSI() async throws -> RemoteAttestation.Auth {
+        return try await RemoteAttestation.authForCDSI()
     }
 }

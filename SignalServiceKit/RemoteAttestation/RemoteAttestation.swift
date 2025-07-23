@@ -11,16 +11,16 @@ public enum RemoteAttestation {}
 // MARK: - CSDI
 
 extension RemoteAttestation {
-    static func authForCDSI() -> Promise<Auth> {
-        return Auth.fetch(forService: .cdsi, auth: .implicit())
+    static func authForCDSI() async throws -> Auth {
+        return try await Auth.fetch(forService: .cdsi, auth: .implicit())
     }
 }
 
 // MARK: - SVR2
 
 extension RemoteAttestation {
-    static func authForSVR2(chatServiceAuth: ChatServiceAuth) -> Promise<Auth> {
-        return Auth.fetch(forService: .svr2, auth: chatServiceAuth)
+    static func authForSVR2(chatServiceAuth: ChatServiceAuth) async throws -> Auth {
+        return try await Auth.fetch(forService: .svr2, auth: chatServiceAuth)
     }
 }
 
@@ -71,13 +71,13 @@ fileprivate extension RemoteAttestation.Auth {
     static func fetch(
         forService service: RemoteAttestation.Service,
         auth: ChatServiceAuth
-    ) -> Promise<RemoteAttestation.Auth> {
+    ) async throws -> RemoteAttestation.Auth {
         var request = service.authRequest()
 
         switch auth.credentials {
         case .implicit:
             guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-                return Promise(error: OWSGenericError("Not registered."))
+                throw OWSGenericError("Not registered.")
             }
         case .explicit:
             break
@@ -85,19 +85,17 @@ fileprivate extension RemoteAttestation.Auth {
 
         request.auth = .identified(auth)
 
-        return firstly {
-            SSKEnvironment.shared.networkManagerRef.makePromise(request: request, canUseWebSocket: false)
-        }.map(on: DispatchQueue.global()) { response in
-#if TESTABLE_BUILD
-            HTTPUtils.logCurl(for: request)
-#endif
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: false)
 
-            guard let json = response.responseBodyJson else {
-                throw attestationError(reason: "Missing or invalid JSON")
-            }
+        #if TESTABLE_BUILD
+        HTTPUtils.logCurl(for: request)
+        #endif
 
-            return try RemoteAttestation.Auth(authParams: json)
+        guard let json = response.responseBodyJson else {
+            throw attestationError(reason: "Missing or invalid JSON")
         }
+
+        return try RemoteAttestation.Auth(authParams: json)
     }
 }
 

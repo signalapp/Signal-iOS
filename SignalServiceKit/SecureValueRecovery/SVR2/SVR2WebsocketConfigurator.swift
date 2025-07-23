@@ -26,14 +26,14 @@ internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
         return "v1/\(mrenclaveString)"
     }
 
-    internal func fetchAuth() -> Promise<RemoteAttestation.Auth> {
+    internal func fetchAuth() async throws -> RemoteAttestation.Auth {
         switch authMethod {
         case .svrAuth(let credential, _):
-            return .value(credential.credential)
+            return credential.credential
         case .chatServerAuth(let authedAccount):
-            return RemoteAttestation.authForSVR2(chatServiceAuth: authedAccount.chatServiceAuth)
+            return try await RemoteAttestation.authForSVR2(chatServiceAuth: authedAccount.chatServiceAuth)
         case .implicit:
-            return RemoteAttestation.authForSVR2(chatServiceAuth: .implicit())
+            return try await RemoteAttestation.authForSVR2(chatServiceAuth: .implicit())
         }
     }
 

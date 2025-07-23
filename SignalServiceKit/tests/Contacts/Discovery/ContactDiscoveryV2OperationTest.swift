@@ -29,8 +29,8 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     }
 
     private class MockRemoteAttestation: ContactDiscoveryV2Operation<MockContactDiscoveryConnection>.Shims.RemoteAttestation {
-        func authForCDSI() -> Promise<RemoteAttestation.Auth> {
-            return .value(RemoteAttestation.Auth(username: "", password: ""))
+        func authForCDSI() async throws -> RemoteAttestation.Auth {
+            return RemoteAttestation.Auth(username: "", password: "")
         }
     }
 
