@@ -337,7 +337,7 @@ public class OWSChatConnection {
     public func requestConnection(shouldReconnectIfConnectedElsewhere: Bool) -> ConnectionToken {
         let (connectionToken, shouldConnect) = connectionTokenState.update {
             $0.tokenId += 1
-            let shouldConnect = $0.activeTokenIds.isEmpty
+            let shouldConnect = !$0.shouldSocketBeOpen()
             // If we want to reconnect, set the number of retries to "Int.max" (aka
             // "infinity"). If we shouldn't reconnect, set the number of retries to 1.
             $0.activeTokenIds[$0.tokenId] = shouldReconnectIfConnectedElsewhere ? Int.max : 1
@@ -353,7 +353,7 @@ public class OWSChatConnection {
     private func releaseConnection(_ tokenId: Int) -> Bool {
         let (didRelease, shouldDisconnect) = connectionTokenState.update {
             let didRelease = $0.activeTokenIds.removeValue(forKey: tokenId) != nil
-            return (didRelease, $0.activeTokenIds.isEmpty)
+            return (didRelease, !$0.shouldSocketBeOpen())
         }
         if shouldDisconnect {
             applyDesiredSocketState()
