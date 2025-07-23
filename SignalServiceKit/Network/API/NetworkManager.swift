@@ -153,14 +153,9 @@ public class NetworkManager {
                 return try await restNetworkManager.asyncRequest(request)
             }
         } catch {
-            if
-                let owsHttpError = error as? OWSHTTPError,
-                case let .wrappedFailure(error) = owsHttpError,
-                (error as NSError).code == NSURLErrorCancelled
-            {
+            if case OWSHTTPError.wrappedFailure(URLError.cancelled) = error {
                 try Task.checkCancellation()
             }
-
             throw error
         }
     }
