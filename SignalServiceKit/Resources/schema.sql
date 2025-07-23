@@ -2388,7 +2388,7 @@ CREATE
             ON DELETE
                 CASCADE
                 ,"text" TEXT NOT NULL CHECK (
-                    LENGTH( "text" ) < 131072
+                    LENGTH( "text" ) <= 131072
                 )
 )
 ;
