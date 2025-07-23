@@ -150,7 +150,7 @@ public struct BackupAttachmentDownloadEligibility {
         currentTimestamp: UInt64,
         backupPlan: BackupPlan
     ) rethrows -> QueuedBackupAttachmentDownload.State? {
-        guard FeatureFlags.Backups.remoteExportAlpha else {
+        guard FeatureFlags.Backups.supported else {
             return nil
         }
         guard attachment.asStream() == nil else {
@@ -213,7 +213,7 @@ public struct BackupAttachmentDownloadEligibility {
         attachment: Attachment,
         backupPlan: BackupPlan,
     ) -> QueuedBackupAttachmentDownload.State? {
-        guard FeatureFlags.Backups.remoteExportAlpha else {
+        guard FeatureFlags.Backups.supported else {
             return nil
         }
         switch backupPlan {

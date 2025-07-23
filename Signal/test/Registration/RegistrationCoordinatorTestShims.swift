@@ -104,7 +104,7 @@ public class _RegistrationCoordinator_FeatureFlagsMock: _RegistrationCoordinator
 
     public init() {}
 
-    public var backupFileAlphaRegistrationFlow: Bool { false }
+    public var backupSupported: Bool { false }
 }
 
 // MARK: - IdentityManager

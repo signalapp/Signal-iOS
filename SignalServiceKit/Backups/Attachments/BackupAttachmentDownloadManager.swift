@@ -181,7 +181,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         guard appContext.isMainApp else { return }
 
         if
-            FeatureFlags.Backups.remoteExportAlpha,
+            FeatureFlags.Backups.supported,
             db.read(block: tsAccountManager.registrationState(tx:))
                 .isRegistered
         {

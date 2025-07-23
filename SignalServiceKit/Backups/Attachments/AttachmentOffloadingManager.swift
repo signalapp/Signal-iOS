@@ -126,7 +126,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
     }
 
     public func offloadAttachmentsIfNeeded() async throws {
-        guard FeatureFlags.Backups.remoteExportAlpha else {
+        guard FeatureFlags.Backups.supported else {
             return
         }
 

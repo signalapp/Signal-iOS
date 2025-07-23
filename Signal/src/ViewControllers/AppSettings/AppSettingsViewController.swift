@@ -241,7 +241,10 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        if isPrimaryDevice, FeatureFlags.Backups.settings {
+        if
+            isPrimaryDevice,
+            RemoteConfig.current.allowBackupSettings
+        {
             section2.add(.disclosureItem(
                 icon: .backup,
                 withText: OWSLocalizedString(

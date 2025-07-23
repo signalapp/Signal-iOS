@@ -17,13 +17,24 @@ class BackupKeyReminderMegaphoneTests: XCTestCase {
         db = InMemoryDB()
     }
 
+    private func checkPreconditions(tx: DBReadTransaction) -> Bool {
+        let remoteConfig = RemoteConfig(clockSkew: 0, valueFlags: [
+            "ios.allowBackups": "true"
+        ])
+
+        return ExperienceUpgradeManifest.checkPreconditionsForBackupKeyReminder(
+            remoteConfig: remoteConfig,
+            transaction: tx
+        )
+    }
+
     func testPreconditionsForBackupKeyMegaphone_backupsDisabled() throws {
         db.write { tx in
             backupSettingsStore.setBackupPlan(.disabled, tx: tx)
         }
 
         let shouldShowBackupKeyReminder = db.read { tx in
-            ExperienceUpgradeManifest.checkPreconditionsForBackupKeyReminder(transaction: tx)
+            checkPreconditions(tx: tx)
         }
         XCTAssertFalse(shouldShowBackupKeyReminder, "Don't show reminder if backups is not enabled")
     }
@@ -34,7 +45,7 @@ class BackupKeyReminderMegaphoneTests: XCTestCase {
         }
 
         let shouldShowBackupKeyReminder = db.read { tx in
-            ExperienceUpgradeManifest.checkPreconditionsForBackupKeyReminder(transaction: tx)
+            checkPreconditions(tx: tx)
         }
         XCTAssertFalse(shouldShowBackupKeyReminder, "Don't show reminder if user has never done a backup")
     }
@@ -49,7 +60,7 @@ class BackupKeyReminderMegaphoneTests: XCTestCase {
         }
 
         let shouldShowBackupKeyReminder = db.read { tx in
-            ExperienceUpgradeManifest.checkPreconditionsForBackupKeyReminder(transaction: tx)
+            checkPreconditions(tx: tx)
         }
         XCTAssertFalse(shouldShowBackupKeyReminder, "Don't show reminder if user just registered for backups")
     }
@@ -65,7 +76,7 @@ class BackupKeyReminderMegaphoneTests: XCTestCase {
         }
 
         let shouldShowBackupKeyReminder = db.read { tx in
-            ExperienceUpgradeManifest.checkPreconditionsForBackupKeyReminder(transaction: tx)
+            checkPreconditions(tx: tx)
         }
         XCTAssertTrue(shouldShowBackupKeyReminder, "Should show reminder if user registered long enough ago and hasn't seen a backup key reminder yet")
     }
@@ -85,7 +96,7 @@ class BackupKeyReminderMegaphoneTests: XCTestCase {
         }
 
         let shouldShowBackupKeyReminder = db.read { tx in
-            ExperienceUpgradeManifest.checkPreconditionsForBackupKeyReminder(transaction: tx)
+            checkPreconditions(tx: tx)
         }
         XCTAssertFalse(shouldShowBackupKeyReminder, "Don't show reminder if user has seen a backup key reminder recently")
     }
@@ -106,7 +117,7 @@ class BackupKeyReminderMegaphoneTests: XCTestCase {
         }
 
         let shouldShowBackupKeyReminder = db.read { tx in
-            ExperienceUpgradeManifest.checkPreconditionsForBackupKeyReminder(transaction: tx)
+            checkPreconditions(tx: tx)
         }
         XCTAssertTrue(shouldShowBackupKeyReminder, "Should show reminder if user registered long enough ago and hasn't seen a reminder in awhile")
     }

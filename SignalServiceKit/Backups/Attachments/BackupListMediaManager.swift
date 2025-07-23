@@ -80,7 +80,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     }
 
     private func _queryListMediaIfNeeded() async throws {
-        guard FeatureFlags.Backups.fileAlpha else {
+        guard FeatureFlags.Backups.supported else {
             return
         }
         let (

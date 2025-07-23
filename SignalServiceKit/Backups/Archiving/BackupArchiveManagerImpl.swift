@@ -282,7 +282,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         localIdentifiers: LocalIdentifiers,
         progress progressSink: OWSProgressSink?
     ) async throws -> URL {
-        guard FeatureFlags.Backups.fileAlpha else {
+        guard FeatureFlags.Backups.supported else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
@@ -718,7 +718,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         backupPurpose: MessageBackupPurpose,
         progress progressSink: OWSProgressSink?
     ) async throws {
-        guard FeatureFlags.Backups.fileAlpha else {
+        guard FeatureFlags.Backups.supported else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }

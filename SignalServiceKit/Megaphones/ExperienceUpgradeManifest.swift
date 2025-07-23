@@ -674,8 +674,11 @@ extension ExperienceUpgradeManifest {
         }
     }
 
-    public static func checkPreconditionsForBackupKeyReminder(transaction: DBReadTransaction) -> Bool {
-        guard FeatureFlags.Backups.settings else {
+    public static func checkPreconditionsForBackupKeyReminder(
+        remoteConfig: RemoteConfig,
+        transaction: DBReadTransaction
+    ) -> Bool {
+        guard remoteConfig.allowBackupSettings else {
             return false
         }
 
@@ -705,8 +708,11 @@ extension ExperienceUpgradeManifest {
         return lastReminderDate < Date().addingTimeInterval(-180 * 24 * 60 * 60)
     }
 
-    public static func checkPreconditionsForBackupEnablementReminder(transaction: DBReadTransaction) -> Bool {
-        guard FeatureFlags.Backups.settings else {
+    public static func checkPreconditionsForBackupEnablementReminder(
+        remoteConfig: RemoteConfig,
+        transaction: DBReadTransaction,
+    ) -> Bool {
+        guard remoteConfig.allowBackupSettings else {
             return false
         }
 

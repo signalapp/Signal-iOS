@@ -272,6 +272,14 @@ public class RemoteConfig {
         return isEnabled(.shouldValidatePrimaryPniIdentityKey)
     }
 
+    public var allowBackupSettings: Bool {
+        if FeatureFlags.Backups.showSettings {
+            return true
+        }
+
+        return FeatureFlags.Backups.supported && isEnabled(.allowBackupSettings)
+    }
+
     #if TESTABLE_BUILD
     public var testHotSwappable: Bool? {
         if self.valueFlags[IsEnabledFlag.hotSwappable.rawValue] != nil {
@@ -472,6 +480,7 @@ public class RemoteConfig {
 // MARK: - IsEnabledFlag
 
 private enum IsEnabledFlag: String, FlagType {
+    case allowBackupSettings = "ios.allowBackups"
     case applePayGiftDonationKillSwitch = "ios.applePayGiftDonationKillSwitch"
     case applePayMonthlyDonationKillSwitch = "ios.applePayMonthlyDonationKillSwitch"
     case applePayOneTimeDonationKillSwitch = "ios.applePayOneTimeDonationKillSwitch"
@@ -505,6 +514,7 @@ private enum IsEnabledFlag: String, FlagType {
 
     var isHotSwappable: Bool {
         switch self {
+        case .allowBackupSettings: true
         case .applePayGiftDonationKillSwitch: false
         case .applePayMonthlyDonationKillSwitch: false
         case .applePayOneTimeDonationKillSwitch: false

@@ -79,10 +79,16 @@ class ExperienceUpgradeManager {
                             .checkPreconditionsForContactsPermissionReminder()
                     case .backupKeyReminder:
                         return ExperienceUpgradeManifest
-                            .checkPreconditionsForBackupKeyReminder(transaction: transaction)
+                            .checkPreconditionsForBackupKeyReminder(
+                                remoteConfig: RemoteConfig.current,
+                                transaction: transaction,
+                            )
                     case .enableBackupsReminder:
                         return ExperienceUpgradeManifest
-                            .checkPreconditionsForBackupEnablementReminder(transaction: transaction)
+                            .checkPreconditionsForBackupEnablementReminder(
+                                remoteConfig: RemoteConfig.current,
+                                transaction: transaction
+                            )
                     case .unrecognized:
                         break
                     }

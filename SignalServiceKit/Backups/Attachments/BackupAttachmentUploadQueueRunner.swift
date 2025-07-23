@@ -113,7 +113,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
     }
 
     public func backUpAllAttachments() async throws {
-        guard FeatureFlags.Backups.remoteExportAlpha else {
+        guard FeatureFlags.Backups.supported else {
             return
         }
         let (isPrimary, localAci, backupPlan) = db.read { tx in
@@ -169,7 +169,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             break
         }
 
-        if FeatureFlags.Backups.remoteExportAlpha {
+        if FeatureFlags.Backups.supported {
             try await listMediaManager.queryListMediaIfNeeded()
         }
 
@@ -281,7 +281,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         private let errorCounts = ErrorCounts()
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
-            guard FeatureFlags.Backups.remoteExportAlpha else {
+            guard FeatureFlags.Backups.supported else {
                 return .cancelled
             }
             let (attachment, backupPlan, currentUploadEra) = db.read { tx in

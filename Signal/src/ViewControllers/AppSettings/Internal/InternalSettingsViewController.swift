@@ -378,11 +378,6 @@ private extension InternalSettingsViewController {
                 }
             }
 
-            guard FeatureFlags.Backups.remoteExportAlpha else {
-                exportMessageBackupProtoFile()
-                return
-            }
-
             DispatchQueue.main.async {
                 let actionSheet = ActionSheetController(title: "Choose backup destination:")
 

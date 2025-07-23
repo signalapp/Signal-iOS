@@ -32,7 +32,7 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
     }
 
     public func startCondition() -> BGProcessingTaskStartCondition {
-        guard FeatureFlags.Backups.remoteExportAlpha else {
+        guard FeatureFlags.Backups.supported else {
             return .never
         }
 

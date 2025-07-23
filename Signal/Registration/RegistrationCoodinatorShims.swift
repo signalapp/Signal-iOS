@@ -160,14 +160,14 @@ public class _RegistrationCoordinator_ExperienceManagerWrapper: _RegistrationCoo
 
 public protocol _RegistrationCoordinator_FeatureFlagsShim {
 
-    var backupFileAlphaRegistrationFlow: Bool { get }
+    var backupSupported: Bool { get }
 }
 
 public class _RegistrationCoordinator_FeatureFlagsWrapper: _RegistrationCoordinator_FeatureFlagsShim {
 
     public init() {}
 
-    public var backupFileAlphaRegistrationFlow: Bool { FeatureFlags.Backups.fileAlphaRegistrationFlow }
+    public var backupSupported: Bool { FeatureFlags.Backups.supported }
 }
 
 public protocol _RegistrationCoordinator_IdentityManagerShim {
