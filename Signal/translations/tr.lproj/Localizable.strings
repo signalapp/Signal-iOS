@@ -589,6 +589,33 @@
 /* Title for a view allowing users to record their 'Backup Key'. */
 "BACKUP_RECORD_KEY_TITLE" = "Yedekleme anahtarını kaydet";
 
+/* Message for an action sheet explaining that performing a backup failed with a generic error. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Something went wrong creating your backup. Please try again, or contact support.";
+
+/* Title for a button in an action sheet allowing users to perform a backup, ignoring that WiFi is required. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Allow Backups Using Cellular";
+
+/* Message for an action sheet explaining that performing a backup failed because WiFi is required. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Backing up using cellular may result in data charges. You can connect to a WiFi network or allow backups using cellular.";
+
+/* Title for an action sheet explaining that performing a backup failed because WiFi is required. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Allow Backups Using Cellular Data?";
+
+/* Message for an action sheet explaining that performing a backup failed with a network error. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Something went wrong creating your backup. Check your internet connection and try again.";
+
+/* Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "Creating backup: %1$@";
+
+/* Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Exporting backup...";
+
+/* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Uploading backup...";
+
+/* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Uploading backup media...";
+
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Yükselt";
 
@@ -626,10 +653,10 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "%1$@ tarihinde sona erdi";
 
 /* Title for a button allowing users to manage their backup plan as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Manage Plan";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Planı Yönet";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid, but free as long as you remain a tester";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Ücretli, ancak test kullanıcısı olduğun sürece ücretsiz kalır";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Metin + tam medya yedeklemesi";
@@ -644,7 +671,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Yedeklemeler kapatıldı ve verilerin Signal'ın güvenli depolama hizmetinden silindi.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, any media that is not on device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Yedeklemeler kapatıldı, cihazda bulunmayan medya dosyaları indiriliyor. Verilerin indirildikten sonra Signal'ın güvenli depolama hizmetinden silinecektir.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Bir hata oluştu. Lütfen destek ekibiyle iletişime geç.";
@@ -671,19 +698,19 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Kapat ve Yedeklemeyi Sil";
 
 /* Title for a button in an action sheet confirming the user wants to disable Backups. */
-"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_CONFIRM" = "Turn Off & Delete";
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_CONFIRM" = "Kapat ve Sil";
 
 /* Message for an action sheet confirming the user wants to disable Backups. */
-"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Your backup will be deleted and no new backups will be created.";
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Yedeklemen silinecek ve yeni yedekleme oluşturulmayacaktır.";
 
 /* Title for an action sheet confirming the user wants to disable Backups. */
-"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_TITLE" = "Turn Off and Delete Backups?";
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_TITLE" = "Yedeklemeler kapatılıp silinsin mi?";
 
 /* Message shown in an action sheet when the user disables Backups, explaining that their media is downloading first. */
-"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_MESSAGE" = "You have media in your backup that's not on this device. Your backup may take a long time to download, keep Signal open to avoid interruptions.";
+"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_MESSAGE" = "Yedeklemende bu cihazda olmayan medya var. Yedeklemenin indirilmesi uzun sürebilir, kesintiye uğramasını önlemek için Signal'ı açık tut.";
 
 /* Title shown in an action sheet when the user disables Backups, explaining that their media is downloading first. */
-"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_TITLE" = "Downloading Your Backup";
+"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_TITLE" = "Yedeklemen indiriliyor";
 
 /* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "Verilerin Signal'ın güvenli depolama hizmetinden silinirken bir hata oluştu.";
@@ -748,6 +775,9 @@
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Şimdi yedekle";
 
+/* Title for a button shown under a progress bar tracking a manual backup, which lets the user cancel the backup. */
+"BACKUP_SETTINGS_MANUAL_BACKUP_CANCEL_BUTTON" = "Cancel Backup";
+
 /* Action in an action sheet allowing users to download their offloaded media later. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_LATER_ACTION" = "Daha sonra indir";
 
@@ -761,16 +791,16 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Boşaltılan medya indirilsin mi?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you remain a tester. Make sure to download all your media before leaving the test program.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Boşaltılan medya, test kullanıcısı olarak kaldığın sürece kullanılabilir olacaktır. Test programından çıkmadan önce tüm medyanı indirdiğinden emin ol.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Testing Offloaded Media";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Boşaltılan Medya Test Ediliyor";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Kullanılmayan medya boşaltılır ancak istediğin zaman yedeklemenden indirilebilir.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you remain a tester.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Kullanılmayan medya boşaltılır, ancak test kullanıcısı olduğun sürece yedeklemenden istediğin zaman indirebilirsin.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Depolama optimizasyonu yalnızca Signal Yedeklemelerin ücretli katmanı ile kullanılabilir. Bu özelliği kullanmaya başlamak için yedekleme planını yükselt.";
@@ -1526,7 +1556,7 @@
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Ücretsiz";
 
 /* Title for the paid plan option, when choosing a Backup plan as a tester. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_NO_PURCHASES_TITLE" = "Paid (but free for testers)";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_NO_PURCHASES_TITLE" = "Ücretli (Ancak test kullanıcıları için ücretsizdir)";
 
 /* Subtitle for the paid plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Metin + tüm medyaların";
@@ -4208,16 +4238,16 @@
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Etkin olmayan bağlı cihaz";
 
 /* Body for an in-app megaphone about a user's inactive primary device. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "Open Signal on your phone to keep your account active";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "To keep your account active, open Signal on your primary device.";
 
 /* Title for a button in an in-app megaphone about a user's inactive primary device, temporarily dismissing the megaphone. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_GOT_IT_BUTTON" = "Got It";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_GOT_IT_BUTTON" = "Anladım";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user wants to learn more. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_LEARN_MORE_BUTTON" = "Learn more";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_LEARN_MORE_BUTTON" = "Daha fazlasını öğren";
 
 /* Title for an in-app megaphone about a user's inactive primary device. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Primary Device";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Open Signal on your phone";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Arşivlenen sessize alınmış sohbetler, yeni bir mesaj geldiğinde arşivlenmiş olarak kalmaya devam eder.";
@@ -5443,6 +5473,12 @@
 /* Description for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Son yedeklemen %1$@ tarihinde %2$@ saatinde yapılmıştır. Yedekleme boyutun %3$@";
 
+/* Description for form confirming restore from backup without size detail. */
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE" = "Your last backup was made on %1$@ at %2$@.";
+
+/* Details confirming manual restore from backup. */
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "If you choose not to restore now, you won’t be able to restore later. Your media will restore in the background.";
+
 /* Text for action button to skip the restore. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Geri yüklemeyi atla";
 
@@ -5612,22 +5648,22 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Ödemeleri kullanmaya devam etmek için Signal'ı güncelle. Bakiyen güncel olmayabilir.";
 
 /* Body of prompt notifying registration without restore completed on the new device. */
-"OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY" = "Your Signal account has been activated on your other device. Signal is now inactive on this device.";
+"OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY" = "Signal hesabın, diğer cihazında etkinleştirildi. Signal artık bu cihazda etkin değil.";
 
 /* Title of prompt notifying registration without restore completed on the new device. */
-"OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Registration complete";
+"OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Kayıt tamamlandı";
 
 /* Body of prompt notifying device restore started on the new device. */
-"OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Your Signal account and messages have started transferring to your other device. Signal is now inactive on this device.";
+"OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Signal hesabın ve mesajların diğer cihazına aktarılmaya başlandı. Signal artık bu cihazda etkin değil.";
 
 /* Title of prompt notifying device restore started on the new device. */
-"OUTGOING_DEVICE_RESTORE_COMPLETE_TITLE" = "Restore complete";
+"OUTGOING_DEVICE_RESTORE_COMPLETE_TITLE" = "Geri yükleme tamamlandı";
 
 /* Body of prompt notifying that action is necessary on the other device. */
-"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_BODY" = "Continue transferring your account on your other device.";
+"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_BODY" = "Hesabını diğer cihazına aktarmaya devam et.";
 
 /* Title of prompt notifying that action is necessary on the other device. */
-"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_TITLE" = "Continue on your other device";
+"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_TITLE" = "Diğer cihazında devam et";
 
 /* Body text describing the outgoing transfer. */
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Hesabın yeni bir cihaza aktarılacaktır. Bu cihaz gruplarını ve kişilerini görebilir, sohbetlerine erişebilir ve adına mesaj gönderebilir.";
@@ -5642,10 +5678,10 @@
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Hesabı Aktar";
 
 /* Body of prompt notifying device transfer completed. */
-"OUTGOING_DEVICE_TRANSFER_COMPLETE_BODY" = "Your Signal account and messages have been transferred to your other device. Signal is now inactive on this device.";
+"OUTGOING_DEVICE_TRANSFER_COMPLETE_BODY" = "Signal hesabın ve mesajların diğer cihazına aktarıldı. Signal artık bu cihazda etkin değil.";
 
 /* Title of prompt notifying device transfer completed. */
-"OUTGOING_DEVICE_TRANSFER_COMPLETE_TITLE" = "Transfer complete";
+"OUTGOING_DEVICE_TRANSFER_COMPLETE_TITLE" = "Aktarım tamamlandı";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Cevapsız görüntülü arama";
@@ -6656,61 +6692,61 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Çok sık denediniz. Lütfen tekrar denemeden önce biraz bekleyin.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "The backup key you entered is correct, but there is no backup associated with it. If you still have your old phone, make sure backups are enabled and that a backup has been completed and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Girdiğin yedekleme anahtarı doğru ancak bununla ilişkili bir yedekleme yok. Hala eski telefonun varsa, yedeklemelerin etkinleştirildiğinden ve bir yedeklemenin tamamlandığından emin ol ve tekrar dene.";
 
 /* Title for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Backup Not Found";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Yedek bulunamadı";
 
 /* Check for update action label for backup restore error recovery. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CHECK_UPDATE_ACTION" = "Check For Update";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CHECK_UPDATE_ACTION" = "Güncelleme ara";
 
 /* Body for a sheet informing users about contacting support due to an error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_BODY" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_BODY" = "Hata ayıklama günlükleriniz sorununuzu çözmemizi hızlandıracaktır. Günlüklerinizi göndermeniz isteğe bağlıdır.";
 
 /* Title for a sheet informing users about contacting support due to an error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_TITLE" = "Submit Debug Log?";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_TITLE" = "Hata Ayıklama Günlüğü gönderilsin mi?";
 
 /* Label for action to contact support with logs. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITH_LOGS_ACTION" = "Submit With Debug Log";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITH_LOGS_ACTION" = "Hata Ayıklama Günlüğü ile gönder";
 
 /* Label for action to contact support without logs. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITHOUT_LOGS_ACTION" = "Submit Without Debug Log";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITHOUT_LOGS_ACTION" = "Hata Ayıklama Günlüğü olmadan gönder";
 
 /* Body for a sheet warning users about a generic backup manual restore failure. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_BODY" = "An error occurred and your account couldn’t be transferred.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_BODY" = "Bir hata oluştu ve hesabın aktarılamadı.";
 
 /* Body for a sheet warning users about a generic backup restore failure. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "An error occurred and your account couldn’t be transferred. Try again by scanning the QR code and choosing your transfer method.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "Bir hata oluştu ve hesabın aktarılamadı. Kare kodu tarayarak ve aktarım yöntemini seçerek tekrar dene.";
 
 /* Title for a sheet warning users about a generic backup restore failure. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_TITLE" = "Couldn't Finish Transfer";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_TITLE" = "Aktarımı tamamlanamadı";
 
 /* Title for a sheet warning users about a generic backup manual restore failure. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Couldn't Finish Transfer";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Aktarımı tamamlanamadı";
 
 /* Body for a sheet warning users about an incorrect backup key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-digit backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
 
 /* Title for a sheet warning users about an incorrect backup key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Backup Key";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Hatalı yedekleme anahtarı";
 
 /* Body for a sheet warning users about a network error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Your backup can’t be restored right now. Check your internet connection and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Yedeklemen şu anda geri yüklenemiyor. İnternet bağlantını kontrol et ve tekrar dene.";
 
 /* Title for a sheet warning users about a network error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "Can't Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "Yedekleme geri yüklenemiyor";
 
 /* Skip restore action label for backup restore error recovery. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "Skip Restore";
+"REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "Geri yüklemeyi atla";
 
 /* Try again action label for backup restore error recovery. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Try Again";
+"REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Yeniden Dene";
 
 /* Body for a sheet warning users about an incompatible backup version. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "To restore your backup, make sure you’re on the latest version of Signal and try again. If this problem persists, contact support.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "Yedeklemeni geri yüklemek için Signal'ın en son sürümünü kullandığından emin ol ve tekrar dene. Sorun devam ederse, destekle iletişime geç.";
 
 /* Title for a sheet warning users about an incompatible backup version. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_TITLE" = "Update required";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_TITLE" = "Güncelleme Gerekli";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Anlık bildirimler için yeniden kayıt edilemedi.";

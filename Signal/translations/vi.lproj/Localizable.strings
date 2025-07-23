@@ -589,6 +589,33 @@
 /* Title for a view allowing users to record their 'Backup Key'. */
 "BACKUP_RECORD_KEY_TITLE" = "Lưu mã khóa sao lưu";
 
+/* Message for an action sheet explaining that performing a backup failed with a generic error. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Something went wrong creating your backup. Please try again, or contact support.";
+
+/* Title for a button in an action sheet allowing users to perform a backup, ignoring that WiFi is required. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Allow Backups Using Cellular";
+
+/* Message for an action sheet explaining that performing a backup failed because WiFi is required. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Backing up using cellular may result in data charges. You can connect to a WiFi network or allow backups using cellular.";
+
+/* Title for an action sheet explaining that performing a backup failed because WiFi is required. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Allow Backups Using Cellular Data?";
+
+/* Message for an action sheet explaining that performing a backup failed with a network error. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Something went wrong creating your backup. Check your internet connection and try again.";
+
+/* Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "Creating backup: %1$@";
+
+/* Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Exporting backup...";
+
+/* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Uploading backup...";
+
+/* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Uploading backup media...";
+
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Nâng cấp";
 
@@ -626,10 +653,10 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Hết hạn vào ngày %1$@";
 
 /* Title for a button allowing users to manage their backup plan as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Manage Plan";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Quản lý gói";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid, but free as long as you remain a tester";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Trả phí, nhưng miễn phí miễn bạn vẫn giữ vai trò người thử nghiệm";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Bản sao lưu tin nhắn văn bản + tất cả tập tin đa phương tiện";
@@ -644,7 +671,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Đã tắt sao lưu và dữ liệu của bạn đã được xóa khỏi dịch vụ lưu trữ bảo mật của Signal.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, any media that is not on device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Đã tắt sao lưu, tập tin đa phương tiện không có trên thiết bị sẽ bắt đầu tải xuống. Khi tải xong, dữ liệu của bạn sẽ được xóa khỏi dịch vụ lưu trữ bảo mật của Signal.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Có lỗi xảy ra. Vui lòng liên hệ bộ phận hỗ trợ.";
@@ -671,19 +698,19 @@
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Tắt & Xóa bản sao lưu";
 
 /* Title for a button in an action sheet confirming the user wants to disable Backups. */
-"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_CONFIRM" = "Turn Off & Delete";
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_CONFIRM" = "Tắt & Xóa";
 
 /* Message for an action sheet confirming the user wants to disable Backups. */
-"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Your backup will be deleted and no new backups will be created.";
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Bản sao lưu của bạn sẽ được xóa và các bản sao lưu mới sẽ không được tạo nữa.";
 
 /* Title for an action sheet confirming the user wants to disable Backups. */
-"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_TITLE" = "Turn Off and Delete Backups?";
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_TITLE" = "Tắt và xóa bản sao lưu?";
 
 /* Message shown in an action sheet when the user disables Backups, explaining that their media is downloading first. */
-"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_MESSAGE" = "You have media in your backup that's not on this device. Your backup may take a long time to download, keep Signal open to avoid interruptions.";
+"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_MESSAGE" = "Bạn có tập tin đa phương tiện trong bản sao lưu không có trên thiết bị này. Bản sao lưu của bạn có thể cần một khoảng thời gian dài để tải, tiếp tục mở Signal để tránh làm gián đoạn.";
 
 /* Title shown in an action sheet when the user disables Backups, explaining that their media is downloading first. */
-"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_TITLE" = "Downloading Your Backup";
+"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_TITLE" = "Đang tải bản sao lưu của bạn";
 
 /* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "Đã xảy ra lỗi khi xóa dữ liệu của bạn khỏi dịch vụ lưu trữ bảo mật của Signal.";
@@ -748,6 +775,9 @@
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Sao lưu Ngay";
 
+/* Title for a button shown under a progress bar tracking a manual backup, which lets the user cancel the backup. */
+"BACKUP_SETTINGS_MANUAL_BACKUP_CANCEL_BUTTON" = "Cancel Backup";
+
 /* Action in an action sheet allowing users to download their offloaded media later. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_LATER_ACTION" = "Tải xuống sau";
 
@@ -761,16 +791,16 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Tải tập tin đa phương tiện đã offload?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you remain a tester. Make sure to download all your media before leaving the test program.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Tập tin đa phương tiện đã được offload sẽ khả dụng miễn bạn vẫn giữ vai trò người thử nghiệm. Đảm bảo tải tất cả tập tin đa phương tiện trước khi rời chương trình thử nghiệm.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Testing Offloaded Media";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Thử nghiệm tính năng offload";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Tập tin đa phương tiện không được sử dụng sẽ được gỡ bỏ, nhưng có thể được tải xuống từ bản sao lưu của bạn bất kỳ lúc nào.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you remain a tester.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Tập tin đa phương tiện không được sử dụng sẽ được offload (gỡ bỏ), nhưng có thể được tải xuống bất kỳ lúc nào trong thời gian bạn giữ vai trò người thử nghiệm.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Tối ưu hóa lưu trữ là tính năng của gói trả phí Sao lưu Signal. Nâng cấp gói sao lưu để bắt đầu sử dụng tính năng này.";
@@ -1526,7 +1556,7 @@
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Miễn phí";
 
 /* Title for the paid plan option, when choosing a Backup plan as a tester. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_NO_PURCHASES_TITLE" = "Paid (but free for testers)";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_NO_PURCHASES_TITLE" = "Trả phí (miễn phí cho người thử nghiệm)";
 
 /* Subtitle for the paid plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Tin nhắn văn bản + tập tin đa phương tiện";
@@ -4208,16 +4238,16 @@
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Thiết bị đã liên kết không còn hoạt động";
 
 /* Body for an in-app megaphone about a user's inactive primary device. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "Open Signal on your phone to keep your account active";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "To keep your account active, open Signal on your primary device.";
 
 /* Title for a button in an in-app megaphone about a user's inactive primary device, temporarily dismissing the megaphone. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_GOT_IT_BUTTON" = "Got It";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_GOT_IT_BUTTON" = "Đã hiểu";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user wants to learn more. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_LEARN_MORE_BUTTON" = "Learn more";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_LEARN_MORE_BUTTON" = "Tìm hiểu thêm";
 
 /* Title for an in-app megaphone about a user's inactive primary device. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Primary Device";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Open Signal on your phone";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Các cuộc trò chuyện đã tắt tiếng vẫn sẽ ở trong mục lưu trữ khi có tin nhắn mới được gửi đến.";
@@ -5443,6 +5473,12 @@
 /* Description for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Bản sao lưu gần nhất của bạn là vào lúc %2$@ ngày %1$@. Dung lượng của bản sao lưu là %3$@";
 
+/* Description for form confirming restore from backup without size detail. */
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE" = "Your last backup was made on %1$@ at %2$@.";
+
+/* Details confirming manual restore from backup. */
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "If you choose not to restore now, you won’t be able to restore later. Your media will restore in the background.";
+
 /* Text for action button to skip the restore. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Bỏ qua";
 
@@ -5612,22 +5648,22 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Cập nhật Signal để tiếp tục sử dụng các hình thức thanh toán. Số dư tài khoản của bạn có thể không phải là mới nhất.";
 
 /* Body of prompt notifying registration without restore completed on the new device. */
-"OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY" = "Your Signal account has been activated on your other device. Signal is now inactive on this device.";
+"OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY" = "Tài khoản Signal của bạn đã được kích hoạt trên thiết bị khác của bạn. Signal hiện không còn hoạt động trên thiết bị này.";
 
 /* Title of prompt notifying registration without restore completed on the new device. */
-"OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Registration complete";
+"OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Hoàn tất đăng ký";
 
 /* Body of prompt notifying device restore started on the new device. */
-"OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Your Signal account and messages have started transferring to your other device. Signal is now inactive on this device.";
+"OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Tài khoản và tin nhắn Signal của bạn đã bắt đầu được chuyển đến thiết bị khác của bạn. Signal hiện không còn hoạt động trên thiết bị này.";
 
 /* Title of prompt notifying device restore started on the new device. */
-"OUTGOING_DEVICE_RESTORE_COMPLETE_TITLE" = "Restore complete";
+"OUTGOING_DEVICE_RESTORE_COMPLETE_TITLE" = "Hoàn tất khôi phục";
 
 /* Body of prompt notifying that action is necessary on the other device. */
-"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_BODY" = "Continue transferring your account on your other device.";
+"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_BODY" = "Tiếp tục chuyển tài khoản trên thiết bị khác của bạn.";
 
 /* Title of prompt notifying that action is necessary on the other device. */
-"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_TITLE" = "Continue on your other device";
+"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_TITLE" = "Tiếp tục trên thiết bị khác của bạn";
 
 /* Body text describing the outgoing transfer. */
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Tài khoản của bạn sẽ dược chuyển đến một thiết bị mới. Thiết bị này sẽ có thể thấy được nhóm và liên hệ của bạn, truy cập các cuộc trò chuyện của bạn, và gửi tin nhắn với danh tính của bạn.";
@@ -5642,10 +5678,10 @@
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Chuyển Tài khoản";
 
 /* Body of prompt notifying device transfer completed. */
-"OUTGOING_DEVICE_TRANSFER_COMPLETE_BODY" = "Your Signal account and messages have been transferred to your other device. Signal is now inactive on this device.";
+"OUTGOING_DEVICE_TRANSFER_COMPLETE_BODY" = "Tài khoản và tin nhắn Signal của bạn đã được chuyển đến thiết bị khác của bạn. Signal hiện không còn hoạt động trên thiết bị này.";
 
 /* Title of prompt notifying device transfer completed. */
-"OUTGOING_DEVICE_TRANSFER_COMPLETE_TITLE" = "Transfer complete";
+"OUTGOING_DEVICE_TRANSFER_COMPLETE_TITLE" = "Chuyển hoàn tất";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Cuộc gọi video không được trả lời";
@@ -6656,61 +6692,61 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Bạn đã thử quá nhiều lần. Vui lòng chờ một phút trước khi thử lại.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "The backup key you entered is correct, but there is no backup associated with it. If you still have your old phone, make sure backups are enabled and that a backup has been completed and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Mã khóa sao lưu bạn nhập đúng nhưng không có bản sao lưu đi kèm. Nếu bạn còn giữ điện thoại cũ, đảm bảo đã bật sao lưu và đã hoàn tất sao lưu rồi thử lại.";
 
 /* Title for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Backup Not Found";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Không tìm thấy bản sao lưu";
 
 /* Check for update action label for backup restore error recovery. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CHECK_UPDATE_ACTION" = "Check For Update";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CHECK_UPDATE_ACTION" = "Kiểm tra cập nhật";
 
 /* Body for a sheet informing users about contacting support due to an error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_BODY" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_BODY" = "Nhật ký gỡ lỗi của bạn sẽ giúp chúng tôi giải quyết vấn đề nhanh hơn. Không bắt buộc gửi nhật ký gỡ lỗi.";
 
 /* Title for a sheet informing users about contacting support due to an error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_TITLE" = "Submit Debug Log?";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_TITLE" = "Gửi nhật ký gỡ lỗi?";
 
 /* Label for action to contact support with logs. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITH_LOGS_ACTION" = "Submit With Debug Log";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITH_LOGS_ACTION" = "Gửi cùng nhật ký gỡ lỗi";
 
 /* Label for action to contact support without logs. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITHOUT_LOGS_ACTION" = "Submit Without Debug Log";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITHOUT_LOGS_ACTION" = "Gửi không có nhật ký gỡ lỗi";
 
 /* Body for a sheet warning users about a generic backup manual restore failure. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_BODY" = "An error occurred and your account couldn’t be transferred.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_BODY" = "Có lỗi xảy ra và không thể chuyển tài khoản của bạn.";
 
 /* Body for a sheet warning users about a generic backup restore failure. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "An error occurred and your account couldn’t be transferred. Try again by scanning the QR code and choosing your transfer method.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "Có lỗi xảy ra và không thể chuyển tài khoản của bạn. Thử lại bằng cách quét mã QR và chọn phương pháp chuyển.";
 
 /* Title for a sheet warning users about a generic backup restore failure. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_TITLE" = "Couldn't Finish Transfer";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_TITLE" = "Không thể hoàn tất việc chuyển";
 
 /* Title for a sheet warning users about a generic backup manual restore failure. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Couldn't Finish Transfer";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Không thể hoàn tất việc chuyển";
 
 /* Body for a sheet warning users about an incorrect backup key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-digit backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
 
 /* Title for a sheet warning users about an incorrect backup key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Backup Key";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Mã khóa sao lưu không đúng";
 
 /* Body for a sheet warning users about a network error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Your backup can’t be restored right now. Check your internet connection and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Hiện không thể khôi phục bản sao lưu của bạn. Kiểm tra kết nối internet của bạn và thử lại.";
 
 /* Title for a sheet warning users about a network error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "Can't Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "Không thể khôi phục bản sao lưu";
 
 /* Skip restore action label for backup restore error recovery. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "Skip Restore";
+"REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "Bỏ qua";
 
 /* Try again action label for backup restore error recovery. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Try Again";
+"REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Hãy thử lại";
 
 /* Body for a sheet warning users about an incompatible backup version. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "To restore your backup, make sure you’re on the latest version of Signal and try again. If this problem persists, contact support.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "Để khôi phục bản sao lưu của bạn, đảm bảo bạn đang sử dụng phiên bản mới nhất của Signal và thử lại. Nếu vẫn gặp vấn đề này, hãy liên hệ với bộ phận hỗ trợ.";
 
 /* Title for a sheet warning users about an incompatible backup version. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_TITLE" = "Update required";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_TITLE" = "Yêu cầu Cập nhật";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Không thể đăng ký lại để nhận thông báo đẩy.";

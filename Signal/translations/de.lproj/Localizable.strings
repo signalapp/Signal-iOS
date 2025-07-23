@@ -589,6 +589,33 @@
 /* Title for a view allowing users to record their 'Backup Key'. */
 "BACKUP_RECORD_KEY_TITLE" = "Sichere deinen Backup-Schlüssel";
 
+/* Message for an action sheet explaining that performing a backup failed with a generic error. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Something went wrong creating your backup. Please try again, or contact support.";
+
+/* Title for a button in an action sheet allowing users to perform a backup, ignoring that WiFi is required. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Allow Backups Using Cellular";
+
+/* Message for an action sheet explaining that performing a backup failed because WiFi is required. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Backing up using cellular may result in data charges. You can connect to a WiFi network or allow backups using cellular.";
+
+/* Title for an action sheet explaining that performing a backup failed because WiFi is required. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Allow Backups Using Cellular Data?";
+
+/* Message for an action sheet explaining that performing a backup failed with a network error. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Something went wrong creating your backup. Check your internet connection and try again.";
+
+/* Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "Creating backup: %1$@";
+
+/* Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Exporting backup...";
+
+/* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Uploading backup...";
+
+/* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Uploading backup media...";
+
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Upgraden";
 
@@ -626,10 +653,10 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Ablaufdatum: %1$@";
 
 /* Title for a button allowing users to manage their backup plan as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Manage Plan";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Abo verwalten";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid, but free as long as you remain a tester";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Kostenpflichtig, aber für dich kostenlos, solange du Tester bist";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Backups von Text + allen Medien";
@@ -644,7 +671,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Backups wurden deaktiviert und deine Daten wurden aus dem sicheren Speicherservice von Signal gelöscht.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, any media that is not on device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups sind deaktiviert. Alle Medien, die nicht auf dem Gerät sind, werden gerade runtergeladen. Nach dem Download werden deine Daten aus dem sicheren Speicher von Signal gelöscht.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Es ist ein Fehler aufgetreten. Bitte kontaktiere den Support.";
@@ -665,25 +692,25 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Details zu Backups";
 
 /* Footer for a menu section allowing users to turn off Backups. */
-"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "Dadurch wird deine komplette Datensicherung gelöscht. Es werden keine neuen Datensicherungen erstellt.";
+"BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "Dadurch wird dein komplettes Backup gelöscht. Es werden keine neuen Backups erstellt.";
 
 /* Title for a button allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_TITLE" = "Backups ausschalten und löschen";
 
 /* Title for a button in an action sheet confirming the user wants to disable Backups. */
-"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_CONFIRM" = "Turn Off & Delete";
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_CONFIRM" = "Deaktivieren und löschen";
 
 /* Message for an action sheet confirming the user wants to disable Backups. */
-"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Your backup will be deleted and no new backups will be created.";
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Dein Backup wird gelöscht und es werden keine neuen Backups erstellt.";
 
 /* Title for an action sheet confirming the user wants to disable Backups. */
-"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_TITLE" = "Turn Off and Delete Backups?";
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_TITLE" = "Backups ausschalten und löschen?";
 
 /* Message shown in an action sheet when the user disables Backups, explaining that their media is downloading first. */
-"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_MESSAGE" = "You have media in your backup that's not on this device. Your backup may take a long time to download, keep Signal open to avoid interruptions.";
+"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_MESSAGE" = "Du hast Backup-Medien, die nicht auf diesem Gerät gespeichert sind. Das Herunterladen deines Backups kann eine Weile dauern. Lass Signal einfach weiter laufen, damit der Download nicht unterbrochen wird.";
 
 /* Title shown in an action sheet when the user disables Backups, explaining that their media is downloading first. */
-"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_TITLE" = "Downloading Your Backup";
+"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_TITLE" = "Dein Backup wird heruntergeladen";
 
 /* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "Beim Löschen deiner Daten aus dem sicheren Speicherservice von Signal ist ein Fehler aufgetreten.";
@@ -748,6 +775,9 @@
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Jetzt sichern";
 
+/* Title for a button shown under a progress bar tracking a manual backup, which lets the user cancel the backup. */
+"BACKUP_SETTINGS_MANUAL_BACKUP_CANCEL_BUTTON" = "Cancel Backup";
+
 /* Action in an action sheet allowing users to download their offloaded media later. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_LATER_ACTION" = "Später herunterladen";
 
@@ -761,16 +791,16 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Ausgelagerte Medien herunterladen?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you remain a tester. Make sure to download all your media before leaving the test program.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Ausgelagerte Medien bleiben verfügbar, solange du Tester bist. Vergiss nicht, all deine Medien herunterzuladen, bevor du das Testprogramm verlässt.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Testing Offloaded Media";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Ausgelagerte Medien testen";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Nicht verwendete Medien werden zwar ausgelagert, sie können aber jederzeit aus deinem Backup heruntergeladen werden.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you remain a tester.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Nicht verwendete Medien werden zwar ausgelagert, sie können aber jederzeit aus deinen Backups heruntergeladen werden, während du Tester bist.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Die Speicheroptimierung kann nur mit der kostenpflichtigen Option für Signal Backups genutzt werden. Upgrade deine Backup-Option, um diese Funktion zu nutzen.";
@@ -800,7 +830,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "%1$@ von %2$@ (%3$@ %%) wird hochgeladen";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Je nach Größe deiner Datensicherung könnte dies etwas dauern. Während des Backups kannst du dein Mobiltelefon weiterhin ganz normal nutzen.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Je nach Größe deines Backups könnte dies etwas dauern. Während des Backups kannst du dein Mobiltelefon weiterhin ganz normal nutzen.";
 
 /* Title for the primary button for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Jetzt sichern";
@@ -1526,7 +1556,7 @@
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Kostenlos";
 
 /* Title for the paid plan option, when choosing a Backup plan as a tester. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_NO_PURCHASES_TITLE" = "Paid (but free for testers)";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_NO_PURCHASES_TITLE" = "Kostenpflichtig (aber kostenlos für Tester)";
 
 /* Subtitle for the paid plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Text + all deine Medien";
@@ -4208,16 +4238,16 @@
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inaktive gekoppelte Geräte";
 
 /* Body for an in-app megaphone about a user's inactive primary device. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "Open Signal on your phone to keep your account active";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "To keep your account active, open Signal on your primary device.";
 
 /* Title for a button in an in-app megaphone about a user's inactive primary device, temporarily dismissing the megaphone. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_GOT_IT_BUTTON" = "Got It";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_GOT_IT_BUTTON" = "Verstanden";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user wants to learn more. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_LEARN_MORE_BUTTON" = "Learn more";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_LEARN_MORE_BUTTON" = "Mehr erfahren";
 
 /* Title for an in-app megaphone about a user's inactive primary device. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Primary Device";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Open Signal on your phone";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Stummgeschaltete Chats, die archiviert sind, bleiben beim Eintreffen einer neuen Nachricht archiviert.";
@@ -5443,6 +5473,12 @@
 /* Description for form confirming restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Dein letztes Backup wurde am %1$@ um %2$@ durchgeführt. Die Größe deines Backups beträgt %3$@";
 
+/* Description for form confirming restore from backup without size detail. */
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE" = "Your last backup was made on %1$@ at %2$@.";
+
+/* Details confirming manual restore from backup. */
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "If you choose not to restore now, you won’t be able to restore later. Your media will restore in the background.";
+
 /* Text for action button to skip the restore. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Wiederherstellen überspringen";
 
@@ -5612,22 +5648,22 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Aktualisiere Signal, um Zahlungen weiterhin verwenden zu können. Dein Kontostand ist möglicherweise nicht aktuell.";
 
 /* Body of prompt notifying registration without restore completed on the new device. */
-"OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY" = "Your Signal account has been activated on your other device. Signal is now inactive on this device.";
+"OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY" = "Dein Signal-Konto wurde auf deinem anderen Gerät aktiviert. Signal ist jetzt auf diesem Gerät inaktiv.";
 
 /* Title of prompt notifying registration without restore completed on the new device. */
-"OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Registration complete";
+"OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Registrierung komplett";
 
 /* Body of prompt notifying device restore started on the new device. */
-"OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Your Signal account and messages have started transferring to your other device. Signal is now inactive on this device.";
+"OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Die Übertragung deines Signal-Kontos und deiner Nachrichten auf dein anderes Gerät hat begonnen. Signal ist jetzt auf diesem Gerät inaktiv.";
 
 /* Title of prompt notifying device restore started on the new device. */
-"OUTGOING_DEVICE_RESTORE_COMPLETE_TITLE" = "Restore complete";
+"OUTGOING_DEVICE_RESTORE_COMPLETE_TITLE" = "Wiederherstellung abgeschlossen";
 
 /* Body of prompt notifying that action is necessary on the other device. */
-"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_BODY" = "Continue transferring your account on your other device.";
+"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_BODY" = "Fahre damit fort, dein Konto auf dein anderes Gerät zu übertragen.";
 
 /* Title of prompt notifying that action is necessary on the other device. */
-"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_TITLE" = "Continue on your other device";
+"OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_TITLE" = "Fahre auf deinem anderen Gerät fort";
 
 /* Body text describing the outgoing transfer. */
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY" = "Dein Konto wird auf ein neues Gerät übertragen. Dieses Gerät kann deine Gruppen und Kontakte sehen, auf deine Chats zugreifen und Nachrichten in deinem Namen versenden.";
@@ -5642,10 +5678,10 @@
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "Konto übertragen";
 
 /* Body of prompt notifying device transfer completed. */
-"OUTGOING_DEVICE_TRANSFER_COMPLETE_BODY" = "Your Signal account and messages have been transferred to your other device. Signal is now inactive on this device.";
+"OUTGOING_DEVICE_TRANSFER_COMPLETE_BODY" = "Dein Signal-Konto und deine Nachrichten wurden auf dein anderes Gerät übertragen. Signal ist jetzt auf diesem Gerät inaktiv.";
 
 /* Title of prompt notifying device transfer completed. */
-"OUTGOING_DEVICE_TRANSFER_COMPLETE_TITLE" = "Transfer complete";
+"OUTGOING_DEVICE_TRANSFER_COMPLETE_TITLE" = "Übertragung vollständig";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Unbeantworteter Videoanruf";
@@ -6656,61 +6692,61 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Zu viele Versuche. Bitte warte eine Minute vor einem erneuten Versuch.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "The backup key you entered is correct, but there is no backup associated with it. If you still have your old phone, make sure backups are enabled and that a backup has been completed and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Der von dir eingegebene Backup-Schlüssel ist korrekt, diesem ist aber kein Backup zugeordnet. Falls du dein altes Telefon noch hast, stelle sicher, dass Backups aktiviert sind und dass ein Backup abgeschlossen wurde. Versuche es dann erneut.";
 
 /* Title for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Backup Not Found";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Backup nicht gefunden";
 
 /* Check for update action label for backup restore error recovery. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CHECK_UPDATE_ACTION" = "Check For Update";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CHECK_UPDATE_ACTION" = "Nach Updates suchen";
 
 /* Body for a sheet informing users about contacting support due to an error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_BODY" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_BODY" = "Deine Diagnoseprotokolle helfen uns, dein Problem schneller zu lösen. Das Übermitteln deiner Protokolle ist optional.";
 
 /* Title for a sheet informing users about contacting support due to an error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_TITLE" = "Submit Debug Log?";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_TITLE" = "Diagnoseprotokoll übermitteln?";
 
 /* Label for action to contact support with logs. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITH_LOGS_ACTION" = "Submit With Debug Log";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITH_LOGS_ACTION" = "Mit Diagnoseprotokoll übermitteln";
 
 /* Label for action to contact support without logs. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITHOUT_LOGS_ACTION" = "Submit Without Debug Log";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITHOUT_LOGS_ACTION" = "Ohne Diagnoseprotokoll übermitteln";
 
 /* Body for a sheet warning users about a generic backup manual restore failure. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_BODY" = "An error occurred and your account couldn’t be transferred.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_BODY" = "Es ist ein Fehler aufgetreten und dein Konto konnte nicht übertragen werden.";
 
 /* Body for a sheet warning users about a generic backup restore failure. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "An error occurred and your account couldn’t be transferred. Try again by scanning the QR code and choosing your transfer method.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "Es ist ein Fehler aufgetreten und dein Konto konnte nicht übertragen werden. Versuch's noch mal, indem du den QR-Code scannst und deine Übertragungsmethode auswählst.";
 
 /* Title for a sheet warning users about a generic backup restore failure. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_TITLE" = "Couldn't Finish Transfer";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_TITLE" = "Übertragung konnte nicht abgeschlossen werden";
 
 /* Title for a sheet warning users about a generic backup manual restore failure. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Couldn't Finish Transfer";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Übertragung konnte nicht abgeschlossen werden";
 
 /* Body for a sheet warning users about an incorrect backup key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-digit backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
 
 /* Title for a sheet warning users about an incorrect backup key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Backup Key";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Falscher Backup-Schlüssel";
 
 /* Body for a sheet warning users about a network error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Your backup can’t be restored right now. Check your internet connection and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Dein Backup kann im Moment nicht wiederhergestellt werden. Überprüfe deine Internetverbindung und versuche es erneut.";
 
 /* Title for a sheet warning users about a network error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "Can't Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "Backup kann nicht wiederhergestellt werden";
 
 /* Skip restore action label for backup restore error recovery. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "Skip Restore";
+"REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "Wiederherstellen überspringen";
 
 /* Try again action label for backup restore error recovery. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Try Again";
+"REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Erneut versuchen";
 
 /* Body for a sheet warning users about an incompatible backup version. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "To restore your backup, make sure you’re on the latest version of Signal and try again. If this problem persists, contact support.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "Vergewissere dich, dass du die neueste Version von Signal verwendest, um dein Backup wiederherzustellen, und versuche es erneut. Falls das Problem weiterhin besteht, kontaktiere bitte den Support.";
 
 /* Title for a sheet warning users about an incompatible backup version. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_TITLE" = "Update required";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_TITLE" = "Update erforderlich";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Push-Mitteilungen konnten nicht erneut registriert werden.";

@@ -663,13 +663,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>W połączeniu bierze już udział maksymalna liczba uczestników (%1$d). Spróbuj później.</string>
+			<string>W połączeniu uczestniczy już maksymalna liczba osób (%1$d). Spróbuj ponownie później.</string>
 			<key>few</key>
-			<string>W połączeniu bierze już udział maksymalna liczba uczestników (%1$d). Spróbuj później.</string>
+			<string>W połączeniu uczestniczy już maksymalna liczba osób (%1$d). Spróbuj ponownie później.</string>
 			<key>many</key>
-			<string>W połączeniu bierze już udział maksymalna liczba uczestników (%1$d). Spróbuj później.</string>
+			<string>W połączeniu uczestniczy już maksymalna liczba osób (%1$d). Spróbuj ponownie później.</string>
 			<key>other</key>
-			<string>W połączeniu bierze już udział maksymalna liczba uczestników (%1$d). Spróbuj później.</string>
+			<string>W połączeniu uczestniczy już maksymalna liczba osób (%1$d). Spróbuj ponownie później.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -1023,13 +1023,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d osoba zostaje zaproszona do grupy.</string>
+			<string>Do grupy zostaje zaproszona %1$d osoba.</string>
 			<key>few</key>
-			<string>%1$d osoby zostają zaproszone do grupy.</string>
+			<string>Do grupy zostają zaproszone %1$d osoby.</string>
 			<key>many</key>
-			<string>%1$d osób zostaje zaproszonych do grupy.</string>
+			<string>Do grupy zostaje zaproszonych %1$d osób.</string>
 			<key>other</key>
-			<string>%1$d osoby zostaje zaproszone do grupy.</string>
+			<string>Do grupy zostaje zaproszone %1$d osoby.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
