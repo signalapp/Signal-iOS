@@ -30,9 +30,9 @@ PODS:
     - Logging (~> 1.4)
   - PureLayout (3.1.4)
   - Reachability (3.7.6)
-  - SignalRingRTC (2.55.0):
-    - SignalRingRTC/WebRTC (= 2.55.0)
-  - SignalRingRTC/WebRTC (2.55.0)
+  - SignalRingRTC (2.56.0):
+    - SignalRingRTC/WebRTC (= 2.56.0)
+  - SignalRingRTC/WebRTC (2.56.0)
   - SQLCipher (4.6.1):
     - SQLCipher/standard (= 4.6.1)
   - SQLCipher/common (4.6.1)
@@ -61,7 +61,7 @@ DEPENDENCIES:
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.3`)
   - PureLayout
   - Reachability
-  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.55.0`)
+  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.56.0`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.1-f_barrierfsync`)
   - SwiftProtobuf (= 1.30.0)
   - YYImage (from `https://github.com/signalapp/YYImage`)
@@ -101,7 +101,7 @@ EXTERNAL SOURCES:
     :tag: v6.0.3
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.55.0
+    :tag: v2.56.0
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.6.1-f_barrierfsync
@@ -130,7 +130,7 @@ CHECKOUT OPTIONS:
     :tag: v6.0.3
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.55.0
+    :tag: v2.56.0
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.6.1-f_barrierfsync
@@ -153,11 +153,11 @@ SPEC CHECKSUMS:
   MobileCoin: cd7f49d6eaa2d362e4c9f8324cae0cc3bc3c53b5
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
-  SignalRingRTC: 808c427bdccd154e3e7f015631f167d367be106f
+  SignalRingRTC: 9caefe46be2413a09ea839bce80ef1bfa3ac69f4
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
   SwiftProtobuf: 3697407f0d5b23bedeba9c2eaaf3ec6fdff69349
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 107e7feccf59e75e5cf2566e860306f22857843e
+PODFILE CHECKSUM: 95d9a57cf4ad317afba5abd752fc4f02f58f653c
 
 COCOAPODS: 1.15.2

@@ -287,15 +287,18 @@ final class IndividualCallService: CallServiceStateObserver {
         opaque: Data,
         identityKeys: CallIdentityKeys?
     ) {
+        guard let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId else {
+            return
+        }
+
         guard let identityKeys else {
-            if let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId {
-                handleFailedCall(failedCall: currentCall, error: OWSAssertionError("missing identity keys"), shouldResetUI: true, shouldResetRingRTC: true)
-            }
+            handleFailedCall(failedCall: currentCall, error: OWSAssertionError("missing identity keys"), shouldResetUI: true, shouldResetRingRTC: true)
             return
         }
 
         do {
             try callManager.receivedAnswer(
+                call: currentCall,
                 sourceDevice: sourceDevice.uint32Value,
                 callId: callId,
                 opaque: opaque,
@@ -304,9 +307,7 @@ final class IndividualCallService: CallServiceStateObserver {
             )
         } catch {
             owsFailDebug("error: \(error)")
-            if let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId {
-                handleFailedCall(failedCall: currentCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
-            }
+            handleFailedCall(failedCall: currentCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
         }
     }
 
@@ -329,8 +330,12 @@ final class IndividualCallService: CallServiceStateObserver {
 
     @MainActor
     private func _handleReceivedIceCandidates(callId: UInt64, sourceDevice: DeviceId, iceCandidates: [Data]) {
+        guard let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId else {
+            return
+        }
+
         do {
-            try callManager.receivedIceCandidates(sourceDevice: sourceDevice.uint32Value, callId: callId, candidates: iceCandidates)
+            try callManager.receivedIceCandidates(call: currentCall, sourceDevice: sourceDevice.uint32Value, callId: callId, candidates: iceCandidates)
         } catch {
             owsFailDebug("error: \(error)")
             // we don't necessarily want to fail the call just because CallManager errored on an
@@ -360,13 +365,15 @@ final class IndividualCallService: CallServiceStateObserver {
 
     @MainActor
     private func _handleReceivedHangup(callId: UInt64, sourceDevice: DeviceId, hangupType: HangupType, deviceId: UInt32) {
+        guard let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId else {
+            return
+        }
+
         do {
-            try callManager.receivedHangup(sourceDevice: sourceDevice.uint32Value, callId: callId, hangupType: hangupType, deviceId: deviceId)
+            try callManager.receivedHangup(call: currentCall, sourceDevice: sourceDevice.uint32Value, callId: callId, hangupType: hangupType, deviceId: deviceId)
         } catch {
             owsFailDebug("\(error)")
-            if let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId {
-                handleFailedCall(failedCall: currentCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
-            }
+            handleFailedCall(failedCall: currentCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
         }
     }
 
@@ -383,13 +390,15 @@ final class IndividualCallService: CallServiceStateObserver {
 
     @MainActor
     private func _handleReceivedBusy(callId: UInt64, sourceDevice: DeviceId) {
+        guard let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId else {
+            return
+        }
+
         do {
-            try callManager.receivedBusy(sourceDevice: sourceDevice.uint32Value, callId: callId)
+            try callManager.receivedBusy(call: currentCall, sourceDevice: sourceDevice.uint32Value, callId: callId)
         } catch {
             owsFailDebug("\(error)")
-            if let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId {
-                handleFailedCall(failedCall: currentCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
-            }
+            handleFailedCall(failedCall: currentCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
         }
     }
 
