@@ -331,7 +331,6 @@ public class MessageSenderJobQueue {
     }
 
     public func setUp() {
-        let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager
         let jobRecordFinder = JobRecordFinderImpl<MessageSenderJobRecord>(db: DependenciesBridge.shared.db)
         Task {
             if CurrentAppContext().isMainApp {
