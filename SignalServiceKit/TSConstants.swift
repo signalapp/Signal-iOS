@@ -187,8 +187,8 @@ public class TSConstantsProduction: TSConstantsProtocol {
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
     public let svr2PreviousEnclaves: [MrEnclave] = [
+        MrEnclave("093be9ea32405e85ae28dbb48eb668aebeb7dbe29517b9b86ad4bec4dfe0e6a6"),
         MrEnclave("9314436a9a144992bb3680770ea5fd7934a7ffd29257844a33763a238903d570"),
-        MrEnclave("093be9ea32405e85ae28dbb48eb668aebeb7dbe29517b9b86ad4bec4dfe0e6a6")
     ]
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group"
@@ -243,8 +243,8 @@ public class TSConstantsStaging: TSConstantsProtocol {
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
     public let svr2PreviousEnclaves: [MrEnclave] = [
-        MrEnclave("38e01eff4fe357dc0b0e8ef7a44b4abc5489fbccba3a78780f3872c277f62bf3"),
         MrEnclave("2e8cefe6e3f389d8426adb24e9b7fb7adf10902c96f06f7bbcee36277711ed91"),
+        MrEnclave("38e01eff4fe357dc0b0e8ef7a44b4abc5489fbccba3a78780f3872c277f62bf3"),
     ]
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group.staging"
