@@ -333,6 +333,7 @@ fileprivate extension HTTPUtils {
         case let httpError as OWSHTTPError: return httpError.isNetworkFailureImpl
         case SignalError.connectionFailed: return true
         case StorageService.StorageError.networkError: return true
+        case Upload.Error.networkError: return true
         default: return false
         }
     }
@@ -344,6 +345,7 @@ fileprivate extension HTTPUtils {
         case GroupsV2Error.timeout: return true
         case PaymentsError.timeout: return true
         case SignalError.connectionTimeoutError: return true
+        case Upload.Error.networkTimeout: return true
         default: return false
         }
     }

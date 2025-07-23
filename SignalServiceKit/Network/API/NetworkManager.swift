@@ -146,10 +146,22 @@ public class NetworkManager {
         _ request: TSRequest,
         canUseWebSocket: Bool,
     ) async throws -> HTTPResponse {
-        if canUseWebSocket && OWSChatConnection.canAppUseSocketsToMakeRequests {
-            return try await chatConnectionManager.makeRequest(request)
-        } else {
-            return try await restNetworkManager.asyncRequest(request)
+        do {
+            if canUseWebSocket && OWSChatConnection.canAppUseSocketsToMakeRequests {
+                return try await chatConnectionManager.makeRequest(request)
+            } else {
+                return try await restNetworkManager.asyncRequest(request)
+            }
+        } catch {
+            if
+                let owsHttpError = error as? OWSHTTPError,
+                case let .wrappedFailure(error) = owsHttpError,
+                (error as NSError).code == NSURLErrorCancelled
+            {
+                try Task.checkCancellation()
+            }
+
+            throw error
         }
     }
 
