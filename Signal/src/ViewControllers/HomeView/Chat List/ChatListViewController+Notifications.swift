@@ -114,13 +114,13 @@ extension ChatListViewController {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(showBadgeSheetIfNecessary),
+            selector: #selector(showFYISheetIfNecessary),
             name: DonationReceiptCredentialRedemptionJob.didSucceedNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(showBadgeSheetIfNecessary),
+            selector: #selector(showFYISheetIfNecessary),
             name: DonationReceiptCredentialRedemptionJob.didFailNotification,
             object: nil
         )
@@ -167,7 +167,7 @@ extension ChatListViewController {
     private func localProfileDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        showBadgeSheetIfNecessary()
+        showFYISheetIfNecessary()
     }
 
     @objc

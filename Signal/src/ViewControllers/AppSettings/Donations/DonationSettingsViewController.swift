@@ -456,14 +456,16 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 self.navigationController?.popToViewController(self, animated: true) { [weak self] in
                     guard
                         let self,
-                        let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.loadWithSneakyTransaction(
+                        let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.fromGlobalsWithSneakyTransaction(
                             successMode: receiptCredentialSuccessMode
                         )
                     else { return }
 
-                    badgeThanksSheetPresenter.presentBadgeThanksAndClearSuccess(
-                        fromViewController: self
-                    )
+                    Task {
+                        await badgeThanksSheetPresenter.presentAndRecordBadgeThanks(
+                            fromViewController: self
+                        )
+                    }
                 }
             case let .monthlySubscriptionCancelled(_, toastText):
                 self.navigationController?.popToViewController(self, animated: true) { [weak self] in

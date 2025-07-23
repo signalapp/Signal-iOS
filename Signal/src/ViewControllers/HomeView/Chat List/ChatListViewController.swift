@@ -235,7 +235,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             }
         }
 
-        showBadgeSheetIfNecessary()
+        showFYISheetIfNecessary()
         Task { try await self.checkForFailedServiceExtensionLaunches() }
 
         hasEverAppeared = true
@@ -343,6 +343,23 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     getStartedBanner.view.alpha = 1
                 }
             }
+        }
+    }
+
+    // MARK: - FYI sheets
+
+    @objc
+    func showFYISheetIfNecessary() {
+        let fyiSheetCoordinator = ChatListFYISheetCoordinator(
+            donationReceiptCredentialResultStore: DependenciesBridge.shared.donationReceiptCredentialResultStore,
+            donationSubscriptionManager: DonationSubscriptionManager.self,
+            db: DependenciesBridge.shared.db,
+            networkManager: SSKEnvironment.shared.networkManagerRef,
+            profileManager: SSKEnvironment.shared.profileManagerRef,
+        )
+
+        Task {
+            await fyiSheetCoordinator.presentIfNecessary(from: self)
         }
     }
 
@@ -746,312 +763,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         DependenciesBridge.shared.donationReceiptCredentialResultStore
     }
 
-    @objc
-    func showBadgeSheetIfNecessary() {
-        guard isChatListTopmostViewController() else {
-            return
-        }
-
-        let (
-            oneTimeBoostDonationReceiptCredentialRedemptionSuccess,
-            recurringSubscriptionInitiationDonationReceiptCredentialRedemptionSuccess,
-
-            oneTimeBoostSuccessHasBeenPresented,
-            recurringSubscriptionInitiationSuccessHasBeenPresented,
-
-            oneTimeBoostReceiptCredentialRequestError,
-            recurringSubscriptionInitiationReceiptCredentialRequestError,
-            recurringSubscriptionRenewalReceiptCredentialRequestError,
-
-            oneTimeBoostErrorHasBeenPresented,
-            recurringSubscriptionInitiationErrorHasBeenPresented,
-            recurringSubscriptionRenewalErrorHasBeenPresented,
-
-            donationSubscriberID,
-            expiredBadgeID,
-            shouldShowExpirySheet,
-            mostRecentSubscriptionPaymentMethod,
-            probablyHasCurrentSubscription
-        ) = SSKEnvironment.shared.databaseStorageRef.read { transaction in (
-            donationReceiptCredentialResultStore.getRedemptionSuccess(successMode: .oneTimeBoost, tx: transaction),
-            donationReceiptCredentialResultStore.getRedemptionSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction),
-
-            donationReceiptCredentialResultStore.hasPresentedSuccess(successMode: .oneTimeBoost, tx: transaction),
-            donationReceiptCredentialResultStore.hasPresentedSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction),
-
-            donationReceiptCredentialResultStore.getRequestError(errorMode: .oneTimeBoost, tx: transaction),
-            donationReceiptCredentialResultStore.getRequestError(errorMode: .recurringSubscriptionInitiation, tx: transaction),
-            donationReceiptCredentialResultStore.getRequestError(errorMode: .recurringSubscriptionRenewal, tx: transaction),
-
-            donationReceiptCredentialResultStore.hasPresentedError(errorMode: .oneTimeBoost, tx: transaction),
-            donationReceiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscriptionInitiation, tx: transaction),
-            donationReceiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscriptionRenewal, tx: transaction),
-
-            DonationSubscriptionManager.getSubscriberID(transaction: transaction),
-            DonationSubscriptionManager.mostRecentlyExpiredBadgeID(transaction: transaction),
-            DonationSubscriptionManager.showExpirySheetOnHomeScreenKey(transaction: transaction),
-            DonationSubscriptionManager.getMostRecentSubscriptionPaymentMethod(transaction: transaction),
-            DonationSubscriptionManager.probablyHasCurrentSubscription(tx: transaction)
-        )}
-
-        if
-            let oneTimeBoostDonationReceiptCredentialRedemptionSuccess,
-            !oneTimeBoostSuccessHasBeenPresented
-        {
-            BadgeThanksSheetPresenter.load(
-                redemptionSuccess: oneTimeBoostDonationReceiptCredentialRedemptionSuccess,
-                successMode: .oneTimeBoost
-            ).presentBadgeThanksAndClearSuccess(fromViewController: self)
-        } else if
-            let recurringSubscriptionInitiationDonationReceiptCredentialRedemptionSuccess,
-            !recurringSubscriptionInitiationSuccessHasBeenPresented
-        {
-            BadgeThanksSheetPresenter.load(
-                redemptionSuccess: recurringSubscriptionInitiationDonationReceiptCredentialRedemptionSuccess,
-                successMode: .recurringSubscriptionInitiation
-            ).presentBadgeThanksAndClearSuccess(fromViewController: self)
-        } else if
-            let oneTimeBoostReceiptCredentialRequestError,
-            !oneTimeBoostErrorHasBeenPresented
-        {
-            showBadgeIssueSheetIfNeeded(
-                receiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
-                errorMode: .oneTimeBoost
-            )
-        } else if
-            let recurringSubscriptionInitiationReceiptCredentialRequestError,
-            !recurringSubscriptionInitiationErrorHasBeenPresented
-        {
-            showBadgeIssueSheetIfNeeded(
-                receiptCredentialRequestError: recurringSubscriptionInitiationReceiptCredentialRequestError,
-                errorMode: .recurringSubscriptionInitiation
-            )
-        } else if
-            let recurringSubscriptionRenewalReceiptCredentialRequestError,
-            !recurringSubscriptionRenewalErrorHasBeenPresented
-        {
-            showBadgeIssueSheetIfNeeded(
-                receiptCredentialRequestError: recurringSubscriptionRenewalReceiptCredentialRequestError,
-                errorMode: .recurringSubscriptionRenewal
-            )
-        } else if
-            let expiredBadgeID,
-            shouldShowExpirySheet
-        {
-            Task {
-                await showBadgeExpirationSheetIfNeeded(
-                    donationSubscriberID: donationSubscriberID,
-                    expiredBadgeID: expiredBadgeID,
-                    mostRecentSubscriptionPaymentMethod: mostRecentSubscriptionPaymentMethod,
-                    probablyHasCurrentSubscription: probablyHasCurrentSubscription
-                )
-            }
-        }
-    }
-
-    /// Show a badge issue sheet if we need to.
-    ///
-    /// Most payment methods succeed or fail to process quickly, and we're able
-    /// to show a blocking spinner in the donation flow until we know the
-    /// status, and show the appropriate UI there (so we show nothing here).
-    ///
-    /// Bank payments, however, are expected to take a long time (on the order
-    /// of days) to process. If one eventually fails, and we find ourselves with
-    /// an error for a failed bank payment, we should present a sheet for it.
-    private func showBadgeIssueSheetIfNeeded(
-        receiptCredentialRequestError: DonationReceiptCredentialRequestError,
-        errorMode: DonationReceiptCredentialResultStore.Mode
-    ) {
-        /// Record that we've presented this error. Important to do even for
-        /// errors that don't merit presentation – otherwise, as long as this
-        /// error is persisted and not-presented, we'll keep attempting and
-        /// declining to present it. That'd be bad if it prevented us from
-        /// presenting a different error.
-        func hasPresentedError() {
-            SSKEnvironment.shared.databaseStorageRef.write { tx in
-                self.donationReceiptCredentialResultStore.setHasPresentedError(
-                    errorMode: errorMode,
-                    tx: tx
-                )
-            }
-        }
-
-        guard let badge = receiptCredentialRequestError.badge else {
-            owsFailDebug("Missing badge for failed donation! Is this an old error?")
-            return hasPresentedError()
-        }
-
-        let errorCode = receiptCredentialRequestError.errorCode
-        let paymentMethod = receiptCredentialRequestError.paymentMethod
-        let chargeFailureCodeIfPaymentFailed = receiptCredentialRequestError.chargeFailureCodeIfPaymentFailed
-
-        switch errorCode {
-        case .paymentStillProcessing:
-            // Not a terminal error – no reason to show a sheet.
-            return hasPresentedError()
-        case
-                .paymentFailed,
-                .localValidationFailed,
-                .serverValidationFailed,
-                .paymentNotFound,
-                .paymentIntentRedeemed:
-            break
-        }
-
-        switch paymentMethod {
-        case nil, .applePay, .creditOrDebitCard, .paypal:
-            // Non-SEPA payment methods generally get their errors immediately,
-            // and so errors from initiating a donation should have been
-            // presented when the user was in the donate view. Consequently, we
-            // only want to present renewal errors here.
-            switch errorMode {
-            case .oneTimeBoost, .recurringSubscriptionInitiation:
-                return hasPresentedError()
-            case .recurringSubscriptionRenewal:
-                break
-            }
-        case .sepa, .ideal:
-            // SEPA donations won't error out immediately upon initiation
-            // (they'll spend time processing first), so we should show errors
-            // for any variety of donation here.
-            break
-        }
-
-        let logger = PrefixedLogger(prefix: "[Donations]", suffix: "\(errorMode)")
-
-        Promise.wrapAsync {
-            try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(badge)
-        }.done(on: DispatchQueue.main) {
-            guard self.isChatListTopmostViewController() else {
-                logger.info("Not presenting error – no longer the top view controller.")
-                return
-            }
-
-            let badgeIssueSheetMode: BadgeIssueSheetState.Mode = {
-                switch errorMode {
-                case .oneTimeBoost, .recurringSubscriptionInitiation:
-                    return .bankPaymentFailed(
-                        chargeFailureCode: chargeFailureCodeIfPaymentFailed
-                    )
-                case .recurringSubscriptionRenewal:
-                    return .subscriptionExpiredBecauseOfChargeFailure(
-                        chargeFailureCode: chargeFailureCodeIfPaymentFailed,
-                        paymentMethod: paymentMethod
-                    )
-                }
-            }()
-
-            let badgeIssueSheet = BadgeIssueSheet(
-                badge: badge,
-                mode: badgeIssueSheetMode
-            )
-            badgeIssueSheet.delegate = self
-
-            self.present(badgeIssueSheet, animated: true) {
-                hasPresentedError()
-            }
-        }.catch(on: SyncScheduler()) { _ in
-            logger.error("Failed to populate badge assets!")
-        }
-    }
-
-    private func showBadgeExpirationSheetIfNeeded(
-        donationSubscriberID: Data?,
-        expiredBadgeID: String,
-        mostRecentSubscriptionPaymentMethod: DonationPaymentMethod?,
-        probablyHasCurrentSubscription: Bool
-    ) async {
-        let db = DependenciesBridge.shared.db
-        let networkManager = SSKEnvironment.shared.networkManagerRef
-        let profileManager = SSKEnvironment.shared.profileManagerRef
-
-        if BoostBadgeIds.contains(expiredBadgeID) {
-            Logger.info("[Donations] Showing expiry sheet for expired boost badge.")
-
-            do {
-                let boostBadge = try await DonationSubscriptionManager.getBoostBadge()
-                try await profileManager.badgeStore.populateAssetsOnBadge(boostBadge)
-
-                // Make sure we're still the active VC
-                guard UIApplication.shared.frontmostViewController == self.conversationSplitViewController,
-                      self.conversationSplitViewController?.selectedThread == nil else { return }
-
-                let badgeSheet = BadgeIssueSheet(
-                    badge: boostBadge,
-                    mode: .boostExpired(hasCurrentSubscription: probablyHasCurrentSubscription)
-                )
-                badgeSheet.delegate = self
-                self.present(badgeSheet, animated: true)
-
-                await db.awaitableWrite { tx in
-                    DonationSubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: tx)
-                }
-            } catch {
-                Logger.warn("[Donations] Failed to fetch expired boost badge assets! \(error)")
-            }
-        } else if SubscriptionBadgeIds.contains(expiredBadgeID) {
-            /// We expect to show an error sheet when the subscription fails to
-            /// renew and we learn about it from the receipt credential
-            /// redemption job kicked off by the keep-alive.
-            ///
-            /// Consequently, we don't need/want to show a sheet for the badge
-            /// expiration itself, since we should've already shown a sheet.
-            ///
-            /// It's possible that the subscription simply "expired" due to
-            /// inactivity (the subscription was not kept-alive), in which case
-            /// we won't have shown a sheet because there won't have been a
-            /// renewal failure. That's ok – we'll let the badge expire
-            /// silently.
-            ///
-            /// We'll still fetch the subscription, but just for logging
-            /// purposes.
-
-            Logger.info("[Donations] Handling expired subscription badge.")
-
-            let currentSubscription: Subscription?
-            if let donationSubscriberID {
-                do {
-                    currentSubscription = try await SubscriptionFetcher(networkManager: networkManager)
-                        .fetch(subscriberID: donationSubscriberID)
-                } catch {
-                    Logger.warn("[Donations] Failed to get subscription during badge expiration!")
-                    return
-                }
-            } else {
-                currentSubscription = nil
-            }
-
-            if
-                donationSubscriberID != nil,
-                let currentSubscription
-            {
-                owsAssertDebug(
-                    currentSubscription.status == .canceled,
-                    "[Donations] Current subscription is not canceled, but the badge expired!"
-                )
-
-                if let chargeFailure = currentSubscription.chargeFailure {
-                    Logger.warn("[Donations] Badge expired for subscription with charge failure: \(chargeFailure.code ?? "nil")")
-                } else {
-                    Logger.warn("[Donations] Badge expired for subscription without charge failure. It probably expired due to inactivity, but hasn't yet been deleted.")
-                }
-            } else if donationSubscriberID != nil {
-                // If the subscription is missing entirely, it presumably
-                // expired due to inactivity.
-                Logger.warn("[Donations] Missing subscription for expired badge. It probably expired due to inactivity and was deleted.")
-            } else {
-                Logger.warn("[Donations] Missing subscriber ID for expired subscription badge.")
-            }
-
-            await db.awaitableWrite { tx in
-                DonationSubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: tx)
-            }
-        }
-    }
-
     // MARK: -
 
-    private func isChatListTopmostViewController() -> Bool {
+    func isChatListTopmostViewController() -> Bool {
         guard
             UIApplication.shared.frontmostViewController == self.conversationSplitViewController,
             conversationSplitViewController?.selectedThread == nil,
@@ -1539,14 +1253,16 @@ extension ChatListViewController {
                     donateSheet.dismiss(animated: true) { [weak self] in
                         guard
                             let self,
-                            let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.loadWithSneakyTransaction(
+                            let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.fromGlobalsWithSneakyTransaction(
                                 successMode: receiptCredentialSuccessMode
                             )
                         else { return }
 
-                        badgeThanksSheetPresenter.presentBadgeThanksAndClearSuccess(
-                            fromViewController: self
-                        )
+                        Task {
+                            await badgeThanksSheetPresenter.presentAndRecordBadgeThanks(
+                                fromViewController: self
+                            )
+                        }
                     }
                 case let .monthlySubscriptionCancelled(donateSheet, toastText):
                     donateSheet.dismiss(animated: true) { [weak self] in
@@ -1565,17 +1281,6 @@ extension ChatListViewController {
         let navigationController = OWSNavigationController()
         navigationController.setViewControllers(viewControllers, animated: false)
         presentFormSheet(navigationController, animated: true, completion: completion)
-    }
-}
-
-extension ChatListViewController: BadgeIssueSheetDelegate {
-    func badgeIssueSheetActionTapped(_ action: BadgeIssueSheetAction) {
-        switch action {
-        case .dismiss:
-            break
-        case .openDonationView:
-            showAppSettings(mode: .donate(donateMode: .oneTime))
-        }
     }
 }
 

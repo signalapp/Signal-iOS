@@ -107,14 +107,16 @@ class RemoteMegaphone: MegaphoneView {
                     donateSheet.dismiss(animated: true) {
                         guard
                             let frontVc = frontVc(),
-                            let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.loadWithSneakyTransaction(
+                            let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.fromGlobalsWithSneakyTransaction(
                                 successMode: receiptCredentialSuccessMode
                             )
                         else { return }
 
-                        badgeThanksSheetPresenter.presentBadgeThanksAndClearSuccess(
-                            fromViewController: frontVc
-                        )
+                        Task {
+                            await badgeThanksSheetPresenter.presentAndRecordBadgeThanks(
+                                fromViewController: frontVc
+                            )
+                        }
                     }
                 case let .monthlySubscriptionCancelled(donateSheet, toastText):
                     donateSheet.dismiss(animated: true) {

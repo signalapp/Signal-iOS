@@ -33,7 +33,7 @@ class BadgeThanksSheetPresenter {
         self.successMode = successMode
     }
 
-    static func loadWithSneakyTransaction(
+    static func fromGlobalsWithSneakyTransaction(
         successMode: DonationReceiptCredentialResultStore.Mode
     ) -> BadgeThanksSheetPresenter? {
         guard let redemptionSuccess = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
@@ -46,16 +46,13 @@ class BadgeThanksSheetPresenter {
             return nil
         }
 
-        return BadgeThanksSheetPresenter(
-            badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore,
-            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-            donationReceiptCredentialResultStore: Deps.donationReceiptCredentialResultStore,
+        return .fromGlobals(
             redemptionSuccess: redemptionSuccess,
-            successMode: successMode
+            successMode: successMode,
         )
     }
 
-    static func load(
+    static func fromGlobals(
         redemptionSuccess: DonationReceiptCredentialRedemptionSuccess,
         successMode: DonationReceiptCredentialResultStore.Mode
     ) -> BadgeThanksSheetPresenter {
@@ -69,31 +66,29 @@ class BadgeThanksSheetPresenter {
     }
 
     @MainActor
-    func presentBadgeThanksAndClearSuccess(
+    func presentAndRecordBadgeThanks(
         fromViewController: UIViewController
-    ) {
+    ) async {
         let logger = PrefixedLogger(prefix: "[Donations]", suffix: "\(successMode)")
         logger.info("Preparing to present badge thanks sheet.")
 
-        Task {
-            do {
-                try await self.badgeStore.populateAssetsOnBadge(self.redemptionSuccess.badge)
-            } catch {
-                logger.error("Failed to populated badge assets for badge thanks sheet!")
-                return
-            }
+        do {
+            try await self.badgeStore.populateAssetsOnBadge(self.redemptionSuccess.badge)
+        } catch {
+            logger.error("Failed to populated badge assets for badge thanks sheet!")
+            return
+        }
 
-            logger.info("Showing badge thanks sheet on receipt credential redemption.")
-            let badgeThanksSheet = BadgeThanksSheet(receiptCredentialRedemptionSuccess: self.redemptionSuccess)
+        logger.info("Showing badge thanks sheet on receipt credential redemption.")
+        let badgeThanksSheet = BadgeThanksSheet(receiptCredentialRedemptionSuccess: self.redemptionSuccess)
 
-            await fromViewController.awaitablePresent(badgeThanksSheet, animated: true)
+        await fromViewController.awaitablePresent(badgeThanksSheet, animated: true)
 
-            await self.databaseStorage.awaitableWrite { tx in
-                self.donationReceiptCredentialResultStore.setHasPresentedSuccess(
-                    successMode: self.successMode,
-                    tx: tx
-                )
-            }
+        await self.databaseStorage.awaitableWrite { tx in
+            self.donationReceiptCredentialResultStore.setHasPresentedSuccess(
+                successMode: self.successMode,
+                tx: tx
+            )
         }
     }
 }

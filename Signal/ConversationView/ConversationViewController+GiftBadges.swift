@@ -151,14 +151,16 @@ extension ConversationViewController: BadgeIssueSheetDelegate {
                     donateSheet.dismiss(animated: true) { [weak self] in
                         guard
                             let self,
-                            let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.loadWithSneakyTransaction(
+                            let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.fromGlobalsWithSneakyTransaction(
                                 successMode: receiptCredentialSuccessMode
                             )
                         else { return }
 
-                        badgeThanksSheetPresenter.presentBadgeThanksAndClearSuccess(
-                            fromViewController: self
-                        )
+                        Task {
+                            await badgeThanksSheetPresenter.presentAndRecordBadgeThanks(
+                                fromViewController: self
+                            )
+                        }
                     }
                 case let .monthlySubscriptionCancelled(donateSheet, toastText):
                     donateSheet.dismiss(animated: true) { [weak self] in

@@ -133,12 +133,15 @@ extension DonationViewsUtil {
             // Do this after the `wrapPromiseInProgressView` completes
             // to dismiss the progress spinner.  Then display the
             // result of the donation.
-            let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.loadWithSneakyTransaction(
+            let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.fromGlobalsWithSneakyTransaction(
                 successMode: donationType.asSuccessMode
             )
-            badgeThanksSheetPresenter?.presentBadgeThanksAndClearSuccess(
-                fromViewController: donationsVC
-            )
+
+            Task {
+                await badgeThanksSheetPresenter?.presentAndRecordBadgeThanks(
+                    fromViewController: donationsVC
+                )
+            }
         } catch {
             if let badge {
                 DonationViewsUtil.presentErrorSheet(

@@ -2475,6 +2475,7 @@
 		D91F0B4E2B193A5C0086DB30 /* GroupCallRecordRingUpdateDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */; };
 		D91F0B4F2B193A7A0086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F0B4B2B1939B60086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift */; };
 		D91FBCF62E2EF4C100D0BCDB /* BackupExportJobRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91FBCF52E2EF4B900D0BCDB /* BackupExportJobRunner.swift */; };
+		D91FBCF42E2E9EA200D0BCDB /* ChatListFYISheetCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91FBCF32E2E9E9E00D0BCDB /* ChatListFYISheetCoordinator.swift */; };
 		D923DF9C2DC135D200CDAFC3 /* BackupIdManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D923DF9B2DC135A000CDAFC3 /* BackupIdManager.swift */; };
 		D9247EA62BFBFFCA00DFEF6F /* DeleteForMeIncomingSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9247EA42BFBFFCA00DFEF6F /* DeleteForMeIncomingSyncMessageManager.swift */; };
 		D9247EA82BFD28E800DFEF6F /* DeleteForMeSyncMessageReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9247EA72BFD28E800DFEF6F /* DeleteForMeSyncMessageReceiver.swift */; };
@@ -6427,6 +6428,7 @@
 		D91F0B4B2B1939B60086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallRecordRingUpdateDelegateTest.swift; sourceTree = "<group>"; };
 		D91F7A2C2935A32F00012C64 /* DonationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationMode.swift; sourceTree = "<group>"; };
 		D91FBCF52E2EF4B900D0BCDB /* BackupExportJobRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupExportJobRunner.swift; sourceTree = "<group>"; };
+		D91FBCF32E2E9E9E00D0BCDB /* ChatListFYISheetCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFYISheetCoordinator.swift; sourceTree = "<group>"; };
 		D923DF9B2DC135A000CDAFC3 /* BackupIdManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupIdManager.swift; sourceTree = "<group>"; };
 		D9247EA42BFBFFCA00DFEF6F /* DeleteForMeIncomingSyncMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeIncomingSyncMessageManager.swift; sourceTree = "<group>"; };
 		D9247EA72BFD28E800DFEF6F /* DeleteForMeSyncMessageReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeSyncMessageReceiver.swift; sourceTree = "<group>"; };
@@ -10681,6 +10683,7 @@
 				052647BE2C63BAC40076E99D /* ChatListFilterControl.swift */,
 				0550A5E32C4048CF0072CC02 /* ChatListFilterFooterCell.swift */,
 				052647C02C6404D70076E99D /* ChatListFilterStore.swift */,
+				D91FBCF32E2E9E9E00D0BCDB /* ChatListFYISheetCoordinator.swift */,
 				05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */,
 				50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */,
 				50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */,
@@ -16880,6 +16883,7 @@
 				052647BF2C63BAD60076E99D /* ChatListFilterControl.swift in Sources */,
 				0550A5E42C4048CF0072CC02 /* ChatListFilterFooterCell.swift in Sources */,
 				052647C12C6404DD0076E99D /* ChatListFilterStore.swift in Sources */,
+				D91FBCF42E2E9EA200D0BCDB /* ChatListFYISheetCoordinator.swift in Sources */,
 				05B411252C62845000A1EDBC /* ChatListInboxFilterSection.swift in Sources */,
 				50101FB42B08447000C648E4 /* ChatListProxyButtonCreator.swift in Sources */,
 				50101FB22B083C8100C648E4 /* ChatListSettingsButtonState.swift in Sources */,
