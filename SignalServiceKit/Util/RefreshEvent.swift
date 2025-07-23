@@ -8,11 +8,9 @@ import Foundation
 // This class can be used to coordinate the refresh of a
 // value obtained from the network.
 
+@MainActor
 public class RefreshEvent {
-
-    public typealias Block = () -> Void
-
-    private let block: Block
+    private let block: @MainActor () -> Void
 
     private let refreshInterval: TimeInterval
 
@@ -29,7 +27,7 @@ public class RefreshEvent {
     public init(
         appReadiness: AppReadiness,
         refreshInterval: TimeInterval,
-        block: @escaping Block
+        block: @escaping @MainActor () -> Void,
     ) {
         self.appReadiness = appReadiness
         self.refreshInterval = refreshInterval
@@ -107,13 +105,13 @@ public class RefreshEvent {
         guard refreshTimer == nil else {
             return
         }
-        refreshTimer = WeakTimer.scheduledTimer(timeInterval: refreshInterval,
-                                                target: self,
-                                                userInfo: nil,
-                                                repeats: true) { [weak self] _ in
-            self?.fireEvent()
-        }
-
+        refreshTimer = WeakTimer.scheduledTimer(
+            timeInterval: refreshInterval,
+            target: self,
+            userInfo: nil,
+            repeats: true,
+            action: { [weak self] _ in self?.fireEvent() },
+        )
         fireEvent()
     }
 }

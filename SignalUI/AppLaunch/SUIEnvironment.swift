@@ -40,6 +40,7 @@ public class SUIEnvironment: NSObject {
         SwiftSingletons.register(self)
     }
 
+    @MainActor
     public func setUp(
         appReadiness: AppReadiness,
         authCredentialManager: any AuthCredentialManager

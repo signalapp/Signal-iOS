@@ -77,6 +77,7 @@ class SendPaymentHelper {
         )
     }
 
+    @MainActor
     public func refreshObservedValues() {
         updateCurrentCurrencyConversion()
 

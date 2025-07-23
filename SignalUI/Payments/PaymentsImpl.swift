@@ -19,6 +19,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     public static let maxPaymentMemoMessageLength: Int = 32
 
+    @MainActor
     public init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
         self.paymentsReconciliation = PaymentsReconciliation(appReadiness: appReadiness)

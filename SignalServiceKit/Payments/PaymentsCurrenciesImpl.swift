@@ -8,6 +8,7 @@ public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies
     private let appReadiness: AppReadiness
     private var refreshEvent: RefreshEvent?
 
+    @MainActor
     public init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
 
@@ -134,18 +135,18 @@ public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies
                 }
             }
             self._conversionRates = newConversionRates
-            NotificationCenter.default.postOnMainThread(name: Self.paymentConversionRatesDidChange,
-                                                                 object: nil)
+            NotificationCenter.default.postOnMainThread(name: Self.paymentConversionRatesDidChange, object: nil)
         }
     }
 
     private let isUpdateInFlight = AtomicBool(false, lock: .sharedGlobal)
 
     @objc
+    @MainActor
     public func updateConversionRates() {
         guard
             appReadiness.isAppReady,
-            CurrentAppContext().isMainAppAndActive,
+            CurrentAppContext().isMainAppAndActiveIsolated,
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         else {
             return
@@ -153,8 +154,7 @@ public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies
         guard SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled else {
             return
         }
-        if let conversionRates = self.conversionRates,
-           !conversionRates.isStale {
+        if let conversionRates = self.conversionRates, !conversionRates.isStale {
             // No need to update.
             return
         }
@@ -163,55 +163,54 @@ public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies
             // Update already in flight.
             return
         }
+        Task {
+            defer { isUpdateInFlight.set(false) }
+            do {
+                try await self._updateConversionRates()
+            } catch {
+                owsFailDebugUnlessNetworkFailure(error)
+            }
+        }
+    }
 
-        firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
-            let request = OWSRequestFactory.currencyConversionRequest()
-            return SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            guard let json = response.responseBodyJson else {
-                throw OWSAssertionError("Missing or invalid JSON")
+    private func _updateConversionRates() async throws {
+        let request = OWSRequestFactory.currencyConversionRequest()
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+
+        guard let json = response.responseBodyJson else {
+            throw OWSAssertionError("Missing or invalid JSON")
+        }
+        guard let parser = ParamParser(responseObject: json) else {
+            throw OWSAssertionError("Invalid responseObject.")
+        }
+        let timestamp: UInt64 = try parser.required(key: "timestamp")
+        let serviceDate = Date(millisecondsSince1970: timestamp)
+        let currencyObjects: [Any] = try parser.required(key: "currencies")
+        var conversionRateMap = ConversionRateMap()
+        for currencyObject in currencyObjects {
+            guard let currencyParser = ParamParser(responseObject: currencyObject) else {
+                throw OWSAssertionError("Invalid currencyObject.")
             }
-            guard let parser = ParamParser(responseObject: json) else {
-                throw OWSAssertionError("Invalid responseObject.")
+            let base: String = try currencyParser.required(key: "base")
+            guard base == PaymentsConstants.mobileCoinCurrencyIdentifier else {
+                continue
             }
-            let timestamp: UInt64 = try parser.required(key: "timestamp")
-            let serviceDate = Date(millisecondsSince1970: timestamp)
-            let currencyObjects: [Any] = try parser.required(key: "currencies")
-            var conversionRateMap = ConversionRateMap()
-            for currencyObject in currencyObjects {
-                guard let currencyParser = ParamParser(responseObject: currencyObject) else {
-                    throw OWSAssertionError("Invalid currencyObject.")
-                }
-                let base: String = try currencyParser.required(key: "base")
-                guard base == PaymentsConstants.mobileCoinCurrencyIdentifier else {
+            let conversionObjects: [String: NSNumber] = try currencyParser.required(key: "conversions")
+            for (currencyCode, nsExchangeRate) in conversionObjects {
+                guard currencyCode.count == 3 else {
+                    Logger.warn("Ignoring invalid currencyCode: \(currencyCode)")
                     continue
                 }
-                let conversionObjects: [String: NSNumber] = try currencyParser.required(key: "conversions")
-                for (currencyCode, nsExchangeRate) in conversionObjects {
-                    guard currencyCode.count == 3 else {
-                        Logger.warn("Ignoring invalid currencyCode: \(currencyCode)")
-                        continue
-                    }
-                    let exchangeRate = nsExchangeRate.doubleValue
-                    guard exchangeRate > 0 else {
-                        Logger.warn("Ignoring invalid exchangeRate: \(exchangeRate), currencyCode: \(currencyCode)")
-                        continue
-                    }
-                    conversionRateMap[currencyCode] = exchangeRate
+                let exchangeRate = nsExchangeRate.doubleValue
+                guard exchangeRate > 0 else {
+                    Logger.warn("Ignoring invalid exchangeRate: \(exchangeRate), currencyCode: \(currencyCode)")
+                    continue
                 }
+                conversionRateMap[currencyCode] = exchangeRate
             }
-            return ConversionRates(conversionRateMap: conversionRateMap, serviceDate: serviceDate)
-        }.done(on: DispatchQueue.global()) { (conversionRates: ConversionRates) in
-            Logger.info("Success.")
-
-            self.setConversionRates(conversionRates)
-
-            isUpdateInFlight.set(false)
-        }.catch(on: DispatchQueue.global()) { error in
-            owsFailDebugUnlessNetworkFailure(error)
-
-            isUpdateInFlight.set(false)
         }
+        self.setConversionRates(ConversionRates(conversionRateMap: conversionRateMap, serviceDate: serviceDate))
+        Logger.info("Success.")
     }
 
     public static let paymentConversionRatesDidChange = NSNotification.Name("paymentConversionRatesDidChange")
