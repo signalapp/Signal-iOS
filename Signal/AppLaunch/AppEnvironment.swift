@@ -75,7 +75,6 @@ public class AppEnvironment: NSObject {
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             backupTestFlightEntitlementManager: DependenciesBridge.shared.backupTestFlightEntitlementManager,
             db: DependenciesBridge.shared.db,
-            remoteConfigManager: SSKEnvironment.shared.remoteConfigManagerRef,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
         self.callService = callService
