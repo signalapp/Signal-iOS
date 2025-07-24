@@ -53,7 +53,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         groupModel: TSGroupModel,
         disappearingMessageToken: DisappearingMessageToken,
         groupUpdateSource: GroupUpdateSource,
-        transaction v2Transaction: DBWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         _insertGroupUpdateInfoMessage(
             localIdentifiers: localIdentifiers,
@@ -65,7 +65,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
             newDisappearingMessageToken: disappearingMessageToken,
             newlyLearnedPniToAciAssociations: [:],
             groupUpdateSource: groupUpdateSource,
-            transaction: v2Transaction
+            transaction: tx
         )
     }
 
@@ -79,7 +79,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         newDisappearingMessageToken: DisappearingMessageToken,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
         groupUpdateSource: GroupUpdateSource,
-        transaction v2Transaction: DBWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         _insertGroupUpdateInfoMessage(
             localIdentifiers: localIdentifiers,
@@ -91,7 +91,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
             newDisappearingMessageToken: newDisappearingMessageToken,
             newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
             groupUpdateSource: groupUpdateSource,
-            transaction: v2Transaction
+            transaction: tx
         )
     }
 
@@ -105,9 +105,8 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         newDisappearingMessageToken: DisappearingMessageToken,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
         groupUpdateSource: GroupUpdateSource,
-        transaction v2Transaction: DBWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
-        let sdsTransaction = SDSDB.shimOnlyBridge(v2Transaction)
         let updateItemsForNewMessage: [TSInfoMessage.PersistableGroupUpdateItem]
 
         if
@@ -139,7 +138,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                         newDisappearingMessageToken: newDisappearingMessageToken,
                         localIdentifiers: localIdentifiers,
                         groupUpdateSource: groupUpdateSource,
-                        tx: v2Transaction
+                        tx: tx
                     )
                 } else {
                     return groupUpdateItemBuilder.precomputedUpdateItemsForNewGroup(
@@ -147,7 +146,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                         newDisappearingMessageToken: newDisappearingMessageToken,
                         localIdentifiers: localIdentifiers,
                         groupUpdateSource: groupUpdateSource,
-                        tx: v2Transaction
+                        tx: tx
                     )
                 }
             }()
@@ -175,7 +174,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                     localIdentifiers: localIdentifiers,
                     groupThread: groupThread,
                     newGroupModel: newGroupModel,
-                    transaction: sdsTransaction
+                    transaction: tx
                 )
             {
                 switch collapseResult {
@@ -203,7 +202,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
             groupThread: groupThread,
             updateItems: updateItemsForNewMessage
         )
-        infoMessage.anyInsert(transaction: sdsTransaction)
+        infoMessage.anyInsert(transaction: tx)
 
         let wasLocalUserInGroup = oldGroupModel?.groupMembership.isLocalUserMemberOfAnyKind ?? false
         let isLocalUserInGroup = newGroupModel.groupMembership.isLocalUserMemberOfAnyKind
@@ -223,7 +222,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                 thread: groupThread,
                 circumstance: .onThisDevice,
                 shouldClearNotifications: true,
-                transaction: sdsTransaction
+                transaction: tx
             )
         } else if !wasLocalUserInGroup && isLocalUserInGroup {
             // Notify when the local user is added or invited to a group.
@@ -231,7 +230,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                 forTSMessage: infoMessage,
                 thread: groupThread,
                 wantsSound: true,
-                transaction: sdsTransaction
+                transaction: tx
             )
         }
     }

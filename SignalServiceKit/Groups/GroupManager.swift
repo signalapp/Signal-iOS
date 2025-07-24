@@ -179,6 +179,7 @@ public class GroupManager: NSObject {
                 groupModel: groupModel,
                 disappearingMessageToken: disappearingMessageToken,
                 groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
+                infoMessagePolicy: .insert,
                 localIdentifiers: localIdentifiers,
                 spamReportingMetadata: .createdByLocalAction,
                 transaction: tx
@@ -245,7 +246,7 @@ public class GroupManager: NSObject {
             groupModel: groupModel,
             disappearingMessageToken: nil,
             groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
-            infoMessagePolicy: shouldInsertInfoMessage ? .always : .never,
+            infoMessagePolicy: shouldInsertInfoMessage ? .insert : .doNotInsert,
             localIdentifiers: localIdentifiers,
             transaction: transaction
         )
@@ -256,7 +257,7 @@ public class GroupManager: NSObject {
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken?,
         groupUpdateSource: GroupUpdateSource,
-        infoMessagePolicy: InfoMessagePolicy = .always,
+        infoMessagePolicy: InfoMessagePolicy = .insert,
         localIdentifiers: LocalIdentifiers,
         transaction: DBWriteTransaction
     ) throws -> TSGroupThread {
@@ -693,7 +694,7 @@ public class GroupManager: NSObject {
                     newDisappearingMessageToken: nil,
                     newlyLearnedPniToAciAssociations: [:],
                     groupUpdateSource: .unknown,
-                    infoMessagePolicy: .always,
+                    infoMessagePolicy: .insert,
                     localIdentifiers: localIdentifiers,
                     spamReportingMetadata: .createdByLocalAction,
                     transaction: tx
@@ -778,10 +779,8 @@ public class GroupManager: NSObject {
     // MARK: - Group Database
 
     public enum InfoMessagePolicy {
-        case always
-        case insertsOnly
-        case updatesOnly
-        case never
+        case insert
+        case doNotInsert
     }
 
     // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
@@ -789,7 +788,7 @@ public class GroupManager: NSObject {
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken?,
         groupUpdateSource: GroupUpdateSource,
-        infoMessagePolicy: InfoMessagePolicy = .always,
+        infoMessagePolicy: InfoMessagePolicy,
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: DBWriteTransaction
@@ -819,7 +818,7 @@ public class GroupManager: NSObject {
         )
 
         switch infoMessagePolicy {
-        case .always, .insertsOnly:
+        case .insert:
             insertGroupUpdateInfoMessageForNewGroup(
                 localIdentifiers: localIdentifiers,
                 spamReportingMetadata: spamReportingMetadata,
@@ -829,7 +828,7 @@ public class GroupManager: NSObject {
                 groupUpdateSource: groupUpdateSource,
                 transaction: transaction
             )
-        default:
+        case .doNotInsert:
             break
         }
 
@@ -853,7 +852,7 @@ public class GroupManager: NSObject {
         newlyLearnedPniToAciAssociations: [Pni: Aci],
         groupUpdateSource: GroupUpdateSource,
         didAddLocalUserToV2Group: Bool,
-        infoMessagePolicy: InfoMessagePolicy = .always,
+        infoMessagePolicy: InfoMessagePolicy,
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: DBWriteTransaction
@@ -922,7 +921,7 @@ public class GroupManager: NSObject {
         newDisappearingMessageToken: DisappearingMessageToken?,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
         groupUpdateSource: GroupUpdateSource,
-        infoMessagePolicy: InfoMessagePolicy = .always,
+        infoMessagePolicy: InfoMessagePolicy = .insert,
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: DBWriteTransaction
@@ -1054,9 +1053,9 @@ public class GroupManager: NSObject {
 
         let shouldInsertInfoMessages: Bool
         switch infoMessagePolicy {
-        case .always, .updatesOnly:
+        case .insert:
             shouldInsertInfoMessages = true
-        case .never, .insertsOnly:
+        case .doNotInsert:
             shouldInsertInfoMessages = false
         }
 

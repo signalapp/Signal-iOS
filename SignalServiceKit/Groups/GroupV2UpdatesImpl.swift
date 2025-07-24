@@ -597,6 +597,7 @@ private extension GroupV2UpdatesImpl {
             newlyLearnedPniToAciAssociations: [:],
             groupUpdateSource: groupUpdateSource,
             didAddLocalUserToV2Group: didAddLocalUserToV2Group,
+            infoMessagePolicy: .insert,
             localIdentifiers: localIdentifiers,
             spamReportingMetadata: spamReportingMetadata,
             transaction: transaction
@@ -770,6 +771,7 @@ private extension GroupV2UpdatesImpl {
                 newlyLearnedPniToAciAssociations: [:], // Not available from snapshots
                 groupUpdateSource: groupUpdateSource,
                 didAddLocalUserToV2Group: false,
+                infoMessagePolicy: .insert,
                 localIdentifiers: localIdentifiers,
                 spamReportingMetadata: spamReportingMetadata,
                 transaction: transaction
