@@ -42,13 +42,23 @@ class PushChallenge: SpamChallenge {
     private func requestToken() {
         let request = OWSRequestFactory.pushChallengeRequest()
 
-        firstly(on: workQueue) {
-            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
+        Task {
+            let result = await Result(catching: {
+                try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+            })
+            self.workQueue.async {
+                self.handleRequestTokenResult(result)
+            }
+        }
+    }
 
-        }.done(on: workQueue) { _ in
+    private func handleRequestTokenResult(_ result: Result<HTTPResponse, any Error>) {
+        assertOnQueue(self.workQueue)
+        do {
+            _ = try result.get()
             self.state = .deferred(self.expirationDate)
 
-        }.catch(on: workQueue) { error in
+        } catch {
             owsFailDebugUnlessNetworkFailure(error)
             self.failureCount += 1
 
@@ -74,14 +84,23 @@ class PushChallenge: SpamChallenge {
 
     private func postToken(_ token: String) {
         let request = OWSRequestFactory.pushChallengeResponse(token: token)
+        Task {
+            let result = await Result(catching: {
+                try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+            })
+            self.workQueue.async {
+                self.handlePostTokenResult(result)
+            }
+        }
+    }
 
-        firstly(on: workQueue) {
-            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-
-        }.done(on: workQueue) { _ in
+    private func handlePostTokenResult(_ result: Result<HTTPResponse, any Error>) {
+        assertOnQueue(self.workQueue)
+        do {
+            _ = try result.get()
             self.state = .complete
 
-        }.catch(on: workQueue) { error in
+        } catch {
             owsFailDebugUnlessNetworkFailure(error)
             self.failureCount += 1
 

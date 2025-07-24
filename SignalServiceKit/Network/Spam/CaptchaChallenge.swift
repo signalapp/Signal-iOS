@@ -49,13 +49,24 @@ class CaptchaChallenge: SpamChallenge {
             captchaToken: captchaToken
         )
 
-        firstly(on: workQueue) {
-            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
+        Task {
+            let result = await Result(catching: {
+                try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+            })
+            self.workQueue.async {
+                self.handleNotifyServerOfCompletedCaptchaResult(result)
+            }
+        }
+    }
 
-        }.done(on: workQueue) { _ in
+    private func handleNotifyServerOfCompletedCaptchaResult(_ result: Result<HTTPResponse, any Error>) {
+        assertOnQueue(self.workQueue)
+
+        do {
+            _ = try result.get()
             self.state = .complete
 
-        }.catch(on: workQueue) { error in
+        } catch {
             owsFailDebugUnlessNetworkFailure(error)
             self.failureCount += 1
 
