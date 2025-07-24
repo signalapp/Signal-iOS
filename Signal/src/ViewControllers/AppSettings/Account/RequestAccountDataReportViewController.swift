@@ -197,7 +197,7 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
             canCancel: true,
             asyncBlock: { modal in
                 do {
-                    let response = try await SSKEnvironment.shared.signalServiceRef.urlSessionForMainSignalService().performRequest(request)
+                    let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
                     let status = response.responseStatusCode
                     guard status == 200 else {
                         throw OWSGenericError("Received a \(status) status code. The request failed")
