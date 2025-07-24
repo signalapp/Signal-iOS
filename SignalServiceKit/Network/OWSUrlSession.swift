@@ -348,12 +348,6 @@ public class OWSURLSession: OWSURLSessionProtocol {
             }
         }
 
-#if TESTABLE_BUILD
-        if DebugFlags.logCurlOnSuccess, let originalRequest {
-            HTTPUtils.logCurl(for: originalRequest)
-        }
-#endif
-
         return httpUrlResponse
     }
 

@@ -123,13 +123,6 @@ public enum DebugFlags {
 
     public static let internalMegaphoneEligible = build.includes(.internal)
 
-    // Currently this flag is only honored by NetworkManager,
-    // but we could eventually honor in other places as well:
-    //
-    // * The socket manager.
-    // * Places we make requests using tasks.
-    public static let logCurlOnSuccess = false
-
     public static let verboseNotificationLogging = build.includes(.internal)
 
     public static let deviceTransferVerboseProgressLogging = build.includes(.internal)

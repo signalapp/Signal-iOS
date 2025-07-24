@@ -30,12 +30,6 @@ class RESTNetworkManager {
 
         let result = try await sessionManager.performRequest(request)
 
-#if TESTABLE_BUILD
-        if DebugFlags.logCurlOnSuccess {
-            HTTPUtils.logCurl(for: request)
-        }
-#endif
-
         OutageDetection.shared.reportConnectionSuccess()
 
         return result
