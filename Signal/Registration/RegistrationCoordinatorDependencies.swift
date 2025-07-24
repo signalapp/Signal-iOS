@@ -9,7 +9,6 @@ public import SignalServiceKit
 public struct RegistrationCoordinatorDependencies {
     public let appExpiry: AppExpiry
     public let backupArchiveManager: BackupArchiveManager
-    public let backupKeyMaterial: BackupKeyMaterial
     public let changeNumberPniManager: ChangePhoneNumberPniManager
     public let contactsManager: RegistrationCoordinatorImpl.Shims.ContactsManager
     public let contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore
@@ -48,7 +47,6 @@ public struct RegistrationCoordinatorDependencies {
         return RegistrationCoordinatorDependencies(
             appExpiry: DependenciesBridge.shared.appExpiry,
             backupArchiveManager: DependenciesBridge.shared.backupArchiveManager,
-            backupKeyMaterial: DependenciesBridge.shared.backupKeyMaterial,
             changeNumberPniManager: DependenciesBridge.shared.changePhoneNumberPniManager,
             contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(SSKEnvironment.shared.contactManagerImplRef),
             contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),

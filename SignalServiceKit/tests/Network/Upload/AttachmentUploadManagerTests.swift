@@ -13,11 +13,11 @@ class AttachmentUploadManagerTests {
     init() {
         helper = AttachmentUploadManagerMockHelper()
         uploadManager = AttachmentUploadManagerImpl(
+            accountKeyStore: helper.mockAccountKeyStore,
             attachmentEncrypter: helper.mockAttachmentEncrypter,
             attachmentStore: helper.mockAttachmentStore,
             attachmentUploadStore: helper.mockAttachmentUploadStore,
             attachmentThumbnailService: helper.mockAttachmentThumbnailService,
-            backupKeyMaterial: helper.mockBackupKeyMaterial,
             backupRequestManager: helper.mockBackupRequestManager,
             dateProvider: helper.mockDateProvider,
             db: helper.mockDB,

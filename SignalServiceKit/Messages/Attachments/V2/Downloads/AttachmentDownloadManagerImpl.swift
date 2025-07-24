@@ -25,13 +25,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private let tsAccountManager: TSAccountManager
 
     public init(
+        accountKeyStore: AccountKeyStore,
         appReadiness: AppReadiness,
         attachmentDownloadStore: AttachmentDownloadStore,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
         backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
-        backupKeyMaterial: BackupKeyMaterial,
         backupRequestManager: BackupRequestManager,
         currentCallProvider: CurrentCallProvider,
         dateProvider: @escaping DateProvider,
@@ -84,10 +84,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             threadStore: threadStore
         )
         let taskRunner = DownloadTaskRunner(
+            accountKeyStore: accountKeyStore,
             attachmentDownloadStore: attachmentDownloadStore,
             attachmentStore: attachmentStore,
             attachmentUpdater: attachmentUpdater,
-            backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             dateProvider: dateProvider,
             db: db,
@@ -417,10 +417,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private final class DownloadTaskRunner: TaskRecordRunner {
         typealias Store = DownloadTaskRecordStore
 
+        private let accountKeyStore: AccountKeyStore
         private let attachmentDownloadStore: AttachmentDownloadStore
         private let attachmentStore: AttachmentStore
         private let attachmentUpdater: AttachmentUpdater
-        private let backupKeyMaterial: BackupKeyMaterial
         private let backupRequestManager: BackupRequestManager
         private let dateProvider: DateProvider
         private let db: any DB
@@ -433,10 +433,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private let tsAccountManager: TSAccountManager
 
         init(
+            accountKeyStore: AccountKeyStore,
             attachmentDownloadStore: AttachmentDownloadStore,
             attachmentStore: AttachmentStore,
             attachmentUpdater: AttachmentUpdater,
-            backupKeyMaterial: BackupKeyMaterial,
             backupRequestManager: BackupRequestManager,
             dateProvider: @escaping DateProvider,
             db: any DB,
@@ -447,10 +447,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             stickerManager: Shims.StickerManager,
             tsAccountManager: TSAccountManager
         ) {
+            self.accountKeyStore = accountKeyStore
             self.attachmentDownloadStore = attachmentDownloadStore
             self.attachmentStore = attachmentStore
             self.attachmentUpdater = attachmentUpdater
-            self.backupKeyMaterial = backupKeyMaterial
             self.backupRequestManager = backupRequestManager
             self.dateProvider = dateProvider
             self.db = db
@@ -714,8 +714,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 guard
                     let mediaTierInfo = attachment.mediaTierInfo,
                     let mediaName = attachment.mediaName,
-                    let encryptionMetadata = buildCdnEncryptionMetadata(mediaName: mediaName, type: .outerLayerFullsizeOrThumbnail),
-                    let cdnCredential = await fetchBackupCdnReadCredential(for: cdnNumber)
+                    let backupKey = db.read(block: { accountKeyStore.getMediaRootBackupKey(tx: $0) }),
+                    let encryptionMetadata = buildCdnEncryptionMetadata(mediaName: mediaName, backupKey: backupKey, type: .outerLayerFullsizeOrThumbnail),
+                    let cdnCredential = await fetchBackupCdnReadCredential(for: cdnNumber, backupKey: backupKey)
                 else {
                     downloadMetadata = nil
                     break
@@ -737,17 +738,20 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 guard
                     attachment.thumbnailMediaTierInfo != nil || MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.mimeType),
                     let mediaName = attachment.mediaName,
+                    let backupKey = db.read(block: { accountKeyStore.getMediaRootBackupKey(tx: $0) }),
                     // This is the outer encryption
                     let outerEncryptionMetadata = buildCdnEncryptionMetadata(
                         mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
+                        backupKey: backupKey,
                         type: .outerLayerFullsizeOrThumbnail
                     ),
                     // inner encryption
                     let innerEncryptionMetadata = buildCdnEncryptionMetadata(
                         mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
+                        backupKey: backupKey,
                         type: .transitTierThumbnail
                     ),
-                    let cdnReadCredential = await fetchBackupCdnReadCredential(for: cdnNumber)
+                    let cdnReadCredential = await fetchBackupCdnReadCredential(for: cdnNumber, backupKey: backupKey)
                 else {
                     downloadMetadata = nil
                     break
@@ -911,22 +915,24 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         private func buildCdnEncryptionMetadata(
             mediaName: String,
+            backupKey: MediaRootBackupKey,
             type: MediaTierEncryptionType
         ) -> MediaTierEncryptionMetadata? {
-            guard let mediaEncryptionMetadata = try? db.read(block: { tx in
-                try backupKeyMaterial.mediaEncryptionMetadata(
+            do {
+                return try backupKey.mediaEncryptionMetadata(
                     mediaName: mediaName,
                     type: type,
-                    tx: tx
                 )
-            }) else {
+            } catch {
                 owsFailDebug("Failed to build backup media metadata")
                 return nil
             }
-            return mediaEncryptionMetadata
         }
 
-        private func fetchBackupCdnReadCredential(for cdn: UInt32) async -> MediaTierReadCredential? {
+        private func fetchBackupCdnReadCredential(
+            for cdn: UInt32,
+            backupKey: MediaRootBackupKey
+        ) async -> MediaTierReadCredential? {
             guard let localAci = db.read(block: { tx in
                 self.tsAccountManager.localIdentifiers(tx: tx)?.aci
             }) else {
@@ -935,7 +941,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
 
             guard let auth = try? await backupRequestManager.fetchBackupServiceAuth(
-                for: .media,
+                for: backupKey,
                 localAci: localAci,
                 auth: .implicit()
             ) else {

@@ -354,19 +354,14 @@ public class AppSetup {
         let backupSettingsStore = BackupSettingsStore()
         let backupCDNCredentialStore = BackupCDNCredentialStore()
 
-        let backupKeyMaterial = BackupKeyMaterialImpl(
-            accountKeyStore: accountKeyStore
-        )
         let backupRequestManager = BackupRequestManagerImpl(
             backupAuthCredentialManager: BackupAuthCredentialManagerImpl(
                 authCredentialStore: authCredentialStore,
-                backupKeyMaterial: backupKeyMaterial,
                 dateProvider: dateProvider,
                 db: db,
                 networkManager: networkManager
             ),
             backupCDNCredentialStore: backupCDNCredentialStore,
-            backupKeyMaterial: backupKeyMaterial,
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             db: db,
@@ -379,9 +374,9 @@ public class AppSetup {
 
         let orphanedBackupAttachmentStore = OrphanedBackupAttachmentStoreImpl()
         let orphanedBackupAttachmentManager = OrphanedBackupAttachmentManagerImpl(
+            accountKeyStore: accountKeyStore,
             appReadiness: appReadiness,
             attachmentStore: attachmentStore,
-            backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             dateProvider: dateProvider,
             db: db,
@@ -391,11 +386,11 @@ public class AppSetup {
 
         let attachmentThumbnailService = AttachmentThumbnailServiceImpl()
         let attachmentUploadManager = AttachmentUploadManagerImpl(
+            accountKeyStore: accountKeyStore,
             attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
             attachmentStore: attachmentStore,
             attachmentUploadStore: attachmentUploadStore,
             attachmentThumbnailService: attachmentThumbnailService,
-            backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             dateProvider: dateProvider,
             db: db,
@@ -457,6 +452,7 @@ public class AppSetup {
         )
 
         let backupListMediaManager = BackupListMediaManagerImpl(
+            accountKeyStore: accountKeyStore,
             attachmentStore: attachmentStore,
             attachmentUploadStore: attachmentUploadStore,
             backupAttachmentDownloadProgress: backupAttachmentDownloadProgress,
@@ -465,7 +461,6 @@ public class AppSetup {
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
-            backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
@@ -476,13 +471,13 @@ public class AppSetup {
         )
 
         let backupAttachmentUploadQueueRunner = BackupAttachmentUploadQueueRunnerImpl(
+            accountKeyStore: accountKeyStore,
             appReadiness: appReadiness,
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
-            backupKeyMaterial: backupKeyMaterial,
             backupListMediaManager: backupListMediaManager,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
@@ -495,13 +490,13 @@ public class AppSetup {
         )
 
         let attachmentDownloadManager = AttachmentDownloadManagerImpl(
+            accountKeyStore: accountKeyStore,
             appReadiness: appReadiness,
             attachmentDownloadStore: attachmentDownloadStore,
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
             backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
-            backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             currentCallProvider: currentCallProvider,
             dateProvider: dateProvider,
@@ -931,6 +926,7 @@ public class AppSetup {
         )
 
         let registrationStateChangeManager = RegistrationStateChangeManagerImpl(
+            accountKeyStore: accountKeyStore,
             appContext: appContext,
             authCredentialStore: authCredentialStore,
             backupIdManager: backupIdManager,
@@ -1258,9 +1254,7 @@ public class AppSetup {
                 storyStore: backupStoryStore,
                 threadStore: backupThreadStore
             ),
-            encryptedStreamProvider: BackupArchiveEncryptedProtoStreamProvider(
-                backupKeyMaterial: backupKeyMaterial
-            ),
+            encryptedStreamProvider: BackupArchiveEncryptedProtoStreamProvider(),
             fullTextSearchIndexer: BackupArchiveFullTextSearchIndexerImpl(
                 appReadiness: appReadiness,
                 dateProvider: dateProviderMonotonic,
@@ -1397,12 +1391,12 @@ public class AppSetup {
             orphanedAttachmentStore: orphanedAttachmentStore
         )
         let backupExportJob = BackupExportJobImpl(
+            accountKeyStore: accountKeyStore,
             attachmentOffloadingManager: attachmentOffloadingManager,
             backupArchiveManager: backupArchiveManager,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupIdManager: backupIdManager,
-            backupKeyMaterial: backupKeyMaterial,
             backupListMediaManager: backupListMediaManager,
             backupSettingsStore: backupSettingsStore,
             db: db,
@@ -1446,7 +1440,6 @@ public class AppSetup {
             backupExportJob: backupExportJob,
             backupExportJobRunner: backupExportJobRunner,
             backupIdManager: backupIdManager,
-            backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             backupPlanManager: backupPlanManager,
             backupSubscriptionManager: backupSubscriptionManager,

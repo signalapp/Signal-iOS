@@ -10,6 +10,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
     public typealias TSAccountManager = SignalServiceKit.TSAccountManager & LocalIdentifiersSetter
 
+    private let accountKeyStore: AccountKeyStore
     private let appContext: AppContext
     private let authCredentialStore: AuthCredentialStore
     private let backupIdManager: BackupIdManager
@@ -33,6 +34,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let versionedProfiles: VersionedProfiles
 
     init(
+        accountKeyStore: AccountKeyStore,
         appContext: AppContext,
         authCredentialStore: AuthCredentialStore,
         backupIdManager: BackupIdManager,
@@ -55,6 +57,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         udManager: OWSUDManager,
         versionedProfiles: VersionedProfiles
     ) {
+        self.accountKeyStore = accountKeyStore
         self.appContext = appContext
         self.authCredentialStore = authCredentialStore
         self.backupIdManager = backupIdManager
@@ -257,8 +260,17 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     public func unregisterFromService() async throws -> Never {
         owsAssertBeta(appContext.isMainAppAndActive)
 
-        let localIdentifiers: LocalIdentifiers? = db.read { tx in
-            tsAccountManager.localIdentifiers(tx: tx)
+        let (localIdentifiers, messageBackupKey, mediaBackupKey) = db.read { tx in
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
+            var messageBackupKey: MessageRootBackupKey?
+            if let aci = localIdentifiers?.aci {
+                messageBackupKey = try? accountKeyStore.getMessageRootBackupKey(aci: aci, tx: tx)
+            }
+            return (
+                localIdentifiers,
+                messageBackupKey,
+                accountKeyStore.getMediaRootBackupKey(tx: tx)
+            )
         }
 
         // Fetch Backup auth before unregistering ourselves remotely, for use
@@ -267,12 +279,18 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         if let localIdentifiers {
             backupAuths = await withTaskGroup { [backupRequestManager] taskGroup in
                 for credentialType in BackupAuthCredentialType.allCases {
-                    taskGroup.addTask {
-                        return try? await backupRequestManager.fetchBackupServiceAuth(
-                            for: credentialType,
-                            localAci: localIdentifiers.aci,
-                            auth: .implicit()
-                        )
+                    let backupKey: BackupKeyMaterial? = switch credentialType {
+                    case .messages: messageBackupKey
+                    case .media: mediaBackupKey
+                    }
+                    if let backupKey {
+                        taskGroup.addTask {
+                            return try? await backupRequestManager.fetchBackupServiceAuth(
+                                for: backupKey,
+                                localAci: localIdentifiers.aci,
+                                auth: .implicit()
+                            )
+                        }
                     }
                 }
 

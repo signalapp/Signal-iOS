@@ -11,11 +11,11 @@ import Testing
 
 public class BackupListMediaManagerTests {
 
+    let accountKeyStore = AccountKeyStore()
     let attachmentStore = AttachmentStoreImpl()
     let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
     let backupAttachmentUploadScheduler = BackupAttachmentUploadSchedulerMock()
     let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
-    let backupKeyMaterial = BackupKeyMaterialMock()
     fileprivate let backupRequestManager = BackupRequestManagerMock()
     let backupSettingsStore = BackupSettingsStore()
     let db = InMemoryDB()
@@ -30,6 +30,7 @@ public class BackupListMediaManagerTests {
             Date()
         }
         self.listMediaManager = BackupListMediaManagerImpl(
+            accountKeyStore: accountKeyStore,
             attachmentStore: attachmentStore,
             attachmentUploadStore: AttachmentUploadStoreImpl(
                 attachmentStore: attachmentStore
@@ -40,7 +41,6 @@ public class BackupListMediaManagerTests {
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore(),
-            backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
@@ -61,11 +61,9 @@ public class BackupListMediaManagerTests {
             valueFlags: ["global.backups.mediaTierFallbackCdnNumber": "\(remoteConfigCdnNumber)"],
         )
 
-        backupKeyMaterial.mediaBackupKey = try BackupKey(
-            contents: Data(repeating: 8, count: 32)
-        )
-
+        let mediaRootBackupKey = try! MediaRootBackupKey(data: Data(repeating: 8, count: 32))
         await db.awaitableWrite { tx in
+            accountKeyStore.setMediaRootBackupKey(mediaRootBackupKey, tx: tx)
             backupSettingsStore.setBackupPlan(.paid(optimizeLocalStorage: false), tx: tx)
         }
 
@@ -113,7 +111,7 @@ public class BackupListMediaManagerTests {
         let discoveredCdnNumberIds = try await db.awaitableWrite { tx in
             return try (0..<numAttachmentsPerCase).map { _ in
                 let mediaName = UUID().uuidString
-                let mediaId = try backupKeyMaterial.mediaBackupKey.deriveMediaId(mediaName)
+                let mediaId = try mediaRootBackupKey.deriveMediaId(mediaName)
                 discoveredCdnNumberMedia.append(.init(
                     cdn: discoveredCdnNumber,
                     mediaId: mediaId.asBase64Url,
@@ -134,7 +132,7 @@ public class BackupListMediaManagerTests {
         let matchingCdnNumberIds = try await db.awaitableWrite { tx in
             return try (0..<numAttachmentsPerCase).map { _ in
                 let mediaName = UUID().uuidString
-                let mediaId = try backupKeyMaterial.mediaBackupKey.deriveMediaId(mediaName)
+                let mediaId = try mediaRootBackupKey.deriveMediaId(mediaName)
                 matchingCdnNumberMedia.append(.init(
                     cdn: matchingCdnNumber,
                     mediaId: mediaId.asBase64Url,
@@ -165,7 +163,7 @@ public class BackupListMediaManagerTests {
         let nonMatchingCdnNumberIds = try await db.awaitableWrite { tx in
             return try (0..<numAttachmentsPerCase).map { _ in
                 let mediaName = UUID().uuidString
-                let mediaId = try backupKeyMaterial.mediaBackupKey.deriveMediaId(mediaName)
+                let mediaId = try mediaRootBackupKey.deriveMediaId(mediaName)
                 nonMatchingCdnNumberMedia.append(.init(
                     // Prefer a cdn number matching remote config,
                     // instead of the other orphaned one below
@@ -380,7 +378,7 @@ private class BackupRequestManagerMock: BackupRequestManager {
     init() {}
 
     func fetchBackupServiceAuth(
-        for credentialType: SignalServiceKit.BackupAuthCredentialType,
+        for key: SignalServiceKit.BackupKeyMaterial,
         localAci: LibSignalClient.Aci,
         auth: SignalServiceKit.ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool

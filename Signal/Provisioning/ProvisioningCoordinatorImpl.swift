@@ -123,7 +123,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
     private class LinkAndSyncError: ProvisioningLinkAndSyncError {
         let error: SecondaryLinkNSyncError
-        let ephemeralBackupKey: BackupKey
+        let ephemeralBackupKey: MessageRootBackupKey
         let authedDevice: AuthedDevice.Explicit
         let progressViewModel: LinkAndSyncSecondaryProgressViewModel
         let undoAllPreviousSteps: () async throws -> Void
@@ -131,7 +131,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
         init(
             error: SecondaryLinkNSyncError,
-            ephemeralBackupKey: BackupKey,
+            ephemeralBackupKey: MessageRootBackupKey,
             authedDevice: AuthedDevice.Explicit,
             progressViewModel: LinkAndSyncSecondaryProgressViewModel,
             undoAllPreviousSteps: @escaping () async throws -> Void,
@@ -175,7 +175,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
     private func continueFromLinkNSync(
         authedDevice: AuthedDevice.Explicit,
-        ephemeralBackupKey: BackupKey?,
+        ephemeralBackupKey: MessageRootBackupKey?,
         progressViewModel: LinkAndSyncSecondaryProgressViewModel,
         undoAllPreviousSteps: @escaping () async throws -> Void
     ) async throws(CompleteProvisioningError) {
@@ -456,7 +456,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     // MARK: -
 
     private func completeProvisioning_linkAndSync(
-        ephemeralBackupKey: BackupKey,
+        ephemeralBackupKey: MessageRootBackupKey,
         authedDevice: AuthedDevice.Explicit,
         progressViewModel: LinkAndSyncSecondaryProgressViewModel,
         undoAllPreviousSteps: @escaping () async throws -> Void

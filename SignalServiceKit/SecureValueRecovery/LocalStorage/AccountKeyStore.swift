@@ -75,12 +75,12 @@ public class AccountKeyStore {
 
     /// Get the already-generated MRBK. Returns nil if none has been set. If you require an MRBK
     /// (e.g. you are creating a backup), use ``getOrGenerateMediaRootBackupKey``.
-    public func getMediaRootBackupKey(tx: DBReadTransaction) -> BackupKey? {
+    public func getMediaRootBackupKey(tx: DBReadTransaction) -> MediaRootBackupKey? {
         guard let data = mrbkKvStore.getData(Keys.mrbkKeyName, transaction: tx) else {
             return nil
         }
         do {
-            return try BackupKey(contents: data)
+            return try MediaRootBackupKey(data: data)
         } catch {
             owsFailDebug("Failed to instantiate MediaRootBackupKey")
         }
@@ -90,11 +90,11 @@ public class AccountKeyStore {
     /// Get the already-generated MRBK or, if one has not been generated, generate one.
     /// WARNING: this method should only be called _after_ restoring or choosing not to restore
     /// from an existing backup; calling this generates a new key and invalidates all media backups.
-    public func getOrGenerateMediaRootBackupKey(tx: DBWriteTransaction) -> BackupKey {
+    public func getOrGenerateMediaRootBackupKey(tx: DBWriteTransaction) -> MediaRootBackupKey {
         if let value = getMediaRootBackupKey(tx: tx) {
             return value
         }
-        let newValue = LibSignalClient.BackupKey.generateRandom()
+        let newValue = MediaRootBackupKey()
         mrbkKvStore.setData(newValue.serialize(), key: Keys.mrbkKeyName, transaction: tx)
         return newValue
     }
@@ -103,7 +103,7 @@ public class AccountKeyStore {
         mrbkKvStore.removeValue(forKey: Keys.mrbkKeyName, transaction: tx)
     }
 
-    public func setMediaRootBackupKey(_ mrbk: BackupKey, tx: DBWriteTransaction) {
+    public func setMediaRootBackupKey(_ mrbk: MediaRootBackupKey, tx: DBWriteTransaction) {
         mrbkKvStore.setData(mrbk.serialize(), key: Keys.mrbkKeyName, transaction: tx)
     }
 
@@ -140,7 +140,11 @@ public class AccountKeyStore {
         return (oldValue, newValue)
     }
 
-    public func getMessageRootBackupKey(tx: DBReadTransaction) -> BackupKey? {
-        return getAccountEntropyPool(tx: tx)?.getBackupKey()
+    public func getMessageRootBackupKey(
+        aci: Aci,
+        tx: DBReadTransaction
+    ) throws -> MessageRootBackupKey? {
+        guard let aep = getAccountEntropyPool(tx: tx) else { return nil }
+        return try MessageRootBackupKey(accountEntropyPool: aep, aci: aci)
     }
 }

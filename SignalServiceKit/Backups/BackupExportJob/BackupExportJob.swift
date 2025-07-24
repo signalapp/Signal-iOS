@@ -43,7 +43,7 @@ public enum BackupExportJobError: Error {
     case cancellationError
     case unregistered
     case needsWifi
-    case backupKeyError(BackupKeyMaterialError)
+    case backupKeyError
     // catch-all for errors thrown by backup steps
     case backupError(Error)
     case networkRequestError(Error)
@@ -71,12 +71,12 @@ public protocol BackupExportJob {
 // MARK: -
 
 class BackupExportJobImpl: BackupExportJob {
+    private let accountKeyStore: AccountKeyStore
     private let attachmentOffloadingManager: AttachmentOffloadingManager
     private let backupArchiveManager: BackupArchiveManager
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
     private let backupIdManager: BackupIdManager
-    private let backupKeyMaterial: BackupKeyMaterial
     private let backupListMediaManager: BackupListMediaManager
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
@@ -87,12 +87,12 @@ class BackupExportJobImpl: BackupExportJob {
     private let tsAccountManager: TSAccountManager
 
     public init(
+        accountKeyStore: AccountKeyStore,
         attachmentOffloadingManager: AttachmentOffloadingManager,
         backupArchiveManager: BackupArchiveManager,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
         backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupIdManager: BackupIdManager,
-        backupKeyMaterial: BackupKeyMaterial,
         backupListMediaManager: BackupListMediaManager,
         backupSettingsStore: BackupSettingsStore,
         db: DB,
@@ -101,12 +101,12 @@ class BackupExportJobImpl: BackupExportJob {
         reachabilityManager: SSKReachabilityManager,
         tsAccountManager: TSAccountManager
     ) {
+        self.accountKeyStore = accountKeyStore
         self.attachmentOffloadingManager = attachmentOffloadingManager
         self.backupArchiveManager = backupArchiveManager
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
         self.backupIdManager = backupIdManager
-        self.backupKeyMaterial = backupKeyMaterial
         self.backupListMediaManager = backupListMediaManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
@@ -125,22 +125,21 @@ class BackupExportJobImpl: BackupExportJob {
             backupKey,
             shouldAllowBackupUploadsOnCellular,
         ) = try db.read { (tx) throws(BackupExportJobError) in
-            let backupKey: BackupKey
-            do throws(BackupKeyMaterialError) {
-                backupKey = try backupKeyMaterial.backupKey(type: .messages, tx: tx)
-            } catch {
-                throw .backupKeyError(error)
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
+                owsFailDebug("Creating a backup when unregistered?")
+                throw .unregistered
             }
+
+            guard let backupKey = try? accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx) else {
+                owsFailDebug("Failed to read backup key")
+                throw .backupKeyError
+            }
+
             return (
-                tsAccountManager.localIdentifiers(tx: tx),
+                localIdentifiers,
                 backupKey,
                 backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx),
             )
-        }
-
-        guard let localIdentifiers else {
-            owsFailDebug("Creating a backup when unregistered?")
-            throw .unregistered
         }
 
         if !shouldAllowBackupUploadsOnCellular {
@@ -235,6 +234,7 @@ class BackupExportJobImpl: BackupExportJob {
 
             try await Retry.performWithBackoffForNetworkRequest(maxAttempts: 3) {
                 _ = try await backupArchiveManager.uploadEncryptedBackup(
+                    backupKey: backupKey,
                     metadata: uploadMetadata,
                     registeredBackupIDToken: registeredBackupIDToken,
                     auth: .implicit(),

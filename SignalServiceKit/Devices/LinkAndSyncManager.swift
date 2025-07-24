@@ -5,10 +5,18 @@
 
 public import LibSignalClient
 
-extension BackupKey {
+extension MessageRootBackupKey {
     #if TESTABLE_BUILD
-    public static func forTesting() -> BackupKey {
-        return try! BackupKey(contents: Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)))
+    public static func forTesting(aci: Aci) -> MessageRootBackupKey {
+        try! MessageRootBackupKey(data: Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)), aci: aci)
+    }
+    #endif
+}
+
+extension MediaRootBackupKey {
+    #if TESTABLE_BUILD
+    public static func forTesting() -> MediaRootBackupKey {
+        try! MediaRootBackupKey(data: Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)))
     }
     #endif
 }
@@ -92,7 +100,7 @@ public protocol LinkAndSyncManager {
     /// This key should be included in the provisioning message and then used to encrypt the backup proto we send.
     ///
     /// - returns The ephemeral key to use, or nil if link'n'sync should not be used.
-    func generateEphemeralBackupKey() -> BackupKey
+    func generateEphemeralBackupKey(aci: Aci) -> MessageRootBackupKey
 
     /// **Call this on the primary device!**
     /// Once the primary sends the provisioning message to the linked device, call this method
@@ -103,7 +111,7 @@ public protocol LinkAndSyncManager {
     /// cancellation has occured. Therefore, callers should expect to maybe wait
     /// after cancelling (and indicate this in the UI).
     func waitForLinkingAndUploadBackup(
-        ephemeralBackupKey: BackupKey,
+        ephemeralBackupKey: MessageRootBackupKey,
         tokenId: DeviceProvisioningTokenId,
         progress: OWSProgressSink
     ) async throws(PrimaryLinkNSyncError)
@@ -117,7 +125,7 @@ public protocol LinkAndSyncManager {
     func waitForBackupAndRestore(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
-        ephemeralBackupKey: BackupKey,
+        ephemeralBackupKey: MessageRootBackupKey,
         progress: OWSProgressSink
     ) async throws(SecondaryLinkNSyncError)
 }
@@ -161,13 +169,16 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         self.tsAccountManager = tsAccountManager
     }
 
-    public func generateEphemeralBackupKey() -> BackupKey {
+    public func generateEphemeralBackupKey(aci: Aci) -> MessageRootBackupKey {
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true)
-        return try! BackupKey(contents: Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)))
+        return try! MessageRootBackupKey(
+            data: Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)),
+            aci: aci
+        )
     }
 
     public func waitForLinkingAndUploadBackup(
-        ephemeralBackupKey: BackupKey,
+        ephemeralBackupKey: MessageRootBackupKey,
         tokenId: DeviceProvisioningTokenId,
         progress: OWSProgressSink
     ) async throws(PrimaryLinkNSyncError) {
@@ -305,7 +316,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     public func waitForBackupAndRestore(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
-        ephemeralBackupKey: BackupKey,
+        ephemeralBackupKey: MessageRootBackupKey,
         progress: OWSProgressSink
     ) async throws(SecondaryLinkNSyncError) {
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice != true)
@@ -490,7 +501,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
     private func generateBackup(
         waitForDeviceToLinkResponse: Requests.WaitForDeviceToLinkResponse,
-        ephemeralBackupKey: BackupKey,
+        ephemeralBackupKey: MessageRootBackupKey,
         localIdentifiers: LocalIdentifiers,
         progress: OWSProgressSink
     ) async throws(PrimaryLinkNSyncError) -> Upload.EncryptedBackupUploadMetadata {
@@ -503,7 +514,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             )
             try await backupArchiveManager.validateEncryptedBackup(
                 fileUrl: metadata.fileUrl,
-                localIdentifiers: localIdentifiers,
                 backupKey: ephemeralBackupKey,
                 backupPurpose: .deviceTransfer
             )
@@ -727,7 +737,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private func downloadEphemeralBackup(
         cdnNumber: UInt32,
         cdnKey: String,
-        ephemeralBackupKey: BackupKey,
+        ephemeralBackupKey: MessageRootBackupKey,
         progress: OWSProgressSink
     ) async throws(SecondaryLinkNSyncError) -> URL {
         do {
@@ -754,7 +764,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private func restoreEphemeralBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        ephemeralBackupKey: BackupKey,
+        ephemeralBackupKey: MessageRootBackupKey,
         progress: OWSProgressSink
     ) async throws(SecondaryLinkNSyncError) {
         do {

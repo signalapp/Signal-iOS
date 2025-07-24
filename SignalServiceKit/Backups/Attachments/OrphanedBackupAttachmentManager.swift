@@ -42,31 +42,31 @@ public protocol OrphanedBackupAttachmentManager {
 
 public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManager {
 
+    private let accountKeyStore: AccountKeyStore
     private let appReadiness: AppReadiness
-    private let backupKeyMaterial: BackupKeyMaterial
     private let db: any DB
     private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
 
     public init(
+        accountKeyStore: AccountKeyStore,
         appReadiness: AppReadiness,
         attachmentStore: AttachmentStore,
-        backupKeyMaterial: BackupKeyMaterial,
         backupRequestManager: BackupRequestManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
         tsAccountManager: TSAccountManager
     ) {
+        self.accountKeyStore = accountKeyStore
         self.appReadiness = appReadiness
-        self.backupKeyMaterial = backupKeyMaterial
         self.db = db
         self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
         self.tsAccountManager = tsAccountManager
         let taskRunner = TaskRunner(
+            accountKeyStore: accountKeyStore,
             attachmentStore: attachmentStore,
-            backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             db: db,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
@@ -90,10 +90,14 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         try! OrphanedBackupAttachment
             .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
             .deleteAll(tx.database)
+        guard let mediaKey = accountKeyStore.getMediaRootBackupKey(tx: tx) else {
+            owsFailDebug("Missing media encryption key")
+            return
+        }
         for type in OrphanedBackupAttachment.SizeType.allCases {
             do {
-                let mediaId = try backupKeyMaterial.mediaEncryptionMetadata(
-                    mediaName: {
+                let mediaId = try mediaKey.deriveMediaId(
+                    {
                         switch type {
                         case .fullsize:
                             mediaName
@@ -102,22 +106,12 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
                                 .thumbnailMediaName(fullsizeMediaName: mediaName)
                         }
                     }(),
-                    // Doesn't matter what we use, we just want the mediaId.
-                    type: .outerLayerFullsizeOrThumbnail,
-                    tx: tx
-                ).mediaId
+                )
                 try! OrphanedBackupAttachment
                     .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == mediaId)
                     .deleteAll(tx.database)
-            } catch let backupKeyMaterialError {
-                switch backupKeyMaterialError {
-                case .missingMediaRootBackupKey:
-                    // If we don't have root keys, we definitely don't have any
-                    // orphaned backup media. quit.
-                    continue
-                case .missingMessageBackupKey, .derivationError:
-                    owsFailDebug("Unexpected encryption material error")
-                }
+            } catch {
+                owsFailDebug("Unexpected encryption material error")
             }
 
         }
@@ -171,8 +165,8 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
 
     private final class TaskRunner: TaskRecordRunner {
 
+        private let accountKeyStore: AccountKeyStore
         private let attachmentStore: AttachmentStore
-        private let backupKeyMaterial: BackupKeyMaterial
         private let backupRequestManager: BackupRequestManager
         private let db: any DB
         private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
@@ -181,15 +175,15 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         let store: TaskStore
 
         init(
+            accountKeyStore: AccountKeyStore,
             attachmentStore: AttachmentStore,
-            backupKeyMaterial: BackupKeyMaterial,
             backupRequestManager: BackupRequestManager,
             db: any DB,
             orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
             tsAccountManager: TSAccountManager
         ) {
+            self.accountKeyStore = accountKeyStore
             self.attachmentStore = attachmentStore
-            self.backupKeyMaterial = backupKeyMaterial
             self.backupRequestManager = backupRequestManager
             self.db = db
             self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
@@ -215,10 +209,11 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
                 return .cancelled
             }
 
-            let (localAci, registrationState) = db.read { tx in
+            let (localAci, registrationState, mediaRootBackupKey) = db.read { tx in
                 return (
                     tsAccountManager.localIdentifiers(tx: tx)?.aci,
                     tsAccountManager.registrationState(tx: tx),
+                    accountKeyStore.getMediaRootBackupKey(tx: tx)
                 )
             }
 
@@ -254,6 +249,12 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
                 return .retryableError(error)
             }
 
+            guard let mediaRootBackupKey else {
+                let error = OWSAssertionError("Deleting without being registered")
+                try? await loader.stop(reason: error)
+                return .retryableError(error)
+            }
+
             let mediaId: Data
 
             if let recordMediaId = record.record.mediaId {
@@ -268,16 +269,11 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
                 }
 
                 do {
-                    (mediaId) = try db.read { tx in
-                        (
-                            try backupKeyMaterial.mediaEncryptionMetadata(
-                                mediaName: mediaNameToUse,
-                                // Doesn't matter what we use, we just want the mediaId.
-                                type: .outerLayerFullsizeOrThumbnail,
-                                tx: tx
-                            ).mediaId
-                        )
-                    }
+                    mediaId = try mediaRootBackupKey.mediaEncryptionMetadata(
+                        mediaName: mediaNameToUse,
+                        // Doesn't matter what we use, we just want the mediaId.
+                        type: .outerLayerFullsizeOrThumbnail,
+                    ).mediaId
                 } catch let error {
                     Logger.error("Failed to generate media IDs")
                     return .unretryableError(error)
@@ -289,7 +285,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
             let backupAuth: BackupServiceAuth
             do {
                 backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-                    for: .media,
+                    for: mediaRootBackupKey,
                     localAci: localAci,
                     auth: .implicit()
                 )

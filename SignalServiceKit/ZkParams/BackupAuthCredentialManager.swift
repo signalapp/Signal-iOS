@@ -22,7 +22,7 @@ public protocol BackupAuthCredentialManager {
     /// credential that isn't ``BackupLevel.paid``. Default false. Set this to true if intending to check whether a
     /// paid credential is available.
     func fetchBackupCredential(
-        for credentialType: BackupAuthCredentialType,
+        for key: BackupKeyMaterial,
         localAci: Aci,
         chatServiceAuth auth: ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool
@@ -38,7 +38,6 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
     }
 
     private let authCredentialStore: AuthCredentialStore
-    private let backupKeyMaterial: BackupKeyMaterial
     private let dateProvider: DateProvider
     private let db: any DB
     private let kvStore: KeyValueStore
@@ -46,13 +45,11 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
     init(
         authCredentialStore: AuthCredentialStore,
-        backupKeyMaterial: BackupKeyMaterial,
         dateProvider: @escaping DateProvider,
         db: any DB,
         networkManager: NetworkManager
     ) {
         self.authCredentialStore = authCredentialStore
-        self.backupKeyMaterial = backupKeyMaterial
         self.dateProvider = dateProvider
         self.db = db
         self.kvStore = KeyValueStore(collection: Constants.keyValueStoreCollectionName)
@@ -60,7 +57,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
     }
 
     public func fetchBackupCredential(
-        for credentialType: BackupAuthCredentialType,
+        for key: BackupKeyMaterial,
         localAci: Aci,
         chatServiceAuth auth: ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool
@@ -72,7 +69,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
             // Check there are more than 4 days of credentials remaining.
             // If not, return nil and trigger a credential fetch.
             guard let _ = self.authCredentialStore.backupAuthCredential(
-                for: credentialType,
+                for: key.credentialType,
                 redemptionTime: futureRedemptionTime,
                 tx: tx
             ) else {
@@ -80,7 +77,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
             }
 
             if let backupAuthCredential = self.authCredentialStore.backupAuthCredential(
-                for: credentialType,
+                for: key.credentialType,
                 redemptionTime: redemptionTime,
                 tx: tx
             ) {
@@ -103,7 +100,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
             return authCredential
         }
 
-        let authCredentials = try await fetchNewAuthCredentials(localAci: localAci, for: credentialType, auth: auth)
+        let authCredentials = try await fetchNewAuthCredentials(localAci: localAci, for: key, auth: auth)
 
         await db.awaitableWrite { tx in
             // Fetch both credential types if either is needed.
@@ -127,7 +124,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
             }
         }
 
-        guard let authCredential = authCredentials[credentialType]?.first?.credential else {
+        guard let authCredential = authCredentials[key.credentialType]?.first?.credential else {
             throw OWSAssertionError("The server didn't give us any auth credentials.")
         }
 
@@ -136,7 +133,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
     private func fetchNewAuthCredentials(
         localAci: Aci,
-        for credentialType: BackupAuthCredentialType,
+        for key: BackupKeyMaterial,
         auth: ChatServiceAuth
     ) async throws -> [BackupAuthCredentialType: [ReceivedBackupAuthCredentials]] {
 
@@ -177,10 +174,10 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
                 }
                 do {
                     let redemptionDate = Date(timeIntervalSince1970: TimeInterval($0.redemptionTime))
-                    let backupRequestContext = try db.read { tx in
-                        let backupKey = try backupKeyMaterial.backupKey(type: type, tx: tx)
-                        return BackupAuthCredentialRequestContext.create(backupKey: backupKey.serialize(), aci: localAci.rawUUID)
-                    }
+                    let backupRequestContext = BackupAuthCredentialRequestContext.create(
+                        backupKey: key.backupKey.serialize(),
+                        aci: localAci.rawUUID
+                    )
                     let backupAuthResponse = try BackupAuthCredentialResponse(contents: $0.credential)
                     let credential = try backupRequestContext.receive(
                         backupAuthResponse,
@@ -188,11 +185,11 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
                         params: backupServerPublicParams
                     )
                     return ReceivedBackupAuthCredentials(redemptionTime: $0.redemptionTime, credential: credential)
-                } catch BackupKeyMaterialError.missingMessageBackupKey where type != credentialType {
+                } catch SignalError.verificationFailed where type != key.credentialType {
                     // If the message backup key is missing and the caller is asking for
                     // media credentials, ignore the error
                     return nil
-                } catch BackupKeyMaterialError.missingMediaRootBackupKey where type != credentialType {
+                } catch SignalError.verificationFailed where type != key.credentialType {
                     // Similarly, If the media backup key is missing and the caller is
                     // asking for message credentials, ignore the error.  This will happen,
                     // for example, during registration when restoring from backup - the

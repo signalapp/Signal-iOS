@@ -25,8 +25,8 @@ public struct LinkingProvisioningMessage {
     public let aciIdentityKeyPair: IdentityKeyPair
     public let pniIdentityKeyPair: IdentityKeyPair
     public let profileKey: Aes256Key
-    public let mrbk: BackupKey
-    public let ephemeralBackupKey: BackupKey?
+    public let mrbk: MediaRootBackupKey
+    public let ephemeralBackupKey: MessageRootBackupKey?
     public let areReadReceiptsEnabled: Bool
     public let provisioningCode: String
     public let provisioningUserAgent: String?
@@ -40,8 +40,8 @@ public struct LinkingProvisioningMessage {
         aciIdentityKeyPair: IdentityKeyPair,
         pniIdentityKeyPair: IdentityKeyPair,
         profileKey: Aes256Key,
-        mrbk: BackupKey,
-        ephemeralBackupKey: BackupKey?,
+        mrbk: MediaRootBackupKey,
+        ephemeralBackupKey: MessageRootBackupKey?,
         areReadReceiptsEnabled: Bool,
         provisioningCode: String,
         provisioningUserAgent: String? = Constants.userAgent,
@@ -126,9 +126,10 @@ public struct LinkingProvisioningMessage {
         guard let mrbkBytes = proto.mediaRootBackupKey else {
             throw ProvisioningError.invalidProvisionMessage("missing media key from provisioning message")
         }
-        self.mrbk = try BackupKey(contents: mrbkBytes)
+        self.mrbk = try MediaRootBackupKey(data: mrbkBytes)
 
-        self.ephemeralBackupKey = try proto.ephemeralBackupKey.map({ try BackupKey.init(contents: $0) })
+        let aci = aci
+        self.ephemeralBackupKey = try proto.ephemeralBackupKey.map { try MessageRootBackupKey(data: $0, aci: aci) }
     }
 
     public func buildEncryptedMessageBody(theirPublicKey: PublicKey) throws -> Data {

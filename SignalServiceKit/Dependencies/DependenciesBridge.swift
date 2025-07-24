@@ -75,7 +75,6 @@ public class DependenciesBridge {
     public let backupExportJob: BackupExportJob
     public let backupExportJobRunner: BackupExportJobRunner
     public let backupIdManager: BackupIdManager
-    public let backupKeyMaterial: BackupKeyMaterial
     public let backupRequestManager: BackupRequestManager
     public let backupPlanManager: BackupPlanManager
     public let backupSubscriptionManager: BackupSubscriptionManager
@@ -207,7 +206,6 @@ public class DependenciesBridge {
         backupExportJob: BackupExportJob,
         backupExportJobRunner: BackupExportJobRunner,
         backupIdManager: BackupIdManager,
-        backupKeyMaterial: BackupKeyMaterial,
         backupRequestManager: BackupRequestManager,
         backupPlanManager: BackupPlanManager,
         backupSubscriptionManager: BackupSubscriptionManager,
@@ -338,7 +336,6 @@ public class DependenciesBridge {
         self.backupExportJob = backupExportJob
         self.backupExportJobRunner = backupExportJobRunner
         self.backupIdManager = backupIdManager
-        self.backupKeyMaterial = backupKeyMaterial
         self.backupRequestManager = backupRequestManager
         self.backupPlanManager = backupPlanManager
         self.backupSubscriptionManager = backupSubscriptionManager

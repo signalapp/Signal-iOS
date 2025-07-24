@@ -38,6 +38,7 @@ extension BackupAttachmentUploadQueueRunner where Self: Sendable {
 
 class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
+    private let accountKeyStore: AccountKeyStore
     private let attachmentStore: AttachmentStore
     private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
@@ -52,13 +53,13 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
     private let tsAccountManager: TSAccountManager
 
     init(
+        accountKeyStore: AccountKeyStore,
         appReadiness: AppReadiness,
         attachmentStore: AttachmentStore,
         attachmentUploadManager: AttachmentUploadManager,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
-        backupKeyMaterial: BackupKeyMaterial,
         backupListMediaManager: BackupListMediaManager,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
@@ -69,6 +70,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         statusManager: BackupAttachmentUploadQueueStatusManager,
         tsAccountManager: TSAccountManager
     ) {
+        self.accountKeyStore = accountKeyStore
         self.attachmentStore = attachmentStore
         self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
@@ -81,12 +83,12 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         self.statusManager = statusManager
         self.tsAccountManager = tsAccountManager
         let taskRunner = TaskRunner(
+            accountKeyStore: accountKeyStore,
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
-            backupKeyMaterial: backupKeyMaterial,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
@@ -116,15 +118,21 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         guard FeatureFlags.Backups.supported else {
             return
         }
-        let (isPrimary, localAci, backupPlan) = db.read { tx in
+        let (isPrimary, localAci, backupPlan, backupKey) = db.read { tx in
             (
                 self.tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? false,
                 self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
-                backupSettingsStore.backupPlan(tx: tx)
+                backupSettingsStore.backupPlan(tx: tx),
+                accountKeyStore.getMediaRootBackupKey(tx: tx)
             )
         }
 
         guard isPrimary, let localAci else {
+            return
+        }
+
+        guard let backupKey else {
+            Logger.info("Skipping attachment backups while media backup key is missing")
             return
         }
 
@@ -142,7 +150,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             // We'll need the paid credential to upload in each task; we load and cache
             // it now so its available (and so we can bail early if its somehow free tier).
             backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-                for: .media,
+                for: backupKey,
                 localAci: localAci,
                 auth: .implicit(),
                 forceRefreshUnlessCachedPaidCredential: true
@@ -214,12 +222,12 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
     private final class TaskRunner: TaskRecordRunner {
 
+        private let accountKeyStore: AccountKeyStore
         private let attachmentStore: AttachmentStore
         private let attachmentUploadManager: AttachmentUploadManager
         private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
         private let backupAttachmentUploadStore: BackupAttachmentUploadStore
         private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
-        private let backupKeyMaterial: BackupKeyMaterial
         private let backupRequestManager: BackupRequestManager
         private let backupSettingsStore: BackupSettingsStore
         private let dateProvider: DateProvider
@@ -233,12 +241,12 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         let store: TaskStore
 
         init(
+            accountKeyStore: AccountKeyStore,
             attachmentStore: AttachmentStore,
             attachmentUploadManager: AttachmentUploadManager,
             backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
             backupAttachmentUploadStore: BackupAttachmentUploadStore,
             backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
-            backupKeyMaterial: BackupKeyMaterial,
             backupRequestManager: BackupRequestManager,
             backupSettingsStore: BackupSettingsStore,
             dateProvider: @escaping DateProvider,
@@ -249,12 +257,12 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             statusManager: BackupAttachmentUploadQueueStatusManager,
             tsAccountManager: TSAccountManager
         ) {
+            self.accountKeyStore = accountKeyStore
             self.attachmentStore = attachmentStore
             self.attachmentUploadManager = attachmentUploadManager
             self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
             self.backupAttachmentUploadStore = backupAttachmentUploadStore
             self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
-            self.backupKeyMaterial = backupKeyMaterial
             self.backupRequestManager = backupRequestManager
             self.backupSettingsStore = backupSettingsStore
             self.dateProvider = dateProvider
@@ -284,11 +292,12 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             guard FeatureFlags.Backups.supported else {
                 return .cancelled
             }
-            let (attachment, backupPlan, currentUploadEra) = db.read { tx in
+            let (attachment, backupPlan, currentUploadEra, backupKey) = db.read { tx in
                 return (
                     self.attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx),
                     self.backupSettingsStore.backupPlan(tx: tx),
-                    self.backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
+                    self.backupAttachmentUploadEraStore.currentUploadEra(tx: tx),
+                    self.accountKeyStore.getMediaRootBackupKey(tx: tx)
                 )
             }
             guard let attachment else {
@@ -301,17 +310,21 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 return .cancelled
             }
 
+            guard let backupKey else {
+                owsFailDebug("Missing media backup key.  Unable to upload attachments.")
+                return .cancelled
+            }
+
             // We're about to upload; ensure we aren't also enqueuing a media tier delete.
             // This is only defensive as we should be cancelling any deletes any time we
             // create an attachmenr stream and enqueue an upload to begin with.
             do {
                 try await db.awaitableWrite { tx in
                     if record.record.isFullsize {
-                        let mediaId = try backupKeyMaterial.mediaEncryptionMetadata(
+                        let mediaId = try backupKey.mediaEncryptionMetadata(
                             mediaName: mediaName,
                             // Doesn't matter what we use, we just want the mediaId
-                            type: .outerLayerFullsizeOrThumbnail,
-                            tx: tx
+                            type: .outerLayerFullsizeOrThumbnail
                         ).mediaId
                         try orphanedBackupAttachmentStore.removeFullsize(
                             mediaName: mediaName,
@@ -319,11 +332,10 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                             tx: tx
                         )
                     } else {
-                        let mediaId = try backupKeyMaterial.mediaEncryptionMetadata(
+                        let mediaId = try backupKey.mediaEncryptionMetadata(
                             mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
                             // Doesn't matter what we use, we just want the mediaId
-                            type: .outerLayerFullsizeOrThumbnail,
-                            tx: tx
+                            type: .outerLayerFullsizeOrThumbnail
                         ).mediaId
                         try orphanedBackupAttachmentStore.removeThumbnail(
                             fullsizeMediaName: mediaName,
@@ -357,7 +369,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             let backupAuth: BackupServiceAuth
             do {
                 backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-                    for: .media,
+                    for: backupKey,
                     localAci: localAci,
                     auth: .implicit(),
                     // No need to force it here; when we start up the queue we force
@@ -409,6 +421,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                         attachmentId: attachment.id,
                         uploadEra: currentUploadEra,
                         localAci: localAci,
+                        backupKey: backupKey,
                         auth: backupAuth,
                         progress: progressSink
                     )
@@ -417,6 +430,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                         attachmentId: attachment.id,
                         uploadEra: currentUploadEra,
                         localAci: localAci,
+                        backupKey: backupKey,
                         auth: backupAuth
                     )
                 }
@@ -434,7 +448,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     // paid. If its not (we just got a 403 so that's what we expect),
                     // all uploads will fail so dequeue them and quit.
                     let credential = try? await backupRequestManager.fetchBackupServiceAuth(
-                        for: .media,
+                        for: backupKey,
                         localAci: localAci,
                         auth: .implicit(),
                         forceRefreshUnlessCachedPaidCredential: true

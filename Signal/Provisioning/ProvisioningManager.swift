@@ -5,7 +5,7 @@
 
 import Foundation
 public import SignalServiceKit
-public import LibSignalClient
+import LibSignalClient
 
 public class ProvisioningManager {
 
@@ -44,27 +44,16 @@ public class ProvisioningManager {
     public func provision(
         with deviceProvisioningUrl: DeviceProvisioningURL,
         shouldLinkNSync: Bool
-    ) async throws -> (BackupKey?, DeviceProvisioningTokenId) {
+    ) async throws -> (MessageRootBackupKey?, DeviceProvisioningTokenId) {
         struct ProvisioningState {
             var localIdentifiers: LocalIdentifiers
             var aciIdentityKeyPair: ECKeyPair
             var pniIdentityKeyPair: ECKeyPair
             var areReadReceiptsEnabled: Bool
             var rootKey: LinkingProvisioningMessage.RootKey
-            var mediaRootBackupKey: BackupKey
+            var mediaRootBackupKey: MediaRootBackupKey
             var profileKey: Aes256Key
         }
-
-        let ephemeralBackupKey: BackupKey?
-        if
-            shouldLinkNSync,
-            deviceProvisioningUrl.capabilities.contains(where: { $0 == .linknsync })
-        {
-            ephemeralBackupKey = linkAndSyncManager.generateEphemeralBackupKey()
-        } else {
-            ephemeralBackupKey = nil
-        }
-
         let provisioningState = await db.awaitableWrite { tx in
             guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else { owsFail("Can't provision without an aci & phone number.")
             }
@@ -101,6 +90,16 @@ public class ProvisioningManager {
         let myPhoneNumber = provisioningState.localIdentifiers.phoneNumber
         guard let myPni = provisioningState.localIdentifiers.pni else {
             owsFail("Can't provision without a pni.")
+        }
+
+        let ephemeralBackupKey: MessageRootBackupKey?
+        if
+            shouldLinkNSync,
+            deviceProvisioningUrl.capabilities.contains(where: { $0 == .linknsync })
+        {
+            ephemeralBackupKey = linkAndSyncManager.generateEphemeralBackupKey(aci: myAci)
+        } else {
+            ephemeralBackupKey = nil
         }
 
         let provisioningCode = try await deviceProvisioningService.requestDeviceProvisioningCode()

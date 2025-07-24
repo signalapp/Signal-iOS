@@ -98,7 +98,7 @@ public protocol BackupRequestManager {
     /// credential that isn't ``BackupLevel.paid``. Default false. Set this to true if intending to check whether a
     /// paid credential is available.
     func fetchBackupServiceAuth(
-        for credentialType: BackupAuthCredentialType,
+        for key: BackupKeyMaterial,
         localAci: Aci,
         auth: ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool
@@ -140,12 +140,12 @@ public protocol BackupRequestManager {
 
 extension BackupRequestManager {
     func fetchBackupServiceAuth(
-        for credentialType: BackupAuthCredentialType,
+        for key: BackupKeyMaterial,
         localAci: Aci,
         auth: ChatServiceAuth,
     ) async throws -> BackupServiceAuth {
         return try await self.fetchBackupServiceAuth(
-            for: credentialType,
+            for: key,
             localAci: localAci,
             auth: auth,
             forceRefreshUnlessCachedPaidCredential: false
@@ -157,7 +157,6 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
 
     private let backupAuthCredentialManager: BackupAuthCredentialManager
     private let backupCDNCredentialStore: BackupCDNCredentialStore
-    private let backupKeyMaterial: BackupKeyMaterial
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
     private let db: any DB
@@ -167,7 +166,6 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
     init(
         backupAuthCredentialManager: BackupAuthCredentialManager,
         backupCDNCredentialStore: BackupCDNCredentialStore,
-        backupKeyMaterial: BackupKeyMaterial,
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
@@ -175,7 +173,6 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
     ) {
         self.backupAuthCredentialManager = backupAuthCredentialManager
         self.backupCDNCredentialStore = backupCDNCredentialStore
-        self.backupKeyMaterial = backupKeyMaterial
         self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
         self.db = db
@@ -186,20 +183,16 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
     // MARK: - Backup Auth
 
     public func fetchBackupServiceAuth(
-        for credentialType: BackupAuthCredentialType,
+        for key: BackupKeyMaterial,
         localAci: Aci,
         auth: ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> BackupServiceAuth {
-        let (backupKey, privateKey) = try db.read { tx in
-            let key = try backupKeyMaterial.backupKey(type: credentialType, tx: tx)
-            let backupKey = key.deriveBackupId(aci: localAci)
-            let privateKey = key.deriveEcKey(aci: localAci)
-            return (backupKey, privateKey)
-        }
+        let backupKey = key.deriveBackupId(aci: localAci)
+        let privateKey = key.deriveEcKey(aci: localAci)
 
         let authCredential = try await backupAuthCredentialManager.fetchBackupCredential(
-            for: credentialType,
+            for: key,
             localAci: localAci,
             chatServiceAuth: auth,
             forceRefreshUnlessCachedPaidCredential: forceRefreshUnlessCachedPaidCredential
@@ -209,7 +202,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
             backupKey: backupKey,
             privateKey: privateKey,
             authCredential: authCredential,
-            type: credentialType
+            type: key.credentialType
         )
     }
 

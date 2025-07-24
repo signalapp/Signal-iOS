@@ -53,7 +53,7 @@ public class ProvisioningManagerTests {
         let myRecipient = SignalRecipient(aci: myAci, pni: myPni, phoneNumber: myPhoneNumber)
         let profileKey = Aes256Key.generateRandom()
         let accountEntropyPool = AccountEntropyPool()
-        let mrbk = BackupKey.generateRandom()
+        let mrbk = MediaRootBackupKey.forTesting()
         let readReceiptsEnabled = true
         let provisioningCode = "ABC123"
 
@@ -156,12 +156,12 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
 
     func setIsLinkAndSyncEnabledOnPrimary(_ isEnabled: Bool, tx: DBWriteTransaction) {}
 
-    func generateEphemeralBackupKey() -> BackupKey {
-        return .forTesting()
+    func generateEphemeralBackupKey(aci: Aci) -> MessageRootBackupKey {
+        return .forTesting(aci: aci)
     }
 
     func waitForLinkingAndUploadBackup(
-        ephemeralBackupKey: BackupKey,
+        ephemeralBackupKey: MessageRootBackupKey,
         tokenId: DeviceProvisioningTokenId,
         progress: OWSProgressSink
     ) async throws(PrimaryLinkNSyncError) {
@@ -171,7 +171,7 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
     func waitForBackupAndRestore(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
-        ephemeralBackupKey: BackupKey,
+        ephemeralBackupKey: MessageRootBackupKey,
         progress: OWSProgressSink
     ) async throws(SecondaryLinkNSyncError) {
         return

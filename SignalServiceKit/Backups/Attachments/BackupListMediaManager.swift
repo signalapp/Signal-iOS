@@ -14,6 +14,7 @@ public protocol BackupListMediaManager {
 
 public class BackupListMediaManagerImpl: BackupListMediaManager {
 
+    private let accountKeyStore: AccountKeyStore
     private let attachmentStore: AttachmentStore
     private let attachmentUploadStore: AttachmentUploadStore
     private let backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress
@@ -22,7 +23,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
-    private let backupKeyMaterial: BackupKeyMaterial
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
@@ -34,6 +34,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     private let kvStore: KeyValueStore
 
     public init(
+        accountKeyStore: AccountKeyStore,
         attachmentStore: AttachmentStore,
         attachmentUploadStore: AttachmentUploadStore,
         backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress,
@@ -42,7 +43,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
-        backupKeyMaterial: BackupKeyMaterial,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
@@ -51,6 +51,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         remoteConfigManager: RemoteConfigManager,
         tsAccountManager: TSAccountManager
     ) {
+        self.accountKeyStore = accountKeyStore
         self.attachmentStore = attachmentStore
         self.attachmentUploadStore = attachmentUploadStore
         self.backupAttachmentDownloadProgress = backupAttachmentDownloadProgress
@@ -59,7 +60,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
-        self.backupKeyMaterial = backupKeyMaterial
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
@@ -105,7 +105,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                     tx: tx
                 ),
                 self.kvStore.getBool(Constants.hasEverRunListMediaKey, defaultValue: false, transaction: tx),
-                try backupKeyMaterial.backupKey(type: .media, tx: tx),
+                self.accountKeyStore.getMediaRootBackupKey(tx: tx)
             )
         }
         guard needsToQuery else {
@@ -114,6 +114,10 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
         guard let localAci, let isPrimaryDevice else {
             throw OWSAssertionError("Not registered")
+        }
+
+        guard let backupKey else {
+            throw OWSAssertionError("Media backup key missing")
         }
 
         let uploadEraAtStartOfListMedia: String
@@ -141,7 +145,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             let backupAuth: BackupServiceAuth?
             do {
                 let fetchedBackupAuth: BackupServiceAuth = try await backupRequestManager.fetchBackupServiceAuth(
-                    for: .media,
+                    for: backupKey,
                     localAci: localAci,
                     auth: .implicit(),
                     // We want to affirmatively check for paid tier status
@@ -397,7 +401,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         attachment: Attachment,
         fullsizeMediaName: String,
         isThumbnail: Bool,
-        backupKey: BackupKey,
+        backupKey: MediaRootBackupKey,
         uploadEraAtStartOfListMedia: String,
         currentBackupPlan: BackupPlan,
         remoteConfig: RemoteConfig,

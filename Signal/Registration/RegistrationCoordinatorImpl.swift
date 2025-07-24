@@ -591,6 +591,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<Void> {
         Logger.info("")
         return _doBackupRestoreStep {
+            guard let aep = self.inMemoryState.accountEntropyPool else {
+                // TODO: Error
+                return
+            }
+            let backupKey = try MessageRootBackupKey(accountEntropyPool: aep, aci: identity.aci)
+
             let progress = await progressBlock()
 
             let downloadProgress = await progress.addChild(
@@ -608,14 +614,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 fileUrl = localFileUrl
             case .remote:
                 fileUrl = try await self.deps.backupArchiveManager.downloadEncryptedBackup(
-                    localIdentifiers: identity.localIdentifiers,
+                    backupKey: backupKey,
                     auth: identity.chatServiceAuth,
                     progress: downloadProgress,
                 )
-            }
-            // Get Backup Key
-            let backupKey = try self.deps.db.read { tx in
-                return try self.deps.backupKeyMaterial.backupKey(type: .messages, tx: tx)
             }
 
             try await self.deps.backupArchiveManager.importEncryptedBackup(
@@ -1444,10 +1446,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return nil
         }
 
+        guard let aep = inMemoryState.accountEntropyPool else {
+            return .value(.enterBackupKey)
+        }
+
         // For manual restore, fetch the backup info
         return Promise.wrapAsync { () -> AttachmentDownloads.CdnInfo? in
-            try await self.deps.backupArchiveManager.backupCdnInfo(
-                localIdentifiers: accountIdentity.localIdentifiers,
+            let backupKey = try MessageRootBackupKey(accountEntropyPool: aep, aci: accountIdentity.aci)
+            return try await self.deps.backupArchiveManager.backupCdnInfo(
+                backupKey: backupKey,
                 auth: accountIdentity.chatServiceAuth
             )
         }

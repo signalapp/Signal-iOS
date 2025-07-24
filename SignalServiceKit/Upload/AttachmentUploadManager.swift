@@ -39,6 +39,7 @@ public protocol AttachmentUploadManager {
         attachmentId: Attachment.IDType,
         uploadEra: String,
         localAci: Aci,
+        backupKey: MediaRootBackupKey,
         auth: BackupServiceAuth,
         progress: OWSProgressSink?
     ) async throws
@@ -49,6 +50,7 @@ public protocol AttachmentUploadManager {
         attachmentId: Attachment.IDType,
         uploadEra: String,
         localAci: Aci,
+        backupKey: MediaRootBackupKey,
         auth: BackupServiceAuth,
         progress: OWSProgressSink?
     ) async throws
@@ -98,12 +100,14 @@ extension AttachmentUploadManager {
         attachmentId: Attachment.IDType,
         uploadEra: String,
         localAci: Aci,
+        backupKey: MediaRootBackupKey,
         auth: BackupServiceAuth
     ) async throws {
         try await  uploadMediaTierAttachment(
             attachmentId: attachmentId,
             uploadEra: uploadEra,
             localAci: localAci,
+            backupKey: backupKey,
             auth: auth,
             progress: nil
         )
@@ -113,12 +117,14 @@ extension AttachmentUploadManager {
         attachmentId: Attachment.IDType,
         uploadEra: String,
         localAci: Aci,
+        backupKey: MediaRootBackupKey,
         auth: BackupServiceAuth
     ) async throws {
         try await uploadMediaTierThumbnailAttachment(
             attachmentId: attachmentId,
             uploadEra: uploadEra,
             localAci: localAci,
+            backupKey: backupKey,
             auth: auth,
             progress: nil
         )
@@ -127,11 +133,11 @@ extension AttachmentUploadManager {
 
 public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
+    private let accountKeyStore: AccountKeyStore
     private let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
     private let attachmentStore: AttachmentStore
     private let attachmentUploadStore: AttachmentUploadStore
     private let attachmentThumbnailService: AttachmentThumbnailService
-    private let backupKeyMaterial: BackupKeyMaterial
     private let backupRequestManager: BackupRequestManager
     private let dateProvider: DateProvider
     private let db: any DB
@@ -177,11 +183,11 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     }
 
     public init(
+        accountKeyStore: AccountKeyStore,
         attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
         attachmentStore: AttachmentStore,
         attachmentUploadStore: AttachmentUploadStore,
         attachmentThumbnailService: AttachmentThumbnailService,
-        backupKeyMaterial: BackupKeyMaterial,
         backupRequestManager: BackupRequestManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
@@ -193,11 +199,11 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         sleepTimer: Upload.Shims.SleepTimer,
         storyStore: StoryStore
     ) {
+        self.accountKeyStore = accountKeyStore
         self.attachmentEncrypter = attachmentEncrypter
         self.attachmentStore = attachmentStore
         self.attachmentUploadStore = attachmentUploadStore
         self.attachmentThumbnailService = attachmentThumbnailService
-        self.backupKeyMaterial = backupKeyMaterial
         self.backupRequestManager = backupRequestManager
         self.dateProvider = dateProvider
         self.db = db
@@ -405,6 +411,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         attachmentId: Attachment.IDType,
         uploadEra: String,
         localAci: Aci,
+        backupKey: MediaRootBackupKey,
         auth: BackupServiceAuth,
         progress: OWSProgressSink?
     ) async throws {
@@ -433,6 +440,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         do {
             cdnNumber =  try await self.copyToMediaTier(
                 localAci: localAci,
+                backupKey: backupKey,
                 mediaName: mediaName,
                 uploadEra: uploadEra,
                 result: result,
@@ -499,6 +507,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         attachmentId: Attachment.IDType,
         uploadEra: String,
         localAci: Aci,
+        backupKey: MediaRootBackupKey,
         auth: BackupServiceAuth,
         progress: OWSProgressSink?
     ) async throws {
@@ -525,6 +534,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
         let cdnNumber =  try await self.copyToMediaTier(
             localAci: localAci,
+            backupKey: backupKey,
             mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
             uploadEra: uploadEra,
             result: result,
@@ -880,13 +890,16 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 throw OWSUnretryableError()
             }
             let fileUrl = fileSystem.temporaryFileUrl()
-            let encryptionKey = try db.read { tx in
-                try backupKeyMaterial.mediaEncryptionMetadata(
-                    mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
-                    type: .transitTierThumbnail,
-                    tx: tx
-                )
+
+            guard let mrbk = db.read(block: { accountKeyStore.getMediaRootBackupKey(tx: $0) }) else {
+                logger.warn("Media tier upload missing root key.")
+                throw OWSUnretryableError()
             }
+
+            let encryptionKey = try mrbk.mediaEncryptionMetadata(
+                mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
+                type: .transitTierThumbnail
+            )
             guard
                 let thumbnailImage = await attachmentThumbnailService.thumbnailImage(
                     for: stream,
@@ -1040,23 +1053,21 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
     public func copyToMediaTier(
         localAci: Aci,
+        backupKey: MediaRootBackupKey,
         mediaName: String,
         uploadEra: String,
         result: Upload.AttachmentResult,
         logger: PrefixedLogger
     ) async throws -> UInt32 {
         let auth = try await backupRequestManager.fetchBackupServiceAuth(
-            for: .media,
+            for: backupKey,
             localAci: localAci,
             auth: .implicit()
         )
-        let mediaEncryptionMetadata = try db.read { tx in
-            try backupKeyMaterial.mediaEncryptionMetadata(
-                mediaName: mediaName,
-                type: .outerLayerFullsizeOrThumbnail,
-                tx: tx
-            )
-        }
+        let mediaEncryptionMetadata = try backupKey.mediaEncryptionMetadata(
+            mediaName: mediaName,
+            type: .outerLayerFullsizeOrThumbnail
+        )
 
         return try await backupRequestManager.copyToMediaTier(
             item: .init(

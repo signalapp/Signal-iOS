@@ -152,13 +152,13 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     // MARK: - Remote backups
 
     public func downloadEncryptedBackup(
-        localIdentifiers: LocalIdentifiers,
+        backupKey: MessageRootBackupKey,
         auth: ChatServiceAuth,
         progress: OWSProgressSink?
     ) async throws -> URL {
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-            for: .messages,
-            localAci: localIdentifiers.aci,
+            for: backupKey,
+            localAci: backupKey.aci,
             auth: auth
         )
         let metadata = try await backupRequestManager.fetchBackupRequestMetadata(auth: backupAuth)
@@ -174,12 +174,12 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     }
 
     public func backupCdnInfo(
-        localIdentifiers: LocalIdentifiers,
+        backupKey: MessageRootBackupKey,
         auth: ChatServiceAuth
     ) async throws -> AttachmentDownloads.CdnInfo {
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-            for: .messages,
-            localAci: localIdentifiers.aci,
+            for: backupKey,
+            localAci: backupKey.aci,
             auth: auth
         )
         let metadata = try await backupRequestManager.fetchBackupRequestMetadata(auth: backupAuth)
@@ -187,24 +187,19 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     }
 
     public func uploadEncryptedBackup(
+        backupKey: MessageRootBackupKey,
         metadata: Upload.EncryptedBackupUploadMetadata,
         registeredBackupIDToken: RegisteredBackupIDToken,
         auth: ChatServiceAuth,
         progress: OWSProgressSink?
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {
-        let (localIdentifiers, isPrimaryDevice) = db.read { tx in
-            return (
-                tsAccountManager.localIdentifiers(tx: tx),
-                tsAccountManager.registrationState(tx: tx).isPrimaryDevice
-            )
-        }
-        guard let localIdentifiers, isPrimaryDevice == true else {
+        guard db.read(block: { tsAccountManager.registrationState(tx: $0).isPrimaryDevice }) == true else {
             throw OWSAssertionError("Backing up not on a registered primary!")
         }
 
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-            for: .messages,
-            localAci: localIdentifiers.aci,
+            for: backupKey,
+            localAci: backupKey.aci,
             auth: auth
         )
         let form: Upload.Form
@@ -255,7 +250,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
     public func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
-        backupKey: BackupKey,
+        backupKey: MessageRootBackupKey,
         backupPurpose: MessageBackupPurpose,
         progress progressSink: OWSProgressSink?
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
@@ -274,8 +269,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             benchTitle: "Export encrypted Backup",
             openOutputStreamBlock: { exportProgress, tx in
                 return encryptedStreamProvider.openEncryptedOutputFileStream(
-                    localAci: localIdentifiers.aci,
-                    backupKey: backupKey,
+                    messageBackupKey: backupKey,
                     exportProgress: exportProgress,
                     attachmentByteCounter: attachmentByteCounter,
                     tx: tx
@@ -403,7 +397,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private func _exportBackup(
         outputStream stream: BackupArchiveProtoOutputStream,
         localIdentifiers: LocalIdentifiers,
-        mediaRootBackupKey mediaRootBackupKeyParam: BackupKey,
+        mediaRootBackupKey mediaRootBackupKeyParam: MediaRootBackupKey,
         backupPurpose: MessageBackupPurpose,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter,
         includedContentFilter: BackupArchive.IncludedContentFilter,
@@ -657,7 +651,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         backupTimeMs: UInt64,
         currentAppVersion: String,
         firstAppVersion: String,
-        mediaRootBackupKey: BackupKey,
+        mediaRootBackupKey: MediaRootBackupKey,
         tx: DBReadTransaction
     ) throws {
         var backupInfo = BackupProto_BackupInfo()
@@ -695,7 +689,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
-        backupKey: BackupKey,
+        backupKey: MessageRootBackupKey,
         backupPurpose: MessageBackupPurpose,
         progress progressSink: OWSProgressSink?
     ) async throws {
@@ -709,8 +703,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             openInputStreamBlock: { fileUrl, frameRestoreProgress, tx in
                 return encryptedStreamProvider.openEncryptedInputFileStream(
                     fileUrl: fileUrl,
-                    localAci: localIdentifiers.aci,
-                    backupKey: backupKey,
+                    messageBackupKey: backupKey,
                     frameRestoreProgress: frameRestoreProgress,
                     tx: tx
                 )
@@ -939,7 +932,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 throw BackupImportError.unsupportedVersion
             }
             do {
-                localStorage.setMediaRootBackupKey(try BackupKey(contents: backupInfo.mediaRootBackupKey), tx: tx)
+                localStorage.setMediaRootBackupKey(try MediaRootBackupKey(data: backupInfo.mediaRootBackupKey), tx: tx)
             } catch {
                 frameErrors.append(LoggableErrorAndProto(
                     error: BackupArchive.RestoreFrameError.restoreFrameError(
@@ -1410,15 +1403,13 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
     public func validateEncryptedBackup(
         fileUrl: URL,
-        localIdentifiers: LocalIdentifiers,
-        backupKey: BackupKey,
+        backupKey: MessageRootBackupKey,
         backupPurpose: MessageBackupPurpose
     ) async throws {
-        let key = try backupKey.asMessageBackupKey(for: localIdentifiers.aci)
         let fileSize = OWSFileSystem.fileSize(ofPath: fileUrl.path)?.uint64Value ?? 0
 
         do {
-            let result = try validateMessageBackup(key: key, purpose: backupPurpose, length: fileSize) {
+            let result = try validateMessageBackup(key: backupKey.messageBackupKey, purpose: backupPurpose, length: fileSize) {
                 return try FileHandle(forReadingFrom: fileUrl)
             }
             if result.fields.count > 0 {

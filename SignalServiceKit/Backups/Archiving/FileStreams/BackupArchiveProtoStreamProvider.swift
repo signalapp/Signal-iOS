@@ -99,11 +99,8 @@ public class BackupArchivePlaintextProtoStreamProvider {
 public class BackupArchiveEncryptedProtoStreamProvider {
     typealias ProtoStream = BackupArchive.ProtoStream
 
-    private let backupKeyMaterial: BackupKeyMaterial
     private let genericStreamProvider: GenericStreamProvider
-
-    init(backupKeyMaterial: BackupKeyMaterial) {
-        self.backupKeyMaterial = backupKeyMaterial
+    init() {
         self.genericStreamProvider = GenericStreamProvider()
     }
 
@@ -111,14 +108,12 @@ public class BackupArchiveEncryptedProtoStreamProvider {
     /// The caller owns the returned stream, and is responsible for closing it
     /// once finished.
     func openEncryptedOutputFileStream(
-        localAci: Aci,
-        backupKey: BackupKey,
+        messageBackupKey: MessageRootBackupKey,
         exportProgress: BackupArchiveExportProgress?,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenOutputStreamResult<Upload.EncryptedBackupUploadMetadata> {
         do {
-            let messageBackupKey = try backupKey.asMessageBackupKey(for: localAci)
             let inputTrackingTransform = MetadataStreamTransform(calculateDigest: false)
             let outputTrackingTransform = MetadataStreamTransform(calculateDigest: true)
 
@@ -169,17 +164,15 @@ public class BackupArchiveEncryptedProtoStreamProvider {
     /// closing it once finished.
     func openEncryptedInputFileStream(
         fileUrl: URL,
-        localAci: Aci,
-        backupKey: BackupKey,
+        messageBackupKey: MessageRootBackupKey,
         frameRestoreProgress: BackupArchiveImportFramesProgress?,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult {
-        guard validateBackupHMAC(localAci: localAci, backupKey: backupKey, fileUrl: fileUrl, tx: tx) else {
+        guard validateBackupHMAC(messageBackupKey: messageBackupKey, fileUrl: fileUrl, tx: tx) else {
             return .hmacValidationFailedOnEncryptedFile
         }
 
         do {
-            let messageBackupKey = try backupKey.asMessageBackupKey(for: localAci)
             let transforms: [any StreamTransform] = [
                 frameRestoreProgress.map { InputProgressStreamTransform(frameRestoreProgress: $0) },
                 try HmacStreamTransform(hmacKey: messageBackupKey.hmacKey, operation: .validate),
@@ -198,13 +191,11 @@ public class BackupArchiveEncryptedProtoStreamProvider {
     }
 
     private func validateBackupHMAC(
-        localAci: Aci,
-        backupKey: BackupKey,
+        messageBackupKey: MessageRootBackupKey,
         fileUrl: URL,
         tx: DBReadTransaction
     ) -> Bool {
         do {
-            let messageBackupKey = try backupKey.asMessageBackupKey(for: localAci)
             let inputStreamResult = genericStreamProvider.openInputFileStream(
                 fileUrl: fileUrl,
                 transforms: [

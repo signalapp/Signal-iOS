@@ -76,11 +76,11 @@ final class BackupIdManagerImpl: BackupIdManager {
             messageBackupKey,
             mediaBackupKey
         ): (
-            BackupKey,
-            BackupKey
+            MessageRootBackupKey,
+            MediaRootBackupKey
         ) = try await db.awaitableWrite { tx in
 
-            guard let messageRootBackupKey = accountKeyStore.getMessageRootBackupKey(tx: tx) else {
+            guard let messageRootBackupKey = try? accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx) else {
                 throw OWSAssertionError("Missing message root backup key! Do we not have an AEP?")
             }
 
@@ -98,15 +98,19 @@ final class BackupIdManagerImpl: BackupIdManager {
             auth: auth
         )
 
-        for credentialType in BackupAuthCredentialType.allCases {
-            let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-                for: credentialType,
-                localAci: localIdentifiers.aci,
-                auth: auth
-            )
+        let messageBackupAuth = try await backupRequestManager.fetchBackupServiceAuth(
+            for: messageBackupKey,
+            localAci: localIdentifiers.aci,
+            auth: auth
+        )
+        try await api.registerBackupKey(backupAuth: messageBackupAuth)
 
-            try await api.registerBackupKey(backupAuth: backupAuth)
-        }
+        let mediaBackupAuth = try await backupRequestManager.fetchBackupServiceAuth(
+            for: mediaBackupKey,
+            localAci: localIdentifiers.aci,
+            auth: auth
+        )
+        try await api.registerBackupKey(backupAuth: mediaBackupAuth)
 
         return RegisteredBackupIDToken()
     }
@@ -115,9 +119,17 @@ final class BackupIdManagerImpl: BackupIdManager {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
     ) async throws {
-        for credentialType in BackupAuthCredentialType.allCases {
+        let (
+            messageBackupKey,
+            mediaBackupKey
+        ) = db.read {(
+            try? accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: $0),
+            accountKeyStore.getMediaRootBackupKey(tx: $0)
+        )}
+
+        func deleteBackup(key: BackupKeyMaterial) async throws {
             let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-                for: credentialType,
+                for: key,
                 localAci: localIdentifiers.aci,
                 auth: auth
             )
@@ -126,6 +138,13 @@ final class BackupIdManagerImpl: BackupIdManager {
                 localIdentifiers: localIdentifiers,
                 backupAuth: backupAuth
             )
+        }
+
+        if let messageBackupKey {
+            try await deleteBackup(key: messageBackupKey)
+        }
+        if let mediaBackupKey {
+            try await deleteBackup(key: mediaBackupKey)
         }
     }
 
@@ -166,8 +185,8 @@ final class BackupIdManagerImpl: BackupIdManager {
 
         func reserveBackupId(
             localAci: Aci,
-            messageBackupKey: BackupKey,
-            mediaBackupKey: BackupKey,
+            messageBackupKey: MessageRootBackupKey,
+            mediaBackupKey: MediaRootBackupKey,
             auth: ChatServiceAuth
         ) async throws {
             let messageBackupRequestContext: BackupAuthCredentialRequestContext = .create(

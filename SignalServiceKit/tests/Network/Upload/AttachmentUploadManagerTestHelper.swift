@@ -66,6 +66,7 @@ enum CDNEndpoint: UInt32, CaseIterable {
 }
 
 class AttachmentUploadManagerMockHelper {
+    let mockAccountKeyStore = AccountKeyStore()
     var mockDate = Date()
     lazy var mockDateProvider = { return self.mockDate }
     var mockDB = InMemoryDB()
@@ -80,7 +81,6 @@ class AttachmentUploadManagerMockHelper {
     lazy var mockAttachmentUploadStore = AttachmentUploadStoreMock(attachmentStore: mockAttachmentStore)
     var mockAttachmentThumbnailService = MockAttachmentThumbnailService()
     var mockAttachmentEncrypter = AttachmentUploadManagerImpl.Mocks.AttachmentEncrypter()
-    var mockBackupKeyMaterial = AttachmentUploadManagerImpl.Mocks.BackupKeyMaterial()
     var mockBackupRequestManager = AttachmentUploadManagerImpl.Mocks.BackupRequestManager()
     var mockRemoteConfigProvider = MockRemoteConfigProvider()
     var mockSleepTimer = AttachmentUploadManagerImpl.Mocks.SleepTimer()

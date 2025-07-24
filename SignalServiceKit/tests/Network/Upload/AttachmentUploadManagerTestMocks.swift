@@ -16,7 +16,6 @@ extension AttachmentUploadManagerImpl {
         typealias AttachmentEncrypter = _Upload_AttachmentEncrypterMock
         typealias FileSystem = _Upload_FileSystemMock
 
-        typealias BackupKeyMaterial = _AttachmentUploadManager_BackupKeyMaterialMock
         typealias BackupRequestManager = _AttachmentUploadManager_BackupRequestManagerMock
 
         typealias SleepTimer = _Upload_SleepTimerMock
@@ -100,26 +99,9 @@ class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager 
     func waitForDisconnectIfClosed() async {}
 }
 
-class _AttachmentUploadManager_BackupKeyMaterialMock: BackupKeyMaterial {
-    func backupKey(
-        type: BackupAuthCredentialType,
-        tx: DBReadTransaction
-    ) throws(BackupKeyMaterialError) -> BackupKey {
-        fatalError("Unimplemented for tests")
-    }
-
-    func mediaEncryptionMetadata(
-        mediaName: String,
-        type: MediaTierEncryptionType,
-        tx: DBReadTransaction
-    ) throws(BackupKeyMaterialError) -> MediaTierEncryptionMetadata {
-        return .init(type: type, mediaId: Data(), hmacKey: Data(), aesKey: Data())
-    }
-}
-
 class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
     func fetchBackupServiceAuth(
-        for type: BackupAuthCredentialType,
+        for key: BackupKeyMaterial,
         localAci: Aci,
         auth: ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool

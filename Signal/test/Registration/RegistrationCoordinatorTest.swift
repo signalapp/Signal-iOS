@@ -112,7 +112,6 @@ public class RegistrationCoordinatorTest {
         let dependencies = RegistrationCoordinatorDependencies(
             appExpiry: appExpiry,
             backupArchiveManager: BackupArchiveManagerMock(),
-            backupKeyMaterial: BackupKeyMaterialMock(),
             changeNumberPniManager: changeNumberPniManager,
             contactsManager: RegistrationCoordinatorImpl.TestMocks.ContactsManager(),
             contactsStore: contactsStore,

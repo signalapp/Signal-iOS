@@ -100,7 +100,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             aciIdentityKeyPair: IdentityKeyPair.generate(),
             pniIdentityKeyPair: IdentityKeyPair.generate(),
             profileKey: .generateRandom(),
-            mrbk: BackupKey.forTesting(),
+            mrbk: MediaRootBackupKey.forTesting(),
             ephemeralBackupKey: nil,
             areReadReceiptsEnabled: true,
             provisioningCode: "1234"
@@ -206,12 +206,12 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
 
     func setIsLinkAndSyncEnabledOnPrimary(_ isEnabled: Bool, tx: DBWriteTransaction) {}
 
-    func generateEphemeralBackupKey() -> BackupKey {
-        return .forTesting()
+    func generateEphemeralBackupKey(aci: Aci) -> MessageRootBackupKey {
+        return .forTesting(aci: aci)
     }
 
     func waitForLinkingAndUploadBackup(
-        ephemeralBackupKey: BackupKey,
+        ephemeralBackupKey: MessageRootBackupKey,
         tokenId: DeviceProvisioningTokenId,
         progress: OWSProgressSink
     ) async throws(PrimaryLinkNSyncError) {
@@ -221,7 +221,7 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
     func waitForBackupAndRestore(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
-        ephemeralBackupKey: BackupKey,
+        ephemeralBackupKey: MessageRootBackupKey,
         progress: OWSProgressSink
     ) async throws(SecondaryLinkNSyncError) {
         return

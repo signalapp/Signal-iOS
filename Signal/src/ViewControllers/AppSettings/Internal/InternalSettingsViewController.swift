@@ -309,8 +309,8 @@ private extension InternalSettingsViewController {
     }
 
     func validateMessageBackupProto() {
+        let accountKeyStore = DependenciesBridge.shared.accountKeyStore
         let backupArchiveManager = DependenciesBridge.shared.backupArchiveManager
-        let backupKeyMaterial = DependenciesBridge.shared.backupKeyMaterial
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         guard let localIdentifiers = SSKEnvironment.shared.databaseStorageRef.read(block: {tx in
@@ -320,8 +320,10 @@ private extension InternalSettingsViewController {
         }
         Task {
             do {
-                let backupKey = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-                    try backupKeyMaterial.backupKey(type: .messages, tx: tx)
+                guard let backupKey = try SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
+                    try accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx)
+                }) else {
+                    return
                 }
                 let metadata = try await backupArchiveManager.exportEncryptedBackup(
                     localIdentifiers: localIdentifiers,
@@ -331,7 +333,6 @@ private extension InternalSettingsViewController {
                 )
                 try await backupArchiveManager.validateEncryptedBackup(
                     fileUrl: metadata.fileUrl,
-                    localIdentifiers: localIdentifiers,
                     backupKey: backupKey,
                     backupPurpose: .remoteBackup
                 )
@@ -414,29 +415,29 @@ private extension InternalSettingsViewController {
     func exportMessageBackupProtoFile(
         presentingFrom vc: UIViewController
     ) async throws {
+        let accountKeyStore = DependenciesBridge.shared.accountKeyStore
         let backupArchiveManager = DependenciesBridge.shared.backupArchiveManager
-        let backupKeyMaterial = DependenciesBridge.shared.backupKeyMaterial
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        let (backupKey, localIdentifiers) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-            (
-                try backupKeyMaterial.backupKey(type: .messages, tx: tx),
-                tsAccountManager.localIdentifiers(tx: tx)
+        let (messageBackupKey, localIdentifiers) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)!
+            return (
+                try accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx),
+                localIdentifiers
             )
         }
 
-        guard let localIdentifiers else {
+        guard let messageBackupKey else {
             return
         }
 
         let metadata = try await backupArchiveManager.exportEncryptedBackup(
             localIdentifiers: localIdentifiers,
-            backupKey: backupKey,
+            backupKey: messageBackupKey,
             backupPurpose: .remoteBackup,
             progress: nil
         )
 
-        let messageBackupKey = try backupKey.asMessageBackupKey(for: localIdentifiers.aci)
         let keyString = "AES key: \(messageBackupKey.aesKey.base64EncodedString())"
             + "\nHMAC key: \(messageBackupKey.hmacKey.base64EncodedString())"
 
@@ -457,25 +458,26 @@ private extension InternalSettingsViewController {
     }
 
     func exportMessageBackupProtoRemotely() async throws {
+        let accountKeyStore = DependenciesBridge.shared.accountKeyStore
         let backupArchiveManager = DependenciesBridge.shared.backupArchiveManager
         let backupIdManager = DependenciesBridge.shared.backupIdManager
-        let backupKeyMaterial = DependenciesBridge.shared.backupKeyMaterial
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        let (backupKey, localIdentifiers) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-            (
-                try backupKeyMaterial.backupKey(type: .messages, tx: tx),
-                tsAccountManager.localIdentifiers(tx: tx)
+        let (messageBackupKey, localIdentifiers) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)!
+            return (
+                try accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx),
+                localIdentifiers
             )
         }
 
-        guard let localIdentifiers else {
+        guard let messageBackupKey else {
             return
         }
 
         let metadata = try await backupArchiveManager.exportEncryptedBackup(
             localIdentifiers: localIdentifiers,
-            backupKey: backupKey,
+            backupKey: messageBackupKey,
             backupPurpose: .remoteBackup,
             progress: nil
         )
@@ -486,6 +488,7 @@ private extension InternalSettingsViewController {
         )
 
         _ = try await backupArchiveManager.uploadEncryptedBackup(
+            backupKey: messageBackupKey,
             metadata: metadata,
             registeredBackupIDToken: registeredBackupIDToken,
             auth: .implicit(),
