@@ -57,9 +57,18 @@ extension AttachmentMultisend {
             // We only prepare the single shared body.
             let validatedMessageBody: ValidatedMessageBody?
             if let messageBody {
-                validatedMessageBody = try attachmentValidator.prepareOversizeTextsIfNeeded(
-                    from: ["": messageBody]
-                ).values.first
+                // AttachmentValidator runs synchronously _and_ opens write transactions
+                // internally. We can't block on the write lock in the cooperative thread
+                // pool, so bridge out of structured concurrency to run the validation.
+                validatedMessageBody = try await withCheckedThrowingContinuation { continuation in
+                    DispatchQueue.global().async {
+                        continuation.resume(with: Swift.Result(catching: {
+                            try attachmentValidator.prepareOversizeTextsIfNeeded(
+                                from: ["": messageBody]
+                            ).values.first
+                        }))
+                    }
+                }
             } else {
                 validatedMessageBody = nil
             }
@@ -83,9 +92,15 @@ extension AttachmentMultisend {
                 ))
                 continue
             }
-            let validatedMessageBody = try attachmentValidator.prepareOversizeTextsIfNeeded(
-                from: ["": hydratedMessageBody.asMessageBodyForForwarding()]
-            ).values.first
+            let validatedMessageBody = try await withCheckedThrowingContinuation { continuation in
+                DispatchQueue.global().async {
+                    continuation.resume(with: Swift.Result(catching: {
+                        try attachmentValidator.prepareOversizeTextsIfNeeded(
+                            from: ["": hydratedMessageBody.asMessageBodyForForwarding()]
+                        ).values.first
+                    }))
+                }
+            }
             destinations.append(.init(
                 conversationItem: preDestination.conversationItem,
                 thread: preDestination.thread,
