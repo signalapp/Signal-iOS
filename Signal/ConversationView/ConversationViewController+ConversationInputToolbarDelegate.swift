@@ -914,7 +914,13 @@ extension ConversationViewController: SendMediaNavDelegate {
                 from: viewController,
                 messageBody: messageBody
             )
-            inputToolbar?.clearTextMessage(animated: false)
+
+            if attachments.count == 1, let attachment = attachments.first, attachment.isBorderless {
+                // This looks like a sticker, we shouldn't clear the input toolbar.
+            } else {
+                inputToolbar?.clearTextMessage(animated: false)
+            }
+
             // we want to already be at the bottom when the user returns, rather than have to watch
             // the new message scroll into view.
             scrollToBottomOfConversation(animated: true)
