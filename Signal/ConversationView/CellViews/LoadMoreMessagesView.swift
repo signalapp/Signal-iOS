@@ -18,10 +18,15 @@ public class LoadMoreMessagesView: UICollectionReusableView {
         label.text = OWSLocalizedString("CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
                                        comment: "Indicates that the app is loading more messages in this conversation.")
         super.init(frame: frame)
-        addSubview(label)
-        label.autoPinEdgesToSuperviewEdges()
-        label.autoSetDimension(.height, toSize: LoadMoreMessagesView.fixedHeight)
+        addSubview(blurView)
+        blurView.contentView.addSubview(label)
+
+        blurView.autoPinEdge(toSuperviewEdge: .leading, withInset: 16, relation: .greaterThanOrEqual)
+        blurView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16, relation: .greaterThanOrEqual)
+
+        label.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16))
         label.textAlignment = .center
+        blurView.autoCenterInSuperview()
     }
 
     required init?(coder: NSCoder) {
@@ -32,6 +37,15 @@ public class LoadMoreMessagesView: UICollectionReusableView {
 
     private let label = UILabel()
 
+    private let blurView: UIVisualEffectView = {
+        let blurEffect = UIBlurEffect(style: .systemMaterial)
+        let view = UIVisualEffectView(effect: blurEffect)
+        view.layer.cornerRadius = 16
+        view.clipsToBounds = true
+        
+        return view
+    }()
+    
     // MARK: Public
 
     public func configureForDisplay() {
