@@ -90,10 +90,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         try! OrphanedBackupAttachment
             .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
             .deleteAll(tx.database)
-        guard let mediaKey = accountKeyStore.getMediaRootBackupKey(tx: tx) else {
-            owsFailDebug("Missing media encryption key")
-            return
-        }
+        let mediaKey = accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx)
         for type in OrphanedBackupAttachment.SizeType.allCases {
             do {
                 let mediaId = try mediaKey.deriveMediaId(
