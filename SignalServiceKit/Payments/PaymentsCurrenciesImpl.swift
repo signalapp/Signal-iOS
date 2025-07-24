@@ -95,10 +95,6 @@ public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies
         let serviceDate: Date
 
         var isStale: Bool {
-            guard !DebugFlags.paymentsIgnoreCurrencyConversions.get() else {
-                // Treat all conversion info as stale/unavailable.
-                return true
-            }
             // We can't use abs(); if the service and client's clocks don't
             // agree we don't want to treat future values as stale.
             //

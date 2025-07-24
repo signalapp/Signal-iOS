@@ -786,39 +786,23 @@ public extension PaymentsImpl {
         guard let mcTransactionData = paymentModel.mcTransactionData,
               !mcTransactionData.isEmpty,
               let mcTransaction = MobileCoin.Transaction(serializedData: mcTransactionData) else {
-            if DebugFlags.paymentsIgnoreBadData.get() {
-                Logger.warn("Missing or invalid mcTransactionData.")
-            } else {
-                owsFailDebug("Missing or invalid mcTransactionData.")
-            }
+            owsFailDebug("Missing or invalid mcTransactionData.")
             return
         }
         guard let mcReceiptData = paymentModel.mcReceiptData,
               !mcReceiptData.isEmpty,
               nil != MobileCoin.Receipt(serializedData: mcReceiptData) else {
-            if DebugFlags.paymentsIgnoreBadData.get() {
-                Logger.warn("Missing or invalid mcReceiptData.")
-            } else {
-                owsFailDebug("Missing or invalid mcReceiptData.")
-            }
+            owsFailDebug("Missing or invalid mcReceiptData.")
             return
         }
         let mcSpentKeyImages = Array(mcTransaction.inputKeyImages)
         guard !mcSpentKeyImages.isEmpty else {
-            if DebugFlags.paymentsIgnoreBadData.get() {
-                Logger.warn("Missing or invalid mcSpentKeyImages.")
-            } else {
-                owsFailDebug("Missing or invalid mcSpentKeyImages.")
-            }
+            owsFailDebug("Missing or invalid mcSpentKeyImages.")
             return
         }
         let mcOutputPublicKeys = Array(mcTransaction.outputPublicKeys)
         guard !mcOutputPublicKeys.isEmpty else {
-            if DebugFlags.paymentsIgnoreBadData.get() {
-                Logger.warn("Missing or invalid mcOutputPublicKeys.")
-            } else {
-                owsFailDebug("Missing or invalid mcOutputPublicKeys.")
-            }
+            owsFailDebug("Missing or invalid mcOutputPublicKeys.")
             return
         }
 
@@ -842,8 +826,7 @@ public extension PaymentsImpl {
             owsFailDebug("Invalid paymentType.")
             throw PaymentsError.invalidModel
         }
-        guard paymentModel.paymentState == .outgoingVerified ||
-                DebugFlags.paymentsDoubleNotify.get() else {
+        guard paymentModel.paymentState == .outgoingVerified else {
             owsFailDebug("Invalid paymentState: \(paymentModel.paymentState.formatted).")
             throw PaymentsError.invalidModel
         }
@@ -870,11 +853,7 @@ public extension PaymentsImpl {
         }
         guard let mcReceiptData = paymentModel.mcReceiptData,
               mcReceiptData.count > 0 else {
-            if DebugFlags.paymentsIgnoreBadData.get() {
-                Logger.warn("Missing mcReceiptData.")
-            } else {
-                owsFailDebug("Missing mcReceiptData.")
-            }
+            owsFailDebug("Missing mcReceiptData.")
             throw PaymentsError.invalidModel
         }
 
@@ -918,39 +897,23 @@ public extension PaymentsImpl {
         guard let mcReceiptData = paymentModel.mcReceiptData,
               !mcReceiptData.isEmpty,
               nil != MobileCoin.Receipt(serializedData: mcReceiptData) else {
-            if DebugFlags.paymentsIgnoreBadData.get() {
-                Logger.warn("Missing mcReceiptData.")
-            } else {
-                owsFailDebug("Missing mcReceiptData.")
-            }
+            owsFailDebug("Missing mcReceiptData.")
             return
         }
         guard let mcTransactionData = paymentModel.mcTransactionData,
               !mcTransactionData.isEmpty,
               let mcTransaction = MobileCoin.Transaction(serializedData: mcTransactionData) else {
-            if DebugFlags.paymentsIgnoreBadData.get() {
-                Logger.warn("Missing or invalid mcTransactionData.")
-            } else {
-                owsFailDebug("Missing or invalid mcTransactionData.")
-            }
+            owsFailDebug("Missing or invalid mcTransactionData.")
             return
         }
         let mcSpentKeyImages = Array(mcTransaction.inputKeyImages)
         guard !mcSpentKeyImages.isEmpty else {
-            if DebugFlags.paymentsIgnoreBadData.get() {
-                Logger.warn("Missing or invalid mcSpentKeyImages.")
-            } else {
-                owsFailDebug("Missing or invalid mcSpentKeyImages.")
-            }
+            owsFailDebug("Missing or invalid mcSpentKeyImages.")
             return
         }
         let mcOutputPublicKeys = Array(mcTransaction.outputPublicKeys)
         guard !mcOutputPublicKeys.isEmpty else {
-            if DebugFlags.paymentsIgnoreBadData.get() {
-                Logger.warn("Missing or invalid mcOutputPublicKeys.")
-            } else {
-                owsFailDebug("Missing or invalid mcOutputPublicKeys.")
-            }
+            owsFailDebug("Missing or invalid mcOutputPublicKeys.")
             return
         }
         _ = sendOutgoingPaymentSyncMessage(recipientAci: recipientAci.wrappedAciValue,

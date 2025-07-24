@@ -421,11 +421,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
     }
 
     private func syncContacts(mode: ContactSyncMode) -> Promise<Void> {
-        if DebugFlags.dontSendContactOrGroupSyncMessages.get() {
-            Logger.info("Skipping contact sync message.")
-            return .value(())
-        }
-
         guard canSendContactSyncMessage() else {
             return Promise(error: OWSGenericError("Not ready to sync contacts."))
         }

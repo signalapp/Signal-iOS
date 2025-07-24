@@ -95,9 +95,6 @@ public class PaymentsProcessor: NSObject {
             else {
                 return
             }
-            guard !DebugFlags.paymentsHaltProcessing.get() else {
-                return
-            }
 
             // Kick of processing for any payments that need
             // processing but are not yet being processed.
@@ -593,11 +590,6 @@ private class PaymentProcessingOperation {
             throw PaymentsError.killSwitch
         }
 
-        if DebugFlags.paymentsSkipSubmissionAndOutgoingVerification.get() {
-            try await Self.updatePaymentStatePromise(paymentModel: paymentModel, fromState: .outgoingUnsubmitted, toState: .outgoingUnverified)
-            return
-        }
-
         // Only try to submit transactions within the first N minutes of them
         // being initiated.  If the app is terminated right after a transaction
         // is initiated (before transaction it can be submitted), we don't want
@@ -643,17 +635,6 @@ private class PaymentProcessingOperation {
 
     private func verifyOutgoingPayment(paymentModel: TSPaymentModel) async throws {
         owsAssertDebug(paymentModel.paymentState == .outgoingUnverified)
-
-        if DebugFlags.paymentsSkipSubmissionAndOutgoingVerification.get() {
-            try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-                guard let paymentModel = TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId, transaction: transaction) else {
-                    throw OWSAssertionError("Missing TSPaymentModel.")
-                }
-                paymentModel.update(mcLedgerBlockIndex: 111, transaction: transaction)
-                paymentModel.update(paymentState: .outgoingVerified, transaction: transaction)
-            }
-            return
-        }
 
         let mobileCoinAPI = try await SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI()
 
@@ -727,11 +708,6 @@ private class PaymentProcessingOperation {
                 }
 
                 try notify()
-
-                if DebugFlags.paymentsDoubleNotify.get() {
-                    // Notify again.
-                    try notify()
-                }
 
                 try paymentModel.updatePaymentModelState(fromState: .outgoingVerified, toState: .outgoingSending, transaction: transaction)
             } catch {

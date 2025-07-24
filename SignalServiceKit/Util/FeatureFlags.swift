@@ -123,12 +123,6 @@ public enum DebugFlags {
 
     public static let internalMegaphoneEligible = build.includes(.internal)
 
-    public static let aggressiveProfileFetching = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Aggressive profile fetching"),
-        details: LocalizationNotNeeded("Client will update profiles aggressively.")
-    )
-
     // Currently this flag is only honored by NetworkManager,
     // but we could eventually honor in other places as well:
     //
@@ -144,102 +138,12 @@ public enum DebugFlags {
 
     public static let exposeCensorshipCircumvention = build.includes(.internal)
 
-    public static let dontSendContactOrGroupSyncMessages = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Don't send contact or group sync messages"),
-        details: LocalizationNotNeeded("Client will not send contact or group info to linked devices.")
-    )
-
-    public static let forceAttachmentDownloadFailures = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Force attachment download failures."),
-        details: LocalizationNotNeeded("All attachment downloads will fail.")
-    )
-
-    public static let forceAttachmentDownloadPendingMessageRequest = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Attachment download vs. message request."),
-        details: LocalizationNotNeeded("Attachment downloads will be blocked by pending message request.")
-    )
-
-    public static let forceAttachmentDownloadPendingManualDownload = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Attachment download vs. manual download."),
-        details: LocalizationNotNeeded("Attachment downloads will be blocked by manual download.")
-    )
-
     public static let extraDebugLogs = build.includes(.internal)
-
-    public static let paymentsIgnoreCurrencyConversions = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Payments: Ignore currency conversions"),
-        details: LocalizationNotNeeded("App will behave as though currency conversions are unavailable")
-    )
-
-    public static let paymentsHaltProcessing = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Payments: Halt Processing"),
-        details: LocalizationNotNeeded("Processing of payments will pause")
-    )
-
-    public static let paymentsIgnoreBadData = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Payments: Ignore bad data"),
-        details: LocalizationNotNeeded("App will skip asserts for invalid data")
-    )
-
-    public static let paymentsFailOutgoingSubmission = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Payments: Fail outgoing submission"),
-        details: LocalizationNotNeeded("Submission of outgoing transactions will always fail")
-    )
-
-    public static let paymentsFailOutgoingVerification = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Payments: Fail outgoing verification"),
-        details: LocalizationNotNeeded("Verification of outgoing transactions will always fail")
-    )
-
-    public static let paymentsFailIncomingVerification = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Payments: Fail incoming verification"),
-        details: LocalizationNotNeeded("Verification of incoming receipts will always fail")
-    )
-
-    public static let paymentsDoubleNotify = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Payments: Double notify"),
-        details: LocalizationNotNeeded("App will send two payment notifications and sync messages for each outgoing payment")
-    )
-
-    public static let paymentsNoRequestsComplete = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Payments: No requests complete"),
-        details: LocalizationNotNeeded("MC SDK network activity never completes")
-    )
-
-    public static let paymentsMalformedMessages = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Payments: Malformed messages"),
-        details: LocalizationNotNeeded("Payment notifications and sync messages are malformed.")
-    )
-
-    public static let paymentsSkipSubmissionAndOutgoingVerification = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Payments: Skip Submission And Verification"),
-        details: LocalizationNotNeeded("Outgoing payments won't be submitted or verified.")
-    )
 
     public static let messageSendsFail = TestableFlag(
         false,
         title: LocalizationNotNeeded("Message Sends Fail"),
         details: LocalizationNotNeeded("All outgoing message sends will fail.")
-    )
-
-    public static let disableUD = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Disable sealed sender"),
-        details: LocalizationNotNeeded("Sealed sender will be disabled for all messages.")
     )
 
     public static let callingUseTestSFU = TestableFlag(
@@ -250,13 +154,13 @@ public enum DebugFlags {
 
     public static let delayedMessageResend = TestableFlag(
         false,
-        title: LocalizationNotNeeded("Sender Key: Delayed message resend"),
+        title: LocalizationNotNeeded("Delayed message resend"),
         details: LocalizationNotNeeded("Waits 10s before responding to a resend request.")
     )
 
     public static let fastPlaceholderExpiration = TestableFlag(
         false,
-        title: LocalizationNotNeeded("Sender Key: Early placeholder expiration"),
+        title: LocalizationNotNeeded("Early placeholder expiration"),
         details: LocalizationNotNeeded("Shortens the valid window for message resend+recovery."),
         toggleHandler: { _ in
             SSKEnvironment.shared.messageDecrypterRef.cleanUpExpiredPlaceholders()
@@ -265,26 +169,10 @@ public enum DebugFlags {
 
     public static func allTestableFlags() -> [TestableFlag] {
         return [
-            aggressiveProfileFetching,
             callingUseTestSFU,
             delayedMessageResend,
-            disableUD,
-            dontSendContactOrGroupSyncMessages,
             fastPlaceholderExpiration,
-            forceAttachmentDownloadFailures,
-            forceAttachmentDownloadPendingManualDownload,
-            forceAttachmentDownloadPendingMessageRequest,
             messageSendsFail,
-            paymentsDoubleNotify,
-            paymentsFailIncomingVerification,
-            paymentsFailOutgoingSubmission,
-            paymentsFailOutgoingVerification,
-            paymentsHaltProcessing,
-            paymentsIgnoreBadData,
-            paymentsIgnoreCurrencyConversions,
-            paymentsMalformedMessages,
-            paymentsNoRequestsComplete,
-            paymentsSkipSubmissionAndOutgoingVerification,
         ]
     }
 }

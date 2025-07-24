@@ -318,11 +318,7 @@ public extension TSPaymentModel {
 
         switch failure {
         case .none:
-            if DebugFlags.paymentsIgnoreBadData.get() {
-                Logger.warn("Unexpected failure type: \(failure.rawValue)")
-            } else {
-                owsFailDebug("Unexpected failure type: \(failure.rawValue)")
-            }
+            owsFailDebug("Unexpected failure type: \(failure.rawValue)")
             return defaultDescription
         case .unknown:
             owsFailDebug("Unexpected failure type: \(failure.rawValue)")

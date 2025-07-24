@@ -24,7 +24,7 @@ extension OWSRecoverableDecryptionPlaceholder {
         var expirationInterval = RemoteConfig.current.replaceableInteractionExpiration
         owsAssertDebug(expirationInterval >= 0)
 
-        if (DebugFlags.fastPlaceholderExpiration.get()) {
+        if DebugFlags.fastPlaceholderExpiration.get() {
             expirationInterval = min(expirationInterval, 5.0)
         }
 

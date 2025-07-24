@@ -317,23 +317,19 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         }
 
         let retryDelay: TimeInterval
-        if DebugFlags.aggressiveProfileFetching.get() {
-            retryDelay = 0
-        } else {
-            switch fetchResult.outcome {
-            case .success:
-                retryDelay = 5 * .minute
-            case .networkFailure:
-                retryDelay = 1 * .minute
-            case .requestFailure(.notAuthorized):
-                retryDelay = 30 * .minute
-            case .requestFailure(.notFound):
-                retryDelay = 6 * .hour
-            case .requestFailure(.rateLimit):
-                retryDelay = 5 * .minute
-            case .otherFailure:
-                retryDelay = 30 * .minute
-            }
+        switch fetchResult.outcome {
+        case .success:
+            retryDelay = 5 * .minute
+        case .networkFailure:
+            retryDelay = 1 * .minute
+        case .requestFailure(.notAuthorized):
+            retryDelay = 30 * .minute
+        case .requestFailure(.notFound):
+            retryDelay = 6 * .hour
+        case .requestFailure(.rateLimit):
+            retryDelay = 5 * .minute
+        case .otherFailure:
+            retryDelay = 30 * .minute
         }
 
         return MonotonicDate() > fetchResult.completionDate.adding(retryDelay)

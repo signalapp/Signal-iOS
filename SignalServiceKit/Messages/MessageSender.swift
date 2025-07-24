@@ -931,9 +931,6 @@ public class MessageSender {
         localIdentifiers: LocalIdentifiers,
         tx: DBReadTransaction
     ) -> [ServiceId: OWSUDAccess] {
-        if DebugFlags.disableUD.get() {
-            return [:]
-        }
         var result = [ServiceId: OWSUDAccess]()
         for serviceId in serviceIds {
             if localIdentifiers.contains(serviceId: serviceId) {
