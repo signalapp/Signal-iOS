@@ -3,5 +3,4 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-SWIFT_TREAT_WARNINGS_AS_ERRORS = NO
 OTHER_SWIFT_FLAGS = $(inherited) -no-warnings-as-errors
