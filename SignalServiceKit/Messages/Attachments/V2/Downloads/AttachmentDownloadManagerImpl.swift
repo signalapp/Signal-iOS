@@ -329,6 +329,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             return
         }
 
+        let downloadKey = DownloadQueue.DownloadKey(id: id, source: source)
+        await downloadQueue.clearOldDownloadsAndIncrementProgressID(key: downloadKey)
+
         let downloadWaitingTask = Task {
             try await self.downloadQueue.waitForDownloadOfAttachment(
                 id: id,
@@ -337,18 +340,25 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             )
         }
 
-        try await db.awaitableWrite { tx in
-            try self.attachmentDownloadStore.enqueueDownloadOfAttachment(
-                withId: id,
-                source: source,
-                priority: priority,
-                tx: tx
-            )
+        do {
+            try await db.awaitableWrite { tx in
+                try self.attachmentDownloadStore.enqueueDownloadOfAttachment(
+                    withId: id,
+                    source: source,
+                    priority: priority,
+                    tx: tx
+                )
+            }
+
+            self.beginDownloadingIfNecessary()
+            try await downloadWaitingTask.value
+        } catch {
+            Logger.error("Error downloading attachment id \(id): \(error)")
+            await downloadQueue.clearDownloadProgressAndMarkFinished(key: downloadKey)
+            throw error
         }
 
-        self.beginDownloadingIfNecessary()
-
-        try await downloadWaitingTask.value
+        await downloadQueue.clearDownloadProgressAndMarkFinished(key: downloadKey)
     }
 
     public func beginDownloadingIfNecessary() {
@@ -377,10 +387,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             attachmentId: attachmentId,
             tx: tx
         )
-    }
-
-    public func downloadProgress(for attachmentId: Attachment.IDType, tx: DBReadTransaction) -> CGFloat? {
-        return progressStates.fractionCompleted(for: attachmentId).map { CGFloat($0) }
     }
 
     // MARK: - Persisted Queue
@@ -1310,14 +1316,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         private let states = TSMutex(initialState: States())
 
-        func fractionCompleted(for attachmentId: Attachment.IDType) -> Double? {
-            states.withLock { $0.states[attachmentId] }
-        }
-
-        func setFractionCompleted(_ fractionComplete: Double, for attachmentId: Attachment.IDType) {
-            states.withLock { $0.states[attachmentId] = fractionComplete }
-        }
-
         func markDownloadCancelled(for attachmentId: Attachment.IDType) {
             states.withLock {
                 $0.states[attachmentId] = nil
@@ -1356,6 +1354,27 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
         private var downloadObservers = [DownloadKey: [CheckedContinuation<Void, Error>]]()
         private var downloadProgresses = [DownloadKey: [OWSProgressSink]]()
+        private var finishedOrFailedDownloads = Set<DownloadKey>()
+        private var progressIDs = [DownloadKey: UInt64]()
+
+        func latestProgressID(downloadKey: DownloadKey?) -> UInt64 {
+            guard let downloadKey else {
+                return 0
+            }
+            return progressIDs[downloadKey] ?? 0
+        }
+
+        func clearOldDownloadsAndIncrementProgressID(key: DownloadKey) {
+            finishedOrFailedDownloads.remove(key)
+
+            let oldProgressID = progressIDs[key] ?? 0
+            progressIDs[key] = oldProgressID + 1
+        }
+
+        func clearDownloadProgressAndMarkFinished(key: DownloadKey) {
+            downloadProgresses.removeValue(forKey: key)
+            finishedOrFailedDownloads.insert(key)
+        }
 
         func waitForDownloadOfAttachment(
             id: Attachment.IDType,
@@ -1536,13 +1555,35 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     }
                 }
 
-                let wrappedProgress = OWSProgress.createSink { progressValue in
+                let wrappedProgressID = await latestProgressID(downloadKey: DownloadQueue.downloadKey(state: downloadState))
+                let wrappedProgress = OWSProgress.createSink { [weak self] progressValue in
+                    if let k = DownloadQueue.downloadKey(state: downloadState) {
+                        if await self?.latestProgressID(downloadKey: k) != wrappedProgressID {
+                            // A new download has started, don't send progress updates or notifications.
+                            return
+                        }
+
+                        if let self = self, await finishedOrFailedDownloads.contains(k) {
+                            // If we've already finished the download, send the notification so
+                            // handlers can get 100% updates but don't update the progress sources,
+                            // which may be double counting.
+                            handleDownloadProgress(
+                                downloadState: downloadState,
+                                task: downloadTask,
+                                progress: progressValue,
+                                expectedDownloadSizeBytes: expectedDownloadSizeBytes,
+                                attachmentId: attachmentId
+                            )
+                            return
+                        }
+                    }
+
                     for progressSource in progressSources {
                         if progressSource.completedUnitCount < progressValue.completedUnitCount {
                             progressSource.incrementCompletedUnitCount(by: progressValue.completedUnitCount - progressSource.completedUnitCount)
                         }
                     }
-                    self.handleDownloadProgress(
+                    self?.handleDownloadProgress(
                         downloadState: downloadState,
                         task: downloadTask,
                         progress: progressValue,
@@ -1656,8 +1697,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .backup, .transientAttachment:
                 break
             case .attachment(_, let attachmentId):
-                progressStates.setFractionCompleted(fractionCompleted, for: attachmentId)
-
                 NotificationCenter.default.postOnMainThread(
                     name: AttachmentDownloads.attachmentDownloadProgressNotification,
                     object: nil,

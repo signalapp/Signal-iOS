@@ -156,9 +156,6 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
     }
 
     public func didEmptyDownloadQueue() async {
-        activeDownloadByteCounts.keys.forEach {
-            recentlyCompletedDownloads.set(key: $0, value: ())
-        }
         activeDownloadByteCounts = [:]
         if let source {
             if source.totalUnitCount > 0, source.totalUnitCount > source.completedUnitCount {
@@ -251,23 +248,13 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
 
     /// Currently active downloads for which we update progress byte-by-byte.
     private var activeDownloadByteCounts = [DownloadId: UInt64]()
-    /// There is a race between receiving the final OWSProgress update for a given attachment
-    /// and being told the attachment finished downloading by BackupAttachmentDownloadManager.
-    /// To resolve this race, track recently completed downloads so we know not to double count.
-    /// There could be tens of thousands of attachments, so to minimize memory usage only keep
-    /// an LRUCache. In practice that will catch all races. Even if it doesn't, the downside
-    /// is we misreport progress until we hit 100%, big whoop.
-    private var recentlyCompletedDownloads = LRUCache<DownloadId, Void>(maxSize: 100)
 
     private func didUpdateProgressForActiveDownload(
         id: DownloadId,
         completedByteCount: UInt64,
         totalByteCount: UInt64
     ) {
-        guard
-            totalByteCount != 0,
-            recentlyCompletedDownloads.get(key: id) == nil
-        else {
+        guard totalByteCount != 0 else {
             return
         }
         let prevByteCount = activeDownloadByteCounts[id] ?? 0
@@ -278,9 +265,7 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
                 self.source?.incrementCompletedUnitCount(by: diff)
             }
         }
-        if completedByteCount >= totalByteCount {
-            recentlyCompletedDownloads.set(key: id, value: ())
-        } else {
+        if completedByteCount < totalByteCount {
             activeDownloadByteCounts[id] = completedByteCount
         }
     }

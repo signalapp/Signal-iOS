@@ -7,6 +7,12 @@ import Foundation
 
 public enum AttachmentDownloads {
 
+    /// There's two sources of truth for calculating download progress,
+    /// OWSProgress handles partial progress and AttachmentDownloadManager.downloadAttachment
+    /// handles errors and success. To avoid double counting progress updates
+    /// we keep a set of completed downloads and ignore progress
+    /// updates if the download has already completed. However, we still send the
+    /// attachmentDownloadProgressNotification in this case.
     public static let attachmentDownloadProgressNotification = Notification.Name("AttachmentDownloadProgressNotification")
 
     /// Key for a CGFloat progress value from 0 to 1
@@ -145,6 +151,12 @@ public protocol AttachmentDownloadManager {
         tx: DBWriteTransaction
     )
 
+    /// There's two sources of truth for calculating download progress,
+    /// OWSProgress handles partial progress and this method returning (or throwing)
+    /// handles errors and success. To avoid double counting progress updates
+    /// we keep a set of completed downloads and ignore progress
+    /// updates if the download has already completed. However, we still send the
+    /// attachmentDownloadProgressNotification in this case.
     func downloadAttachment(
         id: Attachment.IDType,
         priority: AttachmentDownloadPriority,
@@ -157,8 +169,6 @@ public protocol AttachmentDownloadManager {
     func beginDownloadingIfNecessary()
 
     func cancelDownload(for attachmentId: Attachment.IDType, tx: DBWriteTransaction)
-
-    func downloadProgress(for attachmentId: Attachment.IDType, tx: DBReadTransaction) -> CGFloat?
 }
 
 extension AttachmentDownloadManager {
