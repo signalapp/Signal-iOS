@@ -291,7 +291,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
         }
 
         // Don't wait for the view pop to start the linking process
-        let linkAndSyncProgressModal = LinkAndSyncProgressModal()
+        let linkAndSyncProgressModal = BackupProgressModal(style: .linkAndSync)
         linkDeviceViewController.popToLinkedDeviceList { [weak self] in
             self?.present.send(.activityIndicator(linkAndSyncProgressModal))
         }
@@ -337,7 +337,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
             self.newDeviceExpectation = .linkAndSync
             await self.refreshDevices()
         }
-        linkAndSyncProgressModal.linkNSyncTask = linkNSyncTask
+        linkAndSyncProgressModal.backupTask = linkNSyncTask
     }
 
     fileprivate func expectMoreDevices() {

@@ -568,7 +568,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     public func resetRestoreMethodChoice() -> Guarantee<RegistrationStep> {
         inMemoryState.restoreMethod = nil
         inMemoryState.needsToAskForDeviceTransfer = true
-        inMemoryState.hasConfirmedRestoreFromBackup = false
+        inMemoryState.restoreFromBackupProgressSink = nil
         deps.db.write { tx in
             updatePersistedState(tx) {
                 $0.hasDeclinedTransfer = false
@@ -577,17 +577,31 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return self.nextStep()
     }
 
-    public func confirmRestoreFromBackup() -> Guarantee<RegistrationStep> {
-        inMemoryState.hasConfirmedRestoreFromBackup = true
+    public func confirmRestoreFromBackup(
+        progress: @escaping @MainActor (OWSProgress) -> Void
+    ) -> Guarantee<RegistrationStep> {
+        inMemoryState.restoreFromBackupProgressSink = progress
         return nextStep()
     }
 
     private func restoreFromMessageBackup(
         type: InMemoryState.RestoreMethod.BackupType,
-        identity: AccountIdentity
+        identity: AccountIdentity,
+        progress progressBlock: @escaping () async -> OWSProgressSink,
     ) -> Guarantee<Void> {
         Logger.info("")
         return _doBackupRestoreStep {
+            let progress = await progressBlock()
+
+            let downloadProgress = await progress.addChild(
+                withLabel: BackupRestoreProgressPhase.downloadingBackup.rawValue,
+                unitCount: BackupRestoreProgressPhase.downloadingBackup.percentOfTotalProgress
+            )
+            let importProgress = await progress.addChild(
+                withLabel: BackupRestoreProgressPhase.importingBackup.rawValue,
+                unitCount: BackupRestoreProgressPhase.importingBackup.percentOfTotalProgress
+            )
+
             let fileUrl: URL
             switch type {
             case .local(let localFileUrl):
@@ -595,20 +609,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .remote:
                 fileUrl = try await self.deps.backupArchiveManager.downloadEncryptedBackup(
                     localIdentifiers: identity.localIdentifiers,
-                    auth: identity.chatServiceAuth
+                    auth: identity.chatServiceAuth,
+                    progress: downloadProgress,
                 )
             }
             // Get Backup Key
             let backupKey = try self.deps.db.read { tx in
                 return try self.deps.backupKeyMaterial.backupKey(type: .messages, tx: tx)
             }
+
             try await self.deps.backupArchiveManager.importEncryptedBackup(
                 fileUrl: fileUrl,
                 localIdentifiers: identity.localIdentifiers,
                 isPrimaryDevice: true,
                 backupKey: backupKey,
                 backupPurpose: .remoteBackup,
-                progress: nil
+                progress: importProgress
             )
         }
     }
@@ -816,7 +832,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var shouldBackUpToSVR: Bool {
             return hasBackedUpToSVR.negated && didSkipSVRBackup.negated
         }
-        var hasConfirmedRestoreFromBackup = false
+        var restoreFromBackupProgressSink: (@MainActor (OWSProgress) -> Void)?
+        var hasConfirmedRestoreFromBackup: Bool {
+            restoreFromBackupProgressSink != nil
+        }
 
         // OWS2FAManager state
         // If we are re-registering or changing number and
@@ -1279,25 +1298,25 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
 
-        func restoreBackupIfNecessary() -> Guarantee<Void> {
+        func restoreBackupIfNecessary(progress progressBlock: @escaping () async -> OWSProgressSink) async {
             switch inMemoryState.backupRestoreState {
             case .finalized:
-                return .value(())
+                return
             case .unfinalized:
                 // Unconditionally finalize
-                return finalizeRestoreFromMessageBackup(
+                return await finalizeRestoreFromMessageBackup(
                     identity: accountIdentity
-                ).asVoid()
+                ).awaitable()
             case .none:
                 guard let backupType = inMemoryState.restoreMethod?.backupType else {
-                    return .value(())
+                    return
                 }
-                return restoreFromMessageBackup(
+                return await restoreFromMessageBackup(
                     type: backupType,
-                    identity: accountIdentity
-                ).asVoid()
+                    identity: accountIdentity,
+                    progress: progressBlock,
+                ).awaitable()
             }
-
         }
 
         func persistLocalIdentifiers(tx: DBWriteTransaction) {
@@ -1349,13 +1368,43 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return step
             }
 
-            return restoreBackupIfNecessary()
-                .then {
-                    self.db.write { tx in
-                        finalizeRegistration(tx: tx)
+            return Guarantee<RegistrationStep>.wrapAsync {
+                // OWSProgress doesn't support resetting to 0, so if
+                // restoreBackupIfNecessary needs to retry,
+                // we need to create a fresh progress sink.
+                var finishingProgressSource: OWSProgressSource?
+
+                await restoreBackupIfNecessary { [restoreFromBackupProgressSink = self.inMemoryState.restoreFromBackupProgressSink] in
+                    let progress = OWSProgress.createSink { progress in
+                        await MainActor.run {
+                            restoreFromBackupProgressSink?(progress)
+                        }
                     }
-                    return setupContactsAndFinish()
+                    let restoreProgressSource = await progress.addChild(
+                        withLabel: "❤️🧡🤍🩷💜",
+                        unitCount: BackupRestoreProgressPhase.downloadingBackup.percentOfTotalProgress + BackupRestoreProgressPhase.importingBackup.percentOfTotalProgress
+                    )
+                    finishingProgressSource = await progress.addSource(
+                        withLabel: BackupRestoreProgressPhase.finishing.rawValue,
+                        unitCount: BackupRestoreProgressPhase.finishing.percentOfTotalProgress
+                    )
+                    return restoreProgressSource
                 }
+
+                await self.db.awaitableWrite { tx in
+                    finalizeRegistration(tx: tx)
+                }
+
+                if let finishingProgressSource {
+                    return await finishingProgressSource.updatePeriodically(
+                        estimatedTimeToCompletion: 5
+                    ) { @MainActor in
+                        await setupContactsAndFinish().awaitable()
+                    }
+                } else {
+                    return await setupContactsAndFinish().awaitable()
+                }
+            }
 
         case .reRegistering:
             db.write { tx in

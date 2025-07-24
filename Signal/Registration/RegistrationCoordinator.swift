@@ -163,7 +163,9 @@ public protocol RegistrationCoordinator {
     func resetRestoreMethodChoice() -> Guarantee<RegistrationStep>
 
     /// Additional step to have the user confirm restoring from backup.
-    func confirmRestoreFromBackup() -> Guarantee<RegistrationStep>
+    func confirmRestoreFromBackup(
+        progress: @escaping @MainActor (OWSProgress) -> Void
+    ) -> Guarantee<RegistrationStep>
 
     /// Cancel from the backup entry screen and clear out any key that has been entered.
     func cancelBackupKeyEntry() -> Guarantee<RegistrationStep>
@@ -179,4 +181,18 @@ public enum AcknowledgeReglockResult {
     // Unable to get anywhere; typically we are in re-registration
     // and state has already been wiped unrecoverably.
     case cannotExit
+}
+
+enum BackupRestoreProgressPhase: String {
+    case downloadingBackup
+    case importingBackup
+    case finishing
+
+    public var percentOfTotalProgress: UInt64 {
+        return switch self {
+        case .downloadingBackup: 30
+        case .importingBackup: 65
+        case .finishing: 5
+        }
+    }
 }

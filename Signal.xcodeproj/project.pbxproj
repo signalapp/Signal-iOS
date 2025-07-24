@@ -1683,7 +1683,7 @@
 		B99CD9452DB066740035C77B /* AttachmentSaving.swift in Sources */ = {isa = PBXBuildFile; fileRef = D954A5AC2D7BA7DA00F61C36 /* AttachmentSaving.swift */; };
 		B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */; };
 		B9A47ACE2D36DA6B0024DD9C /* circular_indeterminate.json in Resources */ = {isa = PBXBuildFile; fileRef = B9A47ACD2D36DA6B0024DD9C /* circular_indeterminate.json */; };
-		B9A53B912CF507FB0000578B /* LinkAndSyncProgressModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B902CF507FB0000578B /* LinkAndSyncProgressModal.swift */; };
+		B9A53B912CF507FB0000578B /* BackupProgressModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B902CF507FB0000578B /* BackupProgressModal.swift */; };
 		B9A53B932CF7928A0000578B /* SheetPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B922CF7928A0000578B /* SheetPreviewViewController.swift */; };
 		B9A53B952CF799590000578B /* LinkOrSyncPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B942CF799590000578B /* LinkOrSyncPickerSheet.swift */; };
 		B9A53B992D0250FC0000578B /* EditCallLinkNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B982D0250FC0000578B /* EditCallLinkNameViewController.swift */; };
@@ -5635,7 +5635,7 @@
 		B99CD9432DA9AB530035C77B /* TypedItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypedItemProvider.swift; sourceTree = "<group>"; };
 		B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabViewController.swift; sourceTree = "<group>"; };
 		B9A47ACD2D36DA6B0024DD9C /* circular_indeterminate.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = circular_indeterminate.json; sourceTree = "<group>"; };
-		B9A53B902CF507FB0000578B /* LinkAndSyncProgressModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkAndSyncProgressModal.swift; sourceTree = "<group>"; };
+		B9A53B902CF507FB0000578B /* BackupProgressModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupProgressModal.swift; sourceTree = "<group>"; };
 		B9A53B922CF7928A0000578B /* SheetPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetPreviewViewController.swift; sourceTree = "<group>"; };
 		B9A53B942CF799590000578B /* LinkOrSyncPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkOrSyncPickerSheet.swift; sourceTree = "<group>"; };
 		B9A53B982D0250FC0000578B /* EditCallLinkNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCallLinkNameViewController.swift; sourceTree = "<group>"; };
@@ -10806,7 +10806,7 @@
 		887B6DCD25F6C44800E677D4 /* Linked Devices */ = {
 			isa = PBXGroup;
 			children = (
-				B9A53B902CF507FB0000578B /* LinkAndSyncProgressModal.swift */,
+				B9A53B902CF507FB0000578B /* BackupProgressModal.swift */,
 				505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */,
 				B99287FA2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift */,
 				B9E322E82CD191CF006DAF3B /* LinkedDevicesView.swift */,
@@ -16801,6 +16801,7 @@
 				D999345A2DE97BBC002C9196 /* BackupOnboardingCoordinator.swift in Sources */,
 				D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroViewController.swift in Sources */,
 				D98CA2AD2DF14A890060370E /* BackupOnboardingKeyIntroViewController.swift in Sources */,
+				B9A53B912CF507FB0000578B /* BackupProgressModal.swift in Sources */,
 				D98CA2B32DF245140060370E /* BackupRecordKeyViewController.swift in Sources */,
 				D932C0EB2E13AD3F00FEF9C3 /* BackupSettingsAttachmentDownloadTracker.swift in Sources */,
 				D93964B62E038C7B00094117 /* BackupSettingsAttachmentUploadTracker.swift in Sources */,
@@ -17183,7 +17184,6 @@
 				B9E02DF02D974F2B00C9DDF8 /* LimitedPhotoPermissionsView.swift in Sources */,
 				B97803012DD65B0A00E9FC82 /* LinearProgressView.swift in Sources */,
 				66F98DE82DBBF25A009F1A86 /* LineWrappingStackViewTestController.swift in Sources */,
-				B9A53B912CF507FB0000578B /* LinkAndSyncProgressModal.swift in Sources */,
 				660FA9112CE58CD7006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift in Sources */,
 				505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */,
 				B99287FB2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift in Sources */,

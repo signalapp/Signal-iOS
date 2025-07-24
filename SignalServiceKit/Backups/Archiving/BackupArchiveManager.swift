@@ -28,7 +28,8 @@ public protocol BackupArchiveManager {
     /// Download the encrypted backup for the current user to a local file.
     func downloadEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
+        progress: OWSProgressSink?
     ) async throws -> URL
 
     /// Upload the local encrypted backup identified by the given metadata for

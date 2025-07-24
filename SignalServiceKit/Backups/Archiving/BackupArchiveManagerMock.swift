@@ -18,7 +18,8 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
 
     public func downloadEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
+        progress: OWSProgressSink?
     ) async throws -> URL {
         return URL(string: "file://")!
     }

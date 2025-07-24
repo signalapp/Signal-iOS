@@ -61,8 +61,22 @@ public class RegistrationNavigationController: OWSNavigationController {
         if let loadingMode, step.isSealed.negated {
             Logger.info("Pushing loading controller")
             isLoading = true
-            pushViewController(RegistrationLoadingViewController(mode: loadingMode), animated: false) { [weak self] in
-                self?._pushNextController(step)
+
+            switch loadingMode {
+            case .restoringBackup(let progressModal):
+                present(
+                    progressModal,
+                    animated: true
+                ) { [weak self] in
+                    self?._pushNextController(step)
+                }
+            default:
+                pushViewController(
+                    RegistrationLoadingViewController(mode: loadingMode),
+                    animated: false
+                ) { [weak self] in
+                    self?._pushNextController(step)
+                }
             }
         } else {
             Logger.info("Skipping loading controller for \(String(describing: try? step.result?.get().logSafeString))")
@@ -74,6 +88,12 @@ public class RegistrationNavigationController: OWSNavigationController {
         isLoading = true
         Task { @MainActor [self] in
             let step = await step.awaitable()
+
+            if let progressModal = self.presentedViewController as? BackupProgressModal {
+                Logger.info("Dismissing progress view")
+                await progressModal.completeAndDismiss()
+            }
+
             Logger.info("Pushing registration step: \(step.logSafeString)")
 
             self.isLoading = false
@@ -732,8 +752,11 @@ extension RegistrationNavigationController: RegistrationRestoreFromBackupConfirm
     }
 
     func restoreFromBackupConfirmed() {
-        let guarantee = coordinator.confirmRestoreFromBackup()
-        pushNextController(guarantee)
+        let progressModal = BackupProgressModal(style: .backupRestore)
+        let guarantee = coordinator.confirmRestoreFromBackup { progress in
+            progressModal.viewModel.updateProgress(progress: progress)
+        }
+        pushNextController(guarantee, loadingMode: .restoringBackup(progressModal))
     }
 }
 

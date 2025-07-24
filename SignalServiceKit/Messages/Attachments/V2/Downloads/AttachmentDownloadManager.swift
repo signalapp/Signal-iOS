@@ -163,15 +163,6 @@ public protocol AttachmentDownloadManager {
 
 extension AttachmentDownloadManager {
 
-    public func downloadBackup(
-        metadata: BackupReadCredential
-    ) -> Promise<URL> {
-        return downloadBackup(
-            metadata: metadata,
-            progress: nil
-        )
-    }
-
     public func downloadTransientAttachment(
         metadata: AttachmentDownloads.DownloadMetadata
     ) -> Promise<URL> {

@@ -589,6 +589,15 @@
 /* Title for a view allowing users to record their 'Backup Key'. */
 "BACKUP_RECORD_KEY_TITLE" = "Record Your Backup Key";
 
+/* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
+"BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ of %2$@ (%3$@)";
+
+/* Subtitle for a progress spinner on a modal when waiting for a backup restore to start */
+"BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE" = "Preparing to restore";
+
+/* Title for a progress spinner on a modal when restoring messages */
+"BACKUP_RESTORE_MODAL_TITLE" = "Restoring Messages…";
+
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Something went wrong creating your backup. Please try again, or contact support.";
 

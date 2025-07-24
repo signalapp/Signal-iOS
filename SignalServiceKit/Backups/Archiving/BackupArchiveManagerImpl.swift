@@ -151,14 +151,21 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
     // MARK: - Remote backups
 
-    public func downloadEncryptedBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL {
+    public func downloadEncryptedBackup(
+        localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth,
+        progress: OWSProgressSink?
+    ) async throws -> URL {
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
             for: .messages,
             localAci: localIdentifiers.aci,
             auth: auth
         )
         let metadata = try await backupRequestManager.fetchBackupRequestMetadata(auth: backupAuth)
-        let tmpFileUrl = try await attachmentDownloadManager.downloadBackup(metadata: metadata).awaitable()
+        let tmpFileUrl = try await attachmentDownloadManager.downloadBackup(
+            metadata: metadata,
+            progress: progress
+        ).awaitable()
 
         // Once protos calm down, this can be enabled to warn/error on failed validation
         // try await validateBackup(localIdentifiers: localIdentifiers, fileUrl: tmpFileUrl)
