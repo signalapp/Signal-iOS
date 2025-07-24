@@ -12,12 +12,12 @@ public extension OutgoingPaymentSyncMessage {
     func syncMessageBuilder(mobileCoin: OutgoingPaymentMobileCoin,
                             transaction: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
         do {
-            var amountPicoMob = mobileCoin.amountPicoMob
-            var feePicoMob = mobileCoin.feePicoMob
-            var ledgerBlockIndex = mobileCoin.blockIndex
-            var spentKeyImages = mobileCoin.spentKeyImages
-            var outputPublicKeys = mobileCoin.outputPublicKeys
-            var receiptData = mobileCoin.receiptData
+            let amountPicoMob = mobileCoin.amountPicoMob
+            let feePicoMob = mobileCoin.feePicoMob
+            let ledgerBlockIndex = mobileCoin.blockIndex
+            let spentKeyImages = mobileCoin.spentKeyImages
+            let outputPublicKeys = mobileCoin.outputPublicKeys
+            let receiptData = mobileCoin.receiptData
             let mobileCoinBuilder = SSKProtoSyncMessageOutgoingPaymentMobileCoin.builder(amountPicoMob: amountPicoMob,
                                                                                          feePicoMob: feePicoMob,
                                                                                          ledgerBlockIndex: ledgerBlockIndex)
