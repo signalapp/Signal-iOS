@@ -3,17 +3,35 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+public import SwiftUI
 import SignalServiceKit
+import Combine
 
 public protocol CountryCodeViewControllerDelegate: AnyObject {
     func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountry: PhoneNumberCountry)
 }
 
-// MARK: -
+private class ViewModel: NSObject, ObservableObject {
+    let didSelectCountry = PassthroughSubject<PhoneNumberCountry, Never>()
+    @Published var countries: [PhoneNumberCountry] = []
 
-public class CountryCodeViewController: OWSTableViewController2 {
-    public weak var countryCodeDelegate: CountryCodeViewControllerDelegate?
+    func buildCountries(searchText: String? = nil) {
+        countries = PhoneNumberCountry.buildCountries(searchText: searchText)
+    }
+}
+
+extension ViewModel: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        buildCountries(searchText: searchBar.text)
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        buildCountries()
+    }
+}
+
+public class CountryCodeViewController: HostingController<CountryCodePicker> {
+    private var didSelectCountrySink: AnyCancellable?
 
     public var interfaceOrientationMask: UIInterfaceOrientationMask = UIDevice.current.defaultSupportedOrientations
 
@@ -21,119 +39,56 @@ public class CountryCodeViewController: OWSTableViewController2 {
         interfaceOrientationMask
     }
 
-    private let searchBar = OWSSearchBar()
+    public init(delegate: CountryCodeViewControllerDelegate) {
+        let viewModel = ViewModel()
+        super.init(wrappedView: CountryCodePicker(viewModel: viewModel))
 
-    // MARK: -
-
-    override public func viewDidLoad() {
-
-        // Configure searchBar() before super.viewDidLoad().
-        searchBar.delegate = self
-        searchBar.placeholder = OWSLocalizedString(
+        let searchController = UISearchController()
+        searchController.hidesNavigationBarDuringPresentation = false
+        searchController.searchBar.delegate = viewModel
+        searchController.searchBar.placeholder = OWSLocalizedString(
             "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
             comment: "Placeholder text indicating the user can search for contacts by name or phone number."
         )
-        searchBar.sizeToFit()
-
-        let searchBarWrapper = UIStackView()
-        searchBarWrapper.axis = .vertical
-        searchBarWrapper.alignment = .fill
-        searchBarWrapper.addArrangedSubview(searchBar)
-        self.topHeader = searchBarWrapper
-
-        super.viewDidLoad()
-
-        self.delegate = self
+        self.navigationItem.searchController = searchController
 
         self.title = OWSLocalizedString("COUNTRYCODE_SELECT_TITLE", comment: "")
-
         self.navigationItem.leftBarButtonItem = .systemItem(.stop) { [weak self] in
             self?.dismiss(animated: true)
         }
 
-        createViews()
-    }
-
-    private func createViews() {
-        AssertIsOnMainThread()
-
-        updateTableContents()
-    }
-
-    private func updateTableContents() {
-        AssertIsOnMainThread()
-
-        let countries = PhoneNumberCountry.buildCountries(searchText: searchBar.text)
-
-        let contents = OWSTableContents()
-        let section = OWSTableSection()
-        for country in countries {
-            section.add(OWSTableItem.item(
-                name: country.countryName,
-                accessoryText: country.plusPrefixedCallingCode,
-                actionBlock: { [weak self] in
-                    self?.countryWasSelected(country)
-                }
-            ))
+        didSelectCountrySink = viewModel.didSelectCountry.sink { [weak delegate, weak self] country in
+            guard let self else { return }
+            delegate?.countryCodeViewController(self, didSelectCountry: country)
+            self.navigationItem.searchController?.isActive = false
+            self.dismiss(animated: true)
         }
-        contents.add(section)
-
-        self.contents = contents
-    }
-
-    private func countryWasSelected(_ country: PhoneNumberCountry) {
-        AssertIsOnMainThread()
-
-        countryCodeDelegate?.countryCodeViewController(self, didSelectCountry: country)
-        searchBar.resignFirstResponder()
-        self.dismiss(animated: true)
     }
 }
 
-// MARK: -
+public struct CountryCodePicker: View {
+    @ObservedObject fileprivate var viewModel: ViewModel
 
-extension CountryCodeViewController: UISearchBarDelegate {
-
-    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        AssertIsOnMainThread()
-
-        searchTextDidChange()
-    }
-
-    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        AssertIsOnMainThread()
-
-        searchTextDidChange()
-    }
-
-    public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        AssertIsOnMainThread()
-
-        searchTextDidChange()
-    }
-
-    public func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) {
-        AssertIsOnMainThread()
-
-        searchTextDidChange()
-    }
-
-    public func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-        AssertIsOnMainThread()
-
-        searchTextDidChange()
-    }
-
-    private func searchTextDidChange() {
-        updateTableContents()
-    }
-}
-
-// MARK: -
-
-extension CountryCodeViewController: OWSTableViewControllerDelegate {
-
-    public func tableViewWillBeginDragging(_ tableView: UITableView) {
-        searchBar.resignFirstResponder()
+    public var body: some View {
+        SignalList {
+            SignalSection {
+                ForEach(viewModel.countries) { country in
+                    Button {
+                        viewModel.didSelectCountry.send(country)
+                    } label: {
+                        HStack {
+                            Text(country.countryName)
+                            Spacer()
+                            Text(country.plusPrefixedCallingCode)
+                                .foregroundStyle(Color.Signal.secondaryLabel)
+                        }
+                    }
+                    .foregroundStyle(Color.Signal.label)
+                }
+            }
+        }
+        .onAppear {
+            viewModel.buildCountries()
+        }
     }
 }

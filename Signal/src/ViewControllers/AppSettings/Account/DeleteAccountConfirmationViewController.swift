@@ -82,8 +82,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             accessoryText: "\(country.plusPrefixedCallingCode) (\(country.countryCode))",
             actionBlock: { [weak self] in
                 guard let self = self else { return }
-                let countryCodeController = CountryCodeViewController()
-                countryCodeController.countryCodeDelegate = self
+                let countryCodeController = CountryCodeViewController(delegate: self)
                 self.present(OWSNavigationController(rootViewController: countryCodeController), animated: true)
             }
         ))

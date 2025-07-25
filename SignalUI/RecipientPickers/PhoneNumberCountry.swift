@@ -6,13 +6,15 @@
 import Foundation
 import SignalServiceKit
 
-public struct PhoneNumberCountry: Equatable {
+public struct PhoneNumberCountry: Equatable, Identifiable {
     // e.g. France
     public let countryName: String
     // e.g. +33
     public let plusPrefixedCallingCode: String
     // e.g. FR
     public let countryCode: String
+
+    public var id: String { countryCode }
 
     public init(countryName: String, plusPrefixedCallingCode: String, countryCode: String) {
         self.countryName = countryName

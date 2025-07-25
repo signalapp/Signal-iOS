@@ -169,8 +169,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
     }
 
     fileprivate func showCountryCodePicker(valueViews: ChangePhoneNumberValueViews) {
-        let countryCodeController = CountryCodeViewController()
-        countryCodeController.countryCodeDelegate = valueViews
+        let countryCodeController = CountryCodeViewController(delegate: valueViews)
         countryCodeController.interfaceOrientationMask = UIDevice.current.isIPad ? .all : .portrait
         let navigationController = OWSNavigationController(rootViewController: countryCodeController)
         self.present(navigationController, animated: true, completion: nil)

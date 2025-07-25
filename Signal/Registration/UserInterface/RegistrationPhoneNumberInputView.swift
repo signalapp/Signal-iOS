@@ -155,8 +155,7 @@ class RegistrationPhoneNumberInputView: UIStackView {
     private func didTapCountryCode(sender: UIGestureRecognizer) {
         guard isEnabled, sender.state == .recognized, let delegate else { return }
 
-        let countryCodeViewController = CountryCodeViewController()
-        countryCodeViewController.countryCodeDelegate = self
+        let countryCodeViewController = CountryCodeViewController(delegate: self)
         countryCodeViewController.interfaceOrientationMask = UIDevice.current.isIPad ? .all : .portrait
 
         delegate.present(countryCodeViewController)
