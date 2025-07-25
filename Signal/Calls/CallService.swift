@@ -247,7 +247,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
         // Keep the connection open while we have an active call.
         let oldTokens = self.connectionTokens
-        self.connectionTokens = (newValue != nil) ? self.chatConnectionManager.requestConnections(shouldReconnectIfConnectedElsewhere: true) : []
+        self.connectionTokens = (newValue != nil) ? self.chatConnectionManager.requestConnections() : []
         oldTokens.forEach { $0.releaseConnection() }
 
         // Prevent device from sleeping while we have an active call.

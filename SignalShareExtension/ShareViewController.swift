@@ -141,7 +141,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // We need the unidentified connection for bulk identity key lookups.
             if OWSChatConnection.canAppUseSocketsToMakeRequests {
                 let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager
-                self.connectionTokens.append(chatConnectionManager.requestUnidentifiedConnection(shouldReconnectIfConnectedElsewhere: true))
+                self.connectionTokens.append(chatConnectionManager.requestUnidentifiedConnection())
             }
 
             let conversationPicker: SharingThreadPickerViewController
@@ -291,7 +291,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     public func shareViewWillSend() {
         if OWSChatConnection.canAppUseSocketsToMakeRequests {
             let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager
-            self.connectionTokens.append(chatConnectionManager.requestIdentifiedConnection(shouldReconnectIfConnectedElsewhere: true))
+            self.connectionTokens.append(chatConnectionManager.requestIdentifiedConnection())
         }
     }
 

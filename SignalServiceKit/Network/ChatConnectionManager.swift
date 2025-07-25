@@ -21,17 +21,17 @@ public protocol ChatConnectionManager {
 
     func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool
     func shouldSocketBeOpen_restOnly(connectionType: OWSChatConnectionType) -> Bool
-    func requestIdentifiedConnection(shouldReconnectIfConnectedElsewhere: Bool) -> OWSChatConnection.ConnectionToken
-    func requestUnidentifiedConnection(shouldReconnectIfConnectedElsewhere: Bool) -> OWSChatConnection.ConnectionToken
+    func requestIdentifiedConnection() -> OWSChatConnection.ConnectionToken
+    func requestUnidentifiedConnection() -> OWSChatConnection.ConnectionToken
     func waitForDisconnectIfClosed() async
     func makeRequest(_ request: TSRequest) async throws -> HTTPResponse
 }
 
 extension ChatConnectionManager {
-    public func requestConnections(shouldReconnectIfConnectedElsewhere: Bool) -> [OWSChatConnection.ConnectionToken] {
+    public func requestConnections() -> [OWSChatConnection.ConnectionToken] {
         return [
-            requestIdentifiedConnection(shouldReconnectIfConnectedElsewhere: shouldReconnectIfConnectedElsewhere),
-            requestUnidentifiedConnection(shouldReconnectIfConnectedElsewhere: shouldReconnectIfConnectedElsewhere),
+            requestIdentifiedConnection(),
+            requestUnidentifiedConnection(),
         ]
     }
 }
@@ -109,12 +109,12 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         try await self.connectionIdentified.waitUntilSocketShouldBeClosed()
     }
 
-    public func requestIdentifiedConnection(shouldReconnectIfConnectedElsewhere: Bool) -> OWSChatConnection.ConnectionToken {
-        return connectionIdentified.requestConnection(shouldReconnectIfConnectedElsewhere: shouldReconnectIfConnectedElsewhere)
+    public func requestIdentifiedConnection() -> OWSChatConnection.ConnectionToken {
+        return connectionIdentified.requestConnection()
     }
 
-    public func requestUnidentifiedConnection(shouldReconnectIfConnectedElsewhere: Bool) -> OWSChatConnection.ConnectionToken {
-        return connectionUnidentified.requestConnection(shouldReconnectIfConnectedElsewhere: shouldReconnectIfConnectedElsewhere)
+    public func requestUnidentifiedConnection() -> OWSChatConnection.ConnectionToken {
+        return connectionUnidentified.requestConnection()
     }
 
     public func waitForDisconnectIfClosed() async {
@@ -173,11 +173,11 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
         fatalError()
     }
 
-    public func requestIdentifiedConnection(shouldReconnectIfConnectedElsewhere: Bool) -> OWSChatConnection.ConnectionToken {
+    public func requestIdentifiedConnection() -> OWSChatConnection.ConnectionToken {
         fatalError()
     }
 
-    public func requestUnidentifiedConnection(shouldReconnectIfConnectedElsewhere: Bool) -> OWSChatConnection.ConnectionToken {
+    public func requestUnidentifiedConnection() -> OWSChatConnection.ConnectionToken {
         fatalError()
     }
 
