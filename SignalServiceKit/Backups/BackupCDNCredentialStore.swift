@@ -63,7 +63,7 @@ struct BackupCDNCredentialStore {
     ) {
         switch currentBackupPlan {
         case .disabled:
-            owsFailDebug("Attempting to set BackupCDNReadCredential while Backups is disabled!")
+            // This can happen during registration when fetching backup info to download the backup
             return
         case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
             break
@@ -127,7 +127,7 @@ struct BackupCDNCredentialStore {
     ) {
         switch currentBackupPlan {
         case .disabled:
-            owsFailDebug("Attempting to set BackupCDNMetadata while Backups is disabled!")
+            // This can happen during registration when fetching backup info to download the backup
             return
         case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
             break
