@@ -20,6 +20,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
     private var identityManagerMock: MockIdentityManager!
     private var accountKeyStore: AccountKeyStore!
     private var messageFactoryMock: Mocks.MessageFactory!
+    private var networkManagerMock: MockNetworkManager!
     private var prekeyManagerMock: MockPreKeyManager!
     private var profileManagerMock: Mocks.ProfileManager!
     private var pushRegistrationManagerMock: Mocks.PushRegistrationManager!
@@ -51,6 +52,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         self.chatConnectionManagerMock = .init()
         self.accountKeyStore = .init()
         self.messageFactoryMock = .init()
+        self.networkManagerMock = .init()
         self.prekeyManagerMock = .init()
         self.profileManagerMock = .init()
         self.pushRegistrationManagerMock = .init()
@@ -72,6 +74,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             linkAndSyncManager: MockLinkAndSyncManager(),
             accountKeyStore: accountKeyStore,
             messageFactory: messageFactoryMock,
+            networkManager: networkManagerMock,
             preKeyManager: prekeyManagerMock,
             profileManager: profileManagerMock,
             pushRegistrationManager: pushRegistrationManagerMock,
@@ -118,8 +121,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         mockSession.responder = { request in
             if request.url.absoluteString.hasSuffix("v1/devices/link") {
                 return try! JSONEncoder().encode(verificationResponse)
-            } else if request.url.absoluteString.hasSuffix("v1/devices/capabilities") {
-                return Data()
             } else {
                 XCTFail("Unexpected request!")
                 return Data()
@@ -133,6 +134,13 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             )
             return mockSession
         }
+
+        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+            if request.url.absoluteString.hasSuffix("v1/devices/capabilities") {
+                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: Data())
+            }
+            throw OWSAssertionError("")
+        })
 
         pushRegistrationManagerMock.mockRegistrationId = .init(apnsToken: "apn")
 

@@ -36,6 +36,7 @@ class ProvisioningController: NSObject {
             linkAndSyncManager: DependenciesBridge.shared.linkAndSyncManager,
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             messageFactory: ProvisioningCoordinatorImpl.Wrappers.MessageFactory(),
+            networkManager: SSKEnvironment.shared.networkManagerRef,
             preKeyManager: DependenciesBridge.shared.preKeyManager,
             profileManager: ProvisioningCoordinatorImpl.Wrappers.ProfileManager(SSKEnvironment.shared.profileManagerImplRef),
             pushRegistrationManager: ProvisioningCoordinatorImpl.Wrappers.PushRegistrationManager(AppEnvironment.shared.pushRegistrationManagerRef),

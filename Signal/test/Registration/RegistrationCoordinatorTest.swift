@@ -27,6 +27,7 @@ public class RegistrationCoordinatorTest {
     private var mockMessagePipelineSupervisor: RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor!
     private var mockMessageProcessor: RegistrationCoordinatorImpl.TestMocks.MessageProcessor!
     private var mockURLSession: TSRequestOWSURLSessionMock!
+    private var networkManagerMock: MockNetworkManager!
     private var ows2FAManagerMock: RegistrationCoordinatorImpl.TestMocks.OWS2FAManager!
     private var phoneNumberDiscoverabilityManagerMock: MockPhoneNumberDiscoverabilityManager!
     private var preKeyManagerMock: RegistrationCoordinatorImpl.TestMocks.PreKeyManager!
@@ -87,6 +88,7 @@ public class RegistrationCoordinatorTest {
         svrAuthCredentialStore = SVRAuthCredentialStorageMock()
         mockMessagePipelineSupervisor = RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor()
         mockMessageProcessor = RegistrationCoordinatorImpl.TestMocks.MessageProcessor()
+        networkManagerMock = MockNetworkManager()
         ows2FAManagerMock = RegistrationCoordinatorImpl.TestMocks.OWS2FAManager()
         phoneNumberDiscoverabilityManagerMock = MockPhoneNumberDiscoverabilityManager()
         preKeyManagerMock = RegistrationCoordinatorImpl.TestMocks.PreKeyManager(run: testRun)
@@ -125,6 +127,7 @@ public class RegistrationCoordinatorTest {
             localUsernameManager: localUsernameManagerMock,
             messagePipelineSupervisor: mockMessagePipelineSupervisor,
             messageProcessor: mockMessageProcessor,
+            networkManager: networkManagerMock,
             ows2FAManager: ows2FAManagerMock,
             phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManagerMock,
             preKeyManager: preKeyManagerMock,
@@ -372,14 +375,13 @@ public class RegistrationCoordinatorTest {
         if wasReglockEnabled {
             // If we had reglock before registration, it should be re-enabled.
             let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(token: finalMasterKey.reglockToken)
-            mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
-                matcher: { request in
+            networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+                if request.url == expectedReglockRequest.url {
                     #expect(finalMasterKey.reglockToken == request.parameters["registrationLock"] as! String)
-                    return request.url == expectedReglockRequest.url
-                },
-                statusCode: 200,
-                bodyData: nil
-            ))
+                    return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+                }
+                throw OWSAssertionError("")
+            })
         }
 
         // We haven't done a SVR backup; that should happen now.
@@ -425,12 +427,12 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
-        mockURLSession.addResponse(
-            matcher: { request in
-                return request.url == expectedAttributesRequest.url
-            },
-            statusCode: 200
-        )
+        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+            if request.url == expectedAttributesRequest.url {
+                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+            }
+            throw OWSAssertionError("")
+        })
 
         // NOTE: We expect to skip opening path steps because
         // if we have a SVR master key locally, this _must_ be
@@ -553,13 +555,13 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // // doesn't matter for url matching
         )
-        mockURLSession.addResponse(
-            matcher: { request in
+        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+            if request.url == expectedAttributesRequest.url {
                 #expect(finalMasterKey.regRecoveryPw == (request.parameters["recoveryPassword"] as? String) ?? "")
-                return request.url == expectedAttributesRequest.url
-            },
-            statusCode: 200
-         )
+                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+            }
+            throw OWSAssertionError("")
+        })
 
         // We haven't set a phone number so it should ask for that.
         #expect(
@@ -807,7 +809,7 @@ public class RegistrationCoordinatorTest {
         setupDefaultAccountAttributes()
 
         // Set a PIN on disk.
-    ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
+        ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         let (initialMasterKey, finalMasterKey) = buildKeyDataMocks(testCase)
         svr.hasMasterKey = true
@@ -940,19 +942,13 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // // doesn't matter for url matching
         )
-        mockURLSession.addResponse(
-            TSRequestOWSURLSessionMock.Response(
-                matcher: { request in
-                    if request.url == expectedAttributesRequest.url {
-                        self.testRun.addObservedStep(.updateAccountAttribute)
-                        return true
-                    }
-                    return false
-                },
-                statusCode: 200,
-                bodyData: nil
-            )
-        )
+        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+            if request.url == expectedAttributesRequest.url {
+                self.testRun.addObservedStep(.updateAccountAttribute)
+                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+            }
+            throw OWSAssertionError("")
+        })
 
         // We haven't set a phone number so it should ask for that.
         #expect(
@@ -1122,7 +1118,9 @@ public class RegistrationCoordinatorTest {
                 RegistrationReglockTimeoutState(
                     reglockExpirationDate: dateProvider().addingTimeInterval(TimeInterval(10)),
                     acknowledgeAction: acknowledgeAction
-        )))
+                )
+            )
+        )
 
         // We want to have wiped our master key; we failed reglock, which means the key itself is wrong.
         #expect(svr.hasMasterKey)
@@ -1251,14 +1249,13 @@ public class RegistrationCoordinatorTest {
 
         // If we had reglock before registration, it should be re-enabled.
         let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(token: finalMasterKey.reglockToken)
-        mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
-            matcher: { request in
+        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+            if request.url == expectedReglockRequest.url {
                 #expect(finalMasterKey.reglockToken == request.parameters["registrationLock"] as! String)
-                return request.url == expectedReglockRequest.url
-            },
-            statusCode: 200,
-            bodyData: nil
-        ))
+                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+            }
+            throw OWSAssertionError("")
+        })
 
         // We haven't done a SVR backup; that should happen now.
         svr.backupMasterKeyMock = { pin, masterKey, authMethod in
@@ -1306,12 +1303,12 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
-        mockURLSession.addResponse(
-            matcher: { request in
-                return request.url == expectedAttributesRequest.url
-            },
-            statusCode: 200
-        )
+        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+            if request.url == expectedAttributesRequest.url {
+                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+            }
+            throw OWSAssertionError("")
+        })
 
         // We haven't set a phone number so it should ask for that.
         #expect(
@@ -1489,7 +1486,9 @@ public class RegistrationCoordinatorTest {
                 RegistrationReglockTimeoutState(
                     reglockExpirationDate: dateProvider().addingTimeInterval(TimeInterval(10)),
                     acknowledgeAction: acknowledgeAction
-        )))
+                )
+            )
+        )
 
         // We want to have wiped our master key; we failed reglock, which means the key itself is wrong.
         #expect(svr.hasMasterKey)
@@ -1625,20 +1624,20 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
-        mockURLSession.addResponse(
-            matcher: { request in
+        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+            if request.url == expectedAttributesRequest.url {
                 self.testRun.addObservedStep(.updateAccountAttribute)
-                return request.url == expectedAttributesRequest.url
-            },
-            statusCode: 200
-        )
+                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+            }
+            throw OWSAssertionError("")
+        })
 
         // At this point, we should be asking for PIN entry so we can use the credential
         // to recover the SVR master key.
         #expect(
             await coordinator.submitE164(Stubs.e164).awaitable() ==
                 .pinEntry(Stubs.pinEntryStateForSVRAuthCredentialPath(mode: mode))
-            )
+        )
 
         // We should have wiped the invalid and unknown credentials.
         let remainingCredentials = svrAuthCredentialStore.svr2Dict
@@ -1719,8 +1718,8 @@ public class RegistrationCoordinatorTest {
         // Now we should expect to be at verification code entry since we already set the phone number.
         #expect(
             await coordinator.submitE164(Stubs.e164).awaitable() ==
-            .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode))
-       )
+                .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode))
+        )
 
         // We should have wipted the invalid and unknown credentials.
         let remainingCredentials = svrAuthCredentialStore.svr2Dict
@@ -1783,7 +1782,7 @@ public class RegistrationCoordinatorTest {
 
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
-         // Give a match, so it registers via SVR auth credential.
+        // Give a match, so it registers via SVR auth credential.
         expectedSVRCheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
             e164: changedE164,
             credentials: credentialCandidates
@@ -1925,10 +1924,12 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(newMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
-        mockURLSession.addResponse(
-            matcher: { $0.url == expectedAttributesRequest.url },
-            statusCode: 200
-        )
+        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+            if request.url == expectedAttributesRequest.url {
+                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+            }
+            throw OWSAssertionError("")
+        })
 
         storageServiceManagerMock.addRotateManifestMock({ _, _ in return .value(()) })
 
@@ -2124,7 +2125,7 @@ public class RegistrationCoordinatorTest {
         #expect(
             await coordinator.submitVerificationCode(Stubs.verificationCode).awaitable() ==
                 .showErrorSheet(.submittingVerificationCodeBeforeAnyCodeSent)
-       )
+        )
 
         #expect(
             await coordinator.nextStep().awaitable() ==
@@ -2758,11 +2759,11 @@ public class RegistrationCoordinatorTest {
 
         #expect(
             await coordinator.submitVerificationCode(Stubs.verificationCode).awaitable() ==
-            .verificationCodeEntry(stubs.verificationCodeEntryState(
-                mode: mode,
-                nextVerificationAttempt: 10,
-                validationError: .submitCodeTimeout
-            ))
+                .verificationCodeEntry(stubs.verificationCodeEntryState(
+                    mode: mode,
+                    nextVerificationAttempt: 10,
+                    validationError: .submitCodeTimeout
+                ))
         )
 
         #expect(
@@ -2837,10 +2838,10 @@ public class RegistrationCoordinatorTest {
 
         #expect(
             await coordinator.nextStep().awaitable() ==
-            .verificationCodeEntry(stubs.verificationCodeEntryState(
-                mode: mode,
-                nextVerificationAttempt: nil
-            ))
+                .verificationCodeEntry(stubs.verificationCodeEntryState(
+                    mode: mode,
+                    nextVerificationAttempt: nil
+                ))
         )
     }
 
@@ -2888,7 +2889,7 @@ public class RegistrationCoordinatorTest {
                     mode: mode,
                     previouslyEnteredE164: Stubs.e164
                 ))
-       )
+        )
     }
 
     @MainActor @Test(arguments: Self.testCases())
@@ -2981,12 +2982,12 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(newMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
-        mockURLSession.addResponse(
-            matcher: { request in
-                return request.url == expectedAttributesRequest.url
-            },
-            statusCode: 200
-        )
+        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+            if request.url == expectedAttributesRequest.url {
+                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+            }
+            throw OWSAssertionError("")
+        })
 
         var didSetLocalAccountEntropyPool = false
         svr.useDeviceLocalAccountEntropyPoolMock = { _ in
@@ -3144,12 +3145,12 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(newMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
-        mockURLSession.addResponse(
-            matcher: { request in
-                return request.url == expectedAttributesRequest.url
-            },
-            statusCode: 200
-        )
+        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+            if request.url == expectedAttributesRequest.url {
+                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+            }
+            throw OWSAssertionError("")
+        })
 
         var didSetLocalAccountEntropyPool = false
         svr.useDeviceLocalAccountEntropyPoolMock = { _ in
@@ -3166,18 +3167,18 @@ public class RegistrationCoordinatorTest {
         // Now we should ask to restore the PIN.
         #expect(
             await coordinator.submitVerificationCode(Stubs.pinCode).awaitable() ==
-            .pinEntry(
-                Stubs.pinEntryStateForPostRegRestore(mode: mode)
-            )
+                .pinEntry(
+                    Stubs.pinEntryStateForPostRegRestore(mode: mode)
+                )
         )
 
         // Skip the PIN code and create a new one instead.
         // When we skip, we should be asked to _create_ the PIN.
         #expect(
             await coordinator.skipAndCreateNewPINCode().awaitable() ==
-            .pinEntry(
-                Stubs.pinEntryStateForPostRegCreate(mode: mode, exitConfigOverride: .noExitAllowed)
-            )
+                .pinEntry(
+                    Stubs.pinEntryStateForPostRegCreate(mode: mode, exitConfigOverride: .noExitAllowed)
+                )
         )
 
         // At this point we should have no master key.

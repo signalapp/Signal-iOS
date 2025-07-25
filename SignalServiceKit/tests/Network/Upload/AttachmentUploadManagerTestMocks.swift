@@ -58,7 +58,7 @@ class _AttachmentUploadManager_NetworkManagerMock: NetworkManager {
 
     var performRequestBlock: ((TSRequest, Bool) -> Promise<HTTPResponse>)?
 
-    override func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool = true, retryPolicy: RetryPolicy = .dont) async throws -> any HTTPResponse {
+    override func asyncRequestImpl(_ request: TSRequest, canUseWebSocket: Bool, retryPolicy: RetryPolicy) async throws -> any HTTPResponse {
         return try await performRequestBlock!(request, canUseWebSocket).awaitable()
     }
 }

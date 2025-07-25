@@ -272,19 +272,19 @@ extension RegistrationCoordinatorImpl {
         public static func makeEnableReglockRequest(
             reglockToken: String,
             auth: ChatServiceAuth,
-            signalService: OWSSignalServiceProtocol,
+            networkManager: any NetworkManagerProtocol,
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
         ) async throws {
             var request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken)
             request.auth = .identified(auth)
             do {
-                _ = try await signalService.urlSessionForMainSignalService().performRequest(request)
+                _ = try await networkManager.asyncRequest(request, canUseWebSocket: false)
             } catch {
                 if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
                     return try await makeEnableReglockRequest(
                         reglockToken: reglockToken,
                         auth: auth,
-                        signalService: signalService,
+                        networkManager: networkManager,
                         retriesLeft: retriesLeft - 1
                     )
                 }
@@ -295,7 +295,7 @@ extension RegistrationCoordinatorImpl {
         public static func makeUpdateAccountAttributesRequest(
             _ attributes: AccountAttributes,
             auth: ChatServiceAuth,
-            signalService: OWSSignalServiceProtocol,
+            networkManager: any NetworkManagerProtocol,
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
         ) async throws {
             let request = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
@@ -303,7 +303,7 @@ extension RegistrationCoordinatorImpl {
                 auth: auth
             )
             do {
-                let response = try await signalService.urlSessionForMainSignalService().performRequest(request)
+                let response = try await networkManager.asyncRequest(request, canUseWebSocket: false)
                 guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
                     // Errors are undifferentiated; the only actual error we can get is an unauthenticated
                     // one and there isn't any way to handle that as different from a, say server 500.
@@ -314,7 +314,7 @@ extension RegistrationCoordinatorImpl {
                     return try await makeUpdateAccountAttributesRequest(
                         attributes,
                         auth: auth,
-                        signalService: signalService,
+                        networkManager: networkManager,
                         retriesLeft: retriesLeft - 1
                     )
                 }
@@ -330,12 +330,12 @@ extension RegistrationCoordinatorImpl {
 
         public static func makeWhoAmIRequest(
             auth: ChatServiceAuth,
-            signalService: OWSSignalServiceProtocol,
+            networkManager: any NetworkManagerProtocol,
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
         ) async -> WhoAmIResponse {
             let request = WhoAmIRequestFactory.whoAmIRequest(auth: auth)
             do {
-                let response = try await signalService.urlSessionForMainSignalService().performRequest(request)
+                let response = try await networkManager.asyncRequest(request, canUseWebSocket: false)
                 guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
                     return .genericError
                 }
@@ -352,7 +352,7 @@ extension RegistrationCoordinatorImpl {
                 if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
                     return await makeWhoAmIRequest(
                         auth: auth,
-                        signalService: signalService,
+                        networkManager: networkManager,
                         retriesLeft: retriesLeft - 1,
                     )
                 }

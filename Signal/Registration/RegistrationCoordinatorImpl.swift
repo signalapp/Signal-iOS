@@ -3881,7 +3881,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             try await Service.makeEnableReglockRequest(
                 reglockToken: reglockToken,
                 auth: accountIdentity.chatServiceAuth,
-                signalService: deps.signalService,
+                networkManager: deps.networkManager,
             )
         } catch {
             // This isn't immediately catastrophic; this user already had reglock
@@ -3938,7 +3938,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     twoFAMode: self.attributes2FAMode(e164: accountIdentity.e164)
                 ),
                 auth: accountIdentity.chatServiceAuth,
-                signalService: deps.signalService,
+                networkManager: deps.networkManager,
             )
             return nil
         } catch {
@@ -4405,7 +4405,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 deviceId: .primary,
                 password: changeNumberState.oldAuthToken
             ),
-            signalService: deps.signalService,
+            networkManager: deps.networkManager,
         )
 
         switch whoAmIResult {

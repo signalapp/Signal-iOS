@@ -6,8 +6,26 @@
 import Foundation
 public import LibSignalClient
 
+public protocol NetworkManagerProtocol {
+    func asyncRequestImpl(
+        _ request: TSRequest,
+        canUseWebSocket: Bool,
+        retryPolicy: NetworkManager.RetryPolicy,
+    ) async throws -> HTTPResponse
+}
+
+extension NetworkManagerProtocol {
+    public func asyncRequest(
+        _ request: TSRequest,
+        canUseWebSocket: Bool = true,
+        retryPolicy: NetworkManager.RetryPolicy = .dont,
+    ) async throws -> HTTPResponse {
+        return try await asyncRequestImpl(request, canUseWebSocket: canUseWebSocket, retryPolicy: retryPolicy)
+    }
+}
+
 // A class used for making HTTP requests against the main service.
-public class NetworkManager {
+public class NetworkManager: NetworkManagerProtocol {
     private let restNetworkManager = RESTNetworkManager()
     private let appReadiness: AppReadiness
     private let reachabilityDidChangeObserver: Task<Void, Never>?
@@ -116,11 +134,11 @@ public class NetworkManager {
         )
     }
 
-    public func asyncRequest(
+    public func asyncRequestImpl(
         _ request: TSRequest,
-        canUseWebSocket: Bool = true,
-        retryPolicy: RetryPolicy = .dont
-    ) async throws -> HTTPResponse {
+        canUseWebSocket: Bool,
+        retryPolicy: RetryPolicy,
+    ) async throws -> any HTTPResponse {
         return try await Retry.performWithBackoff(
             maxAttempts: retryPolicy.maxAttempts,
             isRetryable: { error -> Bool in
@@ -237,7 +255,7 @@ private struct ProxyConfig {
 
 public class OWSFakeNetworkManager: NetworkManager {
 
-    public override func asyncRequest(
+    public override func asyncRequestImpl(
         _ request: TSRequest,
         canUseWebSocket: Bool,
         retryPolicy: RetryPolicy,
@@ -245,6 +263,17 @@ public class OWSFakeNetworkManager: NetworkManager {
         Logger.info("Ignoring request: \(request)")
         // Never resolve.
         return try await withUnsafeThrowingContinuation { (_ continuation: UnsafeContinuation<any HTTPResponse, any Error>) -> Void in }
+    }
+}
+
+class MockNetworkManager: NetworkManagerProtocol {
+    var asyncRequestHandlers = [(TSRequest, Bool, NetworkManager.RetryPolicy) async throws -> HTTPResponse]()
+    func asyncRequestImpl(
+        _ request: TSRequest,
+        canUseWebSocket: Bool,
+        retryPolicy: NetworkManager.RetryPolicy,
+    ) async throws -> HTTPResponse {
+        return try await asyncRequestHandlers.removeFirst()(request, canUseWebSocket, retryPolicy)
     }
 }
 

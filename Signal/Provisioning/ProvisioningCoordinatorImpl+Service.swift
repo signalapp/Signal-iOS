@@ -90,7 +90,7 @@ extension ProvisioningCoordinatorImpl {
         static func makeUpdateSecondaryDeviceCapabilitiesRequest(
             capabilities: AccountAttributes.Capabilities,
             auth: ChatServiceAuth,
-            signalService: OWSSignalServiceProtocol,
+            networkManager: any NetworkManagerProtocol,
             tsAccountManager: TSAccountManager
         ) async throws {
             let request = AccountAttributesRequestFactory(
@@ -101,7 +101,7 @@ extension ProvisioningCoordinatorImpl {
             )
 
             // Don't care what the response is.
-            _ = try await signalService.urlSessionForMainSignalService().performRequest(request)
+            _ = try await networkManager.asyncRequest(request, canUseWebSocket: false)
         }
 
         enum Constants {
