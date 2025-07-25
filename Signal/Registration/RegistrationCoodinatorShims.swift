@@ -416,9 +416,9 @@ public protocol _RegistrationCoordinator_PushRegistrationManagerShim {
 
     func registerUserNotificationSettings() async
 
-    func requestPushToken() -> Guarantee<Registration.RequestPushTokensResult>
+    func requestPushToken() async -> Registration.RequestPushTokensResult
 
-    func receivePreAuthChallengeToken() -> Guarantee<String>
+    func receivePreAuthChallengeToken() async -> String
 
     func clearPreAuthChallengeToken()
 }
@@ -436,23 +436,21 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
         await manager.registerUserNotificationSettings()
     }
 
-    public func requestPushToken() -> Guarantee<Registration.RequestPushTokensResult> {
-        return manager.requestPushTokens(forceRotation: false, timeOutEventually: true)
-            .map(on: SyncScheduler()) { .success($0) }
-            .recover(on: SyncScheduler()) { error in
-                switch error {
-                case PushRegistrationError.pushNotSupported(let description):
-                    return .value(.pushUnsupported(description: description))
-                case PushRegistrationError.timeout:
-                    return .value(.timeout)
-                default:
-                    return .value(.genericError(error))
-                }
-            }
+    public func requestPushToken() async -> Registration.RequestPushTokensResult {
+        do {
+            let result = try await manager.requestPushTokens(forceRotation: false, timeOutEventually: true)
+            return .success(result)
+        } catch PushRegistrationError.pushNotSupported(let description) {
+            return .pushUnsupported(description: description)
+        } catch PushRegistrationError.timeout {
+            return .timeout
+        } catch {
+            return .genericError(error)
+        }
     }
 
-    public func receivePreAuthChallengeToken() -> Guarantee<String> {
-        return manager.receivePreAuthChallengeToken()
+    public func receivePreAuthChallengeToken() async -> String {
+        return await manager.receivePreAuthChallengeToken()
     }
 
     public func clearPreAuthChallengeToken() {

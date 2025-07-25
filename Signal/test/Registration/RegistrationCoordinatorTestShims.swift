@@ -270,23 +270,23 @@ public class _RegistrationCoordinator_PushRegistrationManagerMock: _Registration
         doesNeedNotificationAuthorization = true
     }
 
-    public typealias RequestPushTokenMock = (() -> Guarantee<Registration.RequestPushTokensResult>)
+    public typealias RequestPushTokenMock = (() async -> Registration.RequestPushTokensResult)
     private var requestPushTokenMocks = [RequestPushTokenMock]()
     public func addRequestPushTokenMock(_ mock: @escaping RequestPushTokenMock) {
         requestPushTokenMocks.append(mock)
     }
-    public func requestPushToken() -> Guarantee<Registration.RequestPushTokensResult> {
+    public func requestPushToken() async -> Registration.RequestPushTokensResult {
         run.addObservedStep(.requestPushToken)
-        return requestPushTokenMocks.removeFirst()()
+        return await requestPushTokenMocks.removeFirst()()
     }
 
-    public typealias RecevePreAuthChallengeTokenMock = (() -> Guarantee<String>)
-    private var receivePreAuthChallengeTokenMocks = [RecevePreAuthChallengeTokenMock]()
-    public func addReceivePreAuthChallengeTokenMock(_ mock: @escaping RecevePreAuthChallengeTokenMock) {
+    public typealias ReceivePreAuthChallengeTokenMock = (() async -> String)
+    private var receivePreAuthChallengeTokenMocks = [ReceivePreAuthChallengeTokenMock]()
+    public func addReceivePreAuthChallengeTokenMock(_ mock: @escaping ReceivePreAuthChallengeTokenMock) {
         receivePreAuthChallengeTokenMocks.append(mock)
     }
-    public func receivePreAuthChallengeToken() -> Guarantee<String> {
-        return receivePreAuthChallengeTokenMocks.removeFirst()()
+    public func receivePreAuthChallengeToken() async -> String {
+        return await receivePreAuthChallengeTokenMocks.removeFirst()()
     }
 
     public var didClearPreAuthChallengeToken = false

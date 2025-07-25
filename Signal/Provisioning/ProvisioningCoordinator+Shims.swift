@@ -108,7 +108,7 @@ public class _ProvisioningCoordinator_PushRegistrationManagerWrapper: _Provision
     }
 
     public func requestPushTokens(forceRotation: Bool) async throws -> ApnRegistrationId {
-        return try await pushRegistrationManager.requestPushTokens(forceRotation: forceRotation).awaitable()
+        return try await pushRegistrationManager.requestPushTokens(forceRotation: forceRotation)
     }
 }
 

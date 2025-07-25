@@ -2650,7 +2650,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         e164: E164,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        return deps.pushRegistrationManager.requestPushToken()
+        return Guarantee.wrapAsync { await self.deps.pushRegistrationManager.requestPushToken() }
             .then(on: DispatchQueue.global()) { [weak self] tokenResult -> Guarantee<RegistrationStep> in
                 guard let strongSelf = self else {
                     return unretainedSelfError()
@@ -2899,12 +2899,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // There is no timeout on this promise. That's deliberate. If we get a push challenge token
         // at some point, we'd like to hold onto it, even if it took awhile to arrive. Other spots
         // in the code may handle a timeout.
-        deps.pushRegistrationManager.receivePreAuthChallengeToken().done(on: DispatchQueue.main) { [weak self] token in
-            guard let self else { return }
-            self.db.write { transaction in
-                self.didReceive(pushChallengeToken: token, for: session, transaction: transaction)
+        Guarantee.wrapAsync { await self.deps.pushRegistrationManager.receivePreAuthChallengeToken() }
+            .done(on: DispatchQueue.main) { [weak self] token in
+                guard let self else { return }
+                self.db.write { transaction in
+                    self.didReceive(pushChallengeToken: token, for: session, transaction: transaction)
+                }
             }
-        }
     }
 
     private func didReceive(
@@ -2955,8 +2956,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             failChallengeIfTimedOut: Bool
         ) -> Guarantee<RegistrationStep> {
             Logger.info("Attempting to fulfill push challenge with a token we don't have yet")
-            return deps.pushRegistrationManager
-                .receivePreAuthChallengeToken()
+            return Guarantee.wrapAsync { await self.deps.pushRegistrationManager.receivePreAuthChallengeToken() }
                 .map { $0 }
                 .nilTimeout(on: DispatchQueue.global(), seconds: timeout)
                 .then(on: DispatchQueue.global()) { [weak self] (challengeToken: String?) -> Guarantee<RegistrationStep> in
@@ -4559,7 +4559,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         guard !inMemoryState.isManualMessageFetchEnabled else {
             return .value(.pushUnsupported(description: "Manual fetch pre-enabled"))
         }
-        return deps.pushRegistrationManager.requestPushToken()
+        return Guarantee.wrapAsync { await self.deps.pushRegistrationManager.requestPushToken() }
     }
 
     private func generateServerAuthToken() -> String {

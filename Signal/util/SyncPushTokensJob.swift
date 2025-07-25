@@ -46,7 +46,7 @@ class SyncPushTokensJob: NSObject {
     public typealias ApnRegistrationId = RegistrationRequestFactory.ApnRegistrationId
 
     private func run(shouldRotateAPNSToken: Bool) async throws {
-        let regResult = try await AppEnvironment.shared.pushRegistrationManagerRef.requestPushTokens(forceRotation: shouldRotateAPNSToken).awaitable()
+        let regResult = try await AppEnvironment.shared.pushRegistrationManagerRef.requestPushTokens(forceRotation: shouldRotateAPNSToken)
 
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             if shouldRotateAPNSToken {
