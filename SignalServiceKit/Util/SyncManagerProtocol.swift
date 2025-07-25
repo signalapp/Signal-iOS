@@ -25,8 +25,8 @@ public protocol SyncManagerProtocolSwift {
     func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: DBWriteTransaction)
     func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: DBWriteTransaction)
 
-    func syncAllContacts() -> Promise<Void>
-    func syncAllContactsIfFullSyncRequested() -> Promise<Void>
+    func syncAllContacts() async throws
+    func syncAllContactsIfFullSyncRequested() async throws
 
     func sendFetchLatestProfileSyncMessage(tx: DBWriteTransaction)
     func sendFetchLatestStorageManifestSyncMessage() async

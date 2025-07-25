@@ -1474,7 +1474,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 // If the main app gets woken to process messages in the background, check
                 // for any pending NSE requests to fulfill.
                 let result = await Result(catching: {
-                    try await SSKEnvironment.shared.syncManagerRef.syncAllContactsIfFullSyncRequested().awaitable()
+                    try await SSKEnvironment.shared.syncManagerRef.syncAllContactsIfFullSyncRequested()
                 })
                 syncContacts.resume(with: result)
             }

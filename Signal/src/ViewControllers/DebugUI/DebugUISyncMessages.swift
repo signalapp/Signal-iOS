@@ -26,10 +26,13 @@ class DebugUISyncMessages: DebugUIPage {
     // MARK: -
 
     private static func sendContactsSyncMessage() {
-        SSKEnvironment.shared.syncManagerRef.syncAllContacts()
-            .catch(on: DispatchQueue.global()) { error in
+        Task {
+            do {
+                try await SSKEnvironment.shared.syncManagerRef.syncAllContacts()
+            } catch {
                 Logger.info("Error: \(error)")
             }
+        }
     }
 
     private static func sendBlockListSyncMessage() {

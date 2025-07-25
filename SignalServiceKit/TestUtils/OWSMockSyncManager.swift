@@ -82,16 +82,12 @@ public class OWSMockSyncManager: SyncManagerProtocol {
         Logger.info("")
     }
 
-    public func syncAllContacts() -> Promise<Void> {
+    public func syncAllContacts() async throws {
         Logger.info("")
-
-        return Promise<Void>()
     }
 
-    public func syncAllContactsIfFullSyncRequested() -> Promise<Void> {
+    public func syncAllContactsIfFullSyncRequested() async throws {
         Logger.info("")
-
-        return Promise<Void>()
     }
 }
 

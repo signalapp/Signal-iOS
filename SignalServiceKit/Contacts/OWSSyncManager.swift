@@ -17,7 +17,7 @@ public class OWSSyncManager {
         KeyValueStore(collection: "kTSStorageManagerOWSSyncManagerCollection")
     }
 
-    private let contactSyncQueue = SerialTaskQueue()
+    private let contactSyncQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     fileprivate let appReadiness: AppReadiness
 
@@ -31,7 +31,9 @@ public class OWSSyncManager {
                 if TSAccountManagerObjcBridge.isPrimaryDeviceWithMaybeTransaction {
                     // syncAllContactsIfNecessary will skip if nothing has changed,
                     // so this won't yield redundant traffic.
-                    self.syncAllContactsIfNecessary()
+                    Task {
+                        try await self.syncAllContactsIfNecessary()
+                    }
                 } else {
                     self.sendAllSyncRequestMessagesIfNecessary().catch { (_ error: Error) in
                         Logger.error("Error: \(error).")
@@ -52,19 +54,25 @@ public class OWSSyncManager {
     @objc
     private func signalAccountsDidChange(_ notification: AnyObject) {
         AssertIsOnMainThread()
-        syncAllContactsIfNecessary()
+        Task {
+            try await self.syncAllContactsIfNecessary()
+        }
     }
 
     @objc
     private func registrationStateDidChange(_ notification: AnyObject) {
         AssertIsOnMainThread()
-        syncAllContactsIfNecessary()
+        Task {
+            try await self.syncAllContactsIfNecessary()
+        }
     }
 
     @objc
     private func willEnterForeground(_ notification: AnyObject) {
         AssertIsOnMainThread()
-        _ = syncAllContactsIfFullSyncRequested()
+        Task {
+            try await self.syncAllContactsIfFullSyncRequested()
+        }
     }
 }
 
@@ -388,19 +396,19 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
     // MARK: - Contact Sync
 
-    public func syncAllContacts() -> Promise<Void> {
+    public func syncAllContacts() async throws {
         owsAssertDebug(canSendContactSyncMessage())
-        return syncContacts(mode: .allSignalAccounts)
+        try await syncContacts(mode: .allSignalAccounts)
     }
 
-    func syncAllContactsIfNecessary() {
+    fileprivate func syncAllContactsIfNecessary() async throws {
         owsAssertDebug(CurrentAppContext().isMainApp)
-        _ = syncContacts(mode: .allSignalAccountsIfChanged)
+        try await syncContacts(mode: .allSignalAccountsIfChanged)
     }
 
-    public func syncAllContactsIfFullSyncRequested() -> Promise<Void> {
+    public func syncAllContactsIfFullSyncRequested() async throws {
         owsAssertDebug(CurrentAppContext().isMainApp)
-        return syncContacts(mode: .allSignalAccountsIfFullSyncRequested)
+        try await syncContacts(mode: .allSignalAccountsIfFullSyncRequested)
     }
 
     private enum ContactSyncMode {
@@ -420,16 +428,14 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         return true
     }
 
-    private func syncContacts(mode: ContactSyncMode) -> Promise<Void> {
+    private func syncContacts(mode: ContactSyncMode) async throws {
         guard canSendContactSyncMessage() else {
-            return Promise(error: OWSGenericError("Not ready to sync contacts."))
+            throw OWSGenericError("Not ready to sync contacts.")
         }
 
-        let syncTask = contactSyncQueue.enqueue {
-            return try await self._syncContacts(mode: mode)
+        try await contactSyncQueue.run {
+            try await self._syncContacts(mode: mode)
         }
-
-        return Promise.wrapAsync { try await syncTask.value }
     }
 
     private func _syncContacts(mode: ContactSyncMode) async throws {
