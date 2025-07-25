@@ -96,10 +96,6 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         fatalError("init(coder:) has not been implemented")
     }
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return Theme.isDarkThemeEnabled ? .lightContent : .default
-    }
-
     @objc
     private func applyTheme() {
         view.backgroundColor = Theme.isDarkThemeEnabled ? UIColor(rgbHex: 0x292929) : UIColor(rgbHex: 0xd6d6d6)

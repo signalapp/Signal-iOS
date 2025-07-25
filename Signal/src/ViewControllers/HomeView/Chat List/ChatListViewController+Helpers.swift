@@ -148,6 +148,8 @@ public extension ChatListViewController {
     func applyArchiveBackButton() {
         AssertIsOnMainThread()
 
+        guard #unavailable(iOS 26) else { return }
+
         navigationItem.backBarButtonItem = UIBarButtonItem(title: CommonStrings.backButton,
                                                            style: .plain,
                                                            target: nil,

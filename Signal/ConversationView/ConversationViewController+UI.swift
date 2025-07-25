@@ -23,7 +23,7 @@ extension ConversationViewController {
         let attributedName = NSMutableAttributedString(
             string: threadViewModel.name,
             attributes: [
-                .foregroundColor: Theme.primaryTextColor
+                .foregroundColor: UIColor.Signal.label,
             ]
         )
 
@@ -75,11 +75,15 @@ extension ConversationViewController {
     public func updateBarButtonItems() {
         AssertIsOnMainThread()
 
-        // Don't include "Back" text on view controllers pushed above us, just use the arrow.
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "",
-                                                           style: .plain,
-                                                           target: nil,
-                                                           action: nil)
+        if #unavailable(iOS 26) {
+            // Don't include "Back" text on view controllers pushed above us, just use the arrow.
+            navigationItem.backBarButtonItem = UIBarButtonItem(
+                title: "",
+                style: .plain,
+                target: nil,
+                action: nil
+            )
+        }
 
         navigationItem.hidesBackButton = false
         navigationItem.leftBarButtonItem = nil
@@ -183,9 +187,15 @@ extension ConversationViewController {
 
         let subtitleText = NSMutableAttributedString()
         let subtitleFont = self.headerView.subtitleFont
+        // Use higher-contrast color for the blurred iOS 26 nav bars
+        let fontColor: UIColor = if #available(iOS 26, *) {
+            UIColor.Signal.label
+        } else {
+            UIColor.Signal.secondaryLabel
+        }
         let attributes: [NSAttributedString.Key: Any] = [
             .font: subtitleFont,
-            .foregroundColor: Theme.navbarTitleColor.withAlphaComponent(0.9)
+            .foregroundColor: fontColor,
         ]
         let hairSpace = "\u{200a}"
         let thinSpace = "\u{2009}"

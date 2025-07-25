@@ -73,10 +73,6 @@ public class PinReminderViewController: OWSViewController {
         pinTextField.resignFirstResponder()
     }
 
-    override public var preferredStatusBarStyle: UIStatusBarStyle {
-        return Theme.isDarkThemeEnabled ? .lightContent : .default
-    }
-
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return UIDevice.current.isIPad ? .all : .portrait
     }

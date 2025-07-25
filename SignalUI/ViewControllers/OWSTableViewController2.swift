@@ -1119,6 +1119,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     }
 
     public static func removeBackButtonText(viewController: UIViewController) {
+        guard #unavailable(iOS 26) else { return }
         // We never want to show titles on back buttons, so we replace it with
         // blank spaces. We pad it out slightly so that it's more tappable.
         viewController.navigationItem.backBarButtonItem = .init(title: "   ", style: .plain, target: nil, action: nil)

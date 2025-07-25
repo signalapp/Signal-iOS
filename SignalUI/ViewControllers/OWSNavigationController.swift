@@ -55,8 +55,8 @@ extension OWSNavigationChildController {
 /// unsaved changes.
 open class OWSNavigationController: UINavigationController {
 
-    private var owsNavigationBar: OWSNavigationBar {
-        return navigationBar as! OWSNavigationBar
+    private var owsNavigationBar: OWSNavigationBar? {
+        return navigationBar as? OWSNavigationBar
     }
 
     private weak var externalDelegate: UINavigationControllerDelegate?
@@ -75,7 +75,11 @@ open class OWSNavigationController: UINavigationController {
     }
 
     public init() {
-        super.init(navigationBarClass: OWSNavigationBar.self, toolbarClass: nil)
+        if #available(iOS 26, *) {
+            super.init(nibName: nil, bundle: nil)
+        } else {
+            super.init(navigationBarClass: OWSNavigationBar.self, toolbarClass: nil)
+        }
 
         super.delegate = self
 
@@ -127,7 +131,7 @@ open class OWSNavigationController: UINavigationController {
     }
 
     public override var preferredStatusBarStyle: UIStatusBarStyle {
-        if let forcedStyle = owsNavigationBar.forcedStatusBarStyle {
+        if let forcedStyle = owsNavigationBar?.forcedStatusBarStyle {
             return forcedStyle
         }
         if !CurrentAppContext().isMainApp {
@@ -135,7 +139,7 @@ open class OWSNavigationController: UINavigationController {
         } else if let presentedViewController = self.presentedViewController {
             return presentedViewController.preferredStatusBarStyle
         } else {
-            return Theme.isDarkThemeEnabled ? .lightContent : .darkContent
+            return super.preferredStatusBarStyle
         }
     }
 
@@ -159,7 +163,7 @@ open class OWSNavigationController: UINavigationController {
         let navChildController = viewController.getFinalNavigationChildController()
         let shouldHideNavbar = navChildController?.prefersNavigationBarHidden ?? false
 
-        if !shouldHideNavbar {
+        if #unavailable(iOS 26), !shouldHideNavbar, let owsNavigationBar {
             // Only update visible attributes if we aren't hiding; if its hidden anyway
             // they won't matter and seeing them blink then hide is weird.
             owsNavigationBar.navbarBackgroundColorOverride = navChildController?.navbarBackgroundColorOverride

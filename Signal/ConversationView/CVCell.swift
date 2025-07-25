@@ -134,9 +134,6 @@ public class CVCell: UICollectionViewCell, CVRootComponentHost {
             return
         }
 
-        // Insist that the cell honor its zIndex.
-        layer.zPosition = CGFloat(layoutAttributes.zIndex)
-
         guard let rootComponent = self.rootComponent,
               let componentView = self.componentView else {
             return

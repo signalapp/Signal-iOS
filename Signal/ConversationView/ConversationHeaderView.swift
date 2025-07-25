@@ -55,8 +55,7 @@ public class ConversationHeaderView: UIView {
     }
 
     public let titlePrimaryFont = UIFont.semiboldFont(ofSize: 17)
-    public let titleSecondaryFont = UIFont.regularFont(ofSize: 9)
-    public let subtitleFont = UIFont.regularFont(ofSize: 12)
+    public let subtitleFont = UIFont.regularFont(ofSize: 13).medium()
 
     private let titleLabel: UILabel
     private let titleIconView: UIImageView
@@ -72,7 +71,7 @@ public class ConversationHeaderView: UIView {
 
     public init() {
         titleLabel = UILabel()
-        titleLabel.textColor = Theme.navbarTitleColor
+        titleLabel.textColor = UIColor.Signal.label
         titleLabel.lineBreakMode = .byTruncatingTail
         titleLabel.font = titlePrimaryFont
         titleLabel.setContentHuggingHigh()
@@ -93,7 +92,7 @@ public class ConversationHeaderView: UIView {
         )
 
         subtitleLabel = UILabel()
-        subtitleLabel.textColor = Theme.navbarTitleColor
+        subtitleLabel.textColor = UIColor.Signal.label
         subtitleLabel.lineBreakMode = .byTruncatingTail
         subtitleLabel.font = subtitleFont
         subtitleLabel.setContentHuggingHigh()
@@ -127,8 +126,6 @@ public class ConversationHeaderView: UIView {
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView))
         rootStack.addGestureRecognizer(tapGesture)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .themeDidChange, object: nil)
     }
 
     required public init(coder: NSCoder) {
@@ -146,12 +143,6 @@ public class ConversationHeaderView: UIView {
     public override var intrinsicContentSize: CGSize {
         // Grow to fill as much of the navbar as possible.
         return UIView.layoutFittingExpandedSize
-    }
-
-    @objc
-    private func themeDidChange() {
-        titleLabel.textColor = Theme.navbarTitleColor
-        subtitleLabel.textColor = Theme.navbarTitleColor
     }
 
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
