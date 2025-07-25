@@ -88,19 +88,19 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
 
     public func buildDataSource(
         from draft: OWSLinkPreviewDraft
-    ) throws -> LinkPreviewDataSource {
-        return try buildDataSource(from: draft, builder: defaultBuilder)
+    ) async throws -> LinkPreviewDataSource {
+        return try await buildDataSource(from: draft, builder: defaultBuilder)
     }
 
     public func buildDataSource<Builder: LinkPreviewBuilder>(
         from draft: OWSLinkPreviewDraft,
         builder: Builder
-    ) throws -> LinkPreviewDataSource {
+    ) async throws -> LinkPreviewDataSource {
         let areLinkPreviewsEnabled = db.read(block: linkPreviewSettingStore.areLinkPreviewsEnabled(tx:))
         guard draft.isForwarded || areLinkPreviewsEnabled else {
             throw LinkPreviewError.featureDisabled
         }
-        return try builder.buildDataSource(draft)
+        return try await builder.buildDataSource(draft)
     }
 
     public func buildLinkPreview(

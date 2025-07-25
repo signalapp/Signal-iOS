@@ -17,7 +17,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
-    ) throws -> PendingAttachment {
+    ) async throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
 
@@ -26,7 +26,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
-    ) throws -> PendingAttachment {
+    ) async throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
 
@@ -38,7 +38,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
-    ) throws -> PendingAttachment {
+    ) async throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
 
@@ -47,7 +47,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         encryptionKey: Data,
         plaintextLength: UInt32,
         mimeType: String
-    ) throws -> RevalidatedAttachment {
+    ) async throws -> RevalidatedAttachment {
         throw OWSAssertionError("Unimplemented")
     }
 
@@ -59,26 +59,26 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
-    ) throws -> any PendingAttachment {
+    ) async throws -> any PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
 
     open func prepareOversizeTextsIfNeeded<Key: Hashable>(
         from texts: [Key: MessageBody]
-    ) throws -> [Key: ValidatedMessageBody] {
+    ) async throws -> [Key: ValidatedMessageBody] {
         return texts.mapValues { .inline($0) }
     }
 
     open func prepareQuotedReplyThumbnail(
         fromOriginalAttachment: AttachmentStream,
         originalReference: AttachmentReference
-    ) throws -> QuotedReplyAttachmentDataSource {
+    ) async throws -> QuotedReplyAttachmentDataSource {
         throw OWSAssertionError("Unimplemented")
     }
 
     open func prepareQuotedReplyThumbnail(
         fromOriginalAttachmentStream: AttachmentStream
-    ) throws -> PendingAttachment {
+    ) async throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
 }

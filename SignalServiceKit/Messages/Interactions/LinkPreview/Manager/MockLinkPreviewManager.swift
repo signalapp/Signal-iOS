@@ -53,8 +53,8 @@ public class MockLinkPreviewManager: LinkPreviewManager {
     public func buildDataSource<Builder: LinkPreviewBuilder>(
         from draft: OWSLinkPreviewDraft,
         builder: Builder
-    ) throws -> LinkPreviewDataSource {
-        return try builder.buildDataSource(draft)
+    ) async throws -> LinkPreviewDataSource {
+        return try await builder.buildDataSource(draft)
     }
 
     public func buildLinkPreview(

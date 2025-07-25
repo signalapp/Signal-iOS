@@ -49,8 +49,8 @@ public class OnboardingStoryManagerStoryMessageFactory {
     public class func validateAttachmentContents(
         dataSource: DataSource,
         mimeType: String
-    ) throws -> AttachmentDataSource {
-        return try DependenciesBridge.shared.attachmentContentValidator.validateContents(
+    ) async throws -> AttachmentDataSource {
+        return try await DependenciesBridge.shared.attachmentContentValidator.validateContents(
             dataSource: dataSource,
             shouldConsume: true,
             mimeType: mimeType,
@@ -553,7 +553,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
             fileUrl: resultUrl,
             shouldDeleteOnDeallocation: CurrentAppContext().isRunningTests.negated
         )
-        return try storyMessageFactory.validateAttachmentContents(
+        return try await storyMessageFactory.validateAttachmentContents(
             dataSource: dataSource,
             mimeType: Constants.imageMimeType
         )

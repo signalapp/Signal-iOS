@@ -130,17 +130,17 @@ class PreviewWallpaperViewController: UIViewController {
             croppedAndScaledPhoto = nil
             preset = selectedWallpaper
         }
-        DispatchQueue.global().async { [weak self, thread] in
+        Task { [weak self, thread] in
             do {
                 if let croppedAndScaledPhoto {
-                    try DependenciesBridge.shared.wallpaperStore.setPhoto(croppedAndScaledPhoto, for: thread)
+                    try await DependenciesBridge.shared.wallpaperStore.setPhoto(croppedAndScaledPhoto, for: thread)
                 } else if let preset {
-                    try DependenciesBridge.shared.wallpaperStore.setBuiltIn(preset, for: thread)
+                    try await DependenciesBridge.shared.wallpaperStore.setBuiltIn(preset, for: thread)
                 }
             } catch {
                 owsFailDebug("Failed to set wallpaper \(error)")
             }
-            DispatchQueue.main.async { [weak self] in
+            await MainActor.run { [weak self] in
                 guard let self else { return }
                 self.delegate?.previewWallpaperDidComplete(self)
             }

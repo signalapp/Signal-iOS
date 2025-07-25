@@ -39,17 +39,17 @@ public class WallpaperStore {
 
     // MARK: - Getters & Setters
 
-    public func setBuiltIn(_ wallpaper: Wallpaper, for thread: TSThread? = nil) throws {
+    public func setBuiltIn(_ wallpaper: Wallpaper, for thread: TSThread? = nil) async throws {
         owsAssertDebug(wallpaper != .photo)
 
-        try _set(wallpaper, for: thread)
+        try await _set(wallpaper, for: thread)
     }
 
-    public func setPhoto(_ photo: UIImage, for thread: TSThread? = nil) throws {
-        try _set(.photo, photo: photo, for: thread)
+    public func setPhoto(_ photo: UIImage, for thread: TSThread? = nil) async throws {
+        try await _set(.photo, photo: photo, for: thread)
     }
 
-    private func _set(_ wallpaper: Wallpaper?, photo: UIImage? = nil, for thread: TSThread?) throws {
+    private func _set(_ wallpaper: Wallpaper?, photo: UIImage? = nil, for thread: TSThread?) async throws {
         owsAssertDebug(photo == nil || wallpaper == .photo)
 
         let onInsert = { [self] (tx: DBWriteTransaction) throws -> Void in
@@ -57,9 +57,9 @@ public class WallpaperStore {
         }
 
         if let thread {
-            try wallpaperImageStore.setWallpaperImage(photo, for: thread, onInsert: onInsert)
+            try await wallpaperImageStore.setWallpaperImage(photo, for: thread, onInsert: onInsert)
         } else {
-            try wallpaperImageStore.setGlobalThreadWallpaperImage(photo, onInsert: onInsert)
+            try await wallpaperImageStore.setGlobalThreadWallpaperImage(photo, onInsert: onInsert)
         }
     }
 

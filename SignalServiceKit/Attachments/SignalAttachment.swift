@@ -288,8 +288,8 @@ public class SignalAttachment: NSObject {
 
     public func buildAttachmentDataSource(
         message: TSMessage? = nil
-    ) throws -> AttachmentDataSource {
-        return try buildOutgoingAttachmentInfo(message: message).asAttachmentDataSource()
+    ) async throws -> AttachmentDataSource {
+        return try await buildOutgoingAttachmentInfo(message: message).asAttachmentDataSource()
     }
 
     public func staticThumbnail() -> UIImage? {

@@ -28,12 +28,12 @@ public protocol LinkPreviewManager {
     /// Uses the default builder.
     func buildDataSource(
         from draft: OWSLinkPreviewDraft
-    ) throws -> LinkPreviewDataSource
+    ) async throws -> LinkPreviewDataSource
 
     func buildDataSource<Builder: LinkPreviewBuilder>(
         from draft: OWSLinkPreviewDraft,
         builder: Builder
-    ) throws -> LinkPreviewDataSource
+    ) async throws -> LinkPreviewDataSource
 
     /// Uses the default builder.
     func buildLinkPreview(

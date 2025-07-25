@@ -28,19 +28,19 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
         _ photo: UIImage?,
         for thread: TSThread,
         onInsert: @escaping (DBWriteTransaction) throws -> Void
-    ) throws {
+    ) async throws {
         guard let rowId = thread.sqliteRowId else {
             throw OWSAssertionError("Inserting wallpaper for uninserted thread!")
         }
         if let photo {
-            let dataSource = try dataSource(wallpaperImage: photo)
-            try setWallpaperImage(
+            let dataSource = try await dataSource(wallpaperImage: photo)
+            try await setWallpaperImage(
                 dataSource,
                 owner: .threadWallpaperImage(threadRowId: rowId),
                 onInsert: onInsert
             )
         } else {
-            try setWallpaperImage(
+            try await setWallpaperImage(
                 nil,
                 owner: .threadWallpaperImage(threadRowId: rowId),
                 onInsert: onInsert
@@ -51,12 +51,12 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
     public func setGlobalThreadWallpaperImage(
         _ photo: UIImage?,
         onInsert: @escaping (DBWriteTransaction) throws -> Void
-    ) throws {
+    ) async throws {
         if let photo {
-            let dataSource = try dataSource(wallpaperImage: photo)
-            try setWallpaperImage(dataSource, owner: .globalThreadWallpaperImage, onInsert: onInsert)
+            let dataSource = try await dataSource(wallpaperImage: photo)
+            try await setWallpaperImage(dataSource, owner: .globalThreadWallpaperImage, onInsert: onInsert)
         } else {
-            try setWallpaperImage(nil, owner: .globalThreadWallpaperImage, onInsert: onInsert)
+            try await setWallpaperImage(nil, owner: .globalThreadWallpaperImage, onInsert: onInsert)
         }
     }
 
@@ -105,14 +105,14 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
 
     // MARK: - Private
 
-    private func dataSource(wallpaperImage photo: UIImage) throws -> AttachmentDataSource {
+    private func dataSource(wallpaperImage photo: UIImage) async throws -> AttachmentDataSource {
         let mimeType = MimeType.imageJpeg.rawValue
         guard
             let imageData = photo.jpegData(compressionQuality: 0.8)
         else {
             throw OWSAssertionError("Failed to get jpg data for wallpaper photo")
         }
-        return try attachmentValidator.validateContents(
+        return try await attachmentValidator.validateContents(
             data: imageData,
             mimeType: mimeType,
             renderingFlag: .default,
@@ -124,8 +124,8 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
         _ dataSource: AttachmentDataSource?,
         owner: AttachmentReference.OwnerBuilder,
         onInsert: @escaping (DBWriteTransaction) throws -> Void
-    ) throws {
-        try db.write { tx in
+    ) async throws {
+        try await db.awaitableWrite { tx in
             // First remove any existing wallpaper.
             if let existingReference = self.attachmentStore.fetchFirstReference(owner: owner.id, tx: tx) {
                 try self.attachmentStore.removeOwner(reference: existingReference, tx: tx)

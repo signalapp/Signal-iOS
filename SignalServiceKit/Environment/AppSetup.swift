@@ -295,7 +295,7 @@ public class AppSetup {
 
         let attachmentStore = AttachmentStoreImpl()
 
-        let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(db: databaseStorage)
+        let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(db: db)
         let attachmentContentValidator = AttachmentContentValidatorImpl(
             attachmentStore: attachmentStore,
             audioWaveformManager: audioWaveformManager,

@@ -41,8 +41,8 @@ public final class OutgoingAttachmentInfo {
         }()
     }
 
-    public func asAttachmentDataSource() throws -> AttachmentDataSource {
-        return try DependenciesBridge.shared.attachmentContentValidator.validateContents(
+    public func asAttachmentDataSource() async throws -> AttachmentDataSource {
+        return try await DependenciesBridge.shared.attachmentContentValidator.validateContents(
             dataSource: dataSource,
             shouldConsume: true,
             mimeType: contentType,

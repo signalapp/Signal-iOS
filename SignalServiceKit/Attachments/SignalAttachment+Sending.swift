@@ -19,8 +19,8 @@ extension SignalAttachment {
         }
     }
 
-    public func forSending() throws -> ForSending {
-        let dataSource = try self.buildAttachmentDataSource()
+    public func forSending() async throws -> ForSending {
+        let dataSource = try await self.buildAttachmentDataSource()
         return .init(
             dataSource: dataSource,
             isViewOnce: self.isViewOnceAttachment,

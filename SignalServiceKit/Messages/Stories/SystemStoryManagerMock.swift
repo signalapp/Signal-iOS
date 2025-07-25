@@ -135,7 +135,7 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
     public override class func validateAttachmentContents(
         dataSource: any DataSource,
         mimeType: String
-    ) throws -> AttachmentDataSource {
+    ) async throws -> AttachmentDataSource {
         struct FakePendingAttachment: PendingAttachment {
             let blurHash: String? = nil
             let sha256ContentHash: Data = Data()

@@ -230,7 +230,7 @@ extension SharingThreadPickerViewController {
 
             let linkPreviewDataSource: LinkPreviewDataSource?
             if let linkPreviewDraft {
-                linkPreviewDataSource = try? DependenciesBridge.shared.linkPreviewManager.buildDataSource(
+                linkPreviewDataSource = try? await DependenciesBridge.shared.linkPreviewManager.buildDataSource(
                     from: linkPreviewDraft
                 )
             } else {
@@ -266,7 +266,7 @@ extension SharingThreadPickerViewController {
             }
             let contactShareForSending: ContactShareDraft.ForSending
             do {
-                contactShareForSending = try DependenciesBridge.shared.contactShareManager.validateAndPrepare(
+                contactShareForSending = try await DependenciesBridge.shared.contactShareManager.validateAndPrepare(
                     draft: contactShareDraft
                 )
             } catch {

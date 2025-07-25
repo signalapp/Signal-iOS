@@ -459,9 +459,7 @@ extension ForwardMessageViewController {
         }
         // This should be changed in the future, but waiting on this queue will
         // ensure that `enqueueBlock` (the prior line) has finished its work.
-        await withCheckedContinuation { continuation in
-            ThreadUtil.enqueueSendQueue.async { continuation.resume() }
-        }
+        try? await ThreadUtil.enqueueSendQueue.enqueue(operation: {}).value
     }
 
     fileprivate func outgoingMessageRecipientThreads(for conversationItems: [ConversationItem]) async throws -> [TSThread] {

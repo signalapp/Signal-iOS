@@ -1763,44 +1763,32 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             let attachmentValidator = self.attachmentValidator
             let stickerManager = self.stickerManager
             return try await decryptionQueue.run {
-                // AttachmentValidator runs synchronously _and_ opens write transactions
-                // internally. We can't block on the write lock in the cooperative thread
-                // pool, so bridge out of structured concurrency to run the validation.
-                return try await withCheckedThrowingContinuation { continuation in
-                    DispatchQueue.global().async {
-                        do {
-                            guard let stickerDataUrl = stickerManager.stickerDataUrl(
-                                forInstalledSticker: sticker,
-                                verifyExists: true
-                            ) else {
-                                throw OWSAssertionError("Missing sticker")
-                            }
-
-                            let mimeType: String
-                            let imageMetadata = Data.imageMetadata(withPath: stickerDataUrl.path, mimeType: nil)
-                            if imageMetadata.imageFormat != .unknown,
-                               let mimeTypeFromMetadata = imageMetadata.mimeType {
-                                mimeType = mimeTypeFromMetadata
-                            } else {
-                                mimeType = MimeType.imageWebp.rawValue
-                            }
-
-                            let pendingAttachment = try attachmentValidator.validateContents(
-                                dataSource: DataSourcePath(
-                                    fileUrl: stickerDataUrl,
-                                    shouldDeleteOnDeallocation: false
-                                ),
-                                shouldConsume: false,
-                                mimeType: mimeType,
-                                renderingFlag: .borderless,
-                                sourceFilename: nil
-                            )
-                            continuation.resume(with: .success(pendingAttachment))
-                        } catch let error {
-                            continuation.resume(throwing: error)
-                        }
-                    }
+                guard let stickerDataUrl = stickerManager.stickerDataUrl(
+                    forInstalledSticker: sticker,
+                    verifyExists: true
+                ) else {
+                    throw OWSAssertionError("Missing sticker")
                 }
+
+                let mimeType: String
+                let imageMetadata = Data.imageMetadata(withPath: stickerDataUrl.path, mimeType: nil)
+                if imageMetadata.imageFormat != .unknown,
+                   let mimeTypeFromMetadata = imageMetadata.mimeType {
+                    mimeType = mimeTypeFromMetadata
+                } else {
+                    mimeType = MimeType.imageWebp.rawValue
+                }
+
+                return try await attachmentValidator.validateContents(
+                    dataSource: DataSourcePath(
+                        fileUrl: stickerDataUrl,
+                        shouldDeleteOnDeallocation: false
+                    ),
+                    shouldConsume: false,
+                    mimeType: mimeType,
+                    renderingFlag: .borderless,
+                    sourceFilename: nil
+                )
             }
         }
 
@@ -1810,61 +1798,48 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         ) async throws -> PendingAttachment {
             let attachmentValidator = self.attachmentValidator
             return try await decryptionQueue.run {
-                // AttachmentValidator runs synchronously _and_ opens write transactions
-                // internally. We can't block on the write lock in the cooperative thread
-                // pool, so bridge out of structured concurrency to run the validation.
-                return try await withCheckedThrowingContinuation { continuation in
-                    DispatchQueue.global().async {
-                        do {
-                            let pendingAttachment: PendingAttachment
-                            switch metadata.source {
-                            case .transitTier(_, let integrityCheck, let plaintextLength):
-                                pendingAttachment = try attachmentValidator.validateDownloadedContents(
-                                    ofEncryptedFileAt: encryptedFileUrl,
-                                    encryptionKey: metadata.encryptionKey,
-                                    plaintextLength: plaintextLength,
-                                    integrityCheck: integrityCheck,
-                                    mimeType: metadata.mimeType,
-                                    renderingFlag: .default,
-                                    sourceFilename: nil
-                                )
-                            case .mediaTierFullsize(_, let outerEncryptionMetadata, let integrityCheck, let plaintextLength):
-                                let innerPlaintextLength: Int? = {
-                                    guard let plaintextLength else { return nil }
-                                    return Int(plaintextLength)
-                                }()
+                switch metadata.source {
+                case .transitTier(_, let integrityCheck, let plaintextLength):
+                    return try await attachmentValidator.validateDownloadedContents(
+                        ofEncryptedFileAt: encryptedFileUrl,
+                        encryptionKey: metadata.encryptionKey,
+                        plaintextLength: plaintextLength,
+                        integrityCheck: integrityCheck,
+                        mimeType: metadata.mimeType,
+                        renderingFlag: .default,
+                        sourceFilename: nil
+                    )
+                case .mediaTierFullsize(_, let outerEncryptionMetadata, let integrityCheck, let plaintextLength):
+                    let innerPlaintextLength: Int? = {
+                        guard let plaintextLength else { return nil }
+                        return Int(plaintextLength)
+                    }()
 
-                                pendingAttachment = try attachmentValidator.validateContents(
-                                    ofBackupMediaFileAt: encryptedFileUrl,
-                                    outerDecryptionData: DecryptionMetadata(key: outerEncryptionMetadata.encryptionKey),
-                                    innerDecryptionData: DecryptionMetadata(
-                                        key: metadata.encryptionKey,
-                                        integrityCheck: integrityCheck,
-                                        plaintextLength: innerPlaintextLength
-                                    ),
-                                    finalEncryptionKey: metadata.encryptionKey,
-                                    mimeType: metadata.mimeType,
-                                    renderingFlag: .default,
-                                    sourceFilename: nil
-                                )
-                            case .mediaTierThumbnail(_, let outerEncryptionMetadata, let innerEncryptionData):
-                                pendingAttachment = try attachmentValidator.validateContents(
-                                    ofBackupMediaFileAt: encryptedFileUrl,
-                                    outerDecryptionData: DecryptionMetadata(key: outerEncryptionMetadata.encryptionKey),
-                                    innerDecryptionData: DecryptionMetadata(key: innerEncryptionData.encryptionKey),
-                                    finalEncryptionKey: metadata.encryptionKey,
-                                    mimeType: metadata.mimeType,
-                                    renderingFlag: .default,
-                                    sourceFilename: nil
-                                )
-                            case .linkNSyncBackup:
-                                throw OWSAssertionError("Should not be validating link'n'sync backups")
-                            }
-                            continuation.resume(with: .success(pendingAttachment))
-                        } catch let error {
-                            continuation.resume(throwing: error)
-                        }
-                    }
+                    return try await attachmentValidator.validateContents(
+                        ofBackupMediaFileAt: encryptedFileUrl,
+                        outerDecryptionData: DecryptionMetadata(key: outerEncryptionMetadata.encryptionKey),
+                        innerDecryptionData: DecryptionMetadata(
+                            key: metadata.encryptionKey,
+                            integrityCheck: integrityCheck,
+                            plaintextLength: innerPlaintextLength
+                        ),
+                        finalEncryptionKey: metadata.encryptionKey,
+                        mimeType: metadata.mimeType,
+                        renderingFlag: .default,
+                        sourceFilename: nil
+                    )
+                case .mediaTierThumbnail(_, let outerEncryptionMetadata, let innerEncryptionData):
+                    return try await attachmentValidator.validateContents(
+                        ofBackupMediaFileAt: encryptedFileUrl,
+                        outerDecryptionData: DecryptionMetadata(key: outerEncryptionMetadata.encryptionKey),
+                        innerDecryptionData: DecryptionMetadata(key: innerEncryptionData.encryptionKey),
+                        finalEncryptionKey: metadata.encryptionKey,
+                        mimeType: metadata.mimeType,
+                        renderingFlag: .default,
+                        sourceFilename: nil
+                    )
+                case .linkNSyncBackup:
+                    throw OWSAssertionError("Should not be validating link'n'sync backups")
                 }
             }
         }
@@ -1872,21 +1847,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         func prepareQuotedReplyThumbnail(originalAttachmentStream: AttachmentStream) async throws -> PendingAttachment {
             let attachmentValidator = self.attachmentValidator
             return try await decryptionQueue.run {
-                // AttachmentValidator runs synchronously _and_ opens write transactions
-                // internally. We can't block on the write lock in the cooperative thread
-                // pool, so bridge out of structured concurrency to run the validation.
-                return try await withCheckedThrowingContinuation { continuation in
-                    DispatchQueue.global().async {
-                        do {
-                            let pendingAttachment = try attachmentValidator.prepareQuotedReplyThumbnail(
-                                fromOriginalAttachmentStream: originalAttachmentStream
-                            )
-                            continuation.resume(with: .success(pendingAttachment))
-                        } catch let error {
-                            continuation.resume(throwing: error)
-                        }
-                    }
-                }
+                return try await attachmentValidator.prepareQuotedReplyThumbnail(
+                    fromOriginalAttachmentStream: originalAttachmentStream
+                )
             }
         }
     }

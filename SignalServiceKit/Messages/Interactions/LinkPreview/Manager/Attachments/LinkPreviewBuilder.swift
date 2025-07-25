@@ -9,7 +9,7 @@ public protocol LinkPreviewBuilder {
 
     func buildDataSource(
         _ draft: OWSLinkPreviewDraft
-    ) throws -> LinkPreviewDataSource
+    ) async throws -> LinkPreviewDataSource
 
     func createLinkPreview(
         from dataSource: LinkPreviewDataSource,

@@ -28,7 +28,7 @@ public protocol QuotedReplyManager {
 
     func prepareDraftForSending(
         _ draft: DraftQuotedReplyModel
-    ) throws -> DraftQuotedReplyModel.ForSending
+    ) async throws -> DraftQuotedReplyModel.ForSending
 
     func buildQuotedReplyForSending(
         draft: DraftQuotedReplyModel.ForSending,

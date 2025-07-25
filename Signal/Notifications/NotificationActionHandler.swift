@@ -134,7 +134,7 @@ public class NotificationActionHandler {
         }
 
         if let draftModel = optionalDraftModel {
-            draftModelForSending = try? DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending(draftModel)
+            draftModelForSending = try? await DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending(draftModel)
         }
 
         do {

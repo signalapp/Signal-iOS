@@ -80,7 +80,9 @@ class DebugUIMessages: DebugUIPage {
                 // MARK: - Misc.
                 OWSTableItem(title: "Perform random actions", actionBlock: {
                     DebugUIMessages.askForQuantityWithTitle("How many actions?") { quantity in
-                        DebugUIMessages.performRandomActions(quantity, inThread: thread)
+                        Task {
+                            await DebugUIMessages.performRandomActions(quantity, inThread: thread)
+                        }
                     }
                 }),
                 OWSTableItem(title: "Create Threads", actionBlock: {
@@ -1171,7 +1173,7 @@ class DebugUIMessages: DebugUIPage {
                 return
             }
 
-            let messageContents = try! createFakeMessageContents(
+            let messageContents = try! await createFakeMessageContents(
                 count: messageQuantity,
                 messageContentType: .longText
             )
@@ -1200,7 +1202,7 @@ class DebugUIMessages: DebugUIPage {
     private static func createFakeMessageContents(
         count: UInt,
         messageContentType: MessageContentType
-    ) throws -> [FakeMessageContent] {
+    ) async throws -> [FakeMessageContent] {
         var contents = [FakeMessageContent]()
         for i in 0..<count {
             let randomText: String
@@ -1218,7 +1220,7 @@ class DebugUIMessages: DebugUIPage {
             case 1:
                 contents.append(.outgoingTextOnly(randomText))
             case 2:
-                let attachmentDataSource = try DependenciesBridge.shared.attachmentContentValidator.validateContents(
+                let attachmentDataSource = try await DependenciesBridge.shared.attachmentContentValidator.validateContents(
                     data: UIImage.image(color: .blue, size: .square(100)).jpegData(compressionQuality: 0.1)!,
                     mimeType: "image/jpg",
                     renderingFlag: .default,
@@ -1229,7 +1231,7 @@ class DebugUIMessages: DebugUIPage {
                 let attachmentCount = Int.random(in: 0...SignalAttachment.maxAttachmentsAllowed)
                 var attachmentDataSources = [AttachmentDataSource]()
                 for _ in (0..<attachmentCount) {
-                    let dataSource = try DependenciesBridge.shared.attachmentContentValidator.validateContents(
+                    let dataSource = try await DependenciesBridge.shared.attachmentContentValidator.validateContents(
                         dataSource: DataSourceValue(
                             ImageFactory().buildPNGData(),
                             fileExtension: "png"
@@ -1503,49 +1505,49 @@ class DebugUIMessages: DebugUIPage {
 
     // MARK: Random Actions
 
-    private static func performRandomActions(_ counter: UInt, inThread thread: TSThread) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            performRandomActionInThread(thread, counter: counter)
+    private static func performRandomActions(_ counter: UInt, inThread thread: TSThread) async {
+        Task {
+            try! await Task.sleep(nanoseconds: NSEC_PER_SEC)
+            await performRandomActionInThread(thread, counter: counter)
             if counter > 0 {
-                performRandomActions(counter - 1, inThread: thread)
+                await performRandomActions(counter - 1, inThread: thread)
             }
         }
     }
 
-    private static func performRandomActionInThread(_ thread: TSThread, counter: UInt) {
+    private static func performRandomActionInThread(_ thread: TSThread, counter: UInt) async {
         let numActions = Int.random(in: 1...4)
         var actions = [(DBWriteTransaction) -> Void]()
         for _ in (0..<numActions) {
             let randomAction = Int.random(in: 0...2)
-            let action: (DBWriteTransaction) -> Void = {
-                switch randomAction {
-                case 0:
-                    return { transaction in
-                        // injectIncomingMessageInThread doesn't take a transaction.
-                        DispatchQueue.main.async {
-                            injectIncomingMessageInThread(thread, counter: counter)
-                        }
-                    }
-                case 1:
-                    return { _ in
-                        // sendTextMessageInThread doesn't take a transaction.
-                        DispatchQueue.main.async {
-                            sendTextMessageInThread(thread, counter: counter)
-                        }
-                    }
-                default:
-                    let messageCount = UInt.random(in: 1...4)
-                    let messageContents = try! createFakeMessageContents(count: messageCount, messageContentType: .normal)
-
-                    return  { transaction in
-                        createFakeMessages(messageContents, inThread: thread, transaction: transaction)
+            let action: (DBWriteTransaction) -> Void
+            switch randomAction {
+            case 0:
+                action = { transaction in
+                    // injectIncomingMessageInThread doesn't take a transaction.
+                    DispatchQueue.main.async {
+                        injectIncomingMessageInThread(thread, counter: counter)
                     }
                 }
-            }()
+            case 1:
+                action = { _ in
+                    // sendTextMessageInThread doesn't take a transaction.
+                    DispatchQueue.main.async {
+                        sendTextMessageInThread(thread, counter: counter)
+                    }
+                }
+            default:
+                let messageCount = UInt.random(in: 1...4)
+                let messageContents = try! await createFakeMessageContents(count: messageCount, messageContentType: .normal)
+
+                action =  { transaction in
+                    createFakeMessages(messageContents, inThread: thread, transaction: transaction)
+                }
+            }
             actions.append(action)
         }
 
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             actions.forEach { $0(transaction) }
         }
     }

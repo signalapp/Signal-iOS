@@ -30,15 +30,15 @@ public protocol OrphanedAttachmentCleaner {
     /// the target file paths.
     ///
     /// Return the id which can be used to release the pending attachment.
-    func commitPendingAttachmentWithSneakyTransaction(
+    func commitPendingAttachment(
         _ record: OrphanedAttachmentRecord
-    ) throws -> OrphanedAttachmentRecord.IDType
+    ) async throws -> OrphanedAttachmentRecord.IDType
 
     /// See commitPendingAttachmentWithSneakyTransaction; does the same thing for
     /// multiple orphan records at once, keyed as chosen by the caller.
-    func commitPendingAttachmentsWithSneakyTransaction<Key: Hashable>(
+    func commitPendingAttachments<Key: Hashable>(
         _ records: [Key: OrphanedAttachmentRecord]
-    ) throws -> [Key: OrphanedAttachmentRecord.IDType]
+    ) async throws -> [Key: OrphanedAttachmentRecord.IDType]
 
     /// Un-marks a pending attachment for deletion IFF currently marked for deletion.
     /// 
@@ -68,33 +68,31 @@ public protocol OrphanedAttachmentCleaner {
 
 public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
 
-    private let dbProvider: () -> DatabaseWriter
+    private let db: DB
     private let taskScheduler: Shims.TaskScheduler
 
     private var observer: OrphanTableObserver!
 
     public convenience init(
-        db: SDSDatabaseStorage,
-        fileSystem: Shims.OWSFileSystem = Wrappers.OWSFileSystem(),
-        taskScheduler: Shims.TaskScheduler = Wrappers.TaskScheduler()
+        db: DB,
     ) {
         self.init(
-            dbProvider: { db.grdbStorage.pool },
-            fileSystem: fileSystem,
-            taskScheduler: taskScheduler
+            db: db,
+            fileSystem: Wrappers.OWSFileSystem(),
+            taskScheduler: Wrappers.TaskScheduler()
         )
     }
 
     internal init(
-        dbProvider: @escaping () -> DatabaseWriter,
+        db: DB,
         fileSystem: Shims.OWSFileSystem,
         taskScheduler: Shims.TaskScheduler
     ) {
-        self.dbProvider = dbProvider
+        self.db = db
         self.taskScheduler = taskScheduler
         self.observer = OrphanTableObserver(
             jobRunner: JobRunner(
-                dbProvider: dbProvider,
+                db: db,
                 fileSystem: fileSystem,
                 cleaner: self
             ),
@@ -108,24 +106,24 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
             try? await observer!.jobRunner.runNextCleanupJob()
         }
         // Begin observing the database for changes.
-        dbProvider().add(transactionObserver: observer)
+        db.add(transactionObserver: observer, extent: .observerLifetime)
     }
 
     public func runUntilFinished() async throws(CancellationError) {
         try await observer.jobRunner.runNextCleanupJob()
     }
 
-    public func commitPendingAttachmentWithSneakyTransaction(
+    public func commitPendingAttachment(
         _ record: OrphanedAttachmentRecord
-    ) throws -> OrphanedAttachmentRecord.IDType {
+    ) async throws -> OrphanedAttachmentRecord.IDType {
         let id = UUID()
-        return try commitPendingAttachmentsWithSneakyTransaction([id: record])[id]!
+        return try await commitPendingAttachments([id: record])[id]!
     }
 
-    public func commitPendingAttachmentsWithSneakyTransaction<Key: Hashable>(
+    public func commitPendingAttachments<Key: Hashable>(
         _ records: [Key: OrphanedAttachmentRecord]
-    ) throws -> [Key: OrphanedAttachmentRecord.IDType] {
-        return try dbProvider().write { db in
+    ) async throws -> [Key: OrphanedAttachmentRecord.IDType] {
+        return try await db.awaitableWrite { tx in
             var results = [Key: OrphanedAttachmentRecord.IDType]()
             for (key, record) in records {
                 guard record.sqliteId == nil else {
@@ -134,7 +132,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
                 // Ensure we mark this attachment as pending.
                 var record = record
                 record.isPendingAttachment = true
-                try record.insert(db)
+                try record.insert(tx.database)
                 guard let id = record.sqliteId else {
                     throw OWSAssertionError("Unable to insert")
                 }
@@ -169,18 +167,18 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
 
     private actor JobRunner {
 
-        private let dbProvider: () -> DatabaseWriter
+        private let db: DB
         private nonisolated let fileSystem: Shims.OWSFileSystem
         private weak var cleaner: OrphanedAttachmentCleanerImpl?
 
         private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
         init(
-            dbProvider: @escaping () -> DatabaseWriter,
+            db: DB,
             fileSystem: Shims.OWSFileSystem,
             cleaner: OrphanedAttachmentCleanerImpl
         ) {
-            self.dbProvider = dbProvider
+            self.db = db
             self.fileSystem = fileSystem
             self.cleaner = cleaner
         }
@@ -223,11 +221,11 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
 
             let cleaner = self.cleaner
 
-            try? await dbProvider().write { db in
+            try? await db.awaitableWrite { tx in
                 // Ensure the record is still around; if it was a pending attachment
                 // and the send flow finished while this job slept, just skip & exit.
                 // This happens within the database write lock to ensure correctness.
-                guard try nextRecord.exists(db) else {
+                guard try nextRecord.exists(tx.database) else {
                     Logger.info("Skipping since-deleted orphan row")
                     return
                 }
@@ -243,7 +241,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
                     // Delete within the database write lock to ensure we don't
                     // conflict with the pending attachment send flow.
                     try self.deleteFiles(record: nextRecord)
-                    _ = try nextRecord.delete(db)
+                    _ = try nextRecord.delete(tx.database)
                     Logger.info("Cleaned up orphaned attachment files")
                     return
                 } catch {
@@ -258,9 +256,9 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
         }
 
         private func fetchNextOrphanRecord() -> OrphanedAttachmentRecord? {
-            return try? dbProvider().read { db in
+            return db.read { tx in
                 guard let skippedRowIds = cleaner?.skippedRowIds.get(), !skippedRowIds.isEmpty else {
-                    return try? OrphanedAttachmentRecord.fetchOne(db)
+                    return try? OrphanedAttachmentRecord.fetchOne(tx.database)
                 }
                 let rowIdColumn = Column(OrphanedAttachmentRecord.CodingKeys.sqliteId)
                 var query: QueryInterfaceRequest<OrphanedAttachmentRecord>?
@@ -288,9 +286,9 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
                     }
                 }
                 if skippedRowIdsForInMemoryFilter.isEmpty {
-                    return try? query?.fetchOne(db)
+                    return try? query?.fetchOne(tx.database)
                 } else {
-                    let cursor = try? query?.fetchCursor(db)
+                    let cursor = try? query?.fetchCursor(tx.database)
                     while let next = try? cursor?.next() {
                         if !skippedRowIdsForInMemoryFilter.contains(next.sqliteId!) {
                             return next

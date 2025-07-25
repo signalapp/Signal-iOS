@@ -43,6 +43,14 @@ public extension Array {
     func compacted<T>() -> [T] where Element == T? {
         return self.compactMap({ $0 })
     }
+
+    func mapAsync<T>(_ fn: (Element) async throws -> T) async rethrows -> [T] {
+        var results = [T]()
+        for element in self {
+            try await results.append(fn(element))
+        }
+        return results
+    }
 }
 
 public extension Collection {

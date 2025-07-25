@@ -20,22 +20,22 @@ extension ThreadUtil {
         let messageTimestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
 
         let benchEventId = sendMessageBenchEventStart(messageTimestamp: messageTimestamp)
-        self.enqueueSendQueue.async {
+        self.enqueueSendQueue.enqueue {
             let unpreparedMessage: UnpreparedOutgoingMessage
             do {
-                let messageBody = try messageBody.map {
-                    try DependenciesBridge.shared.attachmentContentValidator
+                let messageBody = try await messageBody.mapAsync {
+                    try await DependenciesBridge.shared.attachmentContentValidator
                         .prepareOversizeTextsIfNeeded(from: ["": $0])
                         .values.first
                 } ?? nil
-                let linkPreviewDataSource = try linkPreviewDraft.map {
-                    try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
+                let linkPreviewDataSource = try await linkPreviewDraft.mapAsync {
+                    try await DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
                 }
-                let mediaAttachments = try mediaAttachments.map {
-                    try $0.forSending()
+                let mediaAttachments = try await mediaAttachments.mapAsync {
+                    try await $0.forSending()
                 }
-                let quotedReplyDraft = try quotedReplyDraft.map {
-                    try DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending($0)
+                let quotedReplyDraft = try await quotedReplyDraft.mapAsync {
+                    try await DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending($0)
                 }
 
                 unpreparedMessage = SSKEnvironment.shared.databaseStorageRef.read { readTransaction in
@@ -54,7 +54,7 @@ extension ThreadUtil {
                 return
             }
 
-            Self.enqueueMessageSync(
+            await Self.enqueueMessageSync(
                 unpreparedMessage,
                 benchEventId: benchEventId,
                 thread: thread,
@@ -76,16 +76,16 @@ extension ThreadUtil {
         let messageTimestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
 
         let benchEventId = sendMessageBenchEventStart(messageTimestamp: messageTimestamp)
-        self.enqueueSendQueue.async {
+        self.enqueueSendQueue.enqueue {
             let unpreparedMessage: UnpreparedOutgoingMessage
             do {
-                let messageBody = try messageBody.map {
-                    try DependenciesBridge.shared.attachmentContentValidator
+                let messageBody = try await messageBody.mapAsync {
+                    try await DependenciesBridge.shared.attachmentContentValidator
                         .prepareOversizeTextsIfNeeded(from: ["": $0])
                         .values.first
                 } ?? nil
-                let linkPreviewDataSource = try linkPreviewDraft.map {
-                    try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
+                let linkPreviewDataSource = try await linkPreviewDraft.mapAsync {
+                    try await DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
                 }
 
                 unpreparedMessage = UnpreparedOutgoingMessage.buildForEdit(
@@ -101,7 +101,7 @@ extension ThreadUtil {
                 return
             }
 
-            Self.enqueueMessageSync(
+            await Self.enqueueMessageSync(
                 unpreparedMessage,
                 benchEventId: benchEventId,
                 thread: thread,
@@ -118,8 +118,8 @@ extension ThreadUtil {
         persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil
     ) {
         let benchEventId = sendMessageBenchEventStart(messageTimestamp: unpreparedMessage.messageTimestampForLogging)
-        self.enqueueSendQueue.async {
-            Self.enqueueMessageSync(
+        self.enqueueSendQueue.enqueue {
+            await Self.enqueueMessageSync(
                 unpreparedMessage,
                 benchEventId: benchEventId,
                 thread: thread,
@@ -134,9 +134,8 @@ extension ThreadUtil {
         benchEventId: String,
         thread: TSThread,
         persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil
-    ) {
-        assertOnQueue(Self.enqueueSendQueue)
-        SSKEnvironment.shared.databaseStorageRef.write { writeTransaction in
+    ) async {
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { writeTransaction in
             guard let preparedMessage = try? unpreparedMessage.prepare(tx: writeTransaction) else {
                 owsFailDebug("Failed to prepare message")
                 return

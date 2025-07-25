@@ -13,7 +13,7 @@ public protocol ContactShareManager {
 
     func validateAndPrepare(
         draft: ContactShareDraft
-    ) throws -> ContactShareDraft.ForSending
+    ) async throws -> ContactShareDraft.ForSending
 
     func build(
         draft: ContactShareDraft.ForSending,
@@ -111,8 +111,8 @@ public class ContactShareManagerImpl: ContactShareManager {
 
     public func validateAndPrepare(
         draft: ContactShareDraft
-    ) throws -> ContactShareDraft.ForSending {
-        let avatarDataSource: AttachmentDataSource? = try {
+    ) async throws -> ContactShareDraft.ForSending {
+        let avatarDataSource: AttachmentDataSource? = try await {
             if
                 let existingAvatarAttachment = draft.existingAvatarAttachment,
                 let stream = existingAvatarAttachment.attachment.asStream()
@@ -126,7 +126,7 @@ public class ContactShareManagerImpl: ContactShareManager {
                     throw OWSAssertionError("Failed to get JPEG")
                 }
                 let mimeType = MimeType.imageJpeg.rawValue
-                return try attachmentValidator.validateContents(
+                return try await attachmentValidator.validateContents(
                     data: imageData,
                     mimeType: mimeType,
                     renderingFlag: .default,

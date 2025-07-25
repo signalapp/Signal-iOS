@@ -19,7 +19,7 @@ public protocol MessageStickerManager {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<MessageSticker>
 
-    func buildDataSource(fromDraft: MessageStickerDraft) throws -> MessageStickerDataSource
+    func buildDataSource(fromDraft: MessageStickerDraft) async throws -> MessageStickerDataSource
 
     func buildValidatedMessageSticker(
         from dataSource: MessageStickerDataSource,
@@ -100,8 +100,8 @@ public class MessageStickerManagerImpl: MessageStickerManager {
         }
     }
 
-    public func buildDataSource(fromDraft draft: MessageStickerDraft) throws -> MessageStickerDataSource {
-        let validatedDataSource = try attachmentValidator.validateContents(
+    public func buildDataSource(fromDraft draft: MessageStickerDraft) async throws -> MessageStickerDataSource {
+        let validatedDataSource = try await attachmentValidator.validateContents(
             data: draft.stickerData,
             mimeType: draft.stickerType.mimeType,
             renderingFlag: .default,

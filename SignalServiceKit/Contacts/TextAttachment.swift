@@ -34,11 +34,11 @@ public struct UnsentTextAttachment {
         self.linkPreviewDraft = linkPreviewDraft
     }
 
-    public func validateAndPrepareForSending() throws -> ForSending {
+    public func validateAndPrepareForSending() async throws -> ForSending {
         let validatedLinkPreview: LinkPreviewDataSource?
         if let linkPreview = linkPreviewDraft {
             do {
-                validatedLinkPreview = try DependenciesBridge.shared.linkPreviewManager.buildDataSource(
+                validatedLinkPreview = try await DependenciesBridge.shared.linkPreviewManager.buildDataSource(
                     from: linkPreview
                 )
             } catch LinkPreviewError.featureDisabled {

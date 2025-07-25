@@ -23,7 +23,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         mockFileSystem = OrphanedAttachmentCleanerImpl.Mocks.OWSFileSystem()
         mockTaskScheduler = OrphanedAttachmentCleanerImpl.Mocks.TaskScheduler()
         orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(
-            dbProvider: { [db] in db!.databaseQueue },
+            db: db,
             fileSystem: mockFileSystem,
             taskScheduler: mockTaskScheduler
         )
@@ -224,8 +224,8 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                 localRelativeFilePathAudioWaveform: nil,
                 localRelativeFilePathVideoStillFrame: nil
             )
-            skippedIds.append(try orphanedAttachmentCleaner
-                .commitPendingAttachmentWithSneakyTransaction(record)
+            skippedIds.append(try await orphanedAttachmentCleaner
+                .commitPendingAttachment(record)
             )
         }
 

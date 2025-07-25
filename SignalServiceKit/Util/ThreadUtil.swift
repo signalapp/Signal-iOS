@@ -14,11 +14,11 @@ public final class ThreadUtil {
 
     // A serial queue that ensures that messages are sent in the
     // same order in which they are enqueued.
-    public static var enqueueSendQueue: DispatchQueue { .sharedUserInitiated }
+    public static var enqueueSendQueue = SerialTaskQueue()
 
     public static func enqueueSendAsyncWrite(_ block: @escaping (DBWriteTransaction) -> Void) {
-        enqueueSendQueue.async {
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
+        enqueueSendQueue.enqueue {
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 block(transaction)
             }
         }
@@ -70,9 +70,9 @@ public extension ThreadUtil {
             return builder.build(transaction: tx)
         }
 
-        Self.enqueueSendQueue.async {
+        Self.enqueueSendQueue.enqueue {
             guard
-                let sendableContactShareDraft = try? DependenciesBridge.shared.contactShareManager
+                let sendableContactShareDraft = try? await DependenciesBridge.shared.contactShareManager
                     .validateAndPrepare(draft: contactShareDraft)
             else {
                 owsFailDebug("Failed to build contact share")
@@ -84,7 +84,7 @@ public extension ThreadUtil {
                 contactShareDraft: sendableContactShareDraft
             )
 
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 guard let preparedMessage = try? unpreparedMessage.prepare(tx: transaction) else {
                     owsFailDebug("Unable to build message for sending!")
                     return
@@ -117,7 +117,7 @@ public extension ThreadUtil {
             return builder.build(transaction: tx)
         }
 
-        Self.enqueueSendQueue.async {
+        Self.enqueueSendQueue.enqueue {
             let stickerDraft: MessageStickerDraft? = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 guard let stickerMetadata = StickerManager.installedStickerMetadata(stickerInfo: stickerInfo, transaction: tx) else {
                     owsFailDebug("Could not find sticker file.")
@@ -143,14 +143,14 @@ public extension ThreadUtil {
 
             let stickerDataSource: MessageStickerDataSource
             do {
-                stickerDataSource = try DependenciesBridge.shared.messageStickerManager.buildDataSource(
+                stickerDataSource = try await DependenciesBridge.shared.messageStickerManager.buildDataSource(
                     fromDraft: stickerDraft
                 )
             } catch {
                 owsFailDebug("Failed to build sticker!")
                 return
             }
-            SSKEnvironment.shared.databaseStorageRef.write { tx in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 self.enqueueMessage(message, stickerDataSource: stickerDataSource, thread: thread, tx: tx)
             }
         }
@@ -179,17 +179,17 @@ public extension ThreadUtil {
             emoji: stickerMetadata.firstEmoji
         )
 
-        Self.enqueueSendQueue.async {
+        Self.enqueueSendQueue.enqueue {
             let stickerDataSource: MessageStickerDataSource
             do {
-                stickerDataSource = try DependenciesBridge.shared.messageStickerManager.buildDataSource(
+                stickerDataSource = try await DependenciesBridge.shared.messageStickerManager.buildDataSource(
                     fromDraft: stickerDraft
                 )
             } catch {
                 owsFailDebug("Failed to build sticker!")
                 return
             }
-            SSKEnvironment.shared.databaseStorageRef.write { tx in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 self.enqueueMessage(message, stickerDataSource: stickerDataSource, thread: thread, tx: tx)
             }
         }

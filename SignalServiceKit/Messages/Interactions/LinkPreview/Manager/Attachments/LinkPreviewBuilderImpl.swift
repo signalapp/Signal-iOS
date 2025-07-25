@@ -26,7 +26,7 @@ public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
 
     public func buildDataSource(
         _ draft: OWSLinkPreviewDraft
-    ) throws -> LinkPreviewDataSource {
+    ) async throws -> LinkPreviewDataSource {
         let metadata = OWSLinkPreview.Metadata(
             urlString: draft.urlString,
             title: draft.title,
@@ -36,7 +36,7 @@ public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
         guard let imageData = draft.imageData, let imageMimeType = draft.imageMimeType else {
             return .init(metadata: metadata, imageDataSource: nil, isForwarded: draft.isForwarded)
         }
-        let imageDataSource: AttachmentDataSource = try attachmentValidator.validateContents(
+        let imageDataSource: AttachmentDataSource = try await attachmentValidator.validateContents(
             data: imageData,
             mimeType: imageMimeType,
             renderingFlag: .default,

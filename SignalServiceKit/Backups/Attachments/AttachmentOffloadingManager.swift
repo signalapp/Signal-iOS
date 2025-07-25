@@ -395,31 +395,18 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
             $0[$1.id] = AttachmentStream.newRelativeFilePath()
         }
 
-        // orphanedAttachmentCleaner does not (and cannot) use structured concurrency
-        // but does open a database write, necessarily not an awaitableWrite. That is
-        // a no-no from this structured concurrency caller, so bridge back to non-structured
-        // concurrency to perform this step.
         // do the whole batch in one big write.
-        let thumbnailOrphanRecordIds: [Attachment.IDType: OrphanedAttachmentRecord.IDType]
-        thumbnailOrphanRecordIds = try await withCheckedThrowingContinuation { [orphanedAttachmentCleaner] (continuation) in
-            return DispatchQueue.global().async {
-                do {
-                    let results = try orphanedAttachmentCleaner.commitPendingAttachmentsWithSneakyTransaction(
-                        reservedThumbnailFilePaths.mapValues { reservedThumbnailFilePath in
-                            OrphanedAttachmentRecord(
-                                localRelativeFilePath: nil,
-                                localRelativeFilePathThumbnail: reservedThumbnailFilePath,
-                                localRelativeFilePathAudioWaveform: nil,
-                                localRelativeFilePathVideoStillFrame: nil
-                            )
-                        }
+        let thumbnailOrphanRecordIds: [Attachment.IDType: OrphanedAttachmentRecord.IDType] = try await orphanedAttachmentCleaner
+            .commitPendingAttachments(
+                reservedThumbnailFilePaths.mapValues { reservedThumbnailFilePath in
+                    OrphanedAttachmentRecord(
+                        localRelativeFilePath: nil,
+                        localRelativeFilePathThumbnail: reservedThumbnailFilePath,
+                        localRelativeFilePathAudioWaveform: nil,
+                        localRelativeFilePathVideoStillFrame: nil
                     )
-                    continuation.resume(returning: results)
-                } catch let error {
-                    continuation.resume(throwing: error)
                 }
-            }
-        }
+            )
 
         // Generate thumbnails in parallel
         let successfulThumbnails: Set<Attachment.IDType>

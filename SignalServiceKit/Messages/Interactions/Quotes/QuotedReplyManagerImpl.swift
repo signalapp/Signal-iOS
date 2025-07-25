@@ -619,7 +619,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
     public func prepareDraftForSending(
         _ draft: DraftQuotedReplyModel
-    ) throws -> DraftQuotedReplyModel.ForSending {
+    ) async throws -> DraftQuotedReplyModel.ForSending {
         switch draft.content {
         case .edit(_, let tsQuotedMessage, _):
             return .init(
@@ -660,7 +660,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             return (attachmentReference, attachment)
         }
 
-        let quoteAttachment = { () -> DraftQuotedReplyModel.ForSending.Attachment? in
+        let quoteAttachment = await { () -> DraftQuotedReplyModel.ForSending.Attachment? in
             guard let originalAttachmentReference, let originalAttachment else {
                 return nil
             }
@@ -676,7 +676,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 return .stub(.init(mimeType: originalAttachment.mimeType, sourceFilename: originalAttachmentReference.sourceFilename))
             }
             do {
-                let dataSource = try attachmentValidator.prepareQuotedReplyThumbnail(
+                let dataSource = try await attachmentValidator.prepareQuotedReplyThumbnail(
                     fromOriginalAttachment: originalAttachmentStream,
                     originalReference: originalAttachmentReference
                 )

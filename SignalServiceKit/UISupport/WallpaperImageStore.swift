@@ -14,7 +14,7 @@ public protocol WallpaperImageStore {
         _ photo: UIImage?,
         for thread: TSThread,
         onInsert: @escaping (DBWriteTransaction) throws -> Void
-    ) throws
+    ) async throws
 
     /// Pass nil to remove any existing wallpaper.
     /// Opens a sneaky transaction; should not be called from within a transaction.
@@ -22,7 +22,7 @@ public protocol WallpaperImageStore {
     func setGlobalThreadWallpaperImage(
         _ photo: UIImage?,
         onInsert: @escaping (DBWriteTransaction) throws -> Void
-    ) throws
+    ) async throws
 
     func loadWallpaperImage(for thread: TSThread, tx: DBReadTransaction) -> UIImage?
 
