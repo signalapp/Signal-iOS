@@ -1386,14 +1386,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     finalizeRegistration(tx: tx)
                 }
 
+                let finishTask = { @MainActor in
+                    await setupContactsAndFinish().awaitable()
+                }
+
                 if let finishingProgressSource {
                     return await finishingProgressSource.updatePeriodically(
-                        estimatedTimeToCompletion: 5
-                    ) { @MainActor in
-                        await setupContactsAndFinish().awaitable()
-                    }
+                        estimatedTimeToCompletion: 5,
+                        work: finishTask
+                    )
                 } else {
-                    return await setupContactsAndFinish().awaitable()
+                    return await finishTask()
                 }
             }
 
