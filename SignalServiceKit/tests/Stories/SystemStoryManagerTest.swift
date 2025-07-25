@@ -13,8 +13,7 @@ class SystemStoryManagerTest: SSKBaseTest {
     }
 
     private class MockMessageProcessor: SystemStoryManager.Shims.MessageProcessor {
-        func waitForFetchingAndProcessing() -> Guarantee<Void> {
-            return .value(())
+        func waitForFetchingAndProcessing() async throws(CancellationError) {
         }
     }
 
@@ -37,14 +36,7 @@ class SystemStoryManagerTest: SSKBaseTest {
     }
 
     override func tearDown() {
-        let flushExpectation = self.expectation(description: "flush")
-        DispatchQueue.main.async {
-            self.manager.chainedPromise.enqueue { .value(()) }.ensure {
-                self.manager = nil
-                flushExpectation.fulfill()
-            }.cauterize()
-        }
-        self.wait(for: [flushExpectation], timeout: 60)
+        self.manager = nil
         super.tearDown()
     }
 
@@ -97,7 +89,7 @@ class SystemStoryManagerTest: SSKBaseTest {
             return mockSession
         }
 
-        try await manager.enqueueOnboardingStoryDownload().awaitable()
+        try await manager.enqueueOnboardingStoryDownload().value
 
         // The above code triggers unstructured asynchronous operations -- delay
         // the test until those have had a chance to execute.
@@ -162,8 +154,8 @@ class SystemStoryManagerTest: SSKBaseTest {
         }
 
         // Start both
-        async let firstDownload: Void = manager.enqueueOnboardingStoryDownload().awaitable()
-        async let secondDownload: Void = manager.enqueueOnboardingStoryDownload().awaitable()
+        async let firstDownload: Void = manager.enqueueOnboardingStoryDownload().value
+        async let secondDownload: Void = manager.enqueueOnboardingStoryDownload().value
 
         // and then resume the first
         if continueCounter.increment() == 2 {
@@ -179,20 +171,14 @@ class SystemStoryManagerTest: SSKBaseTest {
             DispatchQueue.main.async { continuation.resume(returning: ()) }
         }
 
-        // After we've fulfilled, try again, which should't redownload.
+        // After we've fulfilled, try again, which shouldn't redownload.
 
         mockSignalService.mockUrlSessionBuilder = { _, _, _ in
             XCTFail("Should not be issuing another network request.")
             return .init()
         }
 
-        try await manager.enqueueOnboardingStoryDownload().awaitable()
-
-        // The above code triggers unstructured asynchronous operations -- delay
-        // the test until those have had a chance to execute.
-        await withCheckedContinuation { continuation in
-            DispatchQueue.main.async { continuation.resume(returning: ()) }
-        }
+        try await manager.enqueueOnboardingStoryDownload().value
     }
 
     // MARK: - Viewed state
@@ -244,7 +230,7 @@ class SystemStoryManagerTest: SSKBaseTest {
             return mockSession
         }
 
-        try await manager.enqueueOnboardingStoryDownload().awaitable()
+        try await manager.enqueueOnboardingStoryDownload().value
 
         // The above code triggers unstructured asynchronous operations -- delay
         // the test until those have had a chance to execute.
@@ -266,6 +252,13 @@ class SystemStoryManagerTest: SSKBaseTest {
             }
         }
 
+        // The above code triggers unstructured asynchronous operations -- delay
+        // the test until those have had a chance to execute.
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { continuation.resume(returning: ()) }
+        }
+        try await manager.flush()
+
         try write {
             try manager.setHasViewedOnboardingStory(
                 source: .local(
@@ -276,13 +269,13 @@ class SystemStoryManagerTest: SSKBaseTest {
             )
         }
 
+        try await manager.cleanUpOnboardingStoryIfNeeded().value
+
         // The above code triggers unstructured asynchronous operations -- delay
         // the test until those have had a chance to execute.
         await withCheckedContinuation { continuation in
             DispatchQueue.main.async { continuation.resume(returning: ()) }
         }
-
-        try await manager.cleanUpOnboardingStoryIfNeeded().awaitable()
 
         // Check that stories were indeed deleted.
         read { transaction in
@@ -306,13 +299,7 @@ class SystemStoryManagerTest: SSKBaseTest {
         }
 
         // Triggering a download should do the cleanup.
-        try await manager.enqueueOnboardingStoryDownload().awaitable()
-
-        // The above code triggers unstructured asynchronous operations -- delay
-        // the test until those have had a chance to execute.
-        await withCheckedContinuation { continuation in
-            DispatchQueue.main.async { continuation.resume(returning: ()) }
-        }
+        try await manager.enqueueOnboardingStoryDownload().value
 
         read { transaction in
             if let mockManager = SSKEnvironment.shared.systemStoryManagerRef as? SystemStoryManagerMock {
@@ -372,7 +359,7 @@ class SystemStoryManagerTest: SSKBaseTest {
             return mockSession
         }
 
-        try await manager.enqueueOnboardingStoryDownload().awaitable()
+        try await manager.enqueueOnboardingStoryDownload().value
 
         // The above code triggers unstructured asynchronous operations -- delay
         // the test until those have had a chance to execute.
@@ -399,8 +386,16 @@ class SystemStoryManagerTest: SSKBaseTest {
         await withCheckedContinuation { continuation in
             DispatchQueue.main.async { continuation.resume(returning: ()) }
         }
+        try await manager.flush()
 
-        try await manager.cleanUpOnboardingStoryIfNeeded().awaitable()
+        try await manager.cleanUpOnboardingStoryIfNeeded().value
+
+        // The above code triggers unstructured asynchronous operations -- delay
+        // the test until those have had a chance to execute.
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { continuation.resume(returning: ()) }
+        }
+        try await manager.flush()
 
         // Check that stories were not deleted.
         read { transaction in

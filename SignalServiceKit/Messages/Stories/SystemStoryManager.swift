@@ -70,8 +70,13 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
     private let overlayKvStore = KeyValueStore(collection: "StoryViewerOnboardingOverlay")
     private let groupStoryEducationStore = KeyValueStore(collection: "GroupStoryEducation")
 
-    private let queue: Scheduler
-    internal let chainedPromise: ChainedPromise<Void>
+    private let taskQueue = SerialTaskQueue()
+
+    #if TESTABLE_BUILD
+    func flush() async throws {
+        try await taskQueue.enqueue(operation: {}).value
+    }
+    #endif
 
     public convenience init(appReadiness: AppReadiness, messageProcessor: MessageProcessor) {
         self.init(
@@ -91,8 +96,6 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         self.fileSystem = fileSystem
         self.messageProcessor = messageProcessor
         self.storyMessageFactory = storyMessageFactory
-        self.queue = DispatchQueue(label: "org.signal.story.onboarding", qos: .utility)
-        self.chainedPromise = ChainedPromise<Void>(scheduler: self.queue)
 
         if CurrentAppContext().isMainApp {
             appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
@@ -113,19 +116,22 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
     // MARK: - API
 
     @discardableResult
-    public func enqueueOnboardingStoryDownload() -> Promise<Void> {
-        return chainedPromise.enqueue { [weak self] in
-            return (self?.downloadOnboardingStoryIfNeeded() ?? .init(error: OWSAssertionError("SystemStoryManager unretained"))).catch(on: DispatchQueue.global()) { error in
+    public func enqueueOnboardingStoryDownload() -> Task<Void, any Error> {
+        return taskQueue.enqueue(operation: {
+            do {
+                try await self.downloadOnboardingStoryIfNeeded()
+            } catch {
                 Logger.warn("\(error)")
+                throw error
             }
-        }
+        })
     }
 
     @discardableResult
-    public func cleanUpOnboardingStoryIfNeeded() -> Promise<Void> {
-        return chainedPromise.enqueue { [weak self] () -> Promise<OnboardingStoryDownloadStatus> in
-            return self?.checkOnboardingStoryDownloadStatus() ?? .init(error: OWSAssertionError("SystemStoryManager unretained"))
-        }.asVoid()
+    public func cleanUpOnboardingStoryIfNeeded() -> Task<Void, any Error> {
+        return taskQueue.enqueue(operation: {
+            _ = await self.checkOnboardingStoryDownloadStatus()
+        })
     }
 
     public func isOnboardingStoryRead(transaction: DBReadTransaction) -> Bool {
@@ -323,7 +329,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
                     return
                 }
                 guard
-                    let viewedTimstamp = changedModels
+                    let viewedTimestamp = changedModels
                         .lazy
                         .compactMap(\.localUserViewedTimestamp)
                         .min()
@@ -333,7 +339,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
                 do {
                     try SSKEnvironment.shared.databaseStorageRef.write {
                         try self?.setOnboardingStoryViewedOnThisDevice(
-                            atTimestamp: viewedTimstamp,
+                            atTimestamp: viewedTimestamp,
                             shouldUpdateStorageService: true,
                             transaction: $0
                         )
@@ -361,101 +367,66 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
 
     // MARK: - Implementation
 
-    private func downloadOnboardingStoryIfNeeded() -> Promise<Void> {
+    private func downloadOnboardingStoryIfNeeded() async throws {
         let knownViewStatus = SSKEnvironment.shared.databaseStorageRef.read {
             self.onboardingStoryViewStatus(transaction: $0)
         }
         switch knownViewStatus.status {
         case .viewedOnAnotherDevice:
             // We already know things are viewed, we can stop right away.
-            return .value(())
+            break
         case .viewedOnThisDevice:
             // Already viewed, take the opportunity to clean up if we have to, but don't force it.
-            return self.checkOnboardingStoryDownloadStatus().asVoid()
+            _ = await self.checkOnboardingStoryDownloadStatus()
         case .notViewed:
             // Sync to check if we viewed on another device since last time we synced.
-            return self.syncOnboardingStoryViewStatus()
-                .then(on: queue) { [weak self] (viewStatus: OnboardingStoryViewStatus) -> Promise<Void> in
-                    guard let strongSelf = self else {
-                        return .init(error: OWSAssertionError("SystemStoryManager unretained"))
-                    }
-                    switch viewStatus.status {
-                    case .viewedOnAnotherDevice:
-                        // Already viewed, immediately delete anything we already downloaded.
-                        return strongSelf.checkOnboardingStoryDownloadStatus(forceDeletingIfDownloaded: true).asVoid()
-                    case .viewedOnThisDevice:
-                        // Already viewed, take the opportunity to clean up if we have to, but don't force it.
-                        return strongSelf.checkOnboardingStoryDownloadStatus().asVoid()
-                    case .notViewed:
-                        return strongSelf.downloadOnboardingStoryIfUndownloaded()
-                    }
-                }
+            let viewStatus = try await self.syncOnboardingStoryViewStatus()
+            switch viewStatus.status {
+            case .viewedOnAnotherDevice:
+                // Already viewed, immediately delete anything we already downloaded.
+                _ = await checkOnboardingStoryDownloadStatus(forceDeletingIfDownloaded: true)
+            case .viewedOnThisDevice:
+                // Already viewed, take the opportunity to clean up if we have to, but don't force it.
+                _ = await checkOnboardingStoryDownloadStatus()
+            case .notViewed:
+                try await downloadOnboardingStoryIfUndownloaded()
+            }
         }
     }
 
-    private func syncOnboardingStoryViewStatus() -> Promise<OnboardingStoryViewStatus> {
-        messageProcessor.waitForFetchingAndProcessing()
-            .then(on: queue) {
-                Promise.wrapAsync {
-                    try await SSKEnvironment.shared.storageServiceManagerRef.waitForPendingRestores()
-                }
-            }
-            .then(on: queue) { [weak self] _ -> Promise<OnboardingStoryViewStatus> in
-                guard let strongSelf = self else {
-                    return .init(error: OWSAssertionError("SystemStoryManager unretained"))
-                }
-                // At this point, we will have synced the AccountRecord, which would call
-                // `SystemStoryManager.setHasViewedOnboardingStoryOnAnotherDevice()` and write
-                // to the database. Read from the database to get whatever the latest value is.
-                return .value(SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                    return strongSelf.onboardingStoryViewStatus(transaction: transaction)
-                })
-            }
+    private func syncOnboardingStoryViewStatus() async throws -> OnboardingStoryViewStatus {
+        try await messageProcessor.waitForFetchingAndProcessing()
+        try await SSKEnvironment.shared.storageServiceManagerRef.waitForPendingRestores()
+        // At this point, we will have synced the AccountRecord, which would call
+        // `SystemStoryManager.setHasViewedOnboardingStoryOnAnotherDevice()` and write
+        // to the database. Read from the database to get whatever the latest value is.
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            return onboardingStoryViewStatus(transaction: transaction)
+        }
     }
 
-    private func downloadOnboardingStoryIfUndownloaded() -> Promise<Void> {
-        let queue = self.queue
-        return checkOnboardingStoryDownloadStatus()
-            .then(on: queue) { [weak self] (downloadStatus: OnboardingStoryDownloadStatus) -> Promise<Void> in
-                guard !downloadStatus.isDownloaded else {
-                    // Already done.
-                    return .value(())
-                }
-                guard let strongSelf = self else {
-                    return .init(error: OWSAssertionError("SystemStoryManager unretained"))
-                }
-                let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates2()
-                return strongSelf.fetchFilenames(urlSession: urlSession)
-                    .then(on: queue) { [weak self] (fileNames: [String]) -> Promise<[AttachmentDataSource]> in
-                        let promises = fileNames.compactMap {
-                            self?.downloadOnboardingAsset(urlSession: urlSession, url: $0)
-                        }
-                        return Promise.when(on: SyncScheduler(), fulfilled: promises)
-                    }
-                    .then(on: queue) { [weak self] (attachmentSources: [AttachmentDataSource]) -> Promise<Void> in
-                        guard let strongSelf = self else {
-                            return .init(error: OWSAssertionError("SystemStoryManager unretained"))
-                        }
-                        do {
-                            return .value(try SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                                let uniqueIds = try strongSelf.createStoryMessages(
-                                    attachmentSources: attachmentSources,
-                                    transaction: transaction
-                                )
-                                try strongSelf.markOnboardingStoryDownloaded(
-                                    messageUniqueIds: uniqueIds,
-                                    transaction: transaction
-                                )
-                            })
-                        } catch {
-                            return .init(error: error)
-                        }
-                    }
-                }
+    private func downloadOnboardingStoryIfUndownloaded() async throws {
+        let downloadStatus = await checkOnboardingStoryDownloadStatus()
+        if downloadStatus.isDownloaded {
+            // Already done.
+            return
+        }
+
+        let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates2()
+        let fileNames = try await fetchFilenames(urlSession: urlSession)
+        var attachmentSources = [AttachmentDataSource]()
+        for fileName in fileNames {
+            attachmentSources.append(try await downloadOnboardingAsset(urlSession: urlSession, url: fileName))
+        }
+
+        return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            let uniqueIds = try createStoryMessages(attachmentSources: attachmentSources, transaction: tx)
+            try markOnboardingStoryDownloaded(messageUniqueIds: uniqueIds, transaction: tx)
+        }
     }
 
-    private func checkOnboardingStoryDownloadStatus(forceDeletingIfDownloaded: Bool = false) -> Promise<OnboardingStoryDownloadStatus> {
-        let status = SSKEnvironment.shared.databaseStorageRef.write { transaction -> OnboardingStoryDownloadStatus in
+    private func checkOnboardingStoryDownloadStatus(forceDeletingIfDownloaded: Bool = false) async -> OnboardingStoryDownloadStatus {
+        let status = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction -> OnboardingStoryDownloadStatus in
             let status = self.onboardingStoryDownloadStatus(transaction: transaction)
             if status.isDownloaded {
                 // clean up opportunistically.
@@ -471,7 +442,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         DispatchQueue.main.async {
             self.beginObservingOnboardingStoryEventsIfNeeded(downloadStatus: status)
         }
-        return .value(status)
+        return status
     }
 
     // MARK: Story Deletion
@@ -541,57 +512,51 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
 
     private func fetchFilenames(
         urlSession: OWSURLSessionProtocol
-    ) -> Promise<[String]> {
-        return Promise.wrapAsync {
-            return try await urlSession.performRequest(Constants.manifestPath, method: .get)
-        }.map(on: queue) { (response: HTTPResponse) throws -> [String] in
-            guard
-                let json = response.responseBodyJson,
-                let responseDictionary = json as? [String: AnyObject],
-                let version = responseDictionary[Constants.manifestVersionKey] as? String,
-                let languages = responseDictionary[Constants.manifestLanguagesKey] as? [String: AnyObject]
-            else {
-                throw OWSAssertionError("Missing or invalid JSON")
-            }
-            guard
-                let assetFilenames = Locale.current.languageCode.map({ languageCode in
-                    languages[languageCode] as? [String]
-                }) ?? (languages[Constants.fallbackLanguageCode] as? [String])
-            else {
-                throw OWSAssertionError("Unable to locate onboarding image set")
-            }
-            return assetFilenames.map {
-                return Constants.imagePath(version: version, filename: $0)
-            }
+    ) async throws -> [String] {
+        let response = try await urlSession.performRequest(Constants.manifestPath, method: .get)
+        guard
+            let json = response.responseBodyJson,
+            let responseDictionary = json as? [String: AnyObject],
+            let version = responseDictionary[Constants.manifestVersionKey] as? String,
+            let languages = responseDictionary[Constants.manifestLanguagesKey] as? [String: AnyObject]
+        else {
+            throw OWSAssertionError("Missing or invalid JSON")
+        }
+        guard
+            let assetFilenames = Locale.current.languageCode.map({ languageCode in
+                languages[languageCode] as? [String]
+            }) ?? (languages[Constants.fallbackLanguageCode] as? [String])
+        else {
+            throw OWSAssertionError("Unable to locate onboarding image set")
+        }
+        return assetFilenames.map {
+            return Constants.imagePath(version: version, filename: $0)
         }
     }
 
     private func downloadOnboardingAsset(
         urlSession: OWSURLSessionProtocol,
         url: String
-    ) -> Promise<AttachmentDataSource> {
-        return Promise.wrapAsync {
-            return try await urlSession.performDownload(url, method: .get)
-        }.map(on: self.queue) { [fileSystem, storyMessageFactory] result in
-            let resultUrl = result.downloadUrl
+    ) async throws -> AttachmentDataSource {
+        let result = try await urlSession.performDownload(url, method: .get)
+        let resultUrl = result.downloadUrl
 
-            guard fileSystem.fileOrFolderExists(url: resultUrl) else {
-                throw OWSAssertionError("Onboarding story url missing")
-            }
-            guard
-                fileSystem.isValidImage(at: resultUrl, mimeType: Constants.imageExtension)
-            else {
-                throw OWSAssertionError("Invalid onboarding asset")
-            }
-            let dataSource = try DataSourcePath(
-                fileUrl: resultUrl,
-                shouldDeleteOnDeallocation: CurrentAppContext().isRunningTests.negated
-            )
-            return try storyMessageFactory.validateAttachmentContents(
-                dataSource: dataSource,
-                mimeType: Constants.imageMimeType
-            )
+        guard fileSystem.fileOrFolderExists(url: resultUrl) else {
+            throw OWSAssertionError("Onboarding story url missing")
         }
+        guard
+            fileSystem.isValidImage(at: resultUrl, mimeType: Constants.imageExtension)
+        else {
+            throw OWSAssertionError("Invalid onboarding asset")
+        }
+        let dataSource = try DataSourcePath(
+            fileUrl: resultUrl,
+            shouldDeleteOnDeallocation: CurrentAppContext().isRunningTests.negated
+        )
+        return try storyMessageFactory.validateAttachmentContents(
+            dataSource: dataSource,
+            mimeType: Constants.imageMimeType
+        )
     }
 
     /// Returns unique Ids for the created messages. Fails if any one message creation fails.
@@ -756,7 +721,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         static let imageWidth = 1125
         static let imageHeight = 1998
 
-        static let postViewingTimeout: TimeInterval = 24 /* hrs */ * 60 * 60
+        static let postViewingTimeout: TimeInterval = 24 * .hour
     }
 }
 
@@ -775,7 +740,7 @@ extension SystemStoryManager {
 // MARK: MessageProcessor
 
 public protocol _SystemStoryManager_MessageProcessorShim {
-    func waitForFetchingAndProcessing() -> Guarantee<Void>
+    func waitForFetchingAndProcessing() async throws(CancellationError)
 }
 
 public class _SystemStoryManager_MessageProcessorWrapper: _SystemStoryManager_MessageProcessorShim {
@@ -786,13 +751,7 @@ public class _SystemStoryManager_MessageProcessorWrapper: _SystemStoryManager_Me
         self.messageProcessor = messageProcessor
     }
 
-    public func waitForFetchingAndProcessing() -> Guarantee<Void> {
-        return Guarantee.wrapAsync { [messageProcessor] in
-            do throws(CancellationError) {
-                try await messageProcessor.waitForFetchingAndProcessing()
-            } catch {
-                owsFail("Guarantees can't be canceled.")
-            }
-        }
+    public func waitForFetchingAndProcessing() async throws(CancellationError) {
+        try await messageProcessor.waitForFetchingAndProcessing()
     }
 }

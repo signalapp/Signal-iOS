@@ -18,12 +18,12 @@ public protocol SystemStoryManagerProtocol {
 
     /// Downloads the onboarding story if it has not been downloaded before.
     /// Called on its own when the main app starts up.
-    func enqueueOnboardingStoryDownload() -> Promise<Void>
+    func enqueueOnboardingStoryDownload() -> Task<Void, any Error>
 
     /// If the onboarding story is downloaded, has been viewed, and meets the conditions
     /// to be expired, deletes it and cleans up references.
     /// Called on its own when the app is backgrounded.
-    func cleanUpOnboardingStoryIfNeeded() -> Promise<Void>
+    func cleanUpOnboardingStoryIfNeeded() -> Task<Void, any Error>
 
     /// "Read" means the user went to the stories tab with the onboarding story available.
     /// If its viewed, its also read.

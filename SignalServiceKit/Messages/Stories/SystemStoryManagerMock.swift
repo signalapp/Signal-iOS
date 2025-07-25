@@ -8,20 +8,20 @@ import Foundation
 public class SystemStoryManagerMock: SystemStoryManagerProtocol {
 
     /// In tests, set some other handler to this to return different results when the system under test calls enqueueOnboardingStoryDownload
-    public lazy var downloadOnboardingStoryHandler: () -> Promise<Void> = {
-        return .value(())
+    public lazy var downloadOnboardingStoryHandler: () -> Task<Void, any Error> = {
+        return Task {}
     }
 
-    public func enqueueOnboardingStoryDownload() -> Promise<Void> {
+    public func enqueueOnboardingStoryDownload() -> Task<Void, any Error> {
         return downloadOnboardingStoryHandler()
     }
 
     /// In tests, set some other handler to this to return different results when the system under test calls cleanUpOnboardingStoryIfNeeded
-    public lazy var cleanUpOnboardingStoryHandler: () -> Promise<Void> = {
-        return .value(())
+    public lazy var cleanUpOnboardingStoryHandler: () -> Task<Void, any Error> = {
+        return Task {}
     }
 
-    public func cleanUpOnboardingStoryIfNeeded() -> Promise<Void> {
+    public func cleanUpOnboardingStoryIfNeeded() -> Task<Void, any Error> {
         return cleanUpOnboardingStoryHandler()
     }
 
