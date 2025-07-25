@@ -200,10 +200,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if #available(iOS 26, *), !UIDevice.current.isIPad {
-            (tabBarController as? HomeTabBarController)?.setTabBarHidden(false, animated: false)
-        }
-
         appReadiness.setUIIsReady()
 
         if getStartedBanner == nil && !hasEverPresentedExperienceUpgrade && ExperienceUpgradeManager.presentNext(fromViewController: self) {

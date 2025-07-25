@@ -50,9 +50,6 @@ extension ChatListViewController {
         focusMessageId: String? = nil,
         animated: Bool
     ) {
-        if #available(iOS 26, *), !UIDevice.current.isIPad {
-            (tabBarController as? HomeTabBarController)?.setTabBarHidden(true, animated: false)
-        }
         conversationSplitViewController?.presentThread(
             threadUniqueId: threadUniqueId,
             action: action,
