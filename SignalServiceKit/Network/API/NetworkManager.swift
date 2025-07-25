@@ -159,17 +159,6 @@ public class NetworkManager {
             throw error
         }
     }
-
-    /// Deprecated. Please use ``asyncRequest`` instead.
-    public func makePromise(request: TSRequest, canUseWebSocket: Bool = true) -> Promise<HTTPResponse> {
-        if canUseWebSocket && OWSChatConnection.canAppUseSocketsToMakeRequests {
-            return Promise.wrapAsync { [chatConnectionManager] in
-                try await chatConnectionManager.makeRequest(request)
-            }
-        } else {
-            return restNetworkManager.makePromise(request: request)
-        }
-    }
 }
 
 // MARK: -
@@ -256,13 +245,6 @@ public class OWSFakeNetworkManager: NetworkManager {
         Logger.info("Ignoring request: \(request)")
         // Never resolve.
         return try await withUnsafeThrowingContinuation { (_ continuation: UnsafeContinuation<any HTTPResponse, any Error>) -> Void in }
-    }
-
-    public override func makePromise(request: TSRequest, canUseWebSocket: Bool) -> Promise<HTTPResponse> {
-        Logger.info("Ignoring request: \(request)")
-        // Never resolve.
-        let (promise, _) = Promise<HTTPResponse>.pending()
-        return promise
     }
 }
 

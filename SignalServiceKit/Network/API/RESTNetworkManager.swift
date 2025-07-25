@@ -35,10 +35,6 @@ class RESTNetworkManager {
         return result
     }
 
-    func makePromise(request: TSRequest) -> Promise<HTTPResponse> {
-        return Promise.wrapAsync { return try await self.asyncRequest(request) }
-    }
-
     func asyncRequest(_ request: TSRequest) async throws -> HTTPResponse {
         return try await makeRequest(request)
     }

@@ -61,10 +61,6 @@ class _AttachmentUploadManager_NetworkManagerMock: NetworkManager {
     override func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool = true, retryPolicy: RetryPolicy = .dont) async throws -> any HTTPResponse {
         return try await performRequestBlock!(request, canUseWebSocket).awaitable()
     }
-
-    override func makePromise(request: TSRequest, canUseWebSocket: Bool = true) -> Promise<HTTPResponse> {
-        return performRequestBlock!(request, canUseWebSocket)
-    }
 }
 
 public class _AttachmentUploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {

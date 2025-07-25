@@ -516,7 +516,6 @@ private func failTest<T>(
 private enum CrashyMocks {
     final class MockNetworkManager: NetworkManager {
         override func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool = true, retryPolicy: RetryPolicy = .dont) async throws -> any HTTPResponse { failTest(Self.self) }
-        override func makePromise(request: TSRequest, canUseWebSocket: Bool = true) -> Promise<any HTTPResponse> { failTest(Self.self) }
     }
 
     final class MockWebSocketFactory: WebSocketFactory {
