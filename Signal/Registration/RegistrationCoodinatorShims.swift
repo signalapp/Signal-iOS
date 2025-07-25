@@ -73,32 +73,32 @@ public class _RegistrationCoordinator_ContactsManagerWrapper: _RegistrationCoord
 
 public protocol _RegistrationCoordinator_CNContactsStoreShim {
 
-    func needsContactsAuthorization() -> Guarantee<Bool>
+    func needsContactsAuthorization() -> Bool
 
-    func requestContactsAuthorization() -> Guarantee<Void>
+    func requestContactsAuthorization() async
 }
 
 public class _RegistrationCoordinator_CNContactsStoreWrapper: _RegistrationCoordinator_CNContactsStoreShim {
 
     public init() {}
 
-    public func needsContactsAuthorization() -> Guarantee<Bool> {
-        return .value(CNContactStore.authorizationStatus(for: .contacts) == .notDetermined)
+    public func needsContactsAuthorization() -> Bool {
+        return CNContactStore.authorizationStatus(for: .contacts) == .notDetermined
     }
 
-    public func requestContactsAuthorization() -> Guarantee<Void> {
-        let (guarantee, future) = Guarantee<Void>.pending()
-        CNContactStore().requestAccess(for: CNEntityType.contacts) { (granted, error) -> Void in
-            if granted {
-                Logger.info("User granted contacts permission")
-            } else {
-                // Unfortunately, we can't easily disambiguate "not granted" and
-                // "other error".
-                Logger.warn("User denied contacts permission or there was an error. Error: \(String(describing: error))")
+    public func requestContactsAuthorization() async {
+        await withCheckedContinuation { continuation in
+            CNContactStore().requestAccess(for: CNEntityType.contacts) { (granted, error) -> Void in
+                if granted {
+                    Logger.info("User granted contacts permission")
+                } else {
+                    // Unfortunately, we can't easily disambiguate "not granted" and
+                    // "other error".
+                    Logger.warn("User denied contacts permission or there was an error. Error: \(String(describing: error))")
+                }
+                continuation.resume()
             }
-            future.resolve()
         }
-        return guarantee
     }
 }
 
@@ -412,9 +412,9 @@ extension Registration {
 
 public protocol _RegistrationCoordinator_PushRegistrationManagerShim {
 
-    func needsNotificationAuthorization() -> Guarantee<Bool>
+    func needsNotificationAuthorization() async -> Bool
 
-    func registerUserNotificationSettings() -> Guarantee<Void>
+    func registerUserNotificationSettings() async
 
     func requestPushToken() -> Guarantee<Registration.RequestPushTokensResult>
 
@@ -428,14 +428,12 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
     private let manager: PushRegistrationManager
     public init(_ manager: PushRegistrationManager) { self.manager = manager }
 
-    public func needsNotificationAuthorization() -> Guarantee<Bool> {
-        return manager.needsNotificationAuthorization()
+    public func needsNotificationAuthorization() async -> Bool {
+        return await manager.needsNotificationAuthorization()
     }
 
-    public func registerUserNotificationSettings() -> Guarantee<Void> {
-        return Guarantee.wrapAsync { [manager] in
-            await manager.registerUserNotificationSettings()
-        }
+    public func registerUserNotificationSettings() async {
+        await manager.registerUserNotificationSettings()
     }
 
     public func requestPushToken() -> Guarantee<Registration.RequestPushTokensResult> {

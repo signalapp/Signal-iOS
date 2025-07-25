@@ -55,13 +55,12 @@ public class _RegistrationCoordinator_CNContactsStoreMock: _RegistrationCoordina
 
     public var doesNeedContactsAuthorization = false
 
-    public func needsContactsAuthorization() -> Guarantee<Bool> {
-        return .value(doesNeedContactsAuthorization)
+    public func needsContactsAuthorization() -> Bool {
+        return doesNeedContactsAuthorization
     }
 
-    public func requestContactsAuthorization() -> Guarantee<Void> {
+    public func requestContactsAuthorization() async {
         doesNeedContactsAuthorization = false
-        return .value(())
     }
 }
 
@@ -263,13 +262,12 @@ public class _RegistrationCoordinator_PushRegistrationManagerMock: _Registration
 
     public var doesNeedNotificationAuthorization = false
 
-    public func needsNotificationAuthorization() -> Guarantee<Bool> {
-        return .value(doesNeedNotificationAuthorization)
+    public func needsNotificationAuthorization() async -> Bool {
+        return doesNeedNotificationAuthorization
     }
 
-    public func registerUserNotificationSettings() -> Guarantee<Void> {
+    public func registerUserNotificationSettings() async {
         doesNeedNotificationAuthorization = true
-        return .value(())
     }
 
     public typealias RequestPushTokenMock = (() -> Guarantee<Registration.RequestPushTokensResult>)

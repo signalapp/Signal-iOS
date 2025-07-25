@@ -105,23 +105,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     public func requestPermissions() -> Guarantee<RegistrationStep> {
         Logger.info("")
 
-        // Notifications first, then contacts if needed.
-        return deps.pushRegistrationManager.registerUserNotificationSettings()
-            .then(on: DispatchQueue.main) { [weak self] in
-                guard let self else {
-                    owsFailBeta("Unretained self lost")
-                    return .value(())
-                }
-                return self.deps.contactsStore.requestContactsAuthorization()
-            }
-            .then(on: DispatchQueue.main) { [weak self] in
-                guard let self else {
-                    owsFailBeta("Unretained self lost")
-                    return .value(.registrationSplash)
-                }
-                self.inMemoryState.needsSomePermissions = false
-                return self.nextStep()
-            }
+        return Guarantee.wrapAsync { @MainActor in
+            // Notifications first, then contacts if needed.
+            await self.deps.pushRegistrationManager.registerUserNotificationSettings()
+            await self.deps.contactsStore.requestContactsAuthorization()
+            self.inMemoryState.needsSomePermissions = false
+            return await self.nextStep().awaitable()
+        }
     }
 
     public func submitProspectiveChangeNumberE164(_ e164: E164) -> Guarantee<RegistrationStep> {
@@ -1244,21 +1234,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             break
         }
 
-        let sessionGuarantee: Guarantee<Void> = Guarantee.wrapAsync {
-                await self.deps.sessionManager.restoreSession()
-            } .map(on: DispatchQueue.main) { [weak self] session in
-                self?.db.write { self?.processSession(session, $0) }
+        return Guarantee.wrapAsync { @MainActor in
+            await withTaskGroup { group in
+                group.addTask {
+                    let session = await self.deps.sessionManager.restoreSession()
+                    await self.db.awaitableWrite { self.processSession(session, $0) }
+                }
+                group.addTask {
+                    let needsPermissions = await self.requiresSystemPermissions()
+                    self.inMemoryState.needsSomePermissions = needsPermissions
+                }
+                await group.waitForAll()
             }
-
-        let permissionsGuarantee: Guarantee<Void> = requiresSystemPermissions()
-            .map(on: DispatchQueue.main) { [weak self] needsPermissions in
-                self?.inMemoryState.needsSomePermissions = needsPermissions
-            }
-
-        return Guarantee.when(resolved: sessionGuarantee, permissionsGuarantee).asVoid()
-            .done(on: DispatchQueue.main) { [weak self] in
-                self?.inMemoryState.hasRestoredState = true
-            }
+            self.inMemoryState.hasRestoredState = true
+        }
     }
 
     /// Once registration is complete, we need to take our internal state and write it out to
@@ -4042,14 +4031,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Permissions
 
-    private func requiresSystemPermissions() -> Guarantee<Bool> {
-        let contacts = deps.contactsStore.needsContactsAuthorization()
-        let notifications = deps.pushRegistrationManager.needsNotificationAuthorization()
-        return Guarantee.when(fulfilled: [contacts, notifications])
-            .map { results in
-                return results.allSatisfy({ $0 })
-            }
-            .recover { _ in return .value(true) }
+    private func requiresSystemPermissions() async -> Bool {
+        let needsContactAuthorization = deps.contactsStore.needsContactsAuthorization()
+        let needsNotificationAuthorization = await deps.pushRegistrationManager.needsNotificationAuthorization()
+        return needsContactAuthorization || needsNotificationAuthorization
     }
 
     // MARK: - Register/Change Number Requests

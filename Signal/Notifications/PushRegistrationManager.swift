@@ -50,10 +50,10 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     // MARK: Public interface
 
-    public func needsNotificationAuthorization() -> Guarantee<Bool> {
-        return Guarantee<Bool> { resolve in
+    public func needsNotificationAuthorization() async -> Bool {
+        await withCheckedContinuation { continuation in
             UNUserNotificationCenter.current().getNotificationSettings { settings in
-                resolve(settings.authorizationStatus == .notDetermined)
+                continuation.resume(returning: settings.authorizationStatus == .notDetermined)
             }
         }
     }
