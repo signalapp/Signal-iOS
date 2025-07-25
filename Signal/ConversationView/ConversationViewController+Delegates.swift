@@ -216,6 +216,14 @@ extension ConversationViewController: ConversationHeaderViewDelegate {
 
 extension ConversationViewController: ConversationInputTextViewDelegate {
     public func didAttemptAttachmentPaste() {
+        // If trying to paste a sticker, forego anything async since
+        // the pasteboard will be cleared as soon as paste() exits.
+        if SignalAttachment.pasteboardHasStickerAttachment() {
+            let attachment: SignalAttachment? = SignalAttachment.stickerAttachmentFromPasteboard()
+            self.didPasteAttachment(attachment)
+            return
+        }
+
         ModalActivityIndicatorViewController.present(fromViewController: self) { modal in
             let attachment: SignalAttachment? = await SignalAttachment.attachmentFromPasteboard()
 

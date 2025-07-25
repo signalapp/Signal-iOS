@@ -542,6 +542,23 @@ public class SignalAttachment: NSObject {
         UTType(dataUTI)?.conforms(to: .url) ?? false
     }
 
+    public class func pasteboardHasStickerAttachment() -> Bool {
+        guard UIPasteboard.general.numberOfItems > 0,
+              let pasteboardUTITypes = UIPasteboard.general.types(forItemSet: IndexSet(integer: 0))
+        else {
+            return false
+        }
+
+        let stickerSet: Set<String> = ["com.apple.sticker", "com.apple.png-sticker"]
+        let pasteboardUTISet = Set<String>(filterDynamicUTITypes(pasteboardUTITypes[0]))
+        for utiType in pasteboardUTISet {
+            if stickerSet.contains(utiType) {
+                return true
+            }
+        }
+        return false
+    }
+
     public class func pasteboardHasPossibleAttachment() -> Bool {
         return UIPasteboard.general.numberOfItems > 0
     }
@@ -702,6 +719,42 @@ public class SignalAttachment: NSObject {
         }
         let dataSource = DataSourceValue(data, utiType: dataUTI)
         return genericAttachment(dataSource: dataSource, dataUTI: dataUTI)
+    }
+
+    public class func stickerAttachmentFromPasteboard() -> SignalAttachment? {
+        guard UIPasteboard.general.numberOfItems >= 1,
+              let pasteboardUTITypes = UIPasteboard.general.types(forItemSet: IndexSet(integer: 0))
+        else {
+            return nil
+        }
+
+        var pasteboardUTISet = Set<String>(filterDynamicUTITypes(pasteboardUTITypes[0]))
+        guard pasteboardUTISet.count > 0 else {
+            return nil
+        }
+
+        // If we have the choice between a png and a jpg, always choose
+        // the png as it may have transparency.
+        if pasteboardUTISet.isSuperset(of: [UTType.jpeg.identifier, UTType.png.identifier]) {
+            pasteboardUTISet.remove(UTType.jpeg.identifier)
+        }
+
+        for dataUTI in inputImageUTISet {
+            if pasteboardUTISet.contains(dataUTI) {
+                guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
+                    owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
+                    return nil
+                }
+
+                let dataSource = DataSourceValue(data, utiType: dataUTI)
+                if let dataSource, dataSource.hasStickerLikeProperties == false {
+                    owsFailDebug("Treating non-sticker data as a sticker")
+                }
+
+                return imageAttachment(dataSource: dataSource, dataUTI: dataUTI, isBorderless: true)
+            }
+        }
+        return nil
     }
 
     // Returns an attachment from the memoji, or nil if no attachment
