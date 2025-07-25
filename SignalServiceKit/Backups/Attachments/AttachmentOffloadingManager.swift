@@ -50,6 +50,10 @@ extension Attachment {
             mediaTierInfo.isUploaded(currentUploadEra: currentUploadEra)
         else {
             // Don't offload until we've backed up to media tier.
+            // Note that attachments that are ineligible for media tier upload
+            // (some DMs, view-once, oversized text) won't be uploaded and therefore
+            // won't pass this check. We don't need to also check for "eligibility"
+            // here and can just rely on upload mechanisms to have checked that.
             return false
         }
         if

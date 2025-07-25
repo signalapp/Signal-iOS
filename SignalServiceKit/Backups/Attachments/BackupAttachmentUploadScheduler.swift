@@ -179,6 +179,10 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
             return
         }
 
+        // We only include the provided owner because this is an incremental check;
+        // if some other owner made the attachment eligible for upload, it'd already
+        // be enqueued. We only care if this particular owner makes it newly eligible
+        // (or it was eligible both before and now, but the enqueuing it idempotent).
         guard let uploadOwnerType = self.asEligibleUploadOwnerType(owner, tx: tx) else {
             return
         }
@@ -232,6 +236,20 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
     ) -> QueuedBackupAttachmentUpload.OwnerType? {
         switch owner {
         case .message(let messageSource):
+            switch messageSource.rawMessageOwnerType {
+            case .oversizeText:
+                // We inline oversize text in the backup, and don't back
+                // up the corresponding attachment.
+                return nil
+            case
+                    .bodyAttachment,
+                    .contactAvatar,
+                    .linkPreview,
+                    .quotedReplyAttachment,
+                    .sticker:
+                break
+            }
+
             guard
                 let message = interactionStore.fetchInteraction(
                     rowId: messageSource.messageRowId,
