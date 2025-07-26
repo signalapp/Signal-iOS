@@ -6545,7 +6545,7 @@
 "PUSH_REGISTER_SUCCESS" = "Successfully re-registered for push notifications.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %@.";
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %@. Double Tap to go to original message.";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";

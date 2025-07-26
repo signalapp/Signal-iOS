@@ -4,6 +4,7 @@
 //
 
 public import Foundation
+public import UIKit
 public import SignalServiceKit
 public import SignalUI
 
@@ -37,6 +38,20 @@ extension ConversationViewController {
         }
         return renderItem.interaction
     }
+    
+    func focusAccessibilityOn(messageId: String) {
+        if let indexPath = indexPath(forInteractionUniqueId: messageId) {
+            guard let cell = collectionView.cellForItem(at: indexPath) as? CVCell,
+                  let componentView = cell.componentView as? CVComponentMessage.CVComponentViewMessage
+            else {
+                owsFailDebug("Could not find CVComponentViewMessage")
+                return
+            }
+            componentView.focusAccessibility()
+        } else {
+            owsFailDebug("Unable to find message to highlight [\(messageId)]")
+        }
+    }
 
     var indexPathOfUnreadMessagesIndicator: IndexPath? {
         loadCoordinator.indexPathOfUnreadIndicator
@@ -69,11 +84,12 @@ extension ConversationViewController {
 
     func performMessageHighlightAnimationIfNeeded() {
         if let messageId = viewState.highlightedMessageId {
+            focusAccessibilityOn(messageId: messageId)
             performHighlightAnimationSequenceFor(messageId: messageId)
             viewState.highlightedMessageId = nil
         }
     }
-
+    
     private func performHighlightAnimationSequenceFor(messageId: String) {
         if let indexPath = indexPath(forInteractionUniqueId: messageId) {
             guard let cell = collectionView.cellForItem(at: indexPath) as? CVCell,
@@ -82,7 +98,6 @@ extension ConversationViewController {
                 owsFailDebug("Could not find CVComponentViewMessage")
                 return
             }
-
             componentViewMessage.performMessageBubbleHighlightAnimation()
         } else {
             owsFailDebug("Unable to find a message to highlight. [\(messageId)]")
