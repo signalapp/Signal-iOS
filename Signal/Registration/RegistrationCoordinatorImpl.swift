@@ -353,7 +353,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             owsFailBeta("Shouldn't be submitting captcha from non session paths.")
             return nextStep()
         case .session(let session):
-            return submit(challengeFulfillment: .captcha(token), for: session)
+            return Guarantee.wrapAsync {
+                return await self.submit(challengeFulfillment: .captcha(token), for: session)
+            }
         }
     }
 
@@ -2356,7 +2358,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // try and do that, regardless of other state.
         if let pendingCodeTransport {
             guard session.allowedToRequestCode else {
-                return attemptToFulfillAvailableChallengesWaitingIfNeeded(for: session)
+                return Guarantee.wrapAsync {
+                    return await self.attemptToFulfillAvailableChallengesWaitingIfNeeded(for: session)
+                }
             }
 
             // If we have pending transport and can send, send.
@@ -2914,9 +2918,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    @MainActor
     private func attemptToFulfillAvailableChallengesWaitingIfNeeded(
         for session: RegistrationSession
-    ) -> Guarantee<RegistrationStep> {
+    ) async -> RegistrationStep {
         Logger.info("Found \(session.requestedInformation.count) challenge(s)")
 
         var requestsPushChallenge = false
@@ -2937,55 +2942,55 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return challengeToken
             }
         }()
+
         if requestsPushChallenge, let unfulfilledPushChallengeToken {
             Logger.info("Attempting to fulfill push challenge with a token we already have")
-            return submit(
+            return await submit(
                 challengeFulfillment: .pushChallenge(unfulfilledPushChallengeToken),
                 for: session
             )
         }
 
+        @MainActor
         func waitForPushTokenChallenge(
             timeout: TimeInterval,
             failChallengeIfTimedOut: Bool
-        ) -> Guarantee<RegistrationStep> {
+        ) async -> RegistrationStep {
             Logger.info("Attempting to fulfill push challenge with a token we don't have yet")
-            return Guarantee.wrapAsync { await self.deps.pushRegistrationManager.receivePreAuthChallengeToken() }
-                .map { $0 }
-                .nilTimeout(on: DispatchQueue.global(), seconds: timeout)
-                .then(on: DispatchQueue.global()) { [weak self] (challengeToken: String?) -> Guarantee<RegistrationStep> in
-                    guard let self else {
-                        return unretainedSelfError()
-                    }
-
-                    if let challengeToken {
-                        self.db.write { transaction in
-                            self.didReceive(
-                                pushChallengeToken: challengeToken,
-                                for: session,
-                                transaction: transaction
-                            )
-                        }
-                        return self.submit(
-                            challengeFulfillment: .pushChallenge(challengeToken),
-                            for: session
-                        )
-                    } else if failChallengeIfTimedOut {
-                        Logger.warn("No challenge token received in time. Resetting")
-                        self.db.write { self.resetSession($0) }
-                        return .value(.showErrorSheet(.sessionInvalidated))
-                    } else {
-                        Logger.warn("No challenge token received in time, falling back to next challenge")
-                        return tryNonImmediatePushChallenge()
-                    }
+            do {
+                let challengeToken = try await withUncooperativeTimeout(seconds: timeout) {
+                    return await self.deps.pushRegistrationManager.receivePreAuthChallengeToken()
                 }
+                db.write { transaction in
+                    self.didReceive(
+                        pushChallengeToken: challengeToken,
+                        for: session,
+                        transaction: transaction
+                    )
+                }
+                return await submit(
+                    challengeFulfillment: .pushChallenge(challengeToken),
+                    for: session
+                )
+            } catch {
+                switch error {
+                case is UncooperativeTimeoutError where failChallengeIfTimedOut:
+                    Logger.warn("No challenge token received in time. Resetting")
+                    db.write { self.resetSession($0) }
+                    return .showErrorSheet(.sessionInvalidated)
+                default:
+                    Logger.warn("No challenge token received in time, falling back to next challenge")
+                    return await tryNonImmediatePushChallenge()
+                }
+            }
         }
 
-        func tryNonImmediatePushChallenge() -> Guarantee<RegistrationStep> {
+        @MainActor
+        func tryNonImmediatePushChallenge() async -> RegistrationStep {
             // Our third choice: a captcha challenge
             if requestsCaptchaChallenge {
                 Logger.info("Showing the CAPTCHA challenge to the user")
-                return .value(.captchaChallenge)
+                return .captchaChallenge
             }
 
             // Our fourth choice: a push challenge where we're still waiting for the challenge token.
@@ -2995,7 +3000,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 deps.dateProvider() < timeToWaitUntil
             {
                 let timeout = timeToWaitUntil.timeIntervalSince(deps.dateProvider())
-                return waitForPushTokenChallenge(
+                return await waitForPushTokenChallenge(
                     timeout: timeout,
                     failChallengeIfTimedOut: true
                 )
@@ -3008,11 +3013,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 db.write { tx in
                     self.processSession(session, initialCodeRequestState: .failedToRequest, tx)
                 }
-                return .value(.appUpdateBanner)
+                return .appUpdateBanner
             } else {
                 Logger.warn("Couldn't fulfill any challenges. Resetting the session")
                 db.write { resetSession($0) }
-                return nextStep()
+                return await nextStep().awaitable()
             }
         }
 
@@ -3025,24 +3030,26 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return requestedAt
             }
         }()
+
         if
             requestsPushChallenge,
             let timeToWaitUntil = pushChallengeRequestDate?.addingTimeInterval(deps.timeoutProvider.pushTokenMinWaitTime),
             deps.dateProvider() < timeToWaitUntil
         {
             let timeout = timeToWaitUntil.timeIntervalSince(deps.dateProvider())
-            return waitForPushTokenChallenge(timeout: timeout, failChallengeIfTimedOut: false)
+            return await waitForPushTokenChallenge(timeout: timeout, failChallengeIfTimedOut: false)
         }
 
         // Try the next choices.
-        return tryNonImmediatePushChallenge()
+        return await tryNonImmediatePushChallenge()
     }
 
+    @MainActor
     private func submit(
         challengeFulfillment fulfillment: Registration.ChallengeFulfillment,
         for session: RegistrationSession,
         retriesLeft: Int = Constants.networkErrorRetries
-    ) -> Guarantee<RegistrationStep> {
+    ) async -> RegistrationStep {
         switch fulfillment {
         case .captcha:
             Logger.info("Submitting CAPTCHA challenge fulfillment")
@@ -3050,78 +3057,73 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             Logger.info("Submitting push challenge fulfillment")
         }
 
-        return Guarantee.wrapAsync {
-            await self.deps.sessionManager.fulfillChallenge(
-                for: session,
-                fulfillment: fulfillment
-            )
-        }.then(on: DispatchQueue.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
-            guard let self else {
-                return unretainedSelfError()
-            }
-            switch result {
-            case .success(let session):
-                self.db.write { tx in
-                    self.processSession(session, tx)
-                    switch fulfillment {
-                    case .captcha: break
-                    case .pushChallenge:
-                        self.updatePersistedSessionState(session: session, tx) {
-                            $0.pushChallengeState = .fulfilled
-                        }
+        let result = await deps.sessionManager.fulfillChallenge(
+            for: session,
+            fulfillment: fulfillment
+        )
+
+        switch result {
+        case .success(let session):
+            db.write { tx in
+                processSession(session, tx)
+                switch fulfillment {
+                case .captcha: break
+                case .pushChallenge:
+                    updatePersistedSessionState(session: session, tx) {
+                        $0.pushChallengeState = .fulfilled
                     }
                 }
-                return self.nextStep()
-            case .rejectedArgument(let session):
-                self.db.write { tx in
-                    self.processSession(session, tx)
-                    self.updatePersistedSessionState(session: session, tx) {
-                        $0.pushChallengeState = .rejected
-                    }
-                }
-                return .value(.showErrorSheet(.genericError))
-            case .disallowed(let session):
-                Logger.warn("Disallowed to complete a challenge which should be impossible.")
-                // Don't keep trying to send a code.
-                self.inMemoryState.pendingCodeTransport = nil
-                self.db.write { self.processSession(session, initialCodeRequestState: .failedToRequest, $0) }
-                return .value(.showErrorSheet(.genericError))
-            case .invalidSession:
-                self.db.write { self.resetSession($0) }
-                return .value(.showErrorSheet(.sessionInvalidated))
-            case .serverFailure(let failureResponse):
-                if failureResponse.isPermanent {
-                    return .value(.showErrorSheet(.genericError))
-                } else {
-                    return .value(.showErrorSheet(.networkError))
-                }
-            case .retryAfterTimeout(let session):
-                Logger.error("Should not have to retry a captcha challenge request")
-                // Clear the pending code; we want the user to press again
-                // once the timeout expires.
-                self.inMemoryState.pendingCodeTransport = nil
-                self.db.write { self.processSession(session, initialCodeRequestState: .failedToRequest, $0) }
-                self.db.write { self.processSession(session, $0) }
-                return self.nextStep()
-            case .networkFailure:
-                if retriesLeft > 0 {
-                    return self.submit(
-                        challengeFulfillment: fulfillment,
-                        for: session,
-                        retriesLeft: retriesLeft - 1
-                    )
-                }
-                return .value(.showErrorSheet(.networkError))
-            case .transportError(let session):
-                Logger.error("Should not get a transport error for a challenge request")
-                // Clear the pending code; we want the user to press again
-                // once the timeout expires.
-                self.inMemoryState.pendingCodeTransport = nil
-                self.db.write { self.processSession(session, initialCodeRequestState: .failedToRequest, $0) }
-                return self.nextStep()
-            case .genericError:
-                return .value(.showErrorSheet(.genericError))
             }
+            return await nextStep().awaitable()
+        case .rejectedArgument(let session):
+            db.write { tx in
+                self.processSession(session, tx)
+                self.updatePersistedSessionState(session: session, tx) {
+                    $0.pushChallengeState = .rejected
+                }
+            }
+            return .showErrorSheet(.genericError)
+        case .disallowed(let session):
+            Logger.warn("Disallowed to complete a challenge which should be impossible.")
+            // Don't keep trying to send a code.
+            inMemoryState.pendingCodeTransport = nil
+            db.write { self.processSession(session, initialCodeRequestState: .failedToRequest, $0) }
+            return .showErrorSheet(.genericError)
+        case .invalidSession:
+            db.write { self.resetSession($0) }
+            return .showErrorSheet(.sessionInvalidated)
+        case .serverFailure(let failureResponse):
+            if failureResponse.isPermanent {
+                return .showErrorSheet(.genericError)
+            } else {
+                return .showErrorSheet(.networkError)
+            }
+        case .retryAfterTimeout(let session):
+            Logger.error("Should not have to retry a captcha challenge request")
+            // Clear the pending code; we want the user to press again
+            // once the timeout expires.
+            inMemoryState.pendingCodeTransport = nil
+            db.write { self.processSession(session, initialCodeRequestState: .failedToRequest, $0) }
+            db.write { self.processSession(session, $0) }
+            return await nextStep().awaitable()
+        case .networkFailure:
+            if retriesLeft > 0 {
+                return await submit(
+                    challengeFulfillment: fulfillment,
+                    for: session,
+                    retriesLeft: retriesLeft - 1
+                )
+            }
+            return .showErrorSheet(.networkError)
+        case .transportError(let session):
+            Logger.error("Should not get a transport error for a challenge request")
+            // Clear the pending code; we want the user to press again
+            // once the timeout expires.
+            inMemoryState.pendingCodeTransport = nil
+            db.write { self.processSession(session, initialCodeRequestState: .failedToRequest, $0) }
+            return await nextStep().awaitable()
+        case .genericError:
+            return .showErrorSheet(.genericError)
         }
     }
 

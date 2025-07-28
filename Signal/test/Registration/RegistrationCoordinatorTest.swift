@@ -2546,14 +2546,10 @@ public class RegistrationCoordinatorTest {
         )))
 
         // Give it a phone number, which should cause it to start a session.
-        #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
-                .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode))
-        )
-        #expect(
-            sessionManager.latestChallengeFulfillment ==
-                .pushChallenge("a pre-auth challenge token")
-        )
+        let step = await coordinator.submitE164(Stubs.e164).awaitable()
+        #expect(step == .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode)))
+        let fulfillment = sessionManager.latestChallengeFulfillment
+        #expect(fulfillment == .pushChallenge("a pre-auth challenge token"))
     }
 
     @MainActor @Test(arguments: Self.testCases())
@@ -2629,10 +2625,8 @@ public class RegistrationCoordinatorTest {
         // Give it a phone number, which should cause it to start a session.
         // Once we get that session, we should wait a short time for the
         // push challenge token and fulfill it.
-        #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
-                .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode))
-        )
+        let step = await coordinator.submitE164(Stubs.e164).awaitable()
+        #expect(step == .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode)))
     }
 
     @MainActor @Test(arguments: Self.testCases())
