@@ -289,7 +289,7 @@ public protocol _RegistrationCoordinator_PreKeyManagerShim {
         uploadDidSucceed: Bool
     ) -> Promise<Void>
 
-    func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void>
+    func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws
 }
 
 public class _RegistrationCoordinator_PreKeyManagerWrapper: _RegistrationCoordinator_PreKeyManagerShim {
@@ -320,11 +320,8 @@ public class _RegistrationCoordinator_PreKeyManagerWrapper: _RegistrationCoordin
         }
     }
 
-    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void> {
-        let preKeyManager = self.preKeyManager
-        return Promise.wrapAsync {
-            return try await preKeyManager.rotateOneTimePreKeysForRegistration(auth: auth).value
-        }
+    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws {
+        return try await preKeyManager.rotateOneTimePreKeysForRegistration(auth: auth).value
     }
 }
 
@@ -505,7 +502,7 @@ class _RegistrationCoordinator_QuickRestoreManagerWrapper: _RegistrationCoordina
 
 // MARK: - StorageService
 public protocol _RegistrationCoordinator_StorageServiceManagerShim {
-    func rotateManifest(mode: StorageServiceManagerManifestRotationMode, authedDevice: AuthedDevice) -> Promise<Void>
+    func rotateManifest(mode: StorageServiceManagerManifestRotationMode, authedDevice: AuthedDevice) async throws
     func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice, masterKeySource: StorageService.MasterKeySource) -> Promise<Void>
     func backupPendingChanges(authedDevice: AuthedDevice)
     func recordPendingLocalAccountUpdates()
@@ -518,10 +515,8 @@ public class _RegistrationCoordinator_StorageServiceManagerWrapper: _Registratio
     public func rotateManifest(
         mode: StorageServiceManagerManifestRotationMode,
         authedDevice: AuthedDevice
-    ) -> Promise<Void> {
-        Promise.wrapAsync {
-            try await self.manager.rotateManifest(mode: mode, authedDevice: authedDevice)
-        }
+    ) async throws {
+        try await self.manager.rotateManifest(mode: mode, authedDevice: authedDevice)
     }
 
     public func restoreOrCreateManifestIfNecessary(

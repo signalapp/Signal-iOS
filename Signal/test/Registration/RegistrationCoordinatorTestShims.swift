@@ -208,9 +208,9 @@ public class _RegistrationCoordinator_PreKeyManagerMock: _RegistrationCoordinato
     public typealias RotateOneTimePreKeysMock = ((ChatServiceAuth) -> Promise<Void>)
     private var rotateOneTimePreKeysMocks = [RotateOneTimePreKeysMock]()
     public func addRotateOneTimePreKeyMock(_ mock: @escaping RotateOneTimePreKeysMock) { rotateOneTimePreKeysMocks.append(mock) }
-    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void> {
+    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws {
         run.addObservedStep(.rotateOneTimePreKeys)
-        return rotateOneTimePreKeysMocks.removeFirst()(auth)
+        return try await rotateOneTimePreKeysMocks.removeFirst()(auth).awaitable()
     }
 }
 
@@ -338,9 +338,9 @@ public class _RegistrationCoordinator_StorageServiceManagerMock: _RegistrationCo
     public typealias RotateManifestMock = (StorageServiceManagerManifestRotationMode, AuthedDevice) -> Promise<Void>
     private var rotateManifestMocks = [RotateManifestMock]()
     public func addRotateManifestMock(_ mock: @escaping RotateManifestMock) { rotateManifestMocks.append(mock) }
-    public func rotateManifest(mode: StorageServiceManagerManifestRotationMode, authedDevice: AuthedDevice) -> Promise<Void> {
+    public func rotateManifest(mode: StorageServiceManagerManifestRotationMode, authedDevice: AuthedDevice) async throws {
         run.addObservedStep(.rotateManifest)
-        return rotateManifestMocks.removeFirst()(mode, authedDevice)
+        return try await rotateManifestMocks.removeFirst()(mode, authedDevice).awaitable()
     }
 
     public typealias RestoreOrCreateManifestIfNecessaryMock = (AuthedDevice, StorageService.MasterKeySource) -> Promise<Void>

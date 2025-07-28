@@ -1254,7 +1254,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     /// external classes so that the rest of the app has all our updated information.
     /// Once this is done, we can wipe the internal state of this class so that we get a fresh
     /// registration if we ever re-register while in the same app session.
-    private func exportAndWipeState(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep> {
+    @MainActor
+    private func exportAndWipeState(accountIdentity: AccountIdentity) async -> RegistrationStep {
         Logger.info("")
 
         func persistRegistrationState(_ tx: DBWriteTransaction) {
@@ -1325,19 +1326,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             persistLocalIdentifiers(tx: tx)
         }
 
-        func setupContactsAndFinish() -> Guarantee<RegistrationStep> {
+        @MainActor
+        func setupContactsAndFinish() async -> RegistrationStep {
             // Start syncing system contacts now that we have set up tsAccountManager.
             deps.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
-            return deps.storageServiceManager.rotateManifest(
+            // Ignore any failure when rotating the manifest.
+            try? await deps.storageServiceManager.rotateManifest(
                 mode: .preservingRecordsIfPossible,
                 authedDevice: accountIdentity.authedDevice
             )
-            .recover { _ in }
-            .then {
-                // Update the account attributes once, now, at the end.
-                return self.updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
-            }
+
+            // Update the account attributes once, now, at the end.
+            return await updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
         }
 
         switch mode {
@@ -1356,48 +1357,46 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
             if let step = fetchBackupCdnInfo(accountIdentity: accountIdentity) {
-                return step
+                return await step.awaitable()
             }
 
-            return Guarantee<RegistrationStep>.wrapAsync {
-                // OWSProgress doesn't support resetting to 0, so if
-                // restoreBackupIfNecessary needs to retry,
-                // we need to create a fresh progress sink.
-                var finishingProgressSource: OWSProgressSource?
+            // OWSProgress doesn't support resetting to 0, so if
+            // restoreBackupIfNecessary needs to retry, we need to create a fresh
+            // progress sink.
+            var finishingProgressSource: OWSProgressSource?
 
-                await restoreBackupIfNecessary { [restoreFromBackupProgressSink = self.inMemoryState.restoreFromBackupProgressSink] in
-                    let progress = OWSProgress.createSink { progress in
-                        await MainActor.run {
-                            restoreFromBackupProgressSink?(progress)
-                        }
+            await restoreBackupIfNecessary { [restoreFromBackupProgressSink = self.inMemoryState.restoreFromBackupProgressSink] in
+                let progress = OWSProgress.createSink { progress in
+                    await MainActor.run {
+                        restoreFromBackupProgressSink?(progress)
                     }
-                    let restoreProgressSource = await progress.addChild(
-                        withLabel: "❤️🧡🤍🩷💜",
-                        unitCount: BackupRestoreProgressPhase.downloadingBackup.percentOfTotalProgress + BackupRestoreProgressPhase.importingBackup.percentOfTotalProgress
-                    )
-                    finishingProgressSource = await progress.addSource(
-                        withLabel: BackupRestoreProgressPhase.finishing.rawValue,
-                        unitCount: BackupRestoreProgressPhase.finishing.percentOfTotalProgress
-                    )
-                    return restoreProgressSource
                 }
+                let restoreProgressSource = await progress.addChild(
+                    withLabel: "❤️🧡🤍🩷💜",
+                    unitCount: BackupRestoreProgressPhase.downloadingBackup.percentOfTotalProgress + BackupRestoreProgressPhase.importingBackup.percentOfTotalProgress
+                )
+                finishingProgressSource = await progress.addSource(
+                    withLabel: BackupRestoreProgressPhase.finishing.rawValue,
+                    unitCount: BackupRestoreProgressPhase.finishing.percentOfTotalProgress
+                )
+                return restoreProgressSource
+            }
 
-                await self.db.awaitableWrite { tx in
-                    finalizeRegistration(tx: tx)
-                }
+            await self.db.awaitableWrite { tx in
+                finalizeRegistration(tx: tx)
+            }
 
-                let finishTask = { @MainActor in
-                    await setupContactsAndFinish().awaitable()
-                }
+            let finishTask = { @MainActor in
+                await setupContactsAndFinish()
+            }
 
-                if let finishingProgressSource {
-                    return await finishingProgressSource.updatePeriodically(
-                        estimatedTimeToCompletion: 5,
-                        work: finishTask
-                    )
-                } else {
-                    return await finishTask()
-                }
+            if let finishingProgressSource {
+                return await finishingProgressSource.updatePeriodically(
+                    estimatedTimeToCompletion: 5,
+                    work: finishTask
+                )
+            } else {
+                return await finishTask()
             }
 
         case .reRegistering:
@@ -1405,28 +1404,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 persistRegistrationState(tx)
                 finalizeRegistration(tx: tx)
             }
-            return setupContactsAndFinish()
+            return await setupContactsAndFinish()
 
         case .changingNumber(let changeNumberState):
             if let pniState = changeNumberState.pniState {
-                return finalizeChangeNumberPniState(
+                let result = await finalizeChangeNumberPniState(
                     changeNumberState: changeNumberState,
                     pniState: pniState,
                     accountIdentity: accountIdentity
-                ).then(on: DispatchQueue.main) { [weak self] result in
-                    guard let self else {
-                        return unretainedSelfError()
-                    }
-                    switch result {
-                    case .success:
-                        return self.updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
-                    case .genericError:
-                        return .value(.showErrorSheet(.genericError))
-                    }
+                )
+                switch result {
+                case .success:
+                    break
+                case .genericError:
+                    return .showErrorSheet(.genericError)
                 }
-            } else {
-                return updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
             }
+            return await updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
         }
     }
 
@@ -1485,43 +1479,40 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    @MainActor
     private func updateAccountAttributesAndFinish(
         accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
-    ) -> Guarantee<RegistrationStep> {
+    ) async -> RegistrationStep {
         Logger.info("")
 
-        return Guarantee.wrapAsync { await self.updateAccountAttributes(accountIdentity) }
-            .then(on: DispatchQueue.main) { [weak self] error -> Guarantee<RegistrationStep> in
-                guard let self else {
-                    return unretainedSelfError()
-                }
-                if
-                    let error,
-                    error.isNetworkFailureOrTimeout,
-                    retriesLeft > 0
-                {
-                    return self.updateAccountAttributesAndFinish(
-                        accountIdentity: accountIdentity,
-                        retriesLeft: retriesLeft - 1
-                    )
-                }
-                // If we have a deregistration erorr, it doesn't matter. we are finished
-                // and cleaning up anyway, the main app will discover the issue.
-                if let error {
-                    Logger.warn("Failed account attributes update, finishing registration anyway: \(error)")
-                }
-                // We are done! Wipe everything
-                self.inMemoryState = InMemoryState()
-                self.db.write { tx in
-                    self.wipePersistedState(tx)
-                }
-                // Do any storage service backups we have pending.
-                self.deps.storageServiceManager.backupPendingChanges(
-                    authedDevice: accountIdentity.authedDevice
-                )
-                return .value(.done)
-            }
+        let error = await self.updateAccountAttributes(accountIdentity)
+
+        if
+            let error,
+            error.isNetworkFailureOrTimeout,
+            retriesLeft > 0
+        {
+            return await updateAccountAttributesAndFinish(
+                accountIdentity: accountIdentity,
+                retriesLeft: retriesLeft - 1
+            )
+        }
+        // If we have a deregistration error, it doesn't matter. We are finished
+        // and cleaning up anyway; the main app will discover the issue.
+        if let error {
+            Logger.warn("Failed account attributes update, finishing registration anyway: \(error)")
+        }
+        // We are done! Wipe everything
+        self.inMemoryState = InMemoryState()
+        self.db.write { tx in
+            self.wipePersistedState(tx)
+        }
+        // Do any storage service backups we have pending.
+        self.deps.storageServiceManager.backupPendingChanges(
+            authedDevice: accountIdentity.authedDevice
+        )
+        return .done
     }
 
     private func wipePersistedState(_ tx: DBWriteTransaction) {
@@ -1697,7 +1688,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .session(let session):
             return nextStepForSessionPath(session)
         case .profileSetup(let accountIdentity):
-            return nextStepForProfileSetup(accountIdentity)
+            return Guarantee.wrapAsync { await self.nextStepForProfileSetup(accountIdentity) }
         }
     }
 
@@ -3310,22 +3301,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     /// Returns the next step the user needs to go through _after_ the actual account
     /// registration or change number is complete (e.g. profile setup).
+    @MainActor
     private func nextStepForProfileSetup(
         _ accountIdentity: AccountIdentity
-    ) -> Guarantee<RegistrationStep> {
+    ) async -> RegistrationStep {
         switch mode {
         case .registering, .reRegistering:
             break
         case .changingNumber:
             // Change number is different; we do a limited number of operations and then finalize.
-            if let restoreStepGuarantee = performSVRRestoreStepsIfNeeded(accountIdentity: accountIdentity) {
-                return restoreStepGuarantee
+            if let restoreStepNextStep = await performSVRRestoreStepsIfNeeded(accountIdentity: accountIdentity) {
+                return restoreStepNextStep
             }
-            if let backupStepGuarantee = performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
-                return backupStepGuarantee
+            if let backupStepNextStep = await performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
+                return backupStepNextStep
             }
 
-            return exportAndWipeState(accountIdentity: accountIdentity)
+            return await exportAndWipeState(accountIdentity: accountIdentity)
         }
 
         // We _must_ do these steps first.
@@ -3333,33 +3325,26 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // After atomic account creation, our account is ready to go from the start.
             // But we should still upload one-time prekeys, as that is not part
             // of account creation.
-            return self.deps.preKeyManager.rotateOneTimePreKeysForRegistration(auth: accountIdentity.chatServiceAuth)
-                .then(on: DispatchQueue.main) { [weak self] () -> Guarantee<RegistrationStep> in
-                    guard let self else {
-                        return unretainedSelfError()
+            do {
+                try await deps.preKeyManager.rotateOneTimePreKeysForRegistration(auth: accountIdentity.chatServiceAuth)
+                self.db.write { tx in
+                    self.updatePersistedState(tx) {
+                        // No harm marking both down as done even though
+                        // we only did one or the other.
+                        $0.didRefreshOneTimePreKeys = true
                     }
-                    self.db.write { tx in
-                        self.updatePersistedState(tx) {
-                            // No harm marking both down as done even though
-                            // we only did one or the other.
-                            $0.didRefreshOneTimePreKeys = true
-                        }
-                    }
-                    return self.nextStep()
                 }
-                .recover(on: DispatchQueue.main) { [weak self] error -> Guarantee<RegistrationStep> in
-                    guard let self else {
-                        return unretainedSelfError()
-                    }
-                    if error.isPostRegDeregisteredError {
-                        return self.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
-                    }
-                    Logger.error("Failed to create prekeys: \(error)")
-                    // Note this is undismissable; the user will be on whatever
-                    // screen they were on but with the error sheet atop which retries
-                    // via `nextStep()` when tapped.
-                    return .value(.showErrorSheet(.genericError))
+                return await self.nextStep().awaitable()
+            } catch {
+                if error.isPostRegDeregisteredError {
+                    return await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
                 }
+                Logger.error("Failed to create prekeys: \(error)")
+                // Note this is undismissable; the user will be on whatever
+                // screen they were on but with the error sheet atop which retries
+                // via `nextStep()` when tapped.
+                return .showErrorSheet(.genericError)
+            }
         }
 
         if
@@ -3368,20 +3353,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         {
             // Need to preserve the key recovered by registration and use this for storage service restore
             // If already restored due to AEP change, this step will be skipped
-            return restoreFromStorageService(
+            return await restoreFromStorageService(
                 accountIdentity: accountIdentity,
                 masterKeySource: .explicit(restoredKey)
             )
         }
 
-        if let stepGuarantee = performSVRRestoreStepsIfNeeded(accountIdentity: accountIdentity) {
-            return stepGuarantee
+        if let restoreStepNextStep = await performSVRRestoreStepsIfNeeded(accountIdentity: accountIdentity) {
+            return restoreStepNextStep
         }
 
         if inMemoryState.accountEntropyPool == nil {
             if inMemoryState.restoreMethod?.isBackup == true {
                 // If the user want's to restore from backup, ask for the key
-                return .value(.enterBackupKey)
+                return .enterBackupKey
             } else {
                 // If the AccountEntropyPool doesn't exist yet, create one.
                 db.write { tx in
@@ -3393,8 +3378,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
 
-        if let stepGuarantee = performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
-            return stepGuarantee
+        if let backupStepNextStep = await performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
+            return backupStepNextStep
         }
 
         // This will restore after backup, _or_ it will rotate to the new AEP derived key
@@ -3404,17 +3389,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             shouldRestoreFromStorageService(),
             let masterKey
         {
-            return restoreFromStorageService(
+            return await restoreFromStorageService(
                 accountIdentity: accountIdentity,
                 masterKeySource: .explicit(masterKey)
             )
         }
 
         if let localUsernameState = shouldAttemptToReclaimUsername() {
-            return attemptToReclaimUsername(
+            return await attemptToReclaimUsername(
                 accountIdentity: accountIdentity,
                 localUsernameState: localUsernameState
-            )
+            ).awaitable()
         }
 
         if
@@ -3422,7 +3407,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             inMemoryState.restoreMethod?.backupType == nil
         {
             if let profileInfo = inMemoryState.pendingProfileInfo {
-                return db.write { tx in
+                let updatePromise = db.write { tx in
                     deps.profileManager.updateLocalProfile(
                         givenName: profileInfo.givenName,
                         familyName: profileInfo.familyName,
@@ -3431,31 +3416,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         tx: tx
                     )
                 }
-                .map(on: SyncScheduler()) { return nil }
-                .recover(on: SyncScheduler()) { (error) -> Guarantee<Error?> in
-                    return .value(error)
-                }
-                .then(on: DispatchQueue.main) { [weak self] (error) -> Guarantee<RegistrationStep> in
-                    guard let self else {
-                        return unretainedSelfError()
-                    }
-                    if let error {
-                        if error.isPostRegDeregisteredError {
-                            return self.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
-                        }
-                        return .value(.showErrorSheet(
-                            error.isNetworkFailureOrTimeout ? .networkError : .genericError
-                        ))
-                    }
+                do {
+                    _ = try await updatePromise.awaitable()
                     self.inMemoryState.hasProfileName = true
                     self.inMemoryState.pendingProfileInfo = nil
-                    return self.nextStep()
+                    return await self.nextStep().awaitable()
+                } catch {
+                    if error.isPostRegDeregisteredError {
+                        return await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
+                    }
+                    return .showErrorSheet(
+                        error.isNetworkFailureOrTimeout ? .networkError : .genericError
+                    )
                 }
             } else {
-                return .value(.setupProfile(RegistrationProfileState(
+                return .setupProfile(RegistrationProfileState(
                     e164: accountIdentity.e164,
                     phoneNumberDiscoverability: inMemoryState.phoneNumberDiscoverability.orDefault
-                )))
+                ))
             }
         }
 
@@ -3463,15 +3441,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             inMemoryState.phoneNumberDiscoverability == nil,
             inMemoryState.restoreMethod?.backupType == nil
         {
-            return .value(.phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(
+            return .phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(
                 e164: accountIdentity.e164,
                 phoneNumberDiscoverability: inMemoryState.phoneNumberDiscoverability.orDefault
-            )))
+            ))
         }
 
         // We are ready to finish! Export all state and wipe things
         // so we can re-register later if desired.
-        return exportAndWipeState(accountIdentity: accountIdentity)
+        return await exportAndWipeState(accountIdentity: accountIdentity)
     }
 
     // returns nil if no steps needed.
@@ -3516,17 +3494,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return nil
     }
 
-    // returns nil if no steps needed.
+    // returns nil if no steps performed.
     private func performSVRRestoreStepsIfNeeded(
         accountIdentity: AccountIdentity
-    ) -> Guarantee<RegistrationStep>? {
+    ) async -> RegistrationStep? {
         guard inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration else {
             return nil
         }
 
         Logger.info("")
         guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
-            return showPinEntryIfNeeded(accountIdentity: accountIdentity)
+            return await showPinEntryIfNeeded(accountIdentity: accountIdentity)?.awaitable()
         }
 
         if
@@ -3535,29 +3513,25 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             !persistedState.hasGivenUpTryingToRestoreWithSVR
         {
             // If we have no SVR data, fetch it.
-            return Guarantee.wrapAsync {
-                await self.restoreSVRBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
-            }
+            return await self.restoreSVRBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
         }
         return nil
     }
 
-    // returns nil if no steps needed.
+    // returns nil if no steps performed.
     private func performSVRBackupStepsIfNeeded(
         accountIdentity: AccountIdentity
-    ) -> Guarantee<RegistrationStep>? {
+    ) async -> RegistrationStep? {
         Logger.info("")
 
         guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
-            return showPinEntryIfNeeded(accountIdentity: accountIdentity)
+            return await showPinEntryIfNeeded(accountIdentity: accountIdentity)?.awaitable()
         }
 
         if !persistedState.hasSkippedPinEntry {
             if inMemoryState.shouldBackUpToSVR {
                 // If we haven't backed up, do so now.
-                return Guarantee.wrapAsync {
-                    await self.backupToSVR(pin: pin, accountIdentity: accountIdentity)
-                }
+                return await self.backupToSVR(pin: pin, accountIdentity: accountIdentity)
             }
 
             switch attributes2FAMode(e164: accountIdentity.e164) {
@@ -3567,9 +3541,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 guard inMemoryState.hasSetReglock.negated else {
                     break
                 }
-                return Guarantee.wrapAsync {
-                    return await self.enableReglock(accountIdentity: accountIdentity, reglockToken: reglockToken)
-                }
+                return await self.enableReglock(accountIdentity: accountIdentity, reglockToken: reglockToken)
             }
         }
         return nil
@@ -3634,7 +3606,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .showErrorSheet(.networkError)
         case .genericError(let error):
             if error.isPostRegDeregisteredError {
-                return await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity).awaitable()
+                return await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
             } else if retriesLeft > 0 {
                 return await restoreSVRBackupPostRegistration(
                     pin: pin,
@@ -3717,10 +3689,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    @MainActor
     private func restoreFromStorageService(
         accountIdentity: AccountIdentity,
         masterKeySource: StorageService.MasterKeySource
-    ) -> Guarantee<RegistrationStep> {
+    ) async -> RegistrationStep {
         db.write { tx in
             switch mode {
             case .registering, .reRegistering:
@@ -3741,33 +3714,25 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             deps.storageServiceRecordIkmCapabilityStore.setIsRecordIkmCapable(tx: tx)
         }
 
-        return deps
-            .storageServiceManager.restoreOrCreateManifestIfNecessary(
-                authedDevice: accountIdentity.authedDevice,
-                masterKeySource: masterKeySource
-            )
-            .timeout(seconds: 120)
-            .then(on: SyncScheduler()) { [weak self] in
-                guard let self else {
-                    return unretainedSelfError()
-                }
-                self.loadProfileState()
-                if self.inMemoryState.hasProfileName {
-                    self.scheduleReuploadProfileStateAsync(accountIdentity: accountIdentity)
-                }
-                self.inMemoryState.hasRestoredFromStorageService = true
-                return self.nextStep()
+        do {
+            try await withUncooperativeTimeout(seconds: 120) {
+                try await self.deps.storageServiceManager.restoreOrCreateManifestIfNecessary(
+                    authedDevice: accountIdentity.authedDevice,
+                    masterKeySource: masterKeySource
+                ).awaitable()
             }
-            .recover(on: DispatchQueue.main) { [weak self] error in
-                guard let self else {
-                    return unretainedSelfError()
-                }
-                if error.isPostRegDeregisteredError {
-                    return self.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
-                }
-                self.inMemoryState.hasSkippedRestoreFromStorageService = true
-                return self.nextStep()
+            loadProfileState()
+            if inMemoryState.hasProfileName {
+                scheduleReuploadProfileStateAsync(accountIdentity: accountIdentity)
             }
+            inMemoryState.hasRestoredFromStorageService = true
+        } catch {
+            if error.isPostRegDeregisteredError {
+                return await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
+            }
+            inMemoryState.hasSkippedRestoreFromStorageService = true
+        }
+        return await nextStep().awaitable()
     }
 
     /// If we have a username/username link during registration – which we would
@@ -3972,51 +3937,47 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         changeNumberState: Mode.ChangeNumberState,
         pniState: Mode.ChangeNumberState.PendingPniState,
         accountIdentity: AccountIdentity
-    ) -> Guarantee<FinalizeChangeNumberResult> {
+    ) async -> FinalizeChangeNumberResult {
         Logger.info("")
 
-        // Creating a high strust signal recipient for oneself
-        // must happen in a transaction initiated off the main thread.
-        return Guarantee.wrapAsync {
-            do {
-                try await self.db.awaitableWrite { tx in
-                    try self.deps.changeNumberPniManager.finalizePniIdentity(
-                        withPendingState: pniState.asPniState(),
-                        transaction: tx
-                    )
-                    self._unsafeToModify_mode = .changingNumber(try self.loader.savePendingChangeNumber(
-                        oldState: changeNumberState,
-                        pniState: nil,
-                        transaction: tx
-                    ))
+        do {
+            try await self.db.awaitableWrite { tx in
+                try self.deps.changeNumberPniManager.finalizePniIdentity(
+                    withPendingState: pniState.asPniState(),
+                    transaction: tx
+                )
+                self._unsafeToModify_mode = .changingNumber(try self.loader.savePendingChangeNumber(
+                    oldState: changeNumberState,
+                    pniState: nil,
+                    transaction: tx
+                ))
 
-                    Logger.info(
-                        """
-                        Recording new phone number
-                        localAci: \(changeNumberState.localAci),
-                        localE164: \(changeNumberState.oldE164.stringValue),
-                        serviceAci: \(accountIdentity.aci),
-                        servicePni: \(accountIdentity.pni),
-                        serviceE164: \(accountIdentity.e164.stringValue)")
-                        """
-                    )
+                Logger.info(
+                    """
+                    Recording new phone number
+                    localAci: \(changeNumberState.localAci),
+                    localE164: \(changeNumberState.oldE164.stringValue),
+                    serviceAci: \(accountIdentity.aci),
+                    servicePni: \(accountIdentity.pni),
+                    serviceE164: \(accountIdentity.e164.stringValue)")
+                    """
+                )
 
-                    // We do these here, and not in export state, so that we don't risk
-                    // syncing out-of-date state to storage service.
-                    self.deps.registrationStateChangeManager.didUpdateLocalPhoneNumber(
-                        accountIdentity.e164,
-                        aci: accountIdentity.aci,
-                        pni: accountIdentity.pni,
-                        tx: tx
-                    )
-                    // Make sure we update our local account.
-                    self.deps.storageServiceManager.recordPendingLocalAccountUpdates()
-                }
-                return .success
-            } catch {
-                Logger.error("Failed to finalize change number state: \(error)")
-                return .genericError
+                // We do these here, and not in export state, so that we don't risk
+                // syncing out-of-date state to storage service.
+                self.deps.registrationStateChangeManager.didUpdateLocalPhoneNumber(
+                    accountIdentity.e164,
+                    aci: accountIdentity.aci,
+                    pni: accountIdentity.pni,
+                    tx: tx
+                )
+                // Make sure we update our local account.
+                self.deps.storageServiceManager.recordPendingLocalAccountUpdates()
             }
+            return .success
+        } catch {
+            Logger.error("Failed to finalize change number state: \(error)")
+            return .genericError
         }
     }
 
@@ -4460,41 +4421,33 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Becoming deregistered while registering
 
+    @MainActor
     private func becameDeregisteredBeforeCompleting(
         accountIdentity: AccountIdentity
-    ) -> Guarantee<RegistrationStep> {
+    ) async -> RegistrationStep {
         Logger.info("")
-
-        let kickBackToReRegistration: () -> Guarantee<RegistrationStep> = { [weak self] in
-            guard let self else {
-                return unretainedSelfError()
-            }
-            Logger.warn("Got deregistered while completing registration; starting over with re-registration.")
-            self.db.write { tx in
-                self.wipePersistedState(tx)
-            }
-            return .value(.showErrorSheet(.becameDeregistered(reregParams: .init(
-                e164: accountIdentity.e164,
-                aci: accountIdentity.aci
-            ))))
-        }
 
         switch mode {
         case .registering, .reRegistering:
-            return kickBackToReRegistration()
+            break
         case .changingNumber(let changeNumberState):
             if let pniState = changeNumberState.pniState {
-                return finalizeChangeNumberPniState(
+                _ = await finalizeChangeNumberPniState(
                     changeNumberState: changeNumberState,
                     pniState: pniState,
                     accountIdentity: accountIdentity
-                ).then(on: DispatchQueue.main) { result in
-                    return kickBackToReRegistration()
-                }
-            } else {
-                return kickBackToReRegistration()
+                )
             }
         }
+
+        Logger.warn("Got deregistered while completing registration; starting over with re-registration.")
+        db.write { tx in
+            wipePersistedState(tx)
+        }
+        return .showErrorSheet(.becameDeregistered(reregParams: .init(
+            e164: accountIdentity.e164,
+            aci: accountIdentity.aci
+        )))
     }
 
     // MARK: - Account objects
