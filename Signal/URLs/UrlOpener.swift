@@ -16,7 +16,7 @@ private enum OpenableUrl {
     case linkDevice
     case completeIDEALDonation(Stripe.IDEALCallbackType)
     case callLink(CallLink)
-    case quickRestore
+    case quickRestore(URL)
 }
 
 class UrlOpener {
@@ -75,7 +75,7 @@ class UrlOpener {
         if let linkDeviceURL = isSgnlLinkDeviceUrl(url) {
             switch linkDeviceURL.linkType {
             case .linkDevice: return .linkDevice
-            case .quickRestore: return .quickRestore
+            case .quickRestore: return .quickRestore(url)
             }
         }
         if let donationType = Stripe.parseStripeIDEALCallback(url) {
@@ -201,15 +201,21 @@ class UrlOpener {
             linkDeviceWarningActionSheet.addAction(.cancel)
             rootViewController.presentActionSheet(linkDeviceWarningActionSheet)
 
-        case .quickRestore:
+        case .quickRestore(let url):
 
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
                 owsFailDebug("Ignoring URL; not primary device.")
                 return
             }
 
-            // TODO: Add a prompt to let the user know they need to re-scan
-            // using the in-app camera
+            let provisioningURL = DeviceProvisioningURL(urlString: url.absoluteString)
+            if let provisioningURL {
+                AppEnvironment.shared.outgoingDeviceRestorePresenter.present(
+                    provisioningURL: provisioningURL,
+                    presentingViewController: CurrentAppContext().frontmostViewController()!,
+                    animated: true
+                )
+            }
 
         case .completeIDEALDonation(let donationType):
             Task { [appReadiness, databaseStorage] in
