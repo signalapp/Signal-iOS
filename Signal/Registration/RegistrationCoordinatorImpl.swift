@@ -1345,18 +1345,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         switch mode {
         case .registering:
-            db.write { tx in
-                /// For new registrations, we want to force-set some state.
-                if self.inMemoryState.restoreMethod?.backupType == nil {
-                    /// Read receipts should be on by default.
-                    self.deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
-                    self.deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
-
-                    /// Enable the onboarding banner cards.
-                    self.deps.experienceManager.enableAllGetStartedCards(tx)
-                }
-                persistRegistrationState(tx)
-            }
 
             if let step = fetchBackupCdnInfo(accountIdentity: accountIdentity) {
                 return await step.awaitable()
@@ -1384,7 +1372,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return restoreProgressSource
             }
 
+            if let svrBackupNextStep = await self.performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
+                return svrBackupNextStep
+            }
+
             await self.db.awaitableWrite { tx in
+                persistRegistrationState(tx)
+
+                /// For new registrations, we want to force-set some state.
+                if self.inMemoryState.restoreMethod?.backupType == nil {
+                    /// Read receipts should be on by default.
+                    self.deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
+                    self.deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
+
+                    /// Enable the onboarding banner cards.
+                    self.deps.experienceManager.enableAllGetStartedCards(tx)
+                }
                 finalizeRegistration(tx: tx)
             }
 
@@ -3361,12 +3364,21 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
         }
 
-        if let restoreStepNextStep = await performSVRRestoreStepsIfNeeded(accountIdentity: accountIdentity) {
-            return restoreStepNextStep
+        let isBackup = inMemoryState.restoreMethod?.isBackup == true
+
+        // This step is here to attempt to restore the PIN after an SMS-based registration, and then possibly
+        // restore from storage service. If the user is attempting a backup restore, skip restoring from
+        // SVR. We will either have a restored SVR master key from registration, or we will be using
+        // the entered/generated AEP.
+        // (See comment below for more details)
+        if !isBackup {
+            if let restoreStepNextStep = await performSVRRestoreStepsIfNeeded(accountIdentity: accountIdentity) {
+                return restoreStepNextStep
+            }
         }
 
         if inMemoryState.accountEntropyPool == nil {
-            if inMemoryState.restoreMethod?.isBackup == true {
+            if isBackup {
                 // If the user want's to restore from backup, ask for the key
                 return .enterBackupKey
             } else {
@@ -3380,8 +3392,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
 
-        if let backupStepNextStep = await performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
-            return backupStepNextStep
+        // The user may have registered with a master key that differs from the AEP-derived master key
+        // (e.g. - they previously backed up, but have done a PIN-based registratin in the interim, resulting
+        // in a rotated AEP/masterKey. Because of that, if the user is restoring from backups, postpone
+        // SVR backup until after registration completes. This accomplishes two things:
+        // 1. Allows delaying PIN entry to post-restore in some flows, streamlining the
+        //    backup key entry -> restore confirmation -> backup restore path.
+        // 2. (and more importantly) Backup restore can be a fairly long and complicated part of
+        //    completing a registration. If the user quit before completion and/or otherwise abandons
+        //    the registration before completing the restore, we want to make sure that SVR still holds
+        //    the master key / reglock token that was used for registration.
+        if !isBackup {
+            if let backupStepNextStep = await performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
+                return backupStepNextStep
+            }
         }
 
         // This will restore after backup, _or_ it will rotate to the new AEP derived key
