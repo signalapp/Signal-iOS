@@ -108,7 +108,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
 
         // simulate permanent failure (via `maxRetries` retryable failures)
         let retryCount: Int = 110 // Matches MessageSenderOperation
-        fakeMessageSender.stubbedFailingErrors = Array(repeating: URLError(.notConnectedToInternet), count: retryCount + 1)
+        fakeMessageSender.stubbedFailingErrors = Array(repeating: URLError(.timedOut), count: retryCount + 1)
         jobQueue.setUp()
 
         do {

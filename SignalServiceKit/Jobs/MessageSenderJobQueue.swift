@@ -499,8 +499,9 @@ public class MessageSenderJobQueue {
                 // retry as soon as we reconnect.
                 if error.isNetworkFailure {
                     externalRetryTriggers.insert(.chatConnectionOpened)
-                    // TODO: Remove this after REST is gone -- it'll no longer be relevant.
-                    externalRetryTriggers.insert(.networkBecameReachable)
+                    if !OWSChatConnection.mustAppUseSocketsToMakeRequests {
+                        externalRetryTriggers.insert(.networkBecameReachable)
+                    }
                 }
                 // If there's a timeout, we interrupted the request ourselves, and sending
                 // the same request again on a new connection will typically result in the

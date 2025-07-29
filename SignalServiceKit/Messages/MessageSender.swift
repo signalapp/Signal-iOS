@@ -1535,8 +1535,7 @@ public class MessageSender {
         Logger.warn("\(type(of: message)) to \(messageSend.serviceId), timestamp: \(message.timestamp), error: \(responseError)")
 
         switch responseError.httpStatusCode {
-        case 401:
-            // TODO: [WebSocket] Remove this case when REST is removed.
+        case 401 where !OWSChatConnection.mustAppUseSocketsToMakeRequests:
             throw NotRegisteredError()
         case 404:
             try await failSendForUnregisteredRecipient(messageSend)
