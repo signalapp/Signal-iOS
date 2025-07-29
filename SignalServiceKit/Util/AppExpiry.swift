@@ -5,6 +5,11 @@
 
 import Foundation
 
+/// Thrown when a request isn't sent because the app is already expired.
+public struct AppExpiredError: Error, IsRetryableProvider {
+    public let isRetryableProvider: Bool = false
+}
+
 public final class AppExpiry {
 
     public static let appExpiredStatusCode: UInt = 499

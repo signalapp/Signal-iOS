@@ -52,7 +52,7 @@ extension Upload.CDN0.Form {
 extension Upload.CDN0 {
     public static func upload(data: Data, uploadForm: Upload.CDN0.Form) async throws -> String {
         if DependenciesBridge.shared.appExpiry.isExpired(now: Date()) {
-            throw OWSGenericError("App is expired.")
+            throw AppExpiredError()
         }
 
         let dataFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)

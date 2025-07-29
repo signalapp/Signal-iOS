@@ -66,6 +66,8 @@ private class RESTSessionManager {
                 try await makeIsDeregisteredRequest()
             }
             throw httpError
+        } catch let error as AppExpiredError {
+            throw error
         } catch let error as CancellationError {
             throw error
         } catch {

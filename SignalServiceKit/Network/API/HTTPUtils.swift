@@ -255,7 +255,7 @@ public extension Error {
         switch self as? OWSHTTPError {
         case .serviceResponse(let serviceResponse):
             return serviceResponse.is5xx
-        case nil, .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
+        case nil, .invalidRequest, .wrappedFailure, .networkFailure:
             return false
         }
     }

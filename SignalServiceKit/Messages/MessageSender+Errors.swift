@@ -329,35 +329,6 @@ class OWSUnretryableMessageSenderError: Error, IsRetryableProvider {
 
 // MARK: -
 
-public class AppExpiredError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
-    public static var asNSError: NSError {
-        AppExpiredError() as Error as NSError
-    }
-
-    // NSError bridging: the domain of the error.
-    public static let errorDomain = OWSError.errorDomain
-
-    // NSError bridging: the error code within the given domain.
-    public static var errorCode: Int { OWSErrorCode.appExpired.rawValue }
-
-    // NSError bridging: the error code within the given domain.
-    public var errorUserInfo: [String: Any] {
-        [NSLocalizedDescriptionKey: self.localizedDescription]
-    }
-
-    public var localizedDescription: String {
-        OWSLocalizedString("ERROR_SENDING_EXPIRED",
-                          comment: "Error indicating a send failure due to an expired application.")
-    }
-
-    // NSError bridging: the error code within the given domain.
-    public var errorCode: Int { Self.errorCode }
-
-    public var isRetryableProvider: Bool { false }
-}
-
-// MARK: -
-
 public class AppDeregisteredError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     public static var asNSError: NSError {
         AppDeregisteredError() as Error as NSError

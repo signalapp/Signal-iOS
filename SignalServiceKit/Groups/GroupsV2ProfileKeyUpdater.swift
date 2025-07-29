@@ -216,6 +216,8 @@ class GroupsV2ProfileKeyUpdater {
                 break
             case is OWSHTTPError:
                 throw error
+            case is AppExpiredError:
+                throw error
             case _ where error.isNetworkFailureOrTimeout:
                 throw error
             case GroupsV2Error.timeout:

@@ -250,7 +250,13 @@ public extension TSOutgoingMessage {
         transaction tx: DBWriteTransaction
     ) {
         anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
-            if let error {
+            if error is AppExpiredError {
+                // TODO: Don't store rasterized strings in the database.
+                outgoingMessage.mostRecentFailureText = OWSLocalizedString(
+                    "ERROR_SENDING_EXPIRED",
+                    comment: "Error indicating a send failure due to an expired application."
+                )
+            } else if let error {
                 outgoingMessage.mostRecentFailureText = error.userErrorDescription
             }
 

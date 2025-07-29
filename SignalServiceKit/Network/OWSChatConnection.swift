@@ -255,7 +255,7 @@ public class OWSChatConnection {
     /// don't use this property.
     ///
     /// Must be accessed on `serialQueue`.
-    private var canOpenWebSocketError: OWSHTTPError? = .networkFailure(.genericFailure)
+    private var canOpenWebSocketError: (any Error)? = OWSHTTPError.networkFailure(.genericFailure)
 
     func updateCanOpenWebSocket() {
         serialQueue.async(_updateCanOpenWebSocket)
@@ -268,13 +268,13 @@ public class OWSChatConnection {
         let oldValue = (canOpenWebSocketError == nil)
         canOpenWebSocketError = {
             guard !appExpiry.isExpired(now: Date()) else {
-                return .invalidAppState
+                return AppExpiredError()
             }
             guard Self.canAppUseSocketsToMakeRequests else {
-                return .networkFailure(.genericFailure)
+                return OWSHTTPError.networkFailure(.genericFailure)
             }
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-                return .networkFailure(.genericFailure)
+                return OWSHTTPError.networkFailure(.genericFailure)
             }
             return nil
         }()
