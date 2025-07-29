@@ -282,12 +282,12 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
 // TODO: Remove this layer of abstraction; it's no longer necessary.
 public protocol _RegistrationCoordinator_PreKeyManagerShim {
 
-    func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles>
+    func createPreKeysForRegistration() async throws -> RegistrationPreKeyUploadBundles
 
     func finalizeRegistrationPreKeys(
         _ prekeyBundles: RegistrationPreKeyUploadBundles,
         uploadDidSucceed: Bool
-    ) -> Promise<Void>
+    ) async throws
 
     func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws
 }
@@ -300,24 +300,18 @@ public class _RegistrationCoordinator_PreKeyManagerWrapper: _RegistrationCoordin
         self.preKeyManager = preKeyManager
     }
 
-    public func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles> {
-        let preKeyManager = self.preKeyManager
-        return Promise.wrapAsync {
-            return try await preKeyManager.createPreKeysForRegistration().value
-        }
+    public func createPreKeysForRegistration() async throws -> RegistrationPreKeyUploadBundles {
+        return try await preKeyManager.createPreKeysForRegistration().value
     }
 
     public func finalizeRegistrationPreKeys(
         _ prekeyBundles: RegistrationPreKeyUploadBundles,
         uploadDidSucceed: Bool
-    ) -> Promise<Void> {
-        let preKeyManager = self.preKeyManager
-        return Promise.wrapAsync {
-            return try await preKeyManager.finalizeRegistrationPreKeys(
-                prekeyBundles,
-                uploadDidSucceed: uploadDidSucceed
-            ).value
-        }
+    ) async throws {
+        return try await preKeyManager.finalizeRegistrationPreKeys(
+            prekeyBundles,
+            uploadDidSucceed: uploadDidSucceed
+        ).value
     }
 
     public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws {

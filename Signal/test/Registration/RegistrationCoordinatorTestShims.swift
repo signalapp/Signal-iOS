@@ -192,17 +192,17 @@ public class _RegistrationCoordinator_PreKeyManagerMock: _RegistrationCoordinato
     public typealias CreatePreKeysMock = (() -> Promise<RegistrationPreKeyUploadBundles>)
     private var createPreKeysMocks = [CreatePreKeysMock]()
     public func addCreatePreKeysMock(_ mock: @escaping CreatePreKeysMock) { createPreKeysMocks.append(mock) }
-    public func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles> {
+    public func createPreKeysForRegistration() async throws -> RegistrationPreKeyUploadBundles {
         run.addObservedStep(.createPreKeys)
-        return createPreKeysMocks.removeFirst()()
+        return try await createPreKeysMocks.removeFirst()().awaitable()
     }
 
     public typealias FinalizePreKeysMock = ((Bool) -> Promise<Void>)
     private var finalizePreKeysMocks = [FinalizePreKeysMock]()
     public func addFinalizePreKeyMock(_ mock: @escaping FinalizePreKeysMock) { finalizePreKeysMocks.append(mock) }
-    public func finalizeRegistrationPreKeys(_ bundles: RegistrationPreKeyUploadBundles, uploadDidSucceed: Bool) -> Promise<Void> {
+    public func finalizeRegistrationPreKeys(_ bundles: RegistrationPreKeyUploadBundles, uploadDidSucceed: Bool) async throws {
         run.addObservedStep(.finalizePreKeys)
-        return finalizePreKeysMocks.removeFirst()(uploadDidSucceed)
+        return try await finalizePreKeysMocks.removeFirst()(uploadDidSucceed).awaitable()
     }
 
     public typealias RotateOneTimePreKeysMock = ((ChatServiceAuth) -> Promise<Void>)

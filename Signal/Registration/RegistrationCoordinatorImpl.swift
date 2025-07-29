@@ -4228,8 +4228,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         if let registrationMessage = inMemoryState.registrationMessage {
             persistRegistrationMessage(registrationMessage)
         }
-        return self.deps.preKeyManager.createPreKeysForRegistration()
-            .map(on: SyncScheduler()) { (bundles: RegistrationPreKeyUploadBundles) -> RegistrationPreKeyUploadBundles? in
+        return Promise.wrapAsync {
+                try await self.deps.preKeyManager.createPreKeysForRegistration()
+            }.map(on: SyncScheduler()) { (bundles: RegistrationPreKeyUploadBundles) -> RegistrationPreKeyUploadBundles? in
                 return bundles
             }.recover(on: SyncScheduler()) {
                 Logger.error("Unable to generate prekeys: \($0)")
@@ -4271,18 +4272,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             .deviceTransferPossible:
                         isPrekeyUploadSuccess = false
                     }
-                    return await self.deps.preKeyManager
-                        .finalizeRegistrationPreKeys(
+                    do {
+                        try await self.deps.preKeyManager.finalizeRegistrationPreKeys(
                             prekeyBundles,
                             uploadDidSucceed: isPrekeyUploadSuccess
-                        ).recover(on: SyncScheduler()) { error in
-                            // Finalizing is best effort.
-                            Logger.error("Unable to finalize prekeys, ignoring and continuing")
-                            return .value(())
-                        }
-                        .then(on: DispatchQueue.main) { () -> Guarantee<RegistrationStep> in
-                            return responseHandler(accountResponse)
-                        }.awaitable()
+                        )
+                    } catch {
+                        // Finalizing is best effort.
+                        Logger.error("Unable to finalize prekeys, ignoring and continuing")
+                    }
+                    return await responseHandler(accountResponse).awaitable()
                 }
             }
     }
