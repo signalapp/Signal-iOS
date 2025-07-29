@@ -1,1 +1,1 @@
-• Signal needs a signal, but the improved retry logic in this update should come in handy the next time you find yourself in an area with poor WiFi or cellular reception.
+• Signal-appen kræver et signal, men den forbedrede gentagne forsøgslogik i denne opdatering burde være nyttig næste gang du befinder dig i et område med dårlig Wi-Fi- eller mobildækning.

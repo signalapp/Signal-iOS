@@ -1,1 +1,1 @@
-• Signal needs a signal, but the improved retry logic in this update should come in handy the next time you find yourself in an area with poor WiFi or cellular reception.
+• Lorsque votre connexion Wi-Fi ou mobile fait des siennes, l'appli tente de se reconnecter automatiquement. Et dans la dernière version de Signal, ces tentatives de reconnexion sont encore plus performantes. Morale de l'histoire : ce n'est pas parce qu'on essuie un échec qu'il faut s'avouer vaincu.

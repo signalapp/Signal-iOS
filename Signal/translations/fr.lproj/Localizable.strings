@@ -605,7 +605,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Something went wrong creating your backup. Check your internet connection and try again.";
 
 /* Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "Creating backup: %1$@";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "Création de la sauvegarde : %1$@";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Exporting backup...";
@@ -776,7 +776,7 @@
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Sauvegarder maintenant";
 
 /* Title for a button shown under a progress bar tracking a manual backup, which lets the user cancel the backup. */
-"BACKUP_SETTINGS_MANUAL_BACKUP_CANCEL_BUTTON" = "Cancel Backup";
+"BACKUP_SETTINGS_MANUAL_BACKUP_CANCEL_BUTTON" = "Annuler la sauvegarde";
 
 /* Action in an action sheet allowing users to download their offloaded media later. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_LATER_ACTION" = "Télécharger plus tard";
@@ -4238,7 +4238,7 @@
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Appareil associé inactif";
 
 /* Body for an in-app megaphone about a user's inactive primary device. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "To keep your account active, open Signal on your primary device.";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "Pour que votre compte reste actif, ouvrez Signal sur votre appareil principal.";
 
 /* Title for a button in an in-app megaphone about a user's inactive primary device, temporarily dismissing the megaphone. */
 "INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_GOT_IT_BUTTON" = "J'ai compris";
@@ -4247,7 +4247,7 @@
 "INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_LEARN_MORE_BUTTON" = "En savoir plus";
 
 /* Title for an in-app megaphone about a user's inactive primary device. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Open Signal on your phone";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Ouvrez Signal sur votre téléphone";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Les conversations mises en sourdine restent archivées, même lorsque vous recevez un nouveau message.";
@@ -5474,7 +5474,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "Dernière sauvegarde effectuée le %1$@ à %2$@. Taille de la sauvegarde : %3$@.";
 
 /* Description for form confirming restore from backup without size detail. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE" = "Your last backup was made on %1$@ at %2$@.";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE" = "Dernière sauvegarde effectuée le %1$@ à %2$@.";
 
 /* Details confirming manual restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "If you choose not to restore now, you won’t be able to restore later. Your media will restore in the background.";
@@ -6293,31 +6293,31 @@
 "PIN_REMINDER_MEGAPHONE_BODY" = "Nous vous demanderons occasionnellement de confirmer votre code PIN pour vous aider à le mémoriser.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_SUCCESSFUL_TOAST" = "Code PIN correct. Nous vous le redemanderons dans quelques jours.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_SUCCESSFUL_TOAST" = "Confirmation réussie. Nous vous le redemanderons dans quelques jours.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Nous vous le rappellerons dans quelques jours.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Nous vous le redemanderons dans quelques jours.";
 
 /* Title for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_TITLE" = "Confirmez votre code PIN Signal";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_SUCCESSFUL_TOAST" = "Code PIN correct. Nous vous le redemanderons demain.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_SUCCESSFUL_TOAST" = "Confirmation réussie. Nous vous le redemanderons demain.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Nous vous le rappellerons demain.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Nous vous le redemanderons demain.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_SUCCESSFUL_TOAST" = "Code PIN correct. Nous vous le redemanderons dans deux semaines.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_SUCCESSFUL_TOAST" = "Confirmation réussie. Nous vous le redemanderons dans 15 jours.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Nous vous le rappellerons dans deux semaines.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Nous vous le redemanderons dans 15 jours.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_WEEK_SUCCESSFUL_TOAST" = "Code PIN correct. Nous vous le redemanderons dans une semaine.";
+"PIN_REMINDER_MEGAPHONE_WEEK_SUCCESSFUL_TOAST" = "Confirmation réussie. Nous vous le redemanderons dans une semaine.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Nous vous le rappellerons dans une semaine.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Nous vous le redemanderons dans une semaine.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Code PIN incorrect. Veuillez réessayer.";

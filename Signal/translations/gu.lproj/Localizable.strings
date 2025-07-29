@@ -605,7 +605,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Something went wrong creating your backup. Check your internet connection and try again.";
 
 /* Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "Creating backup: %1$@";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "બેકઅપ બનાવી રહ્યા છીએ: %1$@";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Exporting backup...";
@@ -776,7 +776,7 @@
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "હમણાં બેકઅપ લો";
 
 /* Title for a button shown under a progress bar tracking a manual backup, which lets the user cancel the backup. */
-"BACKUP_SETTINGS_MANUAL_BACKUP_CANCEL_BUTTON" = "Cancel Backup";
+"BACKUP_SETTINGS_MANUAL_BACKUP_CANCEL_BUTTON" = "બેકઅપ રદ કરો";
 
 /* Action in an action sheet allowing users to download their offloaded media later. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_LATER_ACTION" = "પછી ડાઉનલોડ કરો";
@@ -4238,7 +4238,7 @@
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "નિષ્ક્રિય લિંક કરેલા ડિવાઇસ";
 
 /* Body for an in-app megaphone about a user's inactive primary device. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "To keep your account active, open Signal on your primary device.";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "તમારા એકાઉન્ટને સક્રિય રાખવા માટે, તમારા પ્રાથમિક ડિવાઇસ પર Signal ખોલો.";
 
 /* Title for a button in an in-app megaphone about a user's inactive primary device, temporarily dismissing the megaphone. */
 "INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_GOT_IT_BUTTON" = "સમજાઈ ગયું";
@@ -4247,7 +4247,7 @@
 "INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_LEARN_MORE_BUTTON" = "વધુ જાણો";
 
 /* Title for an in-app megaphone about a user's inactive primary device. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Open Signal on your phone";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE" = "તમારા ફોન પર Signal ખોલો";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "મ્યૂટ કરેલી ચેટ જેને આર્કાઇવ કરેલ છે તે નવો મેસેજ આવે ત્યારે પણ આર્કાઇવ જ રહેશે.";
@@ -5474,7 +5474,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION" = "તમારું છેલ્લું બેકઅપ %1$@ના રોજ %2$@ વાગ્યે બનાવવામાં આવ્યું હતું. તમારા બેકઅપની સાઇઝ %3$@ છે";
 
 /* Description for form confirming restore from backup without size detail. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE" = "Your last backup was made on %1$@ at %2$@.";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE" = "તમારું છેલ્લું બેકઅપ %1$@ના રોજ %2$@ વાગ્યે લેવામાં આવ્યું હતું.";
 
 /* Details confirming manual restore from backup. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "If you choose not to restore now, you won’t be able to restore later. Your media will restore in the background.";

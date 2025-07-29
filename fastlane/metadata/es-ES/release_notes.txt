@@ -1,1 +1,1 @@
-• Signal needs a signal, but the improved retry logic in this update should come in handy the next time you find yourself in an area with poor WiFi or cellular reception.
+• Hasta Signal pierde la señal a veces, pero esta actualización incluye una lógica de reintento mejorada que te salvará en lugares con mala cobertura Wi-Fi o de datos móviles.

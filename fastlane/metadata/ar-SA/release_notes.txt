@@ -1,1 +1,1 @@
-• Signal needs a signal, but the improved retry logic in this update should come in handy the next time you find yourself in an area with poor WiFi or cellular reception.
+• يَحتاج تطبيق سيجنال إلى إشارة، لكن من المُفترض أن يُساعدك منطق إعادة المحاولة المُحسَّن في هذا التحديث عندما تجد نفسك في منطقة ذات تغطية واي فاي أو شبكة خلوية ضعيفة.

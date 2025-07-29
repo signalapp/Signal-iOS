@@ -1,1 +1,1 @@
-• Signal needs a signal, but the improved retry logic in this update should come in handy the next time you find yourself in an area with poor WiFi or cellular reception.
+• 我们优化了重试逻辑，以方便 WiFi 网络不佳或蜂窝信号较差的地区。

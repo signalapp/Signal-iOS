@@ -1,1 +1,1 @@
-• Signal needs a signal, but the improved retry logic in this update should come in handy the next time you find yourself in an area with poor WiFi or cellular reception.
+• Cải thiện logic thử lại, hữu ích cho các khu vực có kết nối WiFi hoặc mạng di động kém.

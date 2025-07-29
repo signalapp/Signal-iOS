@@ -1,1 +1,1 @@
-• Signal needs a signal, but the improved retry logic in this update should come in handy the next time you find yourself in an area with poor WiFi or cellular reception.
+• Signal ऐप को भी काम करने के लिए इंटरनेट सिग्नल चाहिए। इस ‘रिट्राई लॉजिक’ अपडेट के बाद, अगर आपके पास कमज़ोर वाई-फ़ाई या मोबाइल नेटवर्क होगा, तो ऐप खुद ही इंटरनेट से कनेक्ट करने के लिए बेहतर कोशिश करेगा।

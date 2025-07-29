@@ -1,1 +1,1 @@
-• Signal needs a signal, but the improved retry logic in this update should come in handy the next time you find yourself in an area with poor WiFi or cellular reception.
+• Signal нужен сигнал, но улучшенная логика повторных попыток в этом обновлении поможет в следующий раз, когда вы окажетесь в зоне со слабым Wi-Fi или сотовым сигналом.

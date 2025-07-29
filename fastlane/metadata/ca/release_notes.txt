@@ -1,1 +1,1 @@
-• Signal needs a signal, but the improved retry logic in this update should come in handy the next time you find yourself in an area with poor WiFi or cellular reception.
+• Actualitzacions a la lògica de reintent per ajudar-te a connectar-te en zones amb mala cobertura o recepció WiFi.

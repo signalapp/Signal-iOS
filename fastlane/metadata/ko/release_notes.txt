@@ -1,1 +1,1 @@
-• Signal needs a signal, but the improved retry logic in this update should come in handy the next time you find yourself in an area with poor WiFi or cellular reception.
+• WiFi 또는 셀룰러 신호가 약한 지역에서 유용하도록 재시도 로직을 개선했습니다.
