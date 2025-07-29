@@ -71,7 +71,7 @@ public struct TSRequest: CustomDebugStringConvertible {
                 case .identified:
                     return .identified
                 case .registration:
-                    // TODO: Add support for this when deprecating REST.
+                    // TODO: Migrate registration requests to LibSignal.
                     throw OWSAssertionError("Can't send registration requests via either web socket.")
                 case .anonymous, .sealedSender, .backup:
                     return .unidentified
