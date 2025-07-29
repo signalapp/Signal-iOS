@@ -281,12 +281,12 @@ public class _RegistrationCoordinator_PushRegistrationManagerMock: _Registration
     }
 
     public typealias ReceivePreAuthChallengeTokenMock = (() async -> String)
-    private var receivePreAuthChallengeTokenMocks = [ReceivePreAuthChallengeTokenMock]()
-    public func addReceivePreAuthChallengeTokenMock(_ mock: @escaping ReceivePreAuthChallengeTokenMock) {
-        receivePreAuthChallengeTokenMocks.append(mock)
+    private var receivePreAuthChallengeTokenMock: ReceivePreAuthChallengeTokenMock!
+    public func setReceivePreAuthChallengeTokenMock(_ mock: @escaping ReceivePreAuthChallengeTokenMock) {
+        receivePreAuthChallengeTokenMock = mock
     }
     public func receivePreAuthChallengeToken() async -> String {
-        return await receivePreAuthChallengeTokenMocks.removeFirst()()
+        return await receivePreAuthChallengeTokenMock()
     }
 
     public var didClearPreAuthChallengeToken = false
