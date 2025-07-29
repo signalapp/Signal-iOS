@@ -235,10 +235,10 @@ public extension TSOutgoingMessage {
                 }
 
                 if recipientState.canHaveErrorCode {
-                    if error is NotRegisteredError {
-                        recipientState.errorCode = OWSErrorCode.appDeregistered.rawValue
+                    if error is UntrustedIdentityError {
+                        recipientState.errorCode = OWSErrorCode.untrustedIdentity.rawValue
                     } else {
-                        recipientState.errorCode = (error as NSError).code
+                        recipientState.errorCode = OWSErrorCode.genericFailure.rawValue
                     }
                 }
             }
