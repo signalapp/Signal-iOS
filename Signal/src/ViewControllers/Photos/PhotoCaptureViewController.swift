@@ -1336,30 +1336,13 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
                 linkDeviceWarningActionSheet.addAction(cancelAction)
                 presentActionSheet(linkDeviceWarningActionSheet)
             case .quickRestore:
-
-                let quickRestoreActionSheet = ActionSheetController(
-                    message: OWSLocalizedString(
-                        "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE",
-                        comment: "Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera."
+                self.dismiss(animated: true) {
+                    AppEnvironment.shared.outgoingDeviceRestorePresenter.present(
+                        provisioningURL: provisioningURL,
+                        presentingViewController: CurrentAppContext().frontmostViewController()!,
+                        animated: true
                     )
-                )
-
-                let showQuickRestoreAction = ActionSheetAction(title: CommonStrings.continueButton) { _ in
-                    self.dismiss(animated: true) {
-                        AppEnvironment.shared.outgoingDeviceRestorePresenter.present(
-                            provisioningURL: provisioningURL,
-                            presentingViewController: CurrentAppContext().frontmostViewController()!,
-                            animated: true
-                        )
-                    }
                 }
-                let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton) { _ in
-                    self.qrCodeScanned = false
-                }
-
-                quickRestoreActionSheet.addAction(showQuickRestoreAction)
-                quickRestoreActionSheet.addAction(cancelAction)
-                presentActionSheet(quickRestoreActionSheet)
             }
         }
     }
