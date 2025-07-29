@@ -78,7 +78,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         ),
         iconName: "backup-light",
         iconSize: 32,
-        selector: #selector(didSelectRestoreLocal)
+        selector: #selector(didSelectRestoreFromBackup)
     )
 
     private lazy var transferButton = choiceButton(
@@ -195,17 +195,8 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
     // MARK: Events
 
     @objc
-    private func didSelectRestoreLocal() {
-        let actionSheet = ActionSheetController(title: "Choose backup import source:")
-        let localFileAction = ActionSheetAction(title: "Local backup") { [weak self] _ in
-            self?.showMessageBackupPicker()
-        }
-        actionSheet.addAction(localFileAction)
-        let remoteFileAction = ActionSheetAction(title: "Remote backup") { [weak self] _ in
-            self?.presenter?.didChooseRestoreMethod(method: .remote)
-        }
-        actionSheet.addAction(remoteFileAction)
-        presentActionSheet(actionSheet)
+    private func didSelectRestoreFromBackup() {
+        presenter?.didChooseRestoreMethod(method: .remote)
     }
 
     @objc
@@ -223,26 +214,9 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         presenter?.didCancelRestoreMethodSelection()
     }
 
-    private func showMessageBackupPicker() {
-        let vc = UIApplication.shared.frontmostViewController!
-        let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.item], asCopy: !Platform.isSimulator)
-        documentPicker.delegate = self
-        documentPicker.allowsMultipleSelection = false
-        vc.present(documentPicker, animated: true)
-    }
-
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         render()
-    }
-}
-
-extension RegistrationChooseRestoreMethodViewController: UIDocumentPickerDelegate {
-    public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let fileUrl = urls.first else {
-            return
-        }
-        presenter?.didChooseRestoreMethod(method: .local(fileUrl: fileUrl))
     }
 }
 
