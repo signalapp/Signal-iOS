@@ -577,8 +577,9 @@ public class MessageSender {
         if DependenciesBridge.shared.appExpiry.isExpired(now: Date()) {
             throw AppExpiredError()
         }
-        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered.negated {
-            throw AppDeregisteredError()
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        if !tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
+            throw NotRegisteredError()
         }
         if message.shouldBeSaved {
             let latestCopy = SSKEnvironment.shared.databaseStorageRef.read { tx in
@@ -1536,7 +1537,7 @@ public class MessageSender {
         switch responseError.httpStatusCode {
         case 401:
             // TODO: [WebSocket] Remove this case when REST is removed.
-            throw AppDeregisteredError()
+            throw NotRegisteredError()
         case 404:
             try await failSendForUnregisteredRecipient(messageSend)
         case 409:

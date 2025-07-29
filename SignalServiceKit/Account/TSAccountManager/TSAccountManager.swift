@@ -66,6 +66,10 @@ public protocol TSAccountManager {
     func lastSetIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Date
 }
 
+public struct NotRegisteredError: Error, IsRetryableProvider {
+    public let isRetryableProvider: Bool = false
+}
+
 /// It's *possible* (but implausible) that the local user's "device ID"
 /// isn't valid. These "device IDs" aren't supported on the server, so these
 /// users consider themselves "deregistered" (or, if they don't, they will

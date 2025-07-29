@@ -274,7 +274,7 @@ public class OWSChatConnection {
                 return OWSHTTPError.networkFailure(.genericFailure)
             }
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-                return OWSHTTPError.networkFailure(.genericFailure)
+                return NotRegisteredError()
             }
             return nil
         }()
