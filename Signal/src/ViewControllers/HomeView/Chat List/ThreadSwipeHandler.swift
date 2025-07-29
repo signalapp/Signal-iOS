@@ -22,40 +22,48 @@ extension ThreadSwipeHandler where Self: UIViewController {
         let isThreadPinned = threadViewModel.isPinned
         let pinnedStateAction: UIContextualAction
         if isThreadPinned {
-            pinnedStateAction = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, completion) in
+            pinnedStateAction = ContextualActionBuilder.makeContextualAction(
+                style: .normal,
+                color: UIColor(rgbHex: 0xff990a),
+                image: "pin-slash-fill",
+                title: CommonStrings.unpinAction,
+            ) { [weak self] completion in
                 self?.unpinThread(threadViewModel: threadViewModel)
                 completion(false)
             }
-            pinnedStateAction.backgroundColor = UIColor(rgbHex: 0xff990a)
-            pinnedStateAction.accessibilityLabel = CommonStrings.unpinAction
-            pinnedStateAction.image = actionImage(name: "pin-slash-fill", title: CommonStrings.unpinAction)
         } else {
-            pinnedStateAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
+            pinnedStateAction = ContextualActionBuilder.makeContextualAction(
+                style: .destructive,
+                color: UIColor(rgbHex: 0xff990a),
+                image: "pin-fill",
+                title: CommonStrings.pinAction,
+            ) { [weak self] completion in
                 self?.pinThread(threadViewModel: threadViewModel)
                 completion(false)
             }
-            pinnedStateAction.backgroundColor = UIColor(rgbHex: 0xff990a)
-            pinnedStateAction.accessibilityLabel = CommonStrings.pinAction
-            pinnedStateAction.image = actionImage(name: "pin-fill", title: CommonStrings.pinAction)
         }
 
         let readStateAction: UIContextualAction
         if threadViewModel.hasUnreadMessages {
-            readStateAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
+            readStateAction = ContextualActionBuilder.makeContextualAction(
+                style: .destructive,
+                color: UIColor.Signal.ultramarine,
+                image: "chat-check-fill",
+                title: CommonStrings.readAction,
+            ) { [weak self] completion in
                 completion(false)
                 self?.markThreadAsRead(threadViewModel: threadViewModel)
             }
-            readStateAction.backgroundColor = .ows_accentBlue
-            readStateAction.accessibilityLabel = CommonStrings.readAction
-            readStateAction.image = actionImage(name: "chat-check-fill", title: CommonStrings.readAction)
         } else {
-            readStateAction = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, completion) in
+            readStateAction = ContextualActionBuilder.makeContextualAction(
+                style: .normal,
+                color: UIColor.Signal.ultramarine,
+                image: "chat-badge-fill",
+                title: CommonStrings.unreadAction
+            ) { [weak self] completion in
                 completion(false)
                 self?.markThreadAsUnread(threadViewModel: threadViewModel)
             }
-            readStateAction.backgroundColor = .ows_accentBlue
-            readStateAction.accessibilityLabel = CommonStrings.unreadAction
-            readStateAction.image = actionImage(name: "chat-badge-fill", title: CommonStrings.unreadAction)
         }
 
         // The first action will be auto-performed for "very long swipes".
@@ -69,7 +77,12 @@ extension ThreadSwipeHandler where Self: UIViewController {
             return nil
         }
 
-        let muteAction = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, completion) in
+        let muteAction = ContextualActionBuilder.makeContextualAction(
+            style: .normal,
+            color: UIColor.Signal.indigo,
+            image: threadViewModel.isMuted ? "bell-fill" : "bell-slash-fill",
+            title: threadViewModel.isMuted ? CommonStrings.unmuteButton : CommonStrings.muteButton,
+        ) { [weak self] completion in
             if threadViewModel.isMuted {
                 self?.unmuteThread(threadViewModel: threadViewModel)
             } else {
@@ -77,14 +90,13 @@ extension ThreadSwipeHandler where Self: UIViewController {
             }
             completion(false)
         }
-        muteAction.backgroundColor = .ows_accentIndigo
-        muteAction.image = actionImage(
-            name: threadViewModel.isMuted ? "bell-fill" : "bell-slash-fill",
-            title: threadViewModel.isMuted ? CommonStrings.unmuteButton : CommonStrings.muteButton
-        )
-        muteAction.accessibilityLabel = threadViewModel.isMuted ? CommonStrings.unmuteButton : CommonStrings.muteButton
 
-        let deleteAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
+        let deleteAction = ContextualActionBuilder.makeContextualAction(
+            style: .destructive,
+            color: UIColor.Signal.red,
+            image: "trash-fill",
+            title: CommonStrings.deleteButton
+        ) { [weak self] completion in
             guard let self else {
                 completion(false)
                 return
@@ -103,44 +115,19 @@ extension ThreadSwipeHandler where Self: UIViewController {
                 completion(false)
             }
         }
-        deleteAction.backgroundColor = .ows_accentRed
-        deleteAction.image = actionImage(name: "trash-fill", title: CommonStrings.deleteButton)
-        deleteAction.accessibilityLabel = CommonStrings.deleteButton
 
-        let archiveAction = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, completion) in
+        let archiveAction = ContextualActionBuilder.makeContextualAction(
+            style: .normal,
+            color: Theme.isDarkThemeEnabled ? .ows_gray45 : .ows_gray25,
+            image: threadViewModel.isArchived ? "archive-up-fill" : "archive-fill",
+            title: threadViewModel.isArchived ? CommonStrings.unarchiveAction : CommonStrings.archiveAction
+        ) { [weak self] completion in
             self?.archiveThread(threadViewModel: threadViewModel, closeConversationBlock: closeConversationBlock)
             completion(false)
         }
 
-        let archiveTitle = threadViewModel.isArchived ? CommonStrings.unarchiveAction : CommonStrings.archiveAction
-        let iconName = threadViewModel.isArchived ? "archive-up-fill" : "archive-fill"
-        archiveAction.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray45 : .ows_gray25
-        archiveAction.image = actionImage(name: iconName, title: archiveTitle)
-        archiveAction.accessibilityLabel = archiveTitle
-
         // The first action will be auto-performed for "very long swipes".
         return UISwipeActionsConfiguration(actions: [archiveAction, deleteAction, muteAction])
-    }
-
-    func actionImage(name imageName: String, title: String) -> UIImage? {
-        AssertIsOnMainThread()
-        // We need to bake the title text into the image because `UIContextualAction`
-        // only displays title + image when the cell's height > 91. We want to always
-        // show both.
-        guard let image = UIImage(named: imageName) else {
-            owsFailDebug("Missing image.")
-            return nil
-        }
-        guard let image = image.withTitle(title,
-                                          font: UIFont.systemFont(ofSize: 13),
-                                          color: .ows_white,
-                                          maxTitleWidth: 68,
-                                          minimumScaleFactor: CGFloat(8) / CGFloat(13),
-                                          spacing: 4) else {
-            owsFailDebug("Missing image.")
-            return nil
-        }
-        return image.withRenderingMode(.alwaysTemplate)
     }
 
     func archiveThread(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {

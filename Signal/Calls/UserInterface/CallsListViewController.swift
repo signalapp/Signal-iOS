@@ -1714,7 +1714,7 @@ extension CallsListViewController: UITableViewDelegate {
             return nil
         }
 
-        let goToChatAction = makeContextualAction(
+        let goToChatAction = ContextualActionBuilder.makeContextualAction(
             style: .normal,
             color: .ows_accentBlue,
             image: "arrow-square-upright-fill",
@@ -1736,7 +1736,7 @@ extension CallsListViewController: UITableViewDelegate {
 
         let modelReferences = viewModelLoader.modelReferences(at: indexPath.row)
 
-        let deleteAction = makeContextualAction(
+        let deleteAction = ContextualActionBuilder.makeContextualAction(
             style: .destructive,
             color: .ows_accentRed,
             image: "trash-fill",
@@ -1746,33 +1746,6 @@ extension CallsListViewController: UITableViewDelegate {
         }
 
         return .init(actions: [deleteAction])
-    }
-
-    private func makeContextualAction(
-        style: UIContextualAction.Style,
-        color: UIColor,
-        image: String,
-        title: String,
-        action: @escaping () -> Void
-    ) -> UIContextualAction {
-        let action = UIContextualAction(
-            style: style,
-            title: nil
-        ) { _, _, completion in
-            action()
-            completion(true)
-        }
-        action.backgroundColor = color
-        action.image = UIImage(named: image)?.withTitle(
-            title,
-            font: .dynamicTypeFootnote.medium(),
-            color: .ows_white,
-            maxTitleWidth: 68,
-            minimumScaleFactor: CGFloat(8) / CGFloat(13),
-            spacing: 4
-        )?.withRenderingMode(.alwaysTemplate)
-
-        return action
     }
 
     private func longPressActions(forRowAt indexPath: IndexPath) -> [UIAction]? {

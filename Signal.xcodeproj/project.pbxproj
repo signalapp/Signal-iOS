@@ -1667,6 +1667,7 @@
 		B93296692BBB3FF200B8BD39 /* ProfileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95BBAC12BB36025009EFB4A /* ProfileName.swift */; };
 		B9488E752CDED27200C1294B /* ScrollOffset.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9488E742CDED27200C1294B /* ScrollOffset.swift */; };
 		B94E48012D385D7800128318 /* linear_indeterminate.json in Resources */ = {isa = PBXBuildFile; fileRef = B94E48002D385D7800128318 /* linear_indeterminate.json */; };
+		B94E922D2E381478007BA81B /* ContextualActionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94E922C2E381478007BA81B /* ContextualActionBuilder.swift */; };
 		B95967842D52976A00F9A800 /* NavigationPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95967832D52976A00F9A800 /* NavigationPreviewController.swift */; };
 		B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */; };
 		B95A765E2B76E93500AA7E97 /* FindByUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */; };
@@ -5620,6 +5621,7 @@
 		B93296662BB5CF7500B8BD39 /* NicknameRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameRecordStore.swift; sourceTree = "<group>"; };
 		B9488E742CDED27200C1294B /* ScrollOffset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollOffset.swift; sourceTree = "<group>"; };
 		B94E48002D385D7800128318 /* linear_indeterminate.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = linear_indeterminate.json; sourceTree = "<group>"; };
+		B94E922C2E381478007BA81B /* ContextualActionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualActionBuilder.swift; sourceTree = "<group>"; };
 		B95967832D52976A00F9A800 /* NavigationPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationPreviewController.swift; sourceTree = "<group>"; };
 		B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarViewPresentationContextProvider.swift; sourceTree = "<group>"; };
 		B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByUsernameViewController.swift; sourceTree = "<group>"; };
@@ -8788,6 +8790,7 @@
 			isa = PBXGroup;
 			children = (
 				342FFE6C271EF580000AC89F /* Categories */,
+				B94E922B2E38145E007BA81B /* View Supplements */,
 				34B3F8331E8DF1700035BE1A /* ViewControllers */,
 				76EB052B18170B33006006FC /* Views */,
 				342FFE67271EF4FF000AC89F /* ConversationSearch.swift */,
@@ -11155,6 +11158,14 @@
 				B9E322E62CD170ED006DAF3B /* SignalList.swift */,
 			);
 			path = SwiftUI;
+			sourceTree = "<group>";
+		};
+		B94E922B2E38145E007BA81B /* View Supplements */ = {
+			isa = PBXGroup;
+			children = (
+				B94E922C2E381478007BA81B /* ContextualActionBuilder.swift */,
+			);
+			path = "View Supplements";
 			sourceTree = "<group>";
 		};
 		B97802FF2DD65AFD00E9FC82 /* SwiftUI */ = {
@@ -16928,6 +16939,7 @@
 				F0FB6B20269E625A00AC2A41 /* ContextMenuController.swift in Sources */,
 				F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */,
 				F0EE4DB626A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift in Sources */,
+				B94E922D2E381478007BA81B /* ContextualActionBuilder.swift in Sources */,
 				3457794326828A9A00732869 /* ConversationCollectionView.swift in Sources */,
 				34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,

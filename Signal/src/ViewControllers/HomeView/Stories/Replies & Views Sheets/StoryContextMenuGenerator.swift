@@ -159,7 +159,7 @@ extension StoryContextMenuGenerator {
 
         let title: String
         let icon: ThemeIcon
-        let contextualActionImage: UIImage
+        let contextualActionImage: String
         if isHidden {
             if useShortTitle {
                 title = OWSLocalizedString(
@@ -173,7 +173,7 @@ extension StoryContextMenuGenerator {
                 )
             }
             icon = .contextMenuSelect
-            contextualActionImage = UIImage(imageLiteralResourceName: "check-circle-fill")
+            contextualActionImage = "check-circle-fill"
         } else {
             if useShortTitle {
                 title = OWSLocalizedString(
@@ -187,7 +187,7 @@ extension StoryContextMenuGenerator {
                 )
             }
             icon = .contextMenuXCircle
-            contextualActionImage = UIImage(imageLiteralResourceName: "x-circle-fill")
+            contextualActionImage = "x-circle-fill"
         }
         return .init(
             title: title,
@@ -409,7 +409,7 @@ extension StoryContextMenuGenerator {
                 comment: "Context menu action to open the chat associated with the selected story"
             ),
             icon: .contextMenuOpenInChat,
-            contextualActionImage: UIImage(imageLiteralResourceName: "arrow-square-upright-fill"),
+            contextualActionImage: "arrow-square-upright-fill",
             handler: { completion in
                 SignalApp.shared.presentConversationForThread(threadUniqueId: thread.uniqueId, action: .compose, animated: true)
                 completion(true)
@@ -442,7 +442,7 @@ extension StoryContextMenuGenerator {
                 comment: "Context menu action to delete the selected story"
             ),
             icon: .contextMenuDelete,
-            contextualActionImage: UIImage(imageLiteralResourceName: "trash-fill"),
+            contextualActionImage: "trash-fill",
             handler: { [weak self] completion in
                 guard
                     let strongSelf = self,
@@ -716,14 +716,14 @@ private struct GenericContextAction {
     let style: Style
     let title: String
     let icon: ThemeIcon
-    let contextualActionImage: UIImage?
+    let contextualActionImage: String?
     let handler: Handler
 
     init(
         style: Style = .normal,
         title: String,
         icon: ThemeIcon,
-        contextualActionImage: UIImage? = nil,
+        contextualActionImage: String? = nil,
         handler: @escaping Handler
     ) {
         self.style = style
@@ -735,25 +735,6 @@ private struct GenericContextAction {
 
     private var image: UIImage {
         return Theme.iconImage(icon)
-    }
-
-    func asSignalContextMenuAction() -> ContextMenuAction {
-        let attributes: ContextMenuAction.Attributes
-        switch style {
-        case .normal:
-            attributes = .init()
-        case .destructive:
-            attributes = .destructive
-        }
-
-        return .init(
-            title: title,
-            image: image,
-            attributes: attributes,
-            handler: { _ in
-                handler({ _ in })
-            }
-        )
     }
 
     func asNativeContextMenuAction() -> UIAction {
@@ -789,35 +770,13 @@ private struct GenericContextAction {
             style = .destructive
         }
 
-        let action = UIContextualAction(
+        return ContextualActionBuilder.makeContextualAction(
             style: style,
-            title: nil,
-            handler: { _, _, completion in
-                handler(completion)
-            }
-        )
-        action.backgroundColor = backgroundColor
-        action.image = contextualActionImage(image: contextualActionImage ?? image, title: title)
-        return action
-    }
-
-    private func contextualActionImage(image: UIImage, title: String) -> UIImage? {
-        AssertIsOnMainThread()
-        // We need to bake the title text into the image because `UIContextualAction`
-        // doesn't let you specify a font for the title.
-        guard
-            let image = image.withTitle(
-                title,
-                font: UIFont.systemFont(ofSize: 13), // Same as conversation swipe actions view font.
-                color: .ows_white,
-                maxTitleWidth: 68,
-                minimumScaleFactor: CGFloat(8) / CGFloat(13),
-                spacing: 4
-            )
-        else {
-            owsFailDebug("Missing image.")
-            return nil
+            color: backgroundColor,
+            image: contextualActionImage ?? Theme.iconName(icon),
+            title: title
+        ) { completion in
+            handler(completion)
         }
-        return image.withRenderingMode(.alwaysTemplate)
     }
 }
