@@ -172,8 +172,6 @@ public class QuickRestoreManager {
     public func waitForRestoreMethodChoice(restoreMethodToken: RestoreMethodToken) async throws -> RestoreMethodType {
         whileLoop: while true {
             do {
-                // TODO: this cannot use websocket until the websocket implementation
-                // supports cooperative cancellation; we need this to be cancellable.
                 let response = try await networkManager.asyncRequest(
                     Requests.WaitForRestoreMethodChoice.buildRequest(token: restoreMethodToken),
                     canUseWebSocket: false

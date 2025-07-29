@@ -447,8 +447,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         var numNetworkErrors = 0
         whileLoop: while true {
             do {
-                // TODO: this cannot use websocket until the websocket implementation
-                // supports cooperative cancellation; we need this to be cancellable.
                 let response = try await networkManager.asyncRequest(
                     Requests.waitForDeviceToLink(tokenId: tokenId),
                     canUseWebSocket: false
@@ -673,8 +671,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         var numNetworkErrors = 0
         whileLoop: while true {
             do {
-                // TODO: this cannot use websocket until the websocket implementation
-                // supports cooperative cancellation; we need this to be cancellable.
                 let response = try await networkManager.asyncRequest(
                     Requests.waitForLinkNSyncBackupUpload(auth: auth),
                     canUseWebSocket: false
