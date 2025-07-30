@@ -832,6 +832,9 @@
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Upload paused: device has low battery";
 
+/* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Upload paused: no internet…";
+
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Upload paused: waiting for Wi-Fi";
 

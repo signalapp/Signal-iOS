@@ -72,6 +72,10 @@ extension OWSGenericError: IsRetryableProvider {
     public var isRetryableProvider: Bool { false }
 }
 
+extension CancellationError: IsRetryableProvider {
+    public var isRetryableProvider: Bool { false }
+}
+
 // MARK: -
 
 // NOTE: We typically prefer to use a more specific error.

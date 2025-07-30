@@ -2299,6 +2299,8 @@ CREATE
                 ,"maxOwnerTimestamp" INTEGER
                 ,"estimatedByteCount" INTEGER NOT NULL
                 ,"isFullsize" BOOLEAN NOT NULL
+                ,"numRetries" INTEGER NOT NULL DEFAULT 0
+                ,"minRetryTimestamp" INTEGER NOT NULL DEFAULT 0
 )
 ;
 

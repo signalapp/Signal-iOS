@@ -335,6 +335,7 @@ public class GRDBSchemaMigrator {
         case lastDraftInteractionRowID
         case addBackupOversizeText
         case addBackupOversizeTextRedux
+        case addRetriesToBackupAttachmentUploadQueue
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -398,7 +399,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 120
+    public static let grdbSchemaVersionLatest: UInt = 121
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4180,6 +4181,15 @@ public class GRDBSchemaMigrator {
                     // Text length is limited to 128 kibibytes.
                     // enforce at SQL level to prevent ambiguity.
                     .check({ length($0) <= (128 * 1024) })
+            }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addRetriesToBackupAttachmentUploadQueue) { tx in
+            try tx.database.alter(table: "BackupAttachmentUploadQueue") { table in
+                table.add(column: "numRetries", .integer).notNull().defaults(to: 0)
+                table.add(column: "minRetryTimestamp", .integer).notNull().defaults(to: 0)
             }
 
             return .success(())

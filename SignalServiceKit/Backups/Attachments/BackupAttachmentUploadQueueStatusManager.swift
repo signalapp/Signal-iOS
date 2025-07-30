@@ -14,6 +14,8 @@ public enum BackupAttachmentUploadQueueStatus {
     case notRegisteredAndReady
     /// Wifi is required for uploads, but not available.
     case noWifiReachability
+    /// Internet access is required for uploads, but not available.
+    case noReachability
     /// The device has low battery or is in low power mode.
     case lowBattery
 }
@@ -124,6 +126,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             backupPlan: nil,
             shouldAllowBackupUploadsOnCellular: nil,
             isWifiReachable: nil,
+            isReachable: nil,
             batteryLevel: nil,
             isLowPowerMode: nil,
         )
@@ -146,6 +149,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
 
         var shouldAllowBackupUploadsOnCellular: Bool?
         var isWifiReachable: Bool?
+        var isReachable: Bool?
 
         // Value from 0 to 1
         var batteryLevel: Float?
@@ -159,6 +163,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             backupPlan: BackupPlan?,
             shouldAllowBackupUploadsOnCellular: Bool?,
             isWifiReachable: Bool?,
+            isReachable: Bool?,
             batteryLevel: Float?,
             isLowPowerMode: Bool?,
         ) {
@@ -169,6 +174,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             self.backupPlan = backupPlan
             self.shouldAllowBackupUploadsOnCellular = shouldAllowBackupUploadsOnCellular
             self.isWifiReachable = isWifiReachable
+            self.isReachable = isReachable
             self.batteryLevel = batteryLevel
             self.isLowPowerMode = isLowPowerMode
         }
@@ -198,6 +204,10 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
                 isWifiReachable != true
             {
                 return .noWifiReachability
+            }
+
+            if isReachable != true {
+                return .noReachability
             }
 
             if (batteryLevel ?? 0) < 0.1 {
@@ -274,6 +284,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             backupPlan: backupPlan,
             shouldAllowBackupUploadsOnCellular: shouldAllowBackupUploadsOnCellular,
             isWifiReachable: reachabilityManager.isReachable(via: .wifi),
+            isReachable: reachabilityManager.isReachable(via: .any),
             batteryLevel: batteryLevelMonitor?.batteryLevel,
             isLowPowerMode: deviceBatteryLevelManager?.isLowPowerModeEnabled,
         )
@@ -314,6 +325,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
     @objc
     private func reachabilityDidChange() {
         state.isWifiReachable = reachabilityManager.isReachable(via: .wifi)
+        state.isReachable = reachabilityManager.isReachable(via: .any)
     }
 
     @objc

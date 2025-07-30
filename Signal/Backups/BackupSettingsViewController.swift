@@ -1528,6 +1528,11 @@ private struct BackupAttachmentUploadProgressView: View {
                     "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI",
                     comment: "Subtitle for a progress bar tracking uploads that are paused because they need WiFi."
                 )
+            case .pausedNeedsInternet:
+                OWSLocalizedString(
+                    "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET",
+                    comment: "Subtitle for a progress bar tracking uploads that are paused because they need an internet connection"
+                )
             }
 
             Text(subtitleText)

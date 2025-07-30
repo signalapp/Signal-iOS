@@ -12,6 +12,7 @@ final class BackupSettingsAttachmentUploadTracker {
             case running
             case pausedLowBattery
             case pausedNeedsWifi
+            case pausedNeedsInternet
         }
 
         let state: State
@@ -185,7 +186,7 @@ private class Tracker {
 
                 _state.uploadProgressObserver = nil
 
-            case .noWifiReachability, .lowBattery:
+            case .noWifiReachability, .lowBattery, .noReachability:
                 break
             }
 
@@ -214,6 +215,8 @@ private class Tracker {
             switch lastReportedUploadQueueStatus {
             case .running:
                 return .running
+            case .noReachability:
+                return .pausedNeedsInternet
             case .noWifiReachability:
                 return .pausedNeedsWifi
             case .lowBattery:

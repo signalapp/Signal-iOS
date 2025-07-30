@@ -25,6 +25,8 @@ public protocol BackupAttachmentUploadStore {
 
     /// Read the next highest priority uploads off the queue, up to count.
     /// Returns an empty array if nothing is left to upload.
+    /// Does NOT take into account minRetryTimestamp; callers are expected
+    /// to handle results with timestamps greater than the current time.
     func fetchNextUploads(
         count: UInt,
         tx: DBReadTransaction

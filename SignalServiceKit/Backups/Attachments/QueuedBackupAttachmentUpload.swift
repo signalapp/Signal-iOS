@@ -59,6 +59,11 @@ public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePer
     /// for estimation in UI and such.
     public let estimatedByteCount: UInt32
 
+    /// Number of retries (due to e.g. network failures).
+    public var numRetries: UInt32
+    /// Minimum timestamp at which this upload can be retried (if it failed in the past)
+    public var minRetryTimestamp: UInt64
+
     public enum OwnerType {
         case threadWallpaper
         /// Timestamp of the newest message that owns this attachment.
@@ -80,13 +85,17 @@ public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePer
         attachmentRowId: Attachment.IDType,
         highestPriorityOwnerType: OwnerType,
         isFullsize: Bool,
-        estimatedByteCount: UInt32
+        estimatedByteCount: UInt32,
+        numRetries: UInt32 = 0,
+        minRetryTimestamp: UInt64 = 0,
     ) {
         self.id = id
         self.attachmentRowId = attachmentRowId
         self.highestPriorityOwnerType = highestPriorityOwnerType
         self.isFullsize = isFullsize
         self.estimatedByteCount = estimatedByteCount
+        self.numRetries = numRetries
+        self.minRetryTimestamp = minRetryTimestamp
     }
 
     // MARK: FetchableRecord
@@ -101,7 +110,7 @@ public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePer
 
     // MARK: - UInt64SafeRecord
 
-    static var uint64Fields: [KeyPath<QueuedBackupAttachmentUpload, UInt64>] = []
+    static var uint64Fields: [KeyPath<QueuedBackupAttachmentUpload, UInt64>] = [\.minRetryTimestamp]
 
     static var uint64OptionalFields: [KeyPath<QueuedBackupAttachmentUpload, UInt64?>] = [\.highestPriorityOwnerType.timestamp]
 
@@ -113,6 +122,8 @@ public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePer
         case maxOwnerTimestamp
         case isFullsize
         case estimatedByteCount
+        case numRetries
+        case minRetryTimestamp
     }
 
     public init(from decoder: any Decoder) throws {
@@ -127,6 +138,8 @@ public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePer
         }
         self.isFullsize = try container.decode(Bool.self, forKey: .isFullsize)
         self.estimatedByteCount = try container.decode(UInt32.self, forKey: .estimatedByteCount)
+        self.numRetries = try container.decode(UInt32.self, forKey: .numRetries)
+        self.minRetryTimestamp = try container.decode(UInt64.self, forKey: .minRetryTimestamp)
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -141,5 +154,7 @@ public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePer
         }
         try container.encode(isFullsize, forKey: .isFullsize)
         try container.encode(estimatedByteCount, forKey: .estimatedByteCount)
+        try container.encode(numRetries, forKey: .numRetries)
+        try container.encode(minRetryTimestamp, forKey: .minRetryTimestamp)
     }
 }

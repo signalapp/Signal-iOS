@@ -194,6 +194,9 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         case .noWifiReachability:
             logger.warn("Skipping Backup uploads: need wifi.")
             try await taskQueue.stop()
+        case .noReachability:
+            logger.warn("Skipping Backup uploads: need internet.")
+            try await taskQueue.stop()
         case .lowBattery:
             logger.warn("Skipping Backup uploads: low battery.")
             try await taskQueue.stop()
@@ -276,22 +279,32 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             self.store = TaskStore(backupAttachmentUploadStore: backupAttachmentUploadStore)
         }
 
-        private actor ErrorCounts {
-            var counts = [TaskRecord.IDType: Int]()
-
-            func updateCount(_ id: TaskRecord.IDType) -> Int {
-                let count = (counts[id] ?? 0) + 1
-                counts[id] = count
-                return count
-            }
-        }
-
-        private let errorCounts = ErrorCounts()
-
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
             guard FeatureFlags.Backups.supported else {
                 return .cancelled
             }
+
+            struct NeedsBatteryError: Error {}
+            struct NeedsInternetError: Error {}
+            struct NeedsToBeRegisteredError: Error {}
+
+            switch await statusManager.currentStatus() {
+            case .running:
+                break
+            case .empty:
+                // The queue will stop on its own, finish this task.
+                break
+            case .lowBattery:
+                try? await loader.stop()
+                return .retryableError(NeedsBatteryError())
+            case .noWifiReachability, .noReachability:
+                try? await loader.stop()
+                return .retryableError(NeedsInternetError())
+            case .notRegisteredAndReady:
+                try? await loader.stop()
+                return .retryableError(NeedsToBeRegisteredError())
+            }
+
             let (attachment, backupPlan, currentUploadEra, backupKey) = db.read { tx in
                 return (
                     self.attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx),
@@ -463,13 +476,40 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     fallthrough
                 default:
                     // All other errors should be treated as per normal.
-                    if record.record.isFullsize || error.isNetworkFailureOrTimeout {
-                        let errorCount = await errorCounts.updateCount(record.id)
-                        if error.isRetryable, errorCount < Constants.maxRetryableErrorCount {
+                    if error.isNetworkFailureOrTimeout {
+                        switch await statusManager.currentStatus() {
+                        case .running:
+                            // If we _think_ we are connected and should be running,
+                            // use a more crude retry time mechanism to retry later.
+                            // Note that we update the individual row but really this
+                            // will end up holding up the entire queue because we don't
+                            // reorder when popping off the queue based on retry time,
+                            // so this row will remain first in line (unless something else
+                            // changes, in which case we retry and either succeed or fall back
+                            // into here) and block the rest of the queue from trying,
+                            // which is what we want because the error is a general network
+                            // issue.
+                            return .retryableError(NetworkRetryError())
+                        case .noWifiReachability, .notRegisteredAndReady,
+                                .lowBattery, .empty:
+                            // These other states may be overriding reachability;
+                            // just allow the queue itself to retry and once the
+                            // other states are resolved reachability will kick in,
+                            // or won't.
+                            fallthrough
+                        case .noReachability:
+                            // If reachability thinks we are not connected, queue status
+                            // will cover us. Don't touch the record itself; the queue will stop
+                            // running and start again once reconnected, and we want to try
+                            // the record again immediately then.
                             return .retryableError(error)
-                        } else {
-                            return .unretryableError(error)
                         }
+                    } else if record.record.isFullsize {
+                        // For other errors stop the queue to prevent thundering herd;
+                        // when it starts up again (e.g. on app launch) we will retry.
+                        logger.error("Unknown error occurred; stopping the queue")
+                        try? await loader.stop()
+                        return .retryableError(error)
                     } else {
                         // Ignore the error if we e.g. fail to generate a thumbnail;
                         // just upload the fullsize.
@@ -493,8 +533,34 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             logger.info("Finished backing up attachment \(record.record.attachmentRowId), upload \(record.id)")
         }
 
+        private struct NetworkRetryError: Error {}
+
         func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
             logger.warn("Failed backing up attachment \(record.record.attachmentRowId), upload \(record.id), isRetryable: \(isRetryable), error: \(error)")
+
+            if isRetryable, error is NetworkRetryError {
+                var record = record.record
+                let nextRetryDelayMs = { () -> UInt64 in
+                    // Use a hard coded backoff schedule.
+                    switch record.numRetries {
+                    case 0:
+                        return .secondInMs * 5
+                    case 1:
+                        return .secondInMs * 10
+                    case 2:
+                        return .minuteInMs
+                    case 3:
+                        return .minuteInMs * 5
+                    case 4:
+                        return .hourInMs
+                    default:
+                        return .dayInMs
+                    }
+                }()
+                record.numRetries += 1
+                record.minRetryTimestamp = dateProvider().ows_millisecondsSince1970 + nextRetryDelayMs
+                try record.update(tx.database)
+            }
         }
 
         func didCancel(record: Store.Record, tx: DBWriteTransaction) throws {
@@ -512,6 +578,10 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
     struct TaskRecord: SignalServiceKit.TaskRecord {
         let id: Int64
         let record: QueuedBackupAttachmentUpload
+
+        var nextRetryTimestamp: UInt64? {
+            return record.minRetryTimestamp
+        }
     }
 
     class TaskStore: TaskRecordStore {
@@ -541,7 +611,6 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
     private enum Constants {
         static let numParallelUploads: UInt = 4
-        static let maxRetryableErrorCount = 3
     }
 }
 
