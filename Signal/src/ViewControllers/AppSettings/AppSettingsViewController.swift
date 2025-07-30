@@ -376,8 +376,8 @@ class AppSettingsViewController: OWSTableViewController2 {
             internalSection.add(.disclosureItem(
                 icon: .settingsAdvanced,
                 withText: "Internal",
-                actionBlock: { [weak self, appReadiness] in
-                    let vc = InternalSettingsViewController(appReadiness: appReadiness)
+                actionBlock: { [weak self] in
+                    let vc = InternalSettingsViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             ))

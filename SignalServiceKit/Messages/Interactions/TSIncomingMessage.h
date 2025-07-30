@@ -137,10 +137,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                    circumstance:(OWSReceiptCircumstance)circumstance
                     transaction:(DBWriteTransaction *)transaction;
 
-// convenience method for expiring a message which was just read
-- (void)debugonly_markAsReadNowWithTransaction:(DBWriteTransaction *)transaction
-    NS_SWIFT_NAME(debugonly_markAsReadNow(transaction:));
-
 @end
 
 NS_ASSUME_NONNULL_END

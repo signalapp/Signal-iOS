@@ -17,14 +17,10 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
     private let mode: Mode
 
-    private let appReadiness: AppReadinessSetter
-
     init(
         mode: Mode = .standard,
-        appReadiness: AppReadinessSetter
     ) {
         self.mode = mode
-        self.appReadiness = appReadiness
         super.init()
     }
 
@@ -44,9 +40,12 @@ class InternalSettingsViewController: OWSTableViewController2 {
         #if USE_DEBUG_UI
         debugSection.add(.disclosureItem(
             withText: "Debug UI",
-            actionBlock: { [weak self, appReadiness] in
+            actionBlock: { [weak self] in
                 guard let self = self else { return }
-                DebugUITableViewController.presentDebugUI(from: self, appReadiness: appReadiness)
+                DebugUITableViewController.presentDebugUI(
+                    fromViewController: self,
+                    thread: nil
+                )
             }
         ))
         #endif
@@ -170,6 +169,36 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         if backupsSection.items.isEmpty.negated {
             contents.add(backupsSection)
+        }
+
+        do {
+            func makeFileBrowsingActionItem(_ title: String, _ fileUrl: URL) -> OWSTableItem {
+                return .actionItem(
+                    withText: title,
+                    actionBlock: { [weak self] in
+                        guard let self else { return }
+                        navigationController?.pushViewController(
+                            InternalFileBrowserViewController(fileURL: fileUrl),
+                            animated: true
+                        )
+                    }
+                )
+            }
+
+            let fileBrowsingSection = OWSTableSection(title: "Browse App Files")
+            fileBrowsingSection.add(makeFileBrowsingActionItem(
+                "App Container: Library",
+                URL(string: OWSFileSystem.appLibraryDirectoryPath())!.deletingLastPathComponent()
+            ))
+            fileBrowsingSection.add(makeFileBrowsingActionItem(
+                "App Container: Documents",
+                URL(string: OWSFileSystem.appDocumentDirectoryPath())!.deletingLastPathComponent()
+            ))
+            fileBrowsingSection.add(makeFileBrowsingActionItem(
+                "Shared App Container",
+                URL(string: OWSFileSystem.appSharedDataDirectoryPath())!.deletingLastPathComponent()
+            ))
+            contents.add(fileBrowsingSection)
         }
 
         let (

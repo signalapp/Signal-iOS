@@ -3,90 +3,29 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import MobileCoin
 import SignalServiceKit
 import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUIMisc: NSObject, DebugUIPage {
+class DebugUIMisc: DebugUIPage {
 
     let name = "Misc."
-
-    private let appReadiness: AppReadinessSetter?
-
-    init(appReadiness: AppReadinessSetter?) {
-        self.appReadiness = appReadiness
-    }
 
     func section(thread: TSThread?) -> OWSTableSection? {
         var items = [OWSTableItem]()
 
-        if let thread {
-            items.append(OWSTableItem(title: "Delete disappearing messages config", actionBlock: {
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                    dmConfigurationStore.remove(for: thread, tx: transaction)
-                }
-            }))
-        }
-
         items += [
+            OWSTableItem(title: "Save plaintext database key", actionBlock: {
+                DebugUIMisc.enableExternalDatabaseAccess()
+            }),
+
             OWSTableItem(title: "Corrupt username", actionBlock: {
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
                     DependenciesBridge.shared.localUsernameManager.setLocalUsernameCorrupted(tx: tx)
                 }
             }),
 
-            OWSTableItem(title: "Reenable disabled inactive linked device reminder megaphones", actionBlock: {
-                SSKEnvironment.shared.databaseStorageRef.write { tx in
-                    DependenciesBridge.shared.inactiveLinkedDeviceFinder
-                        .reenablePermanentlyDisabledFinders(tx: tx)
-                }
-            })
-        ]
-
-        if let appReadiness {
-            items.append(OWSTableItem(title: "Re-register", actionBlock: { [appReadiness] in
-                OWSActionSheets.showConfirmationAlert(
-                    title: "Re-register?",
-                    message: "If you proceed, you will not lose any of your current messages, " +
-                    "but your account will be deactivated until you complete re-registration.",
-                    proceedTitle: "Proceed",
-                    proceedAction: { _ in
-                        DebugUIMisc.reregister(appReadiness: appReadiness)
-                    }
-                )
-            }))
-        }
-
-        items += [
-            OWSTableItem(title: "Show 2FA Reminder", actionBlock: {
-                DebugUIMisc.showPinReminder()
-            }),
-            OWSTableItem(title: "Reset 2FA Repetition Interval", actionBlock: {
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    SSKEnvironment.shared.ows2FAManagerRef.setDefaultRepetitionInterval(transaction: transaction)
-                }
-            }),
-
-            OWSTableItem(title: "Share UIImage", actionBlock: {
-                let image = UIImage.image(color: .red, size: .square(1))
-                AttachmentSharing.showShareUI(for: image)
-            }),
-            OWSTableItem(title: "Share 2 images", actionBlock: {
-                DebugUIMisc.shareImages(2)
-            }),
-            OWSTableItem(title: "Share 2 videos", actionBlock: {
-                DebugUIMisc.shareVideos(2)
-            }),
-            OWSTableItem(title: "Share 2 PDFs", actionBlock: {
-                DebugUIMisc.sharePDFs(2)
-            }),
-
-            OWSTableItem(title: "Fetch system contacts", actionBlock: {
-                SSKEnvironment.shared.contactManagerImplRef.requestSystemContactsOnce()
-            }),
             OWSTableItem(title: "Flag database as corrupted", actionBlock: {
                 DebugUIMisc.showFlagDatabaseAsCorruptedUi()
             }),
@@ -94,223 +33,20 @@ class DebugUIMisc: NSObject, DebugUIPage {
                 DebugUIMisc.showFlagDatabaseAsReadCorruptedUi()
             }),
 
-            OWSTableItem(title: "Add 1k KV keys", actionBlock: {
-                DebugUIMisc.populateRandomKeyValueStores(keyCount: 1 * 1000)
-            }),
-            OWSTableItem(title: "Add 10k KV keys", actionBlock: {
-                DebugUIMisc.populateRandomKeyValueStores(keyCount: 10 * 1000)
-            }),
-            OWSTableItem(title: "Add 100k KV keys", actionBlock: {
-                DebugUIMisc.populateRandomKeyValueStores(keyCount: 100 * 1000)
-            }),
-            OWSTableItem(title: "Add 1m KV keys", actionBlock: {
-                DebugUIMisc.populateRandomKeyValueStores(keyCount: 1000 * 1000)
-            }),
-            OWSTableItem(title: "Clear Random KV keys", actionBlock: {
-                DebugUIMisc.clearRandomKeyValueStores()
-            }),
-
-            OWSTableItem(title: "Save plaintext database key", actionBlock: {
-                DebugUIMisc.enableExternalDatabaseAccess()
-            }),
-
-            OWSTableItem(title: "Update account attributes", actionBlock: {
-                Task {
-                    try? await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
-                }
-            }),
-
-            OWSTableItem(title: "Check Prekeys", actionBlock: {
-                guard let preKeyManagerImpl = DependenciesBridge.shared.preKeyManager as? PreKeyManagerImpl else {
-                    return
-                }
-                SSKEnvironment.shared.databaseStorageRef.read { tx in
-                    preKeyManagerImpl.checkPreKeysImmediately(tx: tx)
-                }
-            }),
-            OWSTableItem(title: "Remove All Prekeys", actionBlock: {
-                DebugUIMisc.removeAllPrekeys()
-            }),
-            OWSTableItem(title: "Remove All Sessions", actionBlock: {
-                DebugUIMisc.removeAllSessions()
-            }),
-            OWSTableItem(title: "Remove local PNI identity key", actionBlock: {
-                DebugUIMisc.removeLocalPniIdentityKey()
-            }),
-
-            OWSTableItem(title: "Log all sticker suggestions", actionBlock: {
-                DebugUIMisc.logStickerSuggestions()
-            }),
-
-            OWSTableItem(title: "Clear Profile Key Credentials", actionBlock: {
-                DebugUIMisc.clearProfileKeyCredentials()
-            }),
-
-            OWSTableItem(title: "Clear custom reaction emoji (locally)", actionBlock: {
-                DebugUIMisc.clearLocalCustomEmoji()
-            }),
-
-            OWSTableItem(title: "Clear My Story privacy settings", actionBlock: {
-                DebugUIMisc.clearMyStoryPrivacySettings()
-            }),
-
-            OWSTableItem(title: "Enable username education prompt", actionBlock: {
-                DebugUIMisc.enableUsernameEducation()
-            }),
-
-            OWSTableItem(title: "Enable username link tooltip", actionBlock: {
-                DebugUIMisc.enableUsernameLinkTooltip()
-            }),
-
-            OWSTableItem(title: "Delete all persisted ExperienceUpgrade records", actionBlock: {
-                DebugUIMisc.removeAllRecordedExperienceUpgrades()
-            }),
-
             OWSTableItem(title: "Test spoiler animations", actionBlock: {
-                DebugUIMisc.showSpoilerAnimationTestController()
+                let viewController = SpoilerAnimationTestController()
+                UIApplication.shared.frontmostViewController!.present(viewController, animated: true)
             }),
+
             OWSTableItem(title: "Test line wrapping stack view", actionBlock: {
                 let viewController = LineWrappingStackViewTestController()
                 UIApplication.shared.frontmostViewController!.present(viewController, animated: true)
             }),
-
-            OWSTableItem(title: "Mark flip cam button tooltip as unread", actionBlock: {
-                let flipCamTooltipManager = FlipCameraTooltipManager(db: DependenciesBridge.shared.db)
-                flipCamTooltipManager.markTooltipAsUnread()
-            }),
-
-            OWSTableItem(title: "Enable DeleteForMeSyncMessage info sheet", actionBlock: {
-                SSKEnvironment.shared.databaseStorageRef.write { tx in
-                    DeleteForMeInfoSheetCoordinator.fromGlobals()
-                        .forceEnableInfoSheet(tx: tx)
-                }
-            }),
-
-            OWSTableItem(title: "Clear AEP", actionBlock: {
-                SSKEnvironment.shared.databaseStorageRef.write { tx in
-                    DependenciesBridge.shared.accountKeyStore.setAccountEntropyPool(nil, tx: tx)
-                }
-            }),
-
-            OWSTableItem(title: "Copy AEP to clipboard", actionBlock: {
-                guard let aep = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                    DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: tx)
-                }) else {
-                    return
-                }
-                UIPasteboard.general.string = aep.rawData
-            })
         ]
         return OWSTableSection(title: name, items: items)
     }
 
-    // MARK: Attachment Sharing
-
-    private static func sendAttachment(_ attachment: SignalAttachment, toThread thread: TSThread) {
-        guard !attachment.hasError else {
-            owsFailDebug("attachment[\(String(describing: attachment.sourceFilename))]: \(String(describing: attachment.errorName))")
-            return
-        }
-        ThreadUtil.enqueueMessage(
-            body: nil,
-            mediaAttachments: [ attachment ],
-            thread: thread
-        )
-    }
-
-    private static func shareAssets(_ count: UInt, fromAssetLoaders assetLoaders: [DebugUIMessagesAssetLoader]) {
-        DebugUIMessagesAssetLoader.prepareAssetLoaders(assetLoaders) { result in
-            switch result {
-            case .success:
-                DebugUIMisc.shareAssets(count, fromAssetLoaders: assetLoaders)
-
-            case .failure(let error):
-                Logger.error("Could not prepare asset loaders. \(error)")
-            }
-        }
-    }
-
-    private static func shareAssets(_ count: UInt, fromPreparedAssetLoaders assetLoaders: [DebugUIMessagesAssetLoader]) {
-        let shuffledAssetLoaders = assetLoaders.shuffled()
-        let urls: [URL] = shuffledAssetLoaders.compactMap { assetLoader in
-            guard let assetFilePath = assetLoader.filePath else {
-                owsFailDebug("assetLoader.filePath is nil")
-                return nil
-            }
-            let filePath = OWSFileSystem.temporaryFilePath(fileExtension: assetFilePath.fileExtension)
-            do {
-                try FileManager.default.copyItem(atPath: assetFilePath, toPath: filePath)
-                return URL(fileURLWithPath: filePath)
-            } catch {
-                Logger.error("Error while copying asset at [\(assetFilePath)]: \(error)")
-                return nil
-            }
-        }
-        Logger.verbose("urls: \(urls)")
-        AttachmentSharing.showShareUI(for: urls, sender: nil, completion: nil)
-    }
-
-    private static func shareImages(_ count: UInt) {
-        shareAssets(count, fromAssetLoaders: [
-            DebugUIMessagesAssetLoader.jpegInstance,
-            DebugUIMessagesAssetLoader.tinyPngInstance
-        ])
-    }
-
-    private static func shareVideos(_ count: UInt) {
-        shareAssets(count, fromAssetLoaders: [ DebugUIMessagesAssetLoader.mp4Instance ])
-    }
-
-    private static func sharePDFs(_ count: UInt) {
-        shareAssets(count, fromAssetLoaders: [ DebugUIMessagesAssetLoader.tinyPdfInstance ])
-    }
-
-    // MARK: KVS
-
-    private static func randomKeyValueStore() -> KeyValueStore {
-        KeyValueStore(collection: "randomKeyValueStore")
-    }
-
-    private static func populateRandomKeyValueStores(keyCount: UInt) {
-        let store = randomKeyValueStore()
-
-        let kBatchSize: UInt = 1000
-        let batchCount: UInt = keyCount / kBatchSize
-        Logger.verbose("keyCount: \(keyCount)")
-        Logger.verbose("batchCount: \(batchCount)")
-        for batchIndex in 0..<batchCount {
-            Logger.verbose("batchIndex: \(batchIndex) / \(batchCount)")
-
-            autoreleasepool {
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    // Set three values at a time.
-                    for _ in 0..<kBatchSize / 3 {
-                        let value = Randomness.generateRandomBytes(4096)
-                        store.setData(value, key: UUID().uuidString, transaction: transaction)
-                        store.setString(UUID().uuidString, key: UUID().uuidString, transaction: transaction)
-                        store.setBool(Bool.random(), key: UUID().uuidString, transaction: transaction)
-                    }
-                }
-            }
-        }
-    }
-
-    private static func clearRandomKeyValueStores() {
-        let store = randomKeyValueStore()
-        SSKEnvironment.shared.databaseStorageRef.write { transcation in
-            store.removeAll(transaction: transcation)
-        }
-    }
-
     // MARK: -
-
-    private static func reregister(appReadiness: AppReadinessSetter) {
-        Logger.info("Re-registering.")
-        RegistrationUtils.reregister(
-            fromViewController: SignalApp.shared.conversationSplitViewController!,
-            appReadiness: appReadiness
-        )
-    }
 
     private static func enableExternalDatabaseAccess() {
         guard Platform.isSimulator else {
@@ -344,73 +80,6 @@ class DebugUIMisc: NSObject, DebugUIPage {
 #endif
     }
 
-    private static func removeAllPrekeys() {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            let signalProtoclStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
-            let signalProtocolStoreACI = signalProtoclStoreManager.signalProtocolStore(for: .aci)
-            signalProtocolStoreACI.signedPreKeyStore.removeAll(tx: transaction)
-            signalProtocolStoreACI.preKeyStore.removeAll(tx: transaction)
-
-            let signalProtocolStorePNI = signalProtoclStoreManager.signalProtocolStore(for: .pni)
-            signalProtocolStorePNI.signedPreKeyStore.removeAll(tx: transaction)
-            signalProtocolStorePNI.preKeyStore.removeAll(tx: transaction)
-        }
-    }
-
-    private static func removeAllSessions() {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            let signalProtoclStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
-
-            let signalProtocolStoreACI = signalProtoclStoreManager.signalProtocolStore(for: .aci)
-            signalProtocolStoreACI.sessionStore.removeAll(tx: transaction)
-            signalProtocolStoreACI.signedPreKeyStore.removeAll(tx: transaction)
-            signalProtocolStoreACI.preKeyStore.removeAll(tx: transaction)
-            signalProtocolStoreACI.kyberPreKeyStore.removeAll(tx: transaction)
-
-            let signalProtocolStorePNI = signalProtoclStoreManager.signalProtocolStore(for: .pni)
-            signalProtocolStorePNI.sessionStore.removeAll(tx: transaction)
-            signalProtocolStorePNI.signedPreKeyStore.removeAll(tx: transaction)
-            signalProtocolStorePNI.preKeyStore.removeAll(tx: transaction)
-            signalProtocolStorePNI.kyberPreKeyStore.removeAll(tx: transaction)
-        }
-    }
-
-    private static func removeLocalPniIdentityKey() {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            let identityManager = DependenciesBridge.shared.identityManager
-            identityManager.setIdentityKeyPair(nil, for: .pni, tx: transaction)
-        }
-    }
-
-    private static func logStickerSuggestions() {
-        var emojiSet = Set<String>()
-        SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            StickerManager.installedStickerPacks(transaction: transaction).forEach { stickerPack in
-                stickerPack.items.forEach { item in
-                    let emojiString = item.emojiString
-                    if !emojiString.isEmpty {
-                        Logger.verbose("emojiString: \(emojiString)")
-                        emojiSet.insert(emojiString)
-                    }
-                }
-            }
-        }
-        let combinedEmojiString = emojiSet.sorted().joined(separator: " ")
-        Logger.verbose("emoji: \(combinedEmojiString)")
-    }
-
-    private static func clearProfileKeyCredentials() {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            SSKEnvironment.shared.versionedProfilesRef.clearProfileKeyCredentials(transaction: transaction)
-        }
-    }
-
-    private static func clearLocalCustomEmoji() {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            ReactionManager.setCustomEmojiSet(nil, transaction: transaction)
-        }
-    }
-
     private static func showFlagDatabaseAsCorruptedUi() {
         OWSActionSheets.showConfirmationAlert(
             title: "Are you sure?",
@@ -436,56 +105,6 @@ class DebugUIMisc: NSObject, DebugUIPage {
                 userDefaults: CurrentAppContext().appUserDefaults()
             )
         }
-    }
-
-    private static func clearMyStoryPrivacySettings() {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            guard let myStoryThread = TSPrivateStoryThread.getMyStory(transaction: transaction) else {
-                return
-            }
-            // Set to all connections which is the default.
-            myStoryThread.updateWithStoryViewMode(
-                .blockList,
-                storyRecipientIds: .setTo([]),
-                updateStorageService: false, /* storage service updated below */
-                transaction: transaction
-            )
-            StoryManager.setHasSetMyStoriesPrivacy(false, shouldUpdateStorageService: true, transaction: transaction)
-        }
-    }
-
-    private static func enableUsernameEducation() {
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
-            DependenciesBridge.shared.usernameEducationManager.setShouldShowUsernameEducation(
-                true,
-                tx: tx
-            )
-        }
-    }
-
-    private static func enableUsernameLinkTooltip() {
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
-            DependenciesBridge.shared.usernameEducationManager.setShouldShowUsernameLinkTooltip(
-                true,
-                tx: tx
-            )
-        }
-    }
-
-    private static func removeAllRecordedExperienceUpgrades() {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            ExperienceUpgrade.anyRemoveAllWithInstantiation(transaction: transaction)
-        }
-    }
-
-    private static func showPinReminder() {
-        let viewController = PinReminderViewController()
-        UIApplication.shared.frontmostViewController!.present(viewController, animated: true)
-    }
-
-    private static func showSpoilerAnimationTestController() {
-        let viewController = SpoilerAnimationTestController()
-        UIApplication.shared.frontmostViewController!.present(viewController, animated: true)
     }
 }
 

@@ -51,24 +51,29 @@ extension ConversationViewController {
         headerView.delegate = self
         navigationItem.titleView = headerView
 
-        if shouldUseDebugUI() {
-            headerView.addGestureRecognizer(UILongPressGestureRecognizer(
-                target: self,
-                action: #selector(navigationTitleLongPressed)
-            ))
-        }
+#if USE_DEBUG_UI
+        headerView.addGestureRecognizer(UILongPressGestureRecognizer(
+            target: self,
+            action: #selector(navigationTitleLongPressed)
+        ))
+#endif
 
         updateNavigationBarSubtitleLabel()
     }
 
+#if USE_DEBUG_UI
     @objc
     private func navigationTitleLongPressed(_ gestureRecognizer: UIGestureRecognizer) {
         AssertIsOnMainThread()
 
         if gestureRecognizer.state == .began {
-            showDebugUIForThread(thread, fromViewController: self)
+            DebugUITableViewController.presentDebugUI(
+                fromViewController: self,
+                thread: thread
+            )
         }
     }
+#endif
 
     public var unreadCountViewDiameter: CGFloat { 16 }
 

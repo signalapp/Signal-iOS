@@ -489,7 +489,6 @@ public class RegistrationNavigationController: OWSNavigationController {
         if DebugFlags.internalSettings {
             let navVc = UINavigationController(rootViewController: InternalSettingsViewController(
                 mode: .registration,
-                appReadiness: appReadiness
             ))
             self.present(navVc, animated: true)
         } else {
