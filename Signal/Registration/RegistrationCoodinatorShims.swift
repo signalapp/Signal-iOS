@@ -570,7 +570,7 @@ public class _RegistrationCoordinator_UDManagerWrapper: _RegistrationCoordinator
 // MARK: - UsernameApiClient
 
 public protocol _RegistrationCoordinator_UsernameApiClientShim {
-    func confirmReservedUsername(reservedUsername: Usernames.HashedUsername, encryptedUsernameForLink: Data, chatServiceAuth: ChatServiceAuth) -> Promise<Usernames.ApiClientConfirmationResult>
+    func confirmReservedUsername(reservedUsername: Usernames.HashedUsername, encryptedUsernameForLink: Data, chatServiceAuth: ChatServiceAuth) async throws -> Usernames.ApiClientConfirmationResult
 }
 
 public class _RegistrationCoordinator_UsernameApiClientWrapper: _RegistrationCoordinator_UsernameApiClientShim {
@@ -578,9 +578,7 @@ public class _RegistrationCoordinator_UsernameApiClientWrapper: _RegistrationCoo
     private let usernameApiClient: any UsernameApiClient
     public init(_ usernameApiClient: any UsernameApiClient) { self.usernameApiClient = usernameApiClient }
 
-    public func confirmReservedUsername(reservedUsername: Usernames.HashedUsername, encryptedUsernameForLink: Data, chatServiceAuth: ChatServiceAuth) -> Promise<Usernames.ApiClientConfirmationResult> {
-        return Promise.wrapAsync {
-            return try await self.usernameApiClient.confirmReservedUsername(reservedUsername: reservedUsername, encryptedUsernameForLink: encryptedUsernameForLink, chatServiceAuth: chatServiceAuth)
-        }
+    public func confirmReservedUsername(reservedUsername: Usernames.HashedUsername, encryptedUsernameForLink: Data, chatServiceAuth: ChatServiceAuth) async throws -> Usernames.ApiClientConfirmationResult {
+        return try await self.usernameApiClient.confirmReservedUsername(reservedUsername: reservedUsername, encryptedUsernameForLink: encryptedUsernameForLink, chatServiceAuth: chatServiceAuth)
     }
 }

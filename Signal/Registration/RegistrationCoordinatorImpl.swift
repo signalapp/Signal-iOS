@@ -3398,13 +3398,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
         }
 
-        if let localUsernameState = shouldAttemptToReclaimUsername() {
-            return await attemptToReclaimUsername(
-                accountIdentity: accountIdentity,
-                localUsernameState: localUsernameState
-            ).awaitable()
-        }
-
         if
             !inMemoryState.hasProfileName,
             inMemoryState.restoreMethod?.backupType == nil
@@ -3457,10 +3450,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         ) {
         case .restored(let progress):
             finalizeProgress = progress
+            loadProfileState()
         case .stepRequired(let stepGuarantee):
             return stepGuarantee
         case .skipped:
             finalizeProgress = nil
+        }
+
+        if let localUsernameState = shouldAttemptToReclaimUsername() {
+            return await attemptToReclaimUsername(
+                accountIdentity: accountIdentity,
+                localUsernameState: localUsernameState
+            )
         }
 
         // We are ready to finish! Export all state and wipe things
@@ -3859,15 +3860,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     /// If the reclamation attempt fails for a non-network reason, or exhausts
     /// network retries, we will simply move on. Any further recovery will
     /// happen via the username validation job and interactive recovery flows.
+    @MainActor
     private func attemptToReclaimUsername(
         accountIdentity: AccountIdentity,
         localUsernameState: Usernames.LocalUsernameState,
         remainingNetworkErrorRetries: UInt = 2
-    ) -> Guarantee<RegistrationStep> {
-        func attemptComplete() -> Guarantee<RegistrationStep> {
-            AssertIsOnMainThread()
+    ) async -> RegistrationStep {
+        @MainActor
+        func attemptComplete() async -> RegistrationStep {
             inMemoryState.usernameReclamationState = .reclamationAttempted
-            return nextStep()
+            return await nextStep().awaitable()
         }
 
         let logger = PrefixedLogger(prefix: "UsernameReclamation")
@@ -3877,7 +3879,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         switch localUsernameState {
         case .unset, .linkCorrupted, .usernameAndLinkCorrupted:
-            return attemptComplete()
+            return await attemptComplete()
         case .available(let username, let usernameLink):
             localUsername = username
             localUsernameLink = usernameLink
@@ -3894,17 +3896,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
         } catch let error {
             logger.error("Failed to reclaim username: error while generating params! \(error)")
-            return attemptComplete()
+            return await attemptComplete()
         }
 
-        return firstly(on: SyncScheduler()) { () -> Promise<Usernames.ApiClientConfirmationResult> in
-            return self.deps.usernameApiClient.confirmReservedUsername(
+        do {
+            let confirmationResult = try await deps.usernameApiClient.confirmReservedUsername(
                 reservedUsername: hashedLocalUsername,
                 encryptedUsernameForLink: encryptedUsernameForLink,
                 chatServiceAuth: accountIdentity.chatServiceAuth
             )
-        }
-        .then(on: DispatchQueue.main) { confirmationResult -> Guarantee<RegistrationStep> in
             switch confirmationResult {
             case .success(let usernameLinkHandle):
                 if localUsernameLink.handle != usernameLinkHandle {
@@ -3916,11 +3916,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 logger.error("Unexpectedly failed to confirm .username! \(confirmationResult)")
             }
 
-            return attemptComplete()
-        }
-        .recover(on: DispatchQueue.main) { error -> Guarantee<RegistrationStep> in
+            return await attemptComplete()
+        } catch {
             if error.isNetworkFailureOrTimeout, remainingNetworkErrorRetries > 0 {
-                return self.attemptToReclaimUsername(
+                return await self.attemptToReclaimUsername(
                     accountIdentity: accountIdentity,
                     localUsernameState: localUsernameState,
                     remainingNetworkErrorRetries: remainingNetworkErrorRetries - 1
@@ -3931,7 +3930,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 logger.error("Failed to reclaim username: unknown error!")
             }
 
-            return attemptComplete()
+            return await attemptComplete()
         }
     }
 

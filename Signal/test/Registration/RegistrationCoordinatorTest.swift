@@ -418,7 +418,7 @@ public class RegistrationCoordinatorTest {
                 deviceId: .primary,
                 password: authPassword
             ))
-            return .value(.success(usernameLinkHandle: mockUsernameLink.handle))
+            return .success(usernameLinkHandle: mockUsernameLink.handle)
         }]
 
         // Once we do the username reclamation,
@@ -933,7 +933,7 @@ public class RegistrationCoordinatorTest {
                 deviceId: .primary,
                 password: authPassword
             ))
-            return .value(.success(usernameLinkHandle: mockUsernameLink.handle))
+            return .success(usernameLinkHandle: mockUsernameLink.handle)
         }]
 
         // Once we do the storage service restore,
@@ -1292,7 +1292,7 @@ public class RegistrationCoordinatorTest {
                 deviceId: .primary,
                 password: authPassword
             ))
-            return .value(.success(usernameLinkHandle: mockUsernameLink.handle))
+            return .success(usernameLinkHandle: mockUsernameLink.handle)
         }]
 
         storageServiceManagerMock.addRotateManifestMock({ _, _ in return .value(()) })
@@ -1616,7 +1616,7 @@ public class RegistrationCoordinatorTest {
                 deviceId: .primary,
                 password: authPassword
             ))
-            return .value(.success(usernameLinkHandle: mockUsernameLink.handle))
+            return .success(usernameLinkHandle: mockUsernameLink.handle)
         }]
 
         // Once we do the storage service restore, we will sync account attributes and then we are finished!
@@ -1915,7 +1915,7 @@ public class RegistrationCoordinatorTest {
                 deviceId: .primary,
                 password: authPassword
             ))
-            return Promise(error: OWSGenericError("Something went wrong :("))
+            throw OWSGenericError("Something went wrong :(")
         }]
 
         // And once we do the storage service restore,
