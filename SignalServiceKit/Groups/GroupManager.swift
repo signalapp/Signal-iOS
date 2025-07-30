@@ -33,8 +33,7 @@ public class GroupManager: NSObject {
     // Epoch 5: Promote pending PNI members
     public static let changeProtoEpoch: UInt32 = 5
 
-    // This matches kOversizeTextMessageSizeThreshold.
-    public static let maxEmbeddedChangeProtoLength: UInt = 2 * 1024
+    public static let maxEmbeddedChangeProtoLength: UInt = UInt(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
 
     // MARK: - Group IDs
 

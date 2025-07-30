@@ -230,4 +230,20 @@ public enum OWSMediaUtils {
     public static let kMaxVideoDimensions: CGFloat = 4096 // 4k video width
     public static let kMaxAnimatedImageDimensions: UInt = 12 * 1024
     public static let kMaxStillImageDimensions: UInt = 12 * 1024
+
+    /// Text past this size on send (excluding forwarding) is truncated to this length and the rest
+    /// is sent as an oversize text attachment.
+    /// Text past this side on receive is considered an invalid message and will be dropped.
+    public static let kOversizeTextMessageSizeThresholdBytes = 2 * 1024
+    /// Oversize text attachments past this size will be truncated on send.
+    public static let kMaxOversizeTextMessageSendSizeBytes = 64 * 1024
+    /// Oversize text attachments past this size will be rejected on receive. (Larger than send
+    /// to support legacy cases)
+    public static let kMaxOversizeTextMessageReceiveSizeBytes = 128 * 1024
+}
+
+@objc
+class OWSMediaUtilsObjc: NSObject {
+    @objc
+    public static let kOversizeTextMessageSizeThresholdBytes = UInt(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
 }

@@ -500,11 +500,11 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                     let oversizeTextData = try? attachment?.asStream()?.decryptedRawData(),
                     let oversizeText = String(data: oversizeTextData, encoding: .utf8)
                 {
-                    // We don't need to include the entire text body of the message, just
-                    // enough to render a snippet.  kOversizeTextMessageSizeThreshold is our
-                    // limit on how long text should be in protos since they'll be stored in
+                    // We don't need to include the entire text body of the message, just enough
+                    // to render a snippet.  OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes
+                    // is our limit on how long text should be in protos since they'll be stored in
                     // the database. We apply this constant here for the same reasons.
-                    let truncatedText = oversizeText.trimToUtf8ByteCount(Int(kOversizeTextMessageSizeThreshold))
+                    let truncatedText = oversizeText.trimToUtf8ByteCount(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
                     return createDraftReply(content: .text(
                         MessageBody(text: truncatedText, ranges: originalMessage.bodyRanges ?? .empty)
                     ))

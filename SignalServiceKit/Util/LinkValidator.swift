@@ -45,7 +45,7 @@ public enum LinkValidator {
 
     public static func firstLinkPreviewURL(in entireMessage: MessageBody) -> URL? {
         // Don't include link previews for oversize text messages.
-        guard entireMessage.text.utf8.dropFirst(Int(kOversizeTextMessageSizeThreshold)).isEmpty else {
+        guard entireMessage.text.utf8.dropFirst(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes).isEmpty else {
             return nil
         }
 

@@ -230,7 +230,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         var oversizedTextInputs = [Key: Input]()
         var results = [Key: ValidatedMessageBody]()
         for (key, messageBody) in texts {
-            let truncatedText = messageBody.text.trimmedIfNeeded(maxByteCount: Int(kOversizeTextMessageSizeThreshold))
+            let truncatedText = messageBody.text.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
             guard let truncatedText else {
                 // No need to truncate
                 results[key] = .inline(messageBody)

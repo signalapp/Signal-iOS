@@ -317,7 +317,7 @@ public class PreparedOutgoingMessage {
         }()
 
         if let body {
-            owsAssertDebug(body.lengthOfBytes(using: .utf8) <= kOversizeTextMessageSizeThreshold)
+            owsAssertDebug(body.lengthOfBytes(using: .utf8) <= OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
         }
     }
 

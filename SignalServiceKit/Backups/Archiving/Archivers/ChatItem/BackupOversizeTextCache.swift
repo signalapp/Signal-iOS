@@ -7,8 +7,8 @@ public import GRDB
 
 /// This table is used exclusively by backups to import/export inlined "oversize" text.
 ///
-/// For Context: "oversize" text is when a message's body exceeds ``kOversizeTextMessageSizeThreshold`` bytes;
-/// the full text (including the first ``kOversizeTextMessageSizeThreshold`` bytes) is represented as an Attachment
+/// For Context: "oversize" text is when a message's body exceeds ``OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes``;
+/// the full text (including the first ``OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes`` bytes) is represented as an Attachment
 /// for purposes of message sending/receiving.
 /// Backups have a separate, larger threshold (``BackupOversizeTextCache/maxTextLengthBytes``). All oversize
 /// text attachments are truncated to this length and inlined in the backup proto (bytes past this length are simply dropped).
@@ -30,7 +30,7 @@ public struct BackupOversizeTextCache: Codable, FetchableRecord, MutablePersista
 
     /// Every row in this table is limited to this many bytes (not characters) of text, in both
     /// the Swift model object and at the SQLite level.
-    public static let maxTextLengthBytes = 128 * 1024
+    public static let maxTextLengthBytes = OWSMediaUtils.kMaxOversizeTextMessageReceiveSizeBytes
 
     public typealias IDType = Int64
 
@@ -148,10 +148,11 @@ class BackupArchiveInlinedOversizeTextArchiver {
         context: BackupArchive.ArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<ArchivedMessageBody> {
         var text = text
-        let originalTextLength =  text.lengthOfBytes(using: .utf8)
-        if originalTextLength > kOversizeTextMessageSizeThreshold {
-            // TSMessage bodies should never be past this length? How is this possible?
-            text = text.trimToUtf8ByteCount(Int(kOversizeTextMessageSizeThreshold))
+        // It was possible, in the past, to end up with inlined text
+        // longer than OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes; inline
+        // this now at the oversize text limit.
+        if text.lengthOfBytes(using: .utf8) > BackupOversizeTextCache.maxTextLengthBytes {
+            text = text.trimToUtf8ByteCount(BackupOversizeTextCache.maxTextLengthBytes)
         }
 
         let oversizedTextReference = attachmentStore.fetchFirstReference(
@@ -202,7 +203,10 @@ class BackupArchiveInlinedOversizeTextArchiver {
             case .bubbleUpError(let error):
                 return error
             case .continue(let oversizedTextPointer):
-                let body = ArchivedMessageBody(inlinedText: text, oversizedTextPointer: oversizedTextPointer)
+                let body = ArchivedMessageBody(
+                    inlinedText: text.trimToUtf8ByteCount(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes),
+                    oversizedTextPointer: oversizedTextPointer
+                )
                 if partialErrors.isEmpty {
                     return .success(body)
                 } else {
@@ -236,8 +240,11 @@ class BackupArchiveInlinedOversizeTextArchiver {
             text = text.trimToUtf8ByteCount(BackupOversizeTextCache.maxTextLengthBytes)
         }
         let messageBody: MessageBody
-        if inlinedTextLength > kOversizeTextMessageSizeThreshold {
-            messageBody = MessageBody(text: text.trimToUtf8ByteCount(Int(kOversizeTextMessageSizeThreshold)), ranges: bodyRanges)
+        if inlinedTextLength > OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes {
+            messageBody = MessageBody(
+                text: text.trimToUtf8ByteCount(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes),
+                ranges: bodyRanges
+            )
         } else {
             messageBody = MessageBody(text: text, ranges: bodyRanges)
         }
@@ -249,7 +256,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
                     .invalidProtoData(.longTextStandardMessageMissingBody),
                     chatItemId
                 )])
-            } else if inlinedTextLength > kOversizeTextMessageSizeThreshold {
+            } else if inlinedTextLength > OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes {
                 // If we have an oversize text attachment, we are not allowed to _also_
                 // have inlined oversize text (that exceeds the standard body length limit).
                 partialErrors.append(.restoreFrameError(
@@ -261,7 +268,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
             } else {
                 oversizeText = .attachmentPointer(oversizeTextAttachment)
             }
-        } else if inlinedTextLength > kOversizeTextMessageSizeThreshold {
+        } else if inlinedTextLength > OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes {
             oversizeText = .inlined(text)
         } else {
             oversizeText = nil

@@ -34,7 +34,8 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
     var isTextMessage: Bool {
         guard let attachments = attachments, attachments.count == 1, let attachment = attachments.first else { return false }
-        return attachment.isConvertibleToTextMessage && attachment.dataLength <= kOversizeTextMessageSizeThreshold
+        // TODO: it may be convertible to an oversize text message, check that
+        return attachment.isConvertibleToTextMessage && attachment.dataLength <= OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes
     }
 
     var isContactShare: Bool {
@@ -578,7 +579,7 @@ extension SharingThreadPickerViewController: ConversationPickerDelegate {
         if !storySelections.isEmpty, let attachments = attachments {
             let areImagesOrVideos = attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo })
             let isTextMessage = attachments.count == 1 && attachments.first.map {
-                $0.isConvertibleToTextMessage && $0.dataLength <= kOversizeTextMessageSizeThreshold
+                $0.isConvertibleToTextMessage && $0.dataLength <= OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes
             } ?? false
             if !areImagesOrVideos && !isTextMessage {
                 // Can't send to stories!

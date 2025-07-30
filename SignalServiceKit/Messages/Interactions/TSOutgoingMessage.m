@@ -12,7 +12,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
 
 NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRecipientAll";
 
@@ -435,7 +434,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
 
     NSString *body = self.body;
-    NSString *trimmedBody = [body trimToUtf8ByteCount:(NSInteger)kOversizeTextMessageSizeThreshold];
+    NSString *trimmedBody =
+        [body trimToUtf8ByteCount:(NSInteger)OWSMediaUtilsObjc.kOversizeTextMessageSizeThresholdBytes];
+    // It was historically possible to end up with a message in the database that
+    // exceeds this threshold, and therefore possible to hit this assert (by forwarding
+    // an older message). But it is good for us to know when this happens.
     OWSAssertDebug(body.length == trimmedBody.length);
     [builder setBody:trimmedBody];
 
