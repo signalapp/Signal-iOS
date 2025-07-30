@@ -129,12 +129,14 @@ public class MessageProcessor {
         )
     }
 
+    /// Deprecated.
     public func enqueueReceivedEnvelope(
         _ envelopeProto: SSKProtoEnvelope,
         serverDeliveryTimestamp: UInt64,
         envelopeSource: EnvelopeSource,
         completion: @escaping () -> Void
     ) {
+        assert(!OWSChatConnection.mustAppUseSocketsToMakeRequests)
         enqueueReceivedEnvelope(
             ReceivedEnvelope(
                 envelope: envelopeProto,
