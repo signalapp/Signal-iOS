@@ -220,39 +220,39 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
         // the pasteboard will be cleared as soon as paste() exits.
         if SignalAttachment.pasteboardHasStickerAttachment() {
             let attachment: SignalAttachment? = SignalAttachment.stickerAttachmentFromPasteboard()
-            self.didPasteAttachment(attachment)
+            self.didPasteAttachments(attachment.map { [$0] })
             return
         }
 
         ModalActivityIndicatorViewController.present(fromViewController: self) { modal in
-            let attachment: SignalAttachment? = await SignalAttachment.attachmentFromPasteboard()
+            let attachments: [SignalAttachment]? = await SignalAttachment.attachmentsFromPasteboard()
 
             await MainActor.run {
                 modal.dismiss {
-                    // Note: attachment might be nil or have an error at this point; that's fine.
-                    self.didPasteAttachment(attachment)
+                    // Note: attachment array might be nil or have an error at this point; that's fine.
+                    self.didPasteAttachments(attachments)
                 }
             }
         }
     }
 
-    func didPasteAttachment(_ attachment: SignalAttachment?) {
+    func didPasteAttachments(_ attachments: [SignalAttachment]?) {
         AssertIsOnMainThread()
 
-        guard let attachment = attachment else {
-            owsFailDebug("Missing attachment.")
+        guard let attachments, attachments.count > 0 else {
+            owsFailDebug("Missing attachments")
             return
         }
 
         // If the thing we pasted is sticker-like, send it immediately
         // and render it borderless.
-        if attachment.isBorderless {
+        if attachments.count == 1, let a = attachments.first, a.isBorderless {
             Task {
-                await self.sendAttachments([attachment], from: self, messageBody: nil)
+                await self.sendAttachments([a], from: self, messageBody: nil)
             }
         } else {
             dismissKeyBoard()
-            showApprovalDialog(forAttachment: attachment)
+            showApprovalDialog(forAttachments: attachments)
         }
     }
 

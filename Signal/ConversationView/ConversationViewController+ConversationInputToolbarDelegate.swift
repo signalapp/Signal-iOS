@@ -556,7 +556,7 @@ public extension ConversationViewController {
                                         message: errorMessage)
     }
 
-    func showApprovalDialog(forAttachment attachment: SignalAttachment) {
+    func showApprovalDialog(forAttachments attachments: [SignalAttachment]) {
         AssertIsOnMainThread()
 
         guard hasViewWillAppearEverBegun else {
@@ -569,7 +569,7 @@ public extension ConversationViewController {
         }
 
         let modal = AttachmentApprovalViewController.wrappedInNavController(
-            attachments: [attachment],
+            attachments: attachments,
             initialMessageBody: inputToolbar.messageBodyForSending,
             hasQuotedReplyDraft: inputToolbar.quotedReplyDraft != nil,
             approvalDelegate: self,
@@ -830,7 +830,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
         }
 
         let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: contentType.identifier)
-        showApprovalDialog(forAttachment: attachment)
+        showApprovalDialog(forAttachments: [attachment])
     }
 
     private func showApprovalDialogAfterProcessingVideoURL(_ movieURL: URL, filename: String?) {
@@ -864,7 +864,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
                         owsFailDebug("Invalid attachment: \(attachment.errorName ?? "Unknown error").")
                         self.showErrorAlert(forAttachment: attachment)
                     } else {
-                        self.showApprovalDialog(forAttachment: attachment)
+                        self.showApprovalDialog(forAttachments: [attachment])
                     }
                 }
             }.catch(on: DispatchQueue.main) { error in

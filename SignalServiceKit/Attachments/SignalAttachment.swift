@@ -633,22 +633,50 @@ public class SignalAttachment: NSObject {
     ///
     /// NOTE: The attachment returned by this method may not be valid.
     ///       Check the attachment's error property.
-    public class func attachmentFromPasteboard() async -> SignalAttachment? {
-        return await attachmentFromPasteboard(retrySinglePixelImages: true)
+    public class func attachmentsFromPasteboard() async -> [SignalAttachment]? {
+        guard UIPasteboard.general.numberOfItems >= 1,
+              let pasteboardUTITypes = UIPasteboard.general.types(forItemSet: nil)
+        else {
+            return nil
+        }
+
+        var attachments = [SignalAttachment]()
+        for (index, utiSet) in pasteboardUTITypes.enumerated() {
+            let attachment = await attachmentFromPasteboard(pasteboardUTIs: utiSet, index: IndexSet(integer: index), retrySinglePixelImages: true)
+
+            guard let attachment else {
+                owsFailDebug("Missing attachment")
+                continue
+            }
+
+            if attachments.isEmpty {
+                if attachment.allowMultipleAttachments() == false {
+                    // If this is a non-visual-media attachment, we only allow 1 pasted item at a time.
+                    return [attachment]
+                }
+            }
+
+            // Otherwise, continue with any visual media attachments, dropping
+            // any non-visual-media ones based on the first pasteboard item.
+            if attachment.allowMultipleAttachments() {
+                attachments.append(attachment)
+            } else {
+                Logger.warn("Dropping non-visual media attachment in paste action")
+            }
+        }
+        return attachments
     }
 
-    private class func attachmentFromPasteboard(retrySinglePixelImages: Bool) async -> SignalAttachment? {
-        guard UIPasteboard.general.numberOfItems >= 1 else {
-            return nil
-        }
+    private func allowMultipleAttachments() -> Bool {
+        return !self.isBorderless
+            && (MimeTypeUtil.isSupportedVideoMimeType(self.mimeType)
+                || MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(self.mimeType)
+                || MimeTypeUtil.isSupportedImageMimeType(self.mimeType))
+    }
 
-        // If pasteboard contains multiple items, use only the first.
-        let itemSet = IndexSet(integer: 0)
-        guard let pasteboardUTITypes = UIPasteboard.general.types(forItemSet: itemSet) else {
-            return nil
-        }
+    private class func attachmentFromPasteboard(pasteboardUTIs: [String], index: IndexSet, retrySinglePixelImages: Bool) async -> SignalAttachment? {
 
-        var pasteboardUTISet = Set<String>(filterDynamicUTITypes(pasteboardUTITypes[0]))
+        var pasteboardUTISet = Set<String>(filterDynamicUTITypes(pasteboardUTIs))
         guard pasteboardUTISet.count > 0 else {
             return nil
         }
@@ -664,7 +692,7 @@ public class SignalAttachment: NSObject {
 
         for dataUTI in inputImageUTISet {
             if pasteboardUTISet.contains(dataUTI) {
-                guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
+                guard let data = dataForPasteboardItem(dataUTI: dataUTI, index: index) else {
                     owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
@@ -675,7 +703,7 @@ public class SignalAttachment: NSObject {
                 // pasteboard after a brief delay (once, then give up).
                 if dataSource?.imageMetadata.pixelSize == CGSize(square: 1), retrySinglePixelImages {
                     try? await Task.sleep(nanoseconds: NSEC_PER_MSEC * 50)
-                    return await attachmentFromPasteboard(retrySinglePixelImages: false)
+                    return await attachmentFromPasteboard(pasteboardUTIs: pasteboardUTIs, index: index, retrySinglePixelImages: false)
                 }
 
                 // If the data source is sticker like AND we're pasting the attachment,
@@ -688,7 +716,7 @@ public class SignalAttachment: NSObject {
         for dataUTI in videoUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard
-                    let data = dataForFirstPasteboardItem(dataUTI: dataUTI),
+                    let data = dataForPasteboardItem(dataUTI: dataUTI, index: index),
                     let dataSource = DataSourceValue(data, utiType: dataUTI)
                 else {
                     owsFailDebug("Failed to build data source from pasteboard data for UTI: \(dataUTI)")
@@ -703,7 +731,7 @@ public class SignalAttachment: NSObject {
         }
         for dataUTI in audioUTISet {
             if pasteboardUTISet.contains(dataUTI) {
-                guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
+                guard let data = dataForPasteboardItem(dataUTI: dataUTI, index: index) else {
                     owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
@@ -713,7 +741,7 @@ public class SignalAttachment: NSObject {
         }
 
         let dataUTI = pasteboardUTISet[pasteboardUTISet.startIndex]
-        guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
+        guard let data = dataForPasteboardItem(dataUTI: dataUTI, index: index) else {
             owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
@@ -741,7 +769,7 @@ public class SignalAttachment: NSObject {
 
         for dataUTI in inputImageUTISet {
             if pasteboardUTISet.contains(dataUTI) {
-                guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
+                guard let data = dataForPasteboardItem(dataUTI: dataUTI, index: IndexSet(integer: 0)) else {
                     owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
@@ -785,11 +813,8 @@ public class SignalAttachment: NSObject {
         return genericAttachment(dataSource: dataSource, dataUTI: dataUTI)
     }
 
-    // This method should only be called for dataUTIs that
-    // are appropriate for the first pasteboard item.
-    private class func dataForFirstPasteboardItem(dataUTI: String) -> Data? {
-        let itemSet = IndexSet(integer: 0)
-        guard let datas = UIPasteboard.general.data(forPasteboardType: dataUTI, inItemSet: itemSet) else {
+    private class func dataForPasteboardItem(dataUTI: String, index: IndexSet) -> Data? {
+        guard let datas = UIPasteboard.general.data(forPasteboardType: dataUTI, inItemSet: index) else {
             owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
