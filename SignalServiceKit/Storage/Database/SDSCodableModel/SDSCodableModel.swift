@@ -225,13 +225,6 @@ public extension SDSCodableModel where Self: AnyObject {
             block: block
         )
     }
-
-    static func anyRemoveAllWithInstantiation(transaction: DBWriteTransaction) {
-        SDSCodableModelDatabaseInterfaceImpl().removeAllModelsWithInstantiation(
-            modelType: Self.self,
-            transaction: transaction
-        )
-    }
 }
 
 public extension SDSCodableModel {

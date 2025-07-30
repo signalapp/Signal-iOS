@@ -2227,27 +2227,6 @@ public extension %(class_name)s {
             record_name,
         )
 
-        # ---- Remove All ----
-
-        if has_remove_methods:
-            swift_body += """
-    class func anyRemoveAllWithInstantiation(transaction: DBWriteTransaction) {
-        // To avoid mutationDuringEnumerationException, we need to remove the
-        // instances outside the enumeration.
-        let uniqueIds = anyAllUniqueIds(transaction: transaction)
-
-        for uniqueId in uniqueIds {
-            autoreleasepool {
-                guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-                    owsFailDebug("Missing instance.")
-                    return
-                }
-                instance.anyRemove(transaction: transaction)
-            }
-        }
-    }
-"""
-
         # ---- Exists ----
 
         swift_body += """

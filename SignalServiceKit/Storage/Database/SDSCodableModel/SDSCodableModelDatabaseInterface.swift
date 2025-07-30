@@ -38,12 +38,6 @@ protocol SDSCodableModelDatabaseInterface {
         transaction: DBWriteTransaction
     )
 
-    /// Instantiate and remove all models of the given type from the database.
-    func removeAllModelsWithInstantiation<Model: SDSCodableModel>(
-        modelType: Model.Type,
-        transaction: DBWriteTransaction
-    )
-
     // MARK: Save
 
     /// Insert the given model to the database.

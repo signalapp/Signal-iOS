@@ -478,22 +478,6 @@ public extension InstalledSticker {
         return InstalledStickerRecord.ows_fetchCount(transaction.database)
     }
 
-    class func anyRemoveAllWithInstantiation(transaction: DBWriteTransaction) {
-        // To avoid mutationDuringEnumerationException, we need to remove the
-        // instances outside the enumeration.
-        let uniqueIds = anyAllUniqueIds(transaction: transaction)
-
-        for uniqueId in uniqueIds {
-            autoreleasepool {
-                guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-                    owsFailDebug("Missing instance.")
-                    return
-                }
-                instance.anyRemove(transaction: transaction)
-            }
-        }
-    }
-
     class func anyExists(
         uniqueId: String,
         transaction: DBReadTransaction

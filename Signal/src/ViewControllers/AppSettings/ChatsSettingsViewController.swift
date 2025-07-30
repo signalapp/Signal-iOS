@@ -214,14 +214,18 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     ) {
         Logger.info("")
 
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+        DependenciesBridge.shared.db.write { tx in
             threadSoftDeleteManager.softDelete(
-                threads: TSThread.anyFetchAll(transaction: transaction),
+                threads: TSThread.anyFetchAll(transaction: tx),
                 sendDeleteForMeSyncMessage: true,
-                tx: transaction
+                tx: tx
             )
 
-            StoryMessage.anyRemoveAllWithInstantiation(transaction: transaction)
+            // Need to instantiate these to remove them, since `StoryMessage`
+            // has an `anyDidRemove` hook.
+            for storyMessage in StoryMessage.anyFetchAll(transaction: tx) {
+                storyMessage.anyRemove(transaction: tx)
+            }
         }
 
         AttachmentStream.deleteAllAttachmentFiles()

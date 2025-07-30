@@ -316,8 +316,10 @@ class SignalRecipientTest: SSKBaseTest {
                     transaction: tx
                 )
             }()
+
             // Delete the group members that were created automatically.
-            TSGroupMember.anyRemoveAllWithInstantiation(transaction: tx)
+            try! TSGroupMember.deleteAll(tx.database)
+
             // And construct the TSGroupMember members using the specific identifiers
             // that were provided.
             for address in addresses {
