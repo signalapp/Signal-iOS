@@ -150,7 +150,7 @@ extension AVAsset {
             }
 
             let requestedOffset = UInt32(dataRequest.requestedOffset)
-            var requestedLength = UInt32(dataRequest.requestedLength)
+            var requestedLength = UInt32(clamping: dataRequest.requestedLength)
             if dataRequest.requestsAllDataToEndOfResource {
                 requestedLength = fileHandle.plaintextLength - requestedOffset
             }
