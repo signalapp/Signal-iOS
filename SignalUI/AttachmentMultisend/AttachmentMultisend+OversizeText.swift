@@ -57,9 +57,9 @@ extension AttachmentMultisend {
             // We only prepare the single shared body.
             let validatedMessageBody: ValidatedMessageBody?
             if let messageBody {
-                validatedMessageBody = try await attachmentValidator.prepareOversizeTextsIfNeeded(
-                    from: ["": messageBody]
-                ).values.first
+                validatedMessageBody = try await attachmentValidator.prepareOversizeTextIfNeeded(
+                    messageBody
+                )
             } else {
                 validatedMessageBody = nil
             }
@@ -83,9 +83,9 @@ extension AttachmentMultisend {
                 ))
                 continue
             }
-            let validatedMessageBody = try await attachmentValidator.prepareOversizeTextsIfNeeded(
-                from: ["": hydratedMessageBody.asMessageBodyForForwarding()]
-            ).values.first
+            let validatedMessageBody = try await attachmentValidator.prepareOversizeTextIfNeeded(
+                hydratedMessageBody.asMessageBodyForForwarding()
+            )
             destinations.append(.init(
                 conversationItem: preDestination.conversationItem,
                 thread: preDestination.thread,

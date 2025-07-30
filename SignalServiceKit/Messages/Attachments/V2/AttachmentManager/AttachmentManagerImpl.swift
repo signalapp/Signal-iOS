@@ -126,6 +126,28 @@ public class AttachmentManagerImpl: AttachmentManager {
         backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
     }
 
+    public func updateAttachmentWithOversizeTextFromBackup(
+        attachmentId: Attachment.IDType,
+        pendingAttachment: PendingAttachment,
+        tx: DBWriteTransaction
+    ) throws {
+        guard let attachment = attachmentStore.fetch(id: attachmentId, tx: tx) else {
+            // The attachment got deleted? Should be impossible but ultimately fine.
+            return
+        }
+
+        if attachment.asStream() != nil {
+            // Its already a stream? Should be impossible but ultimately fine.
+            return
+        }
+
+        try _updateAttachmentWithOversizeTextFromBackup(
+            attachment: attachment,
+            pendingAttachment: pendingAttachment,
+            tx: tx
+        )
+    }
+
     // MARK: Quoted Replies
 
     public func quotedReplyAttachmentInfo(
@@ -835,6 +857,96 @@ public class AttachmentManagerImpl: AttachmentManager {
                     tx: tx
                 )
                 return
+            }
+        }
+    }
+
+    private func _updateAttachmentWithOversizeTextFromBackup(
+        attachment: Attachment,
+        pendingAttachment: PendingAttachment,
+        tx: DBWriteTransaction
+    ) throws {
+        let mediaName = Attachment.mediaName(
+            sha256ContentHash: pendingAttachment.sha256ContentHash,
+            encryptionKey: pendingAttachment.encryptionKey
+        )
+        let streamInfo = Attachment.StreamInfo(
+            sha256ContentHash: pendingAttachment.sha256ContentHash,
+            mediaName: mediaName,
+            encryptedByteCount: pendingAttachment.encryptedByteCount,
+            unencryptedByteCount: pendingAttachment.unencryptedByteCount,
+            contentType: pendingAttachment.validatedContentType,
+            digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
+            localRelativeFilePath: pendingAttachment.localRelativeFilePath
+        )
+
+        do {
+            guard self.orphanedAttachmentStore.orphanAttachmentExists(with: pendingAttachment.orphanRecordId, tx: tx) else {
+                throw OWSAssertionError("Attachment file deleted before creation")
+            }
+
+            // Update the placeholder attachment we previously created with the stream info
+            try self.attachmentStore.updateAttachmentAsDownloaded(
+                // Not technically true but close enough.
+                from: .mediaTierFullsize,
+                priority: .backupRestore,
+                id: attachment.id,
+                validatedMimeType: pendingAttachment.mimeType,
+                streamInfo: streamInfo,
+                // This is used for "last viewed" state which isn't used
+                // for oversize text so it doesn't really matter but give
+                // a real date anyway.
+                timestamp: dateProvider().ows_millisecondsSince1970,
+                tx: tx
+            )
+            // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
+            self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+
+            // Normally, after we create a stream, we schedule it for media tier upload, remove any
+            // media tier deletion jobs, etc. But we don't back up oversize text to media tier (since
+            // we inline it) so we don't need to do any of that.
+
+        } catch let error as AttachmentInsertError {
+            let existingAttachmentId: Attachment.IDType
+            switch error {
+            case .duplicatePlaintextHash(let id):
+                existingAttachmentId = id
+            case .duplicateMediaName(let id):
+                owsFailDebug("How did we match mediaName when using a random encryption key?")
+                existingAttachmentId = id
+            }
+
+            // Already have an attachment with the same plaintext hash or media name!
+            // Move all existing references to that copy, instead.
+            // Doing so should delete the original attachment pointer.
+            // This happens if we have two instances of the same oversized text
+            // in the backup (e.g. some long text message was forwarded)
+
+            // Just hold all refs in memory; there shouldn't in practice be
+            // so many pointers to the same attachment.
+            var references = [AttachmentReference]()
+            try self.attachmentStore.enumerateAllReferences(
+                toAttachmentId: attachment.id,
+                tx: tx
+            ) { reference, _ in
+                references.append(reference)
+            }
+            try references.forEach { reference in
+                try self.attachmentStore.removeOwner(
+                    reference: reference,
+                    tx: tx
+                )
+                let newOwnerParams = AttachmentReference.ConstructionParams(
+                    owner: reference.owner.forReassignmentWithContentType(pendingAttachment.validatedContentType.raw),
+                    sourceFilename: reference.sourceFilename,
+                    sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
+                    sourceMediaSizePixels: reference.sourceMediaSizePixels
+                )
+                try self.attachmentStore.addOwner(
+                    newOwnerParams,
+                    for: existingAttachmentId,
+                    tx: tx
+                )
             }
         }
     }

@@ -388,8 +388,8 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchiveTSMessageEditHist
             case .remoteDeleteTombstone:
                 messageBuilder.wasRemotelyDeleted = true
             case .text(let text):
-                messageBuilder.messageBody = text.body?.text
-                messageBuilder.bodyRanges = text.body?.ranges
+                messageBuilder.messageBody = text.body?.messageBody.text
+                messageBuilder.bodyRanges = text.body?.messageBody.ranges
                 messageBuilder.quotedMessage = text.quotedMessage
                 messageBuilder.linkPreview = text.linkPreview
             case .contactShare(let contactShare):
@@ -409,8 +409,8 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchiveTSMessageEditHist
             case .storyReply(let storyReply):
                 switch storyReply.replyType {
                 case .textReply(let textReply):
-                    messageBuilder.messageBody = textReply.body.text
-                    messageBuilder.bodyRanges = textReply.body.ranges
+                    messageBuilder.messageBody = textReply.body.messageBody.text
+                    messageBuilder.bodyRanges = textReply.body.messageBody.ranges
                 case .emoji(let emoji):
                     messageBuilder.storyReactionEmoji = emoji
                 }

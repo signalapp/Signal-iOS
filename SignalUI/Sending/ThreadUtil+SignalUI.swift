@@ -25,8 +25,7 @@ extension ThreadUtil {
             do {
                 let messageBody = try await messageBody.mapAsync {
                     try await DependenciesBridge.shared.attachmentContentValidator
-                        .prepareOversizeTextsIfNeeded(from: ["": $0])
-                        .values.first
+                        .prepareOversizeTextIfNeeded($0)
                 } ?? nil
                 let linkPreviewDataSource = try await linkPreviewDraft.mapAsync {
                     try await DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
@@ -81,8 +80,7 @@ extension ThreadUtil {
             do {
                 let messageBody = try await messageBody.mapAsync {
                     try await DependenciesBridge.shared.attachmentContentValidator
-                        .prepareOversizeTextsIfNeeded(from: ["": $0])
-                        .values.first
+                        .prepareOversizeTextIfNeeded($0)
                 } ?? nil
                 let linkPreviewDataSource = try await linkPreviewDraft.mapAsync {
                     try await DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)

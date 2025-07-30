@@ -1179,6 +1179,18 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let backupAttachmentsArchiver = BackupArchiveMessageAttachmentArchiver(
+            attachmentManager: attachmentManager,
+            attachmentStore: attachmentStore,
+            backupAttachmentDownloadManager: backupAttachmentDownloadManager,
+        )
+        let backupsOversizeTextArchiver = BackupArchiveInlinedOversizeTextArchiver(
+            attachmentsArchiver: backupAttachmentsArchiver,
+            attachmentContentValidator: attachmentContentValidator,
+            attachmentManager: attachmentManager,
+            attachmentStore: attachmentStore,
+            db: db,
+        )
         let backupArchiveManager = BackupArchiveManagerImpl(
             accountDataArchiver: BackupArchiveAccountDataArchiver(
                 backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
@@ -1228,9 +1240,8 @@ public class AppSetup {
                 threadStore: backupThreadStore
             ),
             chatItemArchiver: BackupArchiveChatItemArchiver(
-                attachmentManager: attachmentManager,
-                attachmentStore: attachmentStore,
-                backupAttachmentDownloadManager: backupAttachmentDownloadManager,
+                archivedPaymentStore: archivedPaymentStore,
+                attachmentsArchiver: backupAttachmentsArchiver,
                 callRecordStore: callRecordStore,
                 contactManager: BackupArchive.Wrappers.ContactManager(contactManager),
                 editMessageStore: editMessageStore,
@@ -1238,7 +1249,7 @@ public class AppSetup {
                 groupUpdateItemBuilder: groupUpdateItemBuilder,
                 individualCallRecordManager: individualCallRecordManager,
                 interactionStore: backupInteractionStore,
-                archivedPaymentStore: archivedPaymentStore,
+                oversizeTextArchiver: backupsOversizeTextArchiver,
                 reactionStore: reactionStore,
                 threadStore: backupThreadStore,
             ),
@@ -1281,6 +1292,7 @@ public class AppSetup {
                 recipientStore: backupRecipientStore
             ),
             messagePipelineSupervisor: messagePipelineSupervisor,
+            oversizeTextArchiver: backupsOversizeTextArchiver,
             plaintextStreamProvider: BackupArchivePlaintextProtoStreamProvider(),
             postFrameRestoreActionManager: BackupArchivePostFrameRestoreActionManager(
                 avatarFetcher: backupArchiveAvatarFetcher,

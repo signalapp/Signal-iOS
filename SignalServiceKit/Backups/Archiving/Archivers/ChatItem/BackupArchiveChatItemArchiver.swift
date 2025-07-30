@@ -36,9 +36,8 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
 
     private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
 
-    private let attachmentManager: AttachmentManager
-    private let attachmentStore: AttachmentStore
-    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
+    private let archivedPaymentStore: ArchivedPaymentStore
+    private let attachmentsArchiver: BackupArchiveMessageAttachmentArchiver
     private let callRecordStore: CallRecordStore
     private let contactManager: BackupArchive.Shims.ContactManager
     private let editMessageStore: EditMessageStore
@@ -46,15 +45,10 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
     private let groupUpdateItemBuilder: GroupUpdateItemBuilder
     private let individualCallRecordManager: IndividualCallRecordManager
     private let interactionStore: BackupArchiveInteractionStore
-    private let archivedPaymentStore: ArchivedPaymentStore
+    private let oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver
     private let reactionStore: ReactionStore
     private let threadStore: BackupArchiveThreadStore
 
-    private lazy var attachmentsArchiver = BackupArchiveMessageAttachmentArchiver(
-        attachmentManager: attachmentManager,
-        attachmentStore: attachmentStore,
-        backupAttachmentDownloadManager: backupAttachmentDownloadManager,
-    )
     private lazy var reactionArchiver = BackupArchiveReactionArchiver(
         reactionStore: BackupArchiveReactionStore()
     )
@@ -62,6 +56,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         interactionStore: interactionStore,
         archivedPaymentStore: archivedPaymentStore,
         attachmentsArchiver: attachmentsArchiver,
+        oversizeTextArchiver: oversizeTextArchiver,
         reactionArchiver: reactionArchiver
     )
     private lazy var incomingMessageArchiver = BackupArchiveTSIncomingMessageArchiver(
@@ -83,10 +78,9 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         interactionStore: interactionStore
     )
 
-    public init(
-        attachmentManager: AttachmentManager,
-        attachmentStore: AttachmentStore,
-        backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
+    init(
+        archivedPaymentStore: ArchivedPaymentStore,
+        attachmentsArchiver: BackupArchiveMessageAttachmentArchiver,
         callRecordStore: CallRecordStore,
         contactManager: BackupArchive.Shims.ContactManager,
         editMessageStore: EditMessageStore,
@@ -94,13 +88,12 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         groupUpdateItemBuilder: GroupUpdateItemBuilder,
         individualCallRecordManager: IndividualCallRecordManager,
         interactionStore: BackupArchiveInteractionStore,
-        archivedPaymentStore: ArchivedPaymentStore,
+        oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver,
         reactionStore: ReactionStore,
         threadStore: BackupArchiveThreadStore,
     ) {
-        self.attachmentManager = attachmentManager
-        self.attachmentStore = attachmentStore
-        self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
+        self.archivedPaymentStore = archivedPaymentStore
+        self.attachmentsArchiver = attachmentsArchiver
         self.callRecordStore = callRecordStore
         self.contactManager = contactManager
         self.editMessageStore = editMessageStore
@@ -108,7 +101,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         self.groupUpdateItemBuilder = groupUpdateItemBuilder
         self.individualCallRecordManager = individualCallRecordManager
         self.interactionStore = interactionStore
-        self.archivedPaymentStore = archivedPaymentStore
+        self.oversizeTextArchiver = oversizeTextArchiver
         self.reactionStore = reactionStore
         self.threadStore = threadStore
     }

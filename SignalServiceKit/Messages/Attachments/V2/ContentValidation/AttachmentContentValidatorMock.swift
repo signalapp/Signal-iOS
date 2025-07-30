@@ -64,7 +64,8 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
     }
 
     open func prepareOversizeTextsIfNeeded<Key: Hashable>(
-        from texts: [Key: MessageBody]
+        from texts: [Key: MessageBody],
+        encryptionKeys: [Key: Data],
     ) async throws -> [Key: ValidatedMessageBody] {
         return texts.mapValues { .inline($0) }
     }

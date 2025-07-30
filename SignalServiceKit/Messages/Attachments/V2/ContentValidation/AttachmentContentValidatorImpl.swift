@@ -223,16 +223,13 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     }
 
     public func prepareOversizeTextsIfNeeded<Key: Hashable>(
-        from texts: [Key: MessageBody]
+        from texts: [Key: MessageBody],
+        encryptionKeys: [Key: Data],
     ) async throws -> [Key: ValidatedMessageBody] {
         var truncatedBodies = [Key: MessageBody]()
         var oversizedTextInputs = [Key: Input]()
         var results = [Key: ValidatedMessageBody]()
         for (key, messageBody) in texts {
-            guard !messageBody.text.isEmpty else {
-                // Skip this one and don't put it in results
-                continue
-            }
             let truncatedText = messageBody.text.trimmedIfNeeded(maxByteCount: Int(kOversizeTextMessageSizeThreshold))
             guard let truncatedText else {
                 // No need to truncate
@@ -243,7 +240,10 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             truncatedBodies[key] = truncatedBody
             let inputType = InputType.inMemory(Data(messageBody.text.utf8))
             let primaryFilePlaintextHash = try computePlaintextHash(inputType: inputType)
-            let encryptionKey = encryptionKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputEncryptionKey: nil)
+            let encryptionKey = encryptionKeyToUse(
+                primaryFilePlaintextHash: primaryFilePlaintextHash,
+                inputEncryptionKey: encryptionKeys[key]
+            )
             oversizedTextInputs[key] = Input(
                 type: inputType,
                 primaryFilePlaintextHash: primaryFilePlaintextHash,

@@ -65,6 +65,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let localStorage: AccountKeyStore
     private let localRecipientArchiver: BackupArchiveLocalRecipientArchiver
     private let messagePipelineSupervisor: MessagePipelineSupervisor
+    private let oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver
     private let plaintextStreamProvider: BackupArchivePlaintextProtoStreamProvider
     private let postFrameRestoreActionManager: BackupArchivePostFrameRestoreActionManager
     private let releaseNotesRecipientArchiver: BackupArchiveReleaseNotesRecipientArchiver
@@ -72,7 +73,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let stickerPackArchiver: BackupArchiveStickerPackArchiver
     private let tsAccountManager: TSAccountManager
 
-    public init(
+    init(
         accountDataArchiver: BackupArchiveAccountDataArchiver,
         adHocCallArchiver: BackupArchiveAdHocCallArchiver,
         appVersion: AppVersion,
@@ -103,6 +104,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         localStorage: AccountKeyStore,
         localRecipientArchiver: BackupArchiveLocalRecipientArchiver,
         messagePipelineSupervisor: MessagePipelineSupervisor,
+        oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver,
         plaintextStreamProvider: BackupArchivePlaintextProtoStreamProvider,
         postFrameRestoreActionManager: BackupArchivePostFrameRestoreActionManager,
         releaseNotesRecipientArchiver: BackupArchiveReleaseNotesRecipientArchiver,
@@ -140,6 +142,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.localStorage = localStorage
         self.localRecipientArchiver = localRecipientArchiver
         self.messagePipelineSupervisor = messagePipelineSupervisor
+        self.oversizeTextArchiver = oversizeTextArchiver
         self.plaintextStreamProvider = plaintextStreamProvider
         self.postFrameRestoreActionManager = postFrameRestoreActionManager
         self.releaseNotesRecipientArchiver = releaseNotesRecipientArchiver
@@ -326,21 +329,27 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         ) -> BackupArchive.ProtoStream.OpenOutputStreamResult<OutputStreamMetadata>
     ) async throws -> OutputStreamMetadata {
         let migrateAttachmentsProgressSink: OWSProgressSink?
+        let prepareOversizeTextAttachmentsProgressSink: OWSProgressSink?
         let exportProgress: BackupArchiveExportProgress?
         if let progressSink {
             migrateAttachmentsProgressSink = await progressSink.addChild(
                 withLabel: "Export Backup: Migrate Attachments",
                 unitCount: 5
             )
+            prepareOversizeTextAttachmentsProgressSink = await progressSink.addChild(
+                withLabel: "Export Backup: Oversize Text Attachments",
+                unitCount: 5
+            )
             exportProgress = try await .prepare(
                 sink: await progressSink.addChild(
                     withLabel: "Export Backup: Export Frames",
-                    unitCount: 95
+                    unitCount: 90
                 ),
                 db: db
             )
         } else {
             migrateAttachmentsProgressSink = nil
+            prepareOversizeTextAttachmentsProgressSink = nil
             exportProgress = nil
         }
 
@@ -350,6 +359,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         }
 
         await migrateAttachmentsBeforeBackup(progress: migrateAttachmentsProgressSink)
+
+        try await oversizeTextArchiver.populateTableIncrementally(progress: prepareOversizeTextAttachmentsProgressSink)
 
         let mediaRootBackupKey = await db.awaitableWrite { tx in
             localStorage.getOrGenerateMediaRootBackupKey(tx: tx)
@@ -742,9 +753,20 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     /// Everything in this method MUST be idempotent, as partial progress can be made
     /// before app termination, which will result in this getting called again.
     public func finalizeBackupImport(progress: OWSProgressSink?) async throws {
-        // TODO: add more steps here, like restoring oversize text
-        let source = await progress?.addSource(withLabel: "", unitCount: 1)
-        source?.incrementCompletedUnitCount(by: 1)
+        let oversizedTextProgress: OWSProgressSink?
+        if let progress {
+            oversizedTextProgress = await progress.addChild(
+                withLabel: "Import Backup: Process Oversized Text Attachments",
+                unitCount: 5
+            )
+        } else {
+            oversizedTextProgress = nil
+        }
+
+        try await oversizeTextArchiver.finishRestoringOversizedTextAttachments(
+            progress: oversizedTextProgress
+        )
+
         await db.awaitableWrite { tx in
             kvStore.setInt(
                 BackupRestoreState.finalized.rawValue,

@@ -105,16 +105,13 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
     }
 
     public func archiveOversizeTextAttachment(
-        messageRowId: Int64,
-        messageId: BackupArchive.InteractionUniqueId,
+        _ referencedAttachment: ReferencedAttachment,
         context: BackupArchive.ArchivingContext
     ) -> BackupArchive.ArchiveInteractionResult<BackupProto_FilePointer?> {
-        return self.archiveSingleAttachment(
-            ownerType: .oversizeText,
-            messageId: messageId,
-            messageRowId: messageRowId,
-            context: context
-        )
+        return .success(referencedAttachment.asBackupFilePointer(
+            currentBackupAttachmentUploadEra: context.currentBackupAttachmentUploadEra,
+            attachmentByteCounter: context.attachmentByteCounter,
+        ))
     }
 
     public func archiveLinkPreviewAttachment(

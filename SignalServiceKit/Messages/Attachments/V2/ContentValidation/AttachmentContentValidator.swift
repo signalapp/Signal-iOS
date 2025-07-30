@@ -144,8 +144,13 @@ public protocol AttachmentContentValidator {
     /// If the provided message body is large enough to require an oversize text
     /// attachment, creates a pending one, alongside the truncated message body.
     /// If not, just returns the message body as is.
+    ///
+    /// - parameter encryptionKeys: The encryption key to use for the pending attachment
+    /// file to create for oversize text, if any. If there is no provided encryption key for a given MessageBody
+    /// input, a random key will be used.
     func prepareOversizeTextsIfNeeded<Key: Hashable>(
-        from texts: [Key: MessageBody]
+        from texts: [Key: MessageBody],
+        encryptionKeys: [Key: Data],
     ) async throws -> [Key: ValidatedMessageBody]
 
     /// Build a `QuotedReplyAttachmentDataSource` for a reply to a message with the provided attachment.
@@ -192,5 +197,14 @@ extension AttachmentContentValidator {
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename
         ))
+    }
+
+    public func prepareOversizeTextIfNeeded(
+        _ body: MessageBody,
+    ) async throws -> ValidatedMessageBody {
+        return try await prepareOversizeTextsIfNeeded(
+            from: ["": body],
+            encryptionKeys: [:]
+        ).values.first!
     }
 }

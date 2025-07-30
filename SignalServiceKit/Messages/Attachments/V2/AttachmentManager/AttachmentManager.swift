@@ -46,6 +46,17 @@ public protocol AttachmentManager {
         tx: DBWriteTransaction
     ) throws
 
+    /// Update an existing placeholder attachment with the full oversized text attachment file
+    /// we restored from a backup.
+    /// May reuse an existing attachment stream if matched by content, which will delete
+    /// both the provided pending files and the placeholder attachment whose id was provided,
+    /// pointing all its references to the existing duplicate.
+    func updateAttachmentWithOversizeTextFromBackup(
+        attachmentId: Attachment.IDType,
+        pendingAttachment: PendingAttachment,
+        tx: DBWriteTransaction
+    ) throws
+
     // MARK: - Quoted Replies
 
     /// Given an original message available locally, returns metadata

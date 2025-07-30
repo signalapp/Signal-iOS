@@ -32,6 +32,14 @@ open class AttachmentManagerMock: AttachmentManager {
         // Do nothing
     }
 
+    open func updateAttachmentWithOversizeTextFromBackup(
+        attachmentId: Attachment.IDType,
+        pendingAttachment: PendingAttachment,
+        tx: DBWriteTransaction
+    ) throws {
+        // Do nothing
+    }
+
     open func quotedReplyAttachmentInfo(
         originalMessage: TSMessage,
         tx: DBReadTransaction

@@ -479,6 +479,8 @@ extension BackupArchive {
             case blockedRecipientFetchError(RawError)
             case blockedGroupFetchError(RawError)
 
+            case oversizedTextCacheFetchError(RawError)
+
             /// These should never happen; it means some invariant in the backup code
             /// we could not enforce with the type system was broken. Nothing was wrong with
             /// the proto or local database; its the iOS backup code that has a bug somewhere.
@@ -604,6 +606,13 @@ extension BackupArchive {
                 /// A ``BackupProto_DirectStoryReplyMessage`` was in a group thread.
                 case directStoryReplyInGroupThread
 
+                /// A ``BackupProto_StandardMessage/text`` had inlined oversize text that
+                /// was too long (even for oversized text there is a limit).
+                case standardMessageWayTooOversizedBody
+                /// A ``BackupProto_StandardMessage/longText`` was present despite an inlined
+                /// oversize message body (longer than standard message body length). Long text
+                /// pointers should only be included if the attachment is undownloaded and unavailable for inlining.
+                case longTextStandardMessageWithOversizeBody
                 /// A ``BackupProto_StandardMessage/longText`` was present despite an empty
                 /// message body (the body text must always be a prefix of the long text)
                 case longTextStandardMessageMissingBody
@@ -611,6 +620,9 @@ extension BackupArchive {
                 /// A quoted message had no body, attachment, gift badge, or other
                 /// content in its representation of the original being quoted.
                 case quotedMessageEmptyContent
+                /// The text body in a quoted message was too long (as enforced by standard message sending).
+                /// Oversized text in quotes is unsupported on all platforms.
+                case quotedMessageOversizeText
 
                 /// A link preview with an empty string for the url
                 case linkPreviewEmptyUrl
@@ -847,8 +859,11 @@ extension BackupArchive {
                         .directStoryReplyMessageEmptyWithLongText,
                         .directStoryReplyFromNonAci,
                         .directStoryReplyInGroupThread,
+                        .standardMessageWayTooOversizedBody,
+                        .longTextStandardMessageWithOversizeBody,
                         .longTextStandardMessageMissingBody,
                         .quotedMessageEmptyContent,
+                        .quotedMessageOversizeText,
                         .linkPreviewEmptyUrl,
                         .linkPreviewUrlNotInBody,
                         .contactMessageMissingContactAttachment,
@@ -948,7 +963,10 @@ extension BackupArchive {
                         .directStoryReplyMessageEmptyWithLongText,
                         .directStoryReplyFromNonAci,
                         .directStoryReplyInGroupThread,
+                        .standardMessageWayTooOversizedBody,
+                        .longTextStandardMessageWithOversizeBody,
                         .longTextStandardMessageMissingBody,
+                        .quotedMessageOversizeText,
                         .linkPreviewEmptyUrl,
                         .contactMessageMissingContactAttachment,
                         .contactAttachmentPhoneNumberMissingValue,

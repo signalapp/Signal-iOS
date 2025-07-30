@@ -10,6 +10,8 @@ extension BackupArchive {
         let chatContext: ChatRestoringContext
         let recipientContext: RecipientRestoringContext
 
+        public var uploadEra: String? { chatContext.customChatColorContext.accountDataContext.uploadEra }
+
         init(
             chatContext: ChatRestoringContext,
             recipientContext: RecipientRestoringContext,

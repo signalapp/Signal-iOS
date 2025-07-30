@@ -555,8 +555,8 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchiveTSMessageEditHist
             case .remoteDeleteTombstone:
                 outgoingMessageBuilder.wasRemotelyDeleted = true
             case .text(let text):
-                outgoingMessageBuilder.messageBody = text.body?.text
-                outgoingMessageBuilder.bodyRanges = text.body?.ranges
+                outgoingMessageBuilder.messageBody = text.body?.messageBody.text
+                outgoingMessageBuilder.bodyRanges = text.body?.messageBody.ranges
                 outgoingMessageBuilder.quotedMessage = text.quotedMessage
                 outgoingMessageBuilder.linkPreview = text.linkPreview
                 outgoingMessageBuilder.isVoiceMessage = text.isVoiceMessage
@@ -577,8 +577,8 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchiveTSMessageEditHist
             case .storyReply(let storyReply):
                 switch storyReply.replyType {
                 case .textReply(let textReply):
-                    outgoingMessageBuilder.messageBody = textReply.body.text
-                    outgoingMessageBuilder.bodyRanges = textReply.body.ranges
+                    outgoingMessageBuilder.messageBody = textReply.body.messageBody.text
+                    outgoingMessageBuilder.bodyRanges = textReply.body.messageBody.ranges
                 case .emoji(let emoji):
                     outgoingMessageBuilder.storyReactionEmoji = emoji
                 }
