@@ -323,17 +323,11 @@ public class ProfileFetcherJob {
     }
 
     private func makeRequest(_ request: TSRequest) async throws -> any HTTPResponse {
-        // TODO: WebSockets: Inline this method once it doesn't need to branch.
         let connectionType = try request.auth.connectionType
-        let shouldUseWebSocket: Bool = (
-            OWSChatConnection.canAppUseSocketsToMakeRequests
-            && DependenciesBridge.shared.chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: connectionType)
-        )
-        if shouldUseWebSocket {
-            return try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
-        } else {
-            return try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: false)
-        }
+        let networkManager = SSKEnvironment.shared.networkManagerRef
+        return try await networkManager.asyncRequest(request, canUseWebSocket: (
+            DependenciesBridge.shared.chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: connectionType)
+        ))
     }
 
     private func updateProfile(

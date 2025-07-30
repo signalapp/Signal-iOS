@@ -165,17 +165,11 @@ final class RequestMaker {
 
     private func _makeRequest(request: TSRequest) async throws -> RequestMakerResult {
         let connectionType = try request.auth.connectionType
-        let shouldUseWebsocket: Bool = (
-            OWSChatConnection.canAppUseSocketsToMakeRequests
-            && (self.options.contains(.waitForWebSocketToOpen) || DependenciesBridge.shared.chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: connectionType))
-        )
-
-        let response: HTTPResponse
-        if shouldUseWebsocket {
-            response = try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
-        } else {
-            response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: false)
-        }
+        let networkManager = SSKEnvironment.shared.networkManagerRef
+        let response = try await networkManager.asyncRequest(request, canUseWebSocket: (
+            self.options.contains(.waitForWebSocketToOpen)
+            || DependenciesBridge.shared.chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: connectionType)
+        ))
         return RequestMakerResult(response: response, wasSentByUD: connectionType == .unidentified)
     }
 
