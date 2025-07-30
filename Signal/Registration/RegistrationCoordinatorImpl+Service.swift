@@ -280,7 +280,7 @@ extension RegistrationCoordinatorImpl {
             ) {
                 var request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken)
                 request.auth = .identified(auth)
-                _ = try await networkManager.asyncRequest(request, canUseWebSocket: false)
+                _ = try await networkManager.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
             }
         }
 
@@ -297,7 +297,7 @@ extension RegistrationCoordinatorImpl {
                     attributes,
                     auth: auth
                 )
-                let response = try await networkManager.asyncRequest(request, canUseWebSocket: false)
+                let response = try await networkManager.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
                 guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
                     // Errors are undifferentiated; the only actual error we can get is an unauthenticated
                     // one and there isn't any way to handle that as different from a, say server 500.
@@ -322,7 +322,7 @@ extension RegistrationCoordinatorImpl {
                     isRetryable: { $0.isNetworkFailureOrTimeout },
                 ) {
                     let request = WhoAmIRequestFactory.whoAmIRequest(auth: auth)
-                    let response = try await networkManager.asyncRequest(request, canUseWebSocket: false)
+                    let response = try await networkManager.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
                     guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
                         return .genericError
                     }

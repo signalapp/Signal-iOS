@@ -326,7 +326,8 @@ public class ProfileFetcherJob {
         let connectionType = try request.auth.connectionType
         let networkManager = SSKEnvironment.shared.networkManagerRef
         return try await networkManager.asyncRequest(request, canUseWebSocket: (
-            DependenciesBridge.shared.chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: connectionType)
+            FeatureFlags.postRegWebSocket
+            || DependenciesBridge.shared.chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: connectionType)
         ))
     }
 

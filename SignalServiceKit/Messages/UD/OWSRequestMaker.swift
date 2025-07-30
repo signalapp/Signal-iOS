@@ -167,7 +167,8 @@ final class RequestMaker {
         let connectionType = try request.auth.connectionType
         let networkManager = SSKEnvironment.shared.networkManagerRef
         let response = try await networkManager.asyncRequest(request, canUseWebSocket: (
-            self.options.contains(.waitForWebSocketToOpen)
+            FeatureFlags.postRegWebSocket
+            || self.options.contains(.waitForWebSocketToOpen)
             || DependenciesBridge.shared.chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: connectionType)
         ))
         return RequestMakerResult(response: response, wasSentByUD: connectionType == .unidentified)

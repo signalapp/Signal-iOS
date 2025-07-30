@@ -106,7 +106,7 @@ class SyncPushTokensJob: NSObject {
         return try await Retry.performWithBackoff(maxAttempts: 3) {
             var request = OWSRequestFactory.registerForPushRequest(apnsToken: pushToken)
             request.auth = .identified(auth)
-            _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: false)
+            _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
         }
     }
 }

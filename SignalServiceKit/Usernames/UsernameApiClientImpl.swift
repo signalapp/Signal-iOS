@@ -95,7 +95,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
         request.auth = .identified(chatServiceAuth)
 
         do {
-            let response = try await performRequest(request: request, canUseWebSocket: false)
+            let response = try await performRequest(request: request, canUseWebSocket: FeatureFlags.postRegWebSocket)
 
             guard response.responseStatusCode == 200 else {
                 throw OWSAssertionError("Unexpected status code from successful request: \(response.responseStatusCode)")

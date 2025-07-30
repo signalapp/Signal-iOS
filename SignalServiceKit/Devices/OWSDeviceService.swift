@@ -140,7 +140,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
     func unlinkDevice(deviceId: DeviceId, auth: ChatServiceAuth) async throws {
         var request = TSRequest.deleteDevice(deviceId: deviceId)
         request.auth = .identified(auth)
-        _ = try await networkManager.asyncRequest(request, canUseWebSocket: false)
+        _ = try await networkManager.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
     }
 
     func renameDevice(

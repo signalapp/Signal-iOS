@@ -149,8 +149,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
         let response: HTTPResponse
         do {
-            // TODO: Switch this back to true when reg supports websockets
-            response = try await networkManager.asyncRequest(request, canUseWebSocket: false)
+            response = try await networkManager.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
         } catch let error {
             if error.httpStatusCode == 404 {
                 throw BackupAuthCredentialFetchError.noExistingBackupId

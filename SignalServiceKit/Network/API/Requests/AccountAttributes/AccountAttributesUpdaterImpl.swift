@@ -181,7 +181,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                     attributes,
                     auth: authedAccount.chatServiceAuth
                 )
-                _ = try await networkManager.asyncRequest(request, canUseWebSocket: false)
+                _ = try await networkManager.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
 
                 reportedDeviceCapabilities = attributes.capabilities
             } else {
@@ -191,7 +191,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                     currentDeviceCapabilities,
                     auth: authedAccount.chatServiceAuth
                 )
-                _ = try await networkManager.asyncRequest(request, canUseWebSocket: false)
+                _ = try await networkManager.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
 
                 reportedDeviceCapabilities = currentDeviceCapabilities
             }
