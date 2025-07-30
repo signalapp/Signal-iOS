@@ -69,12 +69,34 @@ public class MessageProcessor {
         }
     }
 
-    public func processReceivedEnvelopeData(
+    public func enqueueReceivedEnvelopeData(
         _ envelopeData: Data,
         serverDeliveryTimestamp: UInt64,
         envelopeSource: EnvelopeSource,
         completion: @escaping () -> Void
     ) {
+        self.queueForEnqueueing.async {
+            self._enqueueReceivedEnvelopeData(
+                envelopeData,
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                envelopeSource: envelopeSource,
+                completion: completion,
+            )
+        }
+    }
+
+    public func flushEnqueuingQueue(completion: @escaping () -> Void) {
+        self.queueForEnqueueing.async(completion)
+    }
+
+    private func _enqueueReceivedEnvelopeData(
+        _ envelopeData: Data,
+        serverDeliveryTimestamp: UInt64,
+        envelopeSource: EnvelopeSource,
+        completion: @escaping () -> Void
+    ) {
+        assertOnQueue(self.queueForEnqueueing)
+
         guard !envelopeData.isEmpty else {
             owsFailDebug("Empty envelope, envelopeSource: \(envelopeSource).")
             completion()
@@ -97,7 +119,7 @@ public class MessageProcessor {
             return
         }
 
-        processReceivedEnvelope(
+        enqueueReceivedEnvelope(
             ReceivedEnvelope(
                 envelope: protoEnvelope,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
@@ -107,13 +129,13 @@ public class MessageProcessor {
         )
     }
 
-    public func processReceivedEnvelope(
+    public func enqueueReceivedEnvelope(
         _ envelopeProto: SSKProtoEnvelope,
         serverDeliveryTimestamp: UInt64,
         envelopeSource: EnvelopeSource,
         completion: @escaping () -> Void
     ) {
-        processReceivedEnvelope(
+        enqueueReceivedEnvelope(
             ReceivedEnvelope(
                 envelope: envelopeProto,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
@@ -123,19 +145,18 @@ public class MessageProcessor {
         )
     }
 
-    private func processReceivedEnvelope(_ receivedEnvelope: ReceivedEnvelope, envelopeSource: EnvelopeSource) {
+    private func enqueueReceivedEnvelope(_ receivedEnvelope: ReceivedEnvelope, envelopeSource: EnvelopeSource) {
         pendingEnvelopes.enqueue(receivedEnvelope)
         drainPendingEnvelopes()
     }
 
     private static let maxEnvelopeByteCount = 256 * 1024
-    private let serialQueue = DispatchQueue(
-        label: "org.signal.message-processor",
-        autoreleaseFrequency: .workItem
-    )
+
+    private let queueForEnqueueing = DispatchQueue(label: "org.signal.message-processor-enqueue")
+    private let queueForProcessing = DispatchQueue(label: "org.signal.message-processor-process", autoreleaseFrequency: .workItem)
 
     #if TESTABLE_BUILD
-    var serialQueueForTests: DispatchQueue { serialQueue }
+    var serialQueueForTests: DispatchQueue { queueForProcessing }
     #endif
 
     private var pendingEnvelopes = PendingEnvelopes()
@@ -148,7 +169,7 @@ public class MessageProcessor {
 
         guard SSKEnvironment.shared.messagePipelineSupervisorRef.isMessageProcessingPermitted else { return }
 
-        serialQueue.async {
+        queueForProcessing.async {
             self.isDrainingPendingEnvelopes.set(true)
             while autoreleasepool(invoking: { self.drainNextBatch() }) {}
             self.isDrainingPendingEnvelopes.set(false)
@@ -164,7 +185,7 @@ public class MessageProcessor {
 
     /// Returns whether or not to continue draining the queue.
     private func drainNextBatch() -> Bool {
-        assertOnQueue(serialQueue)
+        assertOnQueue(queueForProcessing)
 
         guard SSKEnvironment.shared.messagePipelineSupervisorRef.isMessageProcessingPermitted else {
             return false
@@ -540,7 +561,7 @@ private extension MessageProcessor {
         localDeviceId: LocalDeviceId,
         tx: DBWriteTransaction
     ) -> ProcessingRequest {
-        assertOnQueue(serialQueue)
+        assertOnQueue(queueForProcessing)
         if let serverGuid = envelope.envelope.serverGuid, recentlyProcessedGuids.contains(serverGuid) {
             return ProcessingRequest(envelope, state: .completed(error: OWSGenericError("Skipping because it was recently processed.")))
         }

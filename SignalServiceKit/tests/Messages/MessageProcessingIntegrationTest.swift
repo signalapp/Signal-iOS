@@ -112,7 +112,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setServerGuid(UUID().uuidString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
+        SSKEnvironment.shared.messageProcessorRef.enqueueReceivedEnvelopeData(
             envelopeData,
             serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
             envelopeSource: .tests
@@ -159,7 +159,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         envelopeBuilder.setServerGuid(UUID().uuidString)
         envelopeBuilder.setDestinationServiceID(DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.pni!.serviceIdString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
+        SSKEnvironment.shared.messageProcessorRef.enqueueReceivedEnvelopeData(
             envelopeData,
             serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
             envelopeSource: .tests
@@ -186,7 +186,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             envelopeBuilder.setSourceServiceID(self.bobClient.serviceId.serviceIdString)
             let envelopeData = try envelopeBuilder.buildSerializedData()
             await withCheckedContinuation { continuation in
-                SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
+                SSKEnvironment.shared.messageProcessorRef.enqueueReceivedEnvelopeData(
                     envelopeData,
                     serverDeliveryTimestamp: 102,
                     envelopeSource: .websocketUnidentified
@@ -223,7 +223,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
 
             // Process the message
             await withCheckedContinuation { continuation in
-                SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
+                SSKEnvironment.shared.messageProcessorRef.enqueueReceivedEnvelopeData(
                     envelopeData,
                     serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                     envelopeSource: .tests
@@ -280,7 +280,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             let envelopeData = try envelopeBuilder.buildSerializedData()
 
             await withCheckedContinuation { continuation in
-                SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
+                SSKEnvironment.shared.messageProcessorRef.enqueueReceivedEnvelopeData(
                     envelopeData,
                     serverDeliveryTimestamp: 102,
                     envelopeSource: .websocketUnidentified
@@ -316,7 +316,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
 
             await withCheckedContinuation { continuation in
                 // Process the message
-                SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
+                SSKEnvironment.shared.messageProcessorRef.enqueueReceivedEnvelopeData(
                     envelopeData,
                     serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                     envelopeSource: .tests

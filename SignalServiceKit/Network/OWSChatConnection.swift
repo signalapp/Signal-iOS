@@ -45,9 +45,6 @@ public class OWSChatConnection {
         case idlePrimaryDevice = "idle-primary-device"
     }
 
-    // TODO: Should we use a higher-priority queue?
-    fileprivate static let messageProcessingQueue = DispatchQueue(label: "org.signal.chat-connection.message-processing")
-
     public static let chatConnectionStateDidChange = Notification.Name("chatConnectionStateDidChange")
     public static let chatConnectionStateKey: String = "chatConnectionState"
 
@@ -1112,33 +1109,32 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
 
     func chatConnection(_ chat: AuthenticatedChatConnection, didReceiveIncomingMessage envelope: Data, serverDeliveryTimestamp: UInt64, sendAck: @escaping () throws -> Void) {
         let backgroundTask = OWSBackgroundTask(label: "handleIncomingMessage")
+        let messageProcessor = SSKEnvironment.shared.messageProcessorRef
+        messageProcessor.enqueueReceivedEnvelopeData(
+            envelope,
+            serverDeliveryTimestamp: serverDeliveryTimestamp,
+            envelopeSource: .websocketIdentified
+        ) {
+            defer { backgroundTask.end() }
 
-        Self.messageProcessingQueue.async {
-            SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
-                envelope,
-                serverDeliveryTimestamp: serverDeliveryTimestamp,
-                envelopeSource: .websocketIdentified
-            ) {
-                defer { backgroundTask.end() }
-
-                do {
-                    // Note that this does not wait for a response.
-                    try sendAck()
-                } catch {
-                    Logger.warn("Failed to ack message with serverTimestamp \(serverDeliveryTimestamp): \(error)")
-                }
+            do {
+                // Note that this does not wait for a response.
+                try sendAck()
+            } catch {
+                Logger.warn("Failed to ack message with serverTimestamp \(serverDeliveryTimestamp): \(error)")
             }
         }
     }
 
     func chatConnectionDidReceiveQueueEmpty(_ chat: AuthenticatedChatConnection) {
-        // We need to "flush" (i.e., "jump through") the message processing queue
-        // to ensure that all received messages (see prior method) are enqueued for
-        // processing before we: a) mark the queue as empty, b) notify.
+        // We need to "flush" (i.e., "jump through") the enqueueing queue to ensure
+        // that all previously-enqueued messages (see prior method) are enqueued
+        // for processing before we: a) mark the queue as empty, b) notify.
         //
         // The socket might close and re-open while we're flushing the queue, so
         // we make sure it's still active before marking the queue as empty.
-        Self.messageProcessingQueue.async {
+        let messageProcessor = SSKEnvironment.shared.messageProcessorRef
+        messageProcessor.flushEnqueuingQueue {
             self.serialQueue.async {
                 guard self.connection.isActive(chat) else {
                     // We have since disconnected from the chat service instance that reported the empty queue.

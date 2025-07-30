@@ -113,7 +113,7 @@ public class MessageFetcherJob {
         }
 
         for job in envelopeJobs {
-            SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelope(
+            SSKEnvironment.shared.messageProcessorRef.enqueueReceivedEnvelope(
                 job.encryptedEnvelope,
                 serverDeliveryTimestamp: batch.serverDeliveryTimestamp,
                 envelopeSource: .rest,
