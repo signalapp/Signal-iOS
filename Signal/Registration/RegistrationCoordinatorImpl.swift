@@ -578,16 +578,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func restoreFromMessageBackup(
         type: InMemoryState.RestoreMethod.BackupType,
+        accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         identity: AccountIdentity,
         progress progressBlock: @escaping () async -> OWSProgressSink,
     ) -> Guarantee<Void> {
         Logger.info("")
         return _doBackupRestoreStep {
-            guard let aep = self.inMemoryState.accountEntropyPool else {
-                // TODO: Error
-                return
-            }
-            let backupKey = try MessageRootBackupKey(accountEntropyPool: aep, aci: identity.aci)
 
             let progress = await progressBlock()
 
@@ -600,16 +596,25 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 unitCount: BackupRestoreProgressPhase.importingBackup.percentOfTotalProgress
             )
 
-            let fileUrl: URL
-            switch type {
-            case .local(let localFileUrl):
-                fileUrl = localFileUrl
+            let backupKey = try MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: identity.aci)
+            let fileUrl = switch type {
+            case .local(let localFileUrl): localFileUrl
             case .remote:
-                fileUrl = try await self.deps.backupArchiveManager.downloadEncryptedBackup(
+                try await self.deps.backupArchiveManager.downloadEncryptedBackup(
                     backupKey: backupKey,
                     auth: identity.chatServiceAuth,
                     progress: downloadProgress,
                 )
+            }
+
+            // The backup key has been derived, the backup file has been sourced,
+            // so this is the last possible point before we commit to importing the backup.
+            // At this point, persist the backup key so if the app restarts after this point
+            // we remember the key that was used during restore.
+            await self.db.awaitableWrite { tx in
+                self.updatePersistedState(tx) {
+                    $0.backupKeyAccountEntropyPool = accountEntropyPool
+                }
             }
 
             try await self.deps.backupArchiveManager.importEncryptedBackup(
@@ -663,6 +668,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     fallthrough
                 case .incorrectBackupKey, .skipRestore:
                     // By this point, it's really too late to do anything but skip the backup and continue
+                    self.db.write { tx in
+                        self.updatePersistedState(tx) {
+                            $0.backupKeyAccountEntropyPool = nil
+                        }
+                    }
                     return Guarantee.value(())
                 case .tryAgain:
                     // retry the backup restore
@@ -987,6 +997,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// use in registration
         var recoveredSVRMasterKey: MasterKey?
 
+        /// The AEP used to restore the backup, and the key that should be used for any remaining post-restore
+        /// operations.  This key persisted in case the app quits in between a successful backup restore and the
+        /// finalization of the restore (and registration).  The goal here is to prevent the possibility of a different
+        /// AEP being entered by the user after a backup restore has already succeeded.
+        var backupKeyAccountEntropyPool: SignalServiceKit.AccountEntropyPool?
+
         struct SessionState: Codable {
             let sessionId: String
 
@@ -1119,6 +1135,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case hasDeclinedTransfer
             case restoreMode
             case recoveredSVRMasterKey
+            case backupKeyAccountEntropyPool
         }
     }
 
@@ -1257,96 +1274,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     /// Once this is done, we can wipe the internal state of this class so that we get a fresh
     /// registration if we ever re-register while in the same app session.
     @MainActor
-    private func exportAndWipeState(accountIdentity: AccountIdentity) async -> RegistrationStep {
+    private func exportAndWipeState(
+        accountEntropyPool: SignalServiceKit.AccountEntropyPool,
+        accountIdentity: AccountIdentity
+    ) async -> RegistrationStep {
         Logger.info("")
-
-        func persistRegistrationState(_ tx: DBWriteTransaction) {
-            if
-                inMemoryState.hasBackedUpToSVR
-                || inMemoryState.didHaveSVRBackupsPriorToReg
-                || inMemoryState.backupRestoreState == .finalized
-            {
-                // No need to show the experience if we made the pin
-                // and backed up.
-                deps.experienceManager.clearIntroducingPinsExperience(tx)
-            }
-
-            let userHasPIN = (inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk) != nil
-            if let accountEntropyPool = inMemoryState.accountEntropyPool {
-                deps.svr.useDeviceLocalAccountEntropyPool(
-                    accountEntropyPool,
-                    disablePIN: !userHasPIN,
-                    authedAccount: accountIdentity.authedAccount,
-                    transaction: tx
-                )
-            } else {
-                // While the AEP feature flag exists, we'll need to fall back to
-                // generating a master key if one wasn't restored.
-                let masterKey = persistedState.recoveredSVRMasterKey ?? deps.accountKeyStore.getOrGenerateMasterKey(tx: tx)
-                deps.svr.useDeviceLocalMasterKey(
-                    masterKey,
-                    disablePIN: !userHasPIN,
-                    authedAccount: accountIdentity.authedAccount,
-                    transaction: tx
-                )
-            }
-        }
-
-        func restoreBackupIfNecessary(progress progressBlock: @escaping () async -> OWSProgressSink) async {
-            switch inMemoryState.backupRestoreState {
-            case .finalized:
-                return
-            case .unfinalized:
-                // Unconditionally finalize
-                return await finalizeRestoreFromMessageBackup(
-                    identity: accountIdentity
-                ).awaitable()
-            case .none:
-                guard let backupType = inMemoryState.restoreMethod?.backupType else {
-                    return
-                }
-                return await restoreFromMessageBackup(
-                    type: backupType,
-                    identity: accountIdentity,
-                    progress: progressBlock,
-                ).awaitable()
-            }
-        }
-
-        func persistLocalIdentifiers(tx: DBWriteTransaction) {
-            deps.registrationStateChangeManager.didRegisterPrimary(
-                e164: accountIdentity.e164,
-                aci: accountIdentity.aci,
-                pni: accountIdentity.pni,
-                authToken: accountIdentity.authPassword,
-                tx: tx
-            )
-            deps.tsAccountManager.setIsManualMessageFetchEnabled(inMemoryState.isManualMessageFetchEnabled, tx: tx)
-        }
-
-        func finalizeRegistration(tx: DBWriteTransaction) {
-            persistLocalIdentifiers(tx: tx)
-        }
-
-        @MainActor
-        func setupContactsAndFinish() async -> RegistrationStep {
-            // Start syncing system contacts now that we have set up tsAccountManager.
-            deps.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
-
-            // Ignore any failure when rotating the manifest.
-            try? await deps.storageServiceManager.rotateManifest(
-                mode: .preservingRecordsIfPossible,
-                authedDevice: accountIdentity.authedDevice
-            )
-
-            // Update the account attributes once, now, at the end.
-            return await updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
-        }
 
         switch mode {
         case .registering:
 
-            if let step = fetchBackupCdnInfo(accountIdentity: accountIdentity) {
+            if let step = fetchBackupCdnInfo(
+                accountEntropyPool: accountEntropyPool,
+                accountIdentity: accountIdentity
+            ) {
                 return await step.awaitable()
             }
 
@@ -1355,7 +1295,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // progress sink.
             var finishingProgressSource: OWSProgressSource?
 
-            await restoreBackupIfNecessary { [restoreFromBackupProgressSink = self.inMemoryState.restoreFromBackupProgressSink] in
+            await restoreBackupIfNecessary(
+                accountEntropyPool: accountEntropyPool,
+                accountIdentity: accountIdentity
+            ) { [restoreFromBackupProgressSink = inMemoryState.restoreFromBackupProgressSink] in
                 let progress = OWSProgress.createSink { progress in
                     await MainActor.run {
                         restoreFromBackupProgressSink?(progress)
@@ -1372,44 +1315,44 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return restoreProgressSource
             }
 
-            if let svrBackupNextStep = await self.performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
+            if let svrBackupNextStep = await performSVRBackupStepsIfNeeded(
+                accountEntropyPool: accountEntropyPool,
+                accountIdentity: accountIdentity
+            ) {
                 return svrBackupNextStep
             }
 
-            await self.db.awaitableWrite { tx in
-                persistRegistrationState(tx)
+            let finalizeBlock = { @MainActor in
+                await self.finalize(
+                    accountEntropyPool: accountEntropyPool,
+                    accountIdentity: accountIdentity
+                ) { tx in
+                    /// For new registrations, we want to force-set some state.
+                    if self.inMemoryState.restoreMethod?.backupType == nil {
+                        /// Read receipts should be on by default.
+                        self.deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
+                        self.deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
 
-                /// For new registrations, we want to force-set some state.
-                if self.inMemoryState.restoreMethod?.backupType == nil {
-                    /// Read receipts should be on by default.
-                    self.deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
-                    self.deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
-
-                    /// Enable the onboarding banner cards.
-                    self.deps.experienceManager.enableAllGetStartedCards(tx)
+                        /// Enable the onboarding banner cards.
+                        self.deps.experienceManager.enableAllGetStartedCards(tx)
+                    }
                 }
-                finalizeRegistration(tx: tx)
-            }
-
-            let finishTask = { @MainActor in
-                await setupContactsAndFinish()
             }
 
             if let finishingProgressSource {
                 return await finishingProgressSource.updatePeriodically(
                     estimatedTimeToCompletion: 5,
-                    work: finishTask
+                    work: finalizeBlock
                 )
             } else {
-                return await finishTask()
+                return await finalizeBlock()
             }
 
         case .reRegistering:
-            db.write { tx in
-                persistRegistrationState(tx)
-                finalizeRegistration(tx: tx)
-            }
-            return await setupContactsAndFinish()
+            return await finalize(
+                accountEntropyPool: accountEntropyPool,
+                accountIdentity: accountIdentity
+            )
 
         case .changingNumber(let changeNumberState):
             if let pniState = changeNumberState.pniState {
@@ -1429,7 +1372,82 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    private func fetchBackupCdnInfo(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep>? {
+    func restoreBackupIfNecessary(
+        accountEntropyPool: SignalServiceKit.AccountEntropyPool,
+        accountIdentity: AccountIdentity,
+        progress progressBlock: @escaping () async -> OWSProgressSink
+    ) async {
+        switch inMemoryState.backupRestoreState {
+        case .finalized:
+            break
+        case .unfinalized:
+            // Unconditionally finalize
+            return await finalizeRestoreFromMessageBackup(
+                identity: accountIdentity
+            ).awaitable()
+        case .none:
+            if let backupType = inMemoryState.restoreMethod?.backupType {
+                return await restoreFromMessageBackup(
+                    type: backupType,
+                    accountEntropyPool: accountEntropyPool,
+                    identity: accountIdentity,
+                    progress: progressBlock
+                ).awaitable()
+            }
+        }
+    }
+
+    private func finalize(
+        accountEntropyPool: SignalServiceKit.AccountEntropyPool,
+        accountIdentity: AccountIdentity,
+        block: ((DBWriteTransaction) -> Void)? = nil
+    ) async -> RegistrationStep {
+        await db.awaitableWrite { tx in
+            if
+                inMemoryState.hasBackedUpToSVR
+                    || inMemoryState.didHaveSVRBackupsPriorToReg
+                    || inMemoryState.backupRestoreState == .finalized
+            {
+                // No need to show the experience if we made the pin
+                // and backed up.
+                deps.experienceManager.clearIntroducingPinsExperience(tx)
+            }
+
+            let userHasPIN = (inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk) != nil
+            deps.svr.useDeviceLocalAccountEntropyPool(
+                accountEntropyPool,
+                disablePIN: !userHasPIN,
+                authedAccount: accountIdentity.authedAccount,
+                transaction: tx
+            )
+
+            block?(tx)
+
+            deps.registrationStateChangeManager.didRegisterPrimary(
+                e164: accountIdentity.e164,
+                aci: accountIdentity.aci,
+                pni: accountIdentity.pni,
+                authToken: accountIdentity.authPassword,
+                tx: tx
+            )
+            deps.tsAccountManager.setIsManualMessageFetchEnabled(inMemoryState.isManualMessageFetchEnabled, tx: tx)
+        }
+        // Start syncing system contacts now that we have set up tsAccountManager.
+        deps.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
+
+        try? await deps.storageServiceManager.rotateManifest(
+            mode: .preservingRecordsIfPossible,
+            authedDevice: accountIdentity.authedDevice
+        )
+
+        // Update the account attributes once, now, at the end.
+        return await updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
+    }
+
+    private func fetchBackupCdnInfo(
+        accountEntropyPool: SignalServiceKit.AccountEntropyPool,
+        accountIdentity: AccountIdentity
+    ) -> Guarantee<RegistrationStep>? {
         guard
             inMemoryState.restoreMethod?.isBackup == true,
             !inMemoryState.hasConfirmedRestoreFromBackup
@@ -1437,13 +1455,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return nil
         }
 
-        guard let aep = inMemoryState.accountEntropyPool else {
-            return .value(.enterBackupKey)
-        }
-
         // For manual restore, fetch the backup info
         return Promise.wrapAsync { () -> AttachmentDownloads.CdnInfo? in
-            let backupKey = try MessageRootBackupKey(accountEntropyPool: aep, aci: accountIdentity.aci)
+            let backupKey = try MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.aci)
             return try await self.deps.backupArchiveManager.backupCdnInfo(
                 backupKey: backupKey,
                 auth: accountIdentity.chatServiceAuth
@@ -3318,11 +3332,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             if let restoreStepNextStep = await performSVRRestoreStepsIfNeeded(accountIdentity: accountIdentity) {
                 return restoreStepNextStep
             }
-            if let backupStepNextStep = await performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
-                return backupStepNextStep
+
+            let accountEntropyPool = getOrGenerateAccountEntropyPool()
+
+            if let backupStepGuarantee = await performSVRBackupStepsIfNeeded(
+                accountEntropyPool: accountEntropyPool,
+                accountIdentity: accountIdentity
+            ) {
+                return backupStepGuarantee
             }
 
-            return await exportAndWipeState(accountIdentity: accountIdentity)
+            return await exportAndWipeState(
+                accountEntropyPool: accountEntropyPool,
+                accountIdentity: accountIdentity
+            )
         }
 
         // We _must_ do these steps first.
@@ -3377,20 +3400,25 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
 
-        if inMemoryState.accountEntropyPool == nil {
+        let accountEntropyPool: SignalServiceKit.AccountEntropyPool
+        if let aep = persistedState.backupKeyAccountEntropyPool {
+            accountEntropyPool = aep
+        } else if let aep = inMemoryState.accountEntropyPool {
+            accountEntropyPool = aep
+        } else {
             if isBackup {
                 // If the user want's to restore from backup, ask for the key
                 return .enterBackupKey
             } else {
                 // If the AccountEntropyPool doesn't exist yet, create one.
-                db.write { tx in
-                    let accountEntropyPool = deps.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
-                    inMemoryState.accountEntropyPool = accountEntropyPool
-                    let newMasterKey = accountEntropyPool.getMasterKey()
-                    updateMasterKeyAndLocalState(masterKey: newMasterKey, tx: tx)
-                }
+                accountEntropyPool = getOrGenerateAccountEntropyPool()
             }
         }
+
+        // ***************
+        // After this point, there should be an AEP present, so the AEP should no longer
+        // be sourced from InMemoryState
+        // ***************
 
         // The user may have registered with a master key that differs from the AEP-derived master key
         // (e.g. - they previously backed up, but have done a PIN-based registratin in the interim, resulting
@@ -3403,21 +3431,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         //    the registration before completing the restore, we want to make sure that SVR still holds
         //    the master key / reglock token that was used for registration.
         if !isBackup {
-            if let backupStepNextStep = await performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
+            if let backupStepNextStep = await performSVRBackupStepsIfNeeded(
+                accountEntropyPool: accountEntropyPool,
+                accountIdentity: accountIdentity
+            ) {
                 return backupStepNextStep
             }
         }
 
         // This will restore after backup, _or_ it will rotate to the new AEP derived key
-        let masterKey = inMemoryState.accountEntropyPool?.getMasterKey()
-
-        if
-            shouldRestoreFromStorageService(),
-            let masterKey
-        {
+        if shouldRestoreFromStorageService() {
             return await restoreFromStorageService(
                 accountIdentity: accountIdentity,
-                masterKeySource: .explicit(masterKey)
+                masterKeySource: .explicit(accountEntropyPool.getMasterKey())
             )
         }
 
@@ -3475,7 +3501,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         // We are ready to finish! Export all state and wipe things
         // so we can re-register later if desired.
-        return await exportAndWipeState(accountIdentity: accountIdentity)
+        return await exportAndWipeState(
+            accountEntropyPool: accountEntropyPool,
+            accountIdentity: accountIdentity
+        )
+    }
+
+    @MainActor
+    private func getOrGenerateAccountEntropyPool() -> SignalServiceKit.AccountEntropyPool {
+        // If the AccountEntropyPool doesn't exist yet, create one.
+        return db.write { tx in
+            let accountEntropyPool = deps.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
+            inMemoryState.accountEntropyPool = accountEntropyPool
+            let newMasterKey = accountEntropyPool.getMasterKey()
+            updateMasterKeyAndLocalState(masterKey: newMasterKey, tx: tx)
+            return accountEntropyPool
+        }
     }
 
     // returns nil if no steps needed.
@@ -3546,6 +3587,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // returns nil if no steps performed.
     private func performSVRBackupStepsIfNeeded(
+        accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         accountIdentity: AccountIdentity
     ) async -> RegistrationStep? {
         Logger.info("")
@@ -3557,7 +3599,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         if !persistedState.hasSkippedPinEntry {
             if inMemoryState.shouldBackUpToSVR {
                 // If we haven't backed up, do so now.
-                return await self.backupToSVR(pin: pin, accountIdentity: accountIdentity)
+                return await backupToSVR(
+                    pin: pin,
+                    accountEntropyPool: accountEntropyPool,
+                    accountIdentity: accountIdentity
+                )
             }
 
             switch attributes2FAMode(e164: accountIdentity.e164) {
@@ -3657,6 +3703,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     @MainActor
     private func backupToSVR(
         pin: String,
+        accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
     ) async -> RegistrationStep {
@@ -3670,16 +3717,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             authMethod = backupAuthMethod
         }
 
-        let masterKey = inMemoryState.accountEntropyPool?.getMasterKey()
-
-        guard let masterKey else {
-            Logger.error("Failed to back up to SVR due to missing root key")
-            self.inMemoryState.didSkipSVRBackup = true
-            return .showErrorSheet(.genericError)
-        }
-
+        let masterKey = accountEntropyPool.getMasterKey()
         do {
-            let masterKey = try await deps.svr.backupMasterKey(
+            let backedUpMasterKey = try await deps.svr.backupMasterKey(
                 pin: pin,
                 masterKey: masterKey,
                 authMethod: authMethod
@@ -3689,7 +3729,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             await db.awaitableWrite { tx in
                 Logger.info("Setting pin code after SVR backup")
                 updateMasterKeyAndLocalState(
-                    masterKey: masterKey,
+                    masterKey: backedUpMasterKey,
                     tx: tx
                 )
                 deps.ows2FAManager.markPinEnabled(pin, tx)
@@ -3701,6 +3741,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 if retriesLeft > 0 {
                     return await backupToSVR(
                         pin: pin,
+                        accountEntropyPool: accountEntropyPool,
                         accountIdentity: accountIdentity,
                         retriesLeft: retriesLeft - 1
                     )
