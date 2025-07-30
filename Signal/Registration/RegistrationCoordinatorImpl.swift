@@ -581,9 +581,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         identity: AccountIdentity,
         progress progressBlock: @escaping () async -> OWSProgressSink,
-    ) -> Guarantee<Void> {
+    ) async {
         Logger.info("")
-        return _doBackupRestoreStep {
+        return await _doBackupRestoreStep {
 
             let progress = await progressBlock()
 
@@ -630,19 +630,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func finalizeRestoreFromMessageBackup(
         identity: AccountIdentity
-    ) -> Guarantee<Void> {
+    ) async {
         Logger.info("")
-        return _doBackupRestoreStep {
+        return await _doBackupRestoreStep {
             try await self.deps.backupArchiveManager.finalizeBackupImport(progress: nil)
         }
     }
 
+    @MainActor
     private func _doBackupRestoreStep(
         _ block: @escaping () async throws -> Void
-    ) -> Guarantee<Void> {
-        return Promise.wrapAsync {
+    ) async {
+        do {
             try await block()
-        }.then {
+
             self.inMemoryState.backupRestoreState = self.db.read { tx in
                 self.deps.backupArchiveManager.backupRestoreState(tx: tx)
             }
@@ -651,33 +652,30 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 throw OWSAssertionError("Hasn't restored despite no thrown error!")
             case .finalized:
                 Logger.info("Finished restore")
-                return Guarantee.value(())
+                return
             }
-        }.recover(on: DispatchQueue.main) { error in
+        } catch {
             let errorType = self.deps.registrationBackupErrorPresenter.mapToRegistrationError(error: error)
-            return Guarantee.wrapAsync {
-                await self.deps.registrationBackupErrorPresenter.presentError(
-                    error: errorType,
-                    isQuickRestore: self.persistedState.restoreMode == .quickRestore
-                )
-            }
-            .then { result -> Guarantee<Void> in
-                switch result {
-                case .restartQuickRestore, .none:
-                    owsFailDebug("Invalid option returned from handlinge of registration error.")
-                    fallthrough
-                case .incorrectBackupKey, .skipRestore:
-                    // By this point, it's really too late to do anything but skip the backup and continue
-                    self.db.write { tx in
-                        self.updatePersistedState(tx) {
-                            $0.backupKeyAccountEntropyPool = nil
-                        }
+            let result = await self.deps.registrationBackupErrorPresenter.presentError(
+                error: errorType,
+                isQuickRestore: self.persistedState.restoreMode == .quickRestore
+            )
+
+            switch result {
+            case .restartQuickRestore, .none:
+                owsFailDebug("Invalid option returned from handlinge of registration error.")
+                fallthrough
+            case .incorrectBackupKey, .skipRestore:
+                // By this point, it's really too late to do anything but skip the backup and continue
+                await db.awaitableWrite { tx in
+                    updatePersistedState(tx) {
+                        $0.backupKeyAccountEntropyPool = nil
                     }
-                    return Guarantee.value(())
-                case .tryAgain:
-                    // retry the backup restore
-                    return self._doBackupRestoreStep(block)
                 }
+                return
+            case .tryAgain:
+                // retry the backup restore
+                return await _doBackupRestoreStep(block)
             }
         }
     }
@@ -1282,70 +1280,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         switch mode {
         case .registering:
-
-            if let step = fetchBackupCdnInfo(
+            return await self.finalize(
                 accountEntropyPool: accountEntropyPool,
                 accountIdentity: accountIdentity
-            ) {
-                return await step.awaitable()
-            }
+            ) { tx in
+                /// For new registrations, we want to force-set some state.
+                if self.inMemoryState.restoreMethod?.backupType == nil {
+                    /// Read receipts should be on by default.
+                    self.deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
+                    self.deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
 
-            // OWSProgress doesn't support resetting to 0, so if
-            // restoreBackupIfNecessary needs to retry, we need to create a fresh
-            // progress sink.
-            var finishingProgressSource: OWSProgressSource?
-
-            await restoreBackupIfNecessary(
-                accountEntropyPool: accountEntropyPool,
-                accountIdentity: accountIdentity
-            ) { [restoreFromBackupProgressSink = inMemoryState.restoreFromBackupProgressSink] in
-                let progress = OWSProgress.createSink { progress in
-                    await MainActor.run {
-                        restoreFromBackupProgressSink?(progress)
-                    }
+                    /// Enable the onboarding banner cards.
+                    self.deps.experienceManager.enableAllGetStartedCards(tx)
                 }
-                let restoreProgressSource = await progress.addChild(
-                    withLabel: "❤️🧡🤍🩷💜",
-                    unitCount: BackupRestoreProgressPhase.downloadingBackup.percentOfTotalProgress + BackupRestoreProgressPhase.importingBackup.percentOfTotalProgress
-                )
-                finishingProgressSource = await progress.addSource(
-                    withLabel: BackupRestoreProgressPhase.finishing.rawValue,
-                    unitCount: BackupRestoreProgressPhase.finishing.percentOfTotalProgress
-                )
-                return restoreProgressSource
-            }
-
-            if let svrBackupNextStep = await performSVRBackupStepsIfNeeded(
-                accountEntropyPool: accountEntropyPool,
-                accountIdentity: accountIdentity
-            ) {
-                return svrBackupNextStep
-            }
-
-            let finalizeBlock = { @MainActor in
-                await self.finalize(
-                    accountEntropyPool: accountEntropyPool,
-                    accountIdentity: accountIdentity
-                ) { tx in
-                    /// For new registrations, we want to force-set some state.
-                    if self.inMemoryState.restoreMethod?.backupType == nil {
-                        /// Read receipts should be on by default.
-                        self.deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
-                        self.deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
-
-                        /// Enable the onboarding banner cards.
-                        self.deps.experienceManager.enableAllGetStartedCards(tx)
-                    }
-                }
-            }
-
-            if let finishingProgressSource {
-                return await finishingProgressSource.updatePeriodically(
-                    estimatedTimeToCompletion: 5,
-                    work: finalizeBlock
-                )
-            } else {
-                return await finalizeBlock()
             }
 
         case .reRegistering:
@@ -1372,6 +1319,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    // Need this just to work around the structured concurrency friction with `Guarantee<T>?`
+    func needsToRestoreBackup() -> Bool {
+        switch inMemoryState.backupRestoreState {
+        case .finalized:
+            return false
+        case .unfinalized:
+            return true
+        case .none:
+            return inMemoryState.restoreMethod?.isBackup == true
+        }
+    }
+
     func restoreBackupIfNecessary(
         accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         accountIdentity: AccountIdentity,
@@ -1384,7 +1343,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // Unconditionally finalize
             return await finalizeRestoreFromMessageBackup(
                 identity: accountIdentity
-            ).awaitable()
+            )
         case .none:
             if let backupType = inMemoryState.restoreMethod?.backupType {
                 return await restoreFromMessageBackup(
@@ -1392,11 +1351,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     accountEntropyPool: accountEntropyPool,
                     identity: accountIdentity,
                     progress: progressBlock
-                ).awaitable()
+                )
             }
         }
     }
 
+    @MainActor
     private func finalize(
         accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         accountIdentity: AccountIdentity,
@@ -1447,53 +1407,44 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func fetchBackupCdnInfo(
         accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         accountIdentity: AccountIdentity
-    ) -> Guarantee<RegistrationStep>? {
-        guard
-            inMemoryState.restoreMethod?.isBackup == true,
-            !inMemoryState.hasConfirmedRestoreFromBackup
-        else {
-            return nil
-        }
+    ) async -> RegistrationStep {
+        Logger.info("")
 
-        // For manual restore, fetch the backup info
-        return Promise.wrapAsync { () -> AttachmentDownloads.CdnInfo? in
+        do {
+            // For manual restore, fetch the backup info
             let backupKey = try MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.aci)
-            return try await self.deps.backupArchiveManager.backupCdnInfo(
+            let cdnInfo = try await self.deps.backupArchiveManager.backupCdnInfo(
                 backupKey: backupKey,
                 auth: accountIdentity.chatServiceAuth
             )
-        }
-        .then { cdnInfo -> Guarantee<RegistrationStep> in
-            return Guarantee.value(.confirmRestoreFromBackup(
+            return .confirmRestoreFromBackup(
                 RegistrationRestoreFromBackupConfirmationState(
                     mode: .manual,
                     tier: .free,
-                    lastBackupDate: cdnInfo?.lastModified,
-                    lastBackupSizeBytes: cdnInfo?.contentLength
-                )))
-        }
-        .recover { error -> Guarantee<RegistrationStep> in
+                    lastBackupDate: cdnInfo.lastModified,
+                    lastBackupSizeBytes: cdnInfo.contentLength
+                )
+            )
+        } catch {
             let errorType = self.deps.registrationBackupErrorPresenter.mapToRegistrationError(error: error)
             Logger.error("Can't fetch backup info: \(error.localizedDescription)")
-            return Guarantee.wrapAsync {
-                await self.deps.registrationBackupErrorPresenter.presentError(
-                    error: errorType,
-                    isQuickRestore: self.persistedState.restoreMode == .quickRestore
-                )
-            }.then { step in
-                switch step {
-                case .incorrectBackupKey:
-                    if self.persistedState.restoreMode == .manualRestore {
-                        // If manual restore, there's not much of a recovery path here
-                        // so just skip restoring and continue
-                        return self.updateRestoreMethod(method: .declined)
-                    }
-                    return .value(.enterBackupKey)
-                case .skipRestore:
-                    return self.updateRestoreMethod(method: .declined)
-                case .tryAgain, .restartQuickRestore, .none:
-                    return self.nextStep()
+            let step = await self.deps.registrationBackupErrorPresenter.presentError(
+                error: errorType,
+                isQuickRestore: self.persistedState.restoreMode == .quickRestore
+            )
+
+            switch step {
+            case .incorrectBackupKey:
+                if self.persistedState.restoreMode == .manualRestore {
+                    // If manual restore, there's not much of a recovery path here
+                    // so just skip restoring and continue
+                    return await updateRestoreMethod(method: .declined).awaitable()
                 }
+                return .enterBackupKey
+            case .skipRestore:
+                return await updateRestoreMethod(method: .declined).awaitable()
+            case .tryAgain, .restartQuickRestore, .none:
+                return await nextStep().awaitable()
             }
         }
     }
@@ -3499,12 +3450,94 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             ))
         }
 
-        // We are ready to finish! Export all state and wipe things
-        // so we can re-register later if desired.
-        return await exportAndWipeState(
+        let finalizeProgress: OWSProgressSource?
+        switch await self.confirmAndRestoreFromBackupIfNeeded(
             accountEntropyPool: accountEntropyPool,
             accountIdentity: accountIdentity
-        )
+        ) {
+        case .restored(let progress):
+            finalizeProgress = progress
+        case .stepRequired(let stepGuarantee):
+            return stepGuarantee
+        case .skipped:
+            finalizeProgress = nil
+        }
+
+        // We are ready to finish! Export all state and wipe things
+        // so we can re-register later if desired.
+        let finalStep = {
+            await self.exportAndWipeState(
+                accountEntropyPool: accountEntropyPool,
+                accountIdentity: accountIdentity
+            )
+        }
+
+        if let finalizeProgress {
+            return await finalizeProgress.updatePeriodically(
+                estimatedTimeToCompletion: 5,
+                work: finalStep
+            )
+        } else {
+            return await finalStep()
+        }
+    }
+
+    private enum BackupResult {
+        case restored(OWSProgressSource?)
+        case stepRequired(RegistrationStep)
+        case skipped
+    }
+    private func confirmAndRestoreFromBackupIfNeeded(
+        accountEntropyPool: SignalServiceKit.AccountEntropyPool,
+        accountIdentity: AccountIdentity
+    ) async -> BackupResult {
+
+        if
+            inMemoryState.restoreMethod?.isBackup == true,
+            !inMemoryState.hasConfirmedRestoreFromBackup
+        {
+            let step = await fetchBackupCdnInfo(
+                accountEntropyPool: accountEntropyPool,
+                accountIdentity: accountIdentity
+            )
+            return .stepRequired(step)
+        }
+
+        if needsToRestoreBackup() {
+            // OWSProgress doesn't support resetting to 0, so if
+            // restoreBackupIfNecessary needs to retry,
+            // we need to create a fresh progress sink.
+            var finishingProgressSource: OWSProgressSource?
+            await self.restoreBackupIfNecessary(
+                accountEntropyPool: accountEntropyPool,
+                accountIdentity: accountIdentity
+            ) { [restoreFromBackupProgressSink = self.inMemoryState.restoreFromBackupProgressSink] in
+                let progress = OWSProgress.createSink { progress in
+                    await MainActor.run {
+                        restoreFromBackupProgressSink?(progress)
+                    }
+                }
+                let restoreProgressSource = await progress.addChild(
+                    withLabel: "❤️🧡🤍🩷💜",
+                    unitCount: BackupRestoreProgressPhase.downloadingBackup.percentOfTotalProgress + BackupRestoreProgressPhase.importingBackup.percentOfTotalProgress
+                )
+                finishingProgressSource = await progress.addSource(
+                    withLabel: BackupRestoreProgressPhase.finishing.rawValue,
+                    unitCount: BackupRestoreProgressPhase.finishing.percentOfTotalProgress
+                )
+                return restoreProgressSource
+            }
+            return .restored(finishingProgressSource)
+        }
+
+        if let step = await performSVRBackupStepsIfNeeded(
+            accountEntropyPool: accountEntropyPool,
+            accountIdentity: accountIdentity
+        ) {
+            return .stepRequired(step)
+        }
+
+        return .skipped
     }
 
     @MainActor
