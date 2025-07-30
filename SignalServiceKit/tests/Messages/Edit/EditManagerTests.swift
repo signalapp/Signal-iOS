@@ -450,7 +450,7 @@ class EditManagerTests: SSKBaseTest {
         func findEditDeleteRecords<MessageType: TSMessage>(
             for message: MessageType,
             tx: DBReadTransaction
-        ) throws -> [(record: EditRecord, message: MessageType?)] {
+        ) throws -> [EditDeleteTarget<MessageType>] {
             return []
         }
 

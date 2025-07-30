@@ -44,15 +44,18 @@ public enum InteractionDelete {
         let associatedCallDelete: AssociatedCallDeleteBehavior
         let updateThreadOnInteractionDelete: UpdateThreadOnInteractionDeleteBehavior
         let deleteForMeSyncMessage: DeleteForMeSyncMessageBehavior
+        let deleteAssociatedEdits: Bool
 
         private init(
             associatedCallDelete: AssociatedCallDeleteBehavior,
             updateThreadOnInteractionDelete: UpdateThreadOnInteractionDeleteBehavior,
-            deleteForMeSyncMessage: DeleteForMeSyncMessageBehavior
+            deleteForMeSyncMessage: DeleteForMeSyncMessageBehavior,
+            deleteAssociatedEdits: Bool
         ) {
             self.associatedCallDelete = associatedCallDelete
             self.updateThreadOnInteractionDelete = updateThreadOnInteractionDelete
             self.deleteForMeSyncMessage = deleteForMeSyncMessage
+            self.deleteAssociatedEdits = deleteAssociatedEdits
         }
 
         public static func `default`() -> SideEffects {
@@ -62,12 +65,14 @@ public enum InteractionDelete {
         public static func custom(
             associatedCallDelete: AssociatedCallDeleteBehavior = .localDeleteAndSendCallEventSyncMessage,
             updateThreadOnInteractionDelete: UpdateThreadOnInteractionDeleteBehavior = .updateOnEachDeletedInteraction,
-            deleteForMeSyncMessage: DeleteForMeSyncMessageBehavior = .doNotSend
+            deleteForMeSyncMessage: DeleteForMeSyncMessageBehavior = .doNotSend,
+            deleteAssociatedEdits: Bool = true
         ) -> SideEffects {
             return SideEffects(
                 associatedCallDelete: associatedCallDelete,
                 updateThreadOnInteractionDelete: updateThreadOnInteractionDelete,
-                deleteForMeSyncMessage: deleteForMeSyncMessage
+                deleteForMeSyncMessage: deleteForMeSyncMessage,
+                deleteAssociatedEdits: deleteAssociatedEdits
             )
         }
     }
@@ -282,7 +287,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
             )
         }
 
-        if let message = interaction as? TSMessage {
+        if sideEffects.deleteAssociatedEdits, let message = interaction as? TSMessage {
             // Ensure any associated edits are removed before removing.
             message.removeEdits(transaction: tx)
         }

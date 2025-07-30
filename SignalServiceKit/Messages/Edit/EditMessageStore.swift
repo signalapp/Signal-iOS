@@ -21,6 +21,11 @@ public enum EditMessageTarget {
     }
 }
 
+public enum EditDeleteTarget<MessageType: TSMessage> {
+    case latest(MessageType)
+    case pastRevision(EditRecord, MessageType?)
+}
+
 public protocol EditMessageStore {
 
     // MARK: - Reads
@@ -57,7 +62,7 @@ public protocol EditMessageStore {
     func findEditDeleteRecords<MessageType: TSMessage>(
         for message: MessageType,
         tx: DBReadTransaction
-    ) throws -> [(record: EditRecord, message: MessageType?)]
+    ) throws -> [EditDeleteTarget<MessageType>]
 
     // MARK: - Writes
 
@@ -218,32 +223,59 @@ public class EditMessageStoreImpl: EditMessageStore {
     public func findEditDeleteRecords<MessageType: TSMessage>(
         for message: MessageType,
         tx: DBReadTransaction
-    ) throws -> [(record: EditRecord, message: MessageType?)] {
-        let recordSQL = """
-            SELECT * FROM \(EditRecord.databaseTableName)
-            WHERE latestRevisionId = ?
-            OR pastRevisionId = ?
-            ORDER BY pastRevisionId DESC
-        """
+    ) throws -> [EditDeleteTarget<MessageType>] {
+        var records = try EditRecord
+            .filter(Column(EditRecord.CodingKeys.latestRevisionId) == message.grdbId)
+            .order([Column(EditRecord.CodingKeys.pastRevisionId).desc])
+            .fetchAll(tx.database)
 
-        let arguments: StatementArguments = [message.grdbId, message.grdbId]
+        // If nothing is found, look for the past revision that matches this message.
+        // Once found, use the latestRevisionId to get the list of edit revisions.
+        // This can happen if other clients send something other than the latest
+        // revisions timestamp to delete a message.
+        if records.isEmpty {
+            guard let record = try EditRecord
+                .filter(Column(EditRecord.CodingKeys.pastRevisionId) == message.grdbId)
+                .fetchOne(tx.database)
+            else {
+                return []
+            }
 
-        let records = try EditRecord.fetchAll(
-            tx.database,
-            sql: recordSQL,
-            arguments: arguments
-        )
+            records = try EditRecord
+                .filter(Column(EditRecord.CodingKeys.latestRevisionId) == record.latestRevisionId)
+                .order([Column(EditRecord.CodingKeys.pastRevisionId).desc])
+                .fetchAll(tx.database)
+        }
 
-        return records.map { record -> (EditRecord, MessageType?) in
+        // Map both columns into a single set to remove duplicates
+        let idSet: Set<Int64> = Set(records.map {
+            [$0.pastRevisionId, $0.latestRevisionId]
+        }.reduce([], +))
+
+        return idSet.compactMap { rowId in
             let interaction = InteractionFinder.fetch(
-                rowId: record.pastRevisionId,
+                rowId: rowId,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
-            guard let message = interaction as? MessageType else {
-                owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
-                return (record, nil)
+            let message = interaction as? MessageType
+            let record = records.first { $0.pastRevisionId == rowId }
+
+            switch (record, message) {
+            case (.some(let r), .some(let m)):
+                // Have both a TSMessage and and edit record. This is a prior record.
+                return .pastRevision(r, m)
+            case (.none, .some(let m)):
+                // Have a TSMessage, but no edit record. This is the latest revision.
+                return .latest(m)
+            case (.some(let r), .none):
+                // Have a record, but the interaction is the wrong type
+                owsFailDebug("Unexpectedly found interaction \(String(describing: interaction))")
+                return .pastRevision(r, nil)
+            case (.none, .none):
+                // Have neither a record nor the correct interaction type.
+                owsFailDebug("Unexpectedly found both empty edit record and incorrect interaction type")
+                return nil
             }
-            return (record: record, edit: message)
         }
     }
 

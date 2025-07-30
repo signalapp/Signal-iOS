@@ -44,4 +44,11 @@ public struct EditRecord: Codable, FetchableRecord, PersistableRecord {
         self.pastRevisionId = try container.decode(Int64.self, forKey: .pastRevisionId)
         self.read = try container.decodeIfPresent(Bool.self, forKey: .read) ?? false
     }
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case latestRevisionId
+        case pastRevisionId
+        case read
+    }
 }
