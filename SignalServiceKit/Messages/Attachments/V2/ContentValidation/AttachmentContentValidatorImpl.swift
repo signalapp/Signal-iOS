@@ -222,6 +222,21 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         ).values.first!
     }
 
+    public func truncatedMessageBodyForInlining(
+        _ body: MessageBody,
+        tx: DBWriteTransaction
+    ) -> ValidatedInlineMessageBody {
+        guard !body.text.isEmpty else {
+            return ValidatedMessageBodyImpl(inlinedBody: body, oversizeText: nil)
+        }
+        guard let truncatedText = body.text.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes) else {
+            // No need to truncate
+            return ValidatedMessageBodyImpl(inlinedBody: body, oversizeText: nil)
+        }
+        let truncatedBody = MessageBody(text: truncatedText, ranges: body.ranges)
+        return ValidatedMessageBodyImpl(inlinedBody: truncatedBody, oversizeText: nil)
+    }
+
     public func prepareOversizeTextsIfNeeded<Key: Hashable>(
         from texts: [Key: MessageBody],
         encryptionKeys: [Key: Data],
@@ -233,7 +248,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             let truncatedText = messageBody.text.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
             guard let truncatedText else {
                 // No need to truncate
-                results[key] = .inline(messageBody)
+                results[key] = ValidatedMessageBodyImpl(inlinedBody: messageBody, oversizeText: nil)
                 continue
             }
             let truncatedBody = MessageBody(text: truncatedText, ranges: messageBody.ranges)
@@ -262,7 +277,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             guard let truncatedBody = truncatedBodies[key] else {
                 throw OWSAssertionError("Missing truncated body!")
             }
-            results[key] = .oversize(truncated: truncatedBody, fullsize: pendingAttachment)
+            results[key] = ValidatedMessageBodyImpl(inlinedBody: truncatedBody, oversizeText: pendingAttachment)
         }
 
         return results
@@ -337,6 +352,11 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let mimeType: String
         let blurHash: String?
         let orphanRecordId: OrphanedAttachmentRecord.IDType
+    }
+
+    private struct ValidatedMessageBodyImpl: ValidatedMessageBody {
+        let inlinedBody: MessageBody
+        let oversizeText: (any PendingAttachment)?
     }
 
     private enum InputType {

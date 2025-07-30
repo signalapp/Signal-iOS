@@ -977,8 +977,15 @@ public final class MessageReceiver {
             return nil
         }
 
-        let body = dataMessage.body
-        let bodyRanges = dataMessage.bodyRanges.isEmpty ? nil : MessageBodyRanges(protos: dataMessage.bodyRanges)
+        let bodyRanges = dataMessage.bodyRanges.isEmpty ? MessageBodyRanges.empty : MessageBodyRanges(protos: dataMessage.bodyRanges)
+        let body = dataMessage.body.map {
+            // Note: we already checked above that the length doesn't need truncation; this
+            // just returns the validated body object needed for downstream APIs.
+            DependenciesBridge.shared.attachmentContentValidator.truncatedMessageBodyForInlining(
+                MessageBody(text: $0, ranges: bodyRanges),
+                tx: tx
+            )
+        }
         let serverGuid = envelope.envelope.serverGuid.flatMap { UUID(uuidString: $0) }
         let quotedMessageBuilder = DependenciesBridge.shared.quotedReplyManager.quotedMessage(
             for: dataMessage,
@@ -1097,7 +1104,6 @@ public final class MessageReceiver {
             authorAci: envelope.sourceAci,
             authorE164: nil,
             messageBody: body,
-            bodyRanges: bodyRanges,
             editState: .none,
             expiresInSeconds: dataMessage.expireTimer,
             expireTimerVersion: dataMessage.expireTimerVersion,

@@ -288,6 +288,7 @@ extension SharingThreadPickerViewController {
                     let message = builder.build(transaction: tx)
                     let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
                         message,
+                        body: nil,
                         contactShareDraft: contactShareForSending
                     )
                     return try unpreparedMessage.prepare(tx: tx)

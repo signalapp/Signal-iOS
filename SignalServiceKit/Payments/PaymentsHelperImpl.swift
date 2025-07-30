@@ -431,7 +431,13 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
                 throw OWSAssertionError("Invalid payment sync message: invalid feeAmount.")
             }
             let recipientPublicAddressData = mobileCoinProto.recipientAddress
-            let memoMessage = paymentProto.note?.nilIfEmpty
+            let memoMessage = paymentProto.note?.nilIfEmpty.map {
+                DependenciesBridge.shared.attachmentContentValidator.truncatedMessageBodyForInlining(
+                    MessageBody(text: $0, ranges: .empty),
+                    tx: transaction
+                )
+            }
+
             let spentKeyImages = Array(Set(mobileCoinProto.spentKeyImages))
             owsAssertDebug(spentKeyImages.count == mobileCoinProto.spentKeyImages.count)
             guard !spentKeyImages.isEmpty else {
@@ -498,7 +504,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
                                               paymentAmount: paymentAmount,
                                               createdDate: Date(millisecondsSince1970: messageTimestamp),
                                               senderOrRecipientAci: recipientAci.map { AciObjC($0) },
-                                              memoMessage: memoMessage,
+                                              memoMessage: memoMessage?.inlinedBody.text,
                                               isUnread: false,
                                               interactionUniqueId: nil,
                                               mobileCoin: mobileCoin)
@@ -517,7 +523,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
                     transaction: transaction
                 )
                 let paymentNotification = TSPaymentNotification(
-                    memoMessage: memoMessage,
+                    memoMessage: memoMessage?.inlinedBody.text,
                     mcReceiptData: mcReceiptData
                 )
                 let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
@@ -527,8 +533,8 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
                     messageBody: memoMessage,
                     paymentNotification: paymentNotification,
                     expiresInSeconds: dmConfig.durationSeconds,
-                    expireTimerVersion: NSNumber(value: dmConfig.timerVersion),
-                    transaction: transaction
+                    expireTimerVersion: dmConfig.timerVersion,
+                    tx: transaction
                 )
                 message.anyInsert(transaction: transaction)
                 paymentModel.update(withInteractionUniqueId: message.uniqueId, transaction: transaction)

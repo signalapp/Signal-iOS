@@ -69,12 +69,9 @@ NS_ASSUME_NONNULL_BEGIN
                 storedMessageState:(TSOutgoingMessageState)storedMessageState
               wasNotCreatedLocally:(BOOL)wasNotCreatedLocally NS_UNAVAILABLE;
 
-- (instancetype)initWithThread:(TSThread *)thread
-                   messageBody:(nullable NSString *)messageBody
-           paymentNotification:(TSPaymentNotification *)paymentNotification
-              expiresInSeconds:(uint32_t)expiresInSeconds
-            expireTimerVersion:(nullable NSNumber *)expireTimerVersion
-                   transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBuilder:(TSOutgoingMessageBuilder *)builder
+            paymentNotification:(TSPaymentNotification *)paymentNotification
+                    transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

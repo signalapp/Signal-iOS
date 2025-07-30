@@ -243,11 +243,19 @@ private class SendGiftBadgeJobRunner: JobRunner {
             receiptCredentialRequestContext: receiptCredentialRequestContext
         )
 
+        let messageBody: ValidatedMessageBody?
+        if let text = jobRecord.messageText.nilIfEmpty {
+            messageBody = try await DependenciesBridge.shared.attachmentContentValidator
+                    .prepareOversizeTextIfNeeded(MessageBody(text: text, ranges: .empty))
+        } else {
+            messageBody = nil
+        }
+
         Logger.info("[Gifting] Enqueueing messages & finishing up...")
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             try self.enqueueMessages(
                 threadUniqueId: jobRecord.threadId,
-                messageText: jobRecord.messageText,
+                messageBody: messageBody,
                 receiptCredentialPresentation: receiptCredentialPresentation,
                 tx: tx
             )
@@ -317,7 +325,7 @@ private class SendGiftBadgeJobRunner: JobRunner {
 
     private func enqueueMessages(
         threadUniqueId: String,
-        messageText: String,
+        messageBody: ValidatedMessageBody?,
         receiptCredentialPresentation: ReceiptCredentialPresentation,
         tx: DBWriteTransaction
     ) throws {
@@ -334,8 +342,8 @@ private class SendGiftBadgeJobRunner: JobRunner {
             tx: tx
         ))
 
-        if !messageText.isEmpty {
-            try send(UnpreparedOutgoingMessage.build(messageBody: messageText, thread: thread, tx: tx))
+        if let messageBody {
+            try send(UnpreparedOutgoingMessage.build(messageBody: messageBody, thread: thread, tx: tx))
         }
     }
 }
@@ -356,11 +364,11 @@ extension UnpreparedOutgoingMessage {
             expireTimerVersion: dmConfig.timerVersion,
             giftBadge: OWSGiftBadge(redemptionCredential: giftBadgeReceiptCredentialPresentation.serialize())
         )
-        return .forMessage(builder.build(transaction: tx))
+        return .forMessage(builder.build(transaction: tx), body: nil)
     }
 
     fileprivate static func build(
-        messageBody: String,
+        messageBody: ValidatedMessageBody,
         thread: TSThread,
         tx: DBReadTransaction
     ) -> UnpreparedOutgoingMessage {
@@ -372,6 +380,6 @@ extension UnpreparedOutgoingMessage {
             expiresInSeconds: dmConfig.durationSeconds,
             expireTimerVersion: dmConfig.timerVersion
         )
-        return .forMessage(builder.build(transaction: tx))
+        return .forMessage(builder.build(transaction: tx), body: messageBody)
     }
 }

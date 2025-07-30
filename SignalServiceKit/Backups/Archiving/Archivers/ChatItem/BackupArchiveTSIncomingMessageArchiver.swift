@@ -351,7 +351,6 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchiveTSMessageEditHist
                 authorAci: authorAci,
                 authorE164: authorE164,
                 messageBody: nil,
-                bodyRanges: nil,
                 editState: editState,
                 expiresInSeconds: expiresInSeconds,
                 // Backed up messages don't set the chat timer; version is irrelevant.
@@ -388,8 +387,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchiveTSMessageEditHist
             case .remoteDeleteTombstone:
                 messageBuilder.wasRemotelyDeleted = true
             case .text(let text):
-                messageBuilder.messageBody = text.body?.messageBody.text
-                messageBuilder.bodyRanges = text.body?.messageBody.ranges
+                messageBuilder.setMessageBody(text.body)
                 messageBuilder.quotedMessage = text.quotedMessage
                 messageBuilder.linkPreview = text.linkPreview
             case .contactShare(let contactShare):
@@ -409,8 +407,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchiveTSMessageEditHist
             case .storyReply(let storyReply):
                 switch storyReply.replyType {
                 case .textReply(let textReply):
-                    messageBuilder.messageBody = textReply.body.messageBody.text
-                    messageBuilder.bodyRanges = textReply.body.messageBody.ranges
+                    messageBuilder.setMessageBody(textReply.body)
                 case .emoji(let emoji):
                     messageBuilder.storyReactionEmoji = emoji
                 }

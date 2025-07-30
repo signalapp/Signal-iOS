@@ -239,14 +239,14 @@ class BackupArchiveInlinedOversizeTextArchiver {
             ))
             text = text.trimToUtf8ByteCount(BackupOversizeTextCache.maxTextLengthBytes)
         }
-        let messageBody: MessageBody
+        let inlinedBody: MessageBody
         if inlinedTextLength > OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes {
-            messageBody = MessageBody(
+            inlinedBody = MessageBody(
                 text: text.trimToUtf8ByteCount(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes),
                 ranges: bodyRanges
             )
         } else {
-            messageBody = MessageBody(text: text, ranges: bodyRanges)
+            inlinedBody = MessageBody(text: text, ranges: bodyRanges)
         }
 
         let oversizeText: RestoredMessageBody.OversizeText?
@@ -275,7 +275,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
         }
 
         let restoredBody = RestoredMessageBody(
-            messageBody: messageBody,
+            inlinedBody: inlinedBody,
             oversizeText: oversizeText
         )
 
@@ -517,21 +517,19 @@ class BackupArchiveInlinedOversizeTextArchiver {
                 }
                 for (recordId, validatedMessageBody) in pendingAttachments {
                     maxRecordId = max(maxRecordId, recordId)
-                    switch validatedMessageBody {
-                    case .inline:
+                    guard let pendingAttachment = validatedMessageBody.oversizeText else {
                         owsFailDebug("Got oversize text thats fits a normal message?")
                         continue
-                    case let .oversize(_, pendingAttachment):
-                        guard let attachmentId = cacheIdToAttachmentId[recordId] else {
-                            owsFailDebug("Missing attachment id")
-                            continue
-                        }
-                        try attachmentManager.updateAttachmentWithOversizeTextFromBackup(
-                            attachmentId: attachmentId,
-                            pendingAttachment: pendingAttachment,
-                            tx: tx
-                        )
                     }
+                    guard let attachmentId = cacheIdToAttachmentId[recordId] else {
+                        owsFailDebug("Missing attachment id")
+                        continue
+                    }
+                    try attachmentManager.updateAttachmentWithOversizeTextFromBackup(
+                        attachmentId: attachmentId,
+                        pendingAttachment: pendingAttachment,
+                        tx: tx
+                    )
                 }
             }
         } catch let error {

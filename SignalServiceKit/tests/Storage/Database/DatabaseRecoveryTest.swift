@@ -155,7 +155,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
                 thread: contactThread,
                 timestamp: 1234,
                 authorAci: contactAci,
-                messageBody: "test outgoing message"
+                messageBody: AttachmentContentValidatorMock.mockValidatedBody("test outgoing message")
             )
             let message = messageBuilder.build()
             message.anyInsert(transaction: transaction)
@@ -324,7 +324,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
                 thread: contactThread,
                 timestamp: 1234,
                 authorAci: contactAci,
-                messageBody: "foo bar"
+                messageBody: AttachmentContentValidatorMock.mockValidatedBody("foo bar")
             )
             let message = messageBuilder.build()
             message.anyInsert(transaction: transaction)

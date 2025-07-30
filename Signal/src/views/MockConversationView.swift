@@ -120,6 +120,20 @@ class MockConversationView: UIView {
             return
         }
 
+        let modelItems: [(MockItem, ValidatedInlineMessageBody?)] = SSKEnvironment.shared.databaseStorageRef.write { tx in
+            return model.items.map { item in
+                switch item {
+                case .date:
+                    return (item, nil)
+                case .incoming(let text), .outgoing(let text):
+                    return (item, DependenciesBridge.shared.attachmentContentValidator.truncatedMessageBodyForInlining(
+                        MessageBody(text: text, ranges: .empty),
+                        tx: tx
+                    ))
+                }
+            }
+        }
+
         var renderItems = [CVRenderItem]()
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let chatColor = self.customChatColor ?? DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
@@ -135,15 +149,15 @@ class MockConversationView: UIView {
                 chatColor: chatColor
             )
             let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
-            for item in model.items {
+            for (item, text) in modelItems {
                 let interaction: TSInteraction
                 switch item {
                 case .date:
                     interaction = DateHeaderInteraction(thread: self.thread, timestamp: NSDate.ows_millisecondTimeStamp())
-                case .outgoing(let text):
-                    interaction = MockOutgoingMessage(messageBody: text, thread: self.thread, transaction: transaction)
-                case .incoming(let text):
-                    interaction = MockIncomingMessage(messageBody: text, thread: self.thread)
+                case .outgoing:
+                    interaction = MockOutgoingMessage(messageBody: text!, thread: self.thread, transaction: transaction)
+                case .incoming:
+                    interaction = MockIncomingMessage(messageBody: text!, thread: self.thread)
                 }
 
                 guard let renderItem = CVLoader.buildStandaloneRenderItem(
@@ -200,7 +214,7 @@ private class MockThread: TSContactThread {
 // MARK: -
 
 private class MockIncomingMessage: TSIncomingMessage {
-    init(messageBody: String, thread: MockThread) {
+    init(messageBody: ValidatedInlineMessageBody, thread: MockThread) {
         let builder: TSIncomingMessageBuilder = .withDefaultValues(
             thread: thread,
             authorAci: thread.contactAddress.aci!,
@@ -229,7 +243,7 @@ private class MockIncomingMessage: TSIncomingMessage {
 // MARK: -
 
 private class MockOutgoingMessage: TSOutgoingMessage {
-    init(messageBody: String, thread: TSThread, transaction: DBReadTransaction) {
+    init(messageBody: ValidatedInlineMessageBody, thread: TSThread, transaction: DBReadTransaction) {
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread, messageBody: messageBody)
         super.init(
             outgoingMessageWith: builder,

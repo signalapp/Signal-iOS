@@ -209,13 +209,12 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
     ) throws -> SentMessageTranscriptType.Message? {
         let isViewOnceMessage = dataMessage.hasIsViewOnce && dataMessage.isViewOnce
 
-        let body = dataMessage.body
-
-        let bodyRanges: MessageBodyRanges?
-        if dataMessage.bodyRanges.isEmpty.negated {
-            bodyRanges = MessageBodyRanges(protos: dataMessage.bodyRanges)
-        } else {
-            bodyRanges = nil
+        let bodyRanges = dataMessage.bodyRanges.isEmpty ? MessageBodyRanges.empty : MessageBodyRanges(protos: dataMessage.bodyRanges)
+        let body = dataMessage.body.map {
+            DependenciesBridge.shared.attachmentContentValidator.truncatedMessageBodyForInlining(
+                MessageBody(text: $0, ranges: bodyRanges),
+                tx: tx
+            )
         }
 
         let makeContactBuilder = { [dataMessage] tx in
@@ -301,7 +300,6 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         return .init(
             target: target,
             body: body,
-            bodyRanges: bodyRanges,
             attachmentPointerProtos: dataMessage.attachments,
             makeQuotedMessageBuilder: makeQuotedMessageBuilder,
             makeContactBuilder: makeContactBuilder,

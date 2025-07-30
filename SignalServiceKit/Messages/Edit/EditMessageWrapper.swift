@@ -25,7 +25,9 @@ public protocol EditMessageWrapper {
     /// zeroing-out any attachment-related fields.
     func cloneAsBuilderWithoutAttachments(
         applying: MessageEdits,
-        isLatestRevision: Bool
+        isLatestRevision: Bool,
+        attachmentContentValidator: AttachmentContentValidator,
+        tx: DBWriteTransaction
     ) -> MessageBuilderType
 
     static func build(
@@ -87,7 +89,9 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
 
     public func cloneAsBuilderWithoutAttachments(
         applying edits: MessageEdits,
-        isLatestRevision: Bool
+        isLatestRevision: Bool,
+        attachmentContentValidator: AttachmentContentValidator,
+        tx: DBWriteTransaction
     ) -> TSIncomingMessageBuilder {
         let editState: TSEditState = {
             if isLatestRevision {
@@ -101,8 +105,18 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             }
         }()
 
-        let body = edits.body.unwrapChange(orKeepValue: message.body)
-        let bodyRanges = edits.bodyRanges.unwrapChange(orKeepValue: message.bodyRanges)
+        let messageBody: ValidatedInlineMessageBody?
+        switch edits.body {
+        case .keep:
+            messageBody = message.body.map {
+                attachmentContentValidator.truncatedMessageBodyForInlining(
+                    MessageBody(text: $0, ranges: message.bodyRanges ?? .empty),
+                    tx: tx
+                )
+            }
+        case .change(let body):
+            messageBody = body
+        }
         let timestamp = edits.timestamp.unwrapChange(orKeepValue: message.timestamp)
         let receivedAtTimestamp = edits.receivedAtTimestamp.unwrapChange(orKeepValue: message.receivedAtTimestamp)
         let serverTimestamp = edits.serverTimestamp.unwrapChange(orKeepValue: message.serverTimestamp?.uint64Value ?? 0)
@@ -118,8 +132,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             receivedAtTimestamp: receivedAtTimestamp,
             authorAci: authorAci,
             authorE164: nil,
-            messageBody: body,
-            bodyRanges: bodyRanges,
+            messageBody: messageBody,
             editState: editState,
             // Prior revisions don't expire (timer=0); instead they
             // are cascade-deleted when the latest revision expires.
@@ -180,10 +193,22 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
 
     public func cloneAsBuilderWithoutAttachments(
         applying edits: MessageEdits,
-        isLatestRevision: Bool
+        isLatestRevision: Bool,
+        attachmentContentValidator: AttachmentContentValidator,
+        tx: DBWriteTransaction
     ) -> TSOutgoingMessageBuilder {
-        let body = edits.body.unwrapChange(orKeepValue: message.body)
-        let bodyRanges = edits.bodyRanges.unwrapChange(orKeepValue: message.bodyRanges)
+        let messageBody: ValidatedInlineMessageBody?
+        switch edits.body {
+        case .keep:
+            messageBody = message.body.map {
+                attachmentContentValidator.truncatedMessageBodyForInlining(
+                    MessageBody(text: $0, ranges: message.bodyRanges ?? .empty),
+                    tx: tx
+                )
+            }
+        case .change(let body):
+            messageBody = body
+        }
         let timestamp = edits.timestamp.unwrapChange(orKeepValue: message.timestamp)
         let receivedAtTimestamp = edits.receivedAtTimestamp.unwrapChange(orKeepValue: message.receivedAtTimestamp)
 
@@ -194,8 +219,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             thread: thread,
             timestamp: timestamp,
             receivedAtTimestamp: receivedAtTimestamp,
-            messageBody: body,
-            bodyRanges: bodyRanges,
+            messageBody: messageBody,
             // Outgoing messages are implicitly read.
             editState: isLatestRevision ? .latestRevisionRead : .pastRevision,
             // Prior revisions don't expire (timer=0); instead they

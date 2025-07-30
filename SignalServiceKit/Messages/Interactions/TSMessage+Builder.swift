@@ -10,8 +10,8 @@ public class TSMessageBuilder: NSObject {
     public let thread: TSThread
     public var timestamp: UInt64
     public var receivedAtTimestamp: UInt64
-    public var messageBody: String?
-    public var bodyRanges: MessageBodyRanges?
+    public private(set) var messageBody: String?
+    public private(set) var bodyRanges: MessageBodyRanges?
     public var editState: TSEditState
     public var expiresInSeconds: UInt32
     public var expireTimerVersion: NSNumber?
@@ -39,8 +39,7 @@ public class TSMessageBuilder: NSObject {
         thread: TSThread,
         timestamp: UInt64?,
         receivedAtTimestamp: UInt64?,
-        messageBody: String?,
-        bodyRanges: MessageBodyRanges?,
+        messageBody: ValidatedInlineMessageBody?,
         editState: TSEditState,
         expiresInSeconds: UInt32?,
         expireTimerVersion: UInt32?,
@@ -63,8 +62,8 @@ public class TSMessageBuilder: NSObject {
         self.thread = thread
         self.timestamp = timestamp ?? nowMs
         self.receivedAtTimestamp = receivedAtTimestamp ?? nowMs
-        self.messageBody = messageBody
-        self.bodyRanges = bodyRanges
+        self.messageBody = messageBody?.inlinedBody.text
+        self.bodyRanges = messageBody?.inlinedBody.ranges
         self.editState = editState
         self.expiresInSeconds = expiresInSeconds ?? 0
         self.expireTimerVersion = expireTimerVersion.map(NSNumber.init(value:))
@@ -91,8 +90,7 @@ public class TSMessageBuilder: NSObject {
         thread: TSThread,
         timestamp: UInt64? = nil,
         receivedAtTimestamp: UInt64? = nil,
-        messageBody: String? = nil,
-        bodyRanges: MessageBodyRanges? = nil,
+        messageBody: ValidatedInlineMessageBody? = nil,
         editState: TSEditState = .none,
         expiresInSeconds: UInt32? = nil,
         expireTimerVersion: UInt32? = nil,
@@ -115,7 +113,6 @@ public class TSMessageBuilder: NSObject {
             timestamp: timestamp,
             receivedAtTimestamp: receivedAtTimestamp,
             messageBody: messageBody,
-            bodyRanges: bodyRanges,
             editState: editState,
             expiresInSeconds: expiresInSeconds,
             expireTimerVersion: expireTimerVersion,
@@ -133,6 +130,11 @@ public class TSMessageBuilder: NSObject {
             messageSticker: messageSticker,
             giftBadge: giftBadge
         )
+    }
+
+    public func setMessageBody(_ messageBody: ValidatedInlineMessageBody?) {
+        self.messageBody = messageBody?.inlinedBody.text
+        self.bodyRanges = messageBody?.inlinedBody.ranges
     }
 
     class func messageBuilder(thread: TSThread) -> TSMessageBuilder {

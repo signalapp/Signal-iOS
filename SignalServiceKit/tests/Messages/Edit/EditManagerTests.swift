@@ -43,7 +43,7 @@ class EditManagerTests: SSKBaseTest {
 
     func testBasicValidation() throws {
         let targetMessage = createIncomingMessage(with: thread) { builder in
-            builder.messageBody = "BAR"
+            builder.setMessageBody(AttachmentContentValidatorMock.mockValidatedBody("BAR"))
             builder.authorAci = authorAci
             builder.expireStartedAt = 3
         }
@@ -53,6 +53,7 @@ class EditManagerTests: SSKBaseTest {
         let editMessageStoreMock = EditMessageStoreMock()
         let editManager = EditManagerImpl(context:
             .init(
+                attachmentContentValidator: AttachmentContentValidatorMock(),
                 attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
                 editManagerAttachments: MockEditManagerAttachments(),
@@ -100,6 +101,7 @@ class EditManagerTests: SSKBaseTest {
         let editMessageStoreMock = EditMessageStoreMock()
         let editManager = EditManagerImpl(context:
             .init(
+                attachmentContentValidator: AttachmentContentValidatorMock(),
                 attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
                 editManagerAttachments: MockEditManagerAttachments(),
@@ -144,6 +146,7 @@ class EditManagerTests: SSKBaseTest {
         let editMessageStoreMock = EditMessageStoreMock()
         let editManager = EditManagerImpl(context:
             .init(
+                attachmentContentValidator: AttachmentContentValidatorMock(),
                 attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
                 editManagerAttachments: MockEditManagerAttachments(),
@@ -190,6 +193,7 @@ class EditManagerTests: SSKBaseTest {
 
         let editManager = EditManagerImpl(context:
             .init(
+                attachmentContentValidator: AttachmentContentValidatorMock(),
                 attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
                 editManagerAttachments: MockEditManagerAttachments(),
@@ -238,6 +242,7 @@ class EditManagerTests: SSKBaseTest {
 
         let editManager = EditManagerImpl(context:
             .init(
+                attachmentContentValidator: AttachmentContentValidatorMock(),
                 attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
                 editManagerAttachments: MockEditManagerAttachments(),

@@ -30,6 +30,7 @@ public class EditManagerImpl: EditManager {
     }
 
     public struct Context {
+        let attachmentContentValidator: AttachmentContentValidator
         let attachmentStore: AttachmentStore
         let dataStore: EditManagerImpl.Shims.DataStore
         let editManagerAttachments: EditManagerAttachments
@@ -37,12 +38,14 @@ public class EditManagerImpl: EditManager {
         let receiptManagerShim: EditManagerImpl.Shims.ReceiptManager
 
         public init(
+            attachmentContentValidator: AttachmentContentValidator,
             attachmentStore: AttachmentStore,
             dataStore: EditManagerImpl.Shims.DataStore,
             editManagerAttachments: EditManagerAttachments,
             editMessageStore: EditMessageStore,
             receiptManagerShim: EditManagerImpl.Shims.ReceiptManager
         ) {
+            self.attachmentContentValidator = attachmentContentValidator
             self.attachmentStore = attachmentStore
             self.dataStore = dataStore
             self.editManagerAttachments = editManagerAttachments
@@ -83,7 +86,7 @@ public class EditManagerImpl: EditManager {
             tx: tx
         )
 
-        var bodyRanges: MessageBodyRanges?
+        var bodyRanges: MessageBodyRanges = .empty
         if !newDataMessage.bodyRanges.isEmpty {
             bodyRanges = MessageBodyRanges(protos: newDataMessage.bodyRanges)
         }
@@ -107,6 +110,13 @@ public class EditManagerImpl: EditManager {
 
         let linkPreview = newDataMessage.preview.first.map { MessageEdits.LinkPreviewSource.proto($0, newDataMessage) }
 
+        let body = newDataMessage.body.map {
+            context.attachmentContentValidator.truncatedMessageBodyForInlining(
+                MessageBody(text: $0, ranges: bodyRanges),
+                    tx: tx
+            )
+        }
+
         let edits: MessageEdits = .forIncomingEdit(
             timestamp: .change(newDataMessage.timestamp),
             // Received now!
@@ -114,8 +124,7 @@ public class EditManagerImpl: EditManager {
             serverTimestamp: .change(serverTimestamp),
             serverDeliveryTimestamp: .change(serverDeliveryTimestamp),
             serverGuid: .change(serverGuid),
-            body: .change(newDataMessage.body),
-            bodyRanges: .change(bodyRanges)
+            body: .change(body),
         )
 
         let editedMessage = try applyAndInsertEdits(
@@ -277,7 +286,9 @@ public class EditManagerImpl: EditManager {
         /// Keep the original message's timestamp, as well as its content.
         let priorRevisionMessageBuilder = editTargetWrapper.cloneAsBuilderWithoutAttachments(
             applying: .noChanges(),
-            isLatestRevision: false
+            isLatestRevision: false,
+            attachmentContentValidator: context.attachmentContentValidator,
+            tx: tx
         )
         let priorRevisionMessage = EditTarget.build(
             priorRevisionMessageBuilder,
@@ -333,12 +344,14 @@ public class EditManagerImpl: EditManager {
     private func createEditedMessage<EditTarget: EditMessageWrapper>(
         editTargetWrapper editTarget: EditTarget,
         edits: MessageEdits,
-        tx: DBReadTransaction
+        tx: DBWriteTransaction
     ) -> EditTarget.MessageType {
 
         let editedMessageBuilder = editTarget.cloneAsBuilderWithoutAttachments(
             applying: edits,
-            isLatestRevision: true
+            isLatestRevision: true,
+            attachmentContentValidator: context.attachmentContentValidator,
+            tx: tx
         )
 
         let editedMessage = EditTarget.build(

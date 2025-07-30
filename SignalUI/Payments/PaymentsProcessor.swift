@@ -690,6 +690,28 @@ private class PaymentProcessingOperation {
             return
         }
 
+        let messageBodyText: String? = try SSKEnvironment.shared.databaseStorageRef.read { tx in
+            guard let paymentModel = TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId, transaction: tx) else {
+                throw OWSAssertionError("Missing paymentModel.")
+            }
+            guard let picoMob = paymentModel.paymentAmount?.picoMob else {
+                return nil
+            }
+            // Reverse type direction, so it reads correctly incoming to the recipient.
+            return PaymentsFormat.paymentPreviewText(
+                amount: picoMob,
+                transaction: tx,
+                type: .incomingMessage
+            )?.nilIfEmpty
+        }
+        let messageBody: ValidatedMessageBody?
+        if let messageBodyText = messageBodyText?.nilIfEmpty {
+            messageBody = try await DependenciesBridge.shared.attachmentContentValidator
+                .prepareOversizeTextIfNeeded(MessageBody(text: messageBodyText, ranges: .empty))
+        } else {
+            messageBody = nil
+        }
+
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             guard let paymentModel = TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId, transaction: transaction) else {
                 throw OWSAssertionError("Missing paymentModel.")
@@ -702,7 +724,11 @@ private class PaymentProcessingOperation {
                     if paymentModel.isDefragmentation {
                         PaymentsImpl.sendDefragmentationSyncMessage(paymentModel: paymentModel, transaction: transaction)
                     } else {
-                        _ = try PaymentsImpl.sendPaymentNotificationMessage(paymentModel: paymentModel, transaction: transaction)
+                        _ = try PaymentsImpl.sendPaymentNotificationMessage(
+                            paymentModel: paymentModel,
+                            messageBody: messageBody,
+                            transaction: transaction
+                        )
                         PaymentsImpl.sendOutgoingPaymentSyncMessage(paymentModel: paymentModel, transaction: transaction)
                     }
                 }

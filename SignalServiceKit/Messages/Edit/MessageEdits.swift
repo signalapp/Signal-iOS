@@ -25,9 +25,7 @@ public struct MessageEdits {
     }
 
     /// - SeeAlso ``TSMessage/body``
-    public let body: Edit<String?>
-    /// - SeeAlso ``TSMessage/bodyRanges``
-    public let bodyRanges: Edit<MessageBodyRanges?>
+    public let body: Edit<ValidatedInlineMessageBody?>
 
     /// - SeeAlso ``TSInteraction/timestamp``
     public let timestamp: Edit<UInt64>
@@ -49,8 +47,7 @@ public struct MessageEdits {
         serverTimestamp: Edit<UInt64>,
         serverDeliveryTimestamp: Edit<UInt64>,
         serverGuid: Edit<String?>,
-        body: Edit<String?>,
-        bodyRanges: Edit<MessageBodyRanges?>
+        body: Edit<ValidatedInlineMessageBody?>,
     ) -> MessageEdits {
         return MessageEdits(
             timestamp: timestamp,
@@ -59,15 +56,13 @@ public struct MessageEdits {
             serverDeliveryTimestamp: serverDeliveryTimestamp,
             serverGuid: serverGuid,
             body: body,
-            bodyRanges: bodyRanges
         )
     }
 
     public static func forOutgoingEdit(
         timestamp: Edit<UInt64>,
         receivedAtTimestamp: Edit<UInt64>,
-        body: Edit<String?>,
-        bodyRanges: Edit<MessageBodyRanges?>
+        body: Edit<ValidatedInlineMessageBody?>,
     ) -> MessageEdits {
         return MessageEdits(
             timestamp: timestamp,
@@ -79,7 +74,6 @@ public struct MessageEdits {
             // Not relevant to outgoing edits.
             serverGuid: .keep,
             body: body,
-            bodyRanges: bodyRanges
         )
     }
 
@@ -92,7 +86,6 @@ public struct MessageEdits {
             serverDeliveryTimestamp: .keep,
             serverGuid: .keep,
             body: .keep,
-            bodyRanges: .keep
         )
     }
 
@@ -102,8 +95,7 @@ public struct MessageEdits {
         serverTimestamp: Edit<UInt64>,
         serverDeliveryTimestamp: Edit<UInt64>,
         serverGuid: Edit<String?>,
-        body: Edit<String?>,
-        bodyRanges: Edit<MessageBodyRanges?>
+        body: Edit<ValidatedInlineMessageBody?>,
     ) {
         self.timestamp = timestamp
         self.receivedAtTimestamp = receivedAtTimestamp
@@ -111,6 +103,5 @@ public struct MessageEdits {
         self.serverDeliveryTimestamp = serverDeliveryTimestamp
         self.serverGuid = serverGuid
         self.body = body
-        self.bodyRanges = bodyRanges
     }
 }

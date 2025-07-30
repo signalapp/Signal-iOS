@@ -46,7 +46,7 @@ final class DisappearingMessageFinderTest: SSKBaseTest {
                 thread: thread,
                 timestamp: 1,
                 authorAci: otherAddress.aci,
-                messageBody: body,
+                messageBody: AttachmentContentValidatorMock.mockValidatedBody(body),
                 expiresInSeconds: expiresInSeconds
             )
             let message = incomingMessageBuilder.build()
@@ -85,7 +85,7 @@ final class DisappearingMessageFinderTest: SSKBaseTest {
 
             let messageBuilder: TSOutgoingMessageBuilder = .withDefaultValues(
                 thread: thread,
-                messageBody: body,
+                messageBody: AttachmentContentValidatorMock.mockValidatedBody(body),
                 expiresInSeconds: expiresInSeconds,
                 expireStartedAt: expireStartedAt
             )

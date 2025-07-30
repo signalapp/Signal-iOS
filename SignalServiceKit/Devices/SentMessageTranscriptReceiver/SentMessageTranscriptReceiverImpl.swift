@@ -199,7 +199,6 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             timestamp: transcript.timestamp,
             receivedAtTimestamp: nil,
             messageBody: messageParams.body,
-            bodyRanges: messageParams.bodyRanges,
             editState: .none, // Sent transcripts with edit state are handled by a different codepath
             expiresInSeconds: messageParams.expirationDurationSeconds,
             expireTimerVersion: messageParams.expireTimerVersion,

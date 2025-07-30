@@ -33,7 +33,7 @@ extension BackupArchive {
         }
 
         struct Text {
-            struct RestoredMessageBody {
+            struct RestoredMessageBody: ValidatedInlineMessageBody {
                 enum OversizeText {
                     // The exporter presumably hadn't downloaded the attachment
                     // at export time, so all we have is a pointer.
@@ -45,11 +45,11 @@ extension BackupArchive {
                 }
 
                 // This is the body we put on the message
-                let messageBody: MessageBody
+                let inlinedBody: MessageBody
                 fileprivate let oversizeText: OversizeText?
 
-                init(messageBody: MessageBody, oversizeText: OversizeText?) {
-                    self.messageBody = messageBody
+                init(inlinedBody: MessageBody, oversizeText: OversizeText?) {
+                    self.inlinedBody = inlinedBody
                     self.oversizeText = oversizeText
                 }
             }
@@ -1636,7 +1636,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                         chatItemId
                     ))
                 }
-                quoteBody = component?.messageBody
+                quoteBody = component?.inlinedBody
             case .bubbleUpError(let error):
                 return error
             }

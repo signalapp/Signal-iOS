@@ -518,7 +518,6 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchiveTSMessageEditHist
                 // messages, "sent" and "received" are the same, anyway.
                 receivedAtTimestamp: chatItem.dateSent,
                 messageBody: nil,
-                bodyRanges: nil,
                 editState: editState,
                 expiresInSeconds: expiresInSeconds,
                 // Backed up messages don't set the chat timer; version is irrelevant.
@@ -555,8 +554,7 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchiveTSMessageEditHist
             case .remoteDeleteTombstone:
                 outgoingMessageBuilder.wasRemotelyDeleted = true
             case .text(let text):
-                outgoingMessageBuilder.messageBody = text.body?.messageBody.text
-                outgoingMessageBuilder.bodyRanges = text.body?.messageBody.ranges
+                outgoingMessageBuilder.setMessageBody(text.body)
                 outgoingMessageBuilder.quotedMessage = text.quotedMessage
                 outgoingMessageBuilder.linkPreview = text.linkPreview
                 outgoingMessageBuilder.isVoiceMessage = text.isVoiceMessage
@@ -577,8 +575,7 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchiveTSMessageEditHist
             case .storyReply(let storyReply):
                 switch storyReply.replyType {
                 case .textReply(let textReply):
-                    outgoingMessageBuilder.messageBody = textReply.body.messageBody.text
-                    outgoingMessageBuilder.bodyRanges = textReply.body.messageBody.ranges
+                    outgoingMessageBuilder.setMessageBody(textReply.body)
                 case .emoji(let emoji):
                     outgoingMessageBuilder.storyReactionEmoji = emoji
                 }

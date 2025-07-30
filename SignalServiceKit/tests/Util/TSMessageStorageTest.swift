@@ -47,7 +47,7 @@ final class TSMessageStorageTest: SSKBaseTest {
                     thread: thread,
                     timestamp: timestamp,
                     authorAci: otherAci,
-                    messageBody: body
+                    messageBody: AttachmentContentValidatorMock.mockValidatedBody(body)
                 ).build()
             newMessage.anyInsert(transaction: tx)
 
@@ -76,7 +76,7 @@ final class TSMessageStorageTest: SSKBaseTest {
                         thread: thread,
                         timestamp: UInt64(idx) + 1,
                         authorAci: otherAci,
-                        messageBody: body
+                        messageBody: AttachmentContentValidatorMock.mockValidatedBody(body)
                     ).build()
                 newMessage.anyInsert(transaction: tx)
                 return newMessage
@@ -129,7 +129,7 @@ final class TSMessageStorageTest: SSKBaseTest {
                         thread: groupThread,
                         timestamp: UInt64(idx + 1),
                         authorAci: authorAddress.aci!,
-                        messageBody: body
+                        messageBody: AttachmentContentValidatorMock.mockValidatedBody(body)
                     ).build()
                 newMessage.anyInsert(transaction: tx)
                 return newMessage

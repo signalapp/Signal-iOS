@@ -966,6 +966,7 @@
 		6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF88297B6AF800F96CFD /* DBTransaction.swift */; };
 		6673FF8B297B6FA800F96CFD /* SDSDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF8A297B6FA800F96CFD /* SDSDB.swift */; };
 		6674807C2E32EA52004DA6E9 /* Optional+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6674807B2E32EA4D004DA6E9 /* Optional+SSK.swift */; };
+		6674807E2E344EE9004DA6E9 /* OWSOutgoingPaymentMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6674807D2E344EE9004DA6E9 /* OWSOutgoingPaymentMessage.swift */; };
 		6675F64F29261C39007A311E /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64E29261C39007A311E /* SyncPushTokensJob.swift */; };
 		6675F65129261E0C007A311E /* APNSRotationStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F65029261E0C007A311E /* APNSRotationStoreTest.swift */; };
 		667664362A43BBCD00716B84 /* OWSFingerprint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667664352A43BBCD00716B84 /* OWSFingerprint.swift */; };
@@ -4904,6 +4905,7 @@
 		6673FF88297B6AF800F96CFD /* DBTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBTransaction.swift; sourceTree = "<group>"; };
 		6673FF8A297B6FA800F96CFD /* SDSDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDSDB.swift; sourceTree = "<group>"; };
 		6674807B2E32EA4D004DA6E9 /* Optional+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+SSK.swift"; sourceTree = "<group>"; };
+		6674807D2E344EE9004DA6E9 /* OWSOutgoingPaymentMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingPaymentMessage.swift; sourceTree = "<group>"; };
 		6675F64C2925C012007A311E /* APNSRotationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSRotationStore.swift; sourceTree = "<group>"; };
 		6675F64E29261C39007A311E /* SyncPushTokensJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncPushTokensJob.swift; sourceTree = "<group>"; };
 		6675F65029261E0C007A311E /* APNSRotationStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSRotationStoreTest.swift; sourceTree = "<group>"; };
@@ -13818,6 +13820,7 @@
 				F9C5C913289453B100548EEE /* OWSOutgoingPaymentMessage+SDS.swift */,
 				F9C5C912289453B100548EEE /* OWSOutgoingPaymentMessage.h */,
 				F9C5C914289453B100548EEE /* OWSOutgoingPaymentMessage.m */,
+				6674807D2E344EE9004DA6E9 /* OWSOutgoingPaymentMessage.swift */,
 				6642A8782A8D85F500E591C2 /* OWSPaymentActivationRequestFinishedMessage+SDS.swift */,
 				6642A86F2A8D7B3400E591C2 /* OWSPaymentActivationRequestFinishedMessage.h */,
 				6642A8712A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m */,
@@ -18230,6 +18233,7 @@
 				F9C5CC37289453B300548EEE /* OWSOutgoingNullMessage.m in Sources */,
 				F9C5CC06289453B300548EEE /* OWSOutgoingPaymentMessage+SDS.swift in Sources */,
 				F9C5CC07289453B300548EEE /* OWSOutgoingPaymentMessage.m in Sources */,
+				6674807E2E344EE9004DA6E9 /* OWSOutgoingPaymentMessage.swift in Sources */,
 				F9C5CC3B289453B300548EEE /* OWSOutgoingReactionMessage.m in Sources */,
 				F9C5CC82289453B300548EEE /* OWSOutgoingResendRequest.m in Sources */,
 				F9C5CC1F289453B300548EEE /* OWSOutgoingResendRequest.swift in Sources */,

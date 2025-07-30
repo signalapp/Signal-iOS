@@ -11,7 +11,7 @@ import UIKit
 let kMaxMessageBodyCharacterCount = 2000
 
 protocol StoryReplyInputToolbarDelegate: MessageReactionPickerDelegate {
-    func storyReplyInputToolbarDidTapSend(_ storyReplyInputToolbar: StoryReplyInputToolbar)
+    func storyReplyInputToolbarDidTapSend(_ storyReplyInputToolbar: StoryReplyInputToolbar) async throws
     func storyReplyInputToolbarDidTapReact(_ storyReplyInputToolbar: StoryReplyInputToolbar)
     func storyReplyInputToolbarDidBeginEditing(_ storyReplyInputToolbar: StoryReplyInputToolbar)
     func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar)
@@ -285,7 +285,9 @@ class StoryReplyInputToolbar: UIView {
     @objc
     private func didTapSend() {
         textView.acceptAutocorrectSuggestion()
-        delegate?.storyReplyInputToolbarDidTapSend(self)
+        Task {
+            try await delegate?.storyReplyInputToolbarDidTapSend(self)
+        }
     }
 
     private func didTapReact() {

@@ -152,7 +152,7 @@ class SignalRecipientTest: SSKBaseTest {
             let messageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
                 thread: oldThread,
                 authorAci: aci,
-                messageBody: "Test 123"
+                messageBody: AttachmentContentValidatorMock.mockValidatedBody("Test 123")
             )
             let oldMessage = messageBuilder.build()
             oldMessage.anyInsert(transaction: transaction)
@@ -239,7 +239,7 @@ class SignalRecipientTest: SSKBaseTest {
             let messageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
                 thread: oldThread,
                 authorAci: oldAci,
-                messageBody: "Test 123"
+                messageBody: AttachmentContentValidatorMock.mockValidatedBody("Test 123")
             )
             let oldMessage = messageBuilder.build()
             oldMessage.anyInsert(transaction: transaction)

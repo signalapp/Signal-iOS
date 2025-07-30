@@ -187,26 +187,11 @@ extension UnpreparedOutgoingMessage {
         linkPreviewDataSource: LinkPreviewDataSource?,
         transaction: DBReadTransaction
     ) -> UnpreparedOutgoingMessage {
-
-        let truncatedBody: MessageBody?
-        let oversizeTextDataSource: AttachmentDataSource?
-        switch messageBody {
-        case .inline(let messageBody):
-            truncatedBody = messageBody
-            oversizeTextDataSource = nil
-        case .oversize(let truncated, let fullsize):
-            truncatedBody = truncated
-            oversizeTextDataSource = .pendingAttachment(fullsize)
-        case nil:
-            truncatedBody = nil
-            oversizeTextDataSource = nil
-        }
-
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction)
 
         let isVoiceMessage = mediaAttachments.count == 1
-            && oversizeTextDataSource == nil
+            && messageBody?.oversizeText == nil
             && mediaAttachments.last?.renderingFlag == .voiceMessage
 
         var isViewOnceMessage = false
@@ -225,8 +210,7 @@ extension UnpreparedOutgoingMessage {
 
         let messageBuilder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread, timestamp: timestamp)
 
-        messageBuilder.messageBody = truncatedBody?.text
-        messageBuilder.bodyRanges = truncatedBody?.ranges
+        messageBuilder.setMessageBody(messageBody)
 
         messageBuilder.expiresInSeconds = dmConfig.durationSeconds
         messageBuilder.expireTimerVersion = NSNumber.init(value: dmConfig.timerVersion)
@@ -239,8 +223,8 @@ extension UnpreparedOutgoingMessage {
 
         let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
             message,
+            body: messageBody,
             unsavedBodyMediaAttachments: attachmentInfos,
-            oversizeTextDataSource: oversizeTextDataSource,
             linkPreviewDraft: linkPreviewDataSource,
             quotedReplyDraft: quotedReplyDraft
         )
@@ -256,26 +240,13 @@ extension UnpreparedOutgoingMessage {
         editTarget: TSOutgoingMessage
     ) -> UnpreparedOutgoingMessage {
 
-        let truncatedBody: MessageBody?
-        let oversizeTextDataSource: AttachmentDataSource?
-        switch messageBody {
-        case .inline(let messageBody):
-            truncatedBody = messageBody
-            oversizeTextDataSource = nil
-        case .oversize(let truncated, let fullsize):
-            truncatedBody = truncated
-            oversizeTextDataSource = .pendingAttachment(fullsize)
-        case nil:
-            truncatedBody = nil
-            oversizeTextDataSource = nil
-        }
+        let oversizeTextDataSource: AttachmentDataSource? = messageBody?.oversizeText.map { .pendingAttachment($0) }
 
         let edits: MessageEdits = .forOutgoingEdit(
             timestamp: .change(timestamp),
             // "Received" now!
             receivedAtTimestamp: .change(Date.ows_millisecondTimestamp()),
-            body: .change(truncatedBody?.text),
-            bodyRanges: .change(truncatedBody?.ranges)
+            body: .change(messageBody),
         )
 
         let unpreparedMessage = UnpreparedOutgoingMessage.forEditMessage(

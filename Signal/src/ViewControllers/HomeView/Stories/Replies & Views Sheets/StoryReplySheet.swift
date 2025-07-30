@@ -23,7 +23,10 @@ protocol StoryReplySheet: OWSViewController, StoryReplyInputToolbarDelegate, Mes
 // MARK: - Sending
 
 extension StoryReplySheet {
-    func tryToSendMessage(_ builder: TSOutgoingMessageBuilder) {
+    func tryToSendMessage(
+        _ builder: TSOutgoingMessageBuilder,
+        messageBody: ValidatedMessageBody?,
+    ) {
         guard let thread = thread else {
             return owsFailDebug("Unexpectedly missing thread")
         }
@@ -32,7 +35,7 @@ extension StoryReplySheet {
         guard !isThreadBlocked else {
             BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self) { [weak self] isBlocked in
                 guard !isBlocked else { return }
-                self?.tryToSendMessage(builder)
+                self?.tryToSendMessage(builder, messageBody: messageBody)
             }
             return
         }
@@ -48,7 +51,7 @@ extension StoryReplySheet {
             confirmationText: SafetyNumberStrings.confirmSendButton,
             completion: { [weak self] didConfirmIdentity in
                 guard didConfirmIdentity else { return }
-                self?.tryToSendMessage(builder)
+                self?.tryToSendMessage(builder, messageBody: messageBody)
             }
         ) else { return }
 
@@ -70,7 +73,10 @@ extension StoryReplySheet {
                 builder.expireTimerVersion = NSNumber(value: dmConfig.timerVersion)
             }
 
-            let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(builder.build(transaction: transaction))
+            let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
+                builder.build(transaction: transaction),
+                body: messageBody
+            )
             guard let preparedMessage = try? unpreparedMessage.prepare(tx: transaction) else {
                 owsFailDebug("Failed to prepare message")
                 return
@@ -108,7 +114,7 @@ extension StoryReplySheet {
             storyReactionEmoji: reaction
         )
 
-        tryToSendMessage(builder)
+        tryToSendMessage(builder, messageBody: nil)
 
         ReactionFlybyAnimation(reaction: reaction).present(from: self)
     }
@@ -139,13 +145,20 @@ extension StoryReplySheet {
 // MARK: - StoryReplyInputToolbarDelegate
 
 extension StoryReplySheet {
-    func storyReplyInputToolbarDidTapSend(_ storyReplyInputToolbar: StoryReplyInputToolbar) {
-        guard let messageBody = storyReplyInputToolbar.messageBodyForSending, !messageBody.text.isEmpty else {
-            return owsFailDebug("Unexpectedly missing message body")
+    @MainActor
+    func storyReplyInputToolbarDidTapSend(_ storyReplyInputToolbar: StoryReplyInputToolbar) async throws {
+        guard
+            let originalMessageBody = storyReplyInputToolbar.messageBodyForSending,
+            !originalMessageBody.text.isEmpty
+        else {
+            throw OWSAssertionError("Unexpectedly missing message body")
         }
 
+        let messageBody = try await DependenciesBridge.shared.attachmentContentValidator
+            .prepareOversizeTextIfNeeded(originalMessageBody)
+
         guard let thread = thread else {
-            return owsFailDebug("Unexpectedly missing thread")
+            throw OWSAssertionError("Unexpectedly missing thread")
         }
         owsAssertDebug(
             !storyMessage.authorAddress.isSystemStoryAddress,
@@ -154,13 +167,12 @@ extension StoryReplySheet {
 
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,
-            messageBody: messageBody.text,
-            bodyRanges: messageBody.ranges,
+            messageBody: messageBody,
             storyAuthorAci: storyMessage.authorAci,
             storyTimestamp: storyMessage.timestamp
         )
 
-        tryToSendMessage(builder)
+        tryToSendMessage(builder, messageBody: messageBody)
     }
 
     func storyReplyInputToolbarDidTapReact(_ storyReplyInputToolbar: StoryReplyInputToolbar) {

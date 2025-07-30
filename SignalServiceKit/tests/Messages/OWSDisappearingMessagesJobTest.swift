@@ -17,7 +17,7 @@ final class OWSDisappearingMessagesJobTest: SSKBaseTest {
         let thread = TSContactThread.getOrCreateThread(contactAddress: localAddress)
         let messageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
             thread: thread,
-            messageBody: body
+            messageBody: AttachmentContentValidatorMock.mockValidatedBody(body)
         )
         messageBuilder.timestamp = 1234
         messageBuilder.expiresInSeconds = expiresInSeconds

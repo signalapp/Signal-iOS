@@ -659,6 +659,7 @@ public class AppSetup {
         let editMessageStore = EditMessageStoreImpl()
         let editManager = EditManagerImpl(
             context: .init(
+                attachmentContentValidator: attachmentContentValidator,
                 attachmentStore: attachmentStore,
                 dataStore: EditManagerImpl.Wrappers.DataStore(),
                 editManagerAttachments: EditManagerAttachmentsImpl(

@@ -49,11 +49,15 @@ public protocol RevalidatedAttachment {
     var orphanRecordId: OrphanedAttachmentRecord.IDType { get }
 }
 
-public enum ValidatedMessageBody {
-    /// The original body was small enough to send as-is.
-    case inline(MessageBody)
-    /// The original body was too large; we truncated and created an attachment with the untruncated text.
-    case oversize(truncated: MessageBody, fullsize: PendingAttachment)
+public protocol ValidatedInlineMessageBody {
+    /// The (possibly truncated) body to inline in the message.
+    var inlinedBody: MessageBody { get }
+}
+
+public protocol ValidatedMessageBody: ValidatedInlineMessageBody {
+    /// If the original text didn't fit inline, the pending attachment that
+    /// should be used to create the oversize text Attachment.
+    var oversizeText: PendingAttachment? { get }
 }
 
 public protocol AttachmentContentValidator {
@@ -140,6 +144,20 @@ public protocol AttachmentContentValidator {
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) async throws -> PendingAttachment
+
+    /// Truncates the provided message body if necessary for inlining in a message,
+    /// dropping any remaining text even if it might otherwise fit in an oversized text
+    /// attachment.
+    /// It is much preferred to use ``prepareOversizeTextsIfNeeded(from:)``;
+    /// this method only exists as a temporary solution for callsites that process bodies
+    /// from within inescapable write transactions and therefore cannot do the
+    /// double-commit necessary to prepare an oversize text Attachment.
+    /// (This method takes a transaction, despite not using it, to nudge callers.
+    /// If you're not already in a write tx, you should use prepareOversizeTextsIfNeeded).
+    func truncatedMessageBodyForInlining(
+        _ body: MessageBody,
+        tx: DBWriteTransaction
+    ) -> ValidatedInlineMessageBody
 
     /// If the provided message body is large enough to require an oversize text
     /// attachment, creates a pending one, alongside the truncated message body.

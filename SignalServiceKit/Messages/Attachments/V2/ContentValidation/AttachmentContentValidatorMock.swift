@@ -63,11 +63,31 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         throw OWSAssertionError("Unimplemented")
     }
 
+    struct MockValidatedMessageBody: ValidatedMessageBody {
+        var oversizeText: (any PendingAttachment)? { nil }
+        let inlinedBody: MessageBody
+
+        fileprivate init(inlinedBody: MessageBody) {
+            self.inlinedBody = inlinedBody
+        }
+    }
+
+    static func mockValidatedBody(_ body: String) -> ValidatedMessageBody {
+        return MockValidatedMessageBody(inlinedBody: MessageBody(text: body, ranges: .empty))
+    }
+
+    open func truncatedMessageBodyForInlining(
+        _ body: MessageBody,
+        tx: DBWriteTransaction
+    ) -> ValidatedInlineMessageBody {
+        return MockValidatedMessageBody(inlinedBody: body)
+    }
+
     open func prepareOversizeTextsIfNeeded<Key: Hashable>(
         from texts: [Key: MessageBody],
         encryptionKeys: [Key: Data],
     ) async throws -> [Key: ValidatedMessageBody] {
-        return texts.mapValues { .inline($0) }
+        throw OWSAssertionError("Unimplemented")
     }
 
     open func prepareQuotedReplyThumbnail(

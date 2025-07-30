@@ -16,13 +16,16 @@ public class UnpreparedOutgoingMessage {
 
     public static func forMessage(
         _ message: TSOutgoingMessage,
+        body: ValidatedMessageBody?,
         unsavedBodyMediaAttachments: [AttachmentDataSource] = [],
-        oversizeTextDataSource: AttachmentDataSource? = nil,
         linkPreviewDraft: LinkPreviewDataSource? = nil,
         quotedReplyDraft: DraftQuotedReplyModel.ForSending? = nil,
         messageStickerDraft: MessageStickerDataSource? = nil,
         contactShareDraft: ContactShareDraft.ForSending? = nil
     ) -> UnpreparedOutgoingMessage {
+        let oversizeTextDataSource = (body?.oversizeText).map {
+            AttachmentDataSource.pendingAttachment($0)
+        }
         if !message.shouldBeSaved {
             owsAssertDebug(
                 unsavedBodyMediaAttachments.isEmpty

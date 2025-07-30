@@ -16,7 +16,10 @@ class TSMessageTest: SSKBaseTest {
     }
 
     func testExpiresAtWithoutStartedTimer() {
-        let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread, messageBody: "foo")
+        let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(
+            thread: self.thread,
+            messageBody: AttachmentContentValidatorMock.mockValidatedBody("foo")
+        )
         builder.timestamp = 1
         builder.expiresInSeconds = 100
 
@@ -28,7 +31,10 @@ class TSMessageTest: SSKBaseTest {
         let now = Date.ows_millisecondTimestamp()
         let expirationSeconds: UInt32 = 10
 
-        let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread, messageBody: "foo")
+        let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(
+            thread: self.thread,
+            messageBody: AttachmentContentValidatorMock.mockValidatedBody("foo")
+        )
         builder.timestamp = 1
         builder.expiresInSeconds = expirationSeconds
         builder.expireStartedAt = now

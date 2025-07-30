@@ -21,7 +21,6 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
             timestamp: nil,
             receivedAtTimestamp: nil,
             messageBody: nil,
-            bodyRanges: nil,
             editState: .none,
             expiresInSeconds: nil,
             expireTimerVersion: nil,

@@ -79,8 +79,11 @@ public extension ThreadUtil {
                 return
             }
 
+            // stickers don't have bodies
+            owsPrecondition(message.body == nil)
             let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
                 message,
+                body: nil,
                 contactShareDraft: sendableContactShareDraft
             )
 
@@ -205,8 +208,12 @@ public extension ThreadUtil {
     ) {
         AssertNotOnMainThread()
 
+        // stickers don't have bodies
+        owsPrecondition(message.body == nil)
+
         let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
             message,
+            body: nil,
             messageStickerDraft: stickerDataSource
         )
         let preparedMessage: PreparedOutgoingMessage
