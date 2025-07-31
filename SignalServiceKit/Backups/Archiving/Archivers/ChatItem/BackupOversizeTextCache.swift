@@ -386,7 +386,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
                     .filter(Column(BackupOversizeTextCache.CodingKeys.id) > minId)
                     .fetchCount(tx.database)
             }
-            progressSource = await progress.addSource(withLabel: "OversizedTexts", unitCount: UInt64(unitCount))
+            progressSource = await progress.addSource(withLabel: "OversizedTexts", unitCount: UInt64(max(1, unitCount)))
         } else {
             progressSource = nil
         }
