@@ -28,16 +28,21 @@ class BackupSettingsViewController:
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
+    private let deviceSleepManager: DeviceSleepManager
     private let tsAccountManager: TSAccountManager
 
     private let onLoadAction: OnLoadAction
     private let viewModel: BackupSettingsViewModel
 
-    private var eventObservationTasks: [Task<Void, Never>] = []
+    private var externalEventObservationTasks: [Task<Void, Never>] = []
 
     convenience init(
         onLoadAction: OnLoadAction,
     ) {
+        guard let deviceSleepManager = DependenciesBridge.shared.deviceSleepManager else {
+            owsFail("Unexpectedly missing DeviceSleepManager in main app!")
+        }
+
         self.init(
             onLoadAction: onLoadAction,
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
@@ -52,6 +57,7 @@ class BackupSettingsViewController:
             backupSettingsStore: BackupSettingsStore(),
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
+            deviceSleepManager: deviceSleepManager,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
     }
@@ -70,6 +76,7 @@ class BackupSettingsViewController:
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
+        deviceSleepManager: DeviceSleepManager,
         tsAccountManager: TSAccountManager
     ) {
         owsPrecondition(
@@ -93,6 +100,7 @@ class BackupSettingsViewController:
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
+        self.deviceSleepManager = deviceSleepManager
         self.tsAccountManager = tsAccountManager
 
         self.onLoadAction = onLoadAction
@@ -121,24 +129,60 @@ class BackupSettingsViewController:
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
         viewModel.actionsDelegate = self
+    }
 
-        loadBackupSubscription()
+    override func viewDidLoad() {
+        switch onLoadAction {
+        case .none:
+            break
+        case .presentWelcomeToBackupsSheet:
+            presentWelcomeToBackupsSheet()
+        }
+    }
 
-        eventObservationTasks = [
+    override func viewWillAppear(_ animated: Bool) {
+        startExternalEventObservation()
+
+        // Reload the view model, as state may have changed while we weren't
+        // visible.
+        reloadViewModel()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        stopExternalEventObservation()
+    }
+
+    // MARK: -
+
+    private func startExternalEventObservation() {
+        guard externalEventObservationTasks.isEmpty else {
+            return
+        }
+
+        externalEventObservationTasks = [
             Task { [weak self, backupExportJobRunner] in
-                for await exportProgressUpdate in backupExportJobRunner.updates() {
+                await self?.preventDeviceSleepDuringNonNilUpdates(
+                    updateStream: backupExportJobRunner.updates(),
+                    label: "Export",
+                ) { [weak self] exportProgressUpdate in
                     guard let self else { return }
                     viewModel.latestBackupExportProgressUpdate = exportProgressUpdate
                 }
             },
             Task { [weak self, backupAttachmentDownloadTracker] in
-                for await downloadUpdate in backupAttachmentDownloadTracker.updates() {
+                await self?.preventDeviceSleepDuringNonNilUpdates(
+                    updateStream: backupAttachmentDownloadTracker.updates(),
+                    label: "Downloads",
+                ) { [weak self] downloadUpdate in
                     guard let self else { return }
                     viewModel.latestBackupAttachmentDownloadUpdate = downloadUpdate
                 }
             },
             Task { [weak self, backupAttachmentUploadTracker] in
-                for await uploadUpdate in backupAttachmentUploadTracker.updates() {
+                await self?.preventDeviceSleepDuringNonNilUpdates(
+                    updateStream: backupAttachmentUploadTracker.updates(),
+                    label: "Uploads",
+                ) { [weak self] uploadUpdate in
                     guard let self else { return }
                     viewModel.latestBackupAttachmentUploadUpdate = uploadUpdate
                 }
@@ -166,20 +210,47 @@ class BackupSettingsViewController:
         ]
     }
 
-    deinit {
-        eventObservationTasks.forEach { $0.cancel() }
+    private func stopExternalEventObservation() {
+        externalEventObservationTasks.forEach { $0.cancel() }
+        externalEventObservationTasks = []
     }
 
-    override func viewDidLoad() {
-        switch onLoadAction {
-        case .none:
-            break
-        case .presentWelcomeToBackupsSheet:
-            presentWelcomeToBackupsSheet()
+    /// Prevent device sleep when the given `updateStream` is producing non-nil
+    /// updates. This is appropriate when said updates result in us displaying
+    /// UX, such as a progress bar, for which we want to prevent sleep.
+    @MainActor
+    private func preventDeviceSleepDuringNonNilUpdates<T>(
+        updateStream: AsyncStream<T?>,
+        label: String,
+        onUpdate: (T?) -> Void
+    ) async {
+        // Caller-retained as long as sleep-blocking is required.
+        var deviceSleepBlock: DeviceSleepBlockObject?
+
+        for await update in updateStream {
+            if deviceSleepBlock == nil, update != nil {
+                deviceSleepBlock = DeviceSleepBlockObject(blockReason: "BackupSettings: \(label)")
+                deviceSleepManager.addBlock(blockObject: deviceSleepBlock!)
+            } else if let deviceSleepBlock, update == nil {
+                deviceSleepManager.removeBlock(blockObject: deviceSleepBlock)
+            }
+
+            onUpdate(update)
+        }
+
+        if let deviceSleepBlock {
+            deviceSleepManager.removeBlock(blockObject: deviceSleepBlock)
         }
     }
 
-    private func _backupPlanDidChange() {
+    // MARK: -
+
+    private func reloadViewModel() {
+        // Notably, we don't actively try and reload any of "latest update"
+        // properties, since when we start listening to the update streams (see
+        // `externalEventObservationTasks`) the latest update is yielded
+        // immediately.
+
         db.read { tx in
             viewModel.backupPlan = backupPlanManager.backupPlan(tx: tx)
             viewModel.failedToDisableBackupsRemotely = backupDisablingManager.disableRemotelyFailed(tx: tx)
@@ -187,6 +258,12 @@ class BackupSettingsViewController:
             viewModel.lastBackupSizeBytes = backupSettingsStore.lastBackupSizeBytes(tx: tx)
             viewModel.shouldAllowBackupUploadsOnCellular = backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx)
         }
+
+        loadBackupSubscription()
+    }
+
+    private func _backupPlanDidChange() {
+        reloadViewModel()
 
         // If we just disabled Backups locally but recorded a failure disabling
         // remotely, show an action sheet. (We'll also show that we failed to
@@ -197,8 +274,6 @@ class BackupSettingsViewController:
         case .disabled, .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
             break
         }
-
-        loadBackupSubscription()
     }
 
     private func _shouldAllowBackupUploadsOnCellularDidChange() {

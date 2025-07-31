@@ -48,15 +48,21 @@ public class CLVBackupDownloadProgressView {
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
+    private let deviceSleepManager: DeviceSleepManager
 
     init() {
         AssertIsOnMainThread()
+
+        guard let deviceSleepManager = DependenciesBridge.shared.deviceSleepManager else {
+            owsFail("Unexpectedly missing device sleep manager in main app!")
+        }
 
         self.backupAttachmentDownloadManager = DependenciesBridge.shared.backupAttachmentDownloadManager
         self.backupAttachmentDownloadQueueStatusReporter = DependenciesBridge.shared.backupAttachmentDownloadQueueStatusReporter
         self.backupAttachmentDownloadStore = DependenciesBridge.shared.backupAttachmentDownloadStore
         self.backupSettingsStore = BackupSettingsStore()
         self.db = DependenciesBridge.shared.db
+        self.deviceSleepManager = deviceSleepManager
 
         backupAttachmentDownloadProgressView = BackupAttachmentDownloadProgressView(
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
@@ -86,6 +92,7 @@ public class CLVBackupDownloadProgressView {
         }
     }
 
+    @MainActor
     func update(viewState: CLVBackupDownloadProgressView.State) {
         let state = Self.downloadProgressState(
             viewState: viewState,
@@ -101,14 +108,52 @@ public class CLVBackupDownloadProgressView {
             },
             backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusReporter
         )
+
         let oldState = backupAttachmentDownloadProgressView.state
         backupAttachmentDownloadProgressView.state = state
+
         if (oldState == nil) != (state == nil) {
             DispatchQueue.main.async { [weak self] in
                 self?.chatListViewController?.loadCoordinator.loadIfNecessary()
             }
         }
+
+        manageDeviceSleepBlock(state: state)
     }
+
+    // MARK: -
+
+    @MainActor
+    func willAppear() {
+        manageDeviceSleepBlock(state: backupAttachmentDownloadProgressView.state)
+    }
+
+    @MainActor
+    func didDisappear() {
+        // Force-drop the sleep block if we're disappearing.
+        manageDeviceSleepBlock(state: nil)
+    }
+
+    // MARK: -
+
+    private var deviceSleepBlock: DeviceSleepBlockObject?
+
+    @MainActor
+    private func manageDeviceSleepBlock(state: BackupAttachmentDownloadProgressView.State?) {
+        switch state {
+        case nil, .complete:
+            if let deviceSleepBlock {
+                deviceSleepManager.removeBlock(blockObject: deviceSleepBlock)
+            }
+        case .restoring, .wifiNotReachable, .paused, .outOfDiskSpace:
+            if deviceSleepBlock == nil {
+                deviceSleepBlock = DeviceSleepBlockObject(blockReason: "BackupAttachmentDownloadProgressView")
+                deviceSleepManager.addBlock(blockObject: deviceSleepBlock!)
+            }
+        }
+    }
+
+    // MARK: -
 
     static func measureHeight(
         viewState: CLVBackupDownloadProgressView.State,

@@ -142,6 +142,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
 
         viewState.searchResultsController.viewWillAppear(animated)
+        viewState.backupDownloadProgressView.willAppear()
 
         updateUnreadPaymentNotificationsCountWithSneakyTransaction()
 
@@ -257,6 +258,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         super.viewDidDisappear(animated)
 
         searchResultsController.viewDidDisappear(animated)
+        viewState.backupDownloadProgressView.didDisappear()
     }
 
     public override func viewIsAppearing(_ animated: Bool) {
