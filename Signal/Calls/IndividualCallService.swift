@@ -287,7 +287,11 @@ final class IndividualCallService: CallServiceStateObserver {
         opaque: Data,
         identityKeys: CallIdentityKeys?
     ) {
-        guard let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId else {
+        guard
+            let currentCall = callServiceState.currentCall,
+            currentCall.isIndividualCall,
+            currentCall.individualCall.callId == callId
+        else {
             return
         }
 
@@ -330,7 +334,11 @@ final class IndividualCallService: CallServiceStateObserver {
 
     @MainActor
     private func _handleReceivedIceCandidates(callId: UInt64, sourceDevice: DeviceId, iceCandidates: [Data]) {
-        guard let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId else {
+        guard
+            let currentCall = callServiceState.currentCall,
+            currentCall.isIndividualCall,
+            currentCall.individualCall.callId == callId
+        else {
             return
         }
 
@@ -365,7 +373,11 @@ final class IndividualCallService: CallServiceStateObserver {
 
     @MainActor
     private func _handleReceivedHangup(callId: UInt64, sourceDevice: DeviceId, hangupType: HangupType, deviceId: UInt32) {
-        guard let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId else {
+        guard
+            let currentCall = callServiceState.currentCall,
+            currentCall.isIndividualCall,
+            currentCall.individualCall.callId == callId
+        else {
             return
         }
 
@@ -390,7 +402,11 @@ final class IndividualCallService: CallServiceStateObserver {
 
     @MainActor
     private func _handleReceivedBusy(callId: UInt64, sourceDevice: DeviceId) {
-        guard let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId else {
+        guard
+            let currentCall = callServiceState.currentCall,
+            currentCall.isIndividualCall,
+            currentCall.individualCall.callId == callId
+        else {
             return
         }
 
@@ -1006,7 +1022,7 @@ final class IndividualCallService: CallServiceStateObserver {
         case .contactIsBlocked:
             callType = .incomingMissedBecauseBlockedSystemContact
         default:
-            if call.individualCall?.direction == .outgoing {
+            if call.individualCall.direction == .outgoing {
                 callType = .outgoingMissed
             } else {
                 callType = .incomingMissed
@@ -1341,7 +1357,20 @@ extension TSRecentCallOfferType {
 }
 
 private extension SignalCall {
-    var individualCall: IndividualCall! {
+    /// Whether this call is an individual call.
+    /// - SeeAlso ``individualCall``
+    var isIndividualCall: Bool {
+        switch self.mode {
+        case .individual: return true
+        case .groupThread, .callLink: return false
+        }
+    }
+
+    /// - Important
+    /// Callers must be *sure* that this `SignalCall` represents an individual
+    /// call, either contextually or by consulting ``isIndividualCall``.
+    /// - SeeAlso ``isIndividualCall``
+    var individualCall: IndividualCall {
         switch self.mode {
         case .individual(let individualCall):
             return individualCall
