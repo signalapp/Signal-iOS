@@ -40,26 +40,16 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
             + bottomSafeAreaContentPadding
     }
 
-    private var contentSizeObservation: NSKeyValueObservation?
-
     public init() {
         super.init()
 
         tableViewController.shouldDeferInitialLoad = false
 
         super.allowsExpansion = false
-        contentSizeObservation = tableViewController.tableView.observe(\.contentSize, changeHandler: { [weak self] (_, _) in
-            guard let self = self else { return }
-            self.updateMinimizedHeight()
-        })
     }
 
     public func updateMinimizedHeight() {
         self.minimizedHeight = self.contentSizeHeight
-    }
-
-    deinit {
-        contentSizeObservation?.invalidate()
     }
 
     open var footerStack: UIStackView = {
@@ -82,8 +72,6 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         footerStack.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
         tableViewController.view.autoPinEdge(.bottom, to: .top, of: footerStack)
 
-        minimizedHeight = contentSizeHeight
-
         updateViewState()
     }
 
@@ -103,6 +91,7 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         // The table view might not have its final size when this method is called.
         // Run a layout pass so that we compute the correct height constraints.
         self.tableViewController.tableView.layoutIfNeeded()
+        self.updateMinimizedHeight()
     }
 
     public override func themeDidChange() {
