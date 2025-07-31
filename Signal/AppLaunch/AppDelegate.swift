@@ -505,8 +505,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             return succeededCreatingDir
         }
 
-        // Require 100MB free in order to launch.
-        return freeSpaceInBytes >= 100_000_000
+        // Require 500MB free in order to launch.
+        return freeSpaceInBytes >= 500_000_000
     }
 
     private func setupNSEInteroperation() {
