@@ -18,8 +18,7 @@ extension VoiceMessageSendableDraft {
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss-SSS"
         let dateString = dateFormatter.string(from: Date())
         return String(
-            format: "%@-%@.%@",
-            OWSLocalizedString("VOICE_MESSAGE_FILE_NAME", comment: "Filename for voice messages."),
+            format: "signal-%@.%@",
             dateString,
             VoiceMessageConstants.fileExtension
         )
