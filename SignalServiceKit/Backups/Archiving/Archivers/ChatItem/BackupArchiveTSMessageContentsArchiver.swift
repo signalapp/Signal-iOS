@@ -537,7 +537,9 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
             quote.text = { () -> BackupProto_Text in
                 var quoteText = BackupProto_Text()
-                quoteText.body = text.body
+                // We do not allow oversize text in quotes; truncate if some historical bug
+                // cause quotes to contain more than the usual oversize text threshold.
+                quoteText.body = text.body.trimToUtf8ByteCount(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
                 quoteText.bodyRanges = text.bodyRanges
                 return quoteText
             }()
