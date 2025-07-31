@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import Foundation
+import Foundation
 import SignalServiceKit
 import SignalUI
 
@@ -14,7 +14,7 @@ protocol RegistrationChooseRestoreMethodPresenter: AnyObject {
 
 public enum RegistrationRestoreMethod {
     case deviceTransfer
-    case local(fileUrl: URL)
+    case local
     case remote
     case declined
 }

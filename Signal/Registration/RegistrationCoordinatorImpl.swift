@@ -263,37 +263,39 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .declined:
             inMemoryState.hasSkippedRestoreFromMessageBackup = true
             inMemoryState.needsToAskForDeviceTransfer = false
-            inMemoryState.restoreMethod = .declined
             deps.db.write { tx in
                 updatePersistedState(tx) {
                     $0.hasDeclinedTransfer = true
+                    $0.restoreMethod = .declined
                 }
             }
         case .deviceTransfer:
             inMemoryState.hasSkippedRestoreFromMessageBackup = true
             inMemoryState.needsToAskForDeviceTransfer = false
-            inMemoryState.restoreMethod = .deviceTransfer
             deps.db.write { tx in
                 updatePersistedState(tx) {
                     $0.hasDeclinedTransfer = false
+                    $0.restoreMethod = .deviceTransfer
                 }
             }
         case .remote:
             inMemoryState.hasSkippedRestoreFromMessageBackup = false
             inMemoryState.needsToAskForDeviceTransfer = false
-            inMemoryState.restoreMethod = .remoteBackup
             deps.db.write { tx in
                 updatePersistedState(tx) {
                     $0.hasDeclinedTransfer = true
+                    $0.restoreMethod = .remoteBackup
                 }
             }
-        case .local(let fileUrl):
+        case .local:
+            // TODO: [Backups] - When local backup support is added, the associated 'fileURL'
+            // will need to be persisted to inMemoryState
             inMemoryState.hasSkippedRestoreFromMessageBackup = false
             inMemoryState.needsToAskForDeviceTransfer = false
-            inMemoryState.restoreMethod = .localBackup(filePath: fileUrl)
             deps.db.write { tx in
                 updatePersistedState(tx) {
                     $0.hasDeclinedTransfer = true
+                    $0.restoreMethod = .localBackup
                 }
             }
         }
@@ -532,10 +534,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         inMemoryState.hasSkippedRestoreFromMessageBackup = true
 
         inMemoryState.needsToAskForDeviceTransfer = false
-        inMemoryState.restoreMethod = .declined
         deps.db.write { tx in
             updatePersistedState(tx) {
                 $0.hasDeclinedTransfer = true
+                $0.restoreMethod = .declined
             }
         }
         return self.nextStep()
@@ -558,12 +560,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func resetRestoreMethodChoice() -> Guarantee<RegistrationStep> {
-        inMemoryState.restoreMethod = nil
         inMemoryState.needsToAskForDeviceTransfer = true
         inMemoryState.restoreFromBackupProgressSink = nil
         deps.db.write { tx in
             updatePersistedState(tx) {
                 $0.hasDeclinedTransfer = false
+                $0.restoreMethod = nil
             }
         }
         return self.nextStep()
@@ -577,7 +579,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func restoreFromMessageBackup(
-        type: InMemoryState.RestoreMethod.BackupType,
+        type: PersistedState.RestoreMethod.BackupType,
         accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         identity: AccountIdentity,
         progress progressBlock: @escaping () async -> OWSProgressSink,
@@ -598,7 +600,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             let backupKey = try MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: identity.aci)
             let fileUrl = switch type {
-            case .local(let localFileUrl): localFileUrl
+            case .local:
+                // TODO: [Backups] This is currently unsupported, so log and return
+                throw OWSAssertionError("Local backups not supported.")
             case .remote:
                 try await self.deps.backupArchiveManager.downloadEncryptedBackup(
                     backupKey: backupKey,
@@ -885,37 +889,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case reclamationAttempted
         }
         var usernameReclamationState: UsernameReclamationState = .localUsernameStateNotLoaded
-
-        // The restore method selected by the user.  Since the restore method may
-        // rely on other in-memory state (e.g. restoreMethodToken), don't persist this.
-        var restoreMethod: RestoreMethod?
-
-        enum RestoreMethod: Codable, Equatable {
-            case remoteBackup
-            case localBackup(filePath: URL)
-            case deviceTransfer
-            case declined
-
-            enum BackupType {
-                case local(URL)
-                case remote
-            }
-
-            var backupType: BackupType? {
-                switch self {
-                case .localBackup(let url): return .local(url)
-                case .remoteBackup: return .remote
-                case .declined, .deviceTransfer: return nil
-                }
-            }
-
-            var isBackup: Bool {
-                switch self {
-                case .localBackup, .remoteBackup: return true
-                case .declined, .deviceTransfer: return false
-                }
-            }
-        }
     }
 
     private var inMemoryState = InMemoryState()
@@ -1114,6 +1087,36 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// we ignore this field and always skip asking for device transfer.
         var hasDeclinedTransfer: Bool = false
 
+        // The restore method selected by the user.
+        var restoreMethod: RestoreMethod?
+
+        enum RestoreMethod: Codable, Equatable {
+            case remoteBackup
+            case localBackup
+            case deviceTransfer
+            case declined
+
+            enum BackupType {
+                case remote
+                case local
+            }
+
+            var backupType: BackupType? {
+                switch self {
+                case .remoteBackup: return .remote
+                case .localBackup: return .local
+                case .declined, .deviceTransfer: return nil
+                }
+            }
+
+            var isBackup: Bool {
+                switch self {
+                case .localBackup, .remoteBackup: return true
+                case .declined, .deviceTransfer: return false
+                }
+            }
+        }
+
         init() {}
 
         enum CodingKeys: String, CodingKey {
@@ -1131,6 +1134,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case accountIdentity
             case didRefreshOneTimePreKeys
             case hasDeclinedTransfer
+            case restoreMethod
             case restoreMode
             case recoveredSVRMasterKey
             case backupKeyAccountEntropyPool
@@ -1285,7 +1289,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 accountIdentity: accountIdentity
             ) { tx in
                 /// For new registrations, we want to force-set some state.
-                if self.inMemoryState.restoreMethod?.backupType == nil {
+                if self.persistedState.restoreMethod?.backupType == nil {
                     /// Read receipts should be on by default.
                     self.deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
                     self.deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
@@ -1327,7 +1331,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .unfinalized:
             return true
         case .none:
-            return inMemoryState.restoreMethod?.isBackup == true
+            return persistedState.restoreMethod?.isBackup == true
         }
     }
 
@@ -1345,7 +1349,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 identity: accountIdentity
             )
         case .none:
-            if let backupType = inMemoryState.restoreMethod?.backupType {
+            if let backupType = persistedState.restoreMethod?.backupType {
                 return await restoreFromMessageBackup(
                     type: backupType,
                     accountEntropyPool: accountEntropyPool,
@@ -1556,24 +1560,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         if case .registering = mode {
             switch persistedState.restoreMode {
             case .quickRestore:
-                if inMemoryState.restoreMethod == nil {
+                if persistedState.restoreMethod == nil {
                     return .quickRestore
-                } else if case .deviceTransfer = inMemoryState.restoreMethod {
+                } else if case .deviceTransfer = persistedState.restoreMethod {
                     return .quickRestore
                 } else if
-                    inMemoryState.restoreMethod?.isBackup == true,
+                    persistedState.restoreMethod?.isBackup == true,
                     !inMemoryState.hasConfirmedRestoreFromBackup
                 {
                     return .quickRestore
                 }
             case .manualRestore:
-                if inMemoryState.restoreMethod == nil {
+                if persistedState.restoreMethod == nil {
                     // If the restore method is nil, we need to ask for it,
                     // regardless of if the AEP is present or not.
                     return .manualRestore
                 } else if
                     inMemoryState.accountEntropyPool == nil,
-                    inMemoryState.restoreMethod != .declined
+                    persistedState.restoreMethod != .declined
                 {
                     // If the restore method is anything but declined, we need
                     // to ensure the AEP is present.
@@ -1584,7 +1588,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return .manualRestore
                 }
             case .none:
-                if case .deviceTransfer = inMemoryState.restoreMethod {
+                if case .deviceTransfer = persistedState.restoreMethod {
                     return .quickRestore
                 }
             }
@@ -1686,7 +1690,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         if inMemoryState.accountEntropyPool == nil {
             return .value(.scanQuickRegistrationQrCode)
         }
-        if case .deviceTransfer = inMemoryState.restoreMethod {
+        if case .deviceTransfer = persistedState.restoreMethod {
             if let restoreToken = inMemoryState.registrationMessage?.restoreMethodToken {
                 let transferStatusState = RegistrationTransferStatusState(
                     deviceTransferService: deps.deviceTransferService,
@@ -1700,7 +1704,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if
-            inMemoryState.restoreMethod?.isBackup == true,
+            persistedState.restoreMethod?.isBackup == true,
             let registrationMessage = inMemoryState.registrationMessage
         {
             // if backup, show the confirmation screen
@@ -1719,7 +1723,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func nextStepForManualRestore() -> Guarantee<RegistrationStep> {
         if
             case .manualRestore = persistedState.restoreMode,
-            inMemoryState.restoreMethod == nil
+            persistedState.restoreMethod == nil
         {
             return .value(.chooseRestoreMethod(.manualRestore))
         }
@@ -1767,14 +1771,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return askForPinStep
         }
 
-        if inMemoryState.needsToAskForDeviceTransfer && inMemoryState.restoreMethod == nil {
+        if inMemoryState.needsToAskForDeviceTransfer && persistedState.restoreMethod == nil {
             if deps.featureFlags.backupSupported {
                 return .value(.chooseRestoreMethod(.unspecified))
             } else if !persistedState.hasDeclinedTransfer {
                 return .value(.transferSelection)
             }
         } else if
-            inMemoryState.restoreMethod?.isBackup == true,
+            persistedState.restoreMethod?.isBackup == true,
             inMemoryState.accountEntropyPool == nil
         {
             // If the user chose 'restore from backup', ask them
@@ -3347,7 +3351,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
         }
 
-        let isBackup = inMemoryState.restoreMethod?.isBackup == true
+        let isBackup = persistedState.restoreMethod?.isBackup == true
 
         // This step is here to attempt to restore the PIN after an SMS-based registration, and then possibly
         // restore from storage service. If the user is attempting a backup restore, skip restoring from
@@ -3409,7 +3413,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if
             !inMemoryState.hasProfileName,
-            inMemoryState.restoreMethod?.backupType == nil
+            persistedState.restoreMethod?.backupType == nil
         {
             if let profileInfo = inMemoryState.pendingProfileInfo {
                 let updatePromise = db.write { tx in
@@ -3444,7 +3448,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if
             inMemoryState.phoneNumberDiscoverability == nil,
-            inMemoryState.restoreMethod?.backupType == nil
+            persistedState.restoreMethod?.backupType == nil
         {
             return .phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(
                 e164: accountIdentity.e164,
@@ -3503,7 +3507,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) async -> BackupResult {
 
         if
-            inMemoryState.restoreMethod?.isBackup == true,
+            persistedState.restoreMethod?.isBackup == true,
             !inMemoryState.hasConfirmedRestoreFromBackup
         {
             let step = await fetchBackupCdnInfo(
@@ -3571,7 +3575,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         let isRestoringPinBackup: Bool = (
             accountIdentity.hasPreviouslyUsedSVR &&
             !persistedState.hasGivenUpTryingToRestoreWithSVR &&
-            inMemoryState.restoreMethod?.isBackup != true
+            persistedState.restoreMethod?.isBackup != true
         )
 
         if !persistedState.hasSkippedPinEntry {
@@ -4255,7 +4259,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     /// Device transfer is handled outside the registration flow, so sending that
     /// method is intentionally skipped here.
     private func sendRestoreMethodIfNecessary() -> Guarantee<Void> {
-        let restoreMethod: QuickRestoreManager.RestoreMethodType? = switch inMemoryState.restoreMethod {
+        let restoreMethod: QuickRestoreManager.RestoreMethodType? = switch persistedState.restoreMethod {
         case .declined: .decline
         case .localBackup: .localBackup
         case .remoteBackup: .remoteBackup
@@ -4899,7 +4903,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return !inMemoryState.hasRestoredFromStorageService
                 && !inMemoryState.hasSkippedRestoreFromStorageService
                 && !inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration
-                && inMemoryState.restoreMethod?.backupType == nil
+                && persistedState.restoreMethod?.backupType == nil
         case .changingNumber:
             return false
         }
@@ -4910,7 +4914,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .registering, .reRegistering:
             return !inMemoryState.hasRestoredFromStorageService
                 && !inMemoryState.hasSkippedRestoreFromStorageService
-                && inMemoryState.restoreMethod?.backupType == nil
+                && persistedState.restoreMethod?.backupType == nil
         case .changingNumber:
             return false
         }
