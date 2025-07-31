@@ -189,7 +189,14 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
             let source = observer.source
 
             let prevByteCount = activeUploadByteCounts[uploadId] ?? 0
-            source.incrementCompletedUnitCount(by: completedByteCount - prevByteCount)
+            if completedByteCount > prevByteCount {
+                source.incrementCompletedUnitCount(by: completedByteCount - prevByteCount)
+            } else {
+                // The completed byte count is less than the previous completed
+                // byte count, which is strange but not impossible given that we
+                // have both estimated and actual byte counts flowing through
+                // here. Nothing to increment.
+            }
             activeUploadByteCounts[uploadId] = completedByteCount
 
             if completedByteCount >= totalByteCount {
