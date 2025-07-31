@@ -14,17 +14,24 @@ protocol RegistrationEnterAccountEntropyPoolPresenter: AnyObject {
     func forgotKeyAction()
 }
 
+public struct RegistrationEnterAccountEntropyPoolState: Equatable {
+    let canShowBackButton: Bool
+}
+
 class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPoolViewController {
     private weak var presenter: RegistrationEnterAccountEntropyPoolPresenter?
+    private let state: RegistrationEnterAccountEntropyPoolState
 
     private enum Constants {
         static let backupKeyupportUrl = URL(string: "https://support.signal.org/hc/articles/360007059752")!
     }
 
     init(
+        state: RegistrationEnterAccountEntropyPoolState,
         presenter: RegistrationEnterAccountEntropyPoolPresenter,
         aepValidationPolicy: AEPValidationPolicy = .acceptAnyWellFormed
     ) {
+        self.state = state
         self.presenter = presenter
 
         super.init()
@@ -76,8 +83,12 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
             },
         )
 
-        navigationItem.leftBarButtonItem = .button(title: CommonStrings.backButton, style: .done) { [weak self] in
-            self?.presenter?.cancelKeyEntry()
+        if state.canShowBackButton {
+            navigationItem.leftBarButtonItem = .button(title: CommonStrings.backButton, style: .done) { [weak self] in
+                self?.presenter?.cancelKeyEntry()
+            }
+        } else {
+            navigationItem.hidesBackButton = true
         }
     }
 
@@ -148,6 +159,7 @@ private class PreviewRegistrationEnterAccountEntropyPoolPresenter: RegistrationE
     let presenter = PreviewRegistrationEnterAccountEntropyPoolPresenter()
     return UINavigationController(
         rootViewController: RegistrationEnterAccountEntropyPoolViewController(
+            state: RegistrationEnterAccountEntropyPoolState(canShowBackButton: true),
             presenter: presenter
         )
     )

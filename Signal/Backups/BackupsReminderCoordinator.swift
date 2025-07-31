@@ -44,7 +44,11 @@ class BackupsReminderCoordinator {
         ObjectRetainer.retainObject(self, forLifetimeOf: navController)
 
         navController.viewControllers = [
-            RegistrationEnterAccountEntropyPoolViewController(presenter: self, aepValidationPolicy: .acceptOnly(aep)),
+            RegistrationEnterAccountEntropyPoolViewController(
+                state: RegistrationEnterAccountEntropyPoolState(canShowBackButton: true),
+                presenter: self,
+                aepValidationPolicy: .acceptOnly(aep)
+            ),
         ]
 
         fromViewController.present(navController, animated: true)

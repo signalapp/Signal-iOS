@@ -60,7 +60,7 @@ public enum RegistrationStep: Equatable {
 
     /// If the user elects to restore from backup and doesn't have their old phone,
     /// they are prompted to manually enter their backup key.
-    case enterBackupKey
+    case enterBackupKey(RegistrationEnterAccountEntropyPoolState)
 
     // MARK: - Post-Registration
 

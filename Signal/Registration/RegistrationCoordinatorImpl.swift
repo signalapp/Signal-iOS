@@ -1440,7 +1440,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // so just skip restoring and continue
                     return await updateRestoreMethod(method: .declined).awaitable()
                 }
-                return .enterBackupKey
+                return .enterBackupKey(
+                    RegistrationEnterAccountEntropyPoolState(
+                        canShowBackButton: persistedState.accountIdentity == nil
+                    ))
             case .skipRestore:
                 return await updateRestoreMethod(method: .declined).awaitable()
             case .tryAgain, .restartQuickRestore, .none:
@@ -1726,7 +1729,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .value(.phoneNumberEntry(phoneNumberEntryState()))
         }
 
-        return .value(.enterBackupKey)
+        return .value(.enterBackupKey(
+            RegistrationEnterAccountEntropyPoolState(
+                canShowBackButton: persistedState.accountIdentity == nil
+            )))
     }
 
     private func splashStepToShow() -> RegistrationStep? {
@@ -1773,7 +1779,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         {
             // If the user chose 'restore from backup', ask them
             // for the AEP before continuing with registration
-            return .value(.enterBackupKey)
+            return .value(.enterBackupKey(
+                RegistrationEnterAccountEntropyPoolState(
+                    canShowBackButton: persistedState.accountIdentity == nil
+                )))
         }
 
         // Attempt to register right away with the password.
@@ -3359,7 +3368,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         } else {
             if isBackup {
                 // If the user want's to restore from backup, ask for the key
-                return .enterBackupKey
+                return .enterBackupKey(RegistrationEnterAccountEntropyPoolState(canShowBackButton: false))
             } else {
                 // If the AccountEntropyPool doesn't exist yet, create one.
                 accountEntropyPool = getOrGenerateAccountEntropyPool()

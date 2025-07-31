@@ -390,11 +390,11 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
-        case .enterBackupKey:
+        case .enterBackupKey(let state):
             return Controller(
                 type: RegistrationEnterAccountEntropyPoolViewController.self,
                 make: { presenter in
-                    return RegistrationEnterAccountEntropyPoolViewController(presenter: presenter)
+                    return RegistrationEnterAccountEntropyPoolViewController(state: state, presenter: presenter)
                 },
                 // No state to update.
                 update: nil
