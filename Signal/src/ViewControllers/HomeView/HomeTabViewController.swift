@@ -28,8 +28,15 @@ extension HomeTabViewController {
         let contextButton = ContextMenuButton(actions: buildActions(settingsAction))
         contextButton.accessibilityLabel = CommonStrings.openAppSettingsButton
 
+        let sizeClass: ConversationAvatarView.Configuration.SizeClass
+        if #available(iOS 26, *) {
+            sizeClass = .thirtySix
+        } else {
+            sizeClass = .twentyEight
+        }
+
         let avatarView = ConversationAvatarView(
-            sizeClass: .twentyEight,
+            sizeClass: sizeClass,
             localUserDisplayMode: .asUser
         )
         databaseStorage.read { transaction in
