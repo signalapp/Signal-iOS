@@ -127,7 +127,11 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             previewOrientation = .portrait
         }
         UIViewController.attemptRotationToDeviceOrientation()
+        
+        // Updates preview layer and capture orientation for correct media encoding.
+        // Crucial on iPad where interface orientation may differ from default portrait.
         cameraCaptureSession.updateVideoPreviewConnection(toOrientation: previewOrientation)
+        cameraCaptureSession.setCaptureOrientation(previewOrientation)
         updateIconOrientations(isAnimated: false, captureOrientation: previewOrientation)
 
         NotificationCenter.default.addObserver(

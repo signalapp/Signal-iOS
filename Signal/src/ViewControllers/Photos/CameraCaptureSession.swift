@@ -341,6 +341,15 @@ class CameraCaptureSession: NSObject {
     }
 
     private var motionManager: CMMotionManager?
+    
+    // Allows external callers to update capture orientation on the session queue.
+    // Useful for iPads deriving orientation from interface, especially before accelerometer data is available.
+    func setCaptureOrientation(_ orientation: AVCaptureVideoOrientation) {
+        sessionQueue.async { [weak self] in
+            self?.captureOrientation = orientation
+            self?.updateVideoCaptureOrientation()
+        }
+    }
 
     func updateVideoPreviewConnection(toOrientation orientation: AVCaptureVideoOrientation) {
         guard let videoConnection = previewView.previewLayer.connection else {
