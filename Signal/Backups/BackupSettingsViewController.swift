@@ -14,7 +14,6 @@ class BackupSettingsViewController:
     BackupSettingsViewModel.ActionsDelegate
 {
     enum OnLoadAction {
-        case none
         case presentWelcomeToBackupsSheet
     }
 
@@ -31,13 +30,13 @@ class BackupSettingsViewController:
     private let deviceSleepManager: DeviceSleepManager
     private let tsAccountManager: TSAccountManager
 
-    private let onLoadAction: OnLoadAction
+    private let onLoadAction: OnLoadAction?
     private let viewModel: BackupSettingsViewModel
 
     private var externalEventObservationTasks: [Task<Void, Never>] = []
 
     convenience init(
-        onLoadAction: OnLoadAction,
+        onLoadAction: OnLoadAction?,
     ) {
         guard let deviceSleepManager = DependenciesBridge.shared.deviceSleepManager else {
             owsFail("Unexpectedly missing DeviceSleepManager in main app!")
@@ -63,7 +62,7 @@ class BackupSettingsViewController:
     }
 
     init(
-        onLoadAction: OnLoadAction,
+        onLoadAction: OnLoadAction?,
         accountKeyStore: AccountKeyStore,
         backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress,
         backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter,
@@ -133,7 +132,7 @@ class BackupSettingsViewController:
 
     override func viewDidLoad() {
         switch onLoadAction {
-        case .none:
+        case nil:
             break
         case .presentWelcomeToBackupsSheet:
             presentWelcomeToBackupsSheet()

@@ -262,7 +262,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                     }
 
                     if haveBackupsEverBeenEnabled {
-                        let vc = BackupSettingsViewController(onLoadAction: .none)
+                        let vc = BackupSettingsViewController(onLoadAction: nil)
                         navigationController?.pushViewController(vc, animated: true)
                     } else {
                         BackupOnboardingCoordinator().present(fromViewController: self)
