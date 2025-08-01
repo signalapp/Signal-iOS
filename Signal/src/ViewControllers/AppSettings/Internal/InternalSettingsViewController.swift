@@ -128,11 +128,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
         let backupsSection = OWSTableSection(title: "Backups")
 
         if mode != .registration {
-            backupsSection.add(.actionItem(withText: "Validate Message Backup") {
-                self.validateMessageBackupProto()
-            })
-
-            backupsSection.add(.actionItem(withText: "Export Message Backup proto") {
+            backupsSection.add(.actionItem(withText: "Export + Validate Message Backup proto") {
                 self.exportMessageBackupProto()
             })
         }
@@ -337,48 +333,6 @@ private extension InternalSettingsViewController {
             }
         }
         SpinningCheckmarks.shouldSpin = !wasSpinning
-    }
-
-    func validateMessageBackupProto() {
-        let accountKeyStore = DependenciesBridge.shared.accountKeyStore
-        let backupArchiveManager = DependenciesBridge.shared.backupArchiveManager
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-
-        guard let localIdentifiers = SSKEnvironment.shared.databaseStorageRef.read(block: {tx in
-            return tsAccountManager.localIdentifiers(tx: tx)
-        }) else {
-            return
-        }
-        Task {
-            do {
-                guard let backupKey = try SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                    try accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx)
-                }) else {
-                    return
-                }
-                let metadata = try await backupArchiveManager.exportEncryptedBackup(
-                    localIdentifiers: localIdentifiers,
-                    backupKey: backupKey,
-                    backupPurpose: .remoteBackup,
-                    progress: nil
-                )
-                try await backupArchiveManager.validateEncryptedBackup(
-                    fileUrl: metadata.fileUrl,
-                    backupKey: backupKey,
-                    backupPurpose: .remoteBackup
-                )
-                try? FileManager.default.removeItem(at: metadata.fileUrl)
-                await MainActor.run {
-                    self.presentToast(text: "Passed validation")
-                }
-            } catch {
-                await MainActor.run {
-                    DependenciesBridge.shared.backupArchiveErrorPresenter.presentOverTopmostViewController(completion: {
-                        self.presentToast(text: "Failed validation")
-                    })
-                }
-            }
-        }
     }
 
     func exportMessageBackupProto() {

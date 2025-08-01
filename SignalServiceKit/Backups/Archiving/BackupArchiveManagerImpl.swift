@@ -263,7 +263,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
         let attachmentByteCounter = BackupArchiveAttachmentByteCounter()
 
-        return try await _exportBackup(
+        let metadata = try await _exportBackup(
             localIdentifiers: localIdentifiers,
             backupPurpose: backupPurpose,
             includedContentFilter: includedContentFilter,
@@ -279,6 +279,14 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 )
             }
         )
+
+        try await self.validateEncryptedBackup(
+            fileUrl: metadata.fileUrl,
+            backupKey: backupKey,
+            backupPurpose: backupPurpose
+        )
+
+        return metadata
     }
 
 #if TESTABLE_BUILD
@@ -1423,7 +1431,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         }
     }
 
-    public func validateEncryptedBackup(
+    private func validateEncryptedBackup(
         fileUrl: URL,
         backupKey: MessageRootBackupKey,
         backupPurpose: MessageBackupPurpose

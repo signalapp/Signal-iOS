@@ -510,11 +510,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 backupPurpose: .deviceTransfer,
                 progress: progress
             )
-            try await backupArchiveManager.validateEncryptedBackup(
-                fileUrl: metadata.fileUrl,
-                backupKey: ephemeralBackupKey,
-                backupPurpose: .deviceTransfer
-            )
             return metadata
         } catch let error {
             if error is CancellationError {

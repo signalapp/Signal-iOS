@@ -103,12 +103,6 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         let source = await progress?.addSource(withLabel: "", unitCount: 1)
         source?.incrementCompletedUnitCount(by: 1)
     }
-
-    public func validateEncryptedBackup(
-        fileUrl: URL,
-        backupKey: MessageRootBackupKey,
-        backupPurpose: MessageBackupPurpose
-    ) async throws {}
 }
 
 #endif
