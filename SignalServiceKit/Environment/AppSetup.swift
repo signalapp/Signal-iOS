@@ -930,6 +930,7 @@ public class AppSetup {
             accountKeyStore: accountKeyStore,
             appContext: appContext,
             authCredentialStore: authCredentialStore,
+            backupCDNCredentialStore: backupCDNCredentialStore,
             backupIdManager: backupIdManager,
             backupListMediaManager: backupListMediaManager,
             backupRequestManager: backupRequestManager,

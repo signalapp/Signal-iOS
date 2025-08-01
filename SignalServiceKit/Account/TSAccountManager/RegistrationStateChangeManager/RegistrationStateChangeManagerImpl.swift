@@ -13,6 +13,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let accountKeyStore: AccountKeyStore
     private let appContext: AppContext
     private let authCredentialStore: AuthCredentialStore
+    private let backupCDNCredentialStore: BackupCDNCredentialStore
     private let backupIdManager: BackupIdManager
     private let backupListMediaManager: BackupListMediaManager
     private let backupRequestManager: BackupRequestManager
@@ -37,6 +38,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         accountKeyStore: AccountKeyStore,
         appContext: AppContext,
         authCredentialStore: AuthCredentialStore,
+        backupCDNCredentialStore: BackupCDNCredentialStore,
         backupIdManager: BackupIdManager,
         backupListMediaManager: BackupListMediaManager,
         backupRequestManager: BackupRequestManager,
@@ -60,6 +62,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         self.accountKeyStore = accountKeyStore
         self.appContext = appContext
         self.authCredentialStore = authCredentialStore
+        self.backupCDNCredentialStore = backupCDNCredentialStore
         self.backupIdManager = backupIdManager
         self.backupListMediaManager = backupListMediaManager
         self.backupRequestManager = backupRequestManager
@@ -161,8 +164,15 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             } else {
                 notificationPresenter.notifyUserOfDeregistration(tx: tx)
             }
+
             // Ensure when we reregister, we will query list media.
             backupListMediaManager.setNeedsQueryListMedia(tx: tx)
+
+            // Wipe our cached Backup credentials, which may be invalid if we
+            // eventually re-register.
+            authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
+            backupCDNCredentialStore.wipe(tx: tx)
+
             // On linked devices, reset all DM timer versions. If the user
             // relinks a new primary and resets all its DM timer versions,
             // our local higher version number would prevent us getting
