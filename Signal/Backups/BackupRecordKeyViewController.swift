@@ -33,6 +33,12 @@ extension BackupRecordKeyViewController: BackupRecordKeyViewModel.ActionsDelegat
             [[UIPasteboard.typeAutomatic: aep.rawData]],
             options: [.expirationDate: Date().addingTimeInterval(60)]
         )
+
+        let toast = ToastController(text: OWSLocalizedString(
+            "BACKUP_KEY_COPIED_MESSAGE_TOAST",
+            comment: "Toast indicating that the user has copied their backup key."
+        ))
+        toast.presentToastView(from: .bottom, of: view, inset: view.safeAreaInsets.bottom + 8)
     }
 
     func complete() {
