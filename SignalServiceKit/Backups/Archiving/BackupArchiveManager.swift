@@ -58,7 +58,6 @@ public protocol BackupArchiveManager {
     /// integration tests.
     func exportPlaintextBackupForTests(
         localIdentifiers: LocalIdentifiers,
-        progress: OWSProgressSink?
     ) async throws -> URL
 #endif
 
@@ -79,19 +78,17 @@ public protocol BackupArchiveManager {
         progress: OWSProgressSink?
     ) async throws
 
+#if TESTABLE_BUILD
     /// Import a backup from the plaintext binary file at the given local URL.
-    func importPlaintextBackup(
+    func importPlaintextBackupForTests(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        isPrimaryDevice: Bool,
-        backupPurpose: MessageBackupPurpose,
-        progress: OWSProgressSink?
     ) async throws
+#endif
 
     /// Call this if ``backupRestoreState(tx:)`` returns ``BackupRestoreState/unfinalized``.
     /// ``importEncryptedBackup(fileUrl:localIdentifiers:isPrimaryDevice:backupKey:backupPurpose:progress:)``
-    /// and ``importPlaintextBackup(fileUrl:localIdentifiers:isPrimaryDevice:backupPurpose:progress:)`` will
-    /// finalize on their own; however if this process is interrupted (by e.g. cancellation or app termination) callers MUST NOT import again
+    /// will finalize on its own; however if this process is interrupted (by e.g. cancellation or app termination) callers MUST NOT import again
     /// but MUST call this method to finish the in-progress import finalization steps. This method is idempotent; import is not.
     func finalizeBackupImport(progress: OWSProgressSink?) async throws
 }

@@ -332,16 +332,13 @@ class BackupArchiveIntegrationTests: XCTestCase {
         /// backup file.
         let localIdentifiers: LocalIdentifiers = .forUnitTests
 
-        try await deps.backupArchiveManager.importPlaintextBackup(
+        try await deps.backupArchiveManager.importPlaintextBackupForTests(
             fileUrl: testCaseFileUrl,
-            localIdentifiers: localIdentifiers,
-            isPrimaryDevice: true,
-            backupPurpose: .remoteBackup,
-            progress: nil
+            localIdentifiers: localIdentifiers
         )
 
         let exportedBackupUrl = try await deps.backupArchiveManager
-            .exportPlaintextBackupForTests(localIdentifiers: localIdentifiers, progress: nil)
+            .exportPlaintextBackupForTests(localIdentifiers: localIdentifiers)
 
         try compareViaLibsignal(
             sharedTestCaseBackupUrl: testCaseFileUrl,

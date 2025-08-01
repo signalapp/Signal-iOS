@@ -65,10 +65,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
 
     public func exportPlaintextBackupForTests(
         localIdentifiers: LocalIdentifiers,
-        progress: OWSProgressSink?
     ) async throws -> URL {
-        let source = await progress?.addSource(withLabel: "", unitCount: 1)
-        source?.incrementCompletedUnitCount(by: 1)
         return URL(string: "file://")!
     }
 
@@ -88,16 +85,10 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         source?.incrementCompletedUnitCount(by: 1)
     }
 
-    public func importPlaintextBackup(
+    public func importPlaintextBackupForTests(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        isPrimaryDevice: Bool,
-        backupPurpose: MessageBackupPurpose,
-        progress: OWSProgressSink?
-    ) async throws {
-        let source = await progress?.addSource(withLabel: "", unitCount: 1)
-        source?.incrementCompletedUnitCount(by: 1)
-    }
+    ) async throws {}
 
     public func finalizeBackupImport(progress: OWSProgressSink?) async throws {
         let source = await progress?.addSource(withLabel: "", unitCount: 1)

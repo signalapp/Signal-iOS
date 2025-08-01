@@ -292,7 +292,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 #if TESTABLE_BUILD
     public func exportPlaintextBackupForTests(
         localIdentifiers: LocalIdentifiers,
-        progress progressSink: OWSProgressSink?
     ) async throws -> URL {
         guard FeatureFlags.Backups.supported else {
             owsFailDebug("Should not be able to use backups!")
@@ -312,7 +311,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             localIdentifiers: localIdentifiers,
             backupPurpose: .remoteBackup,
             includedContentFilter: includedContentFilter,
-            progressSink: progressSink,
+            progressSink: nil,
             attachmentByteCounter: attachmentByteCounter,
             benchTitle: "Export plaintext Backup",
             openOutputStreamBlock: { exportProgress, tx in
@@ -730,12 +729,10 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         )
     }
 
-    public func importPlaintextBackup(
+#if TESTABLE_BUILD
+    public func importPlaintextBackupForTests(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        isPrimaryDevice: Bool,
-        backupPurpose: MessageBackupPurpose,
-        progress progressSink: OWSProgressSink?
     ) async throws {
         guard FeatureFlags.Backups.supported else {
             owsFailDebug("Should not be able to use backups!")
@@ -745,10 +742,10 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         try await _importBackup(
             fileUrl: fileUrl,
             localIdentifiers: localIdentifiers,
-            isPrimaryDevice: isPrimaryDevice,
-            progressSink: progressSink,
+            isPrimaryDevice: true,
+            progressSink: nil,
             benchTitle: "Import plaintext Backup",
-            backupPurpose: backupPurpose,
+            backupPurpose: .remoteBackup,
             openInputStreamBlock: { fileUrl, frameRestoreProgress, _ in
                 return plaintextStreamProvider.openPlaintextInputFileStream(
                     fileUrl: fileUrl,
@@ -757,6 +754,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             }
         )
     }
+#endif
 
     /// Everything in this method MUST be idempotent, as partial progress can be made
     /// before app termination, which will result in this getting called again.
