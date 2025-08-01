@@ -370,6 +370,8 @@ class RegistrationPinViewController: OWSViewController {
         stackView.autoPinWidth(toWidthOf: scrollView)
         stackView.heightAnchor.constraint(equalTo: scrollView.frameLayoutGuide.heightAnchor).isActive = true
 
+        pinTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+
         stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(explanationView)
         stackView.addArrangedSubview(pinTextField)
@@ -874,6 +876,11 @@ class RegistrationPinViewController: OWSViewController {
 
         presentActionSheet(actionSheet)
     }
+
+    @objc
+    private func textFieldDidChange(_ textField: UITextField) {
+        render()
+    }
 }
 
 // MARK: - UITextViewDelegate
@@ -914,11 +921,12 @@ extension RegistrationPinViewController: UITextFieldDelegate {
                 replacementString: replacementString
             )
             result = false
+            render()
         case .alphanumeric:
+            // render() will happen in textFieldDidChange, after the textField has
+            // updated input. This makes sure buttons appear correctly.
             result = true
         }
-
-        render()
 
         return result
     }
