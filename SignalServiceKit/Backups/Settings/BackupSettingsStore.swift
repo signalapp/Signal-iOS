@@ -79,6 +79,23 @@ public struct BackupSettingsStore {
         return kvStore.getBool(Keys.haveEverBeenEnabled, defaultValue: false, transaction: tx)
     }
 
+    /// Not intended for production use.
+    ///
+    /// Wipes whether Backups have ever been enabled. Throws if Backups are not
+    /// currently disabled.
+    public func wipeHaveBackupsEverBeenEnabled(tx: DBWriteTransaction) throws(OWSAssertionError) {
+        switch backupPlan(tx: tx) {
+        case .disabled:
+            break
+        case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
+            throw OWSAssertionError("Backups must be disabled to wipe haveBackupsEverBeenEnabled.")
+        }
+
+        kvStore.removeValue(forKey: Keys.haveEverBeenEnabled, transaction: tx)
+    }
+
+    // MARK: -
+
     /// This device's view of the user's current Backup plan. A return value of
     /// `nil` indicates that the user has Backups disabled.
     ///
