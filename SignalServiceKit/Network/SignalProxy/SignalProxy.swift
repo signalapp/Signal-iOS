@@ -44,6 +44,7 @@ public class SignalProxy: NSObject {
             self.host = hostToStore
             self.useProxy = useProxyToStore
             self.ensureProxyState(restartIfNeeded: true)
+            self.updateLibSignalProxy()
         }
     }
 
@@ -62,6 +63,7 @@ public class SignalProxy: NSObject {
             }
 
             ensureProxyState()
+            updateLibSignalProxy()
         }
     }
 
@@ -132,6 +134,18 @@ public class SignalProxy: NSObject {
         // The NSE manages the proxy relay itself
         guard !CurrentAppContext().isNSE else { return }
 
+        if isEnabled {
+            if restartIfNeeded && relayServer.isStarted {
+                relayServer.restartIfNeeded(ignoreBackoff: true)
+            } else {
+                relayServer.start()
+            }
+        } else {
+            relayServer.stop()
+        }
+    }
+
+    private static func updateLibSignalProxy() {
         let networkManager = SSKEnvironment.shared.networkManagerRef
         if isEnabled {
             if let (proxyHost, proxyPort) = host.flatMap({ ProxyClient.parseHost($0) }) {
@@ -146,15 +160,8 @@ public class SignalProxy: NSObject {
                 // We can't print the invalid host in the logs, because that's private!
                 owsFailDebug("failed to parse previously-validated proxy host")
             }
-
-            if restartIfNeeded && relayServer.isStarted {
-                relayServer.restartIfNeeded(ignoreBackoff: true)
-            } else {
-                relayServer.start()
-            }
         } else {
             networkManager.resetLibsignalNetProxySettings()
-            relayServer.stop()
         }
     }
 

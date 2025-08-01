@@ -498,7 +498,7 @@ private enum IsEnabledFlag: String, FlagType {
     case lazyDatabaseMigratorKillSwitch = "ios.lazyDatabaseMigratorKillSwitch"
     case libsignalEnforceMinTlsVersion = "ios.libsignalEnforceMinTlsVersion"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
-    case notificationServiceWebSocket = "ios.notificationServiceWebSocket"
+    case notificationServiceWebSocket = "ios.notificationServiceWebSocket2"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
     case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
     case paypalMonthlyDonationKillSwitch = "ios.paypalMonthlyDonationKillSwitch"
