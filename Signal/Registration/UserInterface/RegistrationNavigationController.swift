@@ -35,7 +35,7 @@ public class RegistrationNavigationController: OWSNavigationController {
 
         if viewControllers.isEmpty, !isLoading {
             Logger.info("Performing initial load")
-            pushNextController(coordinator.nextStep())
+            pushNextController(Guarantee.wrapAsync { await self.coordinator.nextStep() })
         }
 
         let submitLogsGesture = UITapGestureRecognizer(
@@ -436,7 +436,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             let actionSheet = ActionSheetController(title: title, message: message)
             actionSheet.addAction(.init(title: CommonStrings.okButton, style: .default, handler: { [weak self] _ in
                 guard let self else { return }
-                self.pushNextController(self.coordinator.nextStep())
+                self.pushNextController(Guarantee.wrapAsync { await self.coordinator.nextStep() })
             }))
             // We explicitly don't want the user to be able to dismiss.
             actionSheet.isCancelable = false
@@ -615,7 +615,7 @@ extension RegistrationNavigationController: RegistrationPinPresenter {
 
 extension RegistrationNavigationController: RegistrationPinAttemptsExhaustedAndMustCreateNewPinPresenter {
     func acknowledgePinGuessesExhausted() {
-        pushNextController(coordinator.nextStep())
+        pushNextController(Guarantee.wrapAsync { await self.coordinator.nextStep() })
     }
 }
 

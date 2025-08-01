@@ -251,11 +251,11 @@ public class RegistrationCoordinatorTest {
         switch mode {
         case .registering:
             // With no state set up, should show the splash.
-            #expect(await coordinator.nextStep().awaitable() == .registrationSplash)
+            #expect(await coordinator.nextStep() == .registrationSplash)
             // Once we show it, don't show it again.
             #expect(await coordinator.continueFromSplash().awaitable() != .registrationSplash)
         case .reRegistering, .changingNumber:
-            #expect(await coordinator.nextStep().awaitable() != .registrationSplash)
+            #expect(await coordinator.nextStep() != .registrationSplash)
         }
     }
 
@@ -268,7 +268,7 @@ public class RegistrationCoordinatorTest {
         setupDefaultAccountAttributes()
 
         // We should start with the banner.
-        #expect(await coordinator.nextStep().awaitable() == .appUpdateBanner)
+        #expect(await coordinator.nextStep() == .appUpdateBanner)
     }
 
     @MainActor @Test(arguments: Self.testCases())
@@ -285,17 +285,17 @@ public class RegistrationCoordinatorTest {
         switch mode {
         case .registering:
             // Gotta get the splash out of the way.
-            #expect(await coordinator.nextStep().awaitable() == .registrationSplash)
+            #expect(await coordinator.nextStep() == .registrationSplash)
             nextStep = await coordinator.continueFromSplash().awaitable()
         case .reRegistering, .changingNumber:
             // No splash for these.
-            nextStep = await coordinator.nextStep().awaitable()
+            nextStep = await coordinator.nextStep()
         }
 
         // Now we should show the permissions.
         #expect(nextStep == .permissions)
         // Doesn't change even if we try and proceed.
-        #expect(await coordinator.nextStep().awaitable() == .permissions)
+        #expect(await coordinator.nextStep() == .permissions)
 
         // Once the state is updated we can proceed.
         nextStep = await coordinator.requestPermissions().awaitable()
@@ -440,7 +440,7 @@ public class RegistrationCoordinatorTest {
 
         // We haven't set a phone number so it should ask for that.
         #expect(
-            await coordinator.nextStep().awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(stubs.phoneNumberEntryState(mode: mode))
         )
 
@@ -565,7 +565,7 @@ public class RegistrationCoordinatorTest {
 
         // We haven't set a phone number so it should ask for that.
         #expect(
-            await coordinator.nextStep().awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(stubs.phoneNumberEntryState(mode: mode))
         )
 
@@ -658,7 +658,7 @@ public class RegistrationCoordinatorTest {
 
         // We haven't set a phone number so it should ask for that.
         #expect(
-            await coordinator.nextStep().awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(stubs.phoneNumberEntryState(mode: mode))
         )
 
@@ -773,7 +773,7 @@ public class RegistrationCoordinatorTest {
 
         // We haven't set a phone number so it should ask for that.
         #expect(
-            await coordinator.nextStep().awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(stubs.phoneNumberEntryState(mode: mode))
         )
 
@@ -952,7 +952,7 @@ public class RegistrationCoordinatorTest {
 
         // We haven't set a phone number so it should ask for that.
         #expect(
-            await coordinator.nextStep().awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(stubs.phoneNumberEntryState(mode: mode))
         )
 
@@ -1099,7 +1099,7 @@ public class RegistrationCoordinatorTest {
 
         // We haven't set a phone number so it should ask for that.
         #expect(
-            await coordinator.nextStep().awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(stubs.phoneNumberEntryState(mode: mode))
         )
 
@@ -1312,7 +1312,7 @@ public class RegistrationCoordinatorTest {
 
         // We haven't set a phone number so it should ask for that.
         #expect(
-            await coordinator.nextStep().awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(stubs.phoneNumberEntryState(mode: mode))
         )
 
@@ -1456,7 +1456,7 @@ public class RegistrationCoordinatorTest {
 
         // We haven't set a phone number so it should ask for that.
         #expect(
-            await coordinator.nextStep().awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(stubs.phoneNumberEntryState(mode: mode))
         )
 
@@ -2128,7 +2128,7 @@ public class RegistrationCoordinatorTest {
         )
 
         #expect(
-            await coordinator.nextStep().awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(
                     mode: mode,
                     nextVerificationAttempt: nil,
@@ -2356,7 +2356,7 @@ public class RegistrationCoordinatorTest {
 
         // We should still be waiting.
         #expect(
-            await coordinator.nextStep().awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode))
         )
         #expect(
@@ -2777,7 +2777,7 @@ public class RegistrationCoordinatorTest {
         )
 
         #expect(
-            await coordinator.nextStep().awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(
                     mode: mode,
                     nextVerificationAttempt: nil
@@ -2802,7 +2802,7 @@ public class RegistrationCoordinatorTest {
         )
 
         #expect(
-            await coordinator.nextStep().awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(
                     mode: mode,
                     nextVerificationAttempt: nil
@@ -2844,7 +2844,7 @@ public class RegistrationCoordinatorTest {
         )
 
         #expect(
-            await coordinator.nextStep().awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(stubs.phoneNumberEntryState(
                     mode: mode,
                     previouslyEnteredE164: Stubs.e164
@@ -3250,7 +3250,7 @@ public class RegistrationCoordinatorTest {
         switch mode {
         case .registering:
             // Gotta get the splash out of the way.
-            #expect(await coordinator.nextStep().awaitable() == .registrationSplash)
+            #expect(await coordinator.nextStep() == .registrationSplash)
         case .reRegistering, .changingNumber:
             break
         }

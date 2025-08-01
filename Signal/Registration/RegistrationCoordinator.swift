@@ -32,7 +32,8 @@ public protocol RegistrationCoordinator {
     /// The idea is that view controllers should be (mostly) stateless, and rely on
     /// the coordinator to update its state when actions are taken, then get the next
     /// step to know what view to push next.
-    func nextStep() -> Guarantee<RegistrationStep>
+    @MainActor
+    func nextStep() async -> RegistrationStep
 
     /// Continue past the splash screen (marking it as shown).
     func continueFromSplash() -> Guarantee<RegistrationStep>
