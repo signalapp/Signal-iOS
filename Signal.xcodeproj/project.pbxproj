@@ -1100,6 +1100,9 @@
 		66AE8A872C169A900044D388 /* MediaGalleryAttachmentFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE8A852C169A830044D388 /* MediaGalleryAttachmentFinderTest.swift */; };
 		66AEC77E2DD47FE40097AAA2 /* BackupArchive+AccountDataContexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AEC77D2DD47FD80097AAA2 /* BackupArchive+AccountDataContexts.swift */; };
 		66AEFCA42A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */; };
+		66B127FE2E3D352E006FE598 /* BackupPurpose.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B127FD2E3D3529006FE598 /* BackupPurpose.swift */; };
+		66B128002E3D83EA006FE598 /* NonceHeaderInputStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B127FF2E3D83E0006FE598 /* NonceHeaderInputStreamTransform.swift */; };
+		66B128022E3D88BE006FE598 /* NonceHeaderOutputStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B128012E3D88B8006FE598 /* NonceHeaderOutputStreamTransform.swift */; };
 		66B152AC2DD6FDA700DE25CC /* AttachmentOffloadingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B152AB2DD6FD9400DE25CC /* AttachmentOffloadingManager.swift */; };
 		66B1E26C2CB187B3005F43AC /* AttachmentUploadStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1E26B2CB187A0005F43AC /* AttachmentUploadStoreImpl.swift */; };
 		66B1E2702CB48C53005F43AC /* Array+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1E26F2CB48C48005F43AC /* Array+SSKTest.swift */; };
@@ -1114,6 +1117,7 @@
 		66B943812A6F217600DCF2FF /* SpoilerParticleShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */; };
 		66BAB3BA2C92076D008A4C92 /* AttachmentValidationBackfillStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BAB3B92C92076D008A4C92 /* AttachmentValidationBackfillStore.swift */; };
 		66BB4D592AD8BF6200A84219 /* MergingDict.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BB4D582AD8BF6200A84219 /* MergingDict.swift */; };
+		66BCF2752E3AB8C30052EF94 /* BackupNonceMetadataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BCF2742E3AB89E0052EF94 /* BackupNonceMetadataStore.swift */; };
 		66BE13CC2C1D02700081A1ED /* AttachmentDownloadStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BE13CA2C1D026A0081A1ED /* AttachmentDownloadStoreTests.swift */; };
 		66BE544D28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */; };
 		66BED7E32B9B8FDF00236BAD /* MediaBandwidthPreferenceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BED7E22B9B8FDF00236BAD /* MediaBandwidthPreferenceStore.swift */; };
@@ -5043,6 +5047,9 @@
 		66AEC77D2DD47FD80097AAA2 /* BackupArchive+AccountDataContexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupArchive+AccountDataContexts.swift"; sourceTree = "<group>"; };
 		66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerableLabelAnimator.swift; sourceTree = "<group>"; };
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
+		66B127FD2E3D3529006FE598 /* BackupPurpose.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupPurpose.swift; sourceTree = "<group>"; };
+		66B127FF2E3D83E0006FE598 /* NonceHeaderInputStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonceHeaderInputStreamTransform.swift; sourceTree = "<group>"; };
+		66B128012E3D88B8006FE598 /* NonceHeaderOutputStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonceHeaderOutputStreamTransform.swift; sourceTree = "<group>"; };
 		66B152AB2DD6FD9400DE25CC /* AttachmentOffloadingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentOffloadingManager.swift; sourceTree = "<group>"; };
 		66B1E26B2CB187A0005F43AC /* AttachmentUploadStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadStoreImpl.swift; sourceTree = "<group>"; };
 		66B1E26F2CB48C48005F43AC /* Array+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+SSKTest.swift"; sourceTree = "<group>"; };
@@ -5057,6 +5064,7 @@
 		66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SpoilerParticleShader.metal; sourceTree = "<group>"; };
 		66BAB3B92C92076D008A4C92 /* AttachmentValidationBackfillStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentValidationBackfillStore.swift; sourceTree = "<group>"; };
 		66BB4D582AD8BF6200A84219 /* MergingDict.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergingDict.swift; sourceTree = "<group>"; };
+		66BCF2742E3AB89E0052EF94 /* BackupNonceMetadataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupNonceMetadataStore.swift; sourceTree = "<group>"; };
 		66BE13CA2C1D026A0081A1ED /* AttachmentDownloadStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadStoreTests.swift; sourceTree = "<group>"; };
 		66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextOnboardingOverlayView.swift; sourceTree = "<group>"; };
 		66BED7E22B9B8FDF00236BAD /* MediaBandwidthPreferenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBandwidthPreferenceStore.swift; sourceTree = "<group>"; };
@@ -11232,6 +11240,7 @@
 				C1EB623B2BADEE56006D99CB /* ChunkedInputStreamTransform.swift */,
 				C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */,
 				C1DD78AA2BB1CEF80020F064 /* InputStreamable.swift */,
+				66B127FF2E3D83E0006FE598 /* NonceHeaderInputStreamTransform.swift */,
 				C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */,
 			);
 			path = Input;
@@ -11242,6 +11251,7 @@
 			children = (
 				C1CF83CF2B96C85E00CDC9C4 /* ChunkedOutputStreamTransform.swift */,
 				C1CF83D52B9A20FA00CDC9C4 /* EncryptingStreamTransform.swift */,
+				66B128012E3D88B8006FE598 /* NonceHeaderOutputStreamTransform.swift */,
 				C1E3073F2BA3B342009F015B /* OutputStreamable.swift */,
 				C1CF83D32B9A207800CDC9C4 /* TransformingOutputStream.swift */,
 			);
@@ -12601,6 +12611,8 @@
 				665C0D5D2ADF53E200539A37 /* BackupArchiveManagerImpl.swift */,
 				C10E9FAE2BB778E100A609B9 /* BackupArchiveManagerMock.swift */,
 				6694BAB22CE579270015633F /* BackupArchiveProgress.swift */,
+				66BCF2742E3AB89E0052EF94 /* BackupNonceMetadataStore.swift */,
+				66B127FD2E3D3529006FE598 /* BackupPurpose.swift */,
 			);
 			path = Archiving;
 			sourceTree = "<group>";
@@ -17716,10 +17728,12 @@
 				D923DF9C2DC135D200CDAFC3 /* BackupIdManager.swift in Sources */,
 				C17586662E2AC52D008B3A13 /* BackupKeyMaterial.swift in Sources */,
 				66B5451A2DD5B9A00016289B /* BackupListMediaManager.swift in Sources */,
+				66BCF2752E3AB8C30052EF94 /* BackupNonceMetadataStore.swift in Sources */,
 				6652298B2E26E7D4002C14A0 /* BackupOversizeTextCache.swift in Sources */,
 				D970541F2CFE4D0200AC7954 /* BackupPaymentMethod.swift in Sources */,
 				D97054202CFE4D0200AC7954 /* BackupPaymentProcessor.swift in Sources */,
 				D98ACAA92E0DA71B00FA497F /* BackupPlanManager.swift in Sources */,
+				66B127FE2E3D352E006FE598 /* BackupPurpose.swift in Sources */,
 				D9EE79112CF525A4007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift in Sources */,
 				D9EE790F2CF5232C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift in Sources */,
 				C14391132BD1C0DF00ED6FCB /* BackupRequestManager.swift in Sources */,
@@ -18118,6 +18132,8 @@
 				B9327B3A2BBB76E900CCDBBA /* NicknameManager.swift in Sources */,
 				B93296652BB5CF3200B8BD39 /* NicknameRecord.swift in Sources */,
 				B93296672BB5CF7500B8BD39 /* NicknameRecordStore.swift in Sources */,
+				66B128002E3D83EA006FE598 /* NonceHeaderInputStreamTransform.swift in Sources */,
+				66B128022E3D88BE006FE598 /* NonceHeaderOutputStreamTransform.swift in Sources */,
 				72C9058A2B9A293300E586B8 /* NoopCallMessageHandler.swift in Sources */,
 				F9C5CE62289453B400548EEE /* NoopNotificationPresenterImpl.swift in Sources */,
 				F9C5CE58289453B400548EEE /* NoopPendingReadReceiptRecorder.swift in Sources */,

@@ -506,8 +506,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         do {
             let metadata = try await backupArchiveManager.exportEncryptedBackup(
                 localIdentifiers: localIdentifiers,
-                backupKey: ephemeralBackupKey,
-                backupPurpose: .deviceTransfer,
+                backupPurpose: .linkNsync(ephemeralKey: ephemeralBackupKey.backupKey, aci: localIdentifiers.aci),
                 progress: progress
             )
             return metadata
@@ -763,9 +762,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 fileUrl: fileUrl,
                 localIdentifiers: localIdentifiers,
                 isPrimaryDevice: false,
-                backupKey: ephemeralBackupKey,
-                // "Device transfer" is libsignal's name for link'n'sync
-                backupPurpose: .deviceTransfer,
+                source: .linkNsync(ephemeralKey: ephemeralBackupKey.backupKey, aci: localIdentifiers.aci),
                 progress: progress
             )
         } catch {

@@ -12,8 +12,11 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
     public func backupCdnInfo(
         backupKey: MessageRootBackupKey,
         auth: ChatServiceAuth
-    ) async throws -> AttachmentDownloads.CdnInfo {
-        return AttachmentDownloads.CdnInfo(contentLength: 0, lastModified: Date())
+    ) async throws -> BackupCdnInfo {
+        return BackupCdnInfo(
+            fileInfo: AttachmentDownloads.CdnInfo(contentLength: 0, lastModified: Date()),
+            metadataHeader: BackupNonce.MetadataHeader(data: Data())
+        )
     }
 
     public func downloadEncryptedBackup(
@@ -40,6 +43,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
                 encryptedDataLength: 0,
                 plaintextDataLength: 0,
                 attachmentByteSize: metadata.attachmentByteSize,
+                nonceMetadata: metadata.nonceMetadata,
             ),
             beginTimestamp: 0,
             finishTimestamp: Date().ows_millisecondsSince1970
@@ -48,8 +52,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
 
     public func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
-        backupKey: MessageRootBackupKey,
-        backupPurpose: MessageBackupPurpose,
+        backupPurpose: BackupExportPurpose,
         progress: OWSProgressSink?
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
         let source = await progress?.addSource(withLabel: "", unitCount: 1)
@@ -60,6 +63,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
             encryptedDataLength: 0,
             plaintextDataLength: 0,
             attachmentByteSize: 0,
+            nonceMetadata: nil,
         )
     }
 
@@ -77,8 +81,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
-        backupKey: MessageRootBackupKey,
-        backupPurpose: MessageBackupPurpose,
+        source: BackupImportSource,
         progress: OWSProgressSink?
     ) async throws {
         let source = await progress?.addSource(withLabel: "", unitCount: 1)

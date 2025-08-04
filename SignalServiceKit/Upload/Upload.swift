@@ -125,6 +125,10 @@ public enum Upload {
         /// backup eligibility.
         public let attachmentByteSize: UInt64
 
+        /// Metadata related to the SVR🐝 nonce used for forward secrecy that should be persisted
+        /// after upload success.
+        let nonceMetadata: BackupExportPurpose.NonceMetadata?
+
         /// We don't enforce a size limit locally for backups; we let the server
         /// enforce the limit and fail the upload if we surpass it.
         public static var maxUploadSizeBytes: UInt { .max }

@@ -15,6 +15,11 @@ public enum BackupRestoreState: Int, Codable {
     case finalized = 200
 }
 
+public struct BackupCdnInfo {
+    public let fileInfo: AttachmentDownloads.CdnInfo
+    public let metadataHeader: BackupNonce.MetadataHeader
+}
+
 public protocol BackupArchiveManager {
 
     // MARK: - Interact with remotes
@@ -23,7 +28,7 @@ public protocol BackupArchiveManager {
     func backupCdnInfo(
         backupKey: MessageRootBackupKey,
         auth: ChatServiceAuth
-    ) async throws -> AttachmentDownloads.CdnInfo
+    ) async throws -> BackupCdnInfo
 
     /// Download the encrypted backup for the current user to a local file.
     func downloadEncryptedBackup(
@@ -48,8 +53,7 @@ public protocol BackupArchiveManager {
     /// - SeeAlso `uploadEncryptedBackup`
     func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
-        backupKey: MessageRootBackupKey,
-        backupPurpose: MessageBackupPurpose,
+        backupPurpose: BackupExportPurpose,
         progress: OWSProgressSink?
     ) async throws -> Upload.EncryptedBackupUploadMetadata
 
@@ -73,8 +77,7 @@ public protocol BackupArchiveManager {
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
-        backupKey: MessageRootBackupKey,
-        backupPurpose: MessageBackupPurpose,
+        source: BackupImportSource,
         progress: OWSProgressSink?
     ) async throws
 

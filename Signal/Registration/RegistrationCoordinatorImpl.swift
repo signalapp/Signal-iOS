@@ -615,12 +615,25 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
             }
 
+            let nonceSource: BackupImportSource.NonceMetadataSource
+            if let metadataHeader = self.inMemoryState.backupMetadataHeader {
+                nonceSource = .svr🐝(header: metadataHeader, auth: identity.chatServiceAuth)
+            } else {
+                // TODO: [SVR🐝] get forward secrecy token from provisioning
+                owsFailDebug("Missing metadata header; refetching from cdn")
+                let metadataHeader = try await self.deps.backupArchiveManager.backupCdnInfo(
+                    backupKey: backupKey,
+                    auth: identity.chatServiceAuth
+                ).metadataHeader
+                self.inMemoryState.backupMetadataHeader = metadataHeader
+                nonceSource = .svr🐝(header: metadataHeader, auth: identity.chatServiceAuth)
+            }
+
             try await self.deps.backupArchiveManager.importEncryptedBackup(
                 fileUrl: fileUrl,
                 localIdentifiers: identity.localIdentifiers,
                 isPrimaryDevice: true,
-                backupKey: backupKey,
-                backupPurpose: .remoteBackup,
+                source: .remote(key: backupKey, nonceSource: nonceSource),
                 progress: importProgress
             )
         }
@@ -832,6 +845,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var shouldBackUpToSVR: Bool {
             return hasBackedUpToSVR.negated && didSkipSVRBackup.negated
         }
+        var backupMetadataHeader: BackupNonce.MetadataHeader?
         var restoreFromBackupProgressSink: (@MainActor (OWSProgress) -> Void)?
         var hasConfirmedRestoreFromBackup: Bool {
             restoreFromBackupProgressSink != nil
@@ -1414,12 +1428,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 backupKey: backupKey,
                 auth: accountIdentity.chatServiceAuth
             )
+            self.inMemoryState.backupMetadataHeader = cdnInfo.metadataHeader
             return .confirmRestoreFromBackup(
                 RegistrationRestoreFromBackupConfirmationState(
                     mode: .manual,
                     tier: .free,
-                    lastBackupDate: cdnInfo.lastModified,
-                    lastBackupSizeBytes: cdnInfo.contentLength
+                    lastBackupDate: cdnInfo.fileInfo.lastModified,
+                    lastBackupSizeBytes: cdnInfo.fileInfo.contentLength
                 )
             )
         } catch {

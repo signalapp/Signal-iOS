@@ -10,12 +10,12 @@ public class ChunkedOutputStreamTransform: StreamTransform {
     public func transform(data: Data) throws -> Data {
         let byteLength = UInt32(data.count)
         var result = Data()
-        result.append(writeVariableLengthUInt32(byteLength))
+        result.append(Self.writeVariableLengthUInt32(byteLength))
         result.append(data)
         return result
     }
 
-    public func writeVariableLengthUInt32(_ value: UInt32) -> Data {
+    public static func writeVariableLengthUInt32(_ value: UInt32) -> Data {
         var result = Data()
         var v = value
         while v > 0x7F {

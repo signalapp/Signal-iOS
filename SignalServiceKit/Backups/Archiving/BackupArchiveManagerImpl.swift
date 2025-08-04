@@ -43,6 +43,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let backupArchiveErrorPresenter: BackupArchiveErrorPresenter
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
+    private let backupNonceMetadataStore: BackupNonceMetadataStore
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
     private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
@@ -62,6 +63,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let groupRecipientArchiver: BackupArchiveGroupRecipientArchiver
     private let incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator
     private let kvStore: KeyValueStore
+    private let libsignalNet: LibSignalClient.Net
     private let localStorage: AccountKeyStore
     private let localRecipientArchiver: BackupArchiveLocalRecipientArchiver
     private let messagePipelineSupervisor: MessagePipelineSupervisor
@@ -83,6 +85,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         backupArchiveErrorPresenter: BackupArchiveErrorPresenter,
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
+        backupNonceMetadataStore: BackupNonceMetadataStore,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
         backupStickerPackDownloadStore: BackupStickerPackDownloadStore,
@@ -101,6 +104,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         fullTextSearchIndexer: BackupArchiveFullTextSearchIndexer,
         groupRecipientArchiver: BackupArchiveGroupRecipientArchiver,
         incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
+        libsignalNet: LibSignalClient.Net,
         localStorage: AccountKeyStore,
         localRecipientArchiver: BackupArchiveLocalRecipientArchiver,
         messagePipelineSupervisor: MessagePipelineSupervisor,
@@ -120,6 +124,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.backupArchiveErrorPresenter = backupArchiveErrorPresenter
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
+        self.backupNonceMetadataStore = backupNonceMetadataStore
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
@@ -139,6 +144,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.groupRecipientArchiver = groupRecipientArchiver
         self.incrementalTSAttachmentMigrator = incrementalTSAttachmentMigrator
         self.kvStore = KeyValueStore(collection: Constants.keyValueStoreCollectionName)
+        self.libsignalNet = libsignalNet
         self.localStorage = localStorage
         self.localRecipientArchiver = localRecipientArchiver
         self.messagePipelineSupervisor = messagePipelineSupervisor
@@ -179,7 +185,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     public func backupCdnInfo(
         backupKey: MessageRootBackupKey,
         auth: ChatServiceAuth
-    ) async throws -> AttachmentDownloads.CdnInfo {
+    ) async throws -> BackupCdnInfo {
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
             for: backupKey,
             localAci: backupKey.aci,
@@ -244,6 +250,10 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         await db.awaitableWrite { tx in
             BackupSettingsStore().setLastBackupDate(dateProvider(), tx: tx)
             BackupSettingsStore().setLastBackupSizeBytes(UInt64(backupSize), tx: tx)
+            if let nonceMetadata = metadata.nonceMetadata {
+                backupNonceMetadataStore.setLastForwardSecrecyToken(nonceMetadata.forwardSecrecyToken, tx: tx)
+                backupNonceMetadataStore.setNextSecretMetadata(nonceMetadata.nextSecretMetadata, tx: tx)
+            }
         }
 
         return result
@@ -253,26 +263,32 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
     public func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
-        backupKey: MessageRootBackupKey,
-        backupPurpose: MessageBackupPurpose,
+        backupPurpose: BackupExportPurpose,
         progress progressSink: OWSProgressSink?
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
         let includedContentFilter = BackupArchive.IncludedContentFilter(
-            backupPurpose: backupPurpose
+            backupPurpose: backupPurpose.libsignalPurpose
         )
 
         let attachmentByteCounter = BackupArchiveAttachmentByteCounter()
 
+        let encryptionMetadata = try await backupPurpose.deriveEncryptionMetadataWithSvr🐝IfNeeded(
+            backupRequestManager: backupRequestManager,
+            db: db,
+            libsignalNet: libsignalNet,
+            nonceStore: backupNonceMetadataStore
+        )
+
         let metadata = try await _exportBackup(
             localIdentifiers: localIdentifiers,
-            backupPurpose: backupPurpose,
+            backupPurpose: backupPurpose.libsignalPurpose,
             includedContentFilter: includedContentFilter,
             progressSink: progressSink,
             attachmentByteCounter: attachmentByteCounter,
             benchTitle: "Export encrypted Backup",
             openOutputStreamBlock: { exportProgress, tx in
                 return encryptedStreamProvider.openEncryptedOutputFileStream(
-                    messageBackupKey: backupKey,
+                    encryptionMetadata: encryptionMetadata,
                     exportProgress: exportProgress,
                     attachmentByteCounter: attachmentByteCounter,
                     tx: tx
@@ -282,8 +298,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
         try await self.validateEncryptedBackup(
             fileUrl: metadata.fileUrl,
-            backupKey: backupKey,
-            backupPurpose: backupPurpose
+            backupEncryptionKey: encryptionMetadata.encryptionKey,
+            backupPurpose: backupPurpose.libsignalPurpose
         )
 
         return metadata
@@ -707,21 +723,29 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
-        backupKey: MessageRootBackupKey,
-        backupPurpose: MessageBackupPurpose,
+        source: BackupImportSource,
         progress progressSink: OWSProgressSink?
     ) async throws {
+
+        let backupEncryptionKey = try await source.deriveBackupEncryptionKeyWithSvr🐝IfNeeded(
+            backupRequestManager: backupRequestManager,
+            db: db,
+            libsignalNet: libsignalNet,
+            nonceStore: backupNonceMetadataStore
+        )
+
         try await _importBackup(
             fileUrl: fileUrl,
             localIdentifiers: localIdentifiers,
             isPrimaryDevice: isPrimaryDevice,
             progressSink: progressSink,
             benchTitle: "Import encrypted Backup",
-            backupPurpose: backupPurpose,
+            backupPurpose: source.libsignalPurpose,
             openInputStreamBlock: { fileUrl, frameRestoreProgress, tx in
                 return encryptedStreamProvider.openEncryptedInputFileStream(
                     fileUrl: fileUrl,
-                    messageBackupKey: backupKey,
+                    source: source,
+                    backupEncryptionKey: backupEncryptionKey,
                     frameRestoreProgress: frameRestoreProgress,
                     tx: tx
                 )
@@ -1431,13 +1455,13 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
     private func validateEncryptedBackup(
         fileUrl: URL,
-        backupKey: MessageRootBackupKey,
+        backupEncryptionKey: MessageBackupKey,
         backupPurpose: MessageBackupPurpose
     ) async throws {
         let fileSize = OWSFileSystem.fileSize(ofPath: fileUrl.path)?.uint64Value ?? 0
 
         do {
-            let result = try validateMessageBackup(key: backupKey.messageBackupKey, purpose: backupPurpose, length: fileSize) {
+            let result = try validateMessageBackup(key: backupEncryptionKey, purpose: backupPurpose, length: fileSize) {
                 return try FileHandle(forReadingFrom: fileUrl)
             }
             if result.fields.count > 0 {

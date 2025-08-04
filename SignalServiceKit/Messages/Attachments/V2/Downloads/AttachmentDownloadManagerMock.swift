@@ -11,8 +11,11 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
 
     public init() {}
 
-    public func backupCdnInfo(metadata: BackupReadCredential) async throws -> AttachmentDownloads.CdnInfo {
-        return AttachmentDownloads.CdnInfo(contentLength: 0, lastModified: Date())
+    public func backupCdnInfo(metadata: BackupReadCredential) async throws -> BackupCdnInfo {
+        return BackupCdnInfo(
+            fileInfo: AttachmentDownloads.CdnInfo(contentLength: 0, lastModified: Date()),
+            metadataHeader: BackupNonce.MetadataHeader(data: Data())
+        )
     }
 
     public func downloadBackup(

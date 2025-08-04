@@ -5,6 +5,7 @@
 
 import AVFoundation
 import GRDB
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
@@ -416,15 +417,19 @@ private extension InternalSettingsViewController {
             return
         }
 
+        let backupEncryptionKey = try MessageBackupKey(
+            backupKey: messageBackupKey.backupKey,
+            backupId: messageBackupKey.backupId
+        )
+
         let metadata = try await backupArchiveManager.exportEncryptedBackup(
             localIdentifiers: localIdentifiers,
-            backupKey: messageBackupKey,
-            backupPurpose: .remoteBackup,
+            backupPurpose: .remoteExport(key: messageBackupKey, chatAuth: .implicit()),
             progress: nil
         )
 
-        let keyString = "AES key: \(messageBackupKey.aesKey.base64EncodedString())"
-            + "\nHMAC key: \(messageBackupKey.hmacKey.base64EncodedString())"
+        let keyString = "AES key: \(backupEncryptionKey.aesKey.base64EncodedString())"
+            + "\nHMAC key: \(backupEncryptionKey.hmacKey.base64EncodedString())"
 
         await withCheckedContinuation { continuation in
             DispatchQueue.main.async {
@@ -462,8 +467,7 @@ private extension InternalSettingsViewController {
 
         let metadata = try await backupArchiveManager.exportEncryptedBackup(
             localIdentifiers: localIdentifiers,
-            backupKey: messageBackupKey,
-            backupPurpose: .remoteBackup,
+            backupPurpose: .remoteExport(key: messageBackupKey, chatAuth: .implicit()),
             progress: nil
         )
 

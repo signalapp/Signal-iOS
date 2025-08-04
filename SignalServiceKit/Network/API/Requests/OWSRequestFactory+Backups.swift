@@ -150,4 +150,16 @@ extension OWSRequestFactory {
             parameters: ["receiptCredentialPresentation": receiptCredentialPresentation.base64EncodedString()]
         )
     }
+
+    public static func fetchSVR🐝AuthCredential(
+        auth: BackupServiceAuth
+    ) -> TSRequest {
+        var request = TSRequest(
+            url: URL(string: "v1/archives/auth/svrb")!,
+            method: "GET",
+            parameters: [:]
+        )
+        request.auth = .backup(auth)
+        return request
+    }
 }

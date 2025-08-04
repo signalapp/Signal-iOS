@@ -18,7 +18,7 @@ public struct BackupServiceAuth {
     // as long as the credential remains valid.
     public let backupLevel: BackupLevel
 
-    public init(backupKey: Data, privateKey: PrivateKey, authCredential: BackupAuthCredential, type: BackupAuthCredentialType) throws {
+    public init(privateKey: PrivateKey, authCredential: BackupAuthCredential, type: BackupAuthCredentialType) throws {
         let backupServerPublicParams = try GenericServerPublicParams(contents: TSConstants.backupServerPublicParams)
         let presentation = authCredential.present(serverParams: backupServerPublicParams).serialize()
         let signedPresentation = privateKey.generateSignature(message: presentation)

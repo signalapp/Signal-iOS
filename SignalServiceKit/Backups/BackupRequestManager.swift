@@ -136,6 +136,12 @@ public protocol BackupRequestManager {
         objects: [BackupArchive.Request.DeleteMediaTarget],
         auth: BackupServiceAuth
     ) async throws
+
+    func fetchSvr🐝AuthCredential(
+        key: MessageRootBackupKey,
+        chatServiceAuth auth: ChatServiceAuth,
+        forceRefresh: Bool,
+    ) async throws -> LibSignalClient.Auth
 }
 
 extension BackupRequestManager {
@@ -188,7 +194,6 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
         auth: ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> BackupServiceAuth {
-        let backupKey = key.deriveBackupId(aci: localAci)
         let privateKey = key.deriveEcKey(aci: localAci)
 
         let authCredential = try await backupAuthCredentialManager.fetchBackupCredential(
@@ -199,7 +204,6 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
         )
 
         return try BackupServiceAuth(
-            backupKey: backupKey,
             privateKey: privateKey,
             authCredential: authCredential,
             type: key.credentialType
@@ -419,6 +423,18 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
                     objects: objects
                 )
             }
+        )
+    }
+
+    public func fetchSvr🐝AuthCredential(
+        key: MessageRootBackupKey,
+        chatServiceAuth auth: ChatServiceAuth,
+        forceRefresh: Bool,
+    ) async throws -> LibSignalClient.Auth {
+        return try await backupAuthCredentialManager.fetchSvr🐝AuthCredential(
+            key: key,
+            chatServiceAuth: auth,
+            forceRefresh: forceRefresh,
         )
     }
 

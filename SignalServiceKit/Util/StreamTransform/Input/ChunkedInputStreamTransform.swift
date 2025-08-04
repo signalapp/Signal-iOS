@@ -59,7 +59,7 @@ public class ChunkedInputStreamTransform: StreamTransform, BufferedStreamTransfo
     /// Decode the next chunk of data, if enough data is present in the buffer.
     private func getNextChunk() throws -> Data {
         // decode the next variable length int
-        let (dataSize, intLength) = decodeVariableLengthInteger(buffer: buffer, start: consumedBytes)
+        let (dataSize, intLength) = Self.decodeVariableLengthInteger(buffer: buffer, start: consumedBytes)
 
         guard dataSize > 0 else {
             needMoreData = true
@@ -101,7 +101,7 @@ public class ChunkedInputStreamTransform: StreamTransform, BufferedStreamTransfo
     /// (b) read the amount of data specified by the returned integer, dont' remove the decoded
     /// integer bytes from the buffer until we're certain there's enough data to fulfill reading
     /// the specified amount of data.
-    private func decodeVariableLengthInteger(buffer: Data, start: Int) -> (result: UInt64, length: Int) {
+    public static func decodeVariableLengthInteger(buffer: Data, start: Int) -> (result: UInt64, length: Int) {
         guard buffer.count > 0 else { return (result: 0, length: 0) }
 
         return buffer.withUnsafeBytes {

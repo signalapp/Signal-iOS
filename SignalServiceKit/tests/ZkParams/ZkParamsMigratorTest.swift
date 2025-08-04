@@ -23,7 +23,7 @@ class ZkParamsMigratorTest: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        authCredentialStore = AuthCredentialStore()
+        authCredentialStore = AuthCredentialStore(dateProvider: { Date() })
         migrationStore = KeyValueStore(collection: "GroupsV2Impl.serviceStore")
         mockDb = InMemoryDB()
         versionedProfilesRef = MockVersionedProfiles()

@@ -264,7 +264,7 @@ public class AppSetup {
             usernameLookupManager: usernameLookupManager
         )
 
-        let authCredentialStore = AuthCredentialStore()
+        let authCredentialStore = AuthCredentialStore(dateProvider: dateProvider)
 
         let callLinkPublicParams = try! GenericServerPublicParams(contents: tsConstants.callLinkPublicParams)
         let authCredentialManager = AuthCredentialManagerImpl(
@@ -1228,6 +1228,7 @@ public class AppSetup {
             backupArchiveErrorPresenter: backupArchiveErrorPresenter,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
+            backupNonceMetadataStore: BackupNonceMetadataStore(),
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             backupStickerPackDownloadStore: backupStickerPackDownloadStore,
@@ -1287,6 +1288,7 @@ public class AppSetup {
                 threadStore: backupThreadStore
             ),
             incrementalTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator,
+            libsignalNet: libsignalNet,
             localStorage: accountKeyStore,
             localRecipientArchiver: BackupArchiveLocalRecipientArchiver(
                 avatarDefaultColorManager: avatarDefaultColorManager,

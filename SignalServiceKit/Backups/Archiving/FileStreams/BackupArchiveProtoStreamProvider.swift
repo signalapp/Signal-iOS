@@ -108,11 +108,12 @@ public class BackupArchiveEncryptedProtoStreamProvider {
     /// The caller owns the returned stream, and is responsible for closing it
     /// once finished.
     func openEncryptedOutputFileStream(
-        messageBackupKey: MessageRootBackupKey,
+        encryptionMetadata: BackupExportPurpose.EncryptionMetadata,
         exportProgress: BackupArchiveExportProgress?,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenOutputStreamResult<Upload.EncryptedBackupUploadMetadata> {
+        let backupEncryptionKey = encryptionMetadata.encryptionKey
         do {
             let inputTrackingTransform = MetadataStreamTransform(calculateDigest: false)
             let outputTrackingTransform = MetadataStreamTransform(calculateDigest: true)
@@ -123,11 +124,12 @@ public class BackupArchiveEncryptedProtoStreamProvider {
                 try GzipStreamTransform(.compress),
                 try EncryptingStreamTransform(
                     iv: Randomness.generateRandomBytes(UInt(Cryptography.Constants.aescbcIVLength)),
-                    encryptionKey: messageBackupKey.aesKey,
+                    encryptionKey: backupEncryptionKey.aesKey,
                 ),
-                try HmacStreamTransform(hmacKey: messageBackupKey.hmacKey, operation: .generate),
-                outputTrackingTransform
-            ]
+                try HmacStreamTransform(hmacKey: backupEncryptionKey.hmacKey, operation: .generate),
+                encryptionMetadata.metadataHeader.map(NonceHeaderOutputStreamTransform.init(metadataHeader:)),
+                outputTrackingTransform,
+            ].compacted()
 
             let outputStream: BackupArchiveProtoOutputStream
             let fileUrl: URL
@@ -150,7 +152,8 @@ public class BackupArchiveEncryptedProtoStreamProvider {
                         digest: try outputTrackingTransform.digest(),
                         encryptedDataLength: UInt32(clamping: outputTrackingTransform.count),
                         plaintextDataLength: UInt32(clamping: inputTrackingTransform.count),
-                        attachmentByteSize: attachmentByteCounter.attachmentByteSize()
+                        attachmentByteSize: attachmentByteCounter.attachmentByteSize(),
+                        nonceMetadata: encryptionMetadata.nonceMetadata
                     )
                 }
             )
@@ -164,19 +167,21 @@ public class BackupArchiveEncryptedProtoStreamProvider {
     /// closing it once finished.
     func openEncryptedInputFileStream(
         fileUrl: URL,
-        messageBackupKey: MessageRootBackupKey,
+        source: BackupImportSource,
+        backupEncryptionKey: MessageBackupKey,
         frameRestoreProgress: BackupArchiveImportFramesProgress?,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult {
-        guard validateBackupHMAC(messageBackupKey: messageBackupKey, fileUrl: fileUrl, tx: tx) else {
+        guard validateBackupHMAC(source: source, backupEncryptionKey: backupEncryptionKey, fileUrl: fileUrl, tx: tx) else {
             return .hmacValidationFailedOnEncryptedFile
         }
 
         do {
             let transforms: [any StreamTransform] = [
+                NonceHeaderInputStreamTransform(source: source),
                 frameRestoreProgress.map { InputProgressStreamTransform(frameRestoreProgress: $0) },
-                try HmacStreamTransform(hmacKey: messageBackupKey.hmacKey, operation: .validate),
-                try DecryptingStreamTransform(encryptionKey: messageBackupKey.aesKey),
+                try HmacStreamTransform(hmacKey: backupEncryptionKey.hmacKey, operation: .validate),
+                try DecryptingStreamTransform(encryptionKey: backupEncryptionKey.aesKey),
                 try GzipStreamTransform(.decompress),
                 ChunkedInputStreamTransform(),
             ].compacted()
@@ -191,7 +196,8 @@ public class BackupArchiveEncryptedProtoStreamProvider {
     }
 
     private func validateBackupHMAC(
-        messageBackupKey: MessageRootBackupKey,
+        source: BackupImportSource,
+        backupEncryptionKey: MessageBackupKey,
         fileUrl: URL,
         tx: DBReadTransaction
     ) -> Bool {
@@ -199,7 +205,8 @@ public class BackupArchiveEncryptedProtoStreamProvider {
             let inputStreamResult = genericStreamProvider.openInputFileStream(
                 fileUrl: fileUrl,
                 transforms: [
-                    try HmacStreamTransform(hmacKey: messageBackupKey.hmacKey, operation: .validate)
+                    NonceHeaderInputStreamTransform(source: source),
+                    try HmacStreamTransform(hmacKey: backupEncryptionKey.hmacKey, operation: .validate)
                 ]
             )
 

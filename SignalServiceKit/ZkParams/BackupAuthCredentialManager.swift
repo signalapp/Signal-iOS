@@ -27,6 +27,12 @@ public protocol BackupAuthCredentialManager {
         chatServiceAuth auth: ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> BackupAuthCredential
+
+    func fetchSvr🐝AuthCredential(
+        key: MessageRootBackupKey,
+        chatServiceAuth auth: ChatServiceAuth,
+        forceRefresh: Bool,
+    ) async throws -> LibSignalClient.Auth
 }
 
 public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
@@ -131,6 +137,44 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         return authCredential
     }
 
+    public func fetchSvr🐝AuthCredential(
+        key: MessageRootBackupKey,
+        chatServiceAuth auth: ChatServiceAuth,
+        forceRefresh: Bool,
+    ) async throws -> LibSignalClient.Auth {
+        if
+            !forceRefresh,
+            let cachedCredential = db.read(block: authCredentialStore.svr🐝AuthCredential(tx:))
+        {
+            return cachedCredential
+        }
+
+        let backupAuthCredential = try await self.fetchBackupCredential(
+            for: key,
+            localAci: key.aci,
+            chatServiceAuth: auth,
+            forceRefreshUnlessCachedPaidCredential: false
+        )
+        let privateKey = key.deriveEcKey(aci: key.aci)
+        let backupAuth = try BackupServiceAuth(
+            privateKey: privateKey,
+            authCredential: backupAuthCredential,
+            type: key.credentialType
+        )
+        let response = try await networkManager.asyncRequest(
+            OWSRequestFactory.fetchSVR🐝AuthCredential(auth: backupAuth),
+            canUseWebSocket: FeatureFlags.postRegWebSocket
+        )
+        guard let bodyData = response.responseBodyData else {
+            throw OWSAssertionError("Missing body data")
+        }
+        let svr🐝Auth = try JSONDecoder().decode(ReceivedSVR🐝AuthCredentials.self, from: bodyData)
+        return LibSignalClient.Auth(
+            username: svr🐝Auth.username,
+            password: svr🐝Auth.password
+        )
+    }
+
     private func fetchNewAuthCredentials(
         localAci: Aci,
         for key: BackupKeyMaterial,
@@ -215,6 +259,12 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
     private struct ReceivedBackupAuthCredentials {
         var redemptionTime: UInt64
         var credential: BackupAuthCredential
+    }
+
+    // swiftlint:disable:next type_name
+    public struct ReceivedSVR🐝AuthCredentials: Codable {
+        let username: String
+        let password: String
     }
 }
 

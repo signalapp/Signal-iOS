@@ -224,8 +224,10 @@ class BackupExportJobImpl: BackupExportJob {
 
             let uploadMetadata = try await backupArchiveManager.exportEncryptedBackup(
                 localIdentifiers: localIdentifiers,
-                backupKey: backupKey,
-                backupPurpose: .remoteBackup,
+                backupPurpose: .remoteExport(
+                    key: backupKey,
+                    chatAuth: .implicit()
+                ),
                 progress: backupExportProgress
             )
 

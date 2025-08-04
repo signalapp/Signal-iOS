@@ -120,7 +120,7 @@ public protocol AttachmentDownloadManager {
 
     func backupCdnInfo(
         metadata: BackupReadCredential
-    ) async throws -> AttachmentDownloads.CdnInfo
+    ) async throws -> BackupCdnInfo
 
     func downloadBackup(
         metadata: BackupReadCredential,

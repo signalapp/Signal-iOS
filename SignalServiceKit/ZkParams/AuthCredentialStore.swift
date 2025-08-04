@@ -7,16 +7,21 @@ import Foundation
 import LibSignalClient
 
 class AuthCredentialStore {
+    private let dateProvider: DateProvider
+
     private let callLinkAuthCredentialStore: KeyValueStore
     private let groupAuthCredentialStore: KeyValueStore
     private let backupMessagesAuthCredentialStore: KeyValueStore
     private let backupMediaAuthCredentialStore: KeyValueStore
+    private let svr🐝AuthCredentialStore: KeyValueStore
 
-    init() {
+    init(dateProvider: @escaping DateProvider) {
+        self.dateProvider = dateProvider
         self.callLinkAuthCredentialStore = KeyValueStore(collection: "CallLinkAuthCredential")
         self.groupAuthCredentialStore = KeyValueStore(collection: "GroupsV2Impl.authCredentialStoreStore")
         self.backupMessagesAuthCredentialStore = KeyValueStore(collection: "BackupAuthCredential")
         self.backupMediaAuthCredentialStore = KeyValueStore(collection: "MediaAuthCredential")
+        self.svr🐝AuthCredentialStore = KeyValueStore(collection: "SVR🐝AuthCredential")
     }
 
     private static func callLinkAuthCredentialKey(for redemptionTime: UInt64) -> String {
@@ -134,6 +139,45 @@ class AuthCredentialStore {
         )
     }
 
+    static let svr🐝AuthCredentialExpirationTime: TimeInterval = .day - .hour
+    static let svr🐝AuthCredentialExpiryDateKey = "svr🐝AuthCredentialTimestampKey"
+    static let svr🐝AuthCredentialUsernameKey = "svr🐝AuthCredentialUsernameKey"
+    static let svr🐝AuthCredentialPasswordKey = "svr🐝AuthCredentialPasswordKey"
+
+    func svr🐝AuthCredential(tx: DBReadTransaction) -> LibSignalClient.Auth? {
+        guard
+            let username = svr🐝AuthCredentialStore.getString(Self.svr🐝AuthCredentialUsernameKey, transaction: tx),
+            let password = svr🐝AuthCredentialStore.getString(Self.svr🐝AuthCredentialPasswordKey, transaction: tx),
+            let expiryDate = svr🐝AuthCredentialStore.getDate(Self.svr🐝AuthCredentialExpiryDateKey, transaction: tx)
+        else {
+            return nil
+        }
+        guard expiryDate > dateProvider() else {
+            return nil
+        }
+        return Auth(
+            username: username,
+            password: password
+        )
+    }
+
+    func setSvr🐝AuthCredential(
+        _ credential: LibSignalClient.Auth?,
+        tx: DBWriteTransaction
+    ) {
+        guard let credential else {
+            svr🐝AuthCredentialStore.removeAll(transaction: tx)
+            return
+        }
+        svr🐝AuthCredentialStore.setString(credential.username, key: Self.svr🐝AuthCredentialUsernameKey, transaction: tx)
+        svr🐝AuthCredentialStore.setString(credential.password, key: Self.svr🐝AuthCredentialPasswordKey, transaction: tx)
+        svr🐝AuthCredentialStore.setDate(
+            dateProvider().addingTimeInterval(Self.svr🐝AuthCredentialExpirationTime),
+            key: Self.svr🐝AuthCredentialExpiryDateKey,
+            transaction: tx
+        )
+    }
+
     func removeAllBackupAuthCredentials(ofType credentialType: BackupAuthCredentialType, tx: DBWriteTransaction) {
         let store: KeyValueStore = switch credentialType {
         case .media: backupMediaAuthCredentialStore
@@ -141,6 +185,13 @@ class AuthCredentialStore {
         }
 
         store.removeAll(transaction: tx)
+
+        switch credentialType {
+        case .media:
+            break
+        case .messages:
+            svr🐝AuthCredentialStore.removeAll(transaction: tx)
+        }
     }
 
     func removeAllBackupAuthCredentials(tx: DBWriteTransaction) {

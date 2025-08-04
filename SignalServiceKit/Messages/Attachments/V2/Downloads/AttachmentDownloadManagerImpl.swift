@@ -144,10 +144,35 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
     public func backupCdnInfo(
         metadata: BackupReadCredential
-    ) async throws -> AttachmentDownloads.CdnInfo {
+    ) async throws -> BackupCdnInfo {
         let uuid = UUID()
         let downloadState = DownloadState(type: .backup(metadata: metadata, uuid: uuid))
-        return try await self.downloadQueue.performHeadRequest(downloadState: downloadState)
+        var prefixLength = BackupNonce.metadataHeaderByteLengthUpperBound
+        while true {
+            let (cdnInfo, prefix) = try await self.downloadQueue.performPrefixRequest(downloadState: downloadState, length: prefixLength)
+            do throws(BackupNonce.MetadataHeader.ParsingError) {
+                let metadataHeader = try BackupNonce.MetadataHeader.from(prefixBytes: prefix)
+                return BackupCdnInfo(
+                    fileInfo: cdnInfo,
+                    metadataHeader: metadataHeader
+                )
+            } catch {
+                switch error {
+                case .unrecognizedFileSignature:
+                    throw OWSAssertionError("Unrecognized backup file signature")
+                case .dataMissingOrEmpty:
+                    throw OWSAssertionError("Missing backup file prefix data")
+                case .headerTooLarge:
+                    throw OWSAssertionError("Backup header too large")
+                case .moreDataNeeded(let length):
+                    if length <= prefixLength {
+                        // We got fewer bytes than we requested
+                        throw OWSAssertionError("Backup file too small!")
+                    }
+                    prefixLength = length
+                }
+            }
+        }
     }
 
     public func downloadTransientAttachment(
@@ -1449,6 +1474,51 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 contentLength: contentLengthBytes,
                 lastModified: lastModifiedDate
             )
+        }
+
+        /// Fetch the first `length` bytes of the object from the CDN, returning the fetched bytes,
+        /// (or nil if the response was empty) alongside headers from the response (which are the
+        /// same headers from a HEAD response).
+        ///
+        /// Length is limited to UInt16, and really should be even smaller, because this is _not_
+        /// a download task, is not resumable, and should therefore only be used to fetch a very
+        /// limited number of bytes.
+        fileprivate func performPrefixRequest(
+            downloadState: DownloadState,
+            length: UInt16
+        ) async throws -> (AttachmentDownloads.CdnInfo, Data?) {
+            let urlSession = self.signalService.urlSessionForCdn(
+                cdnNumber: downloadState.cdnNumber(),
+                maxResponseSize: BackupArchive.Constants.maxDownloadSizeBytes
+            )
+            let urlPath = try downloadState.urlPath()
+            var headers = downloadState.additionalHeaders()
+            headers["Content-Type"] = MimeType.applicationOctetStream.rawValue
+            headers["length"] = "\(length)"
+
+            let request = try urlSession.endpoint.buildRequest(urlPath, method: .get, headers: headers)
+            let response = try await urlSession.performRequest(request: request, ignoreAppExpiry: true)
+
+            guard
+                let contentLengthRaw = response.headers["Content-Length"],
+                let contentLengthBytes = UInt(contentLengthRaw)
+            else {
+                Logger.error("Missing content length from cdn")
+                throw OWSUnretryableError()
+            }
+
+            guard
+                let lastModifiedRaw = response.headers["Last-Modified"],
+                let lastModifiedDate = Date.ows_parseFromHTTPDateString(lastModifiedRaw)
+            else {
+                Logger.error("Missing last modified from cdn")
+                throw OWSUnretryableError()
+            }
+            let cdnInfo = AttachmentDownloads.CdnInfo(
+                contentLength: contentLengthBytes,
+                lastModified: lastModifiedDate
+            )
+            return (cdnInfo, response.responseBodyData)
         }
 
         func enqueueDownload(

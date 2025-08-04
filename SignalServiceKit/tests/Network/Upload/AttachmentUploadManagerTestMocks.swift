@@ -158,6 +158,14 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
 
     func redeemReceipt(receiptCredentialPresentation: Data) async throws {
     }
+
+    func fetchSvr🐝AuthCredential(
+        key: SignalServiceKit.MessageRootBackupKey,
+        chatServiceAuth auth: SignalServiceKit.ChatServiceAuth,
+        forceRefresh: Bool
+    ) async throws -> LibSignalClient.Auth {
+        return LibSignalClient.Auth(username: "", password: "")
+    }
 }
 
 // MARK: - AttachmentStore
