@@ -449,10 +449,32 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         } catch let error as BackupArchive.Response.CopyToMediaTierError {
             switch error {
             case .sourceObjectNotFound:
+                let attachmentFileUrl = AttachmentStream.absoluteAttachmentFileURL(
+                    relativeFilePath: attachmentStream.localRelativeFilePath
+                )
+                let fileMissingOrEmpty = !OWSFileSystem.fileOrFolderExists(url: attachmentFileUrl)
+                    || (OWSFileSystem.fileSize(of: attachmentFileUrl)?.uint32Value ?? 0) == 0
+
                 try await db.awaitableWrite { tx in
                     // Clean up the upload record; if we failed to copy
                     // we want to start an upload fresh next time.
                     self.cleanup(record: record, logger: logger, tx: tx)
+
+                    if fileMissingOrEmpty {
+                        logger.error("Missing attachment file!")
+
+                        guard let attachment = attachmentStore.fetch(id: attachmentStream.id, tx: tx) else {
+                            return
+                        }
+
+                        let params = Attachment.ConstructionParams.forOffloadingFiles(
+                            attachment: attachment,
+                            localRelativeFilePathThumbnail: nil
+                        )
+                        var newRecord = Attachment.Record(params: params)
+                        newRecord.sqliteId = attachment.id
+                        try newRecord.update(tx.database)
+                    }
 
                     if
                         result.localUploadMetadata.isReusedTransitTierUpload,
@@ -674,6 +696,17 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         case .existing(let metadata), .reuse(let metadata):
             // Cached metadata is still good to use
             localMetadata = metadata
+
+            if metadata.key != attachmentUploadRecord.localMetadata?.key {
+                // If we're using a different key, reset the metadata
+                // and start with a fresh upload form.
+                updateRecord = true
+                attachmentUploadRecord.localMetadata = metadata
+                attachmentUploadRecord.uploadForm = nil
+                attachmentUploadRecord.uploadFormTimestamp = nil
+                attachmentUploadRecord.uploadSessionUrl = nil
+            }
+
         case .new(let metadata):
             localMetadata = metadata
             updateRecord = true
@@ -898,14 +931,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     encryptedDataLength: stream.info.encryptedByteCount,
                     plaintextDataLength: stream.info.unencryptedByteCount
                 )
-                if record.localMetadata?.key == attachment.encryptionKey {
-                    // Only reuse an existing, possibly in-progress upload
-                    // if it uses the same encryption key; if not we want
-                    // a fresh upload that does use the right encryption key.
-                    return .reuse(metadata)
-                } else {
-                    return .new(metadata)
-                }
+                return .reuse(metadata)
             }
 
         case .mediaTier(_, _):
