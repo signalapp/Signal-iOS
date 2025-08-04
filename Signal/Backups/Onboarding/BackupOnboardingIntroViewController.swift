@@ -109,10 +109,10 @@ struct BackupOnboardingIntroView: View {
                     .foregroundStyle(.white)
                     .font(.headline)
                     .padding(.vertical, 14)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.Signal.ultramarine)
             }
             .buttonStyle(.plain)
-            .frame(maxWidth: .infinity)
-            .background(Color.Signal.ultramarine)
             .cornerRadius(12)
             .padding(.horizontal, 40)
 

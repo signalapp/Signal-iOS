@@ -265,11 +265,11 @@ struct ChooseBackupPlanView: View {
                     .foregroundStyle(.white)
                     .font(.headline)
                     .padding(.vertical, 14)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.Signal.ultramarine)
             }
             .disabled(viewModel.planSelection == viewModel.initialPlanSelection)
             .buttonStyle(.plain)
-            .frame(maxWidth: .infinity)
-            .background(Color.Signal.ultramarine)
             .cornerRadius(12)
             .padding(.horizontal, 40)
         }
