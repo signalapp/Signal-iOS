@@ -5,23 +5,28 @@
 
 import GRDB
 import SignalServiceKit
-import UIKit
+import SignalUI
 
 class InternalSQLClientViewController: UIViewController {
 
     let outputTextView: UITextView = {
         let textView = UITextView()
-        textView.backgroundColor = .black
-        textView.textColor = .white
+        textView.backgroundColor = .Signal.secondaryBackground
+        textView.textColor = .Signal.secondaryLabel
         textView.text = "Output will appear here"
+        textView.autocorrectionType = .no
         textView.translatesAutoresizingMaskIntoConstraints = false
         return textView
     }()
 
     let queryTextField: UITextField = {
         let textField = UITextField()
+        textField.backgroundColor = .Signal.secondaryBackground
+        textField.textColor = .Signal.secondaryLabel
+        textField.font = .systemFont(ofSize: 16)
         textField.borderStyle = .roundedRect
         textField.placeholder = "Type your SQL query here"
+        textField.autocorrectionType = .no
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -29,6 +34,7 @@ class InternalSQLClientViewController: UIViewController {
     lazy var runQueryButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Run Query", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 20)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(runQuery), for: .touchUpInside)
         return button
@@ -37,15 +43,17 @@ class InternalSQLClientViewController: UIViewController {
     lazy var copyOutputButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Copy Output", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 20)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(copyOutput), for: .touchUpInside)
         return button
     }()
 
     // MARK: - View Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .Signal.background
 
         view.addSubview(outputTextView)
         view.addSubview(queryTextField)
@@ -58,16 +66,16 @@ class InternalSQLClientViewController: UIViewController {
         NSLayoutConstraint.activate([
             copyOutputButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             copyOutputButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 12),
-            copyOutputButton.heightAnchor.constraint(equalToConstant: 25),
+            copyOutputButton.heightAnchor.constraint(equalToConstant: 36),
 
             runQueryButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             runQueryButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -12),
-            runQueryButton.heightAnchor.constraint(equalToConstant: 25),
+            runQueryButton.heightAnchor.constraint(equalToConstant: 36),
 
             queryTextField.topAnchor.constraint(equalTo: runQueryButton.bottomAnchor, constant: 12),
             queryTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 12),
             queryTextField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -12),
-            queryTextField.heightAnchor.constraint(equalToConstant: 40),
+            queryTextField.heightAnchor.constraint(equalToConstant: 48),
 
             outputTextView.topAnchor.constraint(equalTo: queryTextField.bottomAnchor, constant: 12),
             outputTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
@@ -112,3 +120,14 @@ class InternalSQLClientViewController: UIViewController {
         presentToast(text: "Copied!")
     }
 }
+
+// MARK: -
+
+#if DEBUG
+
+@available(iOS 17.0, *)
+#Preview {
+    InternalSQLClientViewController()
+}
+
+#endif
