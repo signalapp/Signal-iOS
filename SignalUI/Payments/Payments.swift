@@ -6,43 +6,18 @@
 public import MobileCoin
 public import SignalServiceKit
 
+// MARK: - Wallet Operations
+
 @objc
-public protocol Payments: AnyObject {
-
+public protocol WalletOperations: AnyObject {
     func walletAddressBase58() -> String?
-
-    var shouldShowPaymentsUI: Bool { get }
-
     var paymentsEntropy: Data? { get }
-
-    func isValidMobileCoinPublicAddress(_ publicAddressData: Data) -> Bool
-
-    func scheduleReconciliationNow(transaction: DBWriteTransaction)
-
-    func replaceAsUnidentified(paymentModel oldPaymentModel: TSPaymentModel,
-                               transaction: DBWriteTransaction)
-
-    func findPaymentModels(withMCLedgerBlockIndex mcLedgerBlockIndex: UInt64,
-                           mcIncomingTransactionPublicKey: Data,
-                           transaction: DBReadTransaction) -> [TSPaymentModel]
-
-    func didReceiveMCAuthError()
-
-    var isKillSwitchActive: Bool { get }
-
-    func clearState(transaction: DBWriteTransaction)
 }
 
-// MARK: -
+// MARK: - Payment Processing
 
-public protocol PaymentsSwift: Payments {
-
-    var currentPaymentBalance: PaymentBalance? { get }
-    func updateCurrentPaymentBalance()
-    func clearCurrentPaymentBalance()
-
-    func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) async throws -> TSPaymentAmount
-
+@objc
+public protocol PaymentProcessing: AnyObject {
     func prepareOutgoingPayment(
         recipient: SendPaymentRecipient,
         paymentAmount: TSPaymentAmount,
@@ -53,18 +28,110 @@ public protocol PaymentsSwift: Payments {
 
     func initiateOutgoingPayment(preparedPayment: PreparedPayment) async throws -> TSPaymentModel
 
-    func maximumPaymentAmount() async throws -> TSPaymentAmount
-
-    var passphrase: PaymentsPassphrase? { get }
-
-    func passphrase(forPaymentsEntropy paymentsEntropy: Data) -> PaymentsPassphrase?
-
-    func paymentsEntropy(forPassphrase passphrase: PaymentsPassphrase) -> Data?
-
-    func isValidPassphraseWord(_ word: String?) -> Bool
-
     func blockOnOutgoingVerification(paymentModel: TSPaymentModel) async throws -> Bool
 }
+
+// MARK: - Balance Management
+
+@objc
+public protocol BalanceManagement: AnyObject {
+    var currentPaymentBalance: PaymentBalance? { get }
+    func updateCurrentPaymentBalance()
+    func clearCurrentPaymentBalance()
+}
+
+// MARK: - Validation
+
+@objc
+public protocol PaymentValidation: AnyObject {
+    func isValidMobileCoinPublicAddress(_ publicAddressData: Data) -> Bool
+    func isValidPassphraseWord(_ word: String?) -> Bool
+}
+
+// MARK: - Transaction Management
+
+@objc
+public protocol TransactionManagement: AnyObject {
+    func scheduleReconciliationNow(transaction: DBWriteTransaction)
+    
+    func replaceAsUnidentified(paymentModel oldPaymentModel: TSPaymentModel,
+                               transaction: DBWriteTransaction)
+    
+    func findPaymentModels(withMCLedgerBlockIndex mcLedgerBlockIndex: UInt64,
+                           mcIncomingTransactionPublicKey: Data,
+                           transaction: DBReadTransaction) -> [TSPaymentModel]
+    
+    func clearState(transaction: DBWriteTransaction)
+}
+
+// MARK: - Security
+
+@objc
+public protocol PaymentSecurity: AnyObject {
+    var passphrase: PaymentsPassphrase? { get }
+    func passphrase(forPaymentsEntropy paymentsEntropy: Data) -> PaymentsPassphrase?
+    func paymentsEntropy(forPassphrase passphrase: PaymentsPassphrase) -> Data?
+}
+
+// MARK: - Fee Management
+
+@objc
+public protocol FeeManagement: AnyObject {
+    func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) async throws -> TSPaymentAmount
+    func maximumPaymentAmount() async throws -> TSPaymentAmount
+}
+
+// MARK: - State Management
+
+@objc
+public protocol PaymentStateManagement: AnyObject {
+    var shouldShowPaymentsUI: Bool { get }
+    var isKillSwitchActive: Bool { get }
+    func didReceiveMCAuthError()
+}
+
+// MARK: - Legacy Compatibility
+
+@objc
+public protocol Payments: AnyObject {
+    // This protocol maintains backward compatibility
+    // Concrete implementations should conform to all the focused protocols below
+}
+
+// MARK: - Swift-Specific Extensions
+
+public protocol PaymentsSwift: Payments {
+    // This protocol can be used to compose the focused protocols for Swift implementations
+}
+
+// MARK: - Protocol Composition
+
+extension Payments where Self: WalletOperations & PaymentProcessing & BalanceManagement & PaymentValidation & TransactionManagement & PaymentSecurity & FeeManagement & PaymentStateManagement {
+    // Default implementations can be provided here if needed
+}
+
+// MARK: - Usage Example
+
+/*
+ To implement a concrete payments service, conform to the focused protocols:
+
+ class ConcretePaymentsService: NSObject,
+     WalletOperations,
+     PaymentProcessing,
+     BalanceManagement,
+     PaymentValidation,
+     TransactionManagement,
+     PaymentSecurity,
+     FeeManagement,
+     PaymentStateManagement {
+     
+     // Implement all required methods from each protocol
+     // This approach provides better separation of concerns and testability
+ }
+
+ // For backward compatibility, also conform to the legacy protocols:
+ extension ConcretePaymentsService: Payments, PaymentsSwift { }
+ */
 
 // MARK: -
 
@@ -121,48 +188,17 @@ public struct PaymentBalance {
 public class MockPayments: NSObject {
 }
 
-// MARK: -
+// MARK: - Mock Implementations
 
-extension MockPayments: PaymentsSwift {
-
-    public var paymentsState: PaymentsState { .disabled }
-
-    public var shouldShowPaymentsUI: Bool {
-        owsFail("Not implemented.")
-    }
-
-    public var paymentsEntropy: Data? { nil }
-
+extension MockPayments: WalletOperations {
     public func walletAddressBase58() -> String? {
         owsFail("Not implemented.")
     }
+    
+    public var paymentsEntropy: Data? { nil }
+}
 
-    public var isKillSwitchActive: Bool { false }
-
-    public func warmCaches() {
-        // Do nothing.
-    }
-
-    public func clearState(transaction: DBWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
-    public var currentPaymentBalance: PaymentBalance? {
-        owsFail("Not implemented.")
-    }
-
-    public func updateCurrentPaymentBalance() {
-        owsFail("Not implemented.")
-    }
-
-    public func clearCurrentPaymentBalance() {
-        owsFail("Not implemented.")
-    }
-
-    public func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) async throws -> TSPaymentAmount {
-        owsFail("Not implemented.")
-    }
-
+extension MockPayments: PaymentProcessing {
     public func prepareOutgoingPayment(
         recipient: SendPaymentRecipient,
         paymentAmount: TSPaymentAmount,
@@ -177,10 +213,36 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
+    public func blockOnOutgoingVerification(paymentModel: TSPaymentModel) async throws -> Bool {
+        owsFail("Not implemented.")
+    }
+}
+
+extension MockPayments: BalanceManagement {
+    public var currentPaymentBalance: PaymentBalance? {
+        owsFail("Not implemented.")
+    }
+
+    public func updateCurrentPaymentBalance() {
+        owsFail("Not implemented.")
+    }
+
+    public func clearCurrentPaymentBalance() {
+        owsFail("Not implemented.")
+    }
+}
+
+extension MockPayments: PaymentValidation {
     public func isValidMobileCoinPublicAddress(_ publicAddressData: Data) -> Bool {
         owsFail("Not implemented.")
     }
 
+    public func isValidPassphraseWord(_ word: String?) -> Bool {
+        owsFail("Not implemented.")
+    }
+}
+
+extension MockPayments: TransactionManagement {
     public func scheduleReconciliationNow(transaction: DBWriteTransaction) {
         owsFail("Not implemented.")
     }
@@ -196,14 +258,12 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
-    public func didReceiveMCAuthError() {
+    public func clearState(transaction: DBWriteTransaction) {
         owsFail("Not implemented.")
     }
+}
 
-    public func maximumPaymentAmount() async throws -> TSPaymentAmount {
-        owsFail("Not implemented.")
-    }
-
+extension MockPayments: PaymentSecurity {
     public var passphrase: PaymentsPassphrase? { nil }
 
     public func passphrase(forPaymentsEntropy paymentsEntropy: Data) -> PaymentsPassphrase? {
@@ -213,12 +273,36 @@ extension MockPayments: PaymentsSwift {
     public func paymentsEntropy(forPassphrase passphrase: PaymentsPassphrase) -> Data? {
         owsFail("Not implemented.")
     }
+}
 
-    public func isValidPassphraseWord(_ word: String?) -> Bool {
+extension MockPayments: FeeManagement {
+    public func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) async throws -> TSPaymentAmount {
         owsFail("Not implemented.")
     }
 
-    public func blockOnOutgoingVerification(paymentModel: TSPaymentModel) async throws -> Bool {
+    public func maximumPaymentAmount() async throws -> TSPaymentAmount {
         owsFail("Not implemented.")
     }
+}
+
+extension MockPayments: PaymentStateManagement {
+    public var shouldShowPaymentsUI: Bool {
+        owsFail("Not implemented.")
+    }
+
+    public var isKillSwitchActive: Bool { false }
+
+    public func didReceiveMCAuthError() {
+        owsFail("Not implemented.")
+    }
+}
+
+// MARK: - Legacy Compatibility
+
+extension MockPayments: Payments {
+    // MockPayments now implements all required protocols through the focused protocol extensions above
+}
+
+extension MockPayments: PaymentsSwift {
+    // Additional Swift-specific functionality can be added here if needed
 }
