@@ -5,7 +5,7 @@
 
 import GRDB
 
-public enum BackupAttachmentDownloadQueueStatus: Equatable {
+public enum BackupAttachmentDownloadQueueStatus: Equatable, Sendable {
     /// The queue is running, and attachments are downloading.
     case running
 

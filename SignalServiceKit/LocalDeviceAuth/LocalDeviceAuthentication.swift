@@ -101,6 +101,9 @@ public struct LocalDeviceAuthentication {
         case .notInteractive:
             owsFailDebug("Context not interactive!")
             return .genericError(localizedErrorMessage: DeviceAuthenticationErrorMessage.unknownError)
+        case .companionNotAvailable:
+            owsFailDebug("Companion device not available.")
+            return .genericError(localizedErrorMessage: DeviceAuthenticationErrorMessage.unknownError)
         @unknown default:
             owsFailDebug("Unexpected LAContext error code: \(laError.code)")
             return .genericError(localizedErrorMessage: DeviceAuthenticationErrorMessage.unknownError)

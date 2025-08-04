@@ -234,6 +234,9 @@ public class ScreenLock: NSObject {
             case .notInteractive:
                 owsFailDebug("context not interactive.")
                 return .unexpectedFailure(error: defaultErrorDescription)
+            case .companionNotAvailable:
+                owsFailDebug("companion device not available.")
+                return .unexpectedFailure(error: defaultErrorDescription)
             @unknown default:
                 owsFailDebug("Unexpected enum value.")
                 return .unexpectedFailure(error: defaultErrorDescription)
