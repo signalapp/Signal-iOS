@@ -77,8 +77,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     if (messageBuilder.messageBody.length > 0) {
         _body = messageBuilder.messageBody;
         _bodyRanges = messageBuilder.bodyRanges;
-    } else if (messageBuilder.messageBody != nil) {
-        OWSFailDebug(@"Empty message body.");
     }
     _deprecated_attachmentIds = nil;
     _editState = messageBuilder.editState;
