@@ -1411,7 +1411,12 @@ private struct BackupExportProgressView: View {
                         "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP",
                         comment: "Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup."
                     )
-                case .listMedia, .attachmentOrphaning, .attachmentUpload, .offloading:
+                case .listMedia:
+                    OWSLocalizedString(
+                        "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA",
+                        comment: "Description for a progress bar tracking a multi-step backup operation, where we are currently managing our backed-up media."
+                    )
+                case .attachmentOrphaning, .attachmentUpload, .offloading:
                     OWSLocalizedString(
                         "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA",
                         comment: "Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media."
@@ -2060,6 +2065,14 @@ private extension BackupSettingsViewModel {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupExportProgressUpdate: .forPreview(.backupUpload, 0.45),
+        backupSubscriptionLoadingState: .loaded(.free)
+    ))
+}
+
+#Preview("Manual Backup: Listing Media") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupPlan: .free,
+        latestBackupExportProgressUpdate: .forPreview(.listMedia, 0.50),
         backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
