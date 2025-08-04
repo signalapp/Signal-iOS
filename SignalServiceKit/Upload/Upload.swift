@@ -182,7 +182,7 @@ public enum Upload {
         /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
         public let encryptedDataLength: UInt32
 
-        public var isReusedTransitTierUpload: Bool { false }
+        public var isReusedTransitTierUpload: Bool { true }
 
         public static var maxUploadSizeBytes: UInt { OWSMediaUtils.kMaxAttachmentUploadSizeBytes }
         public static var maxPlaintextSizeBytes: UInt { OWSMediaUtils.kMaxFileSizeGeneric }

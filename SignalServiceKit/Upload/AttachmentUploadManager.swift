@@ -449,13 +449,17 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         } catch let error as BackupArchive.Response.CopyToMediaTierError {
             switch error {
             case .sourceObjectNotFound:
-                if
-                    result.localUploadMetadata.isReusedTransitTierUpload,
-                    let transitTierInfo = attachmentStream.attachment.transitTierInfo
-                {
-                    // We reused a transit tier upload but the source couldn't be found.
-                    // That transit tier upload is now invalid.
-                    try await db.awaitableWrite { tx in
+                try await db.awaitableWrite { tx in
+                    // Clean up the upload record; if we failed to copy
+                    // we want to start an upload fresh next time.
+                    self.cleanup(record: record, logger: logger, tx: tx)
+
+                    if
+                        result.localUploadMetadata.isReusedTransitTierUpload,
+                        let transitTierInfo = attachmentStream.attachment.transitTierInfo
+                    {
+                        // We reused a transit tier upload but the source couldn't be found.
+                        // That transit tier upload is now invalid.
                         // Refetch the attachment
                         guard let attachment = attachmentStore.fetch(id: attachmentStream.id, tx: tx) else {
                             return
@@ -532,14 +536,31 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             return
         }
 
-        let cdnNumber =  try await self.copyToMediaTier(
-            localAci: localAci,
-            backupKey: backupKey,
-            mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
-            uploadEra: uploadEra,
-            result: result,
-            logger: logger
-        )
+        let cdnNumber: UInt32
+        do {
+            cdnNumber = try await self.copyToMediaTier(
+                localAci: localAci,
+                backupKey: backupKey,
+                mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
+                uploadEra: uploadEra,
+                result: result,
+                logger: logger
+            )
+        } catch let error as BackupArchive.Response.CopyToMediaTierError {
+            switch error {
+            case .sourceObjectNotFound:
+                await db.awaitableWrite { tx in
+                    // Clean up the upload record; if we failed to copy
+                    // we want to start an upload fresh.
+                    self.cleanup(record: record, logger: logger, tx: tx)
+                }
+                throw error
+            default:
+                throw error
+            }
+        } catch {
+            throw error
+        }
 
         try await db.awaitableWrite { tx in
             // Refetch the attachment to ensure other fields are up-to-date.
@@ -818,7 +839,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         }) {
             attachmentUploadRecord = record
         } else {
-            attachmentUploadRecord = AttachmentUploadRecord(sourceType: .transit, attachmentId: attachmentId)
+            attachmentUploadRecord = AttachmentUploadRecord(sourceType: sourceType, attachmentId: attachmentId)
         }
         return attachmentUploadRecord
     }
@@ -877,7 +898,14 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     encryptedDataLength: stream.info.encryptedByteCount,
                     plaintextDataLength: stream.info.unencryptedByteCount
                 )
-                return .reuse(metadata)
+                if record.localMetadata?.key == attachment.encryptionKey {
+                    // Only reuse an existing, possibly in-progress upload
+                    // if it uses the same encryption key; if not we want
+                    // a fresh upload that does use the right encryption key.
+                    return .reuse(metadata)
+                } else {
+                    return .new(metadata)
+                }
             }
 
         case .mediaTier(_, _):
