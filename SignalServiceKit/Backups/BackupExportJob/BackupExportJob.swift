@@ -15,8 +15,9 @@ public struct BackupExportJobProgress {
         case attachmentUpload
         case offloading
 
-        /// Out of 100 (all must add to 100)
-        fileprivate var percentAllocation: UInt64 {
+        /// Amount of the overall job progress, relative to other `Step`s, that
+        /// a given step should take.
+        fileprivate var relativeAllocation: UInt64 {
             switch self {
             case .registerBackupId: 1
             case .backupExport: 40
@@ -124,6 +125,7 @@ class BackupExportJobImpl: BackupExportJob {
             localIdentifiers,
             backupKey,
             shouldAllowBackupUploadsOnCellular,
+            currentBackupPlan,
         ) = try db.read { (tx) throws(BackupExportJobError) in
             guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
                 owsFailDebug("Creating a backup when unregistered?")
@@ -139,6 +141,7 @@ class BackupExportJobImpl: BackupExportJob {
                 localIdentifiers,
                 backupKey,
                 backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx),
+                backupSettingsStore.backupPlan(tx: tx),
             )
         }
 
@@ -165,46 +168,62 @@ class BackupExportJobImpl: BackupExportJob {
 
         class ProgressUpdater {
             private let onProgressUpdate: (BackupExportJobProgress) -> Void
-            var latestProgress: BackupExportJobProgress {
-                didSet {
-                    onProgressUpdate(latestProgress)
-                }
-            }
 
-            init(
-                onProgressUpdate: @escaping (BackupExportJobProgress) -> Void,
-                latestProgress: BackupExportJobProgress
-            ) {
-                self.onProgressUpdate = onProgressUpdate
-                self.latestProgress = latestProgress
+            var latestProgress: BackupExportJobProgress {
+                didSet { onProgressUpdate(latestProgress) }
             }
-        }
-        let progressUpdater: ProgressUpdater? = onProgressUpdate.map {
-            ProgressUpdater(
-                onProgressUpdate: $0,
-                latestProgress: BackupExportJobProgress(
+            var progressSink: OWSProgressSink!
+
+            init(onProgressUpdate: @escaping (BackupExportJobProgress) -> Void) {
+                self.onProgressUpdate = onProgressUpdate
+
+                self.latestProgress = BackupExportJobProgress(
                     step: .registerBackupId,
                     overallProgress: .zero
                 )
-            )
+                self.progressSink = OWSProgress.createSink { [weak self] progressUpdate in
+                    self?.latestProgress.overallProgress = progressUpdate
+                }
+            }
         }
+        let progressUpdater: ProgressUpdater?
+        let registerBackupIdProgress: OWSProgressSource?
+        let backupExportProgress: OWSProgressSink?
+        let backupUploadProgress: OWSProgressSink?
+        let listMediaProgress: OWSProgressSource?
+        let attachmentOrphaningProgress: OWSProgressSource?
+        let attachmentUploadProgress: OWSProgressSource?
+        let offloadingProgress: OWSProgressSource?
 
-        let progress: OWSProgressSink?
-        if let progressUpdater {
-            progress = OWSProgress.createSink { progressUpdate in
-                progressUpdater.latestProgress.overallProgress = progressUpdate
+        if let onProgressUpdate {
+            progressUpdater = ProgressUpdater(onProgressUpdate: onProgressUpdate)
+            registerBackupIdProgress = await progressUpdater?.progressSink.addSource(.registerBackupId)
+            backupExportProgress = await progressUpdater?.progressSink.addChild(.backupExport)
+            backupUploadProgress = await progressUpdater?.progressSink.addChild(.backupUpload)
+            listMediaProgress = await progressUpdater?.progressSink.addSource(.listMedia)
+
+            // These steps should, on the free tier, be no-ops. We'll still run
+            // them below, but as a nicety exclude them from progress reporting.
+            switch currentBackupPlan {
+            case .disabled, .disabling, .free:
+                attachmentOrphaningProgress = nil
+                attachmentUploadProgress = nil
+                offloadingProgress = nil
+            case .paid, .paidExpiringSoon, .paidAsTester:
+                attachmentOrphaningProgress = await progressUpdater?.progressSink.addSource(.attachmentOrphaning)
+                attachmentUploadProgress = await progressUpdater?.progressSink.addSource(.attachmentUpload)
+                offloadingProgress = await progressUpdater?.progressSink.addSource(.offloading)
             }
         } else {
-            progress = nil
+            progressUpdater = nil
+            registerBackupIdProgress = nil
+            backupExportProgress = nil
+            backupUploadProgress = nil
+            listMediaProgress = nil
+            attachmentOrphaningProgress = nil
+            attachmentUploadProgress = nil
+            offloadingProgress = nil
         }
-
-        let registerBackupIdProgress = await progress?.addSource(.registerBackupId)
-        let backupExportProgress = await progress?.addChild(.backupExport)
-        let backupUploadProgress = await progress?.addChild(.backupUpload)
-        let listMediaProgress = await progress?.addSource(.listMedia)
-        let attachmentOrphaningProgress = await progress?.addSource(.attachmentOrphaning)
-        let attachmentUploadProgress = await progress?.addSource(.attachmentUpload)
-        let offloadingProgress = await progress?.addSource(.offloading)
 
         do {
             logger.info("Starting...")
@@ -322,11 +341,11 @@ class BackupExportJobImpl: BackupExportJob {
 fileprivate extension OWSProgressSink {
 
     func addSource(_ step: BackupExportJobProgress.Step) async -> OWSProgressSource {
-        return await self.addSource(withLabel: step.rawValue, unitCount: step.percentAllocation)
+        return await self.addSource(withLabel: step.rawValue, unitCount: step.relativeAllocation)
     }
 
     func addChild(_ step: BackupExportJobProgress.Step) async -> OWSProgressSink {
-        return await self.addChild(withLabel: step.rawValue, unitCount: step.percentAllocation)
+        return await self.addChild(withLabel: step.rawValue, unitCount: step.relativeAllocation)
     }
 }
 
