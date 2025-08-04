@@ -585,10 +585,14 @@ class BackupSettingsViewController:
         Task { [weak self, backupExportJobRunner] in
             do throws(BackupExportJobError) {
                 try await backupExportJobRunner.run()
-            } catch .cancellationError {
-                self?.showSheetForBackupExportJobError(.needsWifi)
             } catch {
-                owsFailDebug("Failed to perform manual backup! \(error)")
+                switch error {
+                case .cancellationError, .needsWifi, .networkRequestError:
+                    Logger.warn("Failed to perform manual backup! \(error)")
+                case .backupError, .backupKeyError, .unregistered:
+                    owsFailDebug("Failed to perform manual backup! \(error)")
+                }
+
                 self?.showSheetForBackupExportJobError(error)
             }
 
