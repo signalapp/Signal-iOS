@@ -610,7 +610,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
     // MARK: -
 
     private enum Constants {
-        static let numParallelUploads: UInt = 4
+        static let numParallelUploads: UInt = 8
     }
 }
 
