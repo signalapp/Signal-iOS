@@ -536,7 +536,8 @@ public class AppSetup {
         let backupPlanManager = BackupPlanManagerImpl(
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
-            backupSettingsStore: backupSettingsStore
+            backupSettingsStore: backupSettingsStore,
+            storageServiceManager: storageServiceManager
         )
 
         let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(

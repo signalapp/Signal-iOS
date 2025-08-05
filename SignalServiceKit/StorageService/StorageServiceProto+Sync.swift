@@ -1175,6 +1175,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let authedAccount: AuthedAccount
 
     private let avatarDefaultColorManager: AvatarDefaultColorManager
+    private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let linkPreviewSettingStore: LinkPreviewSettingStore
@@ -1199,6 +1200,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         isPrimaryDevice: Bool,
         authedAccount: AuthedAccount,
         avatarDefaultColorManager: AvatarDefaultColorManager,
+        backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         linkPreviewSettingStore: LinkPreviewSettingStore,
@@ -1223,6 +1225,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.authedAccount = authedAccount
 
         self.avatarDefaultColorManager = avatarDefaultColorManager
+        self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.dmConfigurationStore = dmConfigurationStore
         self.linkPreviewSettingStore = linkPreviewSettingStore
@@ -1398,6 +1401,10 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                     tx: transaction
                 ).asStorageServiceProtoAvatarColor
             )
+        }
+
+        if let backupPlanValue = backupSettingsStore.getStorageServiceBackupTier(tx: transaction) {
+            builder.setBackupTier(backupPlanValue)
         }
 
         return builder.buildInfallibly()
@@ -1722,6 +1729,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                 tx: transaction
             )
         }
+
+        backupSettingsStore.setStorageServiceBackupTier(record.backupTier, tx: transaction)
 
         if mergeDefaultAvatarColor(in: record, tx: transaction) {
             needsUpdate = true

@@ -3374,6 +3374,16 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     public var completedUsernameOnboarding: Bool {
         return proto.completedUsernameOnboarding
     }
+    public var backupTier: UInt64? {
+        guard hasBackupTier else {
+            return nil
+        }
+        return proto.backupTier
+    }
+    public var hasBackupTier: Bool {
+        return proto.hasBackupTier
+    }
+
     public var avatarColor: StorageServiceProtoAvatarColor? {
         guard hasAvatarColor else {
             return nil
@@ -3521,6 +3531,9 @@ extension StorageServiceProtoAccountRecord {
         builder.setCompletedUsernameOnboarding(completedUsernameOnboarding)
         if let _value = usernameLink {
             builder.setUsernameLink(_value)
+        }
+        if let _value = backupTier {
+            builder.setBackupTier(_value)
         }
         if let _value = backupSubscriberData {
             builder.setBackupSubscriberData(_value)
@@ -3735,6 +3748,10 @@ public struct StorageServiceProtoAccountRecordBuilder {
 
     public mutating func setUsernameLink(_ valueParam: StorageServiceProtoAccountRecordUsernameLink) {
         proto.usernameLink = valueParam.proto
+    }
+
+    public mutating func setBackupTier(_ valueParam: UInt64) {
+        proto.backupTier = valueParam
     }
 
     @available(swift, obsoleted: 1.0)

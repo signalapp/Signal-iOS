@@ -29,15 +29,18 @@ class BackupPlanManagerImpl: BackupPlanManager {
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
     private let backupSettingsStore: BackupSettingsStore
+    private let storageServiceManager: StorageServiceManager
 
     init(
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
-        backupSettingsStore: BackupSettingsStore
+        backupSettingsStore: BackupSettingsStore,
+        storageServiceManager: StorageServiceManager
     ) {
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
         self.backupSettingsStore = backupSettingsStore
+        self.storageServiceManager = storageServiceManager
     }
 
     // MARK: -
@@ -73,8 +76,9 @@ class BackupPlanManagerImpl: BackupPlanManager {
                 break
             }
 
-            tx.addSyncCompletion {
+            tx.addSyncCompletion { [storageServiceManager] in
                 NotificationCenter.default.post(name: .backupPlanChanged, object: nil)
+                storageServiceManager.recordPendingLocalAccountUpdates()
             }
         }
     }

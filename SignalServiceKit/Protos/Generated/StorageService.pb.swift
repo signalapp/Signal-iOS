@@ -849,6 +849,15 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
   /// Clears the value of `usernameLink`. Subsequent reads from it will return its default value.
   mutating func clearUsernameLink() {_uniqueStorage()._usernameLink = nil}
 
+  var backupTier: UInt64 {
+    get {return _storage._backupTier ?? 0}
+    set {_uniqueStorage()._backupTier = newValue}
+  }
+  /// Returns true if `backupTier` has been explicitly set.
+  var hasBackupTier: Bool {return _storage._backupTier != nil}
+  /// Clears the value of `backupTier`. Subsequent reads from it will return its default value.
+  mutating func clearBackupTier() {_uniqueStorage()._backupTier = nil}
+
   var backupSubscriberData: StorageServiceProtos_AccountRecord.IAPSubscriberData {
     get {return _storage._backupSubscriberData ?? StorageServiceProtos_AccountRecord.IAPSubscriberData()}
     set {_uniqueStorage()._backupSubscriberData = newValue}
@@ -2041,7 +2050,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
   static let protoMessageName: String = _protobuf_package + ".AccountRecord"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(
       reservedNames: [],
-      reservedRanges: [18..<19, 28..<29, 32..<33, 36..<39],
+      reservedRanges: [18..<19, 28..<29, 32..<33, 36..<40],
       numberNameMappings: [
         1: .same(proto: "profileKey"),
         2: .same(proto: "givenName"),
@@ -2075,6 +2084,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         33: .same(proto: "username"),
         34: .same(proto: "completedUsernameOnboarding"),
         35: .same(proto: "usernameLink"),
+        40: .same(proto: "backupTier"),
         41: .same(proto: "backupSubscriberData"),
         42: .same(proto: "avatarColor"),
   ])
@@ -2112,6 +2122,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _username: String = String()
     var _completedUsernameOnboarding: Bool = false
     var _usernameLink: StorageServiceProtos_AccountRecord.UsernameLink? = nil
+    var _backupTier: UInt64? = nil
     var _backupSubscriberData: StorageServiceProtos_AccountRecord.IAPSubscriberData? = nil
     var _avatarColor: StorageServiceProtos_AvatarColor? = nil
 
@@ -2156,6 +2167,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _username = source._username
       _completedUsernameOnboarding = source._completedUsernameOnboarding
       _usernameLink = source._usernameLink
+      _backupTier = source._backupTier
       _backupSubscriberData = source._backupSubscriberData
       _avatarColor = source._avatarColor
     }
@@ -2208,6 +2220,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 33: try { try decoder.decodeSingularStringField(value: &_storage._username) }()
         case 34: try { try decoder.decodeSingularBoolField(value: &_storage._completedUsernameOnboarding) }()
         case 35: try { try decoder.decodeSingularMessageField(value: &_storage._usernameLink) }()
+        case 40: try { try decoder.decodeSingularUInt64Field(value: &_storage._backupTier) }()
         case 41: try { try decoder.decodeSingularMessageField(value: &_storage._backupSubscriberData) }()
         case 42: try { try decoder.decodeSingularEnumField(value: &_storage._avatarColor) }()
         default: break
@@ -2318,6 +2331,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       try { if let v = _storage._usernameLink {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 35)
       } }()
+      try { if let v = _storage._backupTier {
+        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 40)
+      } }()
       try { if let v = _storage._backupSubscriberData {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 41)
       } }()
@@ -2365,6 +2381,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._username != rhs_storage._username {return false}
         if _storage._completedUsernameOnboarding != rhs_storage._completedUsernameOnboarding {return false}
         if _storage._usernameLink != rhs_storage._usernameLink {return false}
+        if _storage._backupTier != rhs_storage._backupTier {return false}
         if _storage._backupSubscriberData != rhs_storage._backupSubscriberData {return false}
         if _storage._avatarColor != rhs_storage._avatarColor {return false}
         return true

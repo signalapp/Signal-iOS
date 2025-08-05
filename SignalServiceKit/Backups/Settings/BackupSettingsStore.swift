@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 public enum BackupPlan: RawRepresentable {
     case disabled
     case disabling
@@ -63,6 +65,9 @@ public struct BackupSettingsStore {
         static let shouldAllowBackupUploadsOnCellular = "shouldAllowBackupUploadsOnCellular"
         static let shouldOptimizeLocalStorage = "shouldOptimizeLocalStorage"
         static let lastBackupKeyReminderDate = "lastBackupKeyReminderDate"
+
+        // Storage Service reflected value
+        static let storageServiceBackupTier = "storageServiceBackupTier"
     }
 
     private let kvStore: KeyValueStore
@@ -120,6 +125,7 @@ public struct BackupSettingsStore {
     public func setBackupPlan(_ newBackupPlan: BackupPlan, tx: DBWriteTransaction) {
         kvStore.setBool(true, key: Keys.haveEverBeenEnabled, transaction: tx)
         kvStore.setInt(newBackupPlan.rawValue, key: Keys.plan, transaction: tx)
+        setStorageServiceBackupTier(newBackupPlan.asStorageServiceBackupTier, tx: tx)
     }
 
     // MARK: -
@@ -134,6 +140,20 @@ public struct BackupSettingsStore {
         } else {
             kvStore.removeValue(forKey: Keys.firstBackupDate, transaction: tx)
         }
+    }
+
+    // MARK: -
+
+    public func setStorageServiceBackupTier(_ value: UInt64?, tx: DBWriteTransaction) {
+        if let value {
+            kvStore.setUInt64(value, key: Keys.storageServiceBackupTier, transaction: tx)
+        } else {
+            kvStore.removeValue(forKey: Keys.storageServiceBackupTier, transaction: tx)
+        }
+    }
+
+    public func getStorageServiceBackupTier(tx: DBReadTransaction) -> UInt64? {
+        return kvStore.getUInt64(Keys.storageServiceBackupTier, transaction: tx)
     }
 
     // MARK: -
@@ -243,5 +263,18 @@ public struct BackupSettingsStore {
 
     public func setLastBackupKeyReminderDate(_ lastBackupKeyReminderDate: Date, tx: DBWriteTransaction) {
         kvStore.setDate(lastBackupKeyReminderDate, key: Keys.lastBackupKeyReminderDate, transaction: tx)
+    }
+}
+
+fileprivate extension BackupPlan {
+    var asStorageServiceBackupTier: UInt64? {
+        switch self {
+        case .disabled, .disabling:
+            return nil
+        case .paid, .paidExpiringSoon, .paidAsTester:
+            return UInt64(LibSignalClient.BackupLevel.paid.rawValue)
+        case .free:
+            return UInt64(LibSignalClient.BackupLevel.free.rawValue)
+        }
     }
 }

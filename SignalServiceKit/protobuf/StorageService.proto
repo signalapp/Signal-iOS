@@ -263,6 +263,8 @@ message AccountRecord {
   reserved /*backupsSubscriberId*/ 36;
   reserved /*backupsSubscriberCurrencyCode*/ 37;
   reserved /*backupsSubscriptionManuallyCancelled*/ 38;
+  reserved /*userHasBackup*/ 39;
+  optional uint64 backupTier = 40;
   IAPSubscriberData backupSubscriberData = 41;
   optional AvatarColor avatarColor = 42;
 }

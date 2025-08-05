@@ -461,6 +461,7 @@ class BackupArchiveIntegrationTests: XCTestCase {
                 backupAttachmentDownloadManager: BackupAttachmentDownloadManagerMock(),
                 dateProvider: dateProvider,
                 networkManager: CrashyMocks.MockNetworkManager(appReadiness: appReadiness, libsignalNet: nil),
+                storageServiceManager: FakeStorageServiceManager(),
                 webSocketFactory: CrashyMocks.MockWebSocketFactory()
             )
         )

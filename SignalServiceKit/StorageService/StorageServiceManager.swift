@@ -2066,6 +2066,7 @@ class StorageServiceOperation {
                 isPrimaryDevice: isPrimaryDevice,
                 authedAccount: authedAccount,
                 avatarDefaultColorManager: DependenciesBridge.shared.avatarDefaultColorManager,
+                backupSettingsStore: BackupSettingsStore(),
                 backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
                 dmConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
                 linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
