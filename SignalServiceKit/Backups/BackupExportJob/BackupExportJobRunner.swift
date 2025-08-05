@@ -128,9 +128,9 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
                 }
 
                 do throws(BackupExportJobError) {
-                    try await backupExportJob.exportAndUploadBackup { [self] exportJobProgress in
+                    try await backupExportJob.exportAndUploadBackup(mode: .manual(onProgressUpdate: { [self] exportJobProgress in
                         exportJobDidUpdateProgress(exportJobProgress)
-                    }
+                    }))
                     return .success(())
                 } catch {
                     return .failure(error)

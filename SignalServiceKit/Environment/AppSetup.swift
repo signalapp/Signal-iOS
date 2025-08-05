@@ -1411,6 +1411,7 @@ public class AppSetup {
             accountKeyStore: accountKeyStore,
             attachmentOffloadingManager: attachmentOffloadingManager,
             backupArchiveManager: backupArchiveManager,
+            backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupIdManager: backupIdManager,

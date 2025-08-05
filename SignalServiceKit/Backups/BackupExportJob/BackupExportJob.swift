@@ -40,6 +40,11 @@ public struct BackupExportJobProgress {
 #endif
 }
 
+public enum BackupExportJobMode {
+    case manual(onProgressUpdate: ((BackupExportJobProgress) -> Void))
+    case bgProcessingTask
+}
+
 public enum BackupExportJobError: Error {
     case cancellationError
     case unregistered
@@ -65,7 +70,7 @@ public protocol BackupExportJob {
     ///
     /// Cooperatively cancellable.
     func exportAndUploadBackup(
-        onProgressUpdate: ((BackupExportJobProgress) -> Void)?
+        mode: BackupExportJobMode
     ) async throws(BackupExportJobError)
 }
 
@@ -75,6 +80,7 @@ class BackupExportJobImpl: BackupExportJob {
     private let accountKeyStore: AccountKeyStore
     private let attachmentOffloadingManager: AttachmentOffloadingManager
     private let backupArchiveManager: BackupArchiveManager
+    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
     private let backupIdManager: BackupIdManager
@@ -91,6 +97,7 @@ class BackupExportJobImpl: BackupExportJob {
         accountKeyStore: AccountKeyStore,
         attachmentOffloadingManager: AttachmentOffloadingManager,
         backupArchiveManager: BackupArchiveManager,
+        backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
         backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupIdManager: BackupIdManager,
@@ -105,6 +112,7 @@ class BackupExportJobImpl: BackupExportJob {
         self.accountKeyStore = accountKeyStore
         self.attachmentOffloadingManager = attachmentOffloadingManager
         self.backupArchiveManager = backupArchiveManager
+        self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
         self.backupIdManager = backupIdManager
@@ -119,7 +127,7 @@ class BackupExportJobImpl: BackupExportJob {
     }
 
     func exportAndUploadBackup(
-        onProgressUpdate: ((BackupExportJobProgress) -> Void)?
+        mode: BackupExportJobMode
     ) async throws(BackupExportJobError) {
         let (
             localIdentifiers,
@@ -195,7 +203,8 @@ class BackupExportJobImpl: BackupExportJob {
         let attachmentUploadProgress: OWSProgressSource?
         let offloadingProgress: OWSProgressSource?
 
-        if let onProgressUpdate {
+        switch mode {
+        case .manual(let onProgressUpdate):
             progressUpdater = ProgressUpdater(onProgressUpdate: onProgressUpdate)
             registerBackupIdProgress = await progressUpdater?.progressSink.addSource(.registerBackupId)
             backupExportProgress = await progressUpdater?.progressSink.addChild(.backupExport)
@@ -214,7 +223,7 @@ class BackupExportJobImpl: BackupExportJob {
                 attachmentUploadProgress = await progressUpdater?.progressSink.addSource(.attachmentUpload)
                 offloadingProgress = await progressUpdater?.progressSink.addSource(.offloading)
             }
-        } else {
+        case .bgProcessingTask:
             progressUpdater = nil
             registerBackupIdProgress = nil
             backupExportProgress = nil
@@ -303,6 +312,13 @@ class BackupExportJobImpl: BackupExportJob {
             try await backupAttachmentUploadQueueRunner.backUpAllAttachments()
             _ = uploadObserver.take()
             uploadObserver = nil
+
+            switch mode {
+            case .manual:
+                break
+            case .bgProcessingTask:
+                try? await backupAttachmentDownloadManager.restoreAttachmentsIfNeeded()
+            }
 
             logger.info("Offloading attachments...")
             progressUpdater?.latestProgress.step = .offloading
