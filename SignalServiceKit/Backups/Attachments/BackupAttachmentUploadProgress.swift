@@ -124,10 +124,11 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
     }
 
     public func didEmptyUploadQueue() async {
-        activeUploadByteCounts.keys.forEach {
+        activeUploadCompletedByteCounts.keys.forEach {
             recentlyCompletedUploads.set(key: $0, value: ())
         }
-        activeUploadByteCounts = [:]
+        activeUploadCompletedByteCounts = [:]
+        activeUploadTotalByteCounts = [:]
         observers.cullExpired()
         observers.elements.forEach { observer in
             let source = observer.source
@@ -154,7 +155,8 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
     }
 
     /// Currently active uploads for which we update progress byte-by-byte.
-    private var activeUploadByteCounts = [PerObserverUploadId: UInt64]()
+    private var activeUploadCompletedByteCounts = [PerObserverUploadId: UInt64]()
+    private var activeUploadTotalByteCounts = [PerObserverUploadId: UInt64]()
     /// There is a race between receiving the final OWSProgress update for a given attachment
     /// and being told the attachment finished uploading by BackupAttachmentUploadManager.
     /// To resolve this race, track recently completed uploads so we know not to double count.
@@ -166,10 +168,10 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
     private func didUpdateProgressForActiveUpload(
         uploadRecord: QueuedBackupAttachmentUpload,
         completedByteCount: UInt64,
-        totalByteCount: UInt64
+        totalByteCount totalByteCountInput: UInt64
     ) {
         guard
-            totalByteCount != 0
+            totalByteCountInput != 0
         else {
             return
         }
@@ -188,19 +190,21 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
             )
             let source = observer.source
 
-            let prevByteCount = activeUploadByteCounts[uploadId] ?? 0
-            if completedByteCount >= totalByteCount {
+            let prevCompletedByteCount = activeUploadCompletedByteCounts[uploadId] ?? 0
+            let totalByteCount = activeUploadTotalByteCounts[uploadId] ?? totalByteCountInput
+            activeUploadTotalByteCounts[uploadId] = totalByteCount
+            if completedByteCount >= totalByteCountInput {
                 // If the caller's intent is to complete to 100%, complete
                 // to 100% even if the caller got the unit count wrong
                 // (e.g. because it was only doing an estimated byte count).
-                if source.completedUnitCount < source.totalUnitCount {
-                    source.incrementCompletedUnitCount(by: source.totalUnitCount - source.completedUnitCount)
-                    activeUploadByteCounts[uploadId] = source.totalUnitCount
+                if prevCompletedByteCount < totalByteCount{
+                    source.incrementCompletedUnitCount(by: totalByteCount - prevCompletedByteCount)
+                    activeUploadCompletedByteCounts[uploadId] = totalByteCount
                     recentlyCompletedUploads.set(key: uploadId, value: ())
                 }
-            } else if completedByteCount > prevByteCount {
-                source.incrementCompletedUnitCount(by: completedByteCount - prevByteCount)
-                activeUploadByteCounts[uploadId] = completedByteCount
+            } else if completedByteCount > prevCompletedByteCount {
+                source.incrementCompletedUnitCount(by: completedByteCount - prevCompletedByteCount)
+                activeUploadCompletedByteCounts[uploadId] = completedByteCount
             } else {
                 // The completed byte count is less than the previous completed
                 // byte count, which is strange but not impossible given that we
