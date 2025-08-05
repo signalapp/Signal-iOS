@@ -116,6 +116,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         updateBarButtonItems()
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
+        if #available(iOS 26, *) {
+            toolbarDeleteButton.image = UIImage(resource: .trash)
+            self.toolbarItems = [.flexibleSpace(), toolbarDeleteButton]
+        }
+
         view.addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges()
         tableView.delegate = self
@@ -229,6 +234,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     )
 
     private func showToolbar() {
+        if #available(iOS 26, *) {
+            navigationController?.setToolbarHidden(false, animated: true)
+            (tabBarController as? HomeTabBarController)?.setTabBarHidden(true)
+            return
+        }
+
         guard
             // Don't create a new toolbar if we already have one
             multiselectToolbarContainer == nil,
@@ -341,6 +352,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     private func hideToolbar() {
+        if #available(iOS 26, *) {
+            self.navigationController?.setToolbarHidden(true, animated: true)
+            (self.tabBarController as? HomeTabBarController)?.setTabBarHidden(false)
+            return
+        }
+
         guard let multiselectToolbarContainer else { return }
         UIView.animate(withDuration: 0.25) {
             multiselectToolbarContainer.alpha = 0

@@ -69,6 +69,13 @@ extension ChatListViewController {
     func showToolbar() {
         AssertIsOnMainThread()
 
+        if #available(iOS 26, *) {
+            self.updateCaptions()
+            self.navigationController?.setToolbarHidden(false, animated: true)
+            (self.tabBarController as? HomeTabBarController)?.setTabBarHidden(true)
+            return
+        }
+
         if viewState.multiSelectState.toolbar == nil {
             let tbc = BlurredToolbarContainer()
             tbc.alpha = 0
@@ -82,7 +89,10 @@ extension ChatListViewController {
                 // to be async, but without it the toolbar inherits stale safe area insets from
                 // its parent, and its own safe area doesn't line up.
                 DispatchQueue.main.async {
-                    self.adjustToolbarButtons(self.viewState.multiSelectState.toolbar?.toolbar)
+                    self.viewState.multiSelectState.toolbar?.toolbar.setItems(
+                        self.makeToolbarButtons(),
+                        animated: false
+                    )
                 }
                 UIView.animate(withDuration: 0.25, animations: {
                     tbc.alpha = 1
@@ -133,12 +143,15 @@ extension ChatListViewController {
         }
     }
 
-    private func adjustToolbarButtons(_ toolbar: UIToolbar?) {
+    private func makeToolbarButtons() -> [UIBarButtonItem] {
         let hasSelectedEntries = !(tableView.indexPathsForSelectedRows ?? []).isEmpty
 
         let archiveBtn = UIBarButtonItem(
             title: viewState.chatListMode == .archive ? CommonStrings.unarchiveAction : CommonStrings.archiveAction,
-            style: .plain, target: self, action: #selector(performUnarchive))
+            style: .plain, target: self, action: #selector(performArchive))
+        if #available(iOS 26, *) {
+            archiveBtn.image = UIImage(resource: .archive)
+        }
         archiveBtn.isEnabled = hasSelectedEntries
 
         let readButton: UIBarButtonItem
@@ -173,6 +186,9 @@ extension ChatListViewController {
         }
 
         let deleteBtn = UIBarButtonItem(title: CommonStrings.deleteButton, style: .plain, target: self, action: #selector(performDelete))
+        if #available(iOS 26, *) {
+            deleteBtn.image = UIImage(resource: .trash)
+        }
         deleteBtn.isEnabled = hasSelectedEntries
 
         var entries: [UIBarButtonItem] = []
@@ -182,11 +198,17 @@ extension ChatListViewController {
             }
             entries.append(button)
         }
-        toolbar?.setItems(entries, animated: false)
+        return entries
     }
 
     private func hideToolbar() {
         AssertIsOnMainThread()
+
+        if #available(iOS 26, *) {
+            (self.tabBarController as? HomeTabBarController)?.setTabBarHidden(false)
+            self.navigationController?.setToolbarHidden(true, animated: true)
+            return
+        }
 
         if let toolbar = viewState.multiSelectState.toolbar {
             UIView.animate(withDuration: 0.25) { [weak self] in
@@ -219,23 +241,22 @@ extension ChatListViewController {
                                            comment: "Label for the toolbar used in the multi-select mode. The number of selected items (1 or more) is passed.")
             title = String.localizedStringWithFormat(format, count)
         }
-        adjustToolbarButtons(viewState.multiSelectState.toolbar?.toolbar)
+
+        if #available(iOS 26, *) {
+            toolbarItems = makeToolbarButtons()
+        } else {
+            viewState.multiSelectState.toolbar?.toolbar.setItems(
+                makeToolbarButtons(),
+                animated: false
+            )
+        }
     }
 
     // MARK: toolbar button actions
 
+    /// Archives or unarchives the selected threads
     @objc
     func performArchive() {
-        performOn(indexPaths: tableView.indexPathsForSelectedRows ?? []) { threadViewModels in
-            for threadViewModel in threadViewModels {
-                archiveThread(threadViewModel: threadViewModel, closeConversationBlock: nil)
-            }
-        }
-        done()
-    }
-
-    @objc
-    func performUnarchive() {
         performOn(indexPaths: tableView.indexPathsForSelectedRows ?? []) { threadViewModels in
             for threadViewModel in threadViewModels {
                 archiveThread(threadViewModel: threadViewModel, closeConversationBlock: nil)
