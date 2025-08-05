@@ -1369,8 +1369,8 @@ struct BackupSettingsView: View {
                     "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE",
                     comment: "Title for a button allowing users to re-enable Backups, after it had been previously disabled."
                 ))
+                .foregroundStyle(Color.Signal.label)
             }
-                .buttonStyle(.plain)
         )
     }
 }
