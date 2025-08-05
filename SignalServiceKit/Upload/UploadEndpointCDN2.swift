@@ -155,6 +155,10 @@ struct UploadEndpointCDN2: UploadEndpoint {
         let fileUrl: URL
         var fileToCleanup: URL?
 
+        guard fileSystem.fileOrFolderExists(url: attempt.fileUrl) else {
+            throw .missingFile
+        }
+
         if startPoint == 0 {
             headers["Content-Length"] = "\(totalDataLength)"
             fileUrl = attempt.fileUrl

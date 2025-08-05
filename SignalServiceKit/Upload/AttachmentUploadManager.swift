@@ -835,6 +835,32 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     logger: logger,
                     progress: progress
                 )
+            } else if case Upload.Error.missingFile = error {
+                try await db.awaitableWrite { tx in
+                    if
+                        let attachmentRelFilePath = attachment.streamInfo?.localRelativeFilePath,
+                        // If the missing file matches the url of the primary attachment file,
+                        // mark the whole attachment as not having a file anymore.
+                        localMetadata.fileUrl == AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: attachmentRelFilePath),
+                        let attachment = attachmentStore.fetch(id: attachmentId, tx: tx)
+                    {
+                        logger.error("Primary attachment file missing!")
+                        let params = Attachment.ConstructionParams.forOffloadingFiles(
+                            attachment: attachment,
+                            localRelativeFilePathThumbnail: nil
+                        )
+                        var newRecord = Attachment.Record(params: params)
+                        newRecord.sqliteId = attachment.id
+                        try newRecord.update(tx.database)
+                    }
+                    // Delete the upload record; whatever the state was we need to start over next time.
+                    try self.attachmentUploadStore.removeRecord(
+                        for: attachmentUploadRecord.attachmentId,
+                        sourceType: attachmentUploadRecord.sourceType,
+                        tx: tx
+                    )
+                }
+                throw error
             } else {
                 // Some other non-upload error was encountered - exit from the upload for now.
                 // Network failures or task cancellation shouldn't bump the attempt count, but

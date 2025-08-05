@@ -40,6 +40,10 @@ class _Upload_FileSystemMock: Upload.Shims.FileSystem {
 
     func temporaryFileUrl() -> URL { return URL(string: "file://")! }
 
+    func fileOrFolderExists(url: URL) -> Bool {
+        true
+    }
+
     func deleteFile(url: URL) throws { }
 
     func createTempFileSlice(url: URL, start: Int) throws -> (URL, Int) {

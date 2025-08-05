@@ -30,6 +30,8 @@ public protocol _Upload_AttachmentEncrypterShim {
 public protocol _Upload_FileSystemShim {
     func temporaryFileUrl() -> URL
 
+    func fileOrFolderExists(url: URL) -> Bool
+
     func deleteFile(url: URL) throws
 
     func createTempFileSlice(url: URL, start: Int) throws -> (URL, Int)
@@ -54,6 +56,10 @@ public struct _Upload_AttachmentEncrypterWrapper: Upload.Shims.AttachmentEncrypt
 public struct _Upload_FileSystemWrapper: Upload.Shims.FileSystem {
     public func temporaryFileUrl() -> URL {
         return OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
+    }
+
+    public func fileOrFolderExists(url: URL) -> Bool {
+        return OWSFileSystem.fileOrFolderExists(url: url)
     }
 
     public func deleteFile(url: URL) throws {

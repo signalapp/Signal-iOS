@@ -213,6 +213,9 @@ public struct AttachmentUpload {
                 }
             case .networkError:
                 failureMode = .resume(.afterBackoff)
+            case .missingFile:
+                attempt.logger.error("Missing attachment file!")
+                failureMode = .noMoreRetries
             case .invalidUploadURL, .unsupportedEndpoint, .unexpectedResponseStatusCode, .unknown:
                 // These errors are unrecoverable, so restart the upload in hopes of correcting the issue.
                 failureMode = .restart(.afterBackoff)

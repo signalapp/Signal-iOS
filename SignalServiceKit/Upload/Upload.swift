@@ -86,11 +86,12 @@ public enum Upload {
         case uploadFailure(recovery: FailureMode)
         case unsupportedEndpoint
         case unexpectedResponseStatusCode(Int)
+        case missingFile
         case unknown
 
         public var isRetryableProvider: Bool {
             switch self {
-            case .invalidUploadURL, .uploadFailure, .unsupportedEndpoint, .unexpectedResponseStatusCode, .networkTimeout, .networkError, .unknown:
+            case .invalidUploadURL, .uploadFailure, .unsupportedEndpoint, .unexpectedResponseStatusCode, .networkTimeout, .networkError, .missingFile, .unknown:
                 return false
             }
         }

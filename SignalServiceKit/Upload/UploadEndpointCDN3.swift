@@ -94,6 +94,10 @@ struct UploadEndpointCDN3: UploadEndpoint {
         headers["Tus-Resumable"] = "1.0.0"
         headers["Upload-Offset"] = "\(startPoint)"
 
+        guard fileSystem.fileOrFolderExists(url: attempt.fileUrl) else {
+            throw .missingFile
+        }
+
         let method: HTTPMethod
         let temporaryFileUrl: URL
         var fileToCleanup: URL?
