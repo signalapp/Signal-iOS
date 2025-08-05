@@ -474,6 +474,9 @@ public extension OWSFileSystem {
 
         // TODO: It'd be better if we could slice on disk.
         let entireFileData = try Data(contentsOf: url)
+        guard start <= entireFileData.count else {
+            throw OWSAssertionError("Invalid slice length.")
+        }
         let dataSlice = entireFileData.suffix(from: start)
         let dataSliceLength = dataSlice.count
         guard dataSliceLength + start == entireFileData.count else {
