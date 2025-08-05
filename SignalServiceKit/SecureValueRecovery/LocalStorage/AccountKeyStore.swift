@@ -54,13 +54,6 @@ public class AccountKeyStore {
         return getMasterKey(tx: tx) ?? masterKeyGenerator()
     }
 
-    public func rotateMasterKey(tx: DBWriteTransaction) -> (old: MasterKey?, new: MasterKey) {
-        let oldValue = getMasterKey(tx: tx)
-        let newValue = masterKeyGenerator()
-        setMasterKey(newValue, tx: tx)
-        return (oldValue, newValue)
-    }
-
     public func setMasterKey(_ masterKey: MasterKey?, tx: DBWriteTransaction) {
         masterKeyKvStore.setData(masterKey?.rawData, key: Keys.masterKey, transaction: tx)
     }
