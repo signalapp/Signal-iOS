@@ -39,6 +39,8 @@ public class AccountKeyStore {
         self.backupSettingsStore = BackupSettingsStore()
     }
 
+    // MARK: -
+
     public func getMasterKey(tx: DBReadTransaction) -> MasterKey? {
         if let aepDerivedKey = getAccountEntropyPool(tx: tx)?.getMasterKey() {
             return aepDerivedKey
@@ -59,6 +61,8 @@ public class AccountKeyStore {
     public func setMasterKey(_ masterKey: MasterKey?, tx: DBWriteTransaction) {
         masterKeyKvStore.setData(masterKey?.rawData, key: Keys.masterKey, transaction: tx)
     }
+
+    // MARK: -
 
     /// Manages the "Media Root Backup Key" a.k.a. "MRBK" a.k.a. "Mr Burger King".
     /// This is a key we generate once and use forever that is used to derive encryption keys
@@ -102,6 +106,18 @@ public class AccountKeyStore {
         mrbkKvStore.setData(mrbk.serialize(), key: Keys.mrbkKeyName, transaction: tx)
     }
 
+    // MARK: -
+
+    public func getMessageRootBackupKey(
+        aci: Aci,
+        tx: DBReadTransaction
+    ) throws -> MessageRootBackupKey? {
+        guard let aep = getAccountEntropyPool(tx: tx) else { return nil }
+        return try MessageRootBackupKey(accountEntropyPool: aep, aci: aci)
+    }
+
+    // MARK: -
+
     public func getAccountEntropyPool(tx: DBReadTransaction) -> SignalServiceKit.AccountEntropyPool? {
         guard let accountEntropyPool = aepKvStore.getString(Keys.aepKeyName, transaction: tx) else {
             return nil
@@ -118,30 +134,21 @@ public class AccountKeyStore {
         return getAccountEntropyPool(tx: tx) ?? accountEntropyPoolGenerator()
     }
 
-    public func setAccountEntropyPool(_ accountEntropyPool: AccountEntropyPool?, tx: DBWriteTransaction) {
+    /// Persist the given `AccountEntropyPool`, without side effects.
+    ///
+    /// - Warning
+    /// Rotating the `AccountEntropyPool` has external side-effects. Callers of
+    /// this method should be careful that those side-effects have been managed,
+    /// either by the caller or something upstream of the caller.
+    ///
+    /// Callers who are unsure should refer to ``SecureValueRecovery/setNewAccountEntropyPoolWithSideEffects``.
+    public func setAccountEntropyPool(_ accountEntropyPool: AccountEntropyPool, tx: DBWriteTransaction) {
         // Clear the old master key when setting the accountEntropyPool
         masterKeyKvStore.removeValue(forKey: Keys.masterKey, transaction: tx)
-        if let accountEntropyPool {
-            aepKvStore.setString(accountEntropyPool.rawData, key: Keys.aepKeyName, transaction: tx)
-        } else {
-            aepKvStore.removeValue(forKey: Keys.aepKeyName, transaction: tx)
-        }
-    }
 
-    public func rotateAccountEntropyPool(tx: DBWriteTransaction) -> (old: AccountEntropyPool?, new: AccountEntropyPool) {
-        let oldValue = getAccountEntropyPool(tx: tx)
-        let newValue = accountEntropyPoolGenerator()
-        setAccountEntropyPool(newValue, tx: tx)
-
+        // Setting the AEP means we need to set our Backup-ID again.
         backupSettingsStore.setHaveSetBackupID(haveSetBackupID: false, tx: tx)
-        return (oldValue, newValue)
-    }
 
-    public func getMessageRootBackupKey(
-        aci: Aci,
-        tx: DBReadTransaction
-    ) throws -> MessageRootBackupKey? {
-        guard let aep = getAccountEntropyPool(tx: tx) else { return nil }
-        return try MessageRootBackupKey(accountEntropyPool: aep, aci: aci)
+        aepKvStore.setString(accountEntropyPool.rawData, key: Keys.aepKeyName, transaction: tx)
     }
 }

@@ -114,26 +114,14 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         doesHavePendingRestoration = false
     }
 
-    public var useDeviceLocalMasterKeyMock: ((_ authedAccount: AuthedAccount) -> Void)?
-
-    public func useDeviceLocalMasterKey(
-        _ masterKey: MasterKey,
-        disablePIN: Bool,
-        authedAccount: AuthedAccount,
-        transaction: DBWriteTransaction
-    ) {
-        useDeviceLocalMasterKeyMock?(authedAccount)
-        hasMasterKey = true
-    }
-
-    public var useDeviceLocalAccountEntropyPoolMock: ((_ authedAccount: AuthedAccount) -> Void)?
-    public func useDeviceLocalAccountEntropyPool(
+    public var setNewAccountEntropyPoolWithSideEffectsMock: ((_ authedAccount: AuthedAccount) -> Void)?
+    public func setNewAccountEntropyPoolWithSideEffects(
         _ accountEntropyPool: AccountEntropyPool,
         disablePIN: Bool,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
-        useDeviceLocalAccountEntropyPoolMock?(authedAccount)
+        setNewAccountEntropyPoolWithSideEffectsMock?(authedAccount)
         hasAccountEntropyPool = true
         hasMasterKey = true
     }

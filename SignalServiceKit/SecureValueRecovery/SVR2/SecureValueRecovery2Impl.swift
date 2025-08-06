@@ -203,29 +203,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         return localStorage.getIsMasterKeyBackedUp(transaction)
     }
 
-    /// This method will:
-    /// 1. Set the provided MasterKey
-    /// 2. Clear out any SVR state
-    /// 3. Initiate a Storage Service update
-    /// 4. Update the users AccountAttributes
-    /// 5. Depending on the value of `disablePIN`
-    ///     a. true: Disable 2FA and remove local SVR credentials
-    ///     b. false: Initiate a new backup of SVR credentials if a PIN is available
-    public func useDeviceLocalMasterKey(
-        _ masterKey: MasterKey,
-        disablePIN: Bool,
-        authedAccount: AuthedAccount,
-        transaction: DBWriteTransaction
-    ) {
-        Logger.info("")
-        accountKeyStore.setMasterKey(masterKey, tx: transaction)
-        updateLocalStateWithNewMasterKey(
-            masterKey,
-            disablePIN: disablePIN,
-            authedAccount: authedAccount,
-            transaction: transaction
-        )
-    }
+    // MARK: -
 
     /// This method will:
     /// 1. Set the provided AEP
@@ -235,15 +213,15 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     /// 5. Depending on the value of `disablePIN`
     ///     a. true: Disable 2FA and remove local SVR credentials
     ///     b. false: Initiate a new backup of SVR credentials if a PIN is available
-    public func useDeviceLocalAccountEntropyPool(
+    public func setNewAccountEntropyPoolWithSideEffects(
         _ accountEntropyPool: AccountEntropyPool,
         disablePIN: Bool,
         authedAccount: AuthedAccount,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         Logger.info("")
         accountKeyStore.setAccountEntropyPool(accountEntropyPool, tx: transaction)
-        updateLocalStateWithNewMasterKey(
+        performSideEffectsOfNewMasterKey(
             accountEntropyPool.getMasterKey(),
             disablePIN: disablePIN,
             authedAccount: authedAccount,
@@ -251,7 +229,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         )
     }
 
-    private func updateLocalStateWithNewMasterKey(
+    private func performSideEffectsOfNewMasterKey(
         _ masterKey: MasterKey,
         disablePIN: Bool,
         authedAccount: AuthedAccount,
@@ -1174,7 +1152,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             Logger.info("")
             db.write { tx in
                 let newAEP = self.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
-                self.useDeviceLocalAccountEntropyPool(
+                self.setNewAccountEntropyPoolWithSideEffects(
                     newAEP,
                     disablePIN: pinCode == nil,
                     authedAccount: .implicit(),
@@ -1198,7 +1176,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     // the NSE to do the initial SVR backup. Initial AEP migrations could happen in the NSE,
     // so we want to allow any migrations that happened in the NSE to complete the backup.
     // This should only affect legacy installs since any new install or
-    // migration should already have this marked through `useDeviceLocalAccountEntropyPool`.
+    // migration should already have this marked through `setNewAccountEntropyPoolWithSideEffects`.
     // Eventualy (Nov 2025), this can be removed since all active accounts will either
     // have migrated or only migrated in the main app.
     private static let needsInitialAEPBackup = "needsInitialAEPBackup"

@@ -2950,15 +2950,9 @@ public class RegistrationCoordinatorTest {
         })
 
         var didSetLocalAccountEntropyPool = false
-        svr.useDeviceLocalAccountEntropyPoolMock = { _ in
+        svr.setNewAccountEntropyPoolWithSideEffectsMock = { _ in
             #expect(self.svr.hasAccountEntropyPool == false)
             didSetLocalAccountEntropyPool = true
-        }
-
-        var didSetLocalMasterKey = false
-        svr.useDeviceLocalMasterKeyMock = { _ in
-            #expect(self.svr.hasMasterKey == false)
-            didSetLocalMasterKey = true
         }
 
         // Once we sync push tokens, we should restore from storage service.
@@ -2994,11 +2988,8 @@ public class RegistrationCoordinatorTest {
         // Skip the PIN code.
         #expect(await coordinator.skipPINCode().awaitable() == .done)
 
-        if testCase.newKey == .accountEntropyPool {
-            #expect(didSetLocalAccountEntropyPool)
-        } else {
-            #expect(didSetLocalMasterKey)
-        }
+        #expect(testCase.newKey == .accountEntropyPool)
+        #expect(didSetLocalAccountEntropyPool)
 
         // Since we set profile info, we should have scheduled a reupload.
         #expect(profileManagerMock.didScheduleReuploadLocalProfile)
@@ -3113,15 +3104,9 @@ public class RegistrationCoordinatorTest {
         })
 
         var didSetLocalAccountEntropyPool = false
-        svr.useDeviceLocalAccountEntropyPoolMock = { _ in
+        svr.setNewAccountEntropyPoolWithSideEffectsMock = { _ in
             #expect(self.svr.hasAccountEntropyPool == false)
             didSetLocalAccountEntropyPool = true
-        }
-
-        var didSetLocalMasterKey = false
-        svr.useDeviceLocalMasterKeyMock = { _ in
-            #expect(self.svr.hasMasterKey == false)
-            didSetLocalMasterKey = true
         }
 
         // Now we should ask to restore the PIN.
@@ -3147,11 +3132,8 @@ public class RegistrationCoordinatorTest {
         // Skip this PIN code, too.
         #expect(await coordinator.skipPINCode().awaitable() == .done)
 
-        if testCase.newKey == .accountEntropyPool {
-            #expect(didSetLocalAccountEntropyPool)
-        } else {
-            #expect(didSetLocalMasterKey)
-        }
+        #expect(testCase.newKey == .accountEntropyPool)
+        #expect(didSetLocalAccountEntropyPool)
 
         // Since we set profile info, we should have scheduled a reupload.
         #expect(profileManagerMock.didScheduleReuploadLocalProfile)

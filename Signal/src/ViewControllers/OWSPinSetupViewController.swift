@@ -812,9 +812,9 @@ extension PinSetupViewController {
                     canCancel: false,
                     asyncBlock: { modal in
                         await ViewControllerContext.shared.db.awaitableWrite {
-                            let (_, newEntropyPool) = ViewControllerContext.shared.accountKeyStore.rotateAccountEntropyPool(tx: $0)
-                            ViewControllerContext.shared.svr.useDeviceLocalAccountEntropyPool(
-                                newEntropyPool,
+                            let newAccountEntropyPool = AccountEntropyPool()
+                            ViewControllerContext.shared.svr.setNewAccountEntropyPoolWithSideEffects(
+                                newAccountEntropyPool,
                                 disablePIN: true,
                                 authedAccount: .implicit(),
                                 transaction: $0

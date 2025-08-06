@@ -172,18 +172,10 @@ public protocol SecureValueRecovery {
         tx: DBWriteTransaction
     ) throws(SVR.KeysError)
 
-    /// Rotate the master key and _don't_ back it up to the SVR server, in effect switching to a
-    /// local-only master key and disabling PIN usage for backup restoration.
-    func useDeviceLocalMasterKey(
-        _ masterKey: MasterKey,
+    func setNewAccountEntropyPoolWithSideEffects(
+        _ accountEntropyPool: AccountEntropyPool,
         disablePIN: Bool,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     )
-
-    func useDeviceLocalAccountEntropyPool(
-        _ accountEntropyPool: AccountEntropyPool,
-        disablePIN: Bool,
-        authedAccount: AuthedAccount,
-        transaction: DBWriteTransaction)
 }

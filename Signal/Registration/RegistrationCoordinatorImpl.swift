@@ -1385,7 +1385,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
             let userHasPIN = (inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk) != nil
-            deps.svr.useDeviceLocalAccountEntropyPool(
+            deps.svr.setNewAccountEntropyPoolWithSideEffects(
                 accountEntropyPool,
                 disablePIN: !userHasPIN,
                 authedAccount: accountIdentity.authedAccount,
