@@ -522,6 +522,19 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                             return .retryableError(error)
                         }
                     } else if record.record.isFullsize {
+                        switch error as? Upload.Error {
+                        case .missingFile:
+                            // The file is missing! We can never retry this upload;
+                            // call it a "success" so we don't mess with progress
+                            // state and so we wipe the upload task row, and move on.
+                            logger.error("Missing attachment file; skipping and proceeding")
+                            await progress.didFinishUploadOfAttachment(
+                                uploadRecord: record.record
+                            )
+                            return .success
+                        default:
+                            break
+                        }
                         // For other errors stop the queue to prevent thundering herd;
                         // when it starts up again (e.g. on app launch) we will retry.
                         logger.error("Unknown error occurred; stopping the queue")
