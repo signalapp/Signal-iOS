@@ -883,10 +883,6 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                 preserveStyleInReplacement: true
             )
             mentionOffset += mentionPlaceholderLength - mention.range.length
-//            mentionOffset += mentionPlaceholderLength
-//            if mention.range.location > 0 {
-//                mentionOffset -= mention.range.length
-//            }
         }
         return MessageBody(
             text: text as String,
