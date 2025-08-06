@@ -1156,14 +1156,16 @@ extension ChatListViewController: ChatListProxyButtonDelegate {
     }
 }
 
+// MARK: -
+
 extension ChatListViewController {
     enum ShowAppSettingsMode {
-        case none
         case payments
         case payment(paymentsHistoryItem: PaymentsHistoryItem)
         case paymentsTransferIn
         case appearance
         case avatarBuilder
+        case backups
         case corruptedUsernameResolution
         case corruptedUsernameLinkResolution
         case donate(donateMode: DonateViewController.DonateMode)
@@ -1171,19 +1173,7 @@ extension ChatListViewController {
         case proxy
     }
 
-    func showAppSettings() {
-        showAppSettings(mode: .none)
-    }
-
-    func showAppSettingsInAppearanceMode() {
-        showAppSettings(mode: .appearance)
-    }
-
-    func showAppSettingsInAvatarBuilderMode() {
-        showAppSettings(mode: .avatarBuilder)
-    }
-
-    func showAppSettings(mode: ShowAppSettingsMode) {
+    func showAppSettings(mode: ShowAppSettingsMode? = nil) {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -1192,52 +1182,64 @@ extension ChatListViewController {
         conversationSplitViewController?.selectedConversationViewController?
             .dismissMessageContextMenu(animated: true)
 
+        let navigationController = OWSNavigationController()
         let appSettingsViewController = AppSettingsViewController(appReadiness: appReadiness)
 
         var completion: (() -> Void)?
         var viewControllers: [UIViewController] = [ appSettingsViewController ]
 
         switch mode {
-        case .none:
+        case nil:
             break
+
         case .payments:
             let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings, appReadiness: appReadiness)
             viewControllers += [ paymentsSettings ]
+
         case .payment(let paymentsHistoryItem):
             let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings, appReadiness: appReadiness)
             let paymentsDetail = PaymentsDetailViewController(paymentItem: paymentsHistoryItem)
             viewControllers += [ paymentsSettings, paymentsDetail ]
+
         case .paymentsTransferIn:
             let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings, appReadiness: appReadiness)
             let paymentsTransferIn = PaymentsTransferInViewController()
             viewControllers += [ paymentsSettings, paymentsTransferIn ]
+
         case .appearance:
             let appearance = AppearanceSettingsTableViewController()
             viewControllers += [ appearance ]
+
         case .avatarBuilder:
             let profile = ProfileSettingsViewController(
                 usernameChangeDelegate: appSettingsViewController,
                 usernameLinkScanDelegate: appSettingsViewController
             )
-
             viewControllers += [ profile ]
             completion = { profile.presentAvatarSettingsView() }
+
+        case .backups:
+            viewControllers += [
+                BackupOnboardingCoordinator()
+                    .prepareForPresentation(inNavController: navigationController)
+            ]
+
         case .corruptedUsernameResolution:
             let profile = ProfileSettingsViewController(
                 usernameChangeDelegate: appSettingsViewController,
                 usernameLinkScanDelegate: appSettingsViewController
             )
-
             viewControllers += [ profile ]
             completion = { profile.presentUsernameCorruptedResolution() }
+
         case .corruptedUsernameLinkResolution:
             let profile = ProfileSettingsViewController(
                 usernameChangeDelegate: appSettingsViewController,
                 usernameLinkScanDelegate: appSettingsViewController
             )
-
             viewControllers += [ profile ]
             completion = { profile.presentUsernameLinkCorruptedResolution() }
+
         case let .donate(donateMode):
             guard DonationUtilities.canDonate(
                 inMode: donateMode.asDonationMode,
@@ -1246,7 +1248,6 @@ extension ChatListViewController {
                 DonationViewsUtil.openDonateWebsite()
                 return
             }
-
             let donate = DonateViewController(preferredDonateMode: donateMode) { [weak self] finishResult in
                 switch finishResult {
                 case let .completedDonation(donateSheet, receiptCredentialSuccessMode):
@@ -1272,17 +1273,21 @@ extension ChatListViewController {
                 }
             }
             viewControllers += [donate]
+
         case .linkedDevices:
             viewControllers += [ LinkedDevicesHostingController() ]
+
         case .proxy:
             viewControllers += [ PrivacySettingsViewController(), AdvancedPrivacySettingsViewController(), ProxySettingsViewController() ]
+
         }
 
-        let navigationController = OWSNavigationController()
         navigationController.setViewControllers(viewControllers, animated: false)
         presentFormSheet(navigationController, animated: true, completion: completion)
     }
 }
+
+// MARK: -
 
 extension ChatListViewController: ThreadSwipeHandler {
     func updateUIAfterSwipeAction() {
@@ -1320,7 +1325,7 @@ extension ChatListViewController: GetStartedBannerViewControllerDelegate {
     }
 
     func getStartedBannerDidTapAppearance(_ banner: GetStartedBannerViewController) {
-        showAppSettingsInAppearanceMode()
+        showAppSettings(mode: .appearance)
     }
 
     func getStartedBannerDidDismissAllCards(_ banner: GetStartedBannerViewController, animated: Bool) {
@@ -1340,7 +1345,7 @@ extension ChatListViewController: GetStartedBannerViewControllerDelegate {
     }
 
     func getStartedBannerDidTapAvatarBuilder(_ banner: GetStartedBannerViewController) {
-        showAppSettingsInAvatarBuilderMode()
+        showAppSettings(mode: .avatarBuilder)
     }
 }
 
