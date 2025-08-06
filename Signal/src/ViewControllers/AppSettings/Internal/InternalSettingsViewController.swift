@@ -471,7 +471,7 @@ private extension InternalSettingsViewController {
             progress: nil
         )
 
-        let registeredBackupIDToken = try await backupIdManager.registerBackupId(
+        let registeredBackupIDToken = try await backupIdManager.registerBackupIdAndKey(
             localIdentifiers: localIdentifiers,
             auth: .implicit()
         )

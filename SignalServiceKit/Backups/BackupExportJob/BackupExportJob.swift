@@ -267,7 +267,7 @@ class BackupExportJobImpl: BackupExportJob {
                 estimatedTimeToCompletion: 0.5,
                 progress: registerBackupIdProgress,
             ) { [backupIdManager] in
-                try await backupIdManager.registerBackupId(
+                try await backupIdManager.registerBackupIdAndKey(
                     localIdentifiers: localIdentifiers,
                     auth: .implicit()
                 )

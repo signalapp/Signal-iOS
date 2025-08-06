@@ -101,7 +101,7 @@ final class BackupEnablingManager {
             // it to finish.
             await self.backupDisablingManager.disableRemotelyIfNecessary()
 
-            _ = try await self.backupIdManager.registerBackupId(
+            _ = try await self.backupIdManager.registerBackupIdAndKey(
                 localIdentifiers: localIdentifiers,
                 auth: .implicit()
             )

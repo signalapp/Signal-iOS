@@ -13,16 +13,17 @@ public struct RegisteredBackupIDToken {}
 /// Responsible for CRUD of the "Backup ID" and related keys, which are required
 /// for CRUD on Backup materials (archives, media) themselves.
 public protocol BackupIdManager {
-    /// Initialize Backups by reserving a "Backup ID" and registering a public
-    /// key used to sign Backup auth credentials. This only needs to be done
-    /// once for a given account while Backups remains enabled.
+    /// Initialize Backups by reserving a "Backup ID" (if not already reserved)
+    /// and registering a public key used to sign Backup auth credentials.
+    /// This only needs to be done once for a given account while Backups
+    /// remains enabled.
     ///
     /// - Note
     /// These APIs are idempotent and safe to call multiple times.
     ///
     /// - Returns
     /// An opaque token indicating that a Backup ID has been registered.
-    func registerBackupId(
+    func registerBackupIdAndKey(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
     ) async throws -> RegisteredBackupIDToken
@@ -46,6 +47,13 @@ public protocol BackupIdManager {
         localIdentifiers: LocalIdentifiers,
         backupAuth: BackupServiceAuth
     ) async throws
+
+    /// Registers the backup ID only if local state tells us we haven't
+    /// done so before. This method updates local state if successful.
+    func registerBackupIDIfNecessary(
+        localIdentifiers: LocalIdentifiers?,
+        auth: ChatServiceAuth,
+    ) async throws
 }
 
 // MARK: -
@@ -55,6 +63,7 @@ final class BackupIdManagerImpl: BackupIdManager {
     private let api: NetworkAPI
     private let backupRequestManager: BackupRequestManager
     private let db: DB
+    private let backupSettingsStore: BackupSettingsStore
 
     init(
         accountKeyStore: AccountKeyStore,
@@ -66,19 +75,11 @@ final class BackupIdManagerImpl: BackupIdManager {
         self.api = NetworkAPI(networkManager: networkManager)
         self.backupRequestManager = backupRequestManager
         self.db = db
+        self.backupSettingsStore = BackupSettingsStore()
     }
 
-    func registerBackupId(
-        localIdentifiers: LocalIdentifiers,
-        auth: ChatServiceAuth
-    ) async throws -> RegisteredBackupIDToken {
-        let (
-            messageBackupKey,
-            mediaBackupKey
-        ): (
-            MessageRootBackupKey,
-            MediaRootBackupKey
-        ) = try await db.awaitableWrite { tx in
+    private func rootBackupKeys(localIdentifiers: LocalIdentifiers) async throws -> (MessageRootBackupKey, MediaRootBackupKey) {
+        try await db.awaitableWrite { tx in
 
             guard let messageRootBackupKey = try? accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx) else {
                 throw OWSAssertionError("Missing message root backup key! Do we not have an AEP?")
@@ -90,7 +91,27 @@ final class BackupIdManagerImpl: BackupIdManager {
 
             return (messageRootBackupKey, mediaRootBackupKey)
         }
+    }
 
+    public func registerBackupIDIfNecessary(
+        localIdentifiers: LocalIdentifiers?,
+        auth: ChatServiceAuth
+    ) async throws {
+        guard FeatureFlags.Backups.showSettings else {
+            return
+        }
+
+        guard let localIdentifiers else {
+            return
+        }
+
+        guard db.read(block: { tx in
+            backupSettingsStore.haveSetBackupID(tx: tx) == false
+        }) else {
+            return
+        }
+
+        let (messageBackupKey, mediaBackupKey) = try await rootBackupKeys(localIdentifiers: localIdentifiers)
         try await api.reserveBackupId(
             localAci: localIdentifiers.aci,
             messageBackupKey: messageBackupKey,
@@ -98,21 +119,65 @@ final class BackupIdManagerImpl: BackupIdManager {
             auth: auth
         )
 
-        let messageBackupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-            for: messageBackupKey,
-            localAci: localIdentifiers.aci,
-            auth: auth
-        )
-        try await api.registerBackupKey(backupAuth: messageBackupAuth)
+        await db.awaitableWrite { tx in
+            backupSettingsStore.setHaveSetBackupID(haveSetBackupID: true, tx: tx)
+        }
+    }
 
-        let mediaBackupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-            for: mediaBackupKey,
-            localAci: localIdentifiers.aci,
-            auth: auth
-        )
-        try await api.registerBackupKey(backupAuth: mediaBackupAuth)
+    func _registerBackupIdAndKey(
+        localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth,
+        retryOnFail: Bool
+    ) async throws -> RegisteredBackupIDToken {
+        let (messageBackupKey, mediaBackupKey) = try await rootBackupKeys(localIdentifiers: localIdentifiers)
 
-        return RegisteredBackupIDToken()
+        try await registerBackupIDIfNecessary(localIdentifiers: localIdentifiers, auth: auth)
+
+        do {
+            let messageBackupAuth = try await backupRequestManager.fetchBackupServiceAuth(
+                for: messageBackupKey,
+                localAci: localIdentifiers.aci,
+                auth: auth
+            )
+
+            try await api.registerBackupKey(backupAuth: messageBackupAuth)
+
+            let mediaBackupAuth = try await backupRequestManager.fetchBackupServiceAuth(
+                for: mediaBackupKey,
+                localAci: localIdentifiers.aci,
+                auth: auth
+            )
+            try await api.registerBackupKey(backupAuth: mediaBackupAuth)
+
+            return RegisteredBackupIDToken()
+
+        } catch SignalError.verificationFailed {
+            // This error is thrown if the backupID was never registered remotely.
+            // We *should* set it above in registerBackupIDIfNecessary based on local state,
+            // but in case local and remote state ever get out of sync, this will clear
+            // local state and re-register the backupID remotely.
+            Logger.error("Verification failed fetching BackupServiceAuth, clearing local state and retrying once.")
+            await db.awaitableWrite { tx in
+                BackupSettingsStore().setHaveSetBackupID(haveSetBackupID: false, tx: tx)
+            }
+
+            return try await _registerBackupIdAndKey(
+                localIdentifiers: localIdentifiers,
+                auth: auth,
+                retryOnFail: false
+            )
+        }
+    }
+
+    func registerBackupIdAndKey(
+        localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth
+    ) async throws -> RegisteredBackupIDToken {
+        try await _registerBackupIdAndKey(
+            localIdentifiers: localIdentifiers,
+            auth: auth,
+            retryOnFail: true
+        )
     }
 
     func deleteBackupId(
@@ -268,8 +333,12 @@ private extension TSRequest {
 #if TESTABLE_BUILD
 
 class MockBackupIdManager: BackupIdManager {
+    func registerBackupIDIfNecessary(localIdentifiers: LocalIdentifiers?, auth: ChatServiceAuth) async throws {
+        // Not implemented.
+    }
+
     var registerBackupIdMock: (() async throws -> RegisteredBackupIDToken)?
-    func registerBackupId(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> RegisteredBackupIDToken {
+    func registerBackupIdAndKey(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> RegisteredBackupIDToken {
         if let registerBackupIdMock {
             return try await registerBackupIdMock()
         }

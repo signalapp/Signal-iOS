@@ -23,6 +23,7 @@ public class AccountKeyStore {
 
     private let masterKeyGenerator: (() -> MasterKey)
     private let accountEntropyPoolGenerator: (() -> AccountEntropyPool)
+    private let backupSettingsStore: BackupSettingsStore
 
     public init(
         masterKeyGenerator: (() -> MasterKey)? = nil,
@@ -35,6 +36,7 @@ public class AccountKeyStore {
         self.masterKeyKvStore = KeyValueStore(collection: "kOWSKeyBackupService_Keys")
         self.mrbkKvStore = KeyValueStore(collection: "MediaRootBackupKey")
         self.aepKvStore = KeyValueStore(collection: "AccountEntropyPool")
+        self.backupSettingsStore = BackupSettingsStore()
     }
 
     public func getMasterKey(tx: DBReadTransaction) -> MasterKey? {
@@ -130,6 +132,8 @@ public class AccountKeyStore {
         let oldValue = getAccountEntropyPool(tx: tx)
         let newValue = accountEntropyPoolGenerator()
         setAccountEntropyPool(newValue, tx: tx)
+
+        backupSettingsStore.setHaveSetBackupID(haveSetBackupID: false, tx: tx)
         return (oldValue, newValue)
     }
 

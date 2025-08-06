@@ -166,6 +166,20 @@ public class AppEnvironment: NSObject {
                         Logger.warn("Couldn't perform avatar default color migration: \(error)")
                     }
                 }
+                Task {
+                    do {
+                        let localIdentifiers = db.read { tx in
+                            return tsAccountManager.localIdentifiers(tx: tx)
+                        }
+                        try await DependenciesBridge.shared.backupIdManager.registerBackupIDIfNecessary(
+                            localIdentifiers: localIdentifiers,
+                            auth: .implicit()
+                        )
+                    } catch {
+                        // Do nothing, we'll try again on the next app launch.
+                        owsFailDebug("Error registering backup ID \(error)")
+                    }
+                }
             } else {
                 Task {
                     await identityKeyMismatchManager.validateLocalPniIdentityKeyIfNecessary()
