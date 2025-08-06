@@ -520,3 +520,92 @@ public struct BackupReadCredential {
         return "backups/\(metadata.backupDir)/\(metadata.backupName)"
     }
 }
+
+// MARK: -
+
+#if TESTABLE_BUILD
+
+public class BackupRequestManagerMock: BackupRequestManager {
+
+    init() {}
+
+    public func fetchBackupServiceAuth(
+        for key: SignalServiceKit.BackupKeyMaterial,
+        localAci: LibSignalClient.Aci,
+        auth: SignalServiceKit.ChatServiceAuth,
+        forceRefreshUnlessCachedPaidCredential: Bool
+    ) async throws -> SignalServiceKit.BackupServiceAuth {
+        return BackupServiceAuth.mock(type: .media, backupLevel: .paid)
+    }
+
+    public func fetchBackupUploadForm(
+        backupByteLength: UInt32,
+        auth: SignalServiceKit.BackupServiceAuth
+    ) async throws -> SignalServiceKit.Upload.Form {
+        fatalError("Unimplemented")
+    }
+
+    public func fetchBackupMediaAttachmentUploadForm(
+        auth: SignalServiceKit.BackupServiceAuth
+    ) async throws -> SignalServiceKit.Upload.Form {
+        fatalError("Unimplemented")
+    }
+
+    public func fetchMediaTierCdnRequestMetadata(
+        cdn: Int32,
+        auth: SignalServiceKit.BackupServiceAuth
+    ) async throws -> SignalServiceKit.MediaTierReadCredential {
+        fatalError("Unimplemented")
+    }
+
+    public func fetchBackupRequestMetadata(
+        auth: SignalServiceKit.BackupServiceAuth
+    ) async throws -> SignalServiceKit.BackupReadCredential {
+        fatalError("Unimplemented")
+    }
+
+    public func copyToMediaTier(
+        item: SignalServiceKit.BackupArchive.Request.MediaItem,
+        auth: SignalServiceKit.BackupServiceAuth
+    ) async throws -> UInt32 {
+        fatalError("Unimplemented")
+    }
+
+    public func copyToMediaTier(
+        items: [SignalServiceKit.BackupArchive.Request.MediaItem],
+        auth: SignalServiceKit.BackupServiceAuth
+    ) async throws -> [SignalServiceKit.BackupArchive.Response.BatchedBackupMediaResult] {
+        fatalError("Unimplemented")
+    }
+
+    var listMediaResults = [BackupArchive.Response.ListMediaResult]()
+
+    public func listMediaObjects(
+        cursor: String?,
+        limit: UInt32?,
+        auth: SignalServiceKit.BackupServiceAuth
+    ) async throws -> SignalServiceKit.BackupArchive.Response.ListMediaResult {
+        return listMediaResults.popFirst()!
+    }
+
+    public func deleteMediaObjects(
+        objects: [SignalServiceKit.BackupArchive.Request.DeleteMediaTarget],
+        auth: SignalServiceKit.BackupServiceAuth
+    ) async throws {
+        fatalError("Unimplemented")
+    }
+
+    func redeemReceipt(receiptCredentialPresentation: Data) async throws {
+        fatalError("Unimplemented")
+    }
+
+    public func fetchSvr🐝AuthCredential(
+        key: SignalServiceKit.MessageRootBackupKey,
+        chatServiceAuth auth: SignalServiceKit.ChatServiceAuth,
+        forceRefresh: Bool
+    ) async throws -> LibSignalClient.Auth {
+        return LibSignalClient.Auth(username: "", password: "")
+    }
+}
+
+#endif

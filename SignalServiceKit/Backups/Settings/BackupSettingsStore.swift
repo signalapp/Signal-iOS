@@ -66,6 +66,7 @@ public struct BackupSettingsStore {
         static let shouldOptimizeLocalStorage = "shouldOptimizeLocalStorage"
         static let lastBackupKeyReminderDate = "lastBackupKeyReminderDate"
         static let haveSetBackupID = "haveSetBackupID"
+        static let lastBackupRefreshDate = "lastBackupRefreshDate"
 
         // Storage Service reflected value
         static let storageServiceBackupTier = "storageServiceBackupTier"
@@ -169,6 +170,8 @@ public struct BackupSettingsStore {
         if firstBackupDate(tx: tx) == nil {
             setFirstBackupDate(lastBackupDate, tx: tx)
         }
+
+        setLastBackupRefreshDate(lastBackupDate, tx: tx)
     }
 
     public func resetLastBackupDate(tx: DBWriteTransaction) {
@@ -274,6 +277,16 @@ public struct BackupSettingsStore {
 
     public func setHaveSetBackupID(haveSetBackupID: Bool, tx: DBWriteTransaction) {
         kvStore.setBool(haveSetBackupID, key: Keys.haveSetBackupID, transaction: tx)
+    }
+
+    // MARK: -
+
+    public func lastBackupRefreshDate(tx: DBReadTransaction) -> Date? {
+        return kvStore.getDate(Keys.lastBackupRefreshDate, transaction: tx)
+    }
+
+    public func setLastBackupRefreshDate(_ lastBackupRefreshDate: Date, tx: DBWriteTransaction) {
+        kvStore.setDate(lastBackupRefreshDate, key: Keys.lastBackupRefreshDate, transaction: tx)
     }
 }
 

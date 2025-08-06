@@ -915,6 +915,15 @@ public class AppSetup {
             networkManager: networkManager,
         )
 
+        let backupRefreshManager = BackupRefreshManager(
+            accountKeyStore: accountKeyStore,
+            backupRequestManager: backupRequestManager,
+            backupSettingsStore: backupSettingsStore,
+            db: db,
+            networkManager: networkManager,
+            dateProvider: dateProvider
+        )
+
         let backupDisablingManager = BackupDisablingManager(
             authCredentialStore: authCredentialStore,
             backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
@@ -1460,6 +1469,7 @@ public class AppSetup {
             backupExportJob: backupExportJob,
             backupExportJobRunner: backupExportJobRunner,
             backupIdManager: backupIdManager,
+            backupRefreshManager: backupRefreshManager,
             backupRequestManager: backupRequestManager,
             backupPlanManager: backupPlanManager,
             backupSubscriptionManager: backupSubscriptionManager,

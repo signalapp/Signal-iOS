@@ -136,6 +136,8 @@ public class AppEnvironment: NSObject {
             let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
             let threadStore = DependenciesBridge.shared.threadStore
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            let backupIdManager = DependenciesBridge.shared.backupIdManager
+            let backupRefreshManager = DependenciesBridge.shared.backupRefreshManager
 
             let avatarDefaultColorStorageServiceMigrator = AvatarDefaultColorStorageServiceMigrator(
                 db: db,
@@ -153,12 +155,20 @@ public class AppEnvironment: NSObject {
                 threadStore: threadStore
             )
 
-            let isPrimaryDevice = db.read { tx -> Bool in
-                return tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
+            let (
+                isRegisteredPrimaryDevice,
+                isRegistered,
+                localIdentifiers
+            ) = db.read { tx in
+                (
+                    tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
+                    tsAccountManager.registrationState(tx: tx).isRegistered,
+                    tsAccountManager.localIdentifiers(tx: tx),
+                )
             }
 
             // Things that should run on only the primary *or* linked devices.
-            if isPrimaryDevice {
+            if isRegisteredPrimaryDevice {
                 Task {
                     do {
                         try await avatarDefaultColorStorageServiceMigrator.performMigrationIfNecessary()
@@ -168,10 +178,7 @@ public class AppEnvironment: NSObject {
                 }
                 Task {
                     do {
-                        let localIdentifiers = db.read { tx in
-                            return tsAccountManager.localIdentifiers(tx: tx)
-                        }
-                        try await DependenciesBridge.shared.backupIdManager.registerBackupIDIfNecessary(
+                        try await backupIdManager.registerBackupIDIfNecessary(
                             localIdentifiers: localIdentifiers,
                             auth: .implicit()
                         )
@@ -183,6 +190,25 @@ public class AppEnvironment: NSObject {
             } else {
                 Task {
                     await identityKeyMismatchManager.validateLocalPniIdentityKeyIfNecessary()
+                }
+            }
+
+            // Things that should run on only registered devices, both linked & primary.
+            if isRegistered {
+                Task {
+                    guard let localIdentifiers else {
+                        owsFailDebug("Registered but no local identifiers")
+                        return
+                    }
+
+                    do {
+                        try await backupRefreshManager.refreshBackupIfNeeded(
+                            localIdentifiers: localIdentifiers,
+                            auth: .implicit()
+                        )
+                    } catch {
+                        owsFailDebug("Failed to refresh backup \(error)")
+                    }
                 }
             }
 
