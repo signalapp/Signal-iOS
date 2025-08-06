@@ -523,6 +523,9 @@
 /* Snooze text for Backup enablement reminder megaphone */
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Όχι τώρα";
 
+/* Toast indicating that the user has copied their backup key. */
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Backup Key copied";
+
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Εφεδρικό κλειδί";
 
@@ -590,40 +593,43 @@
 "BACKUP_RECORD_KEY_TITLE" = "Καταγραφή εφεδρικού κλειδιού";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
-"BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ of %2$@ (%3$@)";
+"BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ από %2$@ (%3$@)";
 
 /* Subtitle for a progress spinner on a modal when waiting for a backup restore to start */
-"BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE" = "Preparing to restore";
+"BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE" = "Προετοιμασία για επαναφορά";
 
 /* Title for a progress spinner on a modal when restoring messages */
-"BACKUP_RESTORE_MODAL_TITLE" = "Restoring Messages…";
+"BACKUP_RESTORE_MODAL_TITLE" = "Επαναφορά μηνυμάτων...";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Something went wrong creating your backup. Please try again, or contact support.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Κάτι πήγε στραβά με τη δημιουργία του αντιγράφου ασφαλείας σου. Παρακαλώ δοκίμασε ξανά ή επικοινώνησε με την υποστήριξη.";
 
 /* Title for a button in an action sheet allowing users to perform a backup, ignoring that WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Allow Backups Using Cellular";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Να επιτρέπονται αντίγραφα ασφαλείας χρησιμοποιώντας δεδομένα κινητής";
 
 /* Message for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Backing up using cellular may result in data charges. You can connect to a WiFi network or allow backups using cellular.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Η δημιουργία αντιγράφου ασφαλείας με χρήση δεδομένων κινητής τηλεφωνίας ενδέχεται να οδηγήσει σε χρεώσεις δεδομένων. Μπορείς να συνδεθείς σε ένα δίκτυο Wi-Fi ή να επιτρέψεις τα αντίγραφα ασφαλείας μέσω δεδομένων κινητής.";
 
 /* Title for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Allow Backups Using Cellular Data?";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Να επιτρέπονται αντίγραφα ασφαλείας με δεδομένα κινητής;";
 
 /* Message for an action sheet explaining that performing a backup failed with a network error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Something went wrong creating your backup. Check your internet connection and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Κάτι πήγε στραβά με τη δημιουργία του αντιγράφου ασφαλείας σου. Έλεγξε τη σύνδεσή σου στο διαδίκτυο και δοκιμάστε ξανά.";
 
 /* Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "Δημιουργία αντιγράφου ασφαλείας: %1$@";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Exporting backup...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Εξαγωγή αντιγράφου ασφαλείας...";
+
+/* Description for a progress bar tracking a multi-step backup operation, where we are currently managing our backed-up media. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "Managing backup media...";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Uploading backup...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Μεταφόρτωση αντιγράφου ασφαλείας...";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Uploading backup media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Μεταφόρτωση αντιγράφου ασφαλείας πολυμέσων...";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Αναβάθμιση";
@@ -833,7 +839,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Η μεταφόρτωση διακόπηκε: η μπαταρία της συσκευής είναι χαμηλή";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Upload paused: no internet…";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Η μεταφόρτωση διακόπηκε: Δεν υπάρχει σύνδεση στο διαδίκτυο…";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Η μεταφόρτωση διακόπηκε: αναμονή για Wi-Fi";
@@ -5489,7 +5495,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE" = "Το τελευταίο σου αντίγραφο ασφαλείας έγινε στις %1$@ στις %2$@.";
 
 /* Details confirming manual restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "If you choose not to restore now, you won’t be able to restore later. Your media will restore in the background.";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "Αν δεν επιλέξεις να τα επαναφέρεις τώρα, δεν θα μπορείς να τα επαναφέρεις αργότερα. Η επαναφορά των πολυμέσων σου θα πραγματοποιηθεί στο παρασκήνιο.";
 
 /* Text for action button to skip the restore. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Παράλειψη επαναφοράς";
@@ -6737,7 +6743,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Δεν ήταν δυνατή η ολοκλήρωση της μεταφοράς";
 
 /* Body for a sheet warning users about an incorrect backup key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-digit backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
 
 /* Title for a sheet warning users about an incorrect backup key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Λανθασμένο εφεδρικό κλειδί";
@@ -6785,7 +6791,7 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Μεταφορά λογαριασμού & μηνυμάτων";
 
 /* Description for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Το εφεδρικό κλειδί σου είναι ένας 64ψήφιος κωδικός που απαιτείται για την ανάκτηση του λογαριασμού και των δεδομένων σου.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your backup key is a 64-character code required to recover your account and data.";
 
 /* Title for the screen that allows users to enter their backup key. */
 "REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Εισαγωγή εφεδρικού κλειδιού σου";
@@ -6815,7 +6821,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Δεν υπάρχει εφεδρικό κλειδί;";
 
 /* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Τα αντίγραφα ασφαλείας δεν μπορούν να ανακτηθούν χωρίς τον 64ψήφιο κωδικό ανάκτησης. Εάν έχεις χάσει το εφεδρικό κλειδί σου, το Signal δεν μπορεί να βοηθήσει στην επαναφορά του αντιγράφου ασφαλείας σου.\n\nΕάν έχεις την παλιά σου συσκευή, μπορείς να δεις το εφεδρικό κλειδί σου στις Ρυθμίσεις > Συνομιλίες > Αντίγραφα ασφαλείας Signal. Στη συνέχεια, πάτα Προβολή εφεδρικού κλειδιού.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
 
 /* Title for sheet with info for what to do if you don't have a backup key */
 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Δεν υπάρχει εφεδρικό κλειδί;";
@@ -9270,9 +9276,6 @@
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Σύρε για ακύρωση";
-
-/* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "signal";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Πάτα και κράτα πατημένο για εγγραφή.";
