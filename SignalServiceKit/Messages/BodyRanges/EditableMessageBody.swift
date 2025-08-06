@@ -368,6 +368,15 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             in: range,
             with: finalMentionText
         ).removingPlaceholders()
+        
+        // If the new mention is before the already existing mentions, we have to shift the existing mentions.
+        body.mentions.forEach { (mentionRange, mentionAci) in
+            if range.upperBound <= mentionRange.location {
+                body.mentions[mentionRange] = nil
+                body.mentions[NSRange(location: mentionRange.location + (hydratedMention as NSString).length, length: mentionRange.length)] = mentionAci
+            }
+        }
+
         // Any space isn't included in the mention's range.
         let mentionRange = NSRange(location: range.location, length: (hydratedMention as NSString).length)
         body.mentions[mentionRange] = mentionAci
@@ -874,6 +883,10 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                 preserveStyleInReplacement: true
             )
             mentionOffset += mentionPlaceholderLength - mention.range.length
+//            mentionOffset += mentionPlaceholderLength
+//            if mention.range.location > 0 {
+//                mentionOffset -= mention.range.length
+//            }
         }
         return MessageBody(
             text: text as String,
