@@ -184,6 +184,17 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         switch await statusManager.beginObservingIfNecessary() {
         case .running:
             logger.info("Running Backup uploads.")
+            let backgroundTask = OWSBackgroundTask(label: #function) { [weak taskQueue] status in
+                switch status {
+                case .expired:
+                    Task {
+                        try await taskQueue?.stop()
+                    }
+                case .couldNotStart, .success:
+                    break
+                }
+            }
+            defer { backgroundTask.end() }
             try await taskQueue.loadAndRunTasks()
         case .empty:
             logger.info("Skipping Backup uploads: queue is empty.")
@@ -200,6 +211,8 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         case .lowBattery:
             logger.warn("Skipping Backup uploads: low battery.")
             try await taskQueue.stop()
+        case .appBackgrounded:
+            logger.warn("Skipping Backup uploads: app backgrounded")
         }
     }
 
@@ -287,6 +300,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             struct NeedsBatteryError: Error {}
             struct NeedsInternetError: Error {}
             struct NeedsToBeRegisteredError: Error {}
+            struct AppBackgroundedError: Error {}
 
             switch await statusManager.currentStatus() {
             case .running:
@@ -303,6 +317,9 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             case .notRegisteredAndReady:
                 try? await loader.stop()
                 return .retryableError(NeedsToBeRegisteredError())
+            case .appBackgrounded:
+                try? await loader.stop()
+                return .retryableError(AppBackgroundedError())
             }
 
             let (attachment, backupPlan, currentUploadEra, backupKey) = db.read { tx in
@@ -491,7 +508,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                             // issue.
                             return .retryableError(NetworkRetryError())
                         case .noWifiReachability, .notRegisteredAndReady,
-                                .lowBattery, .empty:
+                                .lowBattery, .appBackgrounded, .empty:
                             // These other states may be overriding reachability;
                             // just allow the queue itself to retry and once the
                             // other states are resolved reachability will kick in,

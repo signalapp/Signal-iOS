@@ -73,10 +73,22 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     public func queryListMediaIfNeeded() async throws {
-        // Enqueue in a concurrent(1) task queue; we only want to run one of these at a time.
-        try await taskQueue.run { [weak self] in
-            try await self?._queryListMediaIfNeeded()
+        let task = Task {
+            // Enqueue in a concurrent(1) task queue; we only want to run one of these at a time.
+            try await taskQueue.run { [weak self] in
+                try await self?._queryListMediaIfNeeded()
+            }
         }
+        let backgroundTask = OWSBackgroundTask(label: #function) { [task] status in
+            switch status {
+            case .expired:
+                task.cancel()
+            case .couldNotStart, .success:
+                break
+            }
+        }
+        defer { backgroundTask.end() }
+        try await task.value
     }
 
     private func _queryListMediaIfNeeded() async throws {

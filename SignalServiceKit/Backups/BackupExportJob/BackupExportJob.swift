@@ -81,8 +81,10 @@ class BackupExportJobImpl: BackupExportJob {
     private let attachmentOffloadingManager: AttachmentOffloadingManager
     private let backupArchiveManager: BackupArchiveManager
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
+    private let backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
+    private let backupAttachmentUploadQueueStatusManager: BackupAttachmentUploadQueueStatusManager
     private let backupIdManager: BackupIdManager
     private let backupListMediaManager: BackupListMediaManager
     private let backupSettingsStore: BackupSettingsStore
@@ -98,8 +100,10 @@ class BackupExportJobImpl: BackupExportJob {
         attachmentOffloadingManager: AttachmentOffloadingManager,
         backupArchiveManager: BackupArchiveManager,
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
+        backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
         backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
+        backupAttachmentUploadQueueStatusManager: BackupAttachmentUploadQueueStatusManager,
         backupIdManager: BackupIdManager,
         backupListMediaManager: BackupListMediaManager,
         backupSettingsStore: BackupSettingsStore,
@@ -113,8 +117,10 @@ class BackupExportJobImpl: BackupExportJob {
         self.attachmentOffloadingManager = attachmentOffloadingManager
         self.backupArchiveManager = backupArchiveManager
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
+        self.backupAttachmentDownloadQueueStatusManager = backupAttachmentDownloadQueueStatusManager
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
+        self.backupAttachmentUploadQueueStatusManager = backupAttachmentUploadQueueStatusManager
         self.backupIdManager = backupIdManager
         self.backupListMediaManager = backupListMediaManager
         self.backupSettingsStore = backupSettingsStore
@@ -127,6 +133,26 @@ class BackupExportJobImpl: BackupExportJob {
     }
 
     func exportAndUploadBackup(
+        mode: BackupExportJobMode
+    ) async throws(BackupExportJobError) {
+        switch mode {
+        case .manual:
+            try await _exportAndUploadBackup(mode: mode)
+        case .bgProcessingTask:
+            await backupAttachmentDownloadQueueStatusManager.setIsMainAppAndActiveOverride(true)
+            await backupAttachmentUploadQueueStatusManager.setIsMainAppAndActiveOverride(true)
+            let result = await Result<Void, BackupExportJobError>(
+                catching: { () async throws(BackupExportJobError) -> Void in
+                    try await _exportAndUploadBackup(mode: mode)
+                }
+            )
+            await backupAttachmentDownloadQueueStatusManager.setIsMainAppAndActiveOverride(false)
+            await backupAttachmentUploadQueueStatusManager.setIsMainAppAndActiveOverride(false)
+            try result.get()
+        }
+    }
+
+    private func _exportAndUploadBackup(
         mode: BackupExportJobMode
     ) async throws(BackupExportJobError) {
         let (

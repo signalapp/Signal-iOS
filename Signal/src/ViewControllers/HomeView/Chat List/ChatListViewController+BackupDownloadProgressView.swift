@@ -183,7 +183,7 @@ public class CLVBackupDownloadProgressView {
             break
         }
         switch viewState.downloadQueueStatus {
-        case .none, .notRegisteredAndReady, .suspended:
+        case .none, .notRegisteredAndReady, .suspended, .appBackgrounded:
             return nil
         case .lowBattery:
             return .paused(reason: .lowBattery)

@@ -179,7 +179,7 @@ private class Tracker {
                 // observer we just added will do so.
                 return
 
-            case .empty, .notRegisteredAndReady:
+            case .empty, .notRegisteredAndReady, .appBackgrounded:
                 if let uploadProgressObserver = _state.uploadProgressObserver {
                     await backupAttachmentUploadProgress.removeObserver(uploadProgressObserver)
                 }
@@ -221,7 +221,7 @@ private class Tracker {
                 return .pausedNeedsWifi
             case .lowBattery:
                 return .pausedLowBattery
-            case .empty, .notRegisteredAndReady:
+            case .empty, .notRegisteredAndReady, .appBackgrounded:
                 return nil
             }
         }()

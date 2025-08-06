@@ -438,7 +438,7 @@ class BackupSettingsViewController:
         let currentDownloadQueueStatus = await backupDisablingManager.startDisablingBackups()
 
         switch currentDownloadQueueStatus {
-        case .empty, .suspended, .notRegisteredAndReady:
+        case .empty, .suspended, .notRegisteredAndReady, .appBackgrounded:
             break
         case .running, .noWifiReachability, .noReachability, .lowBattery, .lowDiskSpace:
             OWSActionSheets.showActionSheet(

@@ -29,6 +29,8 @@ public enum BackupAttachmentDownloadQueueStatus: Equatable, Sendable {
     /// ahead of time we will hit the threshold before finishing.
     /// Does not apply to upload.
     case lowDiskSpace
+    /// The app is running in the background.
+    case appBackgrounded
 }
 
 public extension Notification.Name {
@@ -84,6 +86,8 @@ public protocol BackupAttachmentDownloadQueueStatusManager: BackupAttachmentDown
 
     /// Call when the download queue is emptied.
     func didEmptyQueue()
+
+    func setIsMainAppAndActiveOverride(_ newValue: Bool)
 }
 
 // MARK: -
@@ -147,6 +151,10 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         stopObservingDeviceAndLocalStates()
     }
 
+    public func setIsMainAppAndActiveOverride(_ newValue: Bool) {
+        state.isMainAppAndActiveOverride = newValue
+    }
+
     // MARK: - Init
 
     private let appContext: AppContext
@@ -197,7 +205,8 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             isLowPowerMode: nil,
             availableDiskSpace: nil,
             requiredDiskSpace: nil,
-            downloadDidExperienceOutOfSpaceError: false
+            downloadDidExperienceOutOfSpaceError: false,
+            isMainAppAndActive: appContext.isMainAppAndActive,
         )
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
@@ -228,6 +237,9 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         var requiredDiskSpace: UInt64?
         var downloadDidExperienceOutOfSpaceError: Bool
 
+        var isMainAppAndActive: Bool
+        var isMainAppAndActiveOverride: Bool = false
+
         init(
             isQueueEmpty: Bool?,
             areDownloadsSuspended: Bool?,
@@ -242,6 +254,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             availableDiskSpace: UInt64?,
             requiredDiskSpace: UInt64?,
             downloadDidExperienceOutOfSpaceError: Bool,
+            isMainAppAndActive: Bool,
         ) {
             self.isQueueEmpty = isQueueEmpty
             self.areDownloadsSuspended = areDownloadsSuspended
@@ -256,6 +269,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             self.availableDiskSpace = availableDiskSpace
             self.requiredDiskSpace = requiredDiskSpace
             self.downloadDidExperienceOutOfSpaceError = downloadDidExperienceOutOfSpaceError
+            self.isMainAppAndActive = isMainAppAndActive
         }
 
         var asQueueStatus: BackupAttachmentDownloadQueueStatus {
@@ -304,6 +318,10 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
             if isLowPowerMode == true {
                 return .lowBattery
+            }
+
+            if !isMainAppAndActive && !isMainAppAndActiveOverride {
+                return .appBackgrounded
             }
 
             return .running
@@ -359,6 +377,8 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             (.OWSApplicationWillEnterForeground, #selector(willEnterForeground)),
             (.backupAttachmentDownloadQueueSuspensionStatusDidChange, #selector(suspensionStatusDidChange)),
             (.shouldAllowBackupDownloadsOnCellularChanged, #selector(shouldAllowBackupDownloadsOnCellularDidChange)),
+            (Notification.Name.OWSApplicationDidEnterBackground, #selector(isMainAppAndActiveDidChange)),
+            (Notification.Name.OWSApplicationDidBecomeActive, #selector(isMainAppAndActiveDidChange)),
         ]
         for (name, selector) in notificationsToObserve {
             NotificationCenter.default.addObserver(
@@ -386,7 +406,8 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             isLowPowerMode: deviceBatteryLevelManager?.isLowPowerModeEnabled,
             availableDiskSpace: getAvailableDiskSpace(),
             requiredDiskSpace: requiredDiskSpace,
-            downloadDidExperienceOutOfSpaceError: state.downloadDidExperienceOutOfSpaceError
+            downloadDidExperienceOutOfSpaceError: state.downloadDidExperienceOutOfSpaceError,
+            isMainAppAndActive: appContext.isMainAppAndActive,
         )
     }
 
@@ -473,6 +494,11 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         state.downloadDidExperienceOutOfSpaceError = true
         return state.asQueueStatus
     }
+
+    @objc
+    private func isMainAppAndActiveDidChange() {
+        self.state.isMainAppAndActive = appContext.isMainAppAndActive
+    }
 }
 
 // MARK: -
@@ -508,6 +534,8 @@ class MockBackupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQu
     func didEmptyQueue() {
         // Nothing
     }
+
+    func setIsMainAppAndActiveOverride(_ newValue: Bool) {}
 }
 
 #endif

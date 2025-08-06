@@ -216,6 +216,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             logger.info("Skipping backup attachment downloads while low on disk space")
             try await taskQueue.stop()
             return
+        case .appBackgrounded:
+            logger.info("Skipping backup attachment downloads while backgrounded")
+            try await taskQueue.stop()
+            return
         }
 
         do {
@@ -224,6 +228,17 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             owsFailDebug("Unable to observe download progres \(error.grdbErrorForLogging)")
         }
 
+        let backgroundTask = OWSBackgroundTask(label: #function) { [weak taskQueue] status in
+            switch status {
+            case .expired:
+                Task {
+                    try await taskQueue?.stop()
+                }
+            case .couldNotStart, .success:
+                break
+            }
+        }
+        defer { backgroundTask.end() }
         try await taskQueue.loadAndRunTasks()
     }
 
@@ -472,6 +487,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             struct SuspendedError: Error {}
             struct NeedsDiskSpaceError: Error {}
             struct NeedsBatteryError: Error {}
+            struct AppBackgroundedError: Error {}
             struct NeedsInternetError: Error {}
             struct NeedsToBeRegisteredError: Error {}
 
@@ -492,6 +508,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             case .lowBattery:
                 try? await taskQueueLoader?.stop()
                 return .retryableError(NeedsBatteryError())
+            case .appBackgrounded:
+                try? await taskQueueLoader?.stop()
+                return .retryableError(AppBackgroundedError())
             case .noWifiReachability, .noReachability:
                 try? await taskQueueLoader?.stop()
                 return .retryableError(NeedsInternetError())
@@ -625,7 +644,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 case .empty:
                     // The queue will stop on its own, finish this task.
                     break
-                case .suspended, .lowDiskSpace, .lowBattery, .noWifiReachability, .noReachability, .notRegisteredAndReady:
+                case .suspended, .lowDiskSpace, .lowBattery, .noWifiReachability, .noReachability, .appBackgrounded, .notRegisteredAndReady:
                     // Stop the queue now proactively.
                     try? await taskQueueLoader?.stop()
                 }

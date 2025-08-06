@@ -18,6 +18,8 @@ public enum BackupAttachmentUploadQueueStatus {
     case noReachability
     /// The device has low battery or is in low power mode.
     case lowBattery
+    /// The app is running in the background.
+    case appBackgrounded
 }
 
 public extension Notification.Name {
@@ -56,6 +58,8 @@ protocol BackupAttachmentUploadQueueStatusManager: BackupAttachmentUploadQueueSt
 
     /// Notifies the status manager that the upload queue was emptied.
     func didEmptyQueue()
+
+    func setIsMainAppAndActiveOverride(_ newValue: Bool)
 }
 
 // MARK: -
@@ -79,6 +83,10 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
     public func didEmptyQueue() {
         state.isQueueEmpty = true
         stopObservingDeviceAndLocalStates()
+    }
+
+    public func setIsMainAppAndActiveOverride(_ newValue: Bool) {
+        state.isMainAppAndActiveOverride = newValue
     }
 
     // MARK: - Init
@@ -129,6 +137,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             isReachable: nil,
             batteryLevel: nil,
             isLowPowerMode: nil,
+            isMainAppAndActive: appContext.isMainAppAndActive,
         )
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
@@ -155,6 +164,9 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
         var batteryLevel: Float?
         var isLowPowerMode: Bool?
 
+        var isMainAppAndActive: Bool
+        var isMainAppAndActiveOverride: Bool = false
+
         init(
             isQueueEmpty: Bool?,
             isMainApp: Bool,
@@ -166,6 +178,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             isReachable: Bool?,
             batteryLevel: Float?,
             isLowPowerMode: Bool?,
+            isMainAppAndActive: Bool
         ) {
             self.isQueueEmpty = isQueueEmpty
             self.isMainApp = isMainApp
@@ -177,6 +190,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             self.isReachable = isReachable
             self.batteryLevel = batteryLevel
             self.isLowPowerMode = isLowPowerMode
+            self.isMainAppAndActive = isMainAppAndActive
         }
 
         var asQueueStatus: BackupAttachmentUploadQueueStatus {
@@ -216,6 +230,10 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
 
             if isLowPowerMode == true {
                 return .lowBattery
+            }
+
+            if !isMainAppAndActive && !isMainAppAndActiveOverride {
+                return .appBackgrounded
             }
 
             return .running
@@ -265,6 +283,8 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             (.reachabilityChanged, #selector(reachabilityDidChange)),
             (UIDevice.batteryLevelDidChangeNotification, #selector(batteryLevelDidChange)),
             (Notification.Name.NSProcessInfoPowerStateDidChange, #selector(lowPowerModeDidChange)),
+            (Notification.Name.OWSApplicationDidEnterBackground, #selector(isMainAppAndActiveDidChange)),
+            (Notification.Name.OWSApplicationDidBecomeActive, #selector(isMainAppAndActiveDidChange)),
         ]
         for (name, selector) in notificationsToObserve {
             NotificationCenter.default.addObserver(
@@ -287,6 +307,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             isReachable: reachabilityManager.isReachable(via: .any),
             batteryLevel: batteryLevelMonitor?.batteryLevel,
             isLowPowerMode: deviceBatteryLevelManager?.isLowPowerModeEnabled,
+            isMainAppAndActive: appContext.isMainAppAndActive
         )
     }
 
@@ -336,5 +357,10 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
     @objc
     private func lowPowerModeDidChange() {
         self.state.isLowPowerMode = deviceBatteryLevelManager?.isLowPowerModeEnabled
+    }
+
+    @objc
+    private func isMainAppAndActiveDidChange() {
+        self.state.isMainAppAndActive = appContext.isMainAppAndActive
     }
 }

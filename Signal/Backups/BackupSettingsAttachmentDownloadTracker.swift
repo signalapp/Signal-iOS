@@ -211,7 +211,7 @@ private class Tracker {
                     lastReportedDownloadProgress.remainingUnitCount,
                     backupAttachmentDownloadQueueStatusReporter.minimumRequiredDiskSpaceToCompleteDownloads()
                 ))
-            case .empty, .notRegisteredAndReady:
+            case .empty, .notRegisteredAndReady, .appBackgrounded:
                 return nil
             }
         }()
