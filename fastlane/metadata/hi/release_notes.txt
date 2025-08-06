@@ -1,1 +1,1 @@
-• Persistence pays off, but it's even better when things work on the first try. We fixed a bug that sometimes required multiple attempts in order to send a sticker from the iOS emoji keyboard. The same fix also works for Genmoji too, so we hope you Genjoy it.
+• सब्र का फल मिलता है, लेकिन काम जब पहली बार में हो जाए, तो अच्छा लगता है न। हमने एक गड़बड़ी ठीक की है, जिसकी वजह से iOS इमोजी कीबोर्ड से किसी स्टिकर को भेजने के लिए कई बार कोशिश करनी पड़ती थी। यही समाधान जेनमोजी के लिए भी काम करता है, तो उम्मीद है कि आपको मज़ा आएगा।

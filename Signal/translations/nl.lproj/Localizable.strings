@@ -590,40 +590,40 @@
 "BACKUP_RECORD_KEY_TITLE" = "Je back-upsleutel vastleggen";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
-"BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ of %2$@ (%3$@)";
+"BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ van %2$@ (%3$@)";
 
 /* Subtitle for a progress spinner on a modal when waiting for a backup restore to start */
-"BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE" = "Preparing to restore";
+"BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE" = "Herstel voorbereiden";
 
 /* Title for a progress spinner on a modal when restoring messages */
-"BACKUP_RESTORE_MODAL_TITLE" = "Restoring Messages…";
+"BACKUP_RESTORE_MODAL_TITLE" = "Berichten herstellen…";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Something went wrong creating your backup. Please try again, or contact support.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Er ging iets mis bij het maken van je back-up. Probeer het opnieuw of neem contact op met ondersteuning.";
 
 /* Title for a button in an action sheet allowing users to perform a backup, ignoring that WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Allow Backups Using Cellular";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Back-ups maken via mobiel netwerk toestaan";
 
 /* Message for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Backing up using cellular may result in data charges. You can connect to a WiFi network or allow backups using cellular.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Als je je back-up herstelt via mobiele data, kunnen er kosten voor datagebruik in rekening worden gebracht door je mobiele provider. Je kunt verbinding maken met een wifi-netwerk of het gebruik van mobiele data voor het maken van back-ups toestaan.";
 
 /* Title for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Allow Backups Using Cellular Data?";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Back-ups maken via mobiel netwerk toestaan?";
 
 /* Message for an action sheet explaining that performing a backup failed with a network error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Something went wrong creating your backup. Check your internet connection and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Er ging iets mis bij het maken van je back-up. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "Back-up maken: %1$@";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Exporting backup...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Back-up exporteren…";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Uploading backup...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Back-up uploaden…";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Uploading backup media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Back-up van media uploaden…";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Upgraden";
@@ -833,7 +833,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Upload gepauzeerd: batterij van apparaat is bijna leeg";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Upload paused: no internet…";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Upload gepauzeerd: geen verbinding…";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Upload gepauzeerd: wachten op wifi";
@@ -5489,7 +5489,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE" = "De laatste back-up is gemaakt op %1$@ om %2$@.";
 
 /* Details confirming manual restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "If you choose not to restore now, you won’t be able to restore later. Your media will restore in the background.";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "Als je er nu voor kiest om niet te herstellen, dan is dat op een later moment niet meer mogelijk. Je media worden op de achtergrond hersteld.";
 
 /* Text for action button to skip the restore. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Herstel overslaan";

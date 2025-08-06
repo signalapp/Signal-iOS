@@ -590,40 +590,40 @@
 "BACKUP_RECORD_KEY_TITLE" = "کلید پشتیبان خود را ضبط کنید";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
-"BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ of %2$@ (%3$@)";
+"BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "‏%1$@ از %2$@ (%3$@)";
 
 /* Subtitle for a progress spinner on a modal when waiting for a backup restore to start */
-"BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE" = "Preparing to restore";
+"BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE" = "در حال آماده‌سازی برای بازیابی";
 
 /* Title for a progress spinner on a modal when restoring messages */
-"BACKUP_RESTORE_MODAL_TITLE" = "Restoring Messages…";
+"BACKUP_RESTORE_MODAL_TITLE" = "در حال بازیابی پیام‌ها…";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Something went wrong creating your backup. Please try again, or contact support.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "مشکلی حین ایجاد نسخه پشتیبان شما پیش آمد. لطفاً دوباره تلاش کنید، یا با پشتیبانی تماس بگیرید.";
 
 /* Title for a button in an action sheet allowing users to perform a backup, ignoring that WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Allow Backups Using Cellular";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "اجازه دادن به پشتیبان‌گیری با استفاده از اینترنت همراه";
 
 /* Message for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Backing up using cellular may result in data charges. You can connect to a WiFi network or allow backups using cellular.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "پشتیبان‌گیری با استفاده از اینترنت همراه ممکن است منجر به هزینه اینترنت شود. می‌توانید به شبکه WiFi متصل شوید یا پشتیبان‌گیری با استفاده از اینترنت همراه را مجاز کنید.";
 
 /* Title for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Allow Backups Using Cellular Data?";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "پشتیبان‌گیری با استفاده از اینترنت همراه مجاز شود؟";
 
 /* Message for an action sheet explaining that performing a backup failed with a network error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Something went wrong creating your backup. Check your internet connection and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "مشکلی حین ایجاد نسخه پشتیبان شما پیش آمد. اتصال اینترنت خود را بررسی و دوباره امتحان کنید.";
 
 /* Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "در حال ایجاد پشتیبان: %1$@";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Exporting backup...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "در حال خروجی گرفتن از نسخه پشتیبان...";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Uploading backup...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "در حال بارگذاری نسخه پشتیبان...";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Uploading backup media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "در حال بارگذاری رسانه نسخه پشتیبان...";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "ارتقا";
@@ -833,7 +833,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "بارگذاری موقتاً متوقف شد: باتری دستگاه کم است";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Upload paused: no internet…";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "بارگذاری موقتاً متوقف شد: عدم اتصال اینترنت…";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "بارگذاری موقتاً متوقف شد: در حال انتظار برای Wi-Fi";
@@ -5489,7 +5489,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE" = "آخرین پشتیبان‌گیری در %1$@ در %2$@ انجام شده است.";
 
 /* Details confirming manual restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "If you choose not to restore now, you won’t be able to restore later. Your media will restore in the background.";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "اگر انتخابتان این باشد که اکنون بازیابی نکنید، بعداً قادر به بازیابی نخواهید بود. فایل رسانه شما در پس‍‌زمینه بازیابی خواهد شد.";
 
 /* Text for action button to skip the restore. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "رد کردن بازیابی";

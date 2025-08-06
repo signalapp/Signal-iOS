@@ -590,40 +590,40 @@
 "BACKUP_RECORD_KEY_TITLE" = "記錄你的備份金鑰";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
-"BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ of %2$@ (%3$@)";
+"BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "共 %2$@ 中的 %1$@ ( %3$@ )";
 
 /* Subtitle for a progress spinner on a modal when waiting for a backup restore to start */
-"BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE" = "Preparing to restore";
+"BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE" = "還原準備中";
 
 /* Title for a progress spinner on a modal when restoring messages */
-"BACKUP_RESTORE_MODAL_TITLE" = "Restoring Messages…";
+"BACKUP_RESTORE_MODAL_TITLE" = "正在還原訊息…";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Something went wrong creating your backup. Please try again, or contact support.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "建立備份時發生錯誤。請重試或聯絡支援團隊。";
 
 /* Title for a button in an action sheet allowing users to perform a backup, ignoring that WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Allow Backups Using Cellular";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "允許使用行動數據備份";
 
 /* Message for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Backing up using cellular may result in data charges. You can connect to a WiFi network or allow backups using cellular.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "使用行動數據備份可能會產生數據費用。你可以連線至 Wi-Fi 網路或允許使用行動數據備份。";
 
 /* Title for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Allow Backups Using Cellular Data?";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "要允許使用行動數據備份嗎？";
 
 /* Message for an action sheet explaining that performing a backup failed with a network error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Something went wrong creating your backup. Check your internet connection and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "建立備份時發生錯誤。請檢查你的網路連線，然後重試。";
 
 /* Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "建立備份中：%1$@";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Exporting backup...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "匯出備份...";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Uploading backup...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "正在上載備份...";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Uploading backup media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "正在上載備份媒體...";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "升級";
@@ -833,7 +833,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "上載已暫停：裝置電池電量不足";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Upload paused: no internet…";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "上載已暫停：沒有網絡連線…";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "上載已暫停：正在等待 Wi-Fi";
@@ -5489,7 +5489,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE" = "你上次備份是在 %1$@ 的 %2$@ 進行的。";
 
 /* Details confirming manual restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "If you choose not to restore now, you won’t be able to restore later. Your media will restore in the background.";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "若你選擇現在不還原，之後將無法還原。媒體將在背景進行還原。";
 
 /* Text for action button to skip the restore. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "跳過還原";

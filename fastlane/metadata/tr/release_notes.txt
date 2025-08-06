@@ -1,1 +1,1 @@
-• Persistence pays off, but it's even better when things work on the first try. We fixed a bug that sometimes required multiple attempts in order to send a sticker from the iOS emoji keyboard. The same fix also works for Genmoji too, so we hope you Genjoy it.
+• Tekrar tekrar denemene gerek kalmadan, emojini ilk denemede gönder. Emojinin pratikliği de burada, değil mi! iOS emoji klavyesinden gönderilen çıkartmalarla ilgili bir hatayı düzelttik. Aynı düzeltme Genmoji için de geçerlidir, umarız bunu beğenirsin.

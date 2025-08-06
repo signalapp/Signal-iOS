@@ -590,40 +590,40 @@
 "BACKUP_RECORD_KEY_TITLE" = "Запішыце свой ключ для рэзервовага капіравання";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
-"BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ of %2$@ (%3$@)";
+"BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ з %2$@ (%3$@)";
 
 /* Subtitle for a progress spinner on a modal when waiting for a backup restore to start */
-"BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE" = "Preparing to restore";
+"BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE" = "Падрыхтоўка да аднаўлення";
 
 /* Title for a progress spinner on a modal when restoring messages */
-"BACKUP_RESTORE_MODAL_TITLE" = "Restoring Messages…";
+"BACKUP_RESTORE_MODAL_TITLE" = "Аднаўленне паведамленняў…";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Something went wrong creating your backup. Please try again, or contact support.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Штосьці не так падчас стварэння рэзервовай копіі. Паспрабуйце яшчэ раз або звярніцеся да службы падтрымкі.";
 
 /* Title for a button in an action sheet allowing users to perform a backup, ignoring that WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Allow Backups Using Cellular";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Дазволіць рэзервовае капіраванне з выкарыстаннем мабільнага інтэрнэту";
 
 /* Message for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Backing up using cellular may result in data charges. You can connect to a WiFi network or allow backups using cellular.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Рэзервовае капіраванне з выкарыстаннем мабільнага інтэрнэту можа прывесці да спагнання платы за перадачу даных. Вы можаце падключыцца да Wi-Fi або дазволіць рэзервовае капіраванне з выкарыстаннем мабільнага інтэрнэту.";
 
 /* Title for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Allow Backups Using Cellular Data?";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Дазволіць рэзервовае капіраванне з выкарыстаннем мабільнага інтэрнэту?";
 
 /* Message for an action sheet explaining that performing a backup failed with a network error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Something went wrong creating your backup. Check your internet connection and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Штосьці не так падчас стварэння рэзервовай копіі. Праверце падключэнне да інтэрнэту і паўтарыце спробу.";
 
 /* Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "Стварэнне рэзервовай копіі: %1$@";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Exporting backup...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Экспарт рэзервовай копіі…";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Uploading backup...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Запампоўка рэзервовай копіі…";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Uploading backup media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Запампоўка рэзервовай копіі медыяфайлаў…";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Абнавіць";
@@ -833,7 +833,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Пампаванне прыпынена: акумулятар разраджаны на прыладзе";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Upload paused: no internet…";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Запампоўка прыпынена: няма інтэрнэту…";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Пампаванне прыпынена: чакаем Wi-Fi";
@@ -5489,7 +5489,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE" = "Ваша апошняя рэзервовая копія была зроблена %1$@ у %2$@.";
 
 /* Details confirming manual restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "If you choose not to restore now, you won’t be able to restore later. Your media will restore in the background.";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "Калі вы не зробіце аднаўленне зараз, пазней аднавіць гэта ўжо не атрымаецца. Вашы медыяфайлы будуць аднаўляцца ў фонавым рэжыме.";
 
 /* Text for action button to skip the restore. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Прапусціць аднаўленне";

@@ -590,40 +590,40 @@
 "BACKUP_RECORD_KEY_TITLE" = "Guarda la clave de tu copia de seguridad";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
-"BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ of %2$@ (%3$@)";
+"BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ de %2$@ (%3$@)";
 
 /* Subtitle for a progress spinner on a modal when waiting for a backup restore to start */
-"BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE" = "Preparing to restore";
+"BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE" = "Preparando la restauración";
 
 /* Title for a progress spinner on a modal when restoring messages */
-"BACKUP_RESTORE_MODAL_TITLE" = "Restoring Messages…";
+"BACKUP_RESTORE_MODAL_TITLE" = "Restaurando mensajes…";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Something went wrong creating your backup. Please try again, or contact support.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "No se ha podido crear tu copia de seguridad. Inténtalo de nuevo o contacta con nuestro equipo de asistencia.";
 
 /* Title for a button in an action sheet allowing users to perform a backup, ignoring that WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Allow Backups Using Cellular";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Permitir copias de seguridad con datos móviles";
 
 /* Message for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Backing up using cellular may result in data charges. You can connect to a WiFi network or allow backups using cellular.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Es posible que se apliquen cargos si haces la copia de seguridad usando datos móviles. Puedes conectarte a una red Wi-Fi o permitir las copias de seguridad usando datos móviles.";
 
 /* Title for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Allow Backups Using Cellular Data?";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "¿Permitir copias de seguridad con datos móviles?";
 
 /* Message for an action sheet explaining that performing a backup failed with a network error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Something went wrong creating your backup. Check your internet connection and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "No se ha podido crear tu copia de seguridad. Comprueba tu conexión a Internet e inténtalo de nuevo.";
 
 /* Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "Creando copia de seguridad: %1$@";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Exporting backup...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Exportando copia de seguridad…";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Uploading backup...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Cargando copia de seguridad…";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Uploading backup media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Cargando archivos de la copia de seguridad…";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Actualizar";
@@ -833,7 +833,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Carga en pausa: tu dispositivo tiene poca batería";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Upload paused: no internet…";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Carga en pausa: no tienes conexión a Internet";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Carga en pausa: esperando red Wi-Fi…";
@@ -4853,7 +4853,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nuevo mensaje";
 
 /* Toast indicating that the user has copied the sent timestamp. */
-"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Hora de envío copiada";
+"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Marca de tiempo copiada";
 
 /* Title for the 'edit history' section on the 'message details' view. */
 "MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "Ver historial de cambios";
@@ -5489,7 +5489,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE" = "Última copia de seguridad: %2$@ del %1$@.";
 
 /* Details confirming manual restore from backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "If you choose not to restore now, you won’t be able to restore later. Your media will restore in the background.";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL" = "Si decides no restaurar ahora, no podrás hacerlo más tarde. Los archivos multimedia se restaurarán en segundo plano.";
 
 /* Text for action button to skip the restore. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION" = "Omitir restauración";

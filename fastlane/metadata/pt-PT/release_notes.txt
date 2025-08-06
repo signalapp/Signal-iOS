@@ -1,1 +1,1 @@
-• Persistence pays off, but it's even better when things work on the first try. We fixed a bug that sometimes required multiple attempts in order to send a sticker from the iOS emoji keyboard. The same fix also works for Genmoji too, so we hope you Genjoy it.
+• Corrigimos um erro nos autocolantes enviados do teclado de emojis do iOS. A mesma correção também funciona para Genmoji.
