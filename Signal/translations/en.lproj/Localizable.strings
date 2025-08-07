@@ -706,6 +706,9 @@
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Backup Details";
 
+/* Notice that backups is a beta feature */
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a Beta feature that we will be adding functionality to on an ongoing basis";
+
 /* Footer for a menu section allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "This will delete all your backup data. No new backups will be created.";
 
@@ -936,6 +939,9 @@
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
+
+/* Beta label */
+"BETA_LABEL" = "BETA";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "You will no longer receive messages or updates from this group.";

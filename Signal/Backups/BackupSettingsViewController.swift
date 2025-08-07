@@ -121,10 +121,14 @@ class BackupSettingsViewController:
 
         super.init(wrappedView: BackupSettingsView(viewModel: viewModel))
 
-        title = OWSLocalizedString(
-            "BACKUPS_SETTINGS_TITLE",
-            comment: "Title for the 'Backup' settings menu."
+        setUpTitleViewWithBadge(
+            title: OWSLocalizedString(
+                "BACKUPS_SETTINGS_TITLE",
+                comment: "Title for the 'Backup' settings menu."
+            ),
+            badgeText: CommonStrings.betaLabel
         )
+
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
         viewModel.actionsDelegate = self
@@ -149,6 +153,69 @@ class BackupSettingsViewController:
 
     override func viewDidDisappear(_ animated: Bool) {
         stopExternalEventObservation()
+    }
+
+    // MARK: -
+
+    private func titleLabel(text: String) -> UILabel {
+        let titleLabel = UILabel()
+        titleLabel.text = text
+        titleLabel.textColor = Theme.primaryTextColor
+        titleLabel.font = UIFont.dynamicTypeHeadlineClamped
+        titleLabel.numberOfLines = 0
+        titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.textAlignment = .center
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        return titleLabel
+    }
+
+    private func badgeView(text: String) -> UIView {
+        let badgeLabel = UILabel()
+        badgeLabel.text = text
+        badgeLabel.font = UIFont.dynamicTypeCaption1.bold()
+        badgeLabel.textColor = UIColor(Color.Signal.label)
+        badgeLabel.textAlignment = .center
+        badgeLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        // Use a container for the grey background so it adjusts
+        // for different text length when localized.
+        let badgeContainer = UIView()
+        badgeContainer.backgroundColor = UIColor(Color.Signal.secondaryFill)
+        badgeContainer.layer.cornerRadius = 12
+        badgeContainer.addSubview(badgeLabel)
+
+        NSLayoutConstraint.activate([
+            badgeLabel.leadingAnchor.constraint(equalTo: badgeContainer.leadingAnchor, constant: 8),
+            badgeLabel.trailingAnchor.constraint(equalTo: badgeContainer.trailingAnchor, constant: -8),
+            badgeLabel.topAnchor.constraint(equalTo: badgeContainer.topAnchor, constant: 4),
+            badgeLabel.bottomAnchor.constraint(equalTo: badgeContainer.bottomAnchor, constant: -4)
+        ])
+
+        return badgeContainer
+    }
+
+    private func setUpTitleViewWithBadge(title: String, badgeText: String) {
+        let titleLabel = titleLabel(text: title)
+        let badgeLabel = badgeView(text: badgeText)
+
+        let stack = UIStackView(arrangedSubviews: [titleLabel, badgeLabel])
+        stack.axis = .horizontal
+        stack.spacing = 8
+        stack.alignment = .center
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        let titleContainer = UIView()
+        titleContainer.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            titleLabel.leadingAnchor.constraint(equalTo: titleContainer.leadingAnchor),
+            titleLabel.centerYAnchor.constraint(equalTo: titleContainer.centerYAnchor),
+            badgeLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 8),
+            badgeLabel.centerYAnchor.constraint(equalTo: titleContainer.centerYAnchor),
+            badgeLabel.trailingAnchor.constraint(equalTo: titleContainer.trailingAnchor)
+        ])
+
+        navigationItem.titleView = titleContainer
     }
 
     // MARK: -
@@ -1123,6 +1190,19 @@ struct BackupSettingsView: View {
 
     var body: some View {
         SignalList {
+            SignalSection {
+                HStack {
+                    Image(.info)
+                        .frame(width: 25, height: 25)
+
+                    Text(OWSLocalizedString(
+                        "BACKUP_SETTINGS_BETA_NOTICE_HEADER",
+                        comment: "Notice that backups is a beta feature")
+                    )
+                    .font(.footnote)
+                }
+                .padding(.vertical, 2)
+            }
             SignalSection {
                 BackupSubscriptionView(
                     loadingState: viewModel.backupSubscriptionLoadingState,

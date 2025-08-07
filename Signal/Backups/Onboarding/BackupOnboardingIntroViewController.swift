@@ -61,20 +61,50 @@ struct BackupOnboardingIntroView: View {
     var body: some View {
         ScrollableContentPinnedFooterView {
             VStack {
+                HStack {
+                    Image(.info)
+                        .frame(width: 25, height: 40)
+
+                    Text(OWSLocalizedString(
+                        "BACKUP_SETTINGS_BETA_NOTICE_HEADER",
+                        comment: "Notice that backups is a beta feature")
+                    )
+                    .font(.footnote)
+                    .multilineTextAlignment(.leading)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 10)
+                .background(Color.Signal.quaternaryFill)
+                .cornerRadius(12)
+            }
+            .padding(.horizontal, 10)
+
+            VStack {
                 Spacer().frame(height: 20)
 
                 Image(.backupsLogo)
                     .frame(width: 80, height: 80)
 
                 Spacer().frame(height: 16)
+                HStack {
+                    Text(OWSLocalizedString(
+                        "BACKUP_ONBOARDING_INTRO_TITLE",
+                        comment: "Title for a view introducing Backups during an onboarding flow."
+                    ))
+                    .font(.title)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.Signal.label)
 
-                Text(OWSLocalizedString(
-                    "BACKUP_ONBOARDING_INTRO_TITLE",
-                    comment: "Title for a view introducing Backups during an onboarding flow."
-                ))
-                .font(.title)
-                .fontWeight(.semibold)
-                .foregroundStyle(Color.Signal.label)
+                    Text(CommonStrings.betaLabel)
+                        .font(.caption)
+                        .bold()
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(Capsule().fill(
+                            Color.Signal.secondaryFill)
+                        )
+                        .foregroundStyle(Color.Signal.label)
+                }
 
                 Spacer().frame(height: 12)
 

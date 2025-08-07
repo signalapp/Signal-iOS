@@ -275,6 +275,10 @@ public enum CommonStrings {
             comment: "Title for the 'scan QR code' view."
         )
     }
+
+    static public var betaLabel: String {
+        OWSLocalizedString("BETA_LABEL", comment: "Beta label")
+    }
 }
 
 // MARK: -
