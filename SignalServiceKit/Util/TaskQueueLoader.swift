@@ -220,9 +220,10 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
             }
         }
         let task = Task {
+            defer {
+                self.runningTask = nil
+            }
             try await self._loadAndRunTasks()
-            await self.runner.didDrainQueue()
-            self.runningTask = nil
         }
         self.runningTask = task
         try await withTaskCancellationHandler(
@@ -270,6 +271,9 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
             !currentTaskIds.contains(record.id)
         }
         guard !records.isEmpty else {
+            if currentTaskIds.isEmpty {
+                await self.runner.didDrainQueue()
+            }
             return
         }
         records.forEach { currentTaskIds.insert($0.id) }
