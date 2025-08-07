@@ -792,10 +792,18 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             // new local metadata, otherwise the existing attachment file location is used.
             // TODO: Tie this in with OrphanedAttachmentRecord to track this
             if cleanupMetadata {
-                do {
-                    try fileSystem.deleteFile(url: localMetadata.fileUrl)
-                } catch {
-                    owsFailDebug("Error: \(error)")
+                if
+                    localMetadata.fileUrl == (attachment.streamInfo?.localRelativeFilePath).map({
+                        AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: $0)
+                    })
+                {
+                    owsFailDebug("Attempting to delete attachment file!")
+                } else {
+                    do {
+                        try fileSystem.deleteFile(url: localMetadata.fileUrl)
+                    } catch {
+                        owsFailDebug("Error: \(error)")
+                    }
                 }
             }
             return (attachmentUploadRecord, result.asAttachmentResult)
