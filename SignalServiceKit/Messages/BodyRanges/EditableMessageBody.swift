@@ -368,12 +368,16 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             in: range,
             with: finalMentionText
         ).removingPlaceholders()
-        
+
         // If the new mention is before the already existing mentions, we have to shift the existing mentions.
         body.mentions.forEach { (mentionRange, mentionAci) in
             if range.upperBound <= mentionRange.location {
+                // Since the user may have already typed out part of the mention, we should remove
+                // range.length from the final location to avoid double counting those letters.
+                let newMentionLowerBound = mentionRange.location - range.length
+
                 body.mentions[mentionRange] = nil
-                body.mentions[NSRange(location: mentionRange.location + (hydratedMention as NSString).length, length: mentionRange.length)] = mentionAci
+                body.mentions[NSRange(location: newMentionLowerBound + (finalMentionText as NSString).length, length: mentionRange.length)] = mentionAci
             }
         }
 
