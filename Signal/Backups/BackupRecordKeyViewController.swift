@@ -8,27 +8,76 @@ import SignalUI
 import SwiftUI
 
 class BackupRecordKeyViewController: HostingController<BackupRecordKeyView> {
-    private let onCompletion: (BackupRecordKeyViewController) -> Void
-    private let viewModel: BackupRecordKeyViewModel
-    private let isOnboardingFlow: Bool
+    struct Option: OptionSet {
+        let rawValue: Int
 
+        /// Show a "done" button instead of the nav bar "back" button. Note that
+        /// this prevents dismissal using standard navigation.
+        static let replaceNavBarBackWithDoneButton = Option(rawValue: 1 << 0)
+        /// Show a "continue" button in the view footer. Not compatible with
+        /// `.showCreateNewKeyButton`.
+        static let showContinueButton = Option(rawValue: 1 << 1)
+        /// Show a "create new key" button in the view footer. Not compatible
+        /// with `.showContinueButton`.
+        static let showCreateNewKeyButton = Option(rawValue: 1 << 2)
+    }
+
+    enum AEPMode {
+        /// The user's current AEP, which must only be viewed after device auth.
+        case current(AccountEntropyPool, LocalDeviceAuthentication.AuthSuccess)
+        /// A new candidate AEP.
+        case newCandidate(AccountEntropyPool)
+
+        fileprivate var aep: AccountEntropyPool {
+            switch self {
+            case .current(let aep, _): return aep
+            case .newCandidate(let aep): return aep
+            }
+        }
+    }
+
+    private let onCompletion: (BackupRecordKeyViewController) -> Void
+    private let onCreateNewKeyPressed: (BackupRecordKeyViewController) -> Void
+    private let options: [Option]
+    private let viewModel: BackupRecordKeyViewModel
+
+    /// - Parameter onCreateNewKeyPressed
+    /// Called when the user taps the "create new key" button. Only relevant if
+    /// the `.showCreateNewKey` option is passed.
+    /// - Parameter onCompletion
+    /// Called when the user "completes" recording their Backup Key, such as by
+    /// tapping a "continue" or "done" button (depending on the passed options).
     init(
-        aep: AccountEntropyPool,
-        isOnboardingFlow: Bool,
-        onCompletion: @escaping (BackupRecordKeyViewController) -> Void,
+        aepMode: AEPMode,
+        options: [Option],
+        onCreateNewKeyPressed: @escaping (BackupRecordKeyViewController) -> Void = { _ in },
+        onCompletion: @escaping (BackupRecordKeyViewController) -> Void
     ) {
         self.onCompletion = onCompletion
-        self.isOnboardingFlow = isOnboardingFlow
-        self.viewModel = BackupRecordKeyViewModel(aep: aep, isOnboardingFlow: isOnboardingFlow)
+        self.onCreateNewKeyPressed = onCreateNewKeyPressed
+        self.options = options
+        self.viewModel = BackupRecordKeyViewModel(aep: aepMode.aep, options: options)
 
         super.init(wrappedView: BackupRecordKeyView(viewModel: viewModel))
 
         viewModel.actionsDelegate = self
     }
+
+    override func viewDidAppear(_ animated: Bool) {
+        if options.contains(.replaceNavBarBackWithDoneButton) {
+            navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        if options.contains(.replaceNavBarBackWithDoneButton) {
+            navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        }
+    }
 }
 
 extension BackupRecordKeyViewController: BackupRecordKeyViewModel.ActionsDelegate {
-    func copyToClipboard(_ aep: AccountEntropyPool) {
+    fileprivate func copyToClipboard(_ aep: AccountEntropyPool) {
         UIPasteboard.general.setItems(
             [[UIPasteboard.typeAutomatic: aep.rawData]],
             options: [.expirationDate: Date().addingTimeInterval(60)]
@@ -41,8 +90,12 @@ extension BackupRecordKeyViewController: BackupRecordKeyViewModel.ActionsDelegat
         toast.presentToastView(from: .bottom, of: view, inset: view.safeAreaInsets.bottom + 8)
     }
 
-    func complete() {
+    fileprivate func complete() {
         onCompletion(self)
+    }
+
+    fileprivate func createNewKey() {
+        onCreateNewKeyPressed(self)
     }
 }
 
@@ -52,16 +105,20 @@ private class BackupRecordKeyViewModel: ObservableObject {
     protocol ActionsDelegate: AnyObject {
         func copyToClipboard(_ aep: AccountEntropyPool)
         func complete()
+        func createNewKey()
     }
+
+    let aep: AccountEntropyPool
+    let options: [BackupRecordKeyViewController.Option]
 
     weak var actionsDelegate: ActionsDelegate?
-    let aep: AccountEntropyPool
-    let isOnboardingFlow: Bool
 
-    init(aep: AccountEntropyPool, isOnboardingFlow: Bool) {
+    init(aep: AccountEntropyPool, options: [BackupRecordKeyViewController.Option]) {
         self.aep = aep
-        self.isOnboardingFlow = isOnboardingFlow
+        self.options = options
     }
+
+    // MARK: -
 
     func copyToClipboard() {
         actionsDelegate?.copyToClipboard(aep)
@@ -70,7 +127,13 @@ private class BackupRecordKeyViewModel: ObservableObject {
     func complete() {
         actionsDelegate?.complete()
     }
+
+    func createNewKey() {
+        actionsDelegate?.createNewKey()
+    }
 }
+
+// MARK: -
 
 struct BackupRecordKeyView: View {
     fileprivate let viewModel: BackupRecordKeyViewModel
@@ -119,7 +182,7 @@ struct BackupRecordKeyView: View {
                     ))
                     .fontWeight(.medium)
                 }
-                .buttonStyle(.plain)
+                .foregroundStyle(Color.Signal.secondaryLabel)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background {
@@ -130,8 +193,19 @@ struct BackupRecordKeyView: View {
             }
             .padding(.horizontal, 12)
         } pinnedFooter: {
-            // Only add "continue" button if we're in the onboarding flow.
-            if viewModel.isOnboardingFlow {
+            if viewModel.options.contains(.showCreateNewKeyButton) {
+                Button {
+                    viewModel.createNewKey()
+                } label: {
+                    Text(OWSLocalizedString(
+                        "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE",
+                        comment: "Title for a button allowing users to create a new 'Backup Key'."
+                    ))
+                    .foregroundStyle(Color.Signal.ultramarine)
+                }
+            }
+
+            if viewModel.options.contains(.showContinueButton) {
                 Button {
                     viewModel.complete()
                 } label: {
@@ -149,15 +223,15 @@ struct BackupRecordKeyView: View {
         }
         .multilineTextAlignment(.center)
         .background(Color.Signal.groupedBackground)
-        .navigationBarBackButtonHidden(!viewModel.isOnboardingFlow)
-        .navigationBarItems(leading: viewModel.isOnboardingFlow ? nil : doneButton)
+        .navigationBarBackButtonHidden(viewModel.options.contains(.replaceNavBarBackWithDoneButton))
+        .navigationBarItems(leading: viewModel.options.contains(.replaceNavBarBackWithDoneButton) ? doneButton : nil)
     }
 
     private var doneButton: some View {
-        Button(action: {
+        Button {
             viewModel.complete()
-        }) {
-            Text(OWSLocalizedString("BUTTON_DONE", comment: "Label for generic done button."))
+        } label: {
+            Text(CommonStrings.doneButton)
                 .buttonStyle(.plain)
                 .foregroundStyle(Color.Signal.label)
         }
@@ -227,26 +301,44 @@ private struct DisplayAccountEntropyPoolView: View {
 #if DEBUG
 
 private extension BackupRecordKeyViewModel {
-    static func forPreview() -> BackupRecordKeyViewModel {
+    static func forPreview(
+        options: [BackupRecordKeyViewController.Option],
+    ) -> BackupRecordKeyViewModel {
         class PreviewActionsDelegate: ActionsDelegate {
-            func copyToClipboard(_ aep: AccountEntropyPool) {
-                print("Copying \(aep.rawData) to clipboard...!")
-            }
-
-            func complete() {
-                print("Continuing...!")
-            }
+            func copyToClipboard(_ aep: AccountEntropyPool) { print("Copying \(aep.rawData) to clipboard...!") }
+            func complete() { print("Continuing...!") }
+            func createNewKey() { print("Creating new key...!") }
         }
 
-        let viewModel = BackupRecordKeyViewModel(aep: AccountEntropyPool(), isOnboardingFlow: true)
+        let viewModel = BackupRecordKeyViewModel(
+            aep: AccountEntropyPool(),
+            options: options,
+        )
         let actionsDelegate = PreviewActionsDelegate()
         ObjectRetainer.retainObject(actionsDelegate, forLifetimeOf: viewModel)
         return viewModel
     }
 }
 
-#Preview {
-    BackupRecordKeyView(viewModel: .forPreview())
+#Preview("NavBarDone") {
+    NavigationView {
+        BackupRecordKeyView(viewModel: .forPreview(options: [.replaceNavBarBackWithDoneButton]))
+    }
+}
+
+#Preview("CreateNewKey") {
+    NavigationView {
+        BackupRecordKeyView(viewModel: .forPreview(options: [
+            .replaceNavBarBackWithDoneButton,
+            .showCreateNewKeyButton,
+        ]))
+    }
+}
+
+#Preview("ContinueButton") {
+    NavigationView {
+        BackupRecordKeyView(viewModel: .forPreview(options: [.showContinueButton]))
+    }
 }
 
 #endif

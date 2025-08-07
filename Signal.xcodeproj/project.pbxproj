@@ -2515,6 +2515,7 @@
 		D9388C912DA475230048D4F9 /* BackupSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9388C902DA4751F0048D4F9 /* BackupSettingsStore.swift */; };
 		D9392DE02D88AA5800728C01 /* ZoomableMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9392DDF2D88AA5000728C01 /* ZoomableMediaView.swift */; };
 		D93964B62E038C7B00094117 /* BackupSettingsAttachmentUploadTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93964B52E038C7B00094117 /* BackupSettingsAttachmentUploadTracker.swift */; };
+		D93BDD942E43064500779BD8 /* BackupKeepKeySafeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93BDD932E43063B00779BD8 /* BackupKeepKeySafeSheet.swift */; };
 		D93CE1242A5C84F600D916B7 /* OWSSyncRequestMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */; };
 		D93EDC042AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */; };
 		D93F4D5A2D800DD20042926C /* AvatarDefaultColorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93F4D552D7FAC3C0042926C /* AvatarDefaultColorManager.swift */; };
@@ -2526,7 +2527,7 @@
 		D945319E2CE53CEB004DAB30 /* SubscriptionRedemptionNecessityChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */; };
 		D9495A6D2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */; };
 		D9495A702C76965600843BC1 /* TSOutgoingMessageRecipientStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */; };
-		D949C4052DF3A597007E095C /* BackupOnboardingConfirmKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D949C4042DF3A588007E095C /* BackupOnboardingConfirmKeyViewController.swift */; };
+		D949C4052DF3A597007E095C /* BackupConfirmKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D949C4042DF3A588007E095C /* BackupConfirmKeyViewController.swift */; };
 		D94AEB3A2D28837F00B03D7A /* MasterKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94AEB392D28837A00B03D7A /* MasterKey.swift */; };
 		D94AEB3C2D28940A00B03D7A /* PreKeyTaskAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94AEB3B2D28940500B03D7A /* PreKeyTaskAPIClient.swift */; };
 		D94D67CD2C9DEF870091B485 /* BackupArchivePostFrameRestoreActionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94D67CC2C9DEF6E0091B485 /* BackupArchivePostFrameRestoreActionManager.swift */; };
@@ -6466,6 +6467,7 @@
 		D938CD5F29283402006FB16A /* Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paypal.swift; sourceTree = "<group>"; };
 		D9392DDF2D88AA5000728C01 /* ZoomableMediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableMediaView.swift; sourceTree = "<group>"; };
 		D93964B52E038C7B00094117 /* BackupSettingsAttachmentUploadTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSettingsAttachmentUploadTracker.swift; sourceTree = "<group>"; };
+		D93BDD932E43063B00779BD8 /* BackupKeepKeySafeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeepKeySafeSheet.swift; sourceTree = "<group>"; };
 		D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSyncRequestMessage.swift; sourceTree = "<group>"; };
 		D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationSettingsViewController+MySupport.swift"; sourceTree = "<group>"; };
 		D93F4D552D7FAC3C0042926C /* AvatarDefaultColorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarDefaultColorManager.swift; sourceTree = "<group>"; };
@@ -6478,7 +6480,7 @@
 		D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionRedemptionNecessityChecker.swift; sourceTree = "<group>"; };
 		D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientState.swift; sourceTree = "<group>"; };
 		D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientStateTest.swift; sourceTree = "<group>"; };
-		D949C4042DF3A588007E095C /* BackupOnboardingConfirmKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOnboardingConfirmKeyViewController.swift; sourceTree = "<group>"; };
+		D949C4042DF3A588007E095C /* BackupConfirmKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupConfirmKeyViewController.swift; sourceTree = "<group>"; };
 		D94AEB392D28837A00B03D7A /* MasterKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKey.swift; sourceTree = "<group>"; };
 		D94AEB3B2D28940500B03D7A /* PreKeyTaskAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskAPIClient.swift; sourceTree = "<group>"; };
 		D94D67CC2C9DEF6E0091B485 /* BackupArchivePostFrameRestoreActionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchivePostFrameRestoreActionManager.swift; sourceTree = "<group>"; };
@@ -12500,7 +12502,9 @@
 			isa = PBXGroup;
 			children = (
 				D9DE34FB2DEE76E6005099D7 /* Onboarding */,
+				D949C4042DF3A588007E095C /* BackupConfirmKeyViewController.swift */,
 				D93FA5BE2DE77E440013879E /* BackupEnablingManager.swift */,
+				D93BDD932E43063B00779BD8 /* BackupKeepKeySafeSheet.swift */,
 				D98CA2B22DF2450E0060370E /* BackupRecordKeyViewController.swift */,
 				D932C0EA2E13AD3600FEF9C3 /* BackupSettingsAttachmentDownloadTracker.swift */,
 				D93964B52E038C7B00094117 /* BackupSettingsAttachmentUploadTracker.swift */,
@@ -12905,7 +12909,6 @@
 		D9DE34FB2DEE76E6005099D7 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
-				D949C4042DF3A588007E095C /* BackupOnboardingConfirmKeyViewController.swift */,
 				D99934592DE97BB6002C9196 /* BackupOnboardingCoordinator.swift */,
 				D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroViewController.swift */,
 				D98CA2AC2DF14A830060370E /* BackupOnboardingKeyIntroViewController.swift */,
@@ -16783,10 +16786,11 @@
 				B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */,
 				66485EB02CCC515A00B8613F /* BackupArchiveInternalErrorViewController.swift in Sources */,
 				66A1F4E62E03641D0095DE4B /* BackupBGProcessingTaskRunner.swift in Sources */,
+				D949C4052DF3A597007E095C /* BackupConfirmKeyViewController.swift in Sources */,
 				041A5F072E05B3F900FAED05 /* BackupEnablementMegaphone.swift in Sources */,
 				D9DF21EC2E21BD6600A962B2 /* BackupEnablingManager.swift in Sources */,
+				D93BDD942E43064500779BD8 /* BackupKeepKeySafeSheet.swift in Sources */,
 				04E66D402DFC825B0059DBAC /* BackupKeyReminderMegaphone.swift in Sources */,
-				D949C4052DF3A597007E095C /* BackupOnboardingConfirmKeyViewController.swift in Sources */,
 				D999345A2DE97BBC002C9196 /* BackupOnboardingCoordinator.swift in Sources */,
 				D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroViewController.swift in Sources */,
 				D98CA2AD2DF14A890060370E /* BackupOnboardingKeyIntroViewController.swift in Sources */,

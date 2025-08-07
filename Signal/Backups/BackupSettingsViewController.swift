@@ -28,6 +28,7 @@ class BackupSettingsViewController:
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
     private let deviceSleepManager: DeviceSleepManager
+    private let svr: SecureValueRecovery
     private let tsAccountManager: TSAccountManager
 
     private let onLoadAction: OnLoadAction?
@@ -57,6 +58,7 @@ class BackupSettingsViewController:
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
             deviceSleepManager: deviceSleepManager,
+            svr: DependenciesBridge.shared.svr,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
     }
@@ -76,6 +78,7 @@ class BackupSettingsViewController:
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
         deviceSleepManager: DeviceSleepManager,
+        svr: SecureValueRecovery,
         tsAccountManager: TSAccountManager
     ) {
         owsPrecondition(
@@ -100,6 +103,7 @@ class BackupSettingsViewController:
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
         self.deviceSleepManager = deviceSleepManager
+        self.svr = svr
         self.tsAccountManager = tsAccountManager
 
         self.onLoadAction = onLoadAction
@@ -916,61 +920,141 @@ class BackupSettingsViewController:
             return
         }
 
-        guard await LocalDeviceAuthentication().performBiometricAuth() else {
+        guard let authSuccess = await LocalDeviceAuthentication().performBiometricAuth() else {
             return
         }
 
-        navigationController?.pushViewController(
-            BackupRecordKeyViewController(
-                aep: aep,
-                isOnboardingFlow: false,
-                onCompletion: { [weak self] recordKeyViewController in
-                    self?.showKeyRecordedConfirmationSheet(
-                        fromViewController: recordKeyViewController
-                    )
-                }
-            ),
-            animated: true
+        let recordKeyViewController = BackupRecordKeyViewController(
+            aepMode: .current(aep, authSuccess),
+            options: [.replaceNavBarBackWithDoneButton, .showCreateNewKeyButton],
+            onCreateNewKeyPressed: { [weak self] recordKeyViewController in
+                guard let self else { return }
+
+                // If appropriate, the warning sheet will let the user continue
+                // in a "create new AEP" flow.
+                showCreateNewBackupKeyWarningSheet(fromViewController: recordKeyViewController)
+            },
+            onCompletion: { [weak self] recordKeyViewController in
+                guard let self else { return }
+
+                let keepKeySafeSheet = BackupKeepKeySafeSheet(
+                    onContinue: { [weak self] in
+                        guard let self else { return }
+                        navigationController?.popToViewController(self, animated: true)
+                    },
+                    onSeeKeyAgain: {
+                        // The sheet is already dismissed, and the topmost
+                        // view is a BackupRecordKeyViewController.
+                    }
+                )
+                recordKeyViewController.present(
+                    keepKeySafeSheet,
+                    animated: true
+                )
+            }
         )
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+
+        navigationController?.pushViewController(recordKeyViewController, animated: true)
     }
 
-    private func showKeyRecordedConfirmationSheet(fromViewController: BackupRecordKeyViewController) {
-        let sheet = HeroSheetViewController(
+    private func showCreateNewBackupKeyWarningSheet(
+        fromViewController: BackupRecordKeyViewController,
+    ) {
+        let currentBackupPlan = db.read { tx in
+            backupSettingsStore.backupPlan(tx: tx)
+        }
+
+        // Only allow creating a new Backup Key if Backups are already disabled.
+        let primary: HeroSheetViewController.Button
+        let secondary: HeroSheetViewController.Button?
+        switch currentBackupPlan {
+        case .disabled:
+            primary = HeroSheetViewController.Button(
+                title: CommonStrings.continueButton,
+                action: { sheet in
+                    sheet.dismiss(animated: true) { [weak self] in
+                        guard let self else { return }
+                        showRecordNewBackupKey()
+                    }
+                }
+            )
+            secondary = .dismissing(
+                title: CommonStrings.cancelButton,
+                style: .secondary,
+            )
+        case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
+            primary = .dismissing(title: CommonStrings.cancelButton)
+            secondary = nil
+        }
+
+        let warningSheet = HeroSheetViewController(
             hero: .image(.backupsKey),
             title: OWSLocalizedString(
-                "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_TITLE",
-                comment: "Title for a sheet warning users to their 'Backup Key' safe."
+                "BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE",
+                comment: "Title for a sheet warning users about creating a new Backup Key."
             ),
             body: OWSLocalizedString(
-                "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY",
-                comment: "Body for a sheet warning users to their 'Backup Key' safe."
+                "BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY",
+                comment: "Body for a sheet warning users about creating a new Backup Key."
             ),
-            primary: .button(HeroSheetViewController.Button(
-                title: OWSLocalizedString(
-                    "BUTTON_CONTINUE",
-                    comment: "Label for 'continue' button."
-                ),
-                action: { [weak self] _ in
-                    self?.dismiss(animated: true)
-                    self?.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
-                    self?.navigationController?.popViewController(animated: true)
-                }
-            )),
-            secondary: .button(HeroSheetViewController.Button(
-                title: OWSLocalizedString(
-                    "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE",
-                    comment: "Title for a button offering to let users see their 'Backup Key'."
-                ),
-                style: .secondary,
-                action: .custom({ [weak self] _ in
-                    self?.dismiss(animated: true)
-                    self?.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
-                })
-            ))
+            primary: .button(primary),
+            secondary: secondary.map { .button($0) },
         )
-        fromViewController.present(sheet, animated: true)
-    }}
+        fromViewController.present(warningSheet, animated: true)
+    }
+
+    private func showRecordNewBackupKey() {
+        let newCandidateAEP = AccountEntropyPool()
+        let recordKeyViewController = BackupRecordKeyViewController(
+            aepMode: .newCandidate(newCandidateAEP),
+            options: [.showContinueButton],
+            onCompletion: { [weak self] _ in
+                guard let self else { return }
+                showConfirmNewBackupKey(newCandidateAEP: newCandidateAEP)
+            }
+        )
+
+        navigationController?.pushViewController(recordKeyViewController, animated: true)
+    }
+
+    private func showConfirmNewBackupKey(newCandidateAEP: AccountEntropyPool) {
+        let confirmKeyViewController = BackupConfirmKeyViewController(
+            aep: newCandidateAEP,
+            onContinue: { [weak self] in
+                guard let self else { return }
+
+                Logger.warn("Setting new AEP!")
+
+                // Persists the new AEP, and schedules all the relevant side
+                // effects. A big deal!
+                db.write { tx in
+                    self.svr.setNewAccountEntropyPoolWithSideEffects(
+                        newCandidateAEP,
+                        disablePIN: false,
+                        authedAccount: .implicit(),
+                        transaction: tx
+                    )
+                }
+
+                // Pop all the way back to Backup Settings.
+                navigationController?.popToViewController(self, animated: true) {
+                    self.presentToast(text: OWSLocalizedString(
+                        "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST",
+                        comment: "Toast shown when a new Backup Key has been created successfully."
+                    ))
+                }
+            },
+            onSeeKeyAgain: { [weak self] in
+                guard let self else { return }
+
+                // Popping drops us back on the BackupRecordKeyViewController.
+                navigationController?.popViewController(animated: true)
+            }
+        )
+
+        navigationController?.pushViewController(confirmKeyViewController, animated: true)
+    }
+}
 
 // MARK: -
 
@@ -1384,6 +1468,10 @@ struct BackupSettingsView: View {
                     .foregroundStyle(Color.Signal.secondaryLabel)
                 }
 
+                SignalSection {
+                    BackupViewKeyView(viewModel: viewModel)
+                }
+
             case .disabledFailedToDisableRemotely:
                 SignalSection {
                     VStack(alignment: .center) {
@@ -1415,6 +1503,10 @@ struct BackupSettingsView: View {
 
                 SignalSection {
                     reenableBackupsButton
+                }
+
+                SignalSection {
+                    BackupViewKeyView(viewModel: viewModel)
                 }
             }
         }
@@ -1993,6 +2085,16 @@ private struct BackupDetailsView: View {
             )
         )
 
+        BackupViewKeyView(viewModel: viewModel)
+    }
+}
+
+// MARK: -
+
+private struct BackupViewKeyView: View {
+    let viewModel: BackupSettingsViewModel
+
+    var body: some View {
         Button {
             viewModel.showViewBackupKey()
         } label: {
@@ -2007,7 +2109,6 @@ private struct BackupDetailsView: View {
             }
         }
         .foregroundStyle(Color.Signal.label)
-
     }
 }
 
@@ -2044,6 +2145,7 @@ private extension BackupSettingsViewModel {
             func setShouldAllowBackupDownloadsOnCellular() { print("Downloads on cellular: true") }
 
             func showViewBackupKey() { print("Showing View Backup Key!") }
+            func showCreateNewBackupKey() { print("Showing Create New Backup Key!") }
         }
 
         let viewModel = BackupSettingsViewModel(

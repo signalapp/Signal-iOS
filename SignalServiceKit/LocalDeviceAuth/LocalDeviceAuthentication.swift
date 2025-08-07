@@ -12,6 +12,9 @@ public struct LocalDeviceAuthentication {
         case genericError(localizedErrorMessage: String)
     }
 
+    /// An opaque object representing successful authentication.
+    public struct AuthSuccess {}
+
     public struct AttemptToken {}
 
     private let context: LAContext
@@ -22,20 +25,22 @@ public struct LocalDeviceAuthentication {
 
     // MARK: -
 
-    public func performBiometricAuth() async -> Bool {
+    public func performBiometricAuth() async -> AuthSuccess? {
         let localDeviceAuthAttemptToken: AttemptToken
 
         switch self.checkCanAttempt() {
         case .success(let attemptToken): localDeviceAuthAttemptToken = attemptToken
-        case .failure(.notRequired): return true
-        case .failure(.canceled), .failure(.genericError): return false
+        case .failure(.notRequired): return AuthSuccess()
+        case .failure(.canceled), .failure(.genericError): return nil
         }
 
         switch await self.attempt(token: localDeviceAuthAttemptToken) {
-        case .success, .failure(.notRequired): return true
-        case .failure(.canceled), .failure(.genericError): return false
+        case .success, .failure(.notRequired): return AuthSuccess()
+        case .failure(.canceled), .failure(.genericError): return nil
         }
     }
+
+    // MARK: -
 
     /// Returns whether checking local device auth is possible. Must be called
     /// prior to calling ``attempt(token:)``.
@@ -52,7 +57,7 @@ public struct LocalDeviceAuthentication {
 
     /// Returns the result of performing local device authentication. Must be
     /// called after calling ``checkCanAttempt()``.
-    public func attempt(token: AttemptToken) async -> Result<Void, AuthError> {
+    public func attempt(token: AttemptToken) async -> Result<AuthSuccess, AuthError> {
         do {
             try await context.evaluatePolicy(
                 .deviceOwnerAuthentication,
@@ -62,7 +67,7 @@ public struct LocalDeviceAuthentication {
                 )
             )
 
-            return .success(())
+            return .success(AuthSuccess())
         } catch {
             return .failure(parseAuthError(error))
         }

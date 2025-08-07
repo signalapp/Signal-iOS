@@ -90,8 +90,8 @@ class BackupOnboardingCoordinator {
 
         onboardingNavController.pushViewController(
             BackupOnboardingKeyIntroViewController(
-                onDeviceAuthSucceeded: { [self] in
-                    showRecordBackupKey()
+                onDeviceAuthSucceeded: { [self] authSuccess in
+                    showRecordBackupKey(localDeviceAuthSuccess: authSuccess)
                 }
             ),
             animated: true
@@ -100,7 +100,9 @@ class BackupOnboardingCoordinator {
 
     // MARK: -
 
-    private func showRecordBackupKey() {
+    private func showRecordBackupKey(
+        localDeviceAuthSuccess: LocalDeviceAuthentication.AuthSuccess
+    ) {
         guard
             let onboardingNavController,
             let aep = db.read(block: { accountKeyStore.getAccountEntropyPool(tx: $0) })
@@ -108,8 +110,8 @@ class BackupOnboardingCoordinator {
 
         onboardingNavController.pushViewController(
             BackupRecordKeyViewController(
-                aep: aep,
-                isOnboardingFlow: true,
+                aepMode: .current(aep, localDeviceAuthSuccess),
+                options: [.showContinueButton],
                 onCompletion: { [self] _ in
                     showConfirmBackupKey(aep: aep)
                 },
@@ -124,7 +126,7 @@ class BackupOnboardingCoordinator {
         guard let onboardingNavController else { return }
 
         onboardingNavController.pushViewController(
-            BackupOnboardingConfirmKeyViewController(
+            BackupConfirmKeyViewController(
                 aep: aep,
                 onContinue: { [self] in
                     Task {
