@@ -734,7 +734,7 @@ extension RegistrationNavigationController: RegistrationQuickRestoreQRCodePresen
 
 extension RegistrationNavigationController: RegistrationTransferStatusPresenter {
     func cancelTransfer() {
-        let guarantee = coordinator.resetRestoreMethodChoice()
+        let guarantee = coordinator.resetRestoreMode()
         pushNextController(guarantee)
     }
 }

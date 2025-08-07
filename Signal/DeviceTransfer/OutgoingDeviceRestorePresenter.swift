@@ -156,7 +156,8 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             }
 
             guard await viewModel.confirmTransfer() else {
-                // TODO: [Backups] - Display an error
+                // Silently fail here. The confirmTransfer UI will notify the user of
+                // success/failure (e.g. FaceID UI)
                 return
             }
 
@@ -171,8 +172,8 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                 await displayRestoreMessage(isBackup: false, presentingViewController: presentingViewController)
             case .deviceTransfer:
                 guard let peerConnectionData = restoreMethodData.peerConnectionData else {
-                    // TODO: [Backups] - Display an error
-                    throw OWSAssertionError("Missing transfer connection data")
+                    Logger.error("Missing transfer connection data")
+                    throw DeviceRestoreError.invalidRestoreData
                 }
 
                 // Push the status sheet if this is a transfer
@@ -182,20 +183,91 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                 )
 
                 await viewModel.waitForDeviceConnection(peerConnectionData: peerConnectionData)
-                Task { @MainActor in
+                Task { @MainActor [weak self] in
                     // TODO: [Backups] - DeviceTransferService does a db.write
                     // internally, and this should be updated to an actor/async aware
                     // in a followup piece of work (and possibly once the old device transfer
                     // flow is removed)
-                    try viewModel.startTransfer(peerConnectionData: peerConnectionData)
+                    do {
+                        try viewModel.startTransfer(peerConnectionData: peerConnectionData)
+                    } catch {
+                        Logger.warn("Device transfer failed: \(error)")
+                        await self?.handleError(
+                            DeviceRestoreError.unknownError,
+                            presentingViewController: presentingViewController
+                        )
+                    }
                 }
-                await viewModel.waitForTransferCompletion()
-
-                await displayTransferComplete(presentingViewController: presentingViewController)
+                let success = await viewModel.waitForTransferCompletion()
+                if !success {
+                    await handleError(
+                        DeviceRestoreError.restoreCancelled,
+                        presentingViewController: presentingViewController
+                    )
+                } else {
+                    await displayTransferComplete(presentingViewController: presentingViewController)
+                }
             }
         } catch {
-            // TODO: [Backups] - Display an error
-            Logger.error("error: \(error)")
+            switch error {
+            case let restoreError as DeviceRestoreError:
+                await handleError(restoreError, presentingViewController: presentingViewController)
+            default:
+                Logger.error("Unexpected device transfer error: \(error)")
+            }
         }
+    }
+
+    @MainActor
+    func handleError(_ error: DeviceRestoreError, presentingViewController: UIViewController?) async {
+        guard let presentingViewController else {
+            Logger.warn("Cannot display transfer error")
+            return
+        }
+
+        let (title, body) = switch error {
+        case .invalidRestoreData: (
+            OWSLocalizedString(
+                "OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE",
+                comment: "Title of prompt notifying restore failed."
+            ),
+            OWSLocalizedString(
+                "OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY",
+                comment: "Body of prompt notifying restore failed."
+            )
+        )
+        case .restoreCancelled: (
+            OWSLocalizedString(
+                "OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_TITLE",
+                comment: "Title of prompt notifying restore was cancelled."
+            ),
+            OWSLocalizedString(
+                "OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_BODY",
+                comment: "Body of prompt notifying restore was cancelled."
+            )
+        )
+        case .unknownError: (
+            OWSLocalizedString(
+                "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE",
+                comment: "Title of prompt notifying restore failed for unknown reasons."
+            ),
+            OWSLocalizedString(
+                "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY",
+                comment: "Body of prompt notifying restore failed for unknown reasons."
+            )
+        )
+        }
+
+        let sheet = HeroSheetViewController(
+            hero: .image(UIImage(resource: .checkCircle)),
+            title: title,
+            body: body,
+            primaryButton: .init(title: CommonStrings.okayButton, action: { _ in
+                presentingViewController.dismiss(animated: true)
+            })
+        )
+        sheet.modalPresentationStyle = .formSheet
+        await presentingViewController.awaitableDismiss(animated: true)
+        await presentingViewController.awaitablePresent(sheet, animated: true)
     }
 }

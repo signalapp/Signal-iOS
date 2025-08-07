@@ -12,7 +12,8 @@ enum TransferState {
     case connecting
     case transferring(Double)
     case done
-    case error(Error)
+    case cancelled
+    case error(DeviceTransferService.Error)
 }
 
 class TransferStatusViewModel: ObservableObject {
@@ -20,34 +21,66 @@ class TransferStatusViewModel: ObservableObject {
         enum Indefinite {
             case starting
             case connecting
+            case cancelling
 
             func title(isNewDevice: Bool) -> String {
                 switch self {
                 case .starting:
                     if isNewDevice {
-                        "Waiting to connect to old iPhone…" // TODO: Localize
+                        OWSLocalizedString(
+                            "DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING",
+                            comment: "Status message on new device when transfer is starting."
+                        )
                     } else {
-                        "Waiting to connect to new iPhone…" // TODO: Localize
+                        OWSLocalizedString(
+                            "DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING",
+                            comment: "Status message on old device when transfer is starting."
+                        )
                     }
                 case .connecting:
                     if isNewDevice {
-                        "Connecting to old iPhone…" // TODO: Localize
+                        OWSLocalizedString(
+                            "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING",
+                            comment: "Status message on new device when connecting to old device."
+                        )
                     } else {
-                        "Connecting to new iPhone…" // TODO: Localize
+                        OWSLocalizedString(
+                            "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING",
+                            comment: "Status message on new device when connecting to new device."
+                        )
+                    }
+                case .cancelling:
+                    if isNewDevice {
+                        OWSLocalizedString(
+                            "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING",
+                            comment: "Status message on new device when cancelling transfer."
+                        )
+                    } else {
+                        OWSLocalizedString(
+                            "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CANCELLING",
+                            comment: "Status message on old device when cancelling transfer."
+                        )
                     }
                 }
             }
 
             func message(isNewDevice: Bool) -> String {
                 if isNewDevice {
-                    "Bring your old device nearby, and make sure Wi-Fi and Bluetooth are enabled." // TODO: Localize
+                    OWSLocalizedString(
+                        "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE",
+                        comment: "Description message on new device displayed during device transfer."
+                    )
                 } else {
-                    "Bring your new device nearby, and make sure Wi-Fi and Bluetooth are enabled." // TODO: Localize
+                    OWSLocalizedString(
+                        "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE",
+                        comment: "Description message on old device displayed during device transfer."
+                    )
                 }
             }
         }
         case indefinite(Indefinite)
         case transferring(Double)
+        case error(Error)
     }
 
     @Published var viewState: ViewState = .indefinite(.starting)
@@ -63,7 +96,10 @@ class TransferStatusViewModel: ObservableObject {
                 self.progressDidUpdate(currentProgress: progress)
             case .done:
                 viewState = .transferring(1)
-            case .error(_):
+            case .cancelled:
+                viewState = .indefinite(.cancelling)
+            case .error(let error):
+                viewState = .error(error)
                 return
             }
         }

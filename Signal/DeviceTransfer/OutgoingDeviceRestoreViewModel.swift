@@ -7,6 +7,12 @@ import Foundation
 import SignalServiceKit
 import MultipeerConnectivity
 
+enum DeviceRestoreError: Error {
+    case invalidRestoreData
+    case restoreCancelled
+    case unknownError
+}
+
 class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObserver {
 
     struct RestoreMethodData {
@@ -35,7 +41,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
     )?> = AtomicValue(nil, lock: .init())
 
     private var finishTransferContinuation: AtomicValue<
-        CheckedContinuation<Void, Never>?
+        CheckedContinuation<Bool, Never>?
     > = AtomicValue(nil, lock: .init())
 
     init(
@@ -46,6 +52,10 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
         self.deviceTransferService = deviceTransferService
         self.quickRestoreManager = quickRestoreManager
         self.provisioningURL = deviceProvisioningURL
+
+       transferStatusViewModel.onCancel = { [weak self] in
+            self?.cancelTransfer()
+        }
     }
 
     func confirmTransfer() async -> Bool {
@@ -57,9 +67,16 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
     /// 2. Outgoing device will wait for the restore method choice from the other device.
     /// 3. Confirm the returned choice is 'device transfer' or fail.
     /// 4. Parse out the MPC connection information returned in the restore method choice, and return this connection data
-    func waitForRestoreMethodResponse() async throws -> RestoreMethodData {
-        let restoreMethodToken = try await quickRestoreManager.register(deviceProvisioningUrl: provisioningURL)
-        let restoreMethod = try await quickRestoreManager.waitForRestoreMethodChoice(restoreMethodToken: restoreMethodToken)
+    func waitForRestoreMethodResponse() async throws(DeviceRestoreError) -> RestoreMethodData {
+        let restoreMethod: QuickRestoreManager.RestoreMethodType
+        do {
+            let token = try await quickRestoreManager.register(deviceProvisioningUrl: provisioningURL)
+            restoreMethod = try await quickRestoreManager.waitForRestoreMethodChoice(restoreMethodToken: token)
+        } catch {
+            Logger.error("Failed to wait for restore method choice: \(error)")
+            throw DeviceRestoreError.invalidRestoreData
+        }
+
         guard case let .deviceTransfer(transferData) = restoreMethod else {
             return RestoreMethodData(restoreMethod: restoreMethod, peerConnectionData: nil)
         }
@@ -68,7 +85,8 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
             let urlString = String(data: stringData, encoding: .utf8),
             let transferURL = URL(string: urlString)
         else {
-            throw OWSAssertionError("Attempting to restore using a method other than device transfer")
+            Logger.error("Attempting to restore using a method other than device transfer")
+            throw DeviceRestoreError.invalidRestoreData
         }
 
         do {
@@ -81,8 +99,8 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
                 )
             )
         } catch {
-            Logger.error("Failed to register device via URL: \(error)")
-            throw error
+            Logger.error("Failed to parse transfer URL: \(error)")
+            throw DeviceRestoreError.invalidRestoreData
         }
     }
 
@@ -120,20 +138,35 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
         }
     }
 
-    func waitForTransferCompletion() async {
+    func waitForTransferCompletion() async -> Bool {
         return await withCheckedContinuation { continuation in
             self.finishTransferContinuation.update {
                 switch transferStatusViewModel.state {
-                case .done, .error:
+                case .done:
                     // If the transfer is finished, just return
-                    continuation.resume()
+                    continuation.resume(returning: true)
                     return
+                case .cancelled:
+                    continuation.resume(returning: false)
+                    return
+                case .error(let error):
+                    Logger.warn("Transfer failed: \(error)")
+                    continuation.resume(returning: false)
                 case .connecting, .idle, .starting, .transferring:
                     break
                 }
                 $0 = continuation
             }
         }
+    }
+
+    private func cancelTransfer() {
+        stopListeningForTransfer()
+        transferStatusViewModel.state = .cancelled
+        deviceTransferService.cancelTransferFromOldDevice()
+        deviceTransferService.stopTransfer()
+        let continuation = finishTransferContinuation.swap(nil)
+        continuation?.resume(returning: false)
     }
 
     private func stopListeningForTransfer() {
@@ -169,10 +202,11 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
         finishTransferContinuation.update { continuation in
             if let error {
                 transferStatusViewModel.state = .error(error)
+                continuation?.resume(returning: false)
             } else {
                 transferStatusViewModel.state = .done
+                continuation?.resume(returning: true)
             }
-            continuation?.resume()
             continuation = nil
         }
     }

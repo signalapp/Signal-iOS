@@ -76,6 +76,8 @@ public class _RegistrationCoordinator_DeviceTransferServiceMock: _RegistrationCo
     public func removeObserver(_ observer: any Signal.DeviceTransferServiceObserver) { }
 
     public func stopAcceptingTransfersFromOldDevices() { }
+
+    public func cancelTransferFromOldDevice() { }
 }
 
 public class _RegistrationCoordinator_ExperienceManagerMock: _RegistrationCoordinator_ExperienceManagerShim {

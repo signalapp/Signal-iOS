@@ -109,6 +109,7 @@ protocol _RegistrationCoordinator_DeviceTransferServiceShim {
     func addObserver(_ observer: DeviceTransferServiceObserver)
     func removeObserver(_ observer: DeviceTransferServiceObserver)
     func stopAcceptingTransfersFromOldDevices()
+    func cancelTransferFromOldDevice()
 }
 
 class _RegistrationCoordinator_DeviceTransferServiceWrapper: _RegistrationCoordinator_DeviceTransferServiceShim {
@@ -131,6 +132,10 @@ class _RegistrationCoordinator_DeviceTransferServiceWrapper: _RegistrationCoordi
 
     func stopAcceptingTransfersFromOldDevices() {
         deviceTransferService.stopAcceptingTransfersFromOldDevices()
+    }
+
+    func cancelTransferFromOldDevice() {
+        deviceTransferService.cancelTransferFromOldDevice()
     }
 }
 

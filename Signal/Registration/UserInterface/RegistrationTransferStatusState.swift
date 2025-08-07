@@ -21,6 +21,7 @@ public class RegistrationTransferStatusState: DeviceTransferServiceObserver, Equ
         set {
             transferStatusViewModel.onCancel = { [weak self] in
                 self?.stopAcceptingTransfers()
+                self?.cancelTransfer()
                 newValue()
             }
         }
@@ -58,6 +59,10 @@ public class RegistrationTransferStatusState: DeviceTransferServiceObserver, Equ
             method: .deviceTransfer(transferData),
             restoreMethodToken: restoreMethodToken
         )
+    }
+
+    private func cancelTransfer() {
+        deviceTransferService.cancelTransferFromOldDevice()
     }
 
     public func stopAcceptingTransfers() {

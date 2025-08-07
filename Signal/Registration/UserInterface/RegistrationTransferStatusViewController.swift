@@ -66,15 +66,12 @@ class RegistrationTransferStatusViewController: HostingController<TransferStatus
             do {
                 try await state.start()
             } catch {
+                Logger.error("ERROR: \(error)")
                 // TODO: [Backups] - Display an error to the user
             }
         }
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        state.onCancel()
-        super.viewDidDisappear(animated)
-    }
 }
 
 struct TransferStatusView: View {
@@ -99,12 +96,18 @@ struct TransferStatusView: View {
                     .font(.body)
                     .foregroundStyle(Color.Signal.secondaryLabel)
             case .transferring(let progress):
-                Text(verbatim: "Transferring") // TODO: Localize
+                Text(OWSLocalizedString(
+                    "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING",
+                    comment: "Title for a progress view displayed during device transfer."
+                    ))
                     .font(.title2.weight(.semibold))
                     .foregroundStyle(Color.Signal.label)
                     .padding(.top, 44)
                     .padding(.bottom, 2)
-                Text(verbatim: "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.") // TODO: Localize
+                Text(OWSLocalizedString(
+                    "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING_DESCRIPTION",
+                    comment: "Description in the progress view displayed during device transfer."
+                    ))
                     .font(.body)
                     .foregroundStyle(Color.Signal.secondaryLabel)
 
@@ -116,6 +119,22 @@ struct TransferStatusView: View {
                     .animation(.smooth, value: progress)
                     .padding(.bottom, 6)
                 Text(viewModel.progressEstimateLabel)
+                    .foregroundStyle(Color.Signal.secondaryLabel)
+                Spacer()
+            case .error(_):
+                Text(OWSLocalizedString(
+                    "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE",
+                    comment: "Title for a progress view displayed after failure of device transfer."
+                    ))
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(Color.Signal.label)
+                    .padding(.top, 44)
+                    .padding(.bottom, 2)
+                Text(OWSLocalizedString(
+                    "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY",
+                    comment: "Description in the progress view displayed after failure of device transfer."
+                    ))
+                    .font(.body)
                     .foregroundStyle(Color.Signal.secondaryLabel)
                 Spacer()
             }

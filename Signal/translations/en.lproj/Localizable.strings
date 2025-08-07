@@ -2542,6 +2542,42 @@
 /* The title for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_TITLE" = "Hold Your New Device Up to the Camera";
 
+/* Status message on new device when cancelling transfer. */
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "Cancelling connection to old iPhone…";
+
+/* Status message on new device when connecting to old device. */
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING" = "Connecting to old iPhone…";
+
+/* Description message on new device displayed during device transfer. */
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "Bring your old device nearby, and make sure Wi-Fi and Bluetooth are enabled.";
+
+/* Status message on new device when transfer is starting. */
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Waiting to connect to old iPhone…";
+
+/* Description in the progress view displayed after failure of device transfer. */
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "Transfer to new device failed. Bring your old device nearby, and please try again.";
+
+/* Title for a progress view displayed after failure of device transfer. */
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE" = "Transfer Failed";
+
+/* Title for a progress view displayed during device transfer. */
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING" = "Transferring";
+
+/* Description in the progress view displayed during device transfer. */
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING_DESCRIPTION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+
+/* Status message on old device when cancelling transfer. */
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CANCELLING" = "Cancelling connection to new iPhone…";
+
+/* Status message on new device when connecting to new device. */
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING" = "Connecting to new iPhone…";
+
+/* Description message on old device displayed during device transfer. */
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "Bring your new device nearby, and make sure Wi-Fi and Bluetooth are enabled.";
+
+/* Status message on old device when transfer is starting. */
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Waiting to connect to new iPhone…";
+
 /* The explanation on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open.";
 
@@ -5671,11 +5707,29 @@
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
 
+/* Body of prompt notifying restore was cancelled. */
+"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_BODY" = "Restore was cancelled. Please try again.";
+
+/* Title of prompt notifying restore was cancelled. */
+"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_TITLE" = "Restore cancelled";
+
 /* Body of prompt notifying registration without restore completed on the new device. */
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY" = "Your Signal account has been activated on your other device. Signal is now inactive on this device.";
 
 /* Title of prompt notifying registration without restore completed on the new device. */
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Registration complete";
+
+/* Body of prompt notifying restore failed. */
+"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "Restore message from other device contained invalid or expired data.  Please try again.";
+
+/* Title of prompt notifying restore failed. */
+"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE" = "Restore failed";
+
+/* Body of prompt notifying restore failed for unknown reasons. */
+"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY" = "Unknown error, please try again.";
+
+/* Title of prompt notifying restore failed for unknown reasons. */
+"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "Unknown error";
 
 /* Body of prompt notifying device restore started on the new device. */
 "OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Your Signal account and messages have started transferring to your other device. Signal is now inactive on this device.";
