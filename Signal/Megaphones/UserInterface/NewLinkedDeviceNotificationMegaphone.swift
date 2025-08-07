@@ -6,12 +6,12 @@
 import SignalServiceKit
 
 final class NewLinkedDeviceNotificationMegaphone: MegaphoneView {
-    private let db: any DB
-    private let deviceStore: any OWSDeviceStore
+    private let db: DB
+    private let deviceStore: OWSDeviceStore
 
     init(
-        db: any DB,
-        deviceStore: any OWSDeviceStore,
+        db: DB,
+        deviceStore: OWSDeviceStore,
         experienceUpgrade: ExperienceUpgrade,
         mostRecentlyLinkedDeviceDetails: MostRecentlyLinkedDeviceDetails
     ) {

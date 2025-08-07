@@ -1351,7 +1351,7 @@ public class AppSetup {
         )
 
         let deviceManager = OWSDeviceManagerImpl()
-        let deviceStore = OWSDeviceStoreImpl()
+        let deviceStore = OWSDeviceStore()
         let deviceService = OWSDeviceServiceImpl(
             db: db,
             deviceManager: deviceManager,

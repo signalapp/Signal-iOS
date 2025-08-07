@@ -600,7 +600,7 @@ extension ExperienceUpgradeManifest {
     ) -> NewLinkedDeviceNotificationResult {
         let deviceStore = DependenciesBridge.shared.deviceStore
         guard
-            let mostRecentlyLinkedDeviceDetails = try? deviceStore.mostRecentlyLinkedDeviceDetails(tx: tx)
+            let mostRecentlyLinkedDeviceDetails = deviceStore.mostRecentlyLinkedDeviceDetails(tx: tx)
         else {
             return .skip
         }

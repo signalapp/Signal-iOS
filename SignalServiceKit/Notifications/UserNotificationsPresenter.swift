@@ -153,7 +153,7 @@ class UserNotificationPresenter {
             let db = DependenciesBridge.shared.db
             let deviceStore = DependenciesBridge.shared.deviceStore
             let linkedDeviceDetails = db.read { tx in
-                try? deviceStore.mostRecentlyLinkedDeviceDetails(tx: tx)
+                deviceStore.mostRecentlyLinkedDeviceDetails(tx: tx)
             }
 
             let delay = {

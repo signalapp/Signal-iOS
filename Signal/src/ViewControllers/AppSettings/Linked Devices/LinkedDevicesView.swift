@@ -115,12 +115,11 @@ class LinkedDevicesViewModel: ObservableObject {
     }
 
     private func updateDeviceList() {
-        var displayableDevices = SSKEnvironment.shared.databaseStorageRef.read { transaction -> [DisplayableDevice] in
-            let justDevices = OWSDevice.anyFetchAll(transaction: transaction).filter {
+        var displayableDevices = db.read { transaction -> [DisplayableDevice] in
+            let justDevices = deviceStore.fetchAll(tx: transaction).filter {
                 !$0.isPrimaryDevice
             }
 
-            let identityManager = DependenciesBridge.shared.identityManager
             return justDevices.map { device -> DisplayableDevice in
                 return .init(
                     device: device,
@@ -363,22 +362,18 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
         let deviceLinkTimestamp = Date()
         let notificationDelay = TimeInterval.random(in: .hour...(.hour * 3))
         db.write { tx in
-            do {
-                try deviceStore.setMostRecentlyLinkedDeviceDetails(
-                    linkedTime: deviceLinkTimestamp,
-                    notificationDelay: notificationDelay,
-                    tx: tx
-                )
-            } catch {
-                owsFailDebug("Unable to set linked device details: \(error)")
-            }
+            deviceStore.setMostRecentlyLinkedDeviceDetails(
+                linkedTime: deviceLinkTimestamp,
+                notificationDelay: notificationDelay,
+                tx: tx
+            )
         }
         SSKEnvironment.shared.notificationPresenterRef.scheduleNotifyForNewLinkedDevice(deviceLinkTimestamp: deviceLinkTimestamp)
     }
 
     private func clearDeliveredNewLinkedDevicesNotificationsAndMegaphone() {
         let details = db.read { tx in
-            try? deviceStore.mostRecentlyLinkedDeviceDetails(tx: tx)
+            deviceStore.mostRecentlyLinkedDeviceDetails(tx: tx)
         }
 
         // Only clear them if the delivery time for the notification and

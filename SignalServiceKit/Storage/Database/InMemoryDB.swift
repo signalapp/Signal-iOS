@@ -241,7 +241,7 @@ public final class InMemoryDB: DB {
 
     // MARK: - Helpers
 
-    func fetchExactlyOne<T: SDSCodableModel>(modelType: T.Type) -> T? {
+    func fetchExactlyOne<T: FetchableRecord & TableRecord>(modelType: T.Type) -> T? {
         let all = try! read { tx in try modelType.fetchAll(tx.database) }
         guard all.count == 1 else { return nil }
         return all.first!

@@ -249,7 +249,7 @@ class ExperienceUpgradeManager {
             return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .newLinkedDeviceNotification:
             let mostRecentlyLinkedDeviceDetails = db.read { tx in
-                try? deviceStore.mostRecentlyLinkedDeviceDetails(tx: tx)
+                deviceStore.mostRecentlyLinkedDeviceDetails(tx: tx)
             }
 
             guard let mostRecentlyLinkedDeviceDetails else {
