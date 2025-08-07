@@ -7,13 +7,13 @@ import CryptoKit
 import Foundation
 public import LibSignalClient
 
-public enum DeviceNameError: Error {
+public enum OWSDeviceNameError: Error {
     case assertionFailure
     case invalidInput
     case cryptError(_ description: String)
 }
 
-public enum DeviceNames {
+public enum OWSDeviceNames {
 
     private static let syntheticIVLength = 16
 
@@ -64,7 +64,7 @@ public enum DeviceNames {
 
         guard let protoData = Data(base64Encoded: base64String) else {
             // Not necessarily an error; might be a legacy device name.
-            throw DeviceNameError.invalidInput
+            throw OWSDeviceNameError.invalidInput
         }
 
         return try decryptDeviceName(protoData: protoData, identityKeyPair: identityKeyPair)
@@ -78,7 +78,7 @@ public enum DeviceNames {
         } catch {
             // Not necessarily an error; might be a legacy device name.
             Logger.error("failed to parse proto")
-            throw DeviceNameError.invalidInput
+            throw OWSDeviceNameError.invalidInput
         }
 
         let ephemeralPublicData = proto.ephemeralPublic
@@ -90,16 +90,16 @@ public enum DeviceNames {
             ephemeralPublic = try PublicKey(ephemeralPublicData)
         } catch {
             owsFailDebug("failed to remove key type")
-            throw DeviceNameError.invalidInput
+            throw OWSDeviceNameError.invalidInput
         }
 
         guard receivedSyntheticIV.count == syntheticIVLength else {
             owsFailDebug("Invalid synthetic IV.")
-            throw DeviceNameError.assertionFailure
+            throw OWSDeviceNameError.assertionFailure
         }
         guard ciphertext.count > 0 else {
             owsFailDebug("Invalid cipher text.")
-            throw DeviceNameError.assertionFailure
+            throw OWSDeviceNameError.assertionFailure
         }
 
         // master_secret = ECDH(identity_private, ephemeral_public)
@@ -117,12 +117,12 @@ public enum DeviceNames {
         // constant_time_compare(HmacSHA256(key=HmacSHA256(key=master_secret, input=”auth”), input=plaintext)[0:16], synthetic_iv) == true
         let computedSyntheticIV = computeSyntheticIV(masterSecret: masterSecret, plaintextData: plaintextData)
         guard receivedSyntheticIV.ows_constantTimeIsEqual(to: computedSyntheticIV) else {
-            throw DeviceNameError.cryptError("Synthetic IV did not match.")
+            throw OWSDeviceNameError.cryptError("Synthetic IV did not match.")
         }
 
         guard let plaintext = String(bytes: plaintextData, encoding: .utf8) else {
             owsFailDebug("Invalid plaintext.")
-            throw DeviceNameError.invalidInput
+            throw OWSDeviceNameError.invalidInput
         }
 
         return plaintext

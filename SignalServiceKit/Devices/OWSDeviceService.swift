@@ -16,7 +16,7 @@ public protocol OWSDeviceService {
     func renameDevice(
         device: OWSDevice,
         newName: String,
-    ) async throws(DeviceRenameError)
+    ) async throws(OWSDeviceRenameError)
 }
 
 extension OWSDeviceService {
@@ -34,7 +34,7 @@ extension OWSDeviceService {
     }
 }
 
-public enum DeviceRenameError: Error {
+public enum OWSDeviceRenameError: Error {
     case encryptionFailed
     case networkError
     case assertion
@@ -151,7 +151,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
                 }
 
                 do {
-                    return try DeviceNames.decryptDeviceName(
+                    return try OWSDeviceNames.decryptDeviceName(
                         base64String: encryptedName,
                         identityKeyPair: identityKeyPair.keyPair
                     )
@@ -181,7 +181,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
     func renameDevice(
         device: OWSDevice,
         newName: String,
-    ) async throws(DeviceRenameError) {
+    ) async throws(OWSDeviceRenameError) {
         guard let identityKeyPair = db.read(block: { tx in
             identityManager.identityKeyPair(for: .aci, tx: tx)
         }) else {
@@ -190,7 +190,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
         let newNameEncrypted: String
         do {
-            newNameEncrypted = try DeviceNames.encryptDeviceName(
+            newNameEncrypted = try OWSDeviceNames.encryptDeviceName(
                 plaintext: newName,
                 identityKeyPair: identityKeyPair.keyPair
             ).base64EncodedString()
@@ -210,7 +210,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
         guard response.responseStatusCode == 204 else {
             owsFailDebug("Unexpected response status code! \(response.responseStatusCode)")
-            throw DeviceRenameError.assertion
+            throw OWSDeviceRenameError.assertion
         }
 
         await db.awaitableWrite { tx in

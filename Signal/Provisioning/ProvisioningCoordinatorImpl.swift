@@ -322,7 +322,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         let encryptedDeviceName: Data
         do {
             apnRegistrationId = try await getApnRegistrationId()
-            encryptedDeviceName = try DeviceNames.encryptDeviceName(
+            encryptedDeviceName = try OWSDeviceNames.encryptDeviceName(
                 plaintext: deviceName,
                 identityKeyPair: provisionMessage.aciIdentityKeyPair
             )

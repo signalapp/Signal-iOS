@@ -244,7 +244,7 @@ private class MockOWSDeviceService: OWSDeviceService {
         return true
     }
 
-    func renameDevice(device: OWSDevice, newName: String) async throws(DeviceRenameError) {
+    func renameDevice(device: OWSDevice, newName: String) async throws(OWSDeviceRenameError) {
         // do nothing
     }
 
