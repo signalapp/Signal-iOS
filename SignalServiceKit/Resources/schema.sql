@@ -297,20 +297,6 @@ CREATE
 ;
 
 CREATE
-    TABLE
-        IF NOT EXISTS "model_OWSDevice" (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-            ,"recordType" INTEGER NOT NULL
-            ,"uniqueId" TEXT NOT NULL UNIQUE
-                ON CONFLICT FAIL
-            ,"createdAt" DOUBLE NOT NULL
-            ,"deviceId" INTEGER NOT NULL
-            ,"lastSeenAt" DOUBLE NOT NULL
-            ,"name" TEXT
-        )
-;
-
-CREATE
     INDEX "index_interactions_on_threadUniqueId_and_id"
         ON "model_TSInteraction"("uniqueThreadId"
     ,"id"
@@ -2393,4 +2379,15 @@ CREATE
                     LENGTH( "text" ) <= 131072
                 )
 )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "OWSDevice" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            ,"deviceId" INTEGER NOT NULL
+            ,"createdAt" DOUBLE NOT NULL
+            ,"lastSeenAt" DOUBLE NOT NULL
+            ,"name" TEXT
+        )
 ;

@@ -87,8 +87,8 @@ class LinkedDevicesViewModel: ObservableObject {
             try? await Task.sleep(nanoseconds: NSEC_PER_SEC)
             withAnimation {
                 self.displayableDevices = [
-                    .init(device: .previewItem(id: DeviceId(validating: 1)!), displayName: "iPad"),
-                    .init(device: .previewItem(id: DeviceId(validating: 2)!), displayName: "macOS"),
+                    .init(device: .previewItem(id: DeviceId(validating: 1)!, name: "iPad")),
+                    .init(device: .previewItem(id: DeviceId(validating: 2)!, name: "macOS")),
                 ]
             }
             self.isLoading = false
@@ -116,19 +116,9 @@ class LinkedDevicesViewModel: ObservableObject {
 
     private func updateDeviceList() {
         var displayableDevices = db.read { transaction -> [DisplayableDevice] in
-            let justDevices = deviceStore.fetchAll(tx: transaction).filter {
-                !$0.isPrimaryDevice
-            }
-
-            return justDevices.map { device -> DisplayableDevice in
-                return .init(
-                    device: device,
-                    displayName: device.displayName(
-                        identityManager: identityManager,
-                        tx: transaction
-                    )
-                )
-            }
+            return deviceStore.fetchAll(tx: transaction)
+                .filter { $0.isLinkedDevice }
+                .map { DisplayableDevice(device: $0) }
         }
 
         if let deviceIdToIgnore {
@@ -208,34 +198,20 @@ class LinkedDevicesViewModel: ObservableObject {
     func renameDevice(
         _ displayableDevice: DisplayableDevice,
         to newName: String
-    ) async throws {
-        let identityKeyPair = db.read { tx in
-            identityManager.identityKeyPair(for: .aci, tx: tx)
-        }
-
-        guard let identityKeyPair else {
-            throw DeviceRenameError.encryptionFailed
-        }
-
-        let encryptedName = try DeviceNames.encryptDeviceName(
-            plaintext: newName,
-            identityKeyPair: identityKeyPair.keyPair
-        ).base64EncodedString()
-
+    ) async throws(DeviceRenameError) {
         try await deviceService.renameDevice(
             device: displayableDevice.device,
-            toEncryptedName: encryptedName
+            newName: newName,
         )
     }
 
     // MARK: DisplayableDevice
 
     struct DisplayableDevice: Hashable, Identifiable {
-        var id: Int { device.deviceId }
-
         let device: OWSDevice
-        let displayName: String
 
+        var id: Int { device.deviceId }
+        var displayName: String { device.displayName }
         var createdAt: Date { device.createdAt }
 
         static func == (lhs: DisplayableDevice, rhs: DisplayableDevice) -> Bool {

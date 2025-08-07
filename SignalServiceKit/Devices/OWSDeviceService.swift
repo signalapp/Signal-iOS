@@ -15,8 +15,8 @@ public protocol OWSDeviceService {
     /// Renames a device with the given encrypted name.
     func renameDevice(
         device: OWSDevice,
-        toEncryptedName encryptedName: String
-    ) async throws
+        newName: String,
+    ) async throws(DeviceRenameError)
 }
 
 extension OWSDeviceService {
@@ -36,7 +36,8 @@ extension OWSDeviceService {
 
 public enum DeviceRenameError: Error {
     case encryptionFailed
-    case unspecified
+    case networkError
+    case assertion
 }
 
 // MARK: -
@@ -46,6 +47,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
     private let deviceNameChangeSyncMessageSender: DeviceNameChangeSyncMessageSender
     private let deviceManager: OWSDeviceManager
     private let deviceStore: OWSDeviceStore
+    private let identityManager: OWSIdentityManager
     private let networkManager: NetworkManager
     private let recipientFetcher: any RecipientFetcher
     private let recipientManager: any SignalRecipientManager
@@ -55,6 +57,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
         db: any DB,
         deviceManager: OWSDeviceManager,
         deviceStore: OWSDeviceStore,
+        identityManager: OWSIdentityManager,
         messageSenderJobQueue: MessageSenderJobQueue,
         networkManager: NetworkManager,
         recipientFetcher: any RecipientFetcher,
@@ -69,6 +72,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
         )
         self.deviceManager = deviceManager
         self.deviceStore = deviceStore
+        self.identityManager = identityManager
         self.networkManager = networkManager
         self.recipientFetcher = recipientFetcher
         self.recipientManager = recipientManager
@@ -82,7 +86,12 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
             .getDevices()
         )
 
-        let devices = try Self.parseDeviceList(response: getDevicesResponse)
+        let devices = try db.read { tx in
+            try parseDeviceList(
+                httpResponse: getDevicesResponse,
+                tx: tx
+            )
+        }
 
         // TODO: This can't fail. Remove it once OWSDevice's deviceId is updated.
         let deviceIds = devices.compactMap { DeviceId(validating: $0.deviceId) }
@@ -104,33 +113,59 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
         return didAddOrRemove
     }
 
-    private static func parseDeviceList(response: HTTPResponse) throws -> [OWSDevice] {
+    private func parseDeviceList(
+        httpResponse: HTTPResponse,
+        tx: DBReadTransaction,
+    ) throws -> [OWSDevice] {
+        guard let responseBodyData = httpResponse.responseBodyData else {
+            throw OWSAssertionError("Missing body data in getDevices response!")
+        }
+
         struct DeviceListResponse: Decodable {
             struct Device: Decodable {
                 enum CodingKeys: String, CodingKey {
+                    case id
                     case createdAtMs = "created"
                     case lastSeenAtMs = "lastSeen"
-                    case id
                     case encryptedName = "name"
                 }
 
+                let id: DeviceId
                 let createdAtMs: UInt64
                 let lastSeenAtMs: UInt64
-                let id: DeviceId
                 let encryptedName: String?
             }
 
             let devices: [Device]
         }
-
-        let devicesResponse = try JSONDecoder().decode(DeviceListResponse.self, from: response.responseBodyData ?? Data())
+        let devicesResponse = try JSONDecoder().decode(DeviceListResponse.self, from: responseBodyData)
 
         return devicesResponse.devices.map { device in
+            let name: String? = {
+                guard let encryptedName = device.encryptedName else {
+                    return nil
+                }
+
+                guard let identityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx) else {
+                    return encryptedName
+                }
+
+                do {
+                    return try DeviceNames.decryptDeviceName(
+                        base64String: encryptedName,
+                        identityKeyPair: identityKeyPair.keyPair
+                    )
+                } catch {
+                    owsFailDebug("Failed to decrypt device name! \(error)")
+                    return encryptedName
+                }
+            }()
+
             return OWSDevice(
                 deviceId: device.id,
-                encryptedName: device.encryptedName,
                 createdAt: Date(millisecondsSince1970: device.createdAtMs),
-                lastSeenAt: Date(millisecondsSince1970: device.lastSeenAtMs)
+                lastSeenAt: Date(millisecondsSince1970: device.lastSeenAtMs),
+                name: name,
             )
         }
     }
@@ -145,22 +180,41 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
     func renameDevice(
         device: OWSDevice,
-        toEncryptedName encryptedName: String
-    ) async throws {
-        let response = try await self.networkManager.asyncRequest(
-            .renameDevice(device: device, encryptedName: encryptedName)
-        )
+        newName: String,
+    ) async throws(DeviceRenameError) {
+        guard let identityKeyPair = db.read(block: { tx in
+            identityManager.identityKeyPair(for: .aci, tx: tx)
+        }) else {
+            throw .encryptionFailed
+        }
+
+        let newNameEncrypted: String
+        do {
+            newNameEncrypted = try DeviceNames.encryptDeviceName(
+                plaintext: newName,
+                identityKeyPair: identityKeyPair.keyPair
+            ).base64EncodedString()
+        } catch {
+            owsFailDebug("Failed to encrypt device name! \(error)")
+            throw .encryptionFailed
+        }
+
+        let response: HTTPResponse
+        do {
+            response = try await self.networkManager.asyncRequest(
+                .renameDevice(device: device, encryptedName: newNameEncrypted)
+            )
+        } catch {
+            throw .networkError
+        }
 
         guard response.responseStatusCode == 204 else {
-            throw DeviceRenameError.unspecified
+            owsFailDebug("Unexpected response status code! \(response.responseStatusCode)")
+            throw DeviceRenameError.assertion
         }
 
         await db.awaitableWrite { tx in
-            deviceStore.setEncryptedName(
-                encryptedName,
-                for: device,
-                tx: tx
-            )
+            deviceStore.setName(newName, for: device, tx: tx)
 
             guard let deviceId = UInt32(exactly: device.deviceId) else {
                 owsFailDebug("Failed to coerce device ID into UInt32!")

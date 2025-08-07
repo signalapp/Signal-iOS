@@ -1356,6 +1356,7 @@ public class AppSetup {
             db: db,
             deviceManager: deviceManager,
             deviceStore: deviceStore,
+            identityManager: identityManager,
             messageSenderJobQueue: messageSenderJobQueue,
             networkManager: networkManager,
             recipientFetcher: recipientFetcher,
@@ -1366,7 +1367,6 @@ public class AppSetup {
         let inactiveLinkedDeviceFinder = InactiveLinkedDeviceFinderImpl(
             dateProvider: dateProvider,
             db: db,
-            deviceNameDecrypter: InactiveLinkedDeviceFinderImpl.Wrappers.OWSDeviceNameDecrypter(identityManager: identityManager),
             deviceService: deviceService,
             deviceStore: deviceStore,
             remoteConfigProvider: remoteConfigManager,

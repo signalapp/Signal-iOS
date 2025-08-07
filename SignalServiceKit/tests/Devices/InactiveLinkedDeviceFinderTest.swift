@@ -10,7 +10,6 @@ import XCTest
 final class InactiveLinkedDeviceFinderTest: XCTestCase {
     private var mockDateProvider: DateProvider!
     private var mockDB: DB!
-    private var mockDeviceNameDecrypter: MockDeviceNameDecrypter!
     private var mockDeviceStore: OWSDeviceStore!
     private var mockDevicesService: MockDevicesService!
     private var mockTSAccountManager: MockTSAccountManager!
@@ -38,7 +37,6 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         mockDateProvider = { nowDate }
 
         mockDB = InMemoryDB()
-        mockDeviceNameDecrypter = MockDeviceNameDecrypter()
         mockDeviceStore = OWSDeviceStore()
         mockDevicesService = MockDevicesService()
         mockTSAccountManager = MockTSAccountManager()
@@ -46,7 +44,6 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         inactiveLinkedDeviceFinder = InactiveLinkedDeviceFinderImpl(
             dateProvider: { self.mockDateProvider() },
             db: mockDB,
-            deviceNameDecrypter: mockDeviceNameDecrypter,
             deviceService: mockDevicesService,
             deviceStore: mockDeviceStore,
             remoteConfigProvider: MockRemoteConfigProvider(),
@@ -164,9 +161,9 @@ private extension OWSDevice {
     static func primary() -> OWSDevice {
         return OWSDevice(
             deviceId: .primary,
-            encryptedName: nil,
             createdAt: .distantPast,
-            lastSeenAt: Date()
+            lastSeenAt: Date(),
+            name: nil,
         )
     }
 
@@ -176,20 +173,14 @@ private extension OWSDevice {
     ) -> OWSDevice {
         return OWSDevice(
             deviceId: DeviceId(validating: 24)!,
-            encryptedName: name,
             createdAt: .distantPast,
-            lastSeenAt: lastSeenAt
+            lastSeenAt: lastSeenAt,
+            name: name,
         )
     }
 }
 
 // MARK: - Mocks
-
-private class MockDeviceNameDecrypter: InactiveLinkedDeviceFinderImpl.Shims.OWSDeviceNameDecrypter {
-    func decryptName(device: OWSDevice, tx: DBReadTransaction) -> String {
-        return device.encryptedName!
-    }
-}
 
 private class MockDevicesService: OWSDeviceService {
     var shouldFail: Bool = false
@@ -204,5 +195,5 @@ private class MockDevicesService: OWSDeviceService {
 
     func unlinkDevice(deviceId: DeviceId, auth: ChatServiceAuth) async throws {}
 
-    func renameDevice(device: OWSDevice, toEncryptedName encryptedName: String) async throws {}
+    func renameDevice(device: OWSDevice, newName: String) async throws(DeviceRenameError) {}
 }

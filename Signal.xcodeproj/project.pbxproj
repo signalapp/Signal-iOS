@@ -2738,7 +2738,6 @@
 		D9B3E6352D4067CA00594475 /* DBFileSizeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B3E6342D4067C400594475 /* DBFileSizeProvider.swift */; };
 		D9B8541229137C150058F97B /* JobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B8541129137C150058F97B /* JobRecord.swift */; };
 		D9B95A9629E6830B00D7CB95 /* JobRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9429E682E900D7CB95 /* JobRecordTest.swift */; };
-		D9B95A9829E8906200D7CB95 /* OWSDeviceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */; };
 		D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */; };
 		D9B95A9D29E894A600D7CB95 /* ValidatableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */; };
 		D9BF53362D0814A000EC3DF0 /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BF53352D08149D00EC3DF0 /* QRCodeView.swift */; };
@@ -6699,7 +6698,6 @@
 		D9B8541129137C150058F97B /* JobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobRecord.swift; sourceTree = "<group>"; };
 		D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallRecordRingUpdateDelegate.swift; sourceTree = "<group>"; };
 		D9B95A9429E682E900D7CB95 /* JobRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobRecordTest.swift; sourceTree = "<group>"; };
-		D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceTest.swift; sourceTree = "<group>"; };
 		D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryDB.swift; sourceTree = "<group>"; };
 		D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatableModel.swift; sourceTree = "<group>"; };
 		D9BF53352D08149D00EC3DF0 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
@@ -13158,7 +13156,6 @@
 				D9C0AE612BD7102500FCB05E /* InactiveLinkedDeviceFinderTest.swift */,
 				04BBBE932E26F00000E914B1 /* InactivePrimaryDeviceStoreTest.swift */,
 				D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */,
-				D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */,
 				F9FA363529F335E500C13830 /* ProvisioningCipherTests.swift */,
 			);
 			name = Devices;
@@ -18903,7 +18900,6 @@
 				500A76152E031CA600322493 /* OWSChatConnectionTest.swift in Sources */,
 				666072622BAB58A20084B3D2 /* OWSContactSerializationTest.swift in Sources */,
 				D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */,
-				D9B95A9829E8906200D7CB95 /* OWSDeviceTest.swift in Sources */,
 				50EF8DD32A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift in Sources */,
 				F93A76ED29133A4B005FDE4F /* OWSDisappearingMessagesJobTest.swift in Sources */,
 				F9426253289B1B5500460798 /* OWSErrorTest.swift in Sources */,

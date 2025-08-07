@@ -71,7 +71,6 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
 
     private let dateProvider: DateProvider
     private let db: any DB
-    private let deviceNameDecrypter: Shims.OWSDeviceNameDecrypter
     private let deviceService: OWSDeviceService
     private let deviceStore: OWSDeviceStore
     private let kvStore: KeyValueStore
@@ -91,7 +90,6 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
     init(
         dateProvider: @escaping DateProvider,
         db: any DB,
-        deviceNameDecrypter: Shims.OWSDeviceNameDecrypter,
         deviceService: OWSDeviceService,
         deviceStore: OWSDeviceStore,
         remoteConfigProvider: any RemoteConfigProvider,
@@ -99,7 +97,6 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
     ) {
         self.dateProvider = dateProvider
         self.db = db
-        self.deviceNameDecrypter = deviceNameDecrypter
         self.deviceService = deviceService
         self.deviceStore = deviceStore
         self.kvStore = KeyValueStore(collection: "InactiveLinkedDeviceFinderImpl")
@@ -182,9 +179,7 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
             }
             .map { device -> InactiveLinkedDevice in
                 return InactiveLinkedDevice(
-                    displayName: deviceNameDecrypter.decryptName(
-                        device: device, tx: tx
-                    ),
+                    displayName: device.displayName,
                     expirationDate: device.lastSeenAt.addingTimeInterval(
                         intervalForDeviceExpiration
                     )
@@ -196,41 +191,9 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
         kvStore.setBool(true, key: StoreKeys.isPermanentlyDisabled, transaction: tx)
     }
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     func reenablePermanentlyDisabledFinders(tx: DBWriteTransaction) {
         kvStore.removeValue(forKey: StoreKeys.isPermanentlyDisabled, transaction: tx)
     }
-    #endif
-}
-
-// MARK: - Shims
-
-extension InactiveLinkedDeviceFinderImpl {
-    enum Shims {
-        typealias OWSDeviceNameDecrypter = InactiveLinkedDeviceFinderImpl_OWSDeviceNameDecrypter_Shim
-    }
-
-    enum Wrappers {
-        typealias OWSDeviceNameDecrypter = InactiveLinkedDeviceFinderImpl_OWSDeviceNameDecrypter_Wrapper
-    }
-}
-
-// MARK: OWSDeviceNameDecrypter
-
-protocol InactiveLinkedDeviceFinderImpl_OWSDeviceNameDecrypter_Shim {
-    func decryptName(device: OWSDevice, tx: DBReadTransaction) -> String
-}
-
-class InactiveLinkedDeviceFinderImpl_OWSDeviceNameDecrypter_Wrapper: InactiveLinkedDeviceFinderImpl_OWSDeviceNameDecrypter_Shim {
-    private let identityManager: OWSIdentityManager
-
-    init(identityManager: OWSIdentityManager) {
-        self.identityManager = identityManager
-    }
-
-    func decryptName(device: OWSDevice, tx: DBReadTransaction) -> String {
-        return device.displayName(
-            identityManager: identityManager, tx: tx
-        )
-    }
+#endif
 }

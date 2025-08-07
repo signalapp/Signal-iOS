@@ -336,6 +336,7 @@ public class GRDBSchemaMigrator {
         case addBackupOversizeText
         case addBackupOversizeTextRedux
         case addRetriesToBackupAttachmentUploadQueue
+        case replaceOWSDeviceTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -399,7 +400,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 121
+    public static let grdbSchemaVersionLatest: UInt = 122
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4190,6 +4191,20 @@ public class GRDBSchemaMigrator {
             try tx.database.alter(table: "BackupAttachmentUploadQueue") { table in
                 table.add(column: "numRetries", .integer).notNull().defaults(to: 0)
                 table.add(column: "minRetryTimestamp", .integer).notNull().defaults(to: 0)
+            }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.replaceOWSDeviceTable) { tx in
+            try tx.database.drop(table: "model_OWSDevice")
+
+            try tx.database.create(table: "OWSDevice") { table in
+                table.autoIncrementedPrimaryKey("id")
+                table.column("deviceId", .integer).notNull()
+                table.column("createdAt", .double).notNull()
+                table.column("lastSeenAt", .double).notNull()
+                table.column("name", .text)
             }
 
             return .success(())

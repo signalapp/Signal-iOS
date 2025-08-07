@@ -77,13 +77,13 @@ public struct OWSDeviceStore {
 
     // MARK: -
 
-    public func setEncryptedName(
-        _ encryptedName: String,
+    public func setName(
+        _ name: String,
         for device: OWSDevice,
         tx: DBWriteTransaction
     ) {
         var device = device
-        device.encryptedName = encryptedName
+        device.name = name
 
         do {
             try device.update(tx.database)

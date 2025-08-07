@@ -244,7 +244,7 @@ private class MockOWSDeviceService: OWSDeviceService {
         return true
     }
 
-    func renameDevice(device: SignalServiceKit.OWSDevice, toEncryptedName encryptedName: String) async throws {
+    func renameDevice(device: OWSDevice, newName: String) async throws(DeviceRenameError) {
         // do nothing
     }
 
