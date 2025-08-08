@@ -416,7 +416,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         progress: OWSProgressSink?
     ) async throws {
         let logger = PrefixedLogger(prefix: "[MediaTierUpload]", suffix: "[\(attachmentId)]")
-        let (record, result) = try await uploadAttachment(
+        let (record, uploadResult) = try await uploadAttachment(
             attachmentId: attachmentId,
             type: .mediaTier(auth: auth, isThumbnail: false),
             logger: logger,
@@ -443,7 +443,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 backupKey: backupKey,
                 mediaName: mediaName,
                 uploadEra: uploadEra,
-                result: result,
+                result: uploadResult,
                 logger: logger
             )
         } catch let error as BackupArchive.Response.CopyToMediaTierError {
@@ -477,7 +477,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     }
 
                     if
-                        result.localUploadMetadata.isReusedTransitTierUpload,
+                        uploadResult.localUploadMetadata.isReusedTransitTierUpload,
                         let transitTierInfo = attachmentStream.attachment.transitTierInfo
                     {
                         // We reused a transit tier upload but the source couldn't be found.
@@ -510,7 +510,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
             let mediaTierInfo = Attachment.MediaTierInfo(
                 cdnNumber: cdnNumber,
-                unencryptedByteCount: result.localUploadMetadata.plaintextDataLength,
+                unencryptedByteCount: uploadResult.localUploadMetadata.plaintextDataLength,
                 sha256ContentHash: attachmentStream.sha256ContentHash,
                 // TODO: [Attachment Streaming] support incremental mac
                 incrementalMacInfo: nil,
@@ -524,6 +524,64 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 mediaName: attachmentStream.info.mediaName,
                 tx: tx
             )
+
+            // To upload to media tier, we also upload to transit tier and then perform a copy.
+            // We can save the transit tier info from that upload to the attachment, in some cases.
+            let shouldUpdateTransitTierInfo: Bool = {
+                guard let oldTransitTierInfo = attachmentStream.attachment.transitTierInfo else {
+                    // First case: we had no transit tier info; something is better than nothing.
+                    return true
+                }
+                let nowMs = dateProvider().ows_millisecondsSince1970
+                if
+                    nowMs > oldTransitTierInfo.uploadTimestamp,
+                    nowMs - oldTransitTierInfo.uploadTimestamp > remoteConfigProvider.currentConfig().messageQueueTimeMs
+                {
+                    // Second case: the transit tier info is old and expired.
+                    return true
+                }
+                if
+                    nowMs > oldTransitTierInfo.uploadTimestamp,
+                    nowMs - oldTransitTierInfo.uploadTimestamp > UInt64(Upload.Constants.uploadReuseWindow * Double(MSEC_PER_SEC)),
+                    oldTransitTierInfo.encryptionKey != attachmentStream.attachment.encryptionKey
+                {
+                    // Third case: the transit tier info isn't expired, but exceeded its reuse window
+                    // anyway so it wasn't going to be used for forwarding. May as well replace it
+                    // with an upload that can be used for _something_.
+                    return true
+                }
+                // Note: if the old transit tier info has been within the reuse window
+                // _and_ used the same encryption key, we wouldn't have reuploaded for
+                // this media tier copy so "oldTransitTierInfo" would be the very one
+                // we reused to create "uploadResult" without uploading to begin with.
+                return false
+            }()
+
+            if shouldUpdateTransitTierInfo {
+                let transitTierInfo = Attachment.TransitTierInfo(
+                    cdnNumber: uploadResult.cdnNumber,
+                    cdnKey: uploadResult.cdnKey,
+                    uploadTimestamp: uploadResult.beginTimestamp,
+                    encryptionKey: uploadResult.localUploadMetadata.key,
+                    unencryptedByteCount: uploadResult.localUploadMetadata.plaintextDataLength,
+                    // ALWAYS use digest for integrity check for uploaded attachments;
+                    // we only allow sending using a digest integrity check not a plaintext hash
+                    // so prefer digest if we have both. If we don't, this attachment we just
+                    // uploaded will fail to send.
+                    integrityCheck: .digestSHA256Ciphertext(uploadResult.localUploadMetadata.digest),
+                    // TODO: [Attachment Streaming] support incremental mac
+                    incrementalMacInfo: nil,
+                    lastDownloadAttemptTimestamp: nil
+                )
+                // Refetch so we get the updated media tier info from above.
+                if let attachmentStream = attachmentStore.fetch(id: attachmentStream.id, tx: tx)?.asStream() {
+                    try self.attachmentUploadStore.markUploadedToTransitTier(
+                        attachmentStream: attachmentStream,
+                        info: transitTierInfo,
+                        tx: tx
+                    )
+                }
+            }
 
             self.cleanup(record: record, logger: logger, tx: tx)
         }
