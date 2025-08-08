@@ -493,7 +493,16 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     fallthrough
                 default:
                     // All other errors should be treated as per normal.
-                    if error.isNetworkFailureOrTimeout {
+                    if error.httpStatusCode == 429 {
+                        if let retryAfter = error.httpResponseHeaders?.retryAfterTimeInterval {
+                            return .retryableError(RateLimitedRetryError(retryAfter: retryAfter))
+                        }
+
+                        // If for whatever reason we don't have a retry-after,
+                        // treat this like a network error that retries with
+                        // backoff.
+                        return .retryableError(NetworkRetryError())
+                    } else if error.isNetworkFailureOrTimeout {
                         switch await statusManager.currentStatus() {
                         case .running:
                             // If we _think_ we are connected and should be running,
@@ -563,34 +572,32 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             logger.info("Finished backing up attachment \(record.record.attachmentRowId), upload \(record.id)")
         }
 
+        private struct RateLimitedRetryError: Error {
+            let retryAfter: TimeInterval
+        }
         private struct NetworkRetryError: Error {}
 
         func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
             logger.warn("Failed backing up attachment \(record.record.attachmentRowId), upload \(record.id), isRetryable: \(isRetryable), error: \(error)")
 
-            if isRetryable, error is NetworkRetryError {
-                var record = record.record
-                let nextRetryDelayMs = { () -> UInt64 in
-                    // Use a hard coded backoff schedule.
-                    switch record.numRetries {
-                    case 0:
-                        return .secondInMs * 5
-                    case 1:
-                        return .secondInMs * 10
-                    case 2:
-                        return .minuteInMs
-                    case 3:
-                        return .minuteInMs * 5
-                    case 4:
-                        return .hourInMs
-                    default:
-                        return .dayInMs
-                    }
-                }()
-                record.numRetries += 1
-                record.minRetryTimestamp = dateProvider().ows_millisecondsSince1970 + nextRetryDelayMs
-                try record.update(tx.database)
+            guard isRetryable else {
+                return
             }
+
+            var record = record.record
+            let retryDelay: TimeInterval
+
+            if error is NetworkRetryError {
+                record.numRetries += 1
+                retryDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: record.numRetries)
+            } else if let rateLimitedError = error as? RateLimitedRetryError {
+                retryDelay = rateLimitedError.retryAfter
+            } else {
+                return
+            }
+
+            record.minRetryTimestamp = dateProvider().addingTimeInterval(retryDelay).ows_millisecondsSince1970
+            try record.update(tx.database)
         }
 
         func didCancel(record: Store.Record, tx: DBWriteTransaction) throws {

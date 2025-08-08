@@ -298,47 +298,44 @@ public func owsFailBetaUnlessNetworkFailure(
 
 extension HttpHeaders {
 
-    // fallback retry-after delay if we fail to parse a non-empty retry-after string
-    private static var kOWSFallbackRetryAfter: TimeInterval { 60 }
-    private static var kOWSRetryAfterHeaderKey: String { "Retry-After" }
-
-    public var retryAfterDate: Date? {
-        if let retryAfterValue = value(forHeader: Self.kOWSRetryAfterHeaderKey) {
-            return Self.parseRetryAfterHeaderValue(retryAfterValue)
-        } else {
+    public var retryAfterTimeInterval: TimeInterval? {
+        guard let retryAfterStringValue else {
             return nil
         }
+
+        let timeInterval = TimeInterval(retryAfterStringValue)
+
+        guard let timeInterval, timeInterval > 0 else {
+            return nil
+        }
+
+        return timeInterval
     }
 
-    static func parseRetryAfterHeaderValue(_ rawValue: String) -> Date? {
-        guard let value = rawValue.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty else {
+    public var retryAfterDate: Date? {
+        guard let retryAfterStringValue else {
             return nil
         }
-        if let result = Date.ows_parseFromHTTPDateString(value) {
-            return result
+
+        if let date = Date.ows_parseFromHTTPDateString(retryAfterStringValue) {
+            return date
+        } else if let date = Date.ows_parseFromISO8601String(retryAfterStringValue) {
+            return date
+        } else if let retryAfterTimeInterval {
+            return Date().addingTimeInterval(retryAfterTimeInterval)
         }
-        if let result = Date.ows_parseFromISO8601String(value) {
-            return result
-        }
-        func parseWithScanner() -> Date? {
-            // We need to use NSScanner instead of -[NSNumber doubleValue] so we can differentiate
-            // because the NSNumber method returns 0.0 on a parse failure. NSScanner lets us detect
-            // a parse failure.
-            let scanner = Scanner(string: value)
-            guard let delay = scanner.scanDouble(),
-                  scanner.isAtEnd else {
-                      // Only return the delay if we've made it to the end.
-                      // Helps to prevent things like: 8/11/1994 being interpreted as delay: 8.
-                      return nil
-                  }
-            return Date(timeIntervalSinceNow: max(0, delay))
-        }
-        if let result = parseWithScanner() {
-            return result
-        }
+
         if !CurrentAppContext().isRunningTests {
-            owsFailDebug("Failed to parse retry-after string: \(String(describing: rawValue))")
+            owsFailDebug("Failed to parse retry-after string: \(String(describing: retryAfterStringValue))")
         }
-        return Date(timeIntervalSinceNow: Self.kOWSFallbackRetryAfter)
+
+        // Historically, if we failed to parse here we returned a +60s date.
+        return Date().addingTimeInterval(.minute)
+    }
+
+    private var retryAfterStringValue: String? {
+        return value(forHeader: "Retry-After")?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .nilIfEmpty
     }
 }

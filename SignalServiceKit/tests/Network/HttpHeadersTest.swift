@@ -108,7 +108,10 @@ class HttpHeadersTest: XCTestCase {
         ]
 
         for (headerValue, expectedTimeInterval) in testCases {
-            let actualTimeInterval = HttpHeaders.parseRetryAfterHeaderValue(headerValue)?.timeIntervalSince1970
+            var headers = HttpHeaders()
+            headers["Retry-After"] = headerValue
+
+            let actualTimeInterval = headers.retryAfterDate?.timeIntervalSince1970
             if let expectedTimeInterval, let actualTimeInterval {
                 XCTAssertEqual(actualTimeInterval, expectedTimeInterval, accuracy: 0.3, "\(headerValue)")
             } else {
