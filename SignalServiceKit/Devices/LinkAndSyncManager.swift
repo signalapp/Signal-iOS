@@ -805,12 +805,12 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         struct WaitForDeviceToLinkResponse: Codable {
             /// The deviceId of the linked device
             let id: DeviceId
-            /// Thename of the linked device.
+            /// The name of the linked device.
             let name: String
             /// The timestamp the linked device was last seen on the server.
             let lastSeen: UInt64
-            /// The timestamp the linked device was created on the server.
-            let created: UInt64
+            /// The registration ID of the linked device.
+            let registrationId: UInt32
         }
 
         enum WaitForDeviceToLinkResponseCodes: Int {
@@ -862,7 +862,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 method: "PUT",
                 parameters: [
                     "destinationDeviceId": waitForDeviceToLinkResponse.id.uint32Value,
-                    "destinationDeviceCreated": waitForDeviceToLinkResponse.created,
+                    "destinationDeviceRegistrationId": waitForDeviceToLinkResponse.registrationId,
                     "transferArchive": {
                         switch result {
                         case .success(let cdnNumber, let cdnKey):
