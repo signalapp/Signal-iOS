@@ -56,9 +56,6 @@ public class OWSChatConnection {
     fileprivate let appExpiry: AppExpiry
     fileprivate let appReadiness: AppReadiness
     fileprivate let db: any DB
-    fileprivate let accountManager: TSAccountManager
-    fileprivate let registrationStateChangeManager: RegistrationStateChangeManager
-    fileprivate let inactivePrimaryDeviceStore: InactivePrimaryDeviceStore
 
     // This var must be thread-safe.
     public var currentState: OWSChatConnectionState {
@@ -80,12 +77,9 @@ public class OWSChatConnection {
 
     public init(
         type: OWSChatConnectionType,
-        accountManager: TSAccountManager,
         appExpiry: AppExpiry,
         appReadiness: AppReadiness,
         db: any DB,
-        registrationStateChangeManager: RegistrationStateChangeManager,
-        inactivePrimaryDeviceStore: InactivePrimaryDeviceStore
     ) {
         AssertIsOnMainThread()
 
@@ -94,9 +88,6 @@ public class OWSChatConnection {
         self.appExpiry = appExpiry
         self.appReadiness = appReadiness
         self.db = db
-        self.accountManager = accountManager
-        self.registrationStateChangeManager = registrationStateChangeManager
-        self.inactivePrimaryDeviceStore = inactivePrimaryDeviceStore
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
             self?.appDidBecomeReady()
@@ -110,27 +101,29 @@ public class OWSChatConnection {
     fileprivate func appDidBecomeReady() {
         AssertIsOnMainThread()
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(isCensorshipCircumventionActiveDidChange),
-                                               name: .isCensorshipCircumventionActiveDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(isSignalProxyReadyDidChange),
-                                               name: .isSignalProxyReadyDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
-
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(isCensorshipCircumventionActiveDidChange),
+            name: .isCensorshipCircumventionActiveDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(isSignalProxyReadyDidChange),
+            name: .isSignalProxyReadyDidChange,
+            object: nil,
+        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(registrationStateDidChange),
             name: .registrationStateDidChange,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appExpiryDidChange),
             name: AppExpiry.AppExpiryDidChange,
-            object: nil
+            object: nil,
         )
     }
 
@@ -441,13 +434,6 @@ public class OWSChatConnection {
         updateCanOpenWebSocket()
     }
 
-    @objc
-    fileprivate func storiesEnabledStateDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        cycleSocket()
-    }
-
     // MARK: - Message Sending
 
     func makeRequest(_ request: TSRequest) async throws -> HTTPResponse {
@@ -583,12 +569,18 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
         }
     }
 
-    internal init(libsignalNet: Net, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB, registrationStateChangeManager: RegistrationStateChangeManager, inactivePrimaryDeviceStore: InactivePrimaryDeviceStore) {
+    internal init(
+        libsignalNet: Net,
+        type: OWSChatConnectionType,
+        appExpiry: AppExpiry,
+        appReadiness: AppReadiness,
+        db: any DB,
+    ) {
         self.libsignalNet = libsignalNet
-        super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager, inactivePrimaryDeviceStore: inactivePrimaryDeviceStore)
+        super.init(type: type, appExpiry: appExpiry, appReadiness: appReadiness, db: db)
     }
 
-    fileprivate func connectChatService() async throws -> Connection {
+    fileprivate func connectChatService(token: NSObject) async throws -> Connection {
         fatalError("must be overridden by subclass")
     }
 
@@ -645,7 +637,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
             }
 
             do {
-                let chatService = try await self.connectChatService()
+                let chatService = try await self.connectChatService(token: token)
                 if type == .identified {
                     self.didConnectIdentified()
                 }
@@ -660,13 +652,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
             } catch SignalError.appExpired(_) {
                 await appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
             } catch SignalError.deviceDeregistered(_) {
-                serialQueue.async {
-                    if self.connection.isCurrentlyConnecting(token) {
-                        self.db.write { tx in
-                            self.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
-                        }
-                    }
-                }
+                // Handled by the subclass; this isn't a connection failure.
             } catch {
                 Logger.error("\(self.logPrefix): failed to connect: \(error)")
                 OutageDetection.shared.reportConnectionFailure()
@@ -889,8 +875,8 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
 }
 
 internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<UnauthenticatedChatConnection> {
-    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB, registrationStateChangeManager: RegistrationStateChangeManager, inactivePrimaryDeviceStore: InactivePrimaryDeviceStore) {
-        super.init(libsignalNet: libsignalNet, type: .unidentified, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager, inactivePrimaryDeviceStore: inactivePrimaryDeviceStore)
+    init(libsignalNet: Net, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB) {
+        super.init(libsignalNet: libsignalNet, type: .unidentified, appExpiry: appExpiry, appReadiness: appReadiness, db: db)
     }
 
     fileprivate override var connection: ConnectionState {
@@ -901,7 +887,7 @@ internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSigna
         }
     }
 
-    override func connectChatService() async throws -> UnauthenticatedChatConnection {
+    override func connectChatService(token: NSObject) async throws -> UnauthenticatedChatConnection {
         return try await libsignalNet.connectUnauthenticatedChat(languages: Array(HttpHeaders.topPreferredLanguages()))
     }
 }
@@ -931,6 +917,10 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         }
     }
 
+    private let accountManager: TSAccountManager
+    private let inactivePrimaryDeviceStore: InactivePrimaryDeviceStore
+    private let registrationStateChangeManager: RegistrationStateChangeManager
+
     init(
         libsignalNet: Net,
         accountManager: TSAccountManager,
@@ -938,9 +928,13 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         appExpiry: AppExpiry,
         appReadiness: AppReadiness,
         db: any DB,
-        registrationStateChangeManager: RegistrationStateChangeManager,
         inactivePrimaryDeviceStore: InactivePrimaryDeviceStore,
+        registrationStateChangeManager: RegistrationStateChangeManager,
     ) {
+        self.accountManager = accountManager
+        self.inactivePrimaryDeviceStore = inactivePrimaryDeviceStore
+        self.registrationStateChangeManager = registrationStateChangeManager
+
         let priority: Int
         switch appContext.type {
         case .share: priority = 1
@@ -949,20 +943,60 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         }
         let priorityCount = 3
         self.connectionLock = ConnectionLock(filePath: appContext.appSharedDataDirectoryPath().appendingPathComponent("chat-connection.lock"), priority: priority, of: priorityCount)
-        super.init(libsignalNet: libsignalNet, type: .identified, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, db: db, registrationStateChangeManager: registrationStateChangeManager, inactivePrimaryDeviceStore: inactivePrimaryDeviceStore)
+
+        super.init(libsignalNet: libsignalNet, type: .identified, appExpiry: appExpiry, appReadiness: appReadiness, db: db)
     }
 
     deinit {
         self.connectionLock.close()
     }
 
-    fileprivate override func connectChatService() async throws -> AuthenticatedChatConnection {
+    override func appDidBecomeReady() {
+        super.appDidBecomeReady()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(storiesEnabledStateDidChange),
+            name: .storiesEnabledStateDidChange,
+            object: nil,
+        )
+    }
+
+    @objc
+    private func storiesEnabledStateDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        cycleSocket()
+    }
+
+    fileprivate override func connectChatService(token: NSObject) async throws -> AuthenticatedChatConnection {
         try await self.acquireConnectionLock()
         let (username, password) = db.read { tx in
             (accountManager.storedServerUsername(tx: tx), accountManager.storedServerAuthToken(tx: tx))
         }
         // Note that we still try to connect for an unregistered user, so that we get a consistent error thrown.
-        return try await libsignalNet.connectAuthenticatedChat(username: username ?? "", password: password ?? "", receiveStories: StoryManager.areStoriesEnabled, languages: Array(HttpHeaders.topPreferredLanguages()))
+        do {
+            return try await libsignalNet.connectAuthenticatedChat(
+                username: username ?? "",
+                password: password ?? "",
+                receiveStories: StoryManager.areStoriesEnabled,
+                languages: Array(HttpHeaders.topPreferredLanguages()),
+            )
+        } catch {
+            switch error {
+            case SignalError.deviceDeregistered(_):
+                serialQueue.async {
+                    if self.connection.isCurrentlyConnecting(token) {
+                        self.db.write { tx in
+                            self.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
+                        }
+                    }
+                }
+            default:
+                break
+            }
+            throw error
+        }
     }
 
     fileprivate override var connection: ConnectionState {

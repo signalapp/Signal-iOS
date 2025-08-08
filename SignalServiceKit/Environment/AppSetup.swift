@@ -984,10 +984,9 @@ public class AppSetup {
             appExpiry: appExpiry,
             appReadiness: appReadiness,
             db: db,
+            inactivePrimaryDeviceStore: inactivePrimaryDeviceStore,
             libsignalNet: libsignalNet,
             registrationStateChangeManager: registrationStateChangeManager,
-            inactivePrimaryDeviceStore: inactivePrimaryDeviceStore,
-            userDefaults: appContext.appUserDefaults()
         )
 
         let preKeyTaskAPIClient = PreKeyTaskAPIClientImpl(networkManager: networkManager)

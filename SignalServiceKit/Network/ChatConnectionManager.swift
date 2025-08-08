@@ -41,18 +41,17 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     private let connectionUnidentified: OWSChatConnection
     private var connections: [OWSChatConnection] { [ connectionIdentified, connectionUnidentified ]}
 
+    @MainActor
     public init(
         accountManager: TSAccountManager,
         appContext: any AppContext,
         appExpiry: AppExpiry,
         appReadiness: AppReadiness,
         db: any DB,
+        inactivePrimaryDeviceStore: InactivePrimaryDeviceStore,
         libsignalNet: Net,
         registrationStateChangeManager: RegistrationStateChangeManager,
-        inactivePrimaryDeviceStore: InactivePrimaryDeviceStore,
-        userDefaults: UserDefaults,
     ) {
-        AssertIsOnMainThread()
         self.connectionIdentified = OWSAuthConnectionUsingLibSignal(
             libsignalNet: libsignalNet,
             accountManager: accountManager,
@@ -60,17 +59,14 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
             appExpiry: appExpiry,
             appReadiness: appReadiness,
             db: db,
-            registrationStateChangeManager: registrationStateChangeManager,
             inactivePrimaryDeviceStore: inactivePrimaryDeviceStore,
+            registrationStateChangeManager: registrationStateChangeManager,
         )
         self.connectionUnidentified = OWSUnauthConnectionUsingLibSignal(
             libsignalNet: libsignalNet,
-            accountManager: accountManager,
             appExpiry: appExpiry,
             appReadiness: appReadiness,
             db: db,
-            registrationStateChangeManager: registrationStateChangeManager,
-            inactivePrimaryDeviceStore: inactivePrimaryDeviceStore,
         )
 
         SwiftSingletons.register(self)
