@@ -169,7 +169,7 @@ public struct AttachmentUpload {
             try await attempt.endpoint.performUpload(
                 startPoint: bytesAlreadyUploaded,
                 attempt: attempt,
-                progress: progress
+                progress: internalProgress
             )
             attempt.logger.warn("Attachment uploaded successfully. \(bytesAlreadyUploaded) -> \(internalProgress.completedUnitCount) (\(downloadTimeLogString(internalProgress.completedUnitCount))")
         } catch {
