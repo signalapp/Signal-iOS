@@ -57,12 +57,6 @@ public class OWSChatConnection {
     fileprivate let appReadiness: AppReadiness
     fileprivate let db: any DB
 
-    // This var must be thread-safe.
-    public var currentState: OWSChatConnectionState {
-        owsFailDebug("should be using a concrete subclass")
-        return .closed
-    }
-
     public var hasEmptiedInitialQueue: Bool {
         get async {
             return false
@@ -129,19 +123,25 @@ public class OWSChatConnection {
 
     // MARK: -
 
-    private struct StateObservation {
-        var currentState: OWSChatConnectionState
-        var onOpen: [NSObject: Monitor.Continuation]
+    fileprivate var _currentState: OWSChatConnectionState = .closed {
+        didSet {
+            DispatchQueue.main.async { [_currentState] in
+                self.currentState = _currentState
+            }
+        }
     }
 
-    /// This lock is sometimes waited on within an async context; make sure *all* uses release the lock quickly.
-    private let stateObservation = AtomicValue(
-        StateObservation(currentState: .closed, onOpen: [:]),
-        lock: .init()
-    )
+    // We update currentState based on lifecycle events,
+    // so this should be accurate (with the usual caveats about races).
+    @MainActor
+    private(set) public var currentState: OWSChatConnectionState = .closed {
+        didSet { AssertIsOnMainThread() }
+    }
 
-    private let openCondition = Monitor.Condition<StateObservation>(
-        isSatisfied: { $0.currentState == .open },
+    private var onOpen = [NSObject: Monitor.Continuation]()
+
+    private let openCondition = Monitor.Condition<OWSChatConnection>(
+        isSatisfied: { $0._currentState == .open },
         waiters: \.onOpen,
     )
 
@@ -151,18 +151,17 @@ public class OWSChatConnection {
         // for a caller to check a condition that's immediately out of date (a race).
         assertOnQueue(serialQueue)
 
-        let oldState = Monitor.updateAndNotify(
-            in: stateObservation,
-            block: {
-                let oldState = $0.currentState
-                $0.currentState = newState
-                return oldState
-            },
-            conditions: openCondition,
-        )
+        let oldState = self._currentState
+        self._currentState = newState
+
         if newState != oldState {
             Logger.info("\(logPrefix): \(oldState) -> \(newState)")
         }
+        Monitor.notifyOnQueue(
+            serialQueue,
+            state: self,
+            conditions: openCondition,
+        )
         NotificationCenter.default.postOnMainThread(
             name: Self.chatConnectionStateDidChange,
             object: nil,
@@ -170,12 +169,8 @@ public class OWSChatConnection {
         )
     }
 
-    fileprivate var cachedCurrentState: OWSChatConnectionState {
-        stateObservation.get().currentState
-    }
-
     func waitForOpen() async throws(CancellationError) {
-        try await Monitor.waitForCondition(openCondition, in: stateObservation)
+        try await Monitor.waitForCondition(openCondition, in: self, on: serialQueue)
     }
 
     /// Only throws on cancellation or after timeout.
@@ -701,12 +696,6 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
         }
     }
 
-    public override var currentState: OWSChatConnectionState {
-        // We update cachedCurrentState based on lifecycle events,
-        // so this should be accurate (with the usual caveats about races).
-        return cachedCurrentState
-    }
-
     fileprivate override var logPrefix: String {
         "[\(type): libsignal]"
     }
@@ -1179,7 +1168,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
 
                 if !alreadyEmptied {
                     // This notification is used to wake up anything waiting for hasEmptiedInitialQueue.
-                    self.notifyStatusChange(newState: self.currentState)
+                    self.notifyStatusChange(newState: self._currentState)
                 }
             }
         }

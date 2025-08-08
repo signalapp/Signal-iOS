@@ -11,6 +11,7 @@ protocol ChatListProxyButtonDelegate: AnyObject {
     func didTapButton(_ proxyButtonCreator: ChatListProxyButtonCreator)
 }
 
+@MainActor
 final class ChatListProxyButtonCreator: NSObject {
     private let chatConnectionManager: ChatConnectionManager
     weak var delegate: ChatListProxyButtonDelegate?
@@ -30,7 +31,7 @@ final class ChatListProxyButtonCreator: NSObject {
             forName: OWSChatConnection.chatConnectionStateDidChange,
             object: nil,
             queue: .main,
-            using: { [weak self] _ in self?.updateState() }
+            using: { [weak self] _ in MainActor.assumeIsolated { self?.updateState() } }
         ))
     }
 

@@ -16,6 +16,7 @@ public protocol ChatConnectionManager {
     /// are no longer capable of opening a socket (e.g., we are deregistered,
     /// all connection tokens are released).
     func waitUntilIdentifiedConnectionShouldBeClosed() async throws(CancellationError)
+    @MainActor
     var identifiedConnectionState: OWSChatConnectionState { get }
     var hasEmptiedInitialQueue: Bool { get async }
 
@@ -129,6 +130,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         return try await connection(ofType: connectionType).makeRequest(request)
     }
 
+    @MainActor
     public var identifiedConnectionState: OWSChatConnectionState {
         connectionIdentified.currentState
     }

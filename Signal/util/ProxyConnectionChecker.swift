@@ -9,7 +9,7 @@ enum ProxyConnectionChecker {
     static func checkConnectionAndNotify() async -> Bool {
         var hasTransitionedToConnecting = false
         for await _ in NotificationCenter.default.notifications(named: OWSChatConnection.chatConnectionStateDidChange) {
-            switch DependenciesBridge.shared.chatConnectionManager.identifiedConnectionState {
+            switch await DependenciesBridge.shared.chatConnectionManager.identifiedConnectionState {
             case .closed:
                 // Ignore closed state until we start connecting, it's expected that old sockets will close
                 guard hasTransitionedToConnecting else { continue }

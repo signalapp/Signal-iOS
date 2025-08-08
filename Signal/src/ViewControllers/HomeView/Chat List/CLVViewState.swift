@@ -57,6 +57,7 @@ class CLVViewState {
 
     // MARK: - Initializer
 
+    @MainActor
     init(chatListMode: ChatListMode, inboxFilter: InboxFilter?) {
         self.chatListMode = chatListMode
         self.inboxFilter = inboxFilter
