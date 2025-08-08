@@ -314,7 +314,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
 
     @objc
     private func isSignalProxyReadyDidChange() {
-        updateHasCensoredPhoneNumber()
+        self.updateIsCensorshipCircumventionActive()
     }
 
     // MARK: - Constants
