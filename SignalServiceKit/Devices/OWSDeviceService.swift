@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 public protocol OWSDeviceService {
     /// Refresh the list of our linked devices.
     /// - Returns
@@ -81,17 +83,41 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
     // MARK: -
 
+    private struct DeviceListResponse: Decodable {
+        struct Device: Decodable {
+            enum CodingKeys: String, CodingKey {
+                case id
+                case lastSeenAtMs = "lastSeen"
+                case registrationId
+                case createdAtCiphertext
+                case nameCiphertext = "name"
+            }
+
+            let id: DeviceId
+            let lastSeenAtMs: UInt64
+            let registrationId: UInt32
+            let createdAtCiphertext: Data
+            let nameCiphertext: String?
+        }
+
+        let devices: [Device]
+    }
+
     func refreshDevices() async throws -> Bool {
+        guard let identityKeyPair = db.read(block: { tx in
+            identityManager.identityKeyPair(for: .aci, tx: tx)?.keyPair
+        }) else {
+            throw OWSAssertionError("Missing ACI identity key pair: will fail to refresh devices!")
+        }
+
         let getDevicesResponse = try await networkManager.asyncRequest(
             .getDevices()
         )
 
-        let devices = try db.read { tx in
-            try parseDeviceList(
-                httpResponse: getDevicesResponse,
-                tx: tx
-            )
-        }
+        let devices = try parseDeviceList(
+            httpResponse: getDevicesResponse,
+            identityKeyPair: identityKeyPair,
+        )
 
         // TODO: This can't fail. Remove it once OWSDevice's deviceId is updated.
         let deviceIds = devices.compactMap { DeviceId(validating: $0.deviceId) }
@@ -115,59 +141,71 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
     private func parseDeviceList(
         httpResponse: HTTPResponse,
-        tx: DBReadTransaction,
+        identityKeyPair: IdentityKeyPair,
     ) throws -> [OWSDevice] {
         guard let responseBodyData = httpResponse.responseBodyData else {
             throw OWSAssertionError("Missing body data in getDevices response!")
         }
 
-        struct DeviceListResponse: Decodable {
-            struct Device: Decodable {
-                enum CodingKeys: String, CodingKey {
-                    case id
-                    case createdAtMs = "created"
-                    case lastSeenAtMs = "lastSeen"
-                    case encryptedName = "name"
-                }
-
-                let id: DeviceId
-                let createdAtMs: UInt64
-                let lastSeenAtMs: UInt64
-                let encryptedName: String?
-            }
-
-            let devices: [Device]
-        }
         let devicesResponse = try JSONDecoder().decode(DeviceListResponse.self, from: responseBodyData)
 
-        return devicesResponse.devices.map { device in
-            let name: String? = {
-                guard let encryptedName = device.encryptedName else {
-                    return nil
-                }
-
-                guard let identityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx) else {
-                    return encryptedName
-                }
-
-                do {
-                    return try OWSDeviceNames.decryptDeviceName(
-                        base64String: encryptedName,
-                        identityKeyPair: identityKeyPair.keyPair
-                    )
-                } catch {
-                    owsFailDebug("Failed to decrypt device name! \(error)")
-                    return encryptedName
-                }
-            }()
-
-            return OWSDevice(
-                deviceId: device.id,
-                createdAt: Date(millisecondsSince1970: device.createdAtMs),
-                lastSeenAt: Date(millisecondsSince1970: device.lastSeenAtMs),
-                name: name,
-            )
+        return try devicesResponse.devices.map {
+            try parseOWSDevice(from: $0, identityKeyPair: identityKeyPair)
         }
+    }
+
+    private func parseOWSDevice(
+        from fetchedDevice: DeviceListResponse.Device,
+        identityKeyPair: IdentityKeyPair,
+    ) throws(OWSAssertionError) -> OWSDevice {
+        let name: String?
+        if let nameCiphertext = fetchedDevice.nameCiphertext {
+            do {
+                name = try OWSDeviceNames.decryptDeviceName(
+                    base64String: nameCiphertext,
+                    identityKeyPair: identityKeyPair,
+                )
+            } catch {
+                owsFailDebug("Failed to decrypt device name! Is this a legacy device name? \(error)")
+                name = nameCiphertext
+            }
+        } else {
+            name = nil
+        }
+
+        let createdAtMs: UInt64
+        do {
+            // The createdAtCiphertext is an Int64, encrypted using the identity
+            // key PrivateKey with associated data (deviceId || registrationId).
+            //
+            // Note that the server does everything big-endian, whereas iOS uses
+            // little-endian by default.
+
+            var associatedData = Data()
+            associatedData.append(contentsOf: withUnsafeBytes(of: fetchedDevice.id.rawValue.bigEndian) { Array($0) })
+            associatedData.append(contentsOf: withUnsafeBytes(of: fetchedDevice.registrationId.bigEndian) { Array($0) })
+
+            let createdAtData: Data = try identityKeyPair.privateKey.open(
+                fetchedDevice.createdAtCiphertext,
+                info: "deviceCreatedAt",
+                associatedData: associatedData
+            )
+
+            let createdAtMsInt = withUnsafeBytes(of: createdAtData) {
+                $0.load(as: Int64.self).bigEndian
+            }
+
+            createdAtMs = UInt64(createdAtMsInt)
+        } catch {
+            throw OWSAssertionError("Failed to decrypt device createdAt! \(error)")
+        }
+
+        return OWSDevice(
+            deviceId: fetchedDevice.id,
+            createdAt: Date(millisecondsSince1970: createdAtMs),
+            lastSeenAt: Date(millisecondsSince1970: fetchedDevice.lastSeenAtMs),
+            name: name,
+        )
     }
 
     // MARK: -
