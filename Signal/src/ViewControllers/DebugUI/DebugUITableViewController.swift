@@ -19,10 +19,10 @@ class DebugUITableViewController: OWSTableViewController2 {
         let viewController = DebugUITableViewController()
 
         let subsectionItems: [OWSTableItem] = [
-            itemForSubsection(DebugUIMisc(), viewController: viewController),
-            itemForSubsection(DebugUIPrompts(), viewController: viewController),
-            itemForSubsection(DebugUISessionState(), viewController: viewController),
-            itemForSubsection(DebugUIDiskUsage(), viewController: viewController),
+            itemForSubsection(DebugUIMisc(), viewController: viewController, thread: thread),
+            itemForSubsection(DebugUIPrompts(), viewController: viewController, thread: thread),
+            itemForSubsection(DebugUISessionState(), viewController: viewController, thread: thread),
+            itemForSubsection(DebugUIDiskUsage(), viewController: viewController, thread: thread),
         ]
         viewController.setContents(OWSTableContents(
             title: "Debug UI",
