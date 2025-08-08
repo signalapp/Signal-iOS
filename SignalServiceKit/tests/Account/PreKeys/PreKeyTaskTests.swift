@@ -371,13 +371,12 @@ final class PreKeyTaskTests: SSKBaseTest {
     func test422WhileSettingKeysReportsSuspectedPniIdentityKeyIssue() async {
         mockTSAccountManager.registrationStateMock = { .provisioned }
         mockIdentityManager.pniKeyPair = ECKeyPair.generateKeyPair()
-        mockAPIClient.setPreKeysResult = .error(OWSHTTPError.forServiceResponse(
+        mockAPIClient.setPreKeysResult = .error(OWSHTTPError.serviceResponse(.init(
             requestUrl: URL(string: "https://example.com")!,
             responseStatus: 422,
             responseHeaders: HttpHeaders(),
-            responseError: nil,
             responseData: nil
-        ))
+        )))
         var didValidateIdentityKey = false
         mockIdentityKeyMismatchManager.validateIdentityKeyMock = { _ in
             didValidateIdentityKey = true

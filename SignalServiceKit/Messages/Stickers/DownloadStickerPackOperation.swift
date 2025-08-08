@@ -43,9 +43,14 @@ enum DownloadStickerPackOperation {
                 throw SSKUnretryableError.stickerDecryptionFailure
             }
         } catch {
-            if error.hasFatalHttpStatusCode() {
+            if
+                let statusCode = error.httpStatusCode,
+                (400..<500).contains(statusCode),
+                statusCode != 429
+            {
                 StickerManager.markStickerPackAsMissing(stickerPackInfo: stickerPackInfo)
             }
+
             throw error
         }
     }

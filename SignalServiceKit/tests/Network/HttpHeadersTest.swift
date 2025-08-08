@@ -74,7 +74,7 @@ class HttpHeadersTest: XCTestCase {
 
     func testRetryAfter() {
         let now = Date().timeIntervalSince1970
-        let testCases: [(String?, TimeInterval?)] = [
+        let testCases: [(String, TimeInterval?)] = [
             // Reference: date -jf '%a, %d %b %Y %T %Z' <Value> +%s
             ("Thu, 01 Jan 1970 00:00:00 GMT", 0),
             ("Wed, 21 Oct 2015 07:28:01 GMT", 1445412481),
@@ -102,7 +102,6 @@ class HttpHeadersTest: XCTestCase {
             ("later", now + 60),
 
             // Absent values (these use nil)
-            (nil, nil),
             ("", nil),
             ("      ", nil),
             ("\n", nil)
@@ -111,9 +110,9 @@ class HttpHeadersTest: XCTestCase {
         for (headerValue, expectedTimeInterval) in testCases {
             let actualTimeInterval = HttpHeaders.parseRetryAfterHeaderValue(headerValue)?.timeIntervalSince1970
             if let expectedTimeInterval, let actualTimeInterval {
-                XCTAssertEqual(actualTimeInterval, expectedTimeInterval, accuracy: 0.3, "\(headerValue ?? "nil")")
+                XCTAssertEqual(actualTimeInterval, expectedTimeInterval, accuracy: 0.3, "\(headerValue)")
             } else {
-                XCTAssertEqual(actualTimeInterval, expectedTimeInterval, "\(headerValue ?? "nil")")
+                XCTAssertEqual(actualTimeInterval, expectedTimeInterval, "\(headerValue)")
             }
         }
     }

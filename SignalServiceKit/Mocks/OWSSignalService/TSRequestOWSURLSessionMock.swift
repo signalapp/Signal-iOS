@@ -90,12 +90,12 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         ) -> Self {
             Self.init(
                 matcher: matcher,
-                error: OWSHTTPError.forServiceResponse(
+                error: OWSHTTPError.serviceResponse(.init(
                     requestUrl: url,
                     responseStatus: statusCode,
                     responseHeaders: headers,
-                    responseError: nil,
-                    responseData: bodyData)
+                    responseData: bodyData
+                ))
             )
         }
 

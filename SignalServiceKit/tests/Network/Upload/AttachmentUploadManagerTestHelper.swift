@@ -327,13 +327,12 @@ class AttachmentUploadManagerMockHelper {
             case .networkError:
                 throw OWSHTTPError.networkFailure(.genericFailure)
             case .failure(let code):
-                throw OWSHTTPError.forServiceResponse(
+                throw OWSHTTPError.serviceResponse(.init(
                     requestUrl: URL(string: location)!,
                     responseStatus: code,
                     responseHeaders: HttpHeaders(),
-                    responseError: nil,
                     responseData: nil
-                )
+                ))
             case .success:
                 return HTTPResponseImpl(
                     requestUrl: request.url!,

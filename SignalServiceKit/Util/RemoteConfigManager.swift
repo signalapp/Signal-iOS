@@ -926,7 +926,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
             return (result.config, response.headers)
         } catch OWSHTTPError.serviceResponse(let serviceResponse) where serviceResponse.responseStatus == 304 {
-            return (nil, serviceResponse.headers)
+            return (nil, serviceResponse.responseHeaders)
         }
     }
 

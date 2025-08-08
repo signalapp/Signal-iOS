@@ -334,13 +334,12 @@ public class OWSURLSession: OWSURLSessionProtocol {
                 if statusCode > 0 {
                     let requestUrl = requestConfig.requestUrl
                     let responseHeaders = HttpHeaders(response: httpUrlResponse)
-                    throw OWSHTTPError.forServiceResponse(
+                    throw OWSHTTPError.serviceResponse(.init(
                         requestUrl: requestUrl,
                         responseStatus: statusCode,
                         responseHeaders: responseHeaders,
-                        responseError: nil,
                         responseData: responseData
-                    )
+                    ))
                 } else {
                     owsFailDebug("Missing status code.")
                     throw OWSHTTPError.networkFailure(.invalidResponseStatus)
