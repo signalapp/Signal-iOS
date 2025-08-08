@@ -366,8 +366,8 @@ public enum RegistrationRequestFactory {
     // MARK: - Helpers
 
     private static func redactSessionIdFromLogs(_ sessionId: String, in request: inout TSRequest) {
-        request.applyRedactionStrategy(.redactURLForSuccessResponses(
-            replacementString: request.url.absoluteString.replacingOccurrences(of: sessionId, with: "[REDACTED]")
+        request.applyRedactionStrategy(.redactURL(
+            replacement: request.url.absoluteString.replacingOccurrences(of: sessionId, with: "[REDACTED]")
         ))
     }
 }

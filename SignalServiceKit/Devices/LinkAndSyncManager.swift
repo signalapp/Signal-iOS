@@ -834,7 +834,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 method: "GET",
                 parameters: nil
             )
-            request.applyRedactionStrategy(.redactURLForSuccessResponses())
+            request.applyRedactionStrategy(.redactURL())
             // The timeout is server side; apply wiggle room for our local clock.
             request.timeoutInterval = 10 + TimeInterval(Constants.longPollRequestTimeoutSeconds)
             return request
@@ -878,7 +878,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                     }()
                 ]
             )
-            request.applyRedactionStrategy(.redactURLForSuccessResponses())
+            request.applyRedactionStrategy(.redactURL())
             return request
         }
 
@@ -910,7 +910,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 parameters: nil
             )
             request.auth = .identified(auth)
-            request.applyRedactionStrategy(.redactURLForSuccessResponses())
+            request.applyRedactionStrategy(.redactURL())
             // The timeout is server side; apply wiggle room for our local clock.
             request.timeoutInterval = 10 + TimeInterval(Constants.longPollRequestTimeoutSeconds)
             return request

@@ -152,8 +152,7 @@ public struct TSRequest: CustomDebugStringConvertible {
 
     public enum RedactionStrategy {
         case none
-        /// Error responses must be separately handled
-        case redactURLForSuccessResponses(replacementString: String = "[REDACTED]")
+        case redactURL(replacement: String = "[REDACTED]")
     }
 
     private var redactionStrategy = RedactionStrategy.none
@@ -167,8 +166,8 @@ public struct TSRequest: CustomDebugStringConvertible {
         switch redactionStrategy {
         case .none:
             result += " \(self.url.relativeString)"
-        case .redactURLForSuccessResponses(let replacementString):
-            result += " \(replacementString)"
+        case .redactURL(let replacement):
+            result += " \(replacement)"
         }
         if !self.headers.headers.isEmpty {
             let formattedHeaderFields = self.headers.headers.keys.sorted().joined(separator: "; ")

@@ -705,7 +705,7 @@ private extension TSRequest {
             parameters: nil
         )
         request.auth = .anonymous
-        request.applyRedactionStrategy(.redactURLForSuccessResponses())
+        request.applyRedactionStrategy(.redactURL())
         return request
     }
 }

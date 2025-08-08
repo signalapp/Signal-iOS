@@ -264,7 +264,7 @@ public enum OWSRequestFactory {
             parameters: nil
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        result.applyRedactionStrategy(.redactURL())
         return result
     }
 
@@ -275,7 +275,7 @@ public enum OWSRequestFactory {
             parameters: nil
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        result.applyRedactionStrategy(.redactURL())
         return result
     }
 
@@ -297,7 +297,7 @@ public enum OWSRequestFactory {
             parameters: nil
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        result.applyRedactionStrategy(.redactURL())
         return result
     }
 
@@ -317,7 +317,7 @@ public enum OWSRequestFactory {
             parameters: nil
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        result.applyRedactionStrategy(.redactURL())
         return result
     }
 
@@ -333,7 +333,7 @@ public enum OWSRequestFactory {
             parameters: nil
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        result.applyRedactionStrategy(.redactURL())
         return result
     }
 
@@ -357,7 +357,7 @@ public enum OWSRequestFactory {
             ]
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        result.applyRedactionStrategy(.redactURL())
         return result
     }
 
@@ -381,7 +381,7 @@ public enum OWSRequestFactory {
             parameters: nil
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        result.applyRedactionStrategy(.redactURL())
         return result
     }
 
@@ -402,7 +402,7 @@ public enum OWSRequestFactory {
             ]
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        result.applyRedactionStrategy(.redactURL())
         return result
     }
 

@@ -254,7 +254,7 @@ public class QuickRestoreManager {
                 )
 
                 request.auth = .anonymous
-                request.applyRedactionStrategy(.redactURLForSuccessResponses())
+                request.applyRedactionStrategy(.redactURL())
                 // The timeout is server side; apply wiggle room for our local clock.
                 request.timeoutInterval = 10 + TimeInterval(Constants.longPollRequestTimeoutSeconds)
                 return request
@@ -291,7 +291,7 @@ public class QuickRestoreManager {
                 )
 
                 request.auth = .anonymous
-                request.applyRedactionStrategy(.redactURLForSuccessResponses())
+                request.applyRedactionStrategy(.redactURL())
                 return request
             }
         }

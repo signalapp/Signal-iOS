@@ -60,7 +60,7 @@ private extension TSRequest {
             parameters: nil
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        result.applyRedactionStrategy(.redactURL())
         return result
     }
 }

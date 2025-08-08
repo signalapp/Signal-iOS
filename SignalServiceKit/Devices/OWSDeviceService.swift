@@ -339,7 +339,7 @@ private extension TSRequest {
                 "deviceName": encryptedName,
             ]
         )
-        request.applyRedactionStrategy(.redactURLForSuccessResponses())
+        request.applyRedactionStrategy(.redactURL())
         return request
     }
 }
