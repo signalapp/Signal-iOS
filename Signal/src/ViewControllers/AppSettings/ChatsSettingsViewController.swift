@@ -172,20 +172,39 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         DeleteForMeInfoSheetCoordinator.fromGlobals().coordinateDelete(
             fromViewController: self
         ) { _, threadSoftDeleteManager in
+            let primaryConfirmDeletionTitle = OWSLocalizedString(
+                "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION",
+                comment: "Alert message before user confirms clearing history"
+            )
+            let secondaryConfirmDeletionTitle = OWSLocalizedString(
+                "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE",
+                comment: "Secondary alert title before user confirms clearing history"
+            )
+            let secondaryConfirmDeletionMessage = OWSLocalizedString(
+                "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE",
+                comment: "Secondary alert message before user confirms clearing history"
+            )
+            let confirmDeletionButtonTitle = OWSLocalizedString(
+                "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
+                comment: "Confirmation text for button which deletes all message, calling, attachments, etc."
+            )
+
+            // Show two layers of confirmation here – this is a maximally
+            // destructive action.
             OWSActionSheets.showConfirmationAlert(
-                title: OWSLocalizedString(
-                    "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION",
-                    comment: "Alert message before user confirms clearing history"
-                ),
-                proceedTitle: OWSLocalizedString(
-                    "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
-                    comment: "Confirmation text for button which deletes all message, calling, attachments, etc."
-                ),
+                title: primaryConfirmDeletionTitle,
+                proceedTitle: confirmDeletionButtonTitle,
                 proceedStyle: .destructive,
-                proceedAction: { [weak self] _ in
+            ) { [weak self] _ in
+                OWSActionSheets.showConfirmationAlert(
+                    title: secondaryConfirmDeletionTitle,
+                    message: secondaryConfirmDeletionMessage,
+                    proceedTitle: confirmDeletionButtonTitle,
+                    proceedStyle: .destructive
+                ) { [weak self] _ in
                     self?.clearHistoryBehindSpinner(threadSoftDeleteManager: threadSoftDeleteManager)
                 }
-            )
+            }
         }
     }
 

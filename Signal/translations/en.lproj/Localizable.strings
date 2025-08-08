@@ -7615,6 +7615,12 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Delete Everything";
 
+/* Secondary alert message before user confirms clearing history */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE" = "All chat history will be permanently removed. This action cannot be undone.";
+
+/* Secondary alert title before user confirms clearing history */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE" = "Are you sure you want to delete all chat history?";
+
 /* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "Disappearing Messages";
 
