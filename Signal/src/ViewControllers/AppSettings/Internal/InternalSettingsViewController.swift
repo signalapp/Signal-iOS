@@ -151,6 +151,15 @@ class InternalSettingsViewController: OWSTableViewController2 {
                     !BackupAttachmentDownloadEligibility.disableTransitTierDownloadsOverride
             }
         ))
+        backupsSection.add(.switch(
+            withText: "Don't reuse transit tier uploads",
+            subtitle: "Reupload all attachments for backups, even stuff <45d old",
+            isOn: { Upload.disableTransitTierUploadReuse },
+            actionBlock: { _ in
+                Upload.disableTransitTierUploadReuse =
+                    !Upload.disableTransitTierUploadReuse
+            }
+        ))
         backupsSection.add(.actionItem(withText: "Enable Backups onboarding flow") { [weak self] in
             let backupSettingsStore = BackupSettingsStore()
             let db = DependenciesBridge.shared.db
