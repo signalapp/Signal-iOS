@@ -238,6 +238,13 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         updateTableContents()
     }
 
+    // iOS 26 adds a large leading safe area under the side column in split
+    // views. The safe area isn't updated right away so the header gets squished
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        updateTableContents()
+    }
+
     // MARK: -
 
     private(set) var groupMemberStateMap = [SignalServiceAddress: VerificationState]()
