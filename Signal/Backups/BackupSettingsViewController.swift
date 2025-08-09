@@ -298,11 +298,16 @@ class BackupSettingsViewController:
         var deviceSleepBlock: DeviceSleepBlockObject?
 
         for await update in updateStream {
-            if deviceSleepBlock == nil, update != nil {
-                deviceSleepBlock = DeviceSleepBlockObject(blockReason: "BackupSettings: \(label)")
-                deviceSleepManager.addBlock(blockObject: deviceSleepBlock!)
-            } else if let deviceSleepBlock, update == nil {
-                deviceSleepManager.removeBlock(blockObject: deviceSleepBlock)
+            if update != nil {
+                deviceSleepBlock = deviceSleepBlock ?? {
+                    let newSleepBlock = DeviceSleepBlockObject(blockReason: "BackupSettings: \(label)")
+                    deviceSleepManager.addBlock(blockObject: newSleepBlock)
+                    return newSleepBlock
+                }()
+            } else {
+                deviceSleepBlock
+                    .take()
+                    .map { deviceSleepManager.removeBlock(blockObject: $0) }
             }
 
             onUpdate(update)
