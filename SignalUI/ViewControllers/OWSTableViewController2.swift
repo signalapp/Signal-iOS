@@ -636,7 +636,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
     // The distance from the edge of the view to the cell border.
     public static func cellOuterInsets(in view: UIView) -> UIEdgeInsets {
-        var insets = UIEdgeInsets(hMargin: defaultHOuterMargin * 2, vMargin: 0)
+        var insets = UIEdgeInsets(hMargin: defaultHOuterMargin, vMargin: 0)
 
         let totalInnerWidth = view.width - insets.totalWidth - view.safeAreaInsets.totalWidth
         if totalInnerWidth > maximumInnerWidth {
