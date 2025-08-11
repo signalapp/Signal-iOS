@@ -196,7 +196,7 @@ extension ConversationViewController {
         let fontColor: UIColor = if #available(iOS 26, *) {
             UIColor.Signal.label
         } else {
-            UIColor.Signal.secondaryLabel
+            Theme.navbarTitleColor.withAlphaComponent(0.9)
         }
         let attributes: [NSAttributedString.Key: Any] = [
             .font: subtitleFont,
