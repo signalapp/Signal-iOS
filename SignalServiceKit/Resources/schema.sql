@@ -2297,13 +2297,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_BackupAttachmentUploadQueue_on_maxOwnerTimestamp_isFullsize"
-        ON "BackupAttachmentUploadQueue"("maxOwnerTimestamp"
-    ,"isFullsize"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "BackupAttachmentDownloadQueue" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT
@@ -2390,4 +2383,11 @@ CREATE
             ,"lastSeenAt" DOUBLE NOT NULL
             ,"name" TEXT
         )
+;
+
+CREATE
+    INDEX "index_BackupAttachmentUploadQueue_on_isFullsize_maxOwnerTimestamp"
+        ON "BackupAttachmentUploadQueue"("isFullsize"
+    ,"maxOwnerTimestamp"
+)
 ;

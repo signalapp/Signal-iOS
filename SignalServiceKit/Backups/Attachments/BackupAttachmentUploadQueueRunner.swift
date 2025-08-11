@@ -49,8 +49,13 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
     private let listMediaManager: BackupListMediaManager
     private let progress: BackupAttachmentUploadProgress
     private let statusManager: BackupAttachmentUploadQueueStatusManager
-    private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
+
+    /// We keep these two separate because we allow more thumbnails in parallel
+    /// than fullsize, so we just run them as separate queues configured at init time
+    /// but sharing the same runner class.
+    private let fullsizeTaskQueue: TaskQueueLoader<TaskRunner>
+    private let thumbnailTaskQueue: TaskQueueLoader<TaskRunner>
 
     init(
         accountKeyStore: AccountKeyStore,
@@ -77,34 +82,44 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
-        self.logger = PrefixedLogger(prefix: "[Backups]")
+        let logger = PrefixedLogger(prefix: "[Backups]")
+        self.logger = logger
         self.listMediaManager = backupListMediaManager
         self.progress = progress
         self.statusManager = statusManager
         self.tsAccountManager = tsAccountManager
-        let taskRunner = TaskRunner(
-            accountKeyStore: accountKeyStore,
-            attachmentStore: attachmentStore,
-            attachmentUploadManager: attachmentUploadManager,
-            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
-            backupAttachmentUploadStore: backupAttachmentUploadStore,
-            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
-            backupRequestManager: backupRequestManager,
-            backupSettingsStore: backupSettingsStore,
-            dateProvider: dateProvider,
-            db: db,
-            logger: logger,
-            orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
-            progress: progress,
-            statusManager: statusManager,
-            tsAccountManager: tsAccountManager
-        )
-        self.taskQueue = TaskQueueLoader(
-            maxConcurrentTasks: Constants.numParallelUploads,
-            dateProvider: dateProvider,
-            db: db,
-            runner: taskRunner
-        )
+
+        func makeTaskQueue(forFullsizeUploads: Bool) -> TaskQueueLoader<TaskRunner> {
+            let taskRunner = TaskRunner(
+                forFullsizeUploads: forFullsizeUploads,
+                accountKeyStore: accountKeyStore,
+                attachmentStore: attachmentStore,
+                attachmentUploadManager: attachmentUploadManager,
+                backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
+                backupAttachmentUploadStore: backupAttachmentUploadStore,
+                backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
+                backupRequestManager: backupRequestManager,
+                backupSettingsStore: backupSettingsStore,
+                dateProvider: dateProvider,
+                db: db,
+                logger: logger,
+                orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
+                progress: progress,
+                statusManager: statusManager,
+                tsAccountManager: tsAccountManager
+            )
+            return TaskQueueLoader(
+                maxConcurrentTasks: forFullsizeUploads
+                    ? Constants.numParallelUploadsFullsize
+                    : Constants.numParallelUploadsThumbnail,
+                dateProvider: dateProvider,
+                db: db,
+                runner: taskRunner
+            )
+        }
+
+        self.fullsizeTaskQueue = makeTaskQueue(forFullsizeUploads: true)
+        self.thumbnailTaskQueue = makeTaskQueue(forFullsizeUploads: false)
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
             self?.startObservingQueueStatus()
@@ -170,8 +185,9 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         case .free:
             owsFailDebug("Local backupPlan is paid but credential is free")
             // If our force refreshed credential is free tier, we definitely
-            // aren't uploading anything, so may as well stop the queue.
-            try? await taskQueue.stop()
+            // aren't uploading anything, so may as well stop the queues.
+            try? await fullsizeTaskQueue.stop()
+            try? await thumbnailTaskQueue.stop()
             return
         case .paid:
             break
@@ -184,35 +200,49 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         switch await statusManager.beginObservingIfNecessary() {
         case .running:
             logger.info("Running Backup uploads.")
-            let backgroundTask = OWSBackgroundTask(label: #function) { [weak taskQueue] status in
+            let backgroundTask = OWSBackgroundTask(label: #function) { [weak fullsizeTaskQueue, weak thumbnailTaskQueue] status in
                 switch status {
                 case .expired:
                     Task {
-                        try await taskQueue?.stop()
+                        try await fullsizeTaskQueue?.stop()
+                        try await thumbnailTaskQueue?.stop()
                     }
                 case .couldNotStart, .success:
                     break
                 }
             }
             defer { backgroundTask.end() }
-            try await taskQueue.loadAndRunTasks()
+            let fullsizeTask = Task { [fullsizeTaskQueue] in
+                try await fullsizeTaskQueue.loadAndRunTasks()
+            }
+            let thumbnailTask = Task { [thumbnailTaskQueue] in
+                try await thumbnailTaskQueue.loadAndRunTasks()
+            }
+            try await thumbnailTask.value
+            try await fullsizeTask.value
         case .empty:
             logger.info("Skipping Backup uploads: queue is empty.")
             return
         case .notRegisteredAndReady:
             logger.warn("Skipping Backup uploads: not registered and ready.")
-            try await taskQueue.stop()
+            try await fullsizeTaskQueue.stop()
+            try await thumbnailTaskQueue.stop()
         case .noWifiReachability:
             logger.warn("Skipping Backup uploads: need wifi.")
-            try await taskQueue.stop()
+            try await fullsizeTaskQueue.stop()
+            try await thumbnailTaskQueue.stop()
         case .noReachability:
             logger.warn("Skipping Backup uploads: need internet.")
-            try await taskQueue.stop()
+            try await fullsizeTaskQueue.stop()
+            try await thumbnailTaskQueue.stop()
         case .lowBattery:
             logger.warn("Skipping Backup uploads: low battery.")
-            try await taskQueue.stop()
+            try await fullsizeTaskQueue.stop()
+            try await thumbnailTaskQueue.stop()
         case .appBackgrounded:
             logger.warn("Skipping Backup uploads: app backgrounded")
+            try await fullsizeTaskQueue.stop()
+            try await thumbnailTaskQueue.stop()
         }
     }
 
@@ -254,9 +284,11 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         private let statusManager: BackupAttachmentUploadQueueStatusManager
         private let tsAccountManager: TSAccountManager
 
+        let forFullsizeUploads: Bool
         let store: TaskStore
 
         init(
+            forFullsizeUploads: Bool,
             accountKeyStore: AccountKeyStore,
             attachmentStore: AttachmentStore,
             attachmentUploadManager: AttachmentUploadManager,
@@ -289,7 +321,11 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             self.statusManager = statusManager
             self.tsAccountManager = tsAccountManager
 
-            self.store = TaskStore(backupAttachmentUploadStore: backupAttachmentUploadStore)
+            self.forFullsizeUploads = forFullsizeUploads
+            self.store = TaskStore(
+                forFullsizeUploads: forFullsizeUploads,
+                backupAttachmentUploadStore: backupAttachmentUploadStore
+            )
         }
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
@@ -569,7 +605,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         }
 
         func didSucceed(record: Store.Record, tx: DBWriteTransaction) throws {
-            logger.info("Finished backing up attachment \(record.record.attachmentRowId), upload \(record.id)")
+            logger.info("Finished backing up attachment \(record.record.attachmentRowId), upload \(record.id), fullsize? \(record.record.isFullsize)")
         }
 
         private struct RateLimitedRetryError: Error {
@@ -578,7 +614,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         private struct NetworkRetryError: Error {}
 
         func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
-            logger.warn("Failed backing up attachment \(record.record.attachmentRowId), upload \(record.id), isRetryable: \(isRetryable), error: \(error)")
+            logger.warn("Failed backing up attachment \(record.record.attachmentRowId), upload \(record.id), , fullsize? \(record.record.isFullsize), isRetryable: \(isRetryable), error: \(error)")
 
             guard isRetryable else {
                 return
@@ -601,12 +637,12 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         }
 
         func didCancel(record: Store.Record, tx: DBWriteTransaction) throws {
-            logger.warn("Cancelled backing up attachment \(record.record.attachmentRowId), upload \(record.id)")
+            logger.warn("Cancelled backing up attachment \(record.record.attachmentRowId), upload \(record.id), fullsize? \(record.record.isFullsize)")
         }
 
         func didDrainQueue() async {
             await progress.didEmptyUploadQueue()
-            await statusManager.didEmptyQueue()
+            await statusManager.didEmptyQueue(forFullsizeUploads: forFullsizeUploads)
         }
     }
 
@@ -623,14 +659,19 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
     class TaskStore: TaskRecordStore {
 
+        private let forFullsizeUploads: Bool
         private let backupAttachmentUploadStore: BackupAttachmentUploadStore
 
-        init(backupAttachmentUploadStore: BackupAttachmentUploadStore) {
+        init(
+            forFullsizeUploads: Bool,
+            backupAttachmentUploadStore: BackupAttachmentUploadStore
+        ) {
+            self.forFullsizeUploads = forFullsizeUploads
             self.backupAttachmentUploadStore = backupAttachmentUploadStore
         }
 
         func peek(count: UInt, tx: DBReadTransaction) throws -> [TaskRecord] {
-            return try backupAttachmentUploadStore.fetchNextUploads(count: count, tx: tx).map {
+            return try backupAttachmentUploadStore.fetchNextUploads(count: count, isFullsize: forFullsizeUploads, tx: tx).map {
                 return .init(id: $0.id!, record: $0)
             }
         }
@@ -647,7 +688,8 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
     // MARK: -
 
     private enum Constants {
-        static let numParallelUploads: UInt = 8
+        static let numParallelUploadsFullsize: UInt = 6
+        static let numParallelUploadsThumbnail: UInt = 8
     }
 }
 

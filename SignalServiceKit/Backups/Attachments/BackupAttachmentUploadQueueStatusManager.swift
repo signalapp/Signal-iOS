@@ -57,7 +57,7 @@ protocol BackupAttachmentUploadQueueStatusManager: BackupAttachmentUploadQueueSt
     func beginObservingIfNecessary() -> BackupAttachmentUploadQueueStatus
 
     /// Notifies the status manager that the upload queue was emptied.
-    func didEmptyQueue()
+    func didEmptyQueue(forFullsizeUploads: Bool)
 
     func setIsMainAppAndActiveOverride(_ newValue: Bool)
 }
@@ -80,9 +80,15 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
         return currentStatus()
     }
 
-    public func didEmptyQueue() {
-        state.isQueueEmpty = true
-        stopObservingDeviceAndLocalStates()
+    public func didEmptyQueue(forFullsizeUploads: Bool) {
+        if forFullsizeUploads {
+            state.isFullsizeQueueEmpty = true
+        } else {
+            state.isThumbnailQueueEmpty = true
+        }
+        if state.isQueueEmpty == true {
+            stopObservingDeviceAndLocalStates()
+        }
     }
 
     public func setIsMainAppAndActiveOverride(_ newValue: Bool) {
@@ -127,7 +133,8 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
         self.tsAccountManager = tsAccountManager
 
         self.state = State(
-            isQueueEmpty: nil,
+            isFullsizeQueueEmpty: nil,
+            isThumbnailQueueEmpty: nil,
             isMainApp: appContext.isMainApp,
             isAppReady: false,
             isRegistered: nil,
@@ -148,7 +155,15 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
     // MARK: - Private
 
     private struct State {
-        var isQueueEmpty: Bool?
+        var isFullsizeQueueEmpty: Bool?
+        var isThumbnailQueueEmpty: Bool?
+
+        var isQueueEmpty: Bool? {
+            guard let isFullsizeQueueEmpty, let isThumbnailQueueEmpty else {
+                return nil
+            }
+            return isFullsizeQueueEmpty && isThumbnailQueueEmpty
+        }
 
         var isMainApp: Bool
         var isAppReady: Bool
@@ -168,7 +183,8 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
         var isMainAppAndActiveOverride: Bool = false
 
         init(
-            isQueueEmpty: Bool?,
+            isFullsizeQueueEmpty: Bool?,
+            isThumbnailQueueEmpty: Bool?,
             isMainApp: Bool,
             isAppReady: Bool,
             isRegistered: Bool?,
@@ -180,7 +196,8 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             isLowPowerMode: Bool?,
             isMainAppAndActive: Bool
         ) {
-            self.isQueueEmpty = isQueueEmpty
+            self.isFullsizeQueueEmpty = isFullsizeQueueEmpty
+            self.isThumbnailQueueEmpty = isThumbnailQueueEmpty
             self.isMainApp = isMainApp
             self.isAppReady = isAppReady
             self.isRegistered = isRegistered
@@ -254,10 +271,15 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
         // For change logic, treat nil as empty (if nil, observation is unstarted)
         let wasQueueEmpty = state.isQueueEmpty ?? true
 
-        let isQueueEmpty = db.read { tx in
-            return ((try? backupAttachmentUploadStore.fetchNextUploads(count: 1, tx: tx)) ?? []).isEmpty
+        let (isFullsizeQueueEmpty, isThumbnailQueueEmpty) = db.read { tx in
+            return (
+                ((try? backupAttachmentUploadStore.fetchNextUploads(count: 1, isFullsize: true, tx: tx)) ?? []).isEmpty,
+                ((try? backupAttachmentUploadStore.fetchNextUploads(count: 1, isFullsize: false, tx: tx)) ?? []).isEmpty
+            )
         }
-        state.isQueueEmpty = isQueueEmpty
+        state.isFullsizeQueueEmpty = isFullsizeQueueEmpty
+        state.isThumbnailQueueEmpty = isThumbnailQueueEmpty
+        let isQueueEmpty = isFullsizeQueueEmpty && isThumbnailQueueEmpty
 
         // Only observe if the queue is non-empty, so as to not waste resources;
         // for example, by telling the OS we want battery level updates.
@@ -297,7 +319,8 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
 
         self.batteryLevelMonitor = deviceBatteryLevelManager?.beginMonitoring(reason: "BackupDownloadQueue")
         self.state = State(
-            isQueueEmpty: state.isQueueEmpty,
+            isFullsizeQueueEmpty: state.isFullsizeQueueEmpty,
+            isThumbnailQueueEmpty: state.isThumbnailQueueEmpty,
             isMainApp: appContext.isMainApp,
             isAppReady: appReadiness.isAppReady,
             isRegistered: tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered,

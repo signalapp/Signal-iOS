@@ -29,6 +29,7 @@ public protocol BackupAttachmentUploadStore {
     /// to handle results with timestamps greater than the current time.
     func fetchNextUploads(
         count: UInt,
+        isFullsize: Bool,
         tx: DBReadTransaction
     ) throws -> [QueuedBackupAttachmentUpload]
 
@@ -92,23 +93,23 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
 
     public func fetchNextUploads(
         count: UInt,
+        isFullsize: Bool,
         tx: DBReadTransaction
     ) throws -> [QueuedBackupAttachmentUpload] {
         // NULLS FIRST is unsupported in GRDB so we bridge to raw SQL;
         // we want thread wallpapers to go first (null timestamp) and then
         // descending order after that.
-        // We do thumbnails first (bool ascending means false first).
         return try QueuedBackupAttachmentUpload
             .fetchAll(
                 tx.database,
                 sql: """
                     SELECT * FROM \(QueuedBackupAttachmentUpload.databaseTableName)
+                    WHERE \(QueuedBackupAttachmentUpload.CodingKeys.isFullsize.rawValue) = ?
                     ORDER BY
-                        \(QueuedBackupAttachmentUpload.CodingKeys.maxOwnerTimestamp.rawValue) DESC NULLS FIRST,
-                        \(QueuedBackupAttachmentUpload.CodingKeys.isFullsize.rawValue) ASC
+                        \(QueuedBackupAttachmentUpload.CodingKeys.maxOwnerTimestamp.rawValue) DESC NULLS FIRST
                     LIMIT ?
                     """,
-                arguments: [count]
+                arguments: [isFullsize, count]
             )
     }
 

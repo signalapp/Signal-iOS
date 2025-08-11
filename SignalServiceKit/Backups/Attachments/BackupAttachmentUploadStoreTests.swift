@@ -187,6 +187,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
 
             dequeuedRecords = try store.fetchNextUploads(
                 count: UInt(timestamps.count - 1),
+                isFullsize: true,
                 tx: tx
             )
         }
@@ -265,20 +266,14 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
 
             dequeuedRecords = try store.fetchNextUploads(
                 count: UInt(timestamps.count * 2),
+                isFullsize: true,
                 tx: tx
             )
         }
 
-        // We should get results in DESC order with thumbnails first.
+        // We should get results in DESC order with only fullsize results.
         var index = 0
         for timestamp in timestamps.sorted().reversed() {
-            XCTAssertEqual(dequeuedRecords[index].isFullsize, false)
-            switch dequeuedRecords[index].highestPriorityOwnerType {
-            case .threadWallpaper: XCTFail("Unexpected type")
-            case .message(let recordTimestamp):
-                XCTAssertEqual(timestamp, recordTimestamp)
-            }
-            index += 1
             XCTAssertEqual(dequeuedRecords[index].isFullsize, true)
             switch dequeuedRecords[index].highestPriorityOwnerType {
             case .threadWallpaper: XCTFail("Unexpected type")
@@ -299,9 +294,9 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         }
 
         try db.read { tx in
-            // all rows should be deleted.
+            // all fullsize rows should be deleted.
             XCTAssertEqual(
-                0,
+                4,
                 try QueuedBackupAttachmentUpload.fetchCount(tx.database)
             )
         }

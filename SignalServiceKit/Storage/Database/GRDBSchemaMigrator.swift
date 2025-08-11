@@ -337,6 +337,7 @@ public class GRDBSchemaMigrator {
         case addBackupOversizeTextRedux
         case addRetriesToBackupAttachmentUploadQueue
         case replaceOWSDeviceTable
+        case reindexBackupAttachmentUploadQueue
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -400,7 +401,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 122
+    public static let grdbSchemaVersionLatest: UInt = 123
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4207,6 +4208,17 @@ public class GRDBSchemaMigrator {
                 table.column("name", .text)
             }
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.reindexBackupAttachmentUploadQueue) { tx in
+            try tx.database.drop(index: "index_BackupAttachmentUploadQueue_on_maxOwnerTimestamp_isFullsize")
+            // For efficient sorting by timestamp
+            try tx.database.create(
+                index: "index_BackupAttachmentUploadQueue_on_isFullsize_maxOwnerTimestamp",
+                on: "BackupAttachmentUploadQueue",
+                columns: ["isFullsize", "maxOwnerTimestamp"]
+            )
             return .success(())
         }
 
