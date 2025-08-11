@@ -202,10 +202,6 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                 || (mentionRange.intersection(range)?.length ?? 0) > 0
             {
                 intersectingMentionRanges.append(mentionRange)
-            } else if range.upperBound <= mentionRange.location {
-                // If the change is before a mention, we have to shift the mention.
-                body.mentions[mentionRange] = nil
-                body.mentions[NSRange(location: mentionRange.location + changeInLength, length: mentionRange.length)] = mentionAci
             }
         }
         if
@@ -222,9 +218,18 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                 location: intersectingMentionRange.location + (Mention.prefix as NSString).length,
                 length: 0
             )
-            self.selectionAfterEdits = newSelectedRange
+            self.editableBodyDelegate?.editableMessageBodyDidRequestNewSelectedRange(newSelectedRange)
             return
         }
+
+        body.mentions.forEach { (mentionRange, mentionAci) in
+            if range.upperBound <= mentionRange.location {
+                // If the change is before a mention, we have to shift the mention.
+                body.mentions[mentionRange] = nil
+                body.mentions[NSRange(location: mentionRange.location + changeInLength, length: mentionRange.length)] = mentionAci
+            }
+        }
+
         intersectingMentionRanges.forEach {
             body.mentions.removeValue(forKey: $0)
             modifiedRange.formUnion($0)
