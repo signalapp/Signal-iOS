@@ -1280,18 +1280,20 @@ struct BackupSettingsView: View {
     var body: some View {
         SignalList {
             SignalSection {
-                HStack {
-                    Image(.info)
-                        .frame(width: 25, height: 25)
-
+                Label {
                     Text(OWSLocalizedString(
                         "BACKUP_SETTINGS_BETA_NOTICE_HEADER",
                         comment: "Notice that backups is a beta feature")
                     )
-                    .font(.footnote)
+                    .font(.subheadline)
+                } icon: {
+                    Image(uiImage: .info)
+                        .frame(width: 24, height: 24)
                 }
                 .padding(.vertical, 2)
+                .foregroundColor(Color.Signal.label)
             }
+
             SignalSection {
                 BackupSubscriptionView(
                     loadingState: viewModel.backupSubscriptionLoadingState,

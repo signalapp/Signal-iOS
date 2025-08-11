@@ -72,6 +72,7 @@ struct BackupOnboardingIntroView: View {
                     .font(.footnote)
                     .multilineTextAlignment(.leading)
                 }
+                .foregroundColor(Color.Signal.label)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 10)
                 .background(Color.Signal.quaternaryFill)
