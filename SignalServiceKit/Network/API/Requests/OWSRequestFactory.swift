@@ -135,10 +135,7 @@ public enum OWSRequestFactory {
         ]
 
         var request = TSRequest(url: URL(string: path)!, method: "PUT", parameters: parameters)
-        // Use 45 seconds (the maximum time allowed by the pinging logic) to
-        // support larger messages. Message sends have automatic retries, so short
-        // timeouts aren't useful because errors are invisible for ~24 hours.
-        request.timeoutInterval = 45
+        request.timeoutInterval = sendMessageTimeout(estimatedRequestSize: messages.reduce(into: 0, { $0 += $1.content.count + 50 }) + 100)
         if let auth {
             request.auth = .sealedSender(auth)
         }
@@ -165,14 +162,21 @@ public enum OWSRequestFactory {
         ]
 
         var request = TSRequest(url: components.url!, method: "PUT", parameters: nil)
-        // Use 45 seconds (the maximum time allowed by the pinging logic) to
-        // support larger messages. Message sends have automatic retries, so short
-        // timeouts aren't useful because errors are invisible for ~24 hours.
-        request.timeoutInterval = 45
+        request.timeoutInterval = sendMessageTimeout(estimatedRequestSize: ciphertext.count + 200)
         request.headers["Content-Type"] = "application/vnd.signal-messenger.mrm"
         request.auth = .sealedSender(auth)
         request.body = .data(ciphertext)
         return request
+    }
+
+    private static func sendMessageTimeout(estimatedRequestSize: Int) -> TimeInterval {
+        let bandwidthEstimate: Double = 40_000 // kbit/s
+        let transferEstimate = Double(estimatedRequestSize) / (bandwidthEstimate / 8)
+        let latencyEstimate: Double = Self.textSecureHTTPTimeOut
+        let overallEstimate = latencyEstimate + transferEstimate
+        // Limit to 45 seconds (the maximum time allowed by the pinging logic) to
+        // support larger messages.
+        return min(overallEstimate, 45)
     }
 
     // MARK: - Registration
