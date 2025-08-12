@@ -319,9 +319,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         )
         attachmentValidationRunner.registerBGProcessingTask(appReadiness: appReadiness)
 
-        let backupSettingsStore = BackupSettingsStore()
         let backupRunner = BackupBGProcessingTaskRunner(
-            backupSettingsStore: backupSettingsStore,
+            backgroundMessageFetcherFactory: { DependenciesBridge.shared.backgroundMessageFetcherFactory },
+            backupSettingsStore: BackupSettingsStore(),
             db: databaseStorage,
             exportJob: { DependenciesBridge.shared.backupExportJob }
         )

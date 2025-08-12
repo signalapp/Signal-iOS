@@ -7,15 +7,18 @@ import SignalServiceKit
 
 class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
 
+    private let backgroundMessageFetcherFactory: () -> BackgroundMessageFetcherFactory
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
-    private let exportJob: () -> any BackupExportJob
+    private let exportJob: () -> BackupExportJob
 
     init(
+        backgroundMessageFetcherFactory: @escaping () -> BackgroundMessageFetcherFactory,
         backupSettingsStore: BackupSettingsStore,
         db: SDSDatabaseStorage,
-        exportJob: @escaping () -> any BackupExportJob
+        exportJob: @escaping () -> BackupExportJob
     ) {
+        self.backgroundMessageFetcherFactory = backgroundMessageFetcherFactory
         self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.exportJob = exportJob
@@ -28,7 +31,12 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
     public static let requiresNetworkConnectivity = true
 
     func run() async throws {
-        try await exportJob().exportAndUploadBackup(mode: .bgProcessingTask)
+        try await runWithChatConnection(
+            backgroundMessageFetcherFactory: backgroundMessageFetcherFactory(),
+            operation: {
+                try await exportJob().exportAndUploadBackup(mode: .bgProcessingTask)
+            }
+        )
     }
 
     public func startCondition() -> BGProcessingTaskStartCondition {
