@@ -155,6 +155,8 @@ class BackupExportJobImpl: BackupExportJob {
     private func _exportAndUploadBackup(
         mode: BackupExportJobMode
     ) async throws(BackupExportJobError) {
+        logger.info("\(mode)")
+
         let (
             localIdentifiers,
             backupKey,
