@@ -246,11 +246,8 @@ public class SSKEnvironment: NSObject {
         // Note: All of these methods must be safe to invoke repeatedly.
 
         dependenciesBridge.tsAccountManager.warmCaches()
-        let remoteConfig = self.remoteConfigManagerRef.warmCaches()
-        self.verifyPniAndPniIdentityKey(
-            dependenciesBridge: dependenciesBridge,
-            remoteConfig: remoteConfig,
-        )
+        _ = self.remoteConfigManagerRef.warmCaches()
+        self.verifyPniAndPniIdentityKey(dependenciesBridge: dependenciesBridge)
         self.fixLocalRecipientIfNeeded(dependenciesBridge: dependenciesBridge)
         SignalProxy.warmCaches(appReadiness: appReadiness)
         self.signalServiceRef.warmCaches()
@@ -266,13 +263,9 @@ public class SSKEnvironment: NSObject {
     }
 
     @MainActor
-    private func verifyPniAndPniIdentityKey(dependenciesBridge: DependenciesBridge, remoteConfig: RemoteConfig) {
+    private func verifyPniAndPniIdentityKey(dependenciesBridge: DependenciesBridge) {
         let databaseStorage = self.databaseStorageRef
         let tsAccountManager = dependenciesBridge.tsAccountManager
-
-        guard remoteConfig.shouldVerifyPniAndPniIdentityKeyExist else {
-            return
-        }
 
         let mustHavePni: Bool
         let mustHavePniIdentityKey: Bool

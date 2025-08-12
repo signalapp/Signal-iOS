@@ -268,10 +268,6 @@ public class RemoteConfig {
         return isEnabled(.usePqRatchet)
     }
 
-    public var shouldVerifyPniAndPniIdentityKeyExist: Bool {
-        return isEnabled(.shouldVerifyPniAndPniIdentityKeyExist)
-    }
-
     public var shouldValidatePrimaryPniIdentityKey: Bool {
         return isEnabled(.shouldValidatePrimaryPniIdentityKey)
     }
@@ -507,7 +503,6 @@ private enum IsEnabledFlag: String, FlagType {
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
     case shareExtensionWebSocket = "ios.shareExtensionWebSocket"
     case shouldValidatePrimaryPniIdentityKey = "ios.shouldValidatePrimaryPniIdentityKey"
-    case shouldVerifyPniAndPniIdentityKeyExist = "ios.shouldVerifyPniAndPniIdentityKeyExist"
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
     case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
     case usePqRatchet = "ios.usePqRatchet"
@@ -542,7 +537,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .serviceExtensionFailureKillSwitch: true
         case .shareExtensionWebSocket: true
         case .shouldValidatePrimaryPniIdentityKey: true
-        case .shouldVerifyPniAndPniIdentityKeyExist: true
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true
         case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true
         case .usePqRatchet: true
