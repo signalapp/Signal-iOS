@@ -727,7 +727,16 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         appReadiness.setAppIsReadyUIStillPending()
 
-        appContext.appUserDefaults().removeObject(forKey: Constants.appLaunchesAttemptedKey)
+        Task {
+            let backgroundTask = OWSBackgroundTask(label: "AppLaunchesAttemptedCleanup")
+            defer { backgroundTask.end() }
+
+            // Wait a few seconds after the app has launched to clear the
+            // counter, in case something is causing us to repeatedly crash not
+            // *during* launch, but just after.
+            try! await Task.sleep(nanoseconds: 3.clampedNanoseconds)
+            appContext.appUserDefaults().removeObject(forKey: Constants.appLaunchesAttemptedKey)
+        }
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
