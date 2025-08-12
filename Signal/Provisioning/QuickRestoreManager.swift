@@ -18,6 +18,7 @@ public class QuickRestoreManager {
     }
 
     private let accountKeyStore: AccountKeyStore
+    private let backupNonceStore: BackupNonceMetadataStore
     private let backupSettingsStore: BackupSettingsStore
     private let db: any DB
     private let deviceProvisioningService: DeviceProvisioningService
@@ -27,6 +28,7 @@ public class QuickRestoreManager {
 
     init(
         accountKeyStore: AccountKeyStore,
+        backupNonceStore: BackupNonceMetadataStore,
         backupSettingsStore: BackupSettingsStore,
         db: any DB,
         deviceProvisioningService: DeviceProvisioningService,
@@ -35,6 +37,7 @@ public class QuickRestoreManager {
         tsAccountManager: TSAccountManager
     ) {
         self.accountKeyStore = accountKeyStore
+        self.backupNonceStore = backupNonceStore
         self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.deviceProvisioningService = deviceProvisioningService
@@ -52,7 +55,9 @@ public class QuickRestoreManager {
             pinCode,
             backupTier,
             lastBackupDate,
-            lastBackupSizeBytes
+            lastBackupSizeBytes,
+            lastBackupForwardSecrecyToken,
+            nextBackupSecretData,
         ) = try db.read { tx in
             guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
                 owsFailDebug("Can't quick restore without local identifiers")
@@ -90,6 +95,9 @@ public class QuickRestoreManager {
                 lastBackupSizeBytes = nil
             }
 
+            let lastBackupForwardSecrecyToken = try backupNonceStore.getLastForwardSecrecyToken(tx: tx)
+            let nextBackupSecretData = backupNonceStore.getNextSecretMetadata(tx: tx)
+
             return (
                 localIdentifiers,
                 accountEntropyPool,
@@ -98,7 +106,9 @@ public class QuickRestoreManager {
                 pinCode,
                 backupTier,
                 lastBackupTime,
-                lastBackupSizeBytes
+                lastBackupSizeBytes,
+                lastBackupForwardSecrecyToken,
+                nextBackupSecretData,
             )
         }
 
@@ -121,7 +131,9 @@ public class QuickRestoreManager {
             backupVersion: BackupArchiveManagerImpl.Constants.supportedBackupVersion,
             backupTimestamp: lastBackupDate,
             backupSizeBytes: lastBackupSizeBytes,
-            restoreMethodToken: restoreMethodToken
+            restoreMethodToken: restoreMethodToken,
+            lastBackupForwardSecrecyToken: lastBackupForwardSecrecyToken,
+            nextBackupSecretData: nextBackupSecretData,
         )
 
         let theirPublicKey = deviceProvisioningUrl.publicKey

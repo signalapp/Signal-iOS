@@ -618,10 +618,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
             let nonceSource: BackupImportSource.NonceMetadataSource
-            if let metadataHeader = self.inMemoryState.backupMetadataHeader {
+            if let lastBackupForwardSecrecyToken = self.inMemoryState.registrationMessage?.lastBackupForwardSecrecyToken {
+                nonceSource = .provisioningMessage(lastBackupForwardSecrecyToken)
+                if let nextBackupSecretData = self.inMemoryState.registrationMessage?.nextBackupSecretData {
+                    // Set the next secret metadata immediately; we won't use
+                    // it until we next create a backup and it will ensure that
+                    // when we do, this previous backup remains decryptable
+                    // if that next backups fails at the upload to cdn step.
+                    // It is ok if the restore process fails after this point,
+                    // either we try again and overwrite this, or we skip
+                    // and then the next time we make a backup we still use
+                    // this key which is at worst as good as a random starting point.
+                    await self.db.awaitableWrite { tx in
+                        self.deps.backupNonceStore.setNextSecretMetadata(nextBackupSecretData, tx: tx)
+                    }
+                }
+            } else if let metadataHeader = self.inMemoryState.backupMetadataHeader {
                 nonceSource = .svr🐝(header: metadataHeader, auth: identity.chatServiceAuth)
             } else {
-                // TODO: [SVR🐝] get forward secrecy token from provisioning
                 owsFailDebug("Missing metadata header; refetching from cdn")
                 let metadataHeader = try await self.deps.backupArchiveManager.backupCdnInfo(
                     backupKey: backupKey,

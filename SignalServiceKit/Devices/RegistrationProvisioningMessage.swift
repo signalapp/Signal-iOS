@@ -41,6 +41,8 @@ public struct RegistrationProvisioningMessage {
     public let backupTimestamp: UInt64?
     public let backupSizeBytes: UInt64?
     public let restoreMethodToken: String?
+    public let lastBackupForwardSecrecyToken: LibSignalClient.BackupForwardSecrecyToken?
+    public let nextBackupSecretData: BackupNonce.NextSecretMetadata?
 
     public init(
         accountEntropyPool: AccountEntropyPool,
@@ -53,7 +55,9 @@ public struct RegistrationProvisioningMessage {
         backupVersion: UInt64?,
         backupTimestamp: UInt64?,
         backupSizeBytes: UInt64?,
-        restoreMethodToken: String?
+        restoreMethodToken: String?,
+        lastBackupForwardSecrecyToken: LibSignalClient.BackupForwardSecrecyToken?,
+        nextBackupSecretData: BackupNonce.NextSecretMetadata?,
     ) {
         self.platform = .ios
         self.accountEntropyPool = accountEntropyPool
@@ -67,6 +71,8 @@ public struct RegistrationProvisioningMessage {
         self.backupTimestamp = backupTimestamp
         self.backupSizeBytes = backupSizeBytes
         self.restoreMethodToken = restoreMethodToken
+        self.lastBackupForwardSecrecyToken = lastBackupForwardSecrecyToken
+        self.nextBackupSecretData = nextBackupSecretData
     }
 
     public init(plaintext: Data) throws {
@@ -107,6 +113,18 @@ public struct RegistrationProvisioningMessage {
         self.backupSizeBytes = proto.backupSizeBytes
 
         self.restoreMethodToken = proto.restoreMethodToken
+
+        if let data = proto.lastBackupForwardSecrecyToken.nilIfEmpty {
+            self.lastBackupForwardSecrecyToken = try LibSignalClient.BackupForwardSecrecyToken(contents: data)
+        } else {
+            self.lastBackupForwardSecrecyToken = nil
+        }
+
+        if let data = proto.nextBackupSecretData.nilIfEmpty {
+            self.nextBackupSecretData = BackupNonce.NextSecretMetadata(data: data)
+        } else {
+            self.nextBackupSecretData = nil
+        }
     }
 
     public func buildEncryptedMessageBody(theirPublicKey: PublicKey) throws -> Data {
@@ -150,6 +168,13 @@ public struct RegistrationProvisioningMessage {
 
         if let restoreMethodToken {
             messageBuilder.restoreMethodToken = restoreMethodToken
+        }
+
+        if let lastBackupForwardSecrecyToken {
+            messageBuilder.lastBackupForwardSecrecyToken = lastBackupForwardSecrecyToken.serialize()
+        }
+        if let nextBackupSecretData {
+            messageBuilder.nextBackupSecretData = nextBackupSecretData.data
         }
 
         let plainTextMessage = try messageBuilder.serializedData()

@@ -41,4 +41,6 @@ message RegistrationProvisionMessage {
   bytes pniIdentityKeyPublic = 12;
   bytes pniIdentityKeyPrivate = 13;
   uint64 backupVersion = 14;
+  bytes lastBackupForwardSecrecyToken = 15;
+  bytes nextBackupSecretData = 16;
 }

@@ -85,6 +85,10 @@ struct RegistrationProtos_RegistrationProvisionMessage: @unchecked Sendable {
 
   var backupVersion: UInt64 = 0
 
+  var lastBackupForwardSecrecyToken: Data = Data()
+
+  var nextBackupSecretData: Data = Data()
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Platform: SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -219,6 +223,8 @@ extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message
     12: .same(proto: "pniIdentityKeyPublic"),
     13: .same(proto: "pniIdentityKeyPrivate"),
     14: .same(proto: "backupVersion"),
+    15: .same(proto: "lastBackupForwardSecrecyToken"),
+    16: .same(proto: "nextBackupSecretData"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -241,6 +247,8 @@ extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message
       case 12: try { try decoder.decodeSingularBytesField(value: &self.pniIdentityKeyPublic) }()
       case 13: try { try decoder.decodeSingularBytesField(value: &self.pniIdentityKeyPrivate) }()
       case 14: try { try decoder.decodeSingularUInt64Field(value: &self.backupVersion) }()
+      case 15: try { try decoder.decodeSingularBytesField(value: &self.lastBackupForwardSecrecyToken) }()
+      case 16: try { try decoder.decodeSingularBytesField(value: &self.nextBackupSecretData) }()
       default: break
       }
     }
@@ -293,6 +301,12 @@ extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message
     if self.backupVersion != 0 {
       try visitor.visitSingularUInt64Field(value: self.backupVersion, fieldNumber: 14)
     }
+    if !self.lastBackupForwardSecrecyToken.isEmpty {
+      try visitor.visitSingularBytesField(value: self.lastBackupForwardSecrecyToken, fieldNumber: 15)
+    }
+    if !self.nextBackupSecretData.isEmpty {
+      try visitor.visitSingularBytesField(value: self.nextBackupSecretData, fieldNumber: 16)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -311,6 +325,8 @@ extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message
     if lhs.pniIdentityKeyPublic != rhs.pniIdentityKeyPublic {return false}
     if lhs.pniIdentityKeyPrivate != rhs.pniIdentityKeyPrivate {return false}
     if lhs.backupVersion != rhs.backupVersion {return false}
+    if lhs.lastBackupForwardSecrecyToken != rhs.lastBackupForwardSecrecyToken {return false}
+    if lhs.nextBackupSecretData != rhs.nextBackupSecretData {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

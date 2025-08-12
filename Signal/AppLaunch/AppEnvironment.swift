@@ -50,6 +50,7 @@ public class AppEnvironment: NSObject {
     }
 
     func setUp(appReadiness: AppReadiness, callService: CallService) {
+        let backupNonceStore = BackupNonceMetadataStore()
         let backupSettingsStore = BackupSettingsStore()
         let backupAttachmentUploadEraStore = BackupAttachmentUploadEraStore()
 
@@ -95,6 +96,7 @@ public class AppEnvironment: NSObject {
         )
         self.quickRestoreManager = QuickRestoreManager(
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
+            backupNonceStore: backupNonceStore,
             backupSettingsStore: backupSettingsStore,
             db: DependenciesBridge.shared.db,
             deviceProvisioningService: deviceProvisioningService,
