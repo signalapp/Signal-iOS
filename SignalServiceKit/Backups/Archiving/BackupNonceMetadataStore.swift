@@ -165,8 +165,12 @@ public class BackupNonceMetadataStore {
     ///  the "next" metadata from.
     /// 3. After restoring a backup on a new device, with the nextSecretMetadata we got from the SVR🐝 response,
     /// to continue the chain on this device when it makes a backup for the first time.
-    public func setNextSecretMetadata(_ metadata: BackupNonce.NextSecretMetadata, tx: DBWriteTransaction) {
-        kvStore.setData(metadata.data, key: Keys.nextSecretMetadata, transaction: tx)
+    public func setNextSecretMetadata(_ metadata: BackupNonce.NextSecretMetadata?, tx: DBWriteTransaction) {
+        if let metadata {
+            kvStore.setData(metadata.data, key: Keys.nextSecretMetadata, transaction: tx)
+        } else {
+            kvStore.removeValue(forKey: Keys.nextSecretMetadata, transaction: tx)
+        }
     }
 
     private enum Keys {

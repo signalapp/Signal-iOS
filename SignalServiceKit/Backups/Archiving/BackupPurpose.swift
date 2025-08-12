@@ -82,6 +82,38 @@ extension BackupExportPurpose {
     }
 }
 
+// MARK: - Errors
+
+// swiftlint:disable:next type_name
+public enum SVR🐝Error: Error, Equatable, IsRetryableProvider {
+    /// Network errors and other transient errors that
+    /// can usually be resolved by an automatic retry, at
+    /// computer time scale.
+    case retryableAutomatically
+    /// Some error that may be resolved by trying again later (e.g. temporary outage)
+    /// at human time scale.
+    case retryableByUser
+    /// An unrecoverable error; SVR🐝 data is potentially lost forever.
+    case unrecoverable
+    /// Couldn't recover SVR🐝 data because the backup key is incorrect;
+    /// may be recoverable by entering a different AEP.
+    case incorrectBackupKey
+
+    public var isRetryableProvider: Bool {
+        switch self {
+        case .retryableAutomatically:
+            return true
+        case .retryableByUser:
+            // This is for automatic retries;
+            // these errors can be retried by
+            // the user.
+            return false
+        case .unrecoverable, .incorrectBackupKey:
+            return false
+        }
+    }
+}
+
 // MARK: - Encryption Key Derivation
 
 extension BackupImportSource {
@@ -101,32 +133,27 @@ extension BackupImportSource {
             case let .provisioningMessage(token):
                 forwardSecrecyToken = token
             case let .svr🐝(metadataHeader, chatAuth):
-                let svr🐝Auth = try await backupRequestManager.fetchSvr🐝AuthCredential(
-                    key: key,
-                    chatServiceAuth: chatAuth,
-                    forceRefresh: false
+                var isRetry = false
+                forwardSecrecyToken = try await Retry.performWithBackoff(
+                    maxAttempts: 2,
+                    block: {
+                        do {
+                            return try await self.fetchForwardSecrecyTokenFromSvr(
+                                key: key,
+                                metadataHeader: metadataHeader,
+                                chatAuth: chatAuth,
+                                isRetry: isRetry,
+                                backupRequestManager: backupRequestManager,
+                                db: db,
+                                libsignalNet: libsignalNet,
+                                nonceStore: nonceStore
+                            )
+                        } catch let error {
+                            isRetry = true
+                            throw error
+                        }
+                    },
                 )
-
-                let svr🐝 = libsignalNet.svr🐝(auth: svr🐝Auth)
-
-                // TODO: [SVR🐝]: error handling
-                let response = try await svr🐝.restore(
-                    backupKey: key.backupKey,
-                    metadata: metadataHeader.data
-                )
-
-                forwardSecrecyToken = response.forwardSecrecyToken
-                // Set the next secret metadata immediately; we won't use
-                // it until we next create a backup and it will ensure that
-                // when we do, this previous backup remains decryptable
-                // if that next backups fails at the upload to cdn step.
-                // It is ok if the restore process fails after this point,
-                // either we try again and overwrite this, or we skip
-                // and then the next time we make a backup we still use
-                // this key which is at worst as good as a random starting point.
-                await db.awaitableWrite { tx in
-                    nonceStore.setNextSecretMetadata(response.nextSecretMetadata, tx: tx)
-                }
             }
 
             return try MessageBackupKey(
@@ -142,6 +169,100 @@ extension BackupImportSource {
                 forwardSecrecyToken: nil
             )
         }
+    }
+
+    private func fetchForwardSecrecyTokenFromSvr(
+        key: MessageRootBackupKey,
+        metadataHeader: BackupNonce.MetadataHeader,
+        chatAuth: ChatServiceAuth,
+        isRetry: Bool,
+        backupRequestManager: BackupRequestManager,
+        db: any DB,
+        libsignalNet: LibSignalClient.Net,
+        nonceStore: BackupNonceMetadataStore,
+    ) async throws(SVR🐝Error) -> BackupForwardSecrecyToken {
+        let svr🐝Auth: LibSignalClient.Auth
+        do {
+            svr🐝Auth = try await backupRequestManager.fetchSvr🐝AuthCredential(
+                key: key,
+                chatServiceAuth: chatAuth,
+                // Force fetch new credentials on retries to make sure
+                // it wasn't stale credentials that caused the problem.
+                forceRefresh: isRetry
+            )
+        } catch let error {
+            if error.isNetworkFailureOrTimeout {
+                throw .retryableAutomatically
+            } else if error.isRetryable {
+                throw .retryableAutomatically
+            } else {
+                owsFailDebug("Permanently failed to fetch svr🐝 auth")
+                throw .unrecoverable
+            }
+        }
+
+        let svr🐝 = libsignalNet.svr🐝(auth: svr🐝Auth)
+
+        let response: Svr🐝.RestoreBackupResponse
+        do {
+            response = try await svr🐝.restore(
+                backupKey: key.backupKey,
+                metadata: metadataHeader.data
+            )
+        } catch let error {
+            switch error as? LibSignalClient.SignalError {
+            case .invalidArgument:
+                // Metadata is malformed. Totally unrecoverable.
+                Logger.error("SVR🐝 metadata header malformed; cannot recover backup")
+                throw .unrecoverable
+            case .svrRestoreFailed:
+                // Some SVR🐝 error that means data is lost. Totally unrecoverable.
+                Logger.error("SVR🐝 restore failed; cannot recover backup")
+                throw .unrecoverable
+            case .svrDataMissing:
+                Logger.error("SVR🐝 data missing; cannot recover backup")
+                throw .incorrectBackupKey
+            case .rateLimitedError(let retryAfter, _):
+                // Do a quite rudimentary thing where we just wait
+                // for the retry time, which will leave the user with
+                // a spinner. But we never really expect this to happen.
+                Logger.warn("Rate-limited SVR🐝 restore, waiting...")
+                try? await Task.sleep(nanoseconds: retryAfter.clampedNanoseconds)
+                return try await fetchForwardSecrecyTokenFromSvr(
+                    key: key,
+                    metadataHeader: metadataHeader,
+                    chatAuth: chatAuth,
+                    isRetry: false, /* not that kind of retry */
+                    backupRequestManager: backupRequestManager,
+                    db: db,
+                    libsignalNet: libsignalNet,
+                    nonceStore: nonceStore
+                )
+            case .connectionFailed, .connectionTimeoutError, .ioError:
+                // Network-level failures mostly end up in these buckets;
+                // these can be retried automatically.
+                throw .retryableAutomatically
+            default:
+                // Everything else let the user retry. This will inevitably
+                // include things that are bugs, leaving users in retry loops.
+                Logger.error("Failed SVR🐝 restore w/ unknown error: \(error)")
+                throw .retryableByUser
+            }
+        }
+
+        let forwardSecrecyToken = response.forwardSecrecyToken
+        // Set the next secret metadata immediately; we won't use
+        // it until we next create a backup and it will ensure that
+        // when we do, this previous backup remains decryptable
+        // if that next backups fails at the upload to cdn step.
+        // It is ok if the restore process fails after this point,
+        // either we try again and overwrite this, or we skip
+        // and then the next time we make a backup we still use
+        // this key which is at worst as good as a random starting point.
+        await db.awaitableWrite { tx in
+            nonceStore.setNextSecretMetadata(response.nextSecretMetadata, tx: tx)
+        }
+        return forwardSecrecyToken
     }
 }
 
@@ -173,44 +294,25 @@ extension BackupExportPurpose {
     ) async throws -> EncryptionMetadata {
         switch self {
         case let .remoteExport(key, chatAuth):
-            let svr🐝Auth = try await backupRequestManager.fetchSvr🐝AuthCredential(
-                key: key,
-                chatServiceAuth: chatAuth,
-                forceRefresh: false
-            )
-
-            let svr🐝 = libsignalNet.svr🐝(auth: svr🐝Auth)
-
-            // We want what was the "next" secret metadata from the _last_ backup we made.
-            // This is used as an input into the generator for the metadata for this new
-            // backup (which is the "next" backup from that last time).
-            let mostRecentSecretData: BackupNonce.NextSecretMetadata
-            if let storedSecretData = db.read(block: nonceStore.getNextSecretMetadata(tx:)) {
-                mostRecentSecretData = storedSecretData
-            } else {
-                mostRecentSecretData = BackupNonce.NextSecretMetadata(data: svr🐝.createNewBackupChain(backupKey: key.backupKey))
-                await db.awaitableWrite { tx in
-                    nonceStore.setNextSecretMetadata(mostRecentSecretData, tx: tx)
-                }
-            }
-
-            // TODO: [SVR🐝]: error handling
-            let response = try await svr🐝.store(backupKey: key.backupKey, previousSecretData: mostRecentSecretData.data)
-
-            let encryptionKey = try MessageBackupKey(
-                backupKey: key.backupKey,
-                backupId: key.backupId,
-                forwardSecrecyToken: response.forwardSecrecyToken
-            )
-
-            return BackupExportPurpose.EncryptionMetadata(
-                encryptionKey: encryptionKey,
-                backupId: key.backupId,
-                metadataHeader: response.headerMetadata,
-                nonceMetadata: NonceMetadata(
-                    forwardSecrecyToken: response.forwardSecrecyToken,
-                    nextSecretMetadata: response.nextSecretMetadata
-                )
+            var isRetry = false
+            return try await Retry.performWithBackoff(
+                maxAttempts: 2,
+                block: {
+                    do {
+                        return try await storeEncryptionMetadataToSvr🐝(
+                            key: key,
+                            chatAuth: chatAuth,
+                            isRetry: isRetry,
+                            backupRequestManager: backupRequestManager,
+                            db: db,
+                            libsignalNet: libsignalNet,
+                            nonceStore: nonceStore
+                        )
+                    } catch let error {
+                        isRetry = true
+                        throw error
+                    }
+                },
             )
         case let .linkNsync(ephemeralKey, aci):
             let backupId = ephemeralKey.deriveBackupId(aci: aci)
@@ -226,6 +328,121 @@ extension BackupExportPurpose {
                 nonceMetadata: nil
             )
         }
+    }
+
+    private func storeEncryptionMetadataToSvr🐝(
+        key: MessageRootBackupKey,
+        chatAuth: ChatServiceAuth,
+        isRetry: Bool,
+        backupRequestManager: BackupRequestManager,
+        db: any DB,
+        libsignalNet: LibSignalClient.Net,
+        nonceStore: BackupNonceMetadataStore,
+    ) async throws(SVR🐝Error) -> EncryptionMetadata {
+        let svr🐝Auth: LibSignalClient.Auth
+        do {
+            svr🐝Auth = try await backupRequestManager.fetchSvr🐝AuthCredential(
+                key: key,
+                chatServiceAuth: chatAuth,
+                // Force fetch new credentials on retries to make sure
+                // it wasn't stale credentials that caused the problem.
+                forceRefresh: isRetry
+            )
+        } catch let error {
+            if error.isNetworkFailureOrTimeout {
+                throw .retryableAutomatically
+            } else if error.isRetryable {
+                throw .retryableAutomatically
+            } else {
+                owsFailDebug("Permanently failed to fetch svr🐝 auth")
+                throw .unrecoverable
+            }
+        }
+
+        let svr🐝 = libsignalNet.svr🐝(auth: svr🐝Auth)
+
+        // We want what was the "next" secret metadata from the _last_ backup we made.
+        // This is used as an input into the generator for the metadata for this new
+        // backup (which is the "next" backup from that last time).
+        let mostRecentSecretData: BackupNonce.NextSecretMetadata
+        if let storedSecretData = db.read(block: nonceStore.getNextSecretMetadata(tx:)) {
+            mostRecentSecretData = storedSecretData
+        } else {
+            mostRecentSecretData = BackupNonce.NextSecretMetadata(data: svr🐝.createNewBackupChain(backupKey: key.backupKey))
+            await db.awaitableWrite { tx in
+                nonceStore.setNextSecretMetadata(mostRecentSecretData, tx: tx)
+            }
+        }
+
+        let response: Svr🐝.StoreBackupResponse
+        do {
+            response = try await svr🐝.store(backupKey: key.backupKey, previousSecretData: mostRecentSecretData.data)
+        } catch let error {
+            switch error as? LibSignalClient.SignalError {
+            case .invalidArgument:
+                // This happens when the "previousSecretData" is invalid.
+                // To recover, we have to start over with `createNewBackupChain`.
+                Logger.error("Failed SVR🐝 store w/ invalid argument, wiping next secret metadata")
+                await db.awaitableWrite { tx in
+                    nonceStore.setNextSecretMetadata(nil, tx: tx)
+                }
+                return try await storeEncryptionMetadataToSvr🐝(
+                    key: key,
+                    chatAuth: chatAuth,
+                    isRetry: false, /* Its not that kind of retry */
+                    backupRequestManager: backupRequestManager,
+                    db: db,
+                    libsignalNet: libsignalNet,
+                    nonceStore: nonceStore
+                )
+            case .rateLimitedError(let retryAfter, _):
+                // Do a quite rudimentary thing where we just wait
+                // for the retry time, which will leave the user with
+                // a spinner. But we never really expect this to happen.
+                Logger.warn("Rate-limited SVR🐝 store, waiting...")
+                try? await Task.sleep(nanoseconds: NSEC_PER_MSEC * UInt64(retryAfter * 1000))
+                return try await storeEncryptionMetadataToSvr🐝(
+                    key: key,
+                    chatAuth: chatAuth,
+                    isRetry: false, /* Its not that kind of retry */
+                    backupRequestManager: backupRequestManager,
+                    db: db,
+                    libsignalNet: libsignalNet,
+                    nonceStore: nonceStore
+                )
+            case .connectionFailed, .connectionTimeoutError, .ioError:
+                // Network-level failures mostly end up in these buckets;
+                // these can be retried automatically.
+                throw .retryableAutomatically
+            default:
+                // Everything else let the user retry. This will inevitably
+                // include things that are bugs, leaving users in retry loops.
+                Logger.error("Failed SVR🐝 store w/ unknown error: \(error)")
+                throw .retryableByUser
+            }
+        }
+
+        let encryptionKey: MessageBackupKey
+        do {
+            encryptionKey = try MessageBackupKey(
+                backupKey: key.backupKey,
+                backupId: key.backupId,
+                forwardSecrecyToken: response.forwardSecrecyToken
+            )
+        } catch {
+            owsFailDebug("Failed to derive encryption key!")
+            throw .unrecoverable
+        }
+
+        return BackupExportPurpose.EncryptionMetadata(
+            encryptionKey: encryptionKey,
+            backupId: key.backupId,
+            metadataHeader: response.headerMetadata,
+            nonceMetadata: NonceMetadata(
+                forwardSecrecyToken: response.forwardSecrecyToken,
+                nextSecretMetadata: response.nextSecretMetadata
+            )
+        )
     }
 }
 

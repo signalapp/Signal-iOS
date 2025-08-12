@@ -13,6 +13,8 @@ public enum RegistrationBackupRestoreError {
     case backupNotFound
     case incorrectBackupKey
     case versionMismatch
+    case retryableSVR🐝Error
+    case unretryableSVR🐝Error
     case networkError
     case timeout
 }
@@ -73,6 +75,15 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
             return .timeout
         case BackupImportError.unsupportedVersion:
             return .versionMismatch
+        case let error as SVR🐝Error:
+            switch error {
+            case .retryableAutomatically, .retryableByUser:
+                return .retryableSVR🐝Error
+            case .unrecoverable:
+                return .unretryableSVR🐝Error
+            case .incorrectBackupKey:
+                return .incorrectBackupKey
+            }
         default:
             return .generic
         }
@@ -226,6 +237,42 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
                         continuation: continuation
                     )
                 }
+            })
+        case .retryableSVR🐝Error:
+            title = OWSLocalizedString(
+                "REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_TITLE",
+                comment: "Title for a sheet telling users to try restoring a backup again after a server error."
+            )
+            message = OWSLocalizedString(
+                "REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_BODY",
+                comment: "Body for a sheet telling users to try restoring a backup again after a server error."
+            )
+
+            actions.append(ActionSheetAction(title: tryAgainString) { _ in
+                continuation.resume(returning: .tryAgain)
+            })
+            actions.append(ActionSheetAction(title: CommonStrings.cancelButton) { _ in
+                continuation.resume(returning: .skipRestore)
+            })
+        case .unretryableSVR🐝Error:
+            title = OWSLocalizedString(
+                "REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_TITLE",
+                comment: "Title for a sheet telling users restoring a backup unrecoverably failed."
+            )
+            message = OWSLocalizedString(
+                "REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_BODY",
+                comment: "Body for a sheet telling users restoring a backup unrecoverably failed."
+            )
+
+            actions.append(ActionSheetAction(title: CommonStrings.contactSupport) { @MainActor _ in
+                    Task { @MainActor in
+                        self.presentContactSupportSheet(presenter: presenter) {
+                            continuation.resume(returning: .skipRestore)
+                        }
+                    }
+            })
+            actions.append(ActionSheetAction(title: CommonStrings.okButton) { _ in
+                continuation.resume(returning: .skipRestore)
             })
         case .networkError, .timeout:
             title = OWSLocalizedString(

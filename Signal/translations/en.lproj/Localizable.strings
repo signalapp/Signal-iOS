@@ -6823,11 +6823,23 @@
 /* Title for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "Can't Restore Backup";
 
+/* Body for a sheet telling users to try restoring a backup again after a server error. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_BODY" = "Your backup can’t be restored right now. Check your internet connection and try again.";
+
+/* Title for a sheet telling users to try restoring a backup again after a server error. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_TITLE" = "Can’t Restore Backup";
+
 /* Skip restore action label for backup restore error recovery. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "Skip Restore";
 
 /* Try again action label for backup restore error recovery. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Try Again";
+
+/* Body for a sheet telling users restoring a backup unrecoverably failed. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_BODY" = "An error occurred while restoring your backup. Your backup is not recoverable. Please contact support for help.";
+
+/* Title for a sheet telling users restoring a backup unrecoverably failed. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_TITLE" = "Can’t Restore Backup";
 
 /* Body for a sheet warning users about an incompatible backup version. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "To restore your backup, make sure you’re on the latest version of Signal and try again. If this problem persists, contact support.";
