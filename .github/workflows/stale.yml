@@ -14,20 +14,31 @@ jobs:
     steps:
     - uses: actions/stale@v9
       with:
-        stale-issue-message: >
-          This issue has been automatically marked as stale because it has not had
-          recent activity. It will be closed if no further activity occurs. Thank you
-          for your contributions.
+        only-issue-labels: answered,needs-info
+        stale-issue-message: |
+          This issue has been automatically marked as stale because an answer
+          was given 90 days ago or there is missing information about the issue
+          since 90 days.
+
+          Please close the issue, if you are satisfied with the answer, or add
+          the requested information.
+
+          The issue will be closed in two weeks, if no further activity occurs.  
+          Thank you for your contributions.
         close-issue-message: >
-          This issue has been closed due to inactivity.
-        stale-pr-message: >
-          This PR has been automatically marked as stale because it has not had
-          recent activity. It will be closed if no further activity occurs. Thank you
-          for your contributions.
+          This issue has been closed due to inactivity. See previous message.
+        only-pr-labels: needs-changes
+        stale-pr-message: |
+          This PR has been automatically marked as stale because changes were
+          requested 90 days ago but there was not change.
+
+          This PR will be closed in two weeks, if no further activity occurs.  
+          Thank you for your contributions.
         close-pr-message: >
-          This PR has been closed due to inactivity.
+          This PR has been closed due to inactivity. See previous message.
         days-before-stale: 90
-        days-before-close: 7
+        # this is long enough for someone to go on 2 week holiday + 1 weekend + 1 extra day
+        days-before-close: 17
         stale-issue-label: stale
         stale-pr-label: stale
         # These are comma-separated lists, if we ever want more than one.
