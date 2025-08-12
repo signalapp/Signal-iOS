@@ -137,19 +137,18 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
 
     func testPeek() throws {
         let nowTimestamp = Date().ows_millisecondsSince1970
-        let recencyThreshold = nowTimestamp - BackupAttachmentDownloadStoreImpl.dequeueRecencyThresholdMs
 
         let thumbnailTimestamps: [UInt64] = [
-            recencyThreshold - 4,
-            recencyThreshold - 2,
-            recencyThreshold + 2,
-            recencyThreshold + 4
+            nowTimestamp - 4,
+            nowTimestamp,
+            nowTimestamp - 6,
+            nowTimestamp - 2,
         ]
         let fullsizeTimestamps: [UInt64] = [
-            recencyThreshold - 3,
-            recencyThreshold - 1,
-            recencyThreshold + 1,
-            recencyThreshold + 3
+            nowTimestamp - 7,
+            nowTimestamp - 1,
+            nowTimestamp - 3,
+            nowTimestamp - 5,
         ]
         for (isThumbnail, timestamps) in [(true, thumbnailTimestamps), (false, fullsizeTimestamps)] {
             for timestamp in timestamps {
@@ -215,26 +214,31 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
             )
         }
 
-        let records = try db.read { tx in
+        let thumbnailRecords = try db.read { tx in
             try store.peek(
                 count: 7,
-                currentTimestamp: nowTimestamp,
+                isThumbnail: true,
+                tx: tx
+            )
+        }
+        let fullsizeRecords = try db.read { tx in
+            try store.peek(
+                count: 7,
+                isThumbnail: false,
                 tx: tx
             )
         }
 
-        // Should get the 2 recent thumbnails, then 2 recent fullsize,
-        // then 2 old thumbnails, then 1 old fullsize.
-        XCTAssertEqual(records.map(\.isThumbnail), [true, true, false, false, true, true, false])
-        XCTAssertEqual(records.map(\.maxOwnerTimestamp), [
-            thumbnailTimestamps[3],
-            thumbnailTimestamps[2],
-            fullsizeTimestamps[3],
-            fullsizeTimestamps[2],
-            thumbnailTimestamps[1],
-            thumbnailTimestamps[0],
-            fullsizeTimestamps[1],
-        ])
+        XCTAssert(thumbnailRecords.anySatisfy(\.isThumbnail))
+        XCTAssert(fullsizeRecords.anySatisfy(\.isThumbnail.negated))
+        XCTAssertEqual(
+            thumbnailRecords.map(\.maxOwnerTimestamp),
+            thumbnailTimestamps.sorted().reversed()
+        )
+        XCTAssertEqual(
+            fullsizeRecords.map(\.maxOwnerTimestamp),
+            fullsizeTimestamps.sorted().reversed()
+        )
     }
 
     // MARK: - Helpers

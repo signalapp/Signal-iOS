@@ -85,7 +85,7 @@ public protocol BackupAttachmentDownloadQueueStatusManager: BackupAttachmentDown
     nonisolated func jobDidExperienceError(_ error: Error) async -> BackupAttachmentDownloadQueueStatus?
 
     /// Call when the download queue is emptied.
-    func didEmptyQueue()
+    func didEmptyQueue(isThumbnail: Bool)
 
     func setIsMainAppAndActiveOverride(_ newValue: Bool)
 }
@@ -146,8 +146,12 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         }
     }
 
-    public func didEmptyQueue() {
-        state.isQueueEmpty = true
+    public func didEmptyQueue(isThumbnail: Bool) {
+        if isThumbnail {
+            state.isThumbnailQueueEmpty = true
+        } else {
+            state.isFullsizeQueueEmpty = true
+        }
         stopObservingDeviceAndLocalStates()
     }
 
@@ -193,7 +197,8 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         self.tsAccountManager = tsAccountManager
 
         self.state = State(
-            isQueueEmpty: nil,
+            isFullsizeQueueEmpty: nil,
+            isThumbnailQueueEmpty: nil,
             areDownloadsSuspended: nil,
             isMainApp: appContext.isMainApp,
             isAppReady: false,
@@ -217,7 +222,16 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
     // MARK: - Private
 
     private struct State {
-        var isQueueEmpty: Bool?
+        var isFullsizeQueueEmpty: Bool?
+        var isThumbnailQueueEmpty: Bool?
+
+        var isQueueEmpty: Bool? {
+            guard let isFullsizeQueueEmpty, let isThumbnailQueueEmpty else {
+                return nil
+            }
+            return isFullsizeQueueEmpty && isThumbnailQueueEmpty
+        }
+
         var areDownloadsSuspended: Bool?
 
         var isMainApp: Bool
@@ -241,7 +255,8 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         var isMainAppAndActiveOverride: Bool = false
 
         init(
-            isQueueEmpty: Bool?,
+            isFullsizeQueueEmpty: Bool?,
+            isThumbnailQueueEmpty: Bool?,
             areDownloadsSuspended: Bool?,
             isMainApp: Bool,
             isAppReady: Bool,
@@ -256,7 +271,8 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             downloadDidExperienceOutOfSpaceError: Bool,
             isMainAppAndActive: Bool,
         ) {
-            self.isQueueEmpty = isQueueEmpty
+            self.isFullsizeQueueEmpty = isFullsizeQueueEmpty
+            self.isThumbnailQueueEmpty = isThumbnailQueueEmpty
             self.areDownloadsSuspended = areDownloadsSuspended
             self.isMainApp = isMainApp
             self.isAppReady = isAppReady
@@ -342,15 +358,29 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         // For change logic, treat nil as empty (if nil, observation is unstarted)
         let wasQueueEmpty = state.isQueueEmpty ?? true
 
-        let (isQueueEmpty, areDownloadsSuspended) = db.read { tx in
+        let (
+            isFullsizeQueueEmpty,
+            isThumbnailQueueEmpty,
+            areDownloadsSuspended
+        ) = db.read { tx in
             return (
-                (try? backupAttachmentDownloadStore.hasAnyReadyDownloads(tx: tx))?.negated ?? true,
+                (try? backupAttachmentDownloadStore.hasAnyReadyDownloads(
+                    isThumbnail: false,
+                    tx: tx
+                ))?.negated ?? true,
+                (try? backupAttachmentDownloadStore.hasAnyReadyDownloads(
+                    isThumbnail: true,
+                    tx: tx
+                ))?.negated ?? true,
                 backupSettingsStore.isBackupAttachmentDownloadQueueSuspended(tx: tx)
             )
 
         }
-        state.isQueueEmpty = isQueueEmpty
+        state.isFullsizeQueueEmpty = isFullsizeQueueEmpty
+        state.isThumbnailQueueEmpty = isThumbnailQueueEmpty
         state.areDownloadsSuspended = areDownloadsSuspended
+
+        let isQueueEmpty = isFullsizeQueueEmpty && isThumbnailQueueEmpty
 
         // Only observe if the queue is non-empty, so as to not waste resources;
         // for example, by telling the OS we want battery level updates.
@@ -394,7 +424,8 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
         self.batteryLevelMonitor = deviceBatteryLevelManager?.beginMonitoring(reason: "BackupDownloadQueue")
         self.state = State(
-            isQueueEmpty: state.isQueueEmpty,
+            isFullsizeQueueEmpty: state.isFullsizeQueueEmpty,
+            isThumbnailQueueEmpty: state.isThumbnailQueueEmpty,
             areDownloadsSuspended: state.areDownloadsSuspended,
             isMainApp: appContext.isMainApp,
             isAppReady: appReadiness.isAppReady,
@@ -531,7 +562,7 @@ class MockBackupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQu
         return nil
     }
 
-    func didEmptyQueue() {
+    func didEmptyQueue(isThumbnail: Bool) {
         // Nothing
     }
 

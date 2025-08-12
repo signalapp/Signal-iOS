@@ -63,8 +63,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private let progress: BackupAttachmentDownloadProgress
     private let remoteConfigProvider: RemoteConfigProvider
     private let statusManager: BackupAttachmentDownloadQueueStatusManager
-    private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
+
+    private let fullsizeTaskQueue: TaskQueueLoader<TaskRunner>
+    private let thumbnailTaskQueue: TaskQueueLoader<TaskRunner>
 
     public init(
         appContext: AppContext,
@@ -89,7 +91,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.attachmentStore = attachmentStore
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.listMediaManager = backupListMediaManager
-        self.logger = PrefixedLogger(prefix: "[Backups]")
+        let logger = PrefixedLogger(prefix: "[Backups]")
+        self.logger = logger
         self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
         self.db = db
@@ -99,29 +102,36 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.statusManager = statusManager
         self.tsAccountManager = tsAccountManager
 
-        let taskRunner = TaskRunner(
-            attachmentStore: attachmentStore,
-            attachmentDownloadManager: attachmentDownloadManager,
-            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
-            backupRequestManager: backupRequestManager,
-            backupSettingsStore: backupSettingsStore,
-            dateProvider: dateProvider,
-            db: db,
-            logger: logger,
-            mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
-            progress: progress,
-            remoteConfigProvider: remoteConfigProvider,
-            statusManager: statusManager,
-            tsAccountManager: tsAccountManager
-        )
-        self.taskQueue = TaskQueueLoader(
-            maxConcurrentTasks: Constants.numParallelDownloads,
-            dateProvider: dateProvider,
-            db: db,
-            runner: taskRunner
-        )
-        taskRunner.taskQueueLoader = taskQueue
+        func taskQueue(forThumbnailDownloads: Bool) -> TaskQueueLoader<TaskRunner> {
+            let taskRunner = TaskRunner(
+                forThumbnailDownloads: forThumbnailDownloads,
+                attachmentStore: attachmentStore,
+                attachmentDownloadManager: attachmentDownloadManager,
+                backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+                backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
+                backupRequestManager: backupRequestManager,
+                backupSettingsStore: backupSettingsStore,
+                dateProvider: dateProvider,
+                db: db,
+                logger: logger,
+                mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
+                progress: progress,
+                remoteConfigProvider: remoteConfigProvider,
+                statusManager: statusManager,
+                tsAccountManager: tsAccountManager
+            )
+            return TaskQueueLoader(
+                maxConcurrentTasks: forThumbnailDownloads
+                    ? Constants.numParallelDownloadsThumbnail
+                    : Constants.numParallelDownloadsFullsize,
+                dateProvider: dateProvider,
+                db: db,
+                runner: taskRunner
+            )
+        }
+
+        self.fullsizeTaskQueue = taskQueue(forThumbnailDownloads: false)
+        self.thumbnailTaskQueue = taskQueue(forThumbnailDownloads: true)
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
             self?.startObservingQueueStatus()
@@ -198,27 +208,33 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             // The queue will stop on its own if empty.
             return
         case .notRegisteredAndReady:
-            try await taskQueue.stop()
+            try await fullsizeTaskQueue.stop()
+            try await thumbnailTaskQueue.stop()
             return
         case .noWifiReachability:
             logger.info("Skipping backup attachment downloads while not reachable by wifi")
-            try await taskQueue.stop()
+            try await fullsizeTaskQueue.stop()
+            try await thumbnailTaskQueue.stop()
             return
         case .noReachability:
             logger.info("Skipping backup attachment downloads while not reachable at all")
-            try await taskQueue.stop()
+            try await fullsizeTaskQueue.stop()
+            try await thumbnailTaskQueue.stop()
             return
         case .lowBattery:
             logger.info("Skipping backup attachment downloads while low battery")
-            try await taskQueue.stop()
+            try await fullsizeTaskQueue.stop()
+            try await thumbnailTaskQueue.stop()
             return
         case .lowDiskSpace:
             logger.info("Skipping backup attachment downloads while low on disk space")
-            try await taskQueue.stop()
+            try await fullsizeTaskQueue.stop()
+            try await thumbnailTaskQueue.stop()
             return
         case .appBackgrounded:
             logger.info("Skipping backup attachment downloads while backgrounded")
-            try await taskQueue.stop()
+            try await fullsizeTaskQueue.stop()
+            try await thumbnailTaskQueue.stop()
             return
         }
 
@@ -228,18 +244,29 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             owsFailDebug("Unable to observe download progres \(error.grdbErrorForLogging)")
         }
 
-        let backgroundTask = OWSBackgroundTask(label: #function) { [weak taskQueue] status in
+        let backgroundTask = OWSBackgroundTask(
+            label: #function
+        ) { [weak fullsizeTaskQueue, weak thumbnailTaskQueue] status in
             switch status {
             case .expired:
                 Task {
-                    try await taskQueue?.stop()
+                    try? await fullsizeTaskQueue?.stop()
+                    try? await thumbnailTaskQueue?.stop()
                 }
             case .couldNotStart, .success:
                 break
             }
         }
         defer { backgroundTask.end() }
-        try await taskQueue.loadAndRunTasks()
+
+        let fullsizeTask = Task { [fullsizeTaskQueue] in
+            try await fullsizeTaskQueue.loadAndRunTasks()
+        }
+        let thumbnailTask = Task { [thumbnailTaskQueue] in
+            try await thumbnailTaskQueue.loadAndRunTasks()
+        }
+        try await fullsizeTask.value
+        try await thumbnailTask.value
     }
 
     public func backupPlanDidChange(
@@ -257,7 +284,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         // Stop the queue; we dont _have_ to do this, but we're about to
         // make changes so may as well stop in progress stuff.
         let stopQueueTask = Task {
-            try await taskQueue.stop()
+            try await fullsizeTaskQueue.stop()
+            try await thumbnailTaskQueue.stop()
         }
         tx.addSyncCompletion {
             // Restart the queue when we're done
@@ -444,9 +472,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         let store: TaskStore
 
-        weak var taskQueueLoader: TaskQueueLoader<TaskRunner>?
+        private let forThumbnailDownloads: Bool
 
         init(
+            forThumbnailDownloads: Bool,
             attachmentStore: AttachmentStore,
             attachmentDownloadManager: AttachmentDownloadManager,
             backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
@@ -462,6 +491,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             statusManager: BackupAttachmentDownloadQueueStatusManager,
             tsAccountManager: TSAccountManager
         ) {
+            self.forThumbnailDownloads = forThumbnailDownloads
             self.attachmentStore = attachmentStore
             self.attachmentDownloadManager = attachmentDownloadManager
             self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
@@ -478,8 +508,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.tsAccountManager = tsAccountManager
 
             self.store = TaskStore(
+                forThumbnailDownloads: forThumbnailDownloads,
                 backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-                dateProvider: dateProvider
             )
         }
 
@@ -503,19 +533,19 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 try? await loader.stop()
                 return .retryableError(SuspendedError())
             case .lowDiskSpace:
-                try? await taskQueueLoader?.stop()
+                try? await loader.stop()
                 return .retryableError(NeedsDiskSpaceError())
             case .lowBattery:
-                try? await taskQueueLoader?.stop()
+                try? await loader.stop()
                 return .retryableError(NeedsBatteryError())
             case .appBackgrounded:
-                try? await taskQueueLoader?.stop()
+                try? await loader.stop()
                 return .retryableError(AppBackgroundedError())
             case .noWifiReachability, .noReachability:
-                try? await taskQueueLoader?.stop()
+                try? await loader.stop()
                 return .retryableError(NeedsInternetError())
             case .notRegisteredAndReady:
-                try? await taskQueueLoader?.stop()
+                try? await loader.stop()
                 return .retryableError(NeedsToBeRegisteredError())
             }
 
@@ -646,7 +676,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                     break
                 case .suspended, .lowDiskSpace, .lowBattery, .noWifiReachability, .noReachability, .appBackgrounded, .notRegisteredAndReady:
                     // Stop the queue now proactively.
-                    try? await taskQueueLoader?.stop()
+                    try? await loader.stop()
                 }
                 // We only retry fullsize media tier 404s.
                 // Retries work one of two ways: we first fall back to transit tier
@@ -846,7 +876,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         func didDrainQueue() async {
             await progress.didEmptyDownloadQueue()
-            await statusManager.didEmptyQueue()
+            await statusManager.didEmptyQueue(isThumbnail: forThumbnailDownloads)
             await db.awaitableWrite { tx in
                 // Go ahead and delete all done rows to reset the byte count.
                 // This isn't load-bearing, but its nice to do just in case
@@ -868,20 +898,21 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     class TaskStore: TaskRecordStore {
 
         private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
-        private let dateProvider: DateProvider
+
+        private let forThumbnailDownloads: Bool
 
         init(
+            forThumbnailDownloads: Bool,
             backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
-            dateProvider: @escaping DateProvider,
         ) {
             self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
-            self.dateProvider = dateProvider
+            self.forThumbnailDownloads = forThumbnailDownloads
         }
 
         func peek(count: UInt, tx: DBReadTransaction) throws -> [TaskRecord] {
             return try backupAttachmentDownloadStore.peek(
                 count: count,
-                currentTimestamp: dateProvider().ows_millisecondsSince1970,
+                isThumbnail: forThumbnailDownloads,
                 tx: tx
             ).map { record in
                 return TaskRecord(
@@ -902,7 +933,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     // MARK: -
 
     private enum Constants {
-        static let numParallelDownloads: UInt = 4
+        static let numParallelDownloadsFullsize: UInt = 4
+        static let numParallelDownloadsThumbnail: UInt = 4
     }
 }
 

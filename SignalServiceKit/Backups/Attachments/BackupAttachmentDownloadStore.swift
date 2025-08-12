@@ -34,12 +34,15 @@ public protocol BackupAttachmentDownloadStore {
     /// Returns an empty array if nothing is left to download.
     func peek(
         count: UInt,
-        currentTimestamp: UInt64,
+        isThumbnail: Bool,
         tx: DBReadTransaction
     ) throws -> [QueuedBackupAttachmentDownload]
 
     /// Returns true if there are any rows in the ready state.
-    func hasAnyReadyDownloads(tx: DBReadTransaction) throws -> Bool
+    func hasAnyReadyDownloads(
+        isThumbnail: Bool,
+        tx: DBReadTransaction
+    ) throws -> Bool
 
     /// Mark a download as done.
     /// If we mark a fullsize as done, the thumbnail is marked done too
@@ -201,90 +204,31 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
             .fetchOne(tx.database)
     }
 
-    /// We first dequeue thumbnails more recent than this long ago, then fullsize recent,
-    /// then all thumbnails, then all fullsize.
-    static let dequeueRecencyThresholdMs: UInt64 = (.dayInMs * 30)
-
     public func peek(
         count: UInt,
-        currentTimestamp: UInt64,
+        isThumbnail: Bool,
         tx: DBReadTransaction
     ) throws -> [QueuedBackupAttachmentDownload] {
-        var results = [QueuedBackupAttachmentDownload]()
-        func baseQuery() -> QueryInterfaceRequest<QueuedBackupAttachmentDownload> {
-            return QueuedBackupAttachmentDownload
-                .filter(
-                    Column(QueuedBackupAttachmentDownload.CodingKeys.state)
+        return try QueuedBackupAttachmentDownload
+            .filter(
+                Column(QueuedBackupAttachmentDownload.CodingKeys.state)
                     == QueuedBackupAttachmentDownload.State.ready.rawValue
-                )
-                .order([
-                    Column(QueuedBackupAttachmentDownload.CodingKeys.minRetryTimestamp).asc
-                ])
-                .limit(Int(count) - results.count)
-        }
-
-        // First we try recent thumbnails. Stop when we hit the recency threshold.
-        // Note that the query sorts by minRetryTimestamp, which effectively sorts
-        // by recency (newest first) for anything with a retry count of 0. If we
-        // ask SQL to filter by owner timestamp, it will get confused and use a
-        // B-Tree, since it doesn't know that minRetryTimestamp ordering and
-        // maxOwnerTimestamp ordering as the same. So we use a cursor and just stop
-        // when we reach the timestamp threshold.
-        let recencyThreshold = currentTimestamp - Self.dequeueRecencyThresholdMs
-
-        var thumbnailMinRetryTimestampThreshold: UInt64 = 0
-        var cursor = try baseQuery()
-            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail) == true)
-            .fetchCursor(tx.database)
-        while let record = try cursor.next() {
-            if record.maxOwnerTimestamp ?? .max < recencyThreshold {
-                thumbnailMinRetryTimestampThreshold = record.minRetryTimestamp
-                break
-            }
-            results.append(record)
-        }
-        if results.count == count {
-            return results
-        }
-
-        // Now try recent fullsize.
-        var fullsizeMinRetryTimestampThreshold: UInt64 = 0
-        cursor = try baseQuery()
-            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail) == false)
-            .fetchCursor(tx.database)
-        while let record = try cursor.next() {
-            if record.maxOwnerTimestamp ?? .max < recencyThreshold {
-                fullsizeMinRetryTimestampThreshold = record.minRetryTimestamp
-                break
-            }
-            results.append(record)
-        }
-        if results.count == count {
-            return results
-        }
-
-        // Next get all thumbnails with no time threshold.
-        results.append(contentsOf: try baseQuery()
-            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail) == true)
-            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.minRetryTimestamp) >= thumbnailMinRetryTimestampThreshold)
+            )
+            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail) == isThumbnail)
+            .order([
+                Column(QueuedBackupAttachmentDownload.CodingKeys.minRetryTimestamp).asc
+            ])
+            .limit(Int(count))
             .fetchAll(tx.database)
-        )
-        if results.count == count {
-            return results
-        }
-
-        // Lastly get all fullsize with no time threshold.
-        results.append(contentsOf: try baseQuery()
-            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail) == false)
-            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.minRetryTimestamp) >= fullsizeMinRetryTimestampThreshold)
-            .fetchAll(tx.database)
-        )
-        return results
     }
 
-    public func hasAnyReadyDownloads(tx: DBReadTransaction) throws -> Bool {
+    public func hasAnyReadyDownloads(
+        isThumbnail: Bool,
+        tx: DBReadTransaction
+    ) throws -> Bool {
         return try QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.state) == QueuedBackupAttachmentDownload.State.ready.rawValue)
+            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail) == isThumbnail)
             .isEmpty(tx.database)
             .negated
     }
