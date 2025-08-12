@@ -76,7 +76,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
             message = newMessage
 
             let edits: [TSMessage] = try DependenciesBridge.shared.editMessageStore.findEditHistory(
-                for: message,
+                forMostRecentRevision: message,
                 tx: tx
             ).compactMap { $0.message }
 

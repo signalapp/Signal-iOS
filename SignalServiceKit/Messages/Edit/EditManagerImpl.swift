@@ -483,7 +483,7 @@ public class EditManagerImpl: EditManager {
         tx: DBWriteTransaction
     ) throws {
         try context.editMessageStore
-            .findEditHistory(for: edit, tx: tx)
+            .findEditHistory(forMostRecentRevision: edit, tx: tx)
             .lazy
             .filter { !$0.record.read }
             .forEach { item in

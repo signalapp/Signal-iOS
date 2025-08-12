@@ -267,12 +267,11 @@ public extension TSMessage {
 
     // MARK: - Edits
 
-    @objc
     func removeEdits(transaction: DBWriteTransaction) {
-        try! deleteEdits(
+        try! processRelatedMessageEdits(
             deleteEditRecords: true,
-            transaction: transaction,
-            messageDeleteBlock: { message in
+            tx: transaction,
+            processMessage: { message in
                 // Don't delete the message driving the deletion, just the related edits/interactions.
                 // The presumption is the message itself will be deleted after this step.
                 guard message.uniqueId != self.uniqueId else { return }
@@ -288,42 +287,56 @@ public extension TSMessage {
         )
     }
 
-    /// Build a list of all related edits based on this message.  An array of record, message pairs are
-    /// returned, allowing the caller to operate on one or both of these items at the same time.
+    /// Enumerate "edited messages" (ie revisions) related to self.
     ///
-    /// The processing of edit records is unbounded, but the number of edits per message
-    /// is limited by both the sender and receiver.
-    private func deleteEdits(
+    /// You may pass the latest revision or a prior revision. Prior revisions
+    /// are passed to `processMessage` before the latest revision. If there
+    /// aren't any prior revisions, `self` is assumed to be the latest revision.
+    ///
+    /// The message for `self` isn't re-fetched -- `self` is always passed to
+    /// `processMessage`. (Note also that `self` is always passed to
+    /// `processMessage` exactly once.)
+    ///
+    /// The processing of edit records is unbounded, but the number of edits per
+    /// message is limited by both the sender and receiver.
+    private func processRelatedMessageEdits(
         deleteEditRecords: Bool,
-        transaction: DBWriteTransaction,
-        messageDeleteBlock: ((TSMessage) throws -> Void)
+        tx: DBWriteTransaction,
+        processMessage: ((TSMessage) throws -> Void)
     ) throws {
-        let editsToProcess = try DependenciesBridge.shared.editMessageStore.findEditDeleteRecords(
-            for: self,
-            tx: transaction
-        )
+        let editMessageStore = DependenciesBridge.shared.editMessageStore
+        let editRecords = try editMessageStore.findEditRecords(relatedTo: self, tx: tx)
 
         if deleteEditRecords {
-            try editsToProcess
-                .compactMap { edit -> EditRecord? in
-                    guard case .pastRevision(let editRecord, _) = edit else { return nil }
-                    return editRecord
-                }
-                .forEach { record in
-                    try record.delete(transaction.database)
-                }
+            for editRecord in editRecords {
+                try editRecord.delete(tx.database)
+            }
         }
 
-        try editsToProcess
-            .compactMap { edit -> TSMessage? in
-                switch edit {
-                case .latest(let message): message
-                case .pastRevision(_, let message): message
+        let pastRevisionIds = Set(editRecords.map(\.pastRevisionId))
+        var latestRevisionIds = Set(editRecords.map(\.latestRevisionId))
+        latestRevisionIds.subtract(pastRevisionIds)
+
+        if editRecords.isEmpty {
+            latestRevisionIds.insert(self.sqliteRowId!)
+        } else {
+            // Check the integrity of the EditRecords.
+            if latestRevisionIds.count != 1 || pastRevisionIds.count != editRecords.count {
+                let revisionIds = editRecords.map { ($0.pastRevisionId, $0.latestRevisionId) }
+                owsFailDebug("Found malformed edit history: \(revisionIds)")
+            }
+        }
+
+        for revisionId in pastRevisionIds.sorted() + latestRevisionIds.sorted() {
+            if revisionId == self.sqliteRowId {
+                try processMessage(self)
+            } else {
+                let interaction = InteractionFinder.fetch(rowId: revisionId, transaction: tx)
+                if let message = interaction as? TSMessage {
+                    try processMessage(message)
                 }
             }
-            .forEach { message in
-                try messageDeleteBlock(message)
-            }
+        }
     }
 
     // MARK: - Remote Delete
@@ -437,17 +450,14 @@ public extension TSMessage {
     }
 
     private func markMessageAsRemotelyDeleted(transaction: DBWriteTransaction) {
-
-        // Delete the current interaction
-        updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
-
         // Delete any past edit revisions.
-        try! deleteEdits(
+        try! processRelatedMessageEdits(
             deleteEditRecords: false,
-            transaction: transaction
-        ) { message in
-            message.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
-        }
+            tx: transaction,
+            processMessage: { message in
+                message.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
+            }
+        )
         SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(messageIds: [self.uniqueId])
     }
 
