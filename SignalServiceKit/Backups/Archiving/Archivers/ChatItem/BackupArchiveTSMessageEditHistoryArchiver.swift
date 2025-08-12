@@ -199,7 +199,7 @@ final class BackupArchiveTSMessageEditHistoryArchiver<MessageType: TSMessage>
         let editHistory: [(EditRecord, MessageType?)]
         do {
             editHistory = try editMessageStore.findEditHistory(
-                for: latestRevisionMessage,
+                forMostRecentRevision: latestRevisionMessage,
                 tx: context.tx
             ).reversed()
         } catch {

@@ -21,11 +21,6 @@ public enum EditMessageTarget {
     }
 }
 
-public enum EditDeleteTarget<MessageType: TSMessage> {
-    case latest(MessageType)
-    case pastRevision(EditRecord, MessageType?)
-}
-
 public protocol EditMessageStore {
 
     // MARK: - Reads
@@ -52,17 +47,32 @@ public protocol EditMessageStore {
     /// An edit record and message instance (if one is found) for each past
     /// revision, from newest to oldest.
     func findEditHistory<MessageType: TSMessage>(
-        for message: MessageType,
+        forMostRecentRevision message: MessageType,
         tx: DBReadTransaction
     ) throws -> [(record: EditRecord, message: MessageType?)]
 
-    /// This method is similar to findEditHistory, but will find records and interactions where the
-    /// passed in message is _either_ the latest edit, or a past revision.  This is useful when
-    /// deleting a message, since the record needs to be removed regardles of the type of edit
-    func findEditDeleteRecords<MessageType: TSMessage>(
-        for message: MessageType,
+    /// Fetches all EditRecords related to `message`.
+    ///
+    /// The `message` may be the latest revision or a past revision.
+    ///
+    /// The EditRecords are fetched "recursively", meaning that every EditRecord
+    /// that references a message ID which is referenced by any element of the
+    /// result will be returned. This is useful when deleting messages because
+    /// it allows us to maintain invariants required by FOREIGN KEY constraints.
+    ///
+    /// For example, if the revision "graph" is well-formed, we'll return
+    /// EditRecords with distinct pastRevisionIds (e.g., 102, 103) which all
+    /// refer to the same latestRevisionId (e.g., 101), and we'll return this
+    /// exact same result regardless of whether `message` refers to a past
+    /// revision (e.g., 102) or the latest revision (e.g., 101).
+    ///
+    /// If the revision "graph" isn't well-formed, we must fetch extra
+    /// EditRecords to ensure we delete all the EditRecords that reference the
+    /// messages that are about to be deleted.
+    func findEditRecords(
+        relatedTo message: TSMessage,
         tx: DBReadTransaction
-    ) throws -> [EditDeleteTarget<MessageType>]
+    ) throws -> [EditRecord]
 
     // MARK: - Writes
 
@@ -184,7 +194,7 @@ public class EditMessageStoreImpl: EditMessageStore {
     }
 
     public func findEditHistory<MessageType: TSMessage>(
-        for message: MessageType,
+        forMostRecentRevision message: MessageType,
         tx: DBReadTransaction
     ) throws -> [(record: EditRecord, message: MessageType?)] {
         /// By ordering DESC on `pastRevisionId`, we end up ordering edits
@@ -217,66 +227,33 @@ public class EditMessageStoreImpl: EditMessageStore {
         }
     }
 
-    /// This method is similar to findEditHistory, but will find records and interactions where the
-    /// passed in message is _either_ the latest edit, or a past revision.  This is useful when
-    /// deleting a message, since the record needs to be removed regardles of the type of edit
-    public func findEditDeleteRecords<MessageType: TSMessage>(
-        for message: MessageType,
+    public func findEditRecords(
+        relatedTo message: TSMessage,
         tx: DBReadTransaction
-    ) throws -> [EditDeleteTarget<MessageType>] {
-        var records = try EditRecord
-            .filter(Column(EditRecord.CodingKeys.latestRevisionId) == message.grdbId)
-            .order([Column(EditRecord.CodingKeys.pastRevisionId).desc])
-            .fetchAll(tx.database)
+    ) throws -> [EditRecord] {
+        // We need to fetch every EditRecord that references message.grdbId or
+        // anything that those EditRecords reference, recursively.
 
-        // If nothing is found, look for the past revision that matches this message.
-        // Once found, use the latestRevisionId to get the list of edit revisions.
-        // This can happen if other clients send something other than the latest
-        // revisions timestamp to delete a message.
-        if records.isEmpty {
-            guard let record = try EditRecord
-                .filter(Column(EditRecord.CodingKeys.pastRevisionId) == message.grdbId)
-                .fetchOne(tx.database)
-            else {
-                return []
+        var revisionIdsToCheck = [message.sqliteRowId].compacted()
+        var alreadyCheckedRevisionIds = Set<Int64>()
+
+        var editRecords = [EditRecord]()
+        while !revisionIdsToCheck.isEmpty {
+            let revisionId = revisionIdsToCheck.removeFirst()
+            guard alreadyCheckedRevisionIds.insert(revisionId).inserted else {
+                continue
             }
-
-            records = try EditRecord
-                .filter(Column(EditRecord.CodingKeys.latestRevisionId) == record.latestRevisionId)
-                .order([Column(EditRecord.CodingKeys.pastRevisionId).desc])
-                .fetchAll(tx.database)
+            let records = try EditRecord.filter(
+                Column(EditRecord.CodingKeys.latestRevisionId) == revisionId
+                || Column(EditRecord.CodingKeys.pastRevisionId) == revisionId
+            ).fetchAll(tx.database)
+            revisionIdsToCheck.append(contentsOf: records.map(\.latestRevisionId))
+            revisionIdsToCheck.append(contentsOf: records.map(\.pastRevisionId))
+            editRecords.append(contentsOf: records)
         }
 
-        // Map both columns into a single set to remove duplicates
-        let idSet: Set<Int64> = Set(records.map {
-            [$0.pastRevisionId, $0.latestRevisionId]
-        }.reduce([], +))
-
-        return idSet.compactMap { rowId in
-            let interaction = InteractionFinder.fetch(
-                rowId: rowId,
-                transaction: SDSDB.shimOnlyBridge(tx)
-            )
-            let message = interaction as? MessageType
-            let record = records.first { $0.pastRevisionId == rowId }
-
-            switch (record, message) {
-            case (.some(let r), .some(let m)):
-                // Have both a TSMessage and and edit record. This is a prior record.
-                return .pastRevision(r, m)
-            case (.none, .some(let m)):
-                // Have a TSMessage, but no edit record. This is the latest revision.
-                return .latest(m)
-            case (.some(let r), .none):
-                // Have a record, but the interaction is the wrong type
-                owsFailDebug("Unexpectedly found interaction \(String(describing: interaction))")
-                return .pastRevision(r, nil)
-            case (.none, .none):
-                // Have neither a record nor the correct interaction type.
-                owsFailDebug("Unexpectedly found both empty edit record and incorrect interaction type")
-                return nil
-            }
-        }
+        // We'll have duplicates because some will be fetched repeatedly.
+        return editRecords.removingDuplicates(uniquingElementsBy: { $0.id! })
     }
 
     public func insert(
