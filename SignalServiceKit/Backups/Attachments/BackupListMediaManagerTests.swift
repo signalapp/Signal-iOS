@@ -61,7 +61,7 @@ public class BackupListMediaManagerTests {
             valueFlags: ["global.backups.mediaTierFallbackCdnNumber": "\(remoteConfigCdnNumber)"],
         )
 
-        let mediaRootBackupKey = try! MediaRootBackupKey(data: Data(repeating: 8, count: 32))
+        let mediaRootBackupKey = MediaRootBackupKey(backupKey: .generateRandom())
         await db.awaitableWrite { tx in
             accountKeyStore.setMediaRootBackupKey(mediaRootBackupKey, tx: tx)
             backupSettingsStore.setBackupPlan(.paid(optimizeLocalStorage: false), tx: tx)

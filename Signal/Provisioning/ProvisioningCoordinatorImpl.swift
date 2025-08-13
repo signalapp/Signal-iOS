@@ -385,7 +385,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 case SVR.KeysError.missingMasterKey:
                     owsFailDebug("Failed to store master key from provisioning message")
                     return .obsoleteLinkedDeviceError
-                case SVR.KeysError.missingMediaRootBackupKey:
+                case SVR.KeysError.missingOrInvalidMRBK:
                     return .obsoleteLinkedDeviceError
                 default:
                     owsFailDebug("Unexpected Error")

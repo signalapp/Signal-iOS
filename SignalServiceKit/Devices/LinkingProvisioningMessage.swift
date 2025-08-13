@@ -126,10 +126,15 @@ public struct LinkingProvisioningMessage {
         guard let mrbkBytes = proto.mediaRootBackupKey else {
             throw ProvisioningError.invalidProvisionMessage("missing media key from provisioning message")
         }
-        self.mrbk = try MediaRootBackupKey(data: mrbkBytes)
+        self.mrbk = try MediaRootBackupKey(backupKey: BackupKey(contents: mrbkBytes))
 
         let aci = aci
-        self.ephemeralBackupKey = try proto.ephemeralBackupKey.map { try MessageRootBackupKey(data: $0, aci: aci) }
+        self.ephemeralBackupKey = try proto.ephemeralBackupKey.map {
+            return MessageRootBackupKey(
+                backupKey: try BackupKey(contents: $0),
+                aci: aci
+            )
+        }
     }
 
     public func buildEncryptedMessageBody(theirPublicKey: PublicKey) throws -> Data {

@@ -431,12 +431,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     ) throws(SVR.KeysError) {
         Logger.info("")
 
-        do {
-            if let mbrk = try syncMessage.mediaRootBackupKey.map({ try MediaRootBackupKey(data: $0) }) {
-                accountKeyStore.setMediaRootBackupKey(mbrk, tx: tx)
-            }
-        } catch {
-            throw SVR.KeysError.missingMediaRootBackupKey
+        if
+            let mrbkBytes = syncMessage.mediaRootBackupKey,
+            let backupKey = try? BackupKey(contents: mrbkBytes)
+        {
+            accountKeyStore.setMediaRootBackupKey(MediaRootBackupKey(backupKey: backupKey), tx: tx)
+        } else {
+            throw SVR.KeysError.missingOrInvalidMRBK
         }
 
         var keyChanged = false

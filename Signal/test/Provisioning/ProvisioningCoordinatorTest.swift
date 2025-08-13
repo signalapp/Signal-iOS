@@ -103,7 +103,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             aciIdentityKeyPair: IdentityKeyPair.generate(),
             pniIdentityKeyPair: IdentityKeyPair.generate(),
             profileKey: .generateRandom(),
-            mrbk: MediaRootBackupKey.forTesting(),
+            mrbk: MediaRootBackupKey(backupKey: .generateRandom()),
             ephemeralBackupKey: nil,
             areReadReceiptsEnabled: true,
             provisioningCode: "1234"
@@ -215,7 +215,7 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
     func setIsLinkAndSyncEnabledOnPrimary(_ isEnabled: Bool, tx: DBWriteTransaction) {}
 
     func generateEphemeralBackupKey(aci: Aci) -> MessageRootBackupKey {
-        return .forTesting(aci: aci)
+        return MessageRootBackupKey(backupKey: .generateRandom(), aci: aci)
     }
 
     func waitForLinkingAndUploadBackup(

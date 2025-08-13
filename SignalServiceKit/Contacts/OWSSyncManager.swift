@@ -251,8 +251,8 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             switch error {
             case .missingMasterKey:
                 Logger.warn("Key sync messages missing master key")
-            case .missingMediaRootBackupKey:
-                Logger.warn("Key sync messages missing media root backup key")
+            case .missingOrInvalidMRBK:
+                Logger.warn("Key sync messages missing or invalid media root backup key")
             }
         }
 

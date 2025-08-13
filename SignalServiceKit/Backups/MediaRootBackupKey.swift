@@ -26,16 +26,8 @@ public struct MediaRootBackupKey: BackupKeyMaterial {
     public var credentialType: BackupAuthCredentialType { .media }
     public var backupKey: BackupKey
 
-    init() {
-        self.backupKey = LibSignalClient.BackupKey.generateRandom()
-    }
-
-    init(data: Data) throws(BackupKeyMaterialError) {
-        do {
-            self.backupKey = try BackupKey(contents: data)
-        } catch {
-            throw BackupKeyMaterialError.derivationError(error)
-        }
+    init(backupKey: BackupKey) {
+        self.backupKey = backupKey
     }
 
     public func deriveMediaId(_ mediaName: String) throws(BackupKeyMaterialError) -> Data {

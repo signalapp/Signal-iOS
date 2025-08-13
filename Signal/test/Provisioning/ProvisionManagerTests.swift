@@ -53,7 +53,7 @@ public class ProvisioningManagerTests {
         let myRecipient = SignalRecipient(aci: myAci, pni: myPni, phoneNumber: myPhoneNumber)
         let profileKey = Aes256Key.generateRandom()
         let accountEntropyPool = AccountEntropyPool()
-        let mrbk = MediaRootBackupKey.forTesting()
+        let mrbk = MediaRootBackupKey(backupKey: .generateRandom())
         let readReceiptsEnabled = true
         let provisioningCode = "ABC123"
 
@@ -157,7 +157,7 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
     func setIsLinkAndSyncEnabledOnPrimary(_ isEnabled: Bool, tx: DBWriteTransaction) {}
 
     func generateEphemeralBackupKey(aci: Aci) -> MessageRootBackupKey {
-        return .forTesting(aci: aci)
+        return MessageRootBackupKey(backupKey: .generateRandom(), aci: aci)
     }
 
     func waitForLinkingAndUploadBackup(

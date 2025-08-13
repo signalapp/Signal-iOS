@@ -28,7 +28,7 @@ extension BackupKeyMaterial {
 
 public enum BackupKeyMaterialError: Error {
     case missingMessageBackupKey
-    case missingMediaRootBackupKey
+    case missingOrInvalidMRBK
     /// Encountered an error using libsignal methods to derive keys.
     case derivationError(Error)
 }

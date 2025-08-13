@@ -984,7 +984,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 throw BackupImportError.unsupportedVersion
             }
             do {
-                localStorage.setMediaRootBackupKey(try MediaRootBackupKey(data: backupInfo.mediaRootBackupKey), tx: tx)
+                let mrbk = try BackupKey(contents: backupInfo.mediaRootBackupKey)
+                localStorage.setMediaRootBackupKey(MediaRootBackupKey(backupKey: mrbk), tx: tx)
             } catch {
                 frameErrors.append(LoggableErrorAndProto(
                     error: BackupArchive.RestoreFrameError.restoreFrameError(

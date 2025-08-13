@@ -22,16 +22,7 @@ public struct MessageRootBackupKey: BackupKeyMaterial {
         }
     }
 
-    init(data: Data, aci: Aci) throws(BackupKeyMaterialError) {
-        do {
-            let backupKey = try BackupKey(contents: data)
-            self.init(backupKey: backupKey, aci: aci)
-        } catch {
-            throw BackupKeyMaterialError.derivationError(error)
-        }
-    }
-
-    private init(backupKey: BackupKey, aci: Aci) {
+    init(backupKey: BackupKey, aci: Aci) {
         self.backupKey = backupKey
         self.backupId = backupKey.deriveBackupId(aci: aci)
         self.aci = aci

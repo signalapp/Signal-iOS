@@ -79,7 +79,7 @@ public class AccountKeyStore {
             return nil
         }
         do {
-            return try MediaRootBackupKey(data: data)
+            return try MediaRootBackupKey(backupKey: BackupKey(contents: data))
         } catch {
             owsFailDebug("Failed to instantiate MediaRootBackupKey")
         }
@@ -93,7 +93,7 @@ public class AccountKeyStore {
         if let value = getMediaRootBackupKey(tx: tx) {
             return value
         }
-        let newValue = MediaRootBackupKey()
+        let newValue = MediaRootBackupKey(backupKey: .generateRandom())
         mrbkKvStore.setData(newValue.serialize(), key: Keys.mrbkKeyName, transaction: tx)
         return newValue
     }

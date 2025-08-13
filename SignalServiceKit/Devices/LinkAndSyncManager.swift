@@ -5,22 +5,6 @@
 
 public import LibSignalClient
 
-extension MessageRootBackupKey {
-    #if TESTABLE_BUILD
-    public static func forTesting(aci: Aci) -> MessageRootBackupKey {
-        try! MessageRootBackupKey(data: Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)), aci: aci)
-    }
-    #endif
-}
-
-extension MediaRootBackupKey {
-    #if TESTABLE_BUILD
-    public static func forTesting() -> MediaRootBackupKey {
-        try! MediaRootBackupKey(data: Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)))
-    }
-    #endif
-}
-
 /// For Link'n'Sync errors thrown on the primary device.
 public enum PrimaryLinkNSyncError: Error {
     case cancelled(linkedDeviceId: DeviceId?)
@@ -171,8 +155,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
     public func generateEphemeralBackupKey(aci: Aci) -> MessageRootBackupKey {
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true)
-        return try! MessageRootBackupKey(
-            data: Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)),
+        return MessageRootBackupKey(
+            backupKey: .generateRandom(),
             aci: aci
         )
     }

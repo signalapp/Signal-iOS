@@ -58,12 +58,6 @@ public struct MasterKey: Codable {
                     dataToDeriveFrom: $0.rawData
                 )
             }
-        case .backupKey:
-            guard FeatureFlags.Backups.supported else {
-                owsFail("Internal only")
-            }
-
-            return SVR.DerivedKeyData(keyType: .backupKey, dataToDeriveFrom: masterKey)
         }
     }
 
@@ -118,8 +112,6 @@ private extension SVR.DerivedKey {
             return "Manifest_\(version)"
         case .legacy_storageServiceRecord(let identifier):
             return "Item_\(identifier.data.base64EncodedString())"
-        case .backupKey:
-            return "20231003_Signal_Backups_GenerateBackupKey"
         }
     }
 
@@ -136,15 +128,6 @@ private extension SVR.DerivedKey {
                 for: infoData,
                 using: SymmetricKey(data: dataToDeriveFrom)
             ))
-        case .backupKey:
-            // TODO: Change this
-            let bytes = try! hkdf(
-                outputLength: Self.backupKeyLength,
-                inputKeyMaterial: dataToDeriveFrom,
-                salt: Data(),
-                info: infoData
-            )
-            return bytes
         }
     }
 }
