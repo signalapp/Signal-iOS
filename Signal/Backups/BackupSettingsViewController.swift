@@ -1287,7 +1287,7 @@ struct BackupSettingsView: View {
                     )
                     .font(.subheadline)
                 } icon: {
-                    Image(uiImage: .info)
+                    Image(uiImage: Theme.iconImage(.info))
                         .frame(width: 24, height: 24)
                 }
                 .padding(.vertical, 2)

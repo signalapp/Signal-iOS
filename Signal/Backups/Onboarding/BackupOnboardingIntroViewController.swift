@@ -62,7 +62,7 @@ struct BackupOnboardingIntroView: View {
         ScrollableContentPinnedFooterView {
             VStack {
                 HStack {
-                    Image(.info)
+                    Image(uiImage: Theme.iconImage(.info))
                         .frame(width: 25, height: 40)
 
                     Text(OWSLocalizedString(
