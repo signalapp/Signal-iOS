@@ -16,6 +16,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private let attachmentDownloadStore: AttachmentDownloadStore
     private let attachmentStore: AttachmentStore
     private let attachmentUpdater: AttachmentUpdater
+    private let backupSettingsStore: BackupSettingsStore
     private let db: any DB
     private let decrypter: Decrypter
     private let downloadQueue: DownloadQueue
@@ -33,6 +34,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         backupRequestManager: BackupRequestManager,
+        backupSettingsStore: BackupSettingsStore,
         currentCallProvider: CurrentCallProvider,
         dateProvider: @escaping DateProvider,
         db: any DB,
@@ -52,6 +54,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         self.attachmentDownloadStore = attachmentDownloadStore
         self.attachmentStore = attachmentStore
         self.appReadiness = appReadiness
+        self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.decrypter = Decrypter(
             attachmentValidator: attachmentValidator,
@@ -251,6 +254,23 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
     ) {
+        let backupPlan = backupSettingsStore.backupPlan(tx: tx)
+        let isEligibleToDownloadFromMediaTier: Bool
+        if FeatureFlags.Backups.supported {
+            switch backupPlan {
+            case .disabled, .disabling:
+                isEligibleToDownloadFromMediaTier = false
+            case .free:
+                // We still might attempt media tier downloads
+                // while currently free tier.
+                isEligibleToDownloadFromMediaTier = true
+            case .paid, .paidExpiringSoon, .paidAsTester:
+                isEligibleToDownloadFromMediaTier = true
+            }
+        } else {
+            isEligibleToDownloadFromMediaTier = false
+        }
+
         var didEnqueueAnyDownloads = false
         referencedAttachments.forEach { referencedAttachment in
             let sourceToUse: QueuedAttachmentDownloadRecord.SourceType = {
@@ -264,7 +284,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     return mediaTierInfo == nil ? .transitTier : .mediaTierFullsize
                 }
                 if
-                    FeatureFlags.Backups.supported,
+                    isEligibleToDownloadFromMediaTier,
                     mediaTierInfo.lastDownloadAttemptTimestamp == nil
                 {
                     // If we've never tried media tier, always try that first.
@@ -277,7 +297,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     return .transitTier
                 } else {
                     // If both have failed fall back to default.
-                    return FeatureFlags.Backups.supported
+                    return isEligibleToDownloadFromMediaTier
                         ? .mediaTierFullsize
                         : .transitTier
                 }

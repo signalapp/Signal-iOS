@@ -501,6 +501,7 @@ public class AppSetup {
             backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupRequestManager: backupRequestManager,
+            backupSettingsStore: backupSettingsStore,
             currentCallProvider: currentCallProvider,
             dateProvider: dateProvider,
             db: db,
