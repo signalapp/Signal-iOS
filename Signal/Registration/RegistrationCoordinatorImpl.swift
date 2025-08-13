@@ -3551,7 +3551,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    // returns nil if no steps needed.
+    // returns nil if no steps performed.
     private func showPinEntryIfNeeded(
         accountIdentity: AccountIdentity
     ) -> RegistrationStep? {
