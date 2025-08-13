@@ -8,8 +8,6 @@ import LibSignalClient
 
 public protocol BackupListMediaManager {
     func queryListMediaIfNeeded() async throws
-
-    func setNeedsQueryListMedia(tx: DBWriteTransaction)
 }
 
 public class BackupListMediaManagerImpl: BackupListMediaManager {
@@ -962,7 +960,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             return
         }
         try ListedBackupMediaObject.deleteAll(tx.database)
-        self.kvStore.removeValue(forKey: Constants.needsToRunAgainKey, transaction: tx)
         self.kvStore.setString(currentUploadEra, key: Constants.inProgressUploadEraKey, transaction: tx)
         self.kvStore.setUInt64(
             dateProvider().ows_millisecondsSince1970,
@@ -992,16 +989,10 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         self.kvStore.removeValue(forKey: Constants.lastEnumeratedAttachmentIdKey, transaction: tx)
     }
 
-    public func setNeedsQueryListMedia(tx: DBWriteTransaction) {
-        self.kvStore.setBool(true, key: Constants.needsToRunAgainKey, transaction: tx)
-    }
-
     private enum Constants {
         /// Maps to the upload era (active subscription) when we last queried the list media
         /// endpoint, or nil if its never been queried.
         static let lastListMediaUploadEraKey = "lastListMediaUploadEra"
-
-        static let needsToRunAgainKey = "needsToRunAgainKey"
 
         /// Maps to the timestamp we last completed a list media request.
         static let lastListMediaStartTimestampKey = "lastListMediaTimestamp"
@@ -1038,10 +1029,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
 class MockBackupListMediaManager: BackupListMediaManager {
     func queryListMediaIfNeeded() async throws {
-        // Nothing
-    }
-
-    func setNeedsQueryListMedia(tx: DBWriteTransaction) {
         // Nothing
     }
 }

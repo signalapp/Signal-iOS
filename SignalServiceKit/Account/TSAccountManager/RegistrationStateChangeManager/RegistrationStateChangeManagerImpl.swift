@@ -13,9 +13,9 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let accountKeyStore: AccountKeyStore
     private let appContext: AppContext
     private let authCredentialStore: AuthCredentialStore
+    private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupCDNCredentialStore: BackupCDNCredentialStore
     private let backupIdManager: BackupIdManager
-    private let backupListMediaManager: BackupListMediaManager
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
@@ -38,9 +38,9 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         accountKeyStore: AccountKeyStore,
         appContext: AppContext,
         authCredentialStore: AuthCredentialStore,
+        backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupCDNCredentialStore: BackupCDNCredentialStore,
         backupIdManager: BackupIdManager,
-        backupListMediaManager: BackupListMediaManager,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
         db: DB,
@@ -62,9 +62,9 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         self.accountKeyStore = accountKeyStore
         self.appContext = appContext
         self.authCredentialStore = authCredentialStore
+        self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupCDNCredentialStore = backupCDNCredentialStore
         self.backupIdManager = backupIdManager
-        self.backupListMediaManager = backupListMediaManager
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
@@ -165,8 +165,9 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
                 notificationPresenter.notifyUserOfDeregistration(tx: tx)
             }
 
-            // Ensure when we reregister, we will query list media.
-            backupListMediaManager.setNeedsQueryListMedia(tx: tx)
+            // Rotate the upload era, thereby ensuring that when we reregister
+            // we will run a list-media.
+            backupAttachmentUploadEraStore.rotateUploadEra(tx: tx)
 
             // Wipe our cached Backup credentials, which may be invalid if we
             // eventually re-register.
