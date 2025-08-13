@@ -1028,17 +1028,8 @@ class BackupSettingsViewController:
             onContinue: { [weak self] in
                 guard let self else { return }
 
-                Logger.warn("Setting new AEP!")
-
-                // Persists the new AEP, and schedules all the relevant side
-                // effects. A big deal!
                 db.write { tx in
-                    self.svr.setNewAccountEntropyPoolWithSideEffects(
-                        newCandidateAEP,
-                        disablePIN: false,
-                        authedAccount: .implicit(),
-                        transaction: tx
-                    )
+                    self.setAEPAndRotateMRBK(newCandidateAEP: newCandidateAEP, tx: tx)
                 }
 
                 // Pop all the way back to Backup Settings.
@@ -1058,6 +1049,36 @@ class BackupSettingsViewController:
         )
 
         navigationController?.pushViewController(confirmKeyViewController, animated: true)
+    }
+
+    /// Sets the given AEP, and rotates the MRBK. A big deal – approach with
+    /// great caution.
+    private func setAEPAndRotateMRBK(
+        newCandidateAEP: AccountEntropyPool,
+        tx: DBWriteTransaction,
+    ) {
+        switch backupSettingsStore.backupPlan(tx: tx) {
+        case .disabled:
+            break
+        case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
+            owsFail("Attempting to set AEP, but Backups are not disabled!")
+        }
+
+        Logger.warn("Setting new AEP and MRBK!")
+
+        // Generate a new, random MRBK for use in the future alongside our new,
+        // random AEP.
+        accountKeyStore.setMediaRootBackupKey(
+            MediaRootBackupKey(backupKey: .generateRandom()),
+            tx: tx
+        )
+
+        svr.setNewAccountEntropyPoolWithSideEffects(
+            newCandidateAEP,
+            disablePIN: false,
+            authedAccount: .implicit(),
+            transaction: tx
+        )
     }
 }
 

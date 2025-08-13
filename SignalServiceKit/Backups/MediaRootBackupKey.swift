@@ -26,7 +26,7 @@ public struct MediaRootBackupKey: BackupKeyMaterial {
     public var credentialType: BackupAuthCredentialType { .media }
     public var backupKey: BackupKey
 
-    init(backupKey: BackupKey) {
+    public init(backupKey: BackupKey) {
         self.backupKey = backupKey
     }
 
