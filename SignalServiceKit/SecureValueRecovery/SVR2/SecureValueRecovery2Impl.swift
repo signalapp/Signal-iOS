@@ -1148,18 +1148,23 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             self.accountKeyStore.getAccountEntropyPool(tx: $0),
             self.twoFAManager.pinCode(transaction: $0)
         )}
-        guard accountEntropyPool == nil else { return }
-        if isRegisteredPrimary {
-            Logger.info("")
-            db.write { tx in
-                let newAEP = self.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
-                self.setNewAccountEntropyPoolWithSideEffects(
-                    newAEP,
-                    disablePIN: pinCode == nil,
-                    authedAccount: .implicit(),
-                    transaction: tx
-                )
-            }
+
+        guard
+            accountEntropyPool == nil,
+            isRegisteredPrimary
+        else {
+            return
+        }
+
+        Logger.info("Generating new AEP, we are registered but missing one!")
+
+        db.write { tx in
+            self.setNewAccountEntropyPoolWithSideEffects(
+                AccountEntropyPool(),
+                disablePIN: pinCode == nil,
+                authedAccount: .implicit(),
+                transaction: tx
+            )
         }
     }
 

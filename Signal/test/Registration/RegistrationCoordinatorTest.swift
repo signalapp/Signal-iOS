@@ -11,14 +11,17 @@ import Testing
 @testable import SignalServiceKit
 
 public class RegistrationCoordinatorTest {
+    // Default to the SSK AEP.
+    typealias AccountEntropyPool = SignalServiceKit.AccountEntropyPool
+
     private var stubs = Stubs()
 
     private var date: Date { self.stubs.date }
-    private var dateProvider: DateProvider!
 
     private var appExpiry: AppExpiry!
     private var changeNumberPniManager: ChangePhoneNumberPniManagerMock!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
+    private var dateProvider: DateProvider!
     private var db: (any DB)!
     private var experienceManager: RegistrationCoordinatorImpl.TestMocks.ExperienceManager!
     private var featureFlags: RegistrationCoordinatorImpl.TestMocks.FeatureFlags!
@@ -45,7 +48,6 @@ public class RegistrationCoordinatorTest {
     private var tsAccountManagerMock: MockTSAccountManager!
     private var usernameApiClientMock: RegistrationCoordinatorImpl.TestMocks.UsernameApiClient!
     private var usernameLinkManagerMock: MockUsernameLinkManager!
-    private var missingKeyGenerator: MissingKeyGenerator!
 
     class RegistrationTestRun {
         private(set) var recordedSteps = [TestStep]()
@@ -55,28 +57,18 @@ public class RegistrationCoordinatorTest {
     }
     private var testRun = RegistrationTestRun()
 
-    private class MissingKeyGenerator {
-        var masterKey: () -> MasterKey = { fatalError("Default MasterKey not provided") }
-        var accountEntropyPool: () -> SignalServiceKit.AccountEntropyPool = { fatalError("Default AccountEntropyPool not provided")  }
-    }
-
     init() {
         dateProvider = { self.date }
         db = InMemoryDB()
 
-        missingKeyGenerator = .init()
-
         appExpiry = .forUnitTests()
+        accountKeyStore = AccountKeyStore(backupSettingsStore: BackupSettingsStore())
         changeNumberPniManager = ChangePhoneNumberPniManagerMock(
             mockKyberStore: KyberPreKeyStoreImpl(for: .pni, dateProvider: dateProvider)
         )
         contactsStore = RegistrationCoordinatorImpl.TestMocks.ContactsStore()
         experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
         featureFlags = RegistrationCoordinatorImpl.TestMocks.FeatureFlags()
-        accountKeyStore = AccountKeyStore(
-            accountEntropyPoolGenerator: { self.missingKeyGenerator.accountEntropyPool() },
-            backupSettingsStore: BackupSettingsStore(),
-        )
         localUsernameManagerMock = {
             let mock = MockLocalUsernameManager()
             // This should result in no username reclamation. Tests that want to
@@ -113,6 +105,8 @@ public class RegistrationCoordinatorTest {
 
         let dependencies = RegistrationCoordinatorDependencies(
             appExpiry: appExpiry,
+            accountEntropyPoolGenerator: { Stubs.accountEntropyPoolToGenerate },
+            accountKeyStore: accountKeyStore,
             backupArchiveManager: BackupArchiveManagerMock(),
             backupNonceStore: BackupNonceMetadataStore(),
             changeNumberPniManager: changeNumberPniManager,
@@ -123,7 +117,6 @@ public class RegistrationCoordinatorTest {
             deviceTransferService: RegistrationCoordinatorImpl.TestMocks.DeviceTransferService(),
             experienceManager: experienceManager,
             featureFlags: featureFlags,
-            accountKeyStore: accountKeyStore,
             identityManager: RegistrationCoordinatorImpl.TestMocks.IdentityManager(),
             localUsernameManager: localUsernameManagerMock,
             messagePipelineSupervisor: mockMessagePipelineSupervisor,
@@ -1826,15 +1819,9 @@ public class RegistrationCoordinatorTest {
     func testSessionPath_happyPath(testCase: TestCase) async {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
+        let newMasterKey = Stubs.accountEntropyPoolToGenerate.getMasterKey()
         var authPassword: String!
 
-        let accountEntropyPool = AccountEntropyPool()
-        let newMasterKey = accountEntropyPool.getMasterKey()
-        if testCase.newKey == .accountEntropyPool {
-            missingKeyGenerator.accountEntropyPool = { accountEntropyPool }
-        } else {
-            missingKeyGenerator.masterKey = { newMasterKey }
-        }
         await createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         // Give back a verified session.
@@ -2856,16 +2843,9 @@ public class RegistrationCoordinatorTest {
     func testSessionPath_skipPINCode(testCase: TestCase) async {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
+        let newMasterKey = Stubs.accountEntropyPoolToGenerate.getMasterKey()
 
         await createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
-
-        let accountEntropyPool = AccountEntropyPool()
-        let newMasterKey = accountEntropyPool.getMasterKey()
-        if testCase.newKey == .accountEntropyPool {
-            missingKeyGenerator.accountEntropyPool = { accountEntropyPool }
-        } else {
-            missingKeyGenerator.masterKey = { newMasterKey }
-        }
 
         // Give back a verified session.
         sessionManager.addSubmitCodeResponseMock(.success(stubs.session(
@@ -2999,6 +2979,7 @@ public class RegistrationCoordinatorTest {
     func testSessionPath_skipPINRestore_createNewPIN(testCase: TestCase) async {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
+        let newMasterKey = Stubs.accountEntropyPoolToGenerate.getMasterKey()
 
         switch mode {
         case .registering:
@@ -3009,14 +2990,6 @@ public class RegistrationCoordinatorTest {
         }
 
         await createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
-
-        let accountEntropyPool = AccountEntropyPool()
-        let newMasterKey = accountEntropyPool.getMasterKey()
-        if testCase.newKey == .accountEntropyPool {
-            missingKeyGenerator.accountEntropyPool = { accountEntropyPool }
-        } else {
-            missingKeyGenerator.masterKey = { newMasterKey }
-        }
 
         // Give back a verified session.
         sessionManager.addSubmitCodeResponseMock(.success(stubs.session(
@@ -3343,10 +3316,10 @@ public class RegistrationCoordinatorTest {
     // MARK: - Helpers
 
     func buildKeyDataMocks(_ testCase: TestCase) -> (MasterKey, MasterKey) {
-        let newAccountEntropyPool = AccountEntropyPool()
-        let newMasterKey = newAccountEntropyPool.getMasterKey()
         let oldAccountEntropyPool = AccountEntropyPool()
         let oldMasterKey = oldAccountEntropyPool.getMasterKey()
+        let newMasterKey = Stubs.accountEntropyPoolToGenerate.getMasterKey()
+
         switch (testCase.oldKey, testCase.newKey) {
         case (.accountEntropyPool, .accountEntropyPool):
             // on re-registration, make the AEP be present
@@ -3359,17 +3332,10 @@ public class RegistrationCoordinatorTest {
             // If this is a reregistration from an non-AEP client,
             // AEP is only available after calling getOrGenerateAEP()
             db.write { accountKeyStore.setMasterKey(oldMasterKey, tx: $0) }
-            missingKeyGenerator.accountEntropyPool = {
-                return newAccountEntropyPool
-            }
             return (oldMasterKey, newMasterKey)
         case (.none, .masterKey):
-            missingKeyGenerator.masterKey = { newMasterKey }
             return (newMasterKey, newMasterKey)
         case (.none, .accountEntropyPool):
-            missingKeyGenerator.accountEntropyPool = {
-                newAccountEntropyPool
-            }
             return (newMasterKey, newMasterKey)
         case (.accountEntropyPool, .masterKey):
             fatalError("Migrating to masterkey from AEP not supported")
@@ -3410,6 +3376,7 @@ public class RegistrationCoordinatorTest {
 
     private struct Stubs {
 
+        static let accountEntropyPoolToGenerate = AccountEntropyPool()
         static let e164 = E164("+17875550100")!
         static let aci = Aci.randomForTesting()
         static let pinCode = "1234"

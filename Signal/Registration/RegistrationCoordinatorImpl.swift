@@ -3537,7 +3537,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func getOrGenerateAccountEntropyPool() -> SignalServiceKit.AccountEntropyPool {
         // If the AccountEntropyPool doesn't exist yet, create one.
         return db.write { tx in
-            let accountEntropyPool = deps.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
+            let accountEntropyPool: SignalServiceKit.AccountEntropyPool
+            if let _accountEntropyPool = deps.accountKeyStore.getAccountEntropyPool(tx: tx) {
+                accountEntropyPool = _accountEntropyPool
+            } else {
+                accountEntropyPool = deps.accountEntropyPoolGenerator()
+            }
+
             inMemoryState.accountEntropyPool = accountEntropyPool
             let newMasterKey = accountEntropyPool.getMasterKey()
             updateMasterKeyAndLocalState(masterKey: newMasterKey, tx: tx)

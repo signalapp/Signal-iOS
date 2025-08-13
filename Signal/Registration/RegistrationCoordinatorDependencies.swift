@@ -8,6 +8,8 @@ public import SignalServiceKit
 
 public struct RegistrationCoordinatorDependencies {
     public let appExpiry: AppExpiry
+    public let accountEntropyPoolGenerator: () -> AccountEntropyPool
+    public let accountKeyStore: AccountKeyStore
     public let backupArchiveManager: BackupArchiveManager
     public let backupNonceStore: BackupNonceMetadataStore
     public let changeNumberPniManager: ChangePhoneNumberPniManager
@@ -18,7 +20,6 @@ public struct RegistrationCoordinatorDependencies {
     let deviceTransferService: RegistrationCoordinatorImpl.Shims.DeviceTransferService
     public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
     public let featureFlags: RegistrationCoordinatorImpl.Shims.FeatureFlags
-    public let accountKeyStore: AccountKeyStore
     public let identityManager: RegistrationCoordinatorImpl.Shims.IdentityManager
     public let localUsernameManager: LocalUsernameManager
     public let messagePipelineSupervisor: RegistrationCoordinatorImpl.Shims.MessagePipelineSupervisor
@@ -47,6 +48,8 @@ public struct RegistrationCoordinatorDependencies {
     public static func from(_ object: NSObject) -> RegistrationCoordinatorDependencies {
         return RegistrationCoordinatorDependencies(
             appExpiry: DependenciesBridge.shared.appExpiry,
+            accountEntropyPoolGenerator: { AccountEntropyPool() },
+            accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             backupArchiveManager: DependenciesBridge.shared.backupArchiveManager,
             backupNonceStore: BackupNonceMetadataStore(),
             changeNumberPniManager: DependenciesBridge.shared.changePhoneNumberPniManager,
@@ -57,7 +60,6 @@ public struct RegistrationCoordinatorDependencies {
             deviceTransferService: RegistrationCoordinatorImpl.Wrappers.DeviceTransferService(AppEnvironment.shared.deviceTransferServiceRef),
             experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
             featureFlags: RegistrationCoordinatorImpl.Wrappers.FeatureFlags(),
-            accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             identityManager: RegistrationCoordinatorImpl.Wrappers.IdentityManager(DependenciesBridge.shared.identityManager),
             localUsernameManager: DependenciesBridge.shared.localUsernameManager,
             messagePipelineSupervisor: RegistrationCoordinatorImpl.Wrappers.MessagePipelineSupervisor(SSKEnvironment.shared.messagePipelineSupervisorRef),
