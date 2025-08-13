@@ -9,69 +9,45 @@ public protocol StorageServiceRecordIkmMigrator {
 
     /// Schedules a migration to encrypting Storage Service records using a
     /// `recordIkm` from the Storage Service manifest, if necessary.
-    func migrateToManifestRecordIkmIfNecessary()
+    func migrateToManifestRecordIkmIfNecessary() async
 }
 
 struct StorageServiceRecordIkmMigratorImpl: StorageServiceRecordIkmMigrator {
     private let logger = PrefixedLogger(prefix: "[SSRecIkmMig]")
 
     private let db: any DB
-    private let serialTaskQueue: SerialTaskQueue
-    private let storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStore
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
 
     init(
         db: any DB,
-        storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStore,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager
     ) {
         self.db = db
-        self.serialTaskQueue = SerialTaskQueue()
-        self.storageServiceRecordIkmCapabilityStore = storageServiceRecordIkmCapabilityStore
         self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
     }
 
     // MARK: -
 
-    func migrateToManifestRecordIkmIfNecessary() {
-        /// Put the migration on a serial task queue so we avoid doing multiple
-        /// rotations if possible.
-        serialTaskQueue.enqueue {
-            await _migrateToManifestRecordIkmIfNecessary()
-        }
-    }
-
-    private func _migrateToManifestRecordIkmIfNecessary() async {
+    func migrateToManifestRecordIkmIfNecessary() async {
         /// If we're currently restoring, allow that to finish. We may be
         /// restoring (or creating) a manifest that contains a `recordIkm`,
         /// in which case there's nothing for us to do!
         try? await storageServiceManager.waitForPendingRestores()
 
         let (
-            isRecordIkmCapable,
             alreadyHasRecordIkm,
             isRegisteredPrimaryDevice
         ): (
             Bool,
-            Bool,
             Bool
         ) = db.read { tx in
             return (
-                storageServiceRecordIkmCapabilityStore.isRecordIkmCapable(tx: tx),
                 storageServiceManager.currentManifestHasRecordIkm(tx: tx),
                 tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
             )
-        }
-
-        guard isRecordIkmCapable else {
-            owsFailDebug(
-                "Unexpectedly attempting to migrate to recordIkm, but not yet capable!",
-                logger: logger
-            )
-            return
         }
 
         guard isRegisteredPrimaryDevice else {

@@ -140,7 +140,6 @@ public class RegistrationCoordinatorTest {
             registrationStateChangeManager: registrationStateChangeManagerMock,
             sessionManager: sessionManager,
             signalService: mockSignalService,
-            storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStoreImpl(),
             storageServiceManager: storageServiceManagerMock,
             svr: svr,
             svrAuthCredentialStore: svrAuthCredentialStore,

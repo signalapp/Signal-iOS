@@ -156,9 +156,9 @@ public class DependenciesBridge {
     public let searchableNameIndexer: SearchableNameIndexer
     public let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
     public let signalProtocolStoreManager: SignalProtocolStoreManager
-    public let storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStore
     public let svr: SecureValueRecovery
     public let svrCredentialStorage: SVRAuthCredentialStorage
+    public let storageServiceRecordIkmMigrator: StorageServiceRecordIkmMigrator
     public let storyRecipientManager: StoryRecipientManager
     public let storyRecipientStore: StoryRecipientStore
     public let svrLocalStorage: SVRLocalStorage
@@ -288,7 +288,7 @@ public class DependenciesBridge {
         searchableNameIndexer: SearchableNameIndexer,
         sentMessageTranscriptReceiver: SentMessageTranscriptReceiver,
         signalProtocolStoreManager: SignalProtocolStoreManager,
-        storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStore,
+        storageServiceRecordIkmMigrator: StorageServiceRecordIkmMigrator,
         storyRecipientManager: StoryRecipientManager,
         storyRecipientStore: StoryRecipientStore,
         svr: SecureValueRecovery,
@@ -419,7 +419,7 @@ public class DependenciesBridge {
         self.searchableNameIndexer = searchableNameIndexer
         self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
         self.signalProtocolStoreManager = signalProtocolStoreManager
-        self.storageServiceRecordIkmCapabilityStore = storageServiceRecordIkmCapabilityStore
+        self.storageServiceRecordIkmMigrator = storageServiceRecordIkmMigrator
         self.storyRecipientManager = storyRecipientManager
         self.storyRecipientStore = storyRecipientStore
         self.svr = svr

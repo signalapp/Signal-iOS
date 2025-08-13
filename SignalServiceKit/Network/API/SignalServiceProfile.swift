@@ -16,7 +16,13 @@ public class SignalServiceProfile {
     }
 
     public struct Capabilities {
-        public let storageServiceRecordIkm: Bool
+        fileprivate static let dummyCapabilityKey = "dummy"
+
+        /// A dummy capability that keeps this struct non-empty. If it were
+        /// empty, the compiler would complain about much of the code in here
+        /// being unused...which is true! But, we want to keep it around for the
+        /// future, when we may add new capabilities.
+        public let dummyCapability: Bool
     }
 
     public let serviceId: ServiceId
@@ -134,10 +140,10 @@ public class SignalServiceProfile {
         }
 
         return Capabilities(
-            storageServiceRecordIkm: parseCapabilityFlag(
+            dummyCapability: parseCapabilityFlag(
                 capabilitiesParser: capabilitiesParser,
-                capabilityKey: AccountAttributes.Capabilities.CodingKeys.storageServiceRecordIkm.rawValue
-            )
+                capabilityKey: Capabilities.dummyCapabilityKey
+            ),
         )
     }
 
@@ -149,6 +155,10 @@ public class SignalServiceProfile {
         capabilitiesParser: ParamParser,
         capabilityKey: String
     ) -> Bool {
+        if capabilityKey == Capabilities.dummyCapabilityKey {
+            return false
+        }
+
         do {
             guard let capabilityFlag: Bool = try capabilitiesParser.optional(key: capabilityKey) else {
                 owsFailDebug("Missing capability \(capabilityKey)! Assuming retired from service, and therefore hardcoded-on.")

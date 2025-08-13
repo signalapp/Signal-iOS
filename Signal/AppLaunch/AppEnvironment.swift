@@ -140,6 +140,7 @@ public class AppEnvironment: NSObject {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             let backupIdManager = DependenciesBridge.shared.backupIdManager
             let backupRefreshManager = DependenciesBridge.shared.backupRefreshManager
+            let storageServiceRecordIkmMigrator = DependenciesBridge.shared.storageServiceRecordIkmMigrator
 
             let avatarDefaultColorStorageServiceMigrator = AvatarDefaultColorStorageServiceMigrator(
                 db: db,
@@ -178,6 +179,11 @@ public class AppEnvironment: NSObject {
                         Logger.warn("Couldn't perform avatar default color migration: \(error)")
                     }
                 }
+
+                Task {
+                    await storageServiceRecordIkmMigrator.migrateToManifestRecordIkmIfNecessary()
+                }
+
                 Task {
                     do {
                         try await backupIdManager.registerBackupIDIfNecessary(

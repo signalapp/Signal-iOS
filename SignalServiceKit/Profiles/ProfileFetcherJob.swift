@@ -29,8 +29,6 @@ public class ProfileFetcherJob {
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: any RecipientMerger
-    private let storageServiceRecordIkmCapabilityStore: any StorageServiceRecordIkmCapabilityStore
-    private let storageServiceRecordIkmMigrator: any StorageServiceRecordIkmMigrator
     private let syncManager: any SyncManagerProtocol
     private let tsAccountManager: any TSAccountManager
     private let udManager: any OWSUDManager
@@ -49,8 +47,6 @@ public class ProfileFetcherJob {
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientManager: any SignalRecipientManager,
         recipientMerger: any RecipientMerger,
-        storageServiceRecordIkmCapabilityStore: any StorageServiceRecordIkmCapabilityStore,
-        storageServiceRecordIkmMigrator: any StorageServiceRecordIkmMigrator,
         syncManager: any SyncManagerProtocol,
         tsAccountManager: any TSAccountManager,
         udManager: any OWSUDManager,
@@ -68,8 +64,6 @@ public class ProfileFetcherJob {
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientManager = recipientManager
         self.recipientMerger = recipientMerger
-        self.storageServiceRecordIkmCapabilityStore = storageServiceRecordIkmCapabilityStore
-        self.storageServiceRecordIkmMigrator = storageServiceRecordIkmMigrator
         self.syncManager = syncManager
         self.tsAccountManager = tsAccountManager
         self.udManager = udManager
@@ -540,26 +534,14 @@ public class ProfileFetcherJob {
 
         if
             localIdentifiers.contains(serviceId: serviceId),
-            fetchedCapabilities.storageServiceRecordIkm
+            fetchedCapabilities.dummyCapability
         {
-            if !storageServiceRecordIkmCapabilityStore.isRecordIkmCapable(tx: tx) {
-                storageServiceRecordIkmCapabilityStore.setIsRecordIkmCapable(tx: tx)
-
-                shouldSendProfileSync = true
-            }
-
-            if registrationState.isRegisteredPrimaryDevice {
-                /// Only primary devices should perform the `recordIkm`
-                /// migration, since only primaries can create a Storage Service
-                /// manifest.
-                ///
-                /// We want to do this in a transaction completion block, since
-                /// it'll read from the database and we want to ensure this
-                /// write has completed.
-                tx.addSyncCompletion { [storageServiceRecordIkmMigrator] in
-                    storageServiceRecordIkmMigrator.migrateToManifestRecordIkmIfNecessary()
-                }
-            }
+            // Space to detect changes to our own capabilities, and run code
+            // such as migrations in response.
+            //
+            // See comment on `dummyCapability`: it's always false, but lets us
+            // keep this code around without the compiler complaining.
+            shouldSendProfileSync = true
         }
 
         if
@@ -569,7 +551,7 @@ public class ProfileFetcherJob {
             /// If some capability is newly enabled, we want all devices to be aware.
             /// This would happen automatically the next time those devices
             /// fetch the local profile, but we'd prefer it happen ASAP!
-            syncManager.sendFetchLatestProfileSyncMessage(tx: SDSDB.shimOnlyBridge(tx))
+            syncManager.sendFetchLatestProfileSyncMessage(tx: tx)
         }
     }
 

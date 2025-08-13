@@ -342,7 +342,6 @@ public struct StorageService {
                 } else {
                     /// If we don't have a `recordIkm` yet, fall back to the
                     /// SVR-derived key.
-                    ///
                     let itemEncryptionResult = masterKey.encrypt(
                         keyType: .legacy_storageServiceRecord(identifier: item.identifier),
                         data: plaintextRecordData

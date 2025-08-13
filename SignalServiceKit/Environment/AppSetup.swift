@@ -1103,7 +1103,11 @@ public class AppSetup {
         let reactionStore: any ReactionStore = ReactionStoreImpl()
         let disappearingMessagesJob = OWSDisappearingMessagesJob(appReadiness: appReadiness, databaseStorage: databaseStorage)
 
-        let storageServiceRecordIkmCapabilityStore = StorageServiceRecordIkmCapabilityStoreImpl()
+        let storageServiceRecordIkmMigrator = StorageServiceRecordIkmMigratorImpl(
+            db: db,
+            storageServiceManager: storageServiceManager,
+            tsAccountManager: tsAccountManager
+        )
 
         let profileFetcher = ProfileFetcherImpl(
             db: db,
@@ -1115,13 +1119,6 @@ public class AppSetup {
             recipientDatabaseTable: recipientDatabaseTable,
             recipientManager: recipientManager,
             recipientMerger: recipientMerger,
-            storageServiceRecordIkmCapabilityStore: storageServiceRecordIkmCapabilityStore,
-            storageServiceRecordIkmMigrator: StorageServiceRecordIkmMigratorImpl(
-                db: db,
-                storageServiceRecordIkmCapabilityStore: storageServiceRecordIkmCapabilityStore,
-                storageServiceManager: storageServiceManager,
-                tsAccountManager: tsAccountManager
-            ),
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
             udManager: udManager,
@@ -1549,7 +1546,7 @@ public class AppSetup {
             searchableNameIndexer: searchableNameIndexer,
             sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
             signalProtocolStoreManager: signalProtocolStoreManager,
-            storageServiceRecordIkmCapabilityStore: storageServiceRecordIkmCapabilityStore,
+            storageServiceRecordIkmMigrator: storageServiceRecordIkmMigrator,
             storyRecipientManager: storyRecipientManager,
             storyRecipientStore: storyRecipientStore,
             svr: svr,

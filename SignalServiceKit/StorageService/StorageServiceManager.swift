@@ -1188,16 +1188,10 @@ class StorageServiceOperation {
         state.manifestVersion = version
 
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            if
-                DependenciesBridge.shared.storageServiceRecordIkmCapabilityStore
-                    .isRecordIkmCapable(tx: transaction)
-            {
-                /// If we are `recordIkm`-capable, we should generate a new one
-                /// each time we create a new manifest. The records recreated
-                /// alongside this manifest will be encrypted using this newly-
-                /// generated value.
-                state.manifestRecordIkm = StorageService.ManifestRecordIkm.generateForNewManifest()
-            }
+            /// Generate a new `recordIkm` each time we create a new manifest.
+            /// The records recreated alongside this manifest will be encrypted
+            /// using this newly- generated value.
+            state.manifestRecordIkm = StorageService.ManifestRecordIkm.generateForNewManifest()
 
             let shouldInterceptForMigration =
                 StorageServiceUnknownFieldMigrator.shouldInterceptLocalManifestBeforeUploading(tx: transaction)

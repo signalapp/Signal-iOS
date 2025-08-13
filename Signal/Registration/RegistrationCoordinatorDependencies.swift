@@ -35,7 +35,6 @@ public struct RegistrationCoordinatorDependencies {
     public let registrationStateChangeManager: RegistrationStateChangeManager
     public let sessionManager: RegistrationSessionManager
     public let signalService: OWSSignalServiceProtocol
-    public let storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStore
     public let storageServiceManager: RegistrationCoordinatorImpl.Shims.StorageServiceManager
     public let svr: SecureValueRecovery
     public let svrAuthCredentialStore: SVRAuthCredentialStorage
@@ -77,7 +76,6 @@ public struct RegistrationCoordinatorDependencies {
             registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
             sessionManager: DependenciesBridge.shared.registrationSessionManager,
             signalService: SSKEnvironment.shared.signalServiceRef,
-            storageServiceRecordIkmCapabilityStore: DependenciesBridge.shared.storageServiceRecordIkmCapabilityStore,
             storageServiceManager: RegistrationCoordinatorImpl.Wrappers.StorageServiceManager(SSKEnvironment.shared.storageServiceManagerRef),
             svr: DependenciesBridge.shared.svr,
             svrAuthCredentialStore: DependenciesBridge.shared.svrCredentialStorage,
