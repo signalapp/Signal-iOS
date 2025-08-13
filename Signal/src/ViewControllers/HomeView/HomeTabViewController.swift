@@ -29,7 +29,7 @@ extension HomeTabViewController {
         contextButton.accessibilityLabel = CommonStrings.openAppSettingsButton
 
         let sizeClass: ConversationAvatarView.Configuration.SizeClass
-        if #available(iOS 26, *) {
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
             sizeClass = .thirtySix
         } else {
             sizeClass = .twentyEight

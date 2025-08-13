@@ -4,6 +4,7 @@
 //
 
 import UIKit
+import SignalServiceKit
 
 enum ContextualActionBuilder {
     typealias Handler = (_ completion: @escaping (_ success: Bool) -> Void) -> Void
@@ -36,7 +37,7 @@ enum ContextualActionBuilder {
         // We want to always show a title with the icon. iOS 26 does this by
         // default, but previous iOS versions only does when the cell's
         // height > 91, so we generate an image with the text below it.
-        if #available(iOS 26, *) {
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
             let action = UIContextualAction(
                 style: style,
                 title: title

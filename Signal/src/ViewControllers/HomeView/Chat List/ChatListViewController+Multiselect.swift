@@ -69,7 +69,7 @@ extension ChatListViewController {
     func showToolbar() {
         AssertIsOnMainThread()
 
-        if #available(iOS 26, *) {
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
             self.updateCaptions()
             self.navigationController?.setToolbarHidden(false, animated: true)
             (self.tabBarController as? HomeTabBarController)?.setTabBarHidden(true)
@@ -149,7 +149,7 @@ extension ChatListViewController {
         let archiveBtn = UIBarButtonItem(
             title: viewState.chatListMode == .archive ? CommonStrings.unarchiveAction : CommonStrings.archiveAction,
             style: .plain, target: self, action: #selector(performArchive))
-        if #available(iOS 26, *) {
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
             archiveBtn.image = UIImage(resource: .archive)
         }
         archiveBtn.isEnabled = hasSelectedEntries
@@ -186,7 +186,7 @@ extension ChatListViewController {
         }
 
         let deleteBtn = UIBarButtonItem(title: CommonStrings.deleteButton, style: .plain, target: self, action: #selector(performDelete))
-        if #available(iOS 26, *) {
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
             deleteBtn.image = UIImage(resource: .trash)
         }
         deleteBtn.isEnabled = hasSelectedEntries
@@ -204,7 +204,7 @@ extension ChatListViewController {
     private func hideToolbar() {
         AssertIsOnMainThread()
 
-        if #available(iOS 26, *) {
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
             (self.tabBarController as? HomeTabBarController)?.setTabBarHidden(false)
             self.navigationController?.setToolbarHidden(true, animated: true)
             return
@@ -242,7 +242,7 @@ extension ChatListViewController {
             title = String.localizedStringWithFormat(format, count)
         }
 
-        if #available(iOS 26, *) {
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
             toolbarItems = makeToolbarButtons()
         } else {
             viewState.multiSelectState.toolbar?.toolbar.setItems(

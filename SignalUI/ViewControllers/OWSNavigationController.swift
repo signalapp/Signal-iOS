@@ -75,7 +75,7 @@ open class OWSNavigationController: UINavigationController {
     }
 
     public init() {
-        if #available(iOS 26, *) {
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
             super.init(nibName: nil, bundle: nil)
         } else {
             super.init(navigationBarClass: OWSNavigationBar.self, toolbarClass: nil)
@@ -163,7 +163,7 @@ open class OWSNavigationController: UINavigationController {
         let navChildController = viewController.getFinalNavigationChildController()
         let shouldHideNavbar = navChildController?.prefersNavigationBarHidden ?? false
 
-        if #unavailable(iOS 26), !shouldHideNavbar, let owsNavigationBar {
+        if !shouldHideNavbar, let owsNavigationBar {
             // Only update visible attributes if we aren't hiding; if its hidden anyway
             // they won't matter and seeing them blink then hide is weird.
             owsNavigationBar.navbarBackgroundColorOverride = navChildController?.navbarBackgroundColorOverride

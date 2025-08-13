@@ -682,7 +682,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     private func applyDefaultBackButton() {
         AssertIsOnMainThread()
 
-        guard #unavailable(iOS 26) else { return }
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable { return }
 
         // We don't show any text for the back button, so there's no need to localize it. But because we left align the
         // conversation title view, we add a little tappable padding after the back button, by having a title of spaces.
