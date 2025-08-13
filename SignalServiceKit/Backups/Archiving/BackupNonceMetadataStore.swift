@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 public import LibSignalClient
 
 /// Container for types wrapping raw data that relates to backup future secrecy nonces.
@@ -143,18 +144,60 @@ public class BackupNonceMetadataStore {
 
     public init() {}
 
-    public func getLastForwardSecrecyToken(tx: DBReadTransaction) throws -> BackupForwardSecrecyToken? {
+    /// Get the last forward secrecy token, which can be used to decrypt the last backup
+    /// that was created using the provided backupKey. Returns nil if no previous backup
+    /// was created (or creation was interrupted) or if the last one was created using
+    /// a different backup key (e.g. an AEP rotation happened between then and now).
+    public func getLastForwardSecrecyToken(
+        for backupKey: MessageRootBackupKey,
+        tx: DBReadTransaction
+    ) throws -> BackupForwardSecrecyToken? {
+        var sha = SHA256()
+        sha.update(data: backupKey.serialize())
+        let hashedBackupKey = Data(sha.finalize())
+        guard
+            let associatedBackupKeyHash = kvStore.getData(Keys.lastForwardSecrecyTokenAssociatedBackupKeyHash, transaction: tx),
+            associatedBackupKeyHash == hashedBackupKey
+        else {
+            return nil
+        }
         return try kvStore.getData(Keys.lastForwardSecrecyToken, transaction: tx).map(BackupForwardSecrecyToken.init(contents:))
     }
 
     /// We should only call this method in one place only:
     /// Immediately after successfuly uploading a backup file to CDN using the MetadataHeader from the same
     /// StoreBackupResponse as this BackupForwardSecrecyToken.
-    public func setLastForwardSecrecyToken(_ token: BackupForwardSecrecyToken, tx: DBWriteTransaction) {
+    ///
+    /// - parameter backupKey: The message backup key used to encrypt the just-created backup.
+    public func setLastForwardSecrecyToken(
+        _ token: BackupForwardSecrecyToken,
+        for backupKey: MessageRootBackupKey,
+        tx: DBWriteTransaction
+    ) {
+        var sha = SHA256()
+        sha.update(data: backupKey.serialize())
+        let hashedBackupKey = Data(sha.finalize())
+        kvStore.setData(hashedBackupKey, key: Keys.lastForwardSecrecyTokenAssociatedBackupKeyHash, transaction: tx)
         kvStore.setData(token.serialize(), key: Keys.lastForwardSecrecyToken, transaction: tx)
     }
 
-    public func getNextSecretMetadata(tx: DBReadTransaction) -> BackupNonce.NextSecretMetadata? {
+    /// Get the next "secret metadata" which should be used to encrypt the next backup
+    /// we create using the provided backupKey. Returns nil if no previous backup
+    /// was created (or creation was interrupted) or if the last one was created using
+    /// a different backup key (e.g. an AEP rotation happened between then and now).
+    public func getNextSecretMetadata(
+        for backupKey: MessageRootBackupKey,
+        tx: DBReadTransaction
+    ) -> BackupNonce.NextSecretMetadata? {
+        var sha = SHA256()
+        sha.update(data: backupKey.serialize())
+        let hashedBackupKey = Data(sha.finalize())
+        guard
+            let associatedBackupKeyHash = kvStore.getData(Keys.nextSecretMetadataAssociatedBackupKeyHash, transaction: tx),
+            associatedBackupKeyHash == hashedBackupKey
+        else {
+            return nil
+        }
         return kvStore.getData(Keys.nextSecretMetadata, transaction: tx).map(BackupNonce.NextSecretMetadata.init(data:))
     }
 
@@ -165,16 +208,33 @@ public class BackupNonceMetadataStore {
     ///  the "next" metadata from.
     /// 3. After restoring a backup on a new device, with the nextSecretMetadata we got from the SVR🐝 response,
     /// to continue the chain on this device when it makes a backup for the first time.
-    public func setNextSecretMetadata(_ metadata: BackupNonce.NextSecretMetadata?, tx: DBWriteTransaction) {
-        if let metadata {
-            kvStore.setData(metadata.data, key: Keys.nextSecretMetadata, transaction: tx)
-        } else {
-            kvStore.removeValue(forKey: Keys.nextSecretMetadata, transaction: tx)
-        }
+    ///
+    /// - parameter backupKey: The message backup key used to encrypt the just-created/restored backup.
+    public func setNextSecretMetadata(
+        _ metadata: BackupNonce.NextSecretMetadata,
+        for backupKey: MessageRootBackupKey,
+        tx: DBWriteTransaction
+    ) {
+        var sha = SHA256()
+        sha.update(data: backupKey.serialize())
+        let hashedBackupKey = Data(sha.finalize())
+        kvStore.setData(hashedBackupKey, key: Keys.nextSecretMetadataAssociatedBackupKeyHash, transaction: tx)
+        kvStore.setData(metadata.data, key: Keys.nextSecretMetadata, transaction: tx)
+    }
+
+    public func deleteNextSecretMetadata(tx: DBWriteTransaction) {
+        kvStore.removeValue(forKey: Keys.nextSecretMetadata, transaction: tx)
+        kvStore.removeValue(forKey: Keys.nextSecretMetadataAssociatedBackupKeyHash, transaction: tx)
     }
 
     private enum Keys {
         static let lastForwardSecrecyToken = "lastForwardSecrecyToken"
         static let nextSecretMetadata = "nextSecretMetadata"
+        /// The backup key for which the above two values are valid;
+        /// if the backup key changes these values shouldn't be used.
+        /// Technically the two associated keys should always be the same value, but they get set separately
+        /// so for compilter-level correctness we store separately also.
+        static let lastForwardSecrecyTokenAssociatedBackupKeyHash = "lastForwardSecrecyTokenAssociatedBackupKeyHash"
+        static let nextSecretMetadataAssociatedBackupKeyHash = "nextSecretMetadataAssociatedBackupKeyHash"
     }
 }

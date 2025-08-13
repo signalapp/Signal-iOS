@@ -29,7 +29,9 @@ class SVR2ConcurrencyTests: XCTestCase {
 
         let mockClientWrapper = MockSVR2ClientWrapper()
 
-        let accountKeyStore = AccountKeyStore()
+        let accountKeyStore = AccountKeyStore(
+            backupSettingsStore: BackupSettingsStore(),
+        )
         let localStorage = SVRLocalStorageImpl()
 
         self.svr = SecureValueRecovery2Impl(
@@ -335,7 +337,9 @@ class SVR2ConcurrencyTests: XCTestCase {
                 return requestPromise
             }
 
-            let accountKeyStore = AccountKeyStore()
+            let accountKeyStore = AccountKeyStore(
+                backupSettingsStore: BackupSettingsStore(),
+            )
             let localStorage = SVRLocalStorageImpl()
 
             let svr = SecureValueRecovery2Impl(

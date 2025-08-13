@@ -74,8 +74,8 @@ public class RegistrationCoordinatorTest {
         experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
         featureFlags = RegistrationCoordinatorImpl.TestMocks.FeatureFlags()
         accountKeyStore = AccountKeyStore(
-            masterKeyGenerator: { self.missingKeyGenerator.masterKey() },
-            accountEntropyPoolGenerator: { self.missingKeyGenerator.accountEntropyPool() }
+            accountEntropyPoolGenerator: { self.missingKeyGenerator.accountEntropyPool() },
+            backupSettingsStore: BackupSettingsStore(),
         )
         localUsernameManagerMock = {
             let mock = MockLocalUsernameManager()

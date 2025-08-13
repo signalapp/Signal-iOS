@@ -21,22 +21,20 @@ public class AccountKeyStore {
     private let mrbkKvStore: KeyValueStore
     private let masterKeyKvStore: KeyValueStore
 
-    private let masterKeyGenerator: (() -> MasterKey)
     private let accountEntropyPoolGenerator: (() -> AccountEntropyPool)
     private let backupSettingsStore: BackupSettingsStore
 
     public init(
-        masterKeyGenerator: (() -> MasterKey)? = nil,
-        accountEntropyPoolGenerator: (() -> AccountEntropyPool)? = nil
+        accountEntropyPoolGenerator: @escaping (() -> AccountEntropyPool) = { AccountEntropyPool() },
+        backupSettingsStore: BackupSettingsStore,
     ) {
-        self.masterKeyGenerator = masterKeyGenerator ?? { .init() }
-        self.accountEntropyPoolGenerator = accountEntropyPoolGenerator ?? { .init() }
+        self.accountEntropyPoolGenerator = accountEntropyPoolGenerator
 
         // Collection name must not be changed; matches that historically kept in KeyBackupServiceImpl.
         self.masterKeyKvStore = KeyValueStore(collection: "kOWSKeyBackupService_Keys")
         self.mrbkKvStore = KeyValueStore(collection: "MediaRootBackupKey")
         self.aepKvStore = KeyValueStore(collection: "AccountEntropyPool")
-        self.backupSettingsStore = BackupSettingsStore()
+        self.backupSettingsStore = backupSettingsStore
     }
 
     // MARK: -
@@ -52,10 +50,6 @@ public class AccountKeyStore {
             owsFailDebug("Failed to instantiate MasterKey")
         }
         return nil
-    }
-
-    public func getOrGenerateMasterKey(tx: DBReadTransaction) -> MasterKey {
-        return getMasterKey(tx: tx) ?? masterKeyGenerator()
     }
 
     public func setMasterKey(_ masterKey: MasterKey?, tx: DBWriteTransaction) {

@@ -60,7 +60,9 @@ public class ProvisioningManagerTests {
         let ephemeralDeviceId = "ephemeral-device-id"
         let newDeviceIdentityKeyPair = IdentityKeyPair.generate()
 
-        let accountKeyStore = AccountKeyStore()
+        let accountKeyStore = AccountKeyStore(
+            backupSettingsStore: BackupSettingsStore(),
+        )
         db.write { tx in
             accountKeyStore.setAccountEntropyPool(accountEntropyPool, tx: tx)
             accountKeyStore.setMediaRootBackupKey(mrbk, tx: tx)

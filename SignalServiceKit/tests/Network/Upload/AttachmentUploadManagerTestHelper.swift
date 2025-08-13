@@ -66,7 +66,9 @@ enum CDNEndpoint: UInt32, CaseIterable {
 }
 
 class AttachmentUploadManagerMockHelper {
-    let mockAccountKeyStore = AccountKeyStore()
+    let mockAccountKeyStore = AccountKeyStore(
+        backupSettingsStore: BackupSettingsStore(),
+    )
     var mockDate = Date()
     lazy var mockDateProvider = { return self.mockDate }
     var mockDB = InMemoryDB()

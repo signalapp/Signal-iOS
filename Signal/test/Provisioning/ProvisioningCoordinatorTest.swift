@@ -50,7 +50,9 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         self.identityManagerMock = .init(recipientIdFinder: recipientIdFinder)
 
         self.chatConnectionManagerMock = .init()
-        self.accountKeyStore = .init()
+        self.accountKeyStore = .init(
+            backupSettingsStore: BackupSettingsStore(),
+        )
         self.messageFactoryMock = .init()
         self.networkManagerMock = .init()
         self.prekeyManagerMock = .init()

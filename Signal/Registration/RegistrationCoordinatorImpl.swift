@@ -630,7 +630,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // and then the next time we make a backup we still use
                     // this key which is at worst as good as a random starting point.
                     await self.db.awaitableWrite { tx in
-                        self.deps.backupNonceStore.setNextSecretMetadata(nextBackupSecretData, tx: tx)
+                        self.deps.backupNonceStore.setNextSecretMetadata(
+                            nextBackupSecretData,
+                            for: backupKey,
+                            tx: tx
+                        )
                     }
                 }
             } else if let metadataHeader = self.inMemoryState.backupMetadataHeader {

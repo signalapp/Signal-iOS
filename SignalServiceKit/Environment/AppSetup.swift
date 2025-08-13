@@ -303,7 +303,11 @@ public class AppSetup {
             orphanedAttachmentCleaner: orphanedAttachmentCleaner
         )
 
-        let accountKeyStore = AccountKeyStore()
+        let backupNonceMetadataStore = BackupNonceMetadataStore()
+        let backupSettingsStore = BackupSettingsStore()
+        let accountKeyStore = AccountKeyStore(
+            backupSettingsStore: backupSettingsStore,
+        )
         let svrCredentialStorage = SVRAuthCredentialStorageImpl()
         let svrLocalStorage = SVRLocalStorageImpl()
 
@@ -351,7 +355,6 @@ public class AppSetup {
             twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager)
         )
 
-        let backupSettingsStore = BackupSettingsStore()
         let backupCDNCredentialStore = BackupCDNCredentialStore()
 
         let backupRequestManager = BackupRequestManagerImpl(
@@ -1234,7 +1237,7 @@ public class AppSetup {
             backupArchiveErrorPresenter: backupArchiveErrorPresenter,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
-            backupNonceMetadataStore: BackupNonceMetadataStore(),
+            backupNonceMetadataStore: backupNonceMetadataStore,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             backupStickerPackDownloadStore: backupStickerPackDownloadStore,

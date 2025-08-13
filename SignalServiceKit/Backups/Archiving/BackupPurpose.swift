@@ -260,7 +260,11 @@ extension BackupImportSource {
         // and then the next time we make a backup we still use
         // this key which is at worst as good as a random starting point.
         await db.awaitableWrite { tx in
-            nonceStore.setNextSecretMetadata(response.nextSecretMetadata, tx: tx)
+            nonceStore.setNextSecretMetadata(
+                response.nextSecretMetadata,
+                for: key,
+                tx: tx
+            )
         }
         return forwardSecrecyToken
     }
@@ -365,12 +369,18 @@ extension BackupExportPurpose {
         // This is used as an input into the generator for the metadata for this new
         // backup (which is the "next" backup from that last time).
         let mostRecentSecretData: BackupNonce.NextSecretMetadata
-        if let storedSecretData = db.read(block: nonceStore.getNextSecretMetadata(tx:)) {
+        if let storedSecretData = db.read(block: { tx in
+            nonceStore.getNextSecretMetadata(for: key, tx: tx)
+        }) {
             mostRecentSecretData = storedSecretData
         } else {
             mostRecentSecretData = BackupNonce.NextSecretMetadata(data: svr🐝.createNewBackupChain(backupKey: key.backupKey))
             await db.awaitableWrite { tx in
-                nonceStore.setNextSecretMetadata(mostRecentSecretData, tx: tx)
+                nonceStore.setNextSecretMetadata(
+                    mostRecentSecretData,
+                    for: key,
+                    tx: tx
+                )
             }
         }
 
@@ -384,7 +394,7 @@ extension BackupExportPurpose {
                 // To recover, we have to start over with `createNewBackupChain`.
                 Logger.error("Failed SVR🐝 store w/ invalid argument, wiping next secret metadata")
                 await db.awaitableWrite { tx in
-                    nonceStore.setNextSecretMetadata(nil, tx: tx)
+                    nonceStore.deleteNextSecretMetadata(tx: tx)
                 }
                 return try await storeEncryptionMetadataToSvr🐝(
                     key: key,

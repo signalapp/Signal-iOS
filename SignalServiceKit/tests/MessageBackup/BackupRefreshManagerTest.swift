@@ -9,13 +9,20 @@ import Testing
 
 @MainActor
 struct BackupRefreshManagerTest {
-    private var backupSettingsStore = BackupSettingsStore()
-    private var db = InMemoryDB()
-    private var accountKeyStore = AccountKeyStore()
-    private var mockNetworkManager = MockNetworkManager()
+    private let backupSettingsStore: BackupSettingsStore
+    private let db: InMemoryDB
+    private let accountKeyStore: AccountKeyStore
+    private let mockNetworkManager: MockNetworkManager
+    private let mockBackupRefreshManager: BackupRefreshManager
 
-    var mockBackupRefreshManager: BackupRefreshManager {
-        return BackupRefreshManager(
+    init() {
+        self.backupSettingsStore = BackupSettingsStore()
+        self.db = InMemoryDB()
+        self.accountKeyStore = AccountKeyStore(
+            backupSettingsStore: backupSettingsStore,
+        )
+        self.mockNetworkManager = MockNetworkManager()
+        self.mockBackupRefreshManager = BackupRefreshManager(
             accountKeyStore: accountKeyStore,
             backupRequestManager: BackupRequestManagerMock(),
             backupSettingsStore: backupSettingsStore,

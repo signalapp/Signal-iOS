@@ -11,7 +11,7 @@ import Testing
 
 public class BackupListMediaManagerTests {
 
-    let accountKeyStore = AccountKeyStore()
+    let accountKeyStore: AccountKeyStore
     let attachmentStore = AttachmentStoreImpl()
     let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
     let backupAttachmentUploadScheduler = BackupAttachmentUploadSchedulerMock()
@@ -29,6 +29,9 @@ public class BackupListMediaManagerTests {
         let dateProvider: DateProvider = {
             Date()
         }
+        self.accountKeyStore = AccountKeyStore(
+            backupSettingsStore: backupSettingsStore
+        )
         self.listMediaManager = BackupListMediaManagerImpl(
             accountKeyStore: accountKeyStore,
             attachmentStore: attachmentStore,

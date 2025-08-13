@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 
 public class QuickRestoreManager {
@@ -95,8 +96,18 @@ public class QuickRestoreManager {
                 lastBackupSizeBytes = nil
             }
 
-            let lastBackupForwardSecrecyToken = try backupNonceStore.getLastForwardSecrecyToken(tx: tx)
-            let nextBackupSecretData = backupNonceStore.getNextSecretMetadata(tx: tx)
+            let backupKey = try MessageRootBackupKey(
+                accountEntropyPool: accountEntropyPool,
+                aci: localIdentifiers.aci
+            )
+            let lastBackupForwardSecrecyToken = try backupNonceStore.getLastForwardSecrecyToken(
+                for: backupKey,
+                tx: tx
+            )
+            let nextBackupSecretData = backupNonceStore.getNextSecretMetadata(
+                for: backupKey,
+                tx: tx
+            )
 
             return (
                 localIdentifiers,

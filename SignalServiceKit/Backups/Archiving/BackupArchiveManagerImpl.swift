@@ -251,8 +251,16 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             BackupSettingsStore().setLastBackupDate(dateProvider(), tx: tx)
             BackupSettingsStore().setLastBackupSizeBytes(UInt64(backupSize), tx: tx)
             if let nonceMetadata = metadata.nonceMetadata {
-                backupNonceMetadataStore.setLastForwardSecrecyToken(nonceMetadata.forwardSecrecyToken, tx: tx)
-                backupNonceMetadataStore.setNextSecretMetadata(nonceMetadata.nextSecretMetadata, tx: tx)
+                backupNonceMetadataStore.setLastForwardSecrecyToken(
+                    nonceMetadata.forwardSecrecyToken,
+                    for: backupKey,
+                    tx: tx
+                )
+                backupNonceMetadataStore.setNextSecretMetadata(
+                    nonceMetadata.nextSecretMetadata,
+                    for: backupKey,
+                    tx: tx
+                )
             }
         }
 

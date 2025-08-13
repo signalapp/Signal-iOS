@@ -29,7 +29,9 @@ class SecureValueRecovery2Tests: XCTestCase {
         self.credentialStorage = SVRAuthCredentialStorageMock()
 
         mock2FAManager = SVR2.TestMocks.OWS2FAManager()
-        accountKeyStore = AccountKeyStore()
+        accountKeyStore = AccountKeyStore(
+            backupSettingsStore: BackupSettingsStore(),
+        )
         localStorage = SVRLocalStorageImpl()
 
         let mockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
