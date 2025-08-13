@@ -11,8 +11,8 @@ extension DebugLogger {
     func postLaunchLogCleanup(appContext: MainAppContext) {
         let shouldWipeLogs: Bool = {
             guard let lastLaunchVersion = AppVersionImpl.shared.lastCompletedLaunchMainAppVersion else {
-                // This is probably a new version, but perhaps it's a really old version.
-                return true
+                // If we've never completed a main app launch, don't wipe.
+                return false
             }
             return AppVersionNumber(lastLaunchVersion) < AppVersionNumber("6.16.0.0")
         }()
