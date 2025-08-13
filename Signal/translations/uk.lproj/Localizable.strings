@@ -524,7 +524,7 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Не зараз";
 
 /* Toast indicating that the user has copied their backup key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Backup Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Ключ скопійовано";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Ключ від резервної копії";
@@ -623,7 +623,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Експортування резервної копії…";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently managing our backed-up media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "Managing backup media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "Опрацювання медіафайлів з резервної копії…";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Завантаження резервної копії…";
@@ -6743,7 +6743,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Не вдалося перенести дані";
 
 /* Body for a sheet warning users about an incorrect backup key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Потрібно ввести той самий ключ від резервної копії з 64 символів, який ви зберегли під час активації резервного копіювання від Signal. Без цього ключа відновити дані з резервної копії неможливо.";
 
 /* Title for a sheet warning users about an incorrect backup key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Неправильний ключ";
@@ -6791,7 +6791,7 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Перенесення акаунту й повідомлень";
 
 /* Description for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your backup key is a 64-character code required to recover your account and data.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Ключ від резервної копії — це код із 64 символів, який дає змогу відновити акаунт і пов'язані з ним дані.";
 
 /* Title for the screen that allows users to enter their backup key. */
 "REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Введіть ключ від резервної копії";
@@ -6821,7 +6821,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Не зберегли ключа?";
 
 /* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Резервну копію неможливо відновити без відповідного ключа з 64 символів. Якщо ви втратили доступ до свого ключа, Signal не допоможе вам відновити резервну копію.\n\nЯкщо у вас лишився старий пристрій, ключ від резервної копії можна переглянути, відкривши налаштування > Чати > Резервне копіювання від Signal. Потім виберіть «Переглянути ключ від резервної копії».";
 
 /* Title for sheet with info for what to do if you don't have a backup key */
 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Не зберегли ключа?";

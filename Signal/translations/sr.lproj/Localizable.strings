@@ -524,7 +524,7 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Не сада";
 
 /* Toast indicating that the user has copied their backup key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Backup Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Кључ за резервне копије је копиран";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Кључ за резервне копије";
@@ -623,7 +623,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Резервна копија се извози...";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently managing our backed-up media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "Managing backup media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "Управљање резервним копијама медија...";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Резервна копија се отпрема...";
@@ -6743,7 +6743,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Пренос није завршен";
 
 /* Body for a sheet warning users about an incorrect backup key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Проверите да ли сте унели исти резервни кључ од 64 знака који сте сачували приликом активирања резервних копија на Signal-у. Резервне копије се не могу вратити без тог кључа.";
 
 /* Title for a sheet warning users about an incorrect backup key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Нетачан кључ за резервне копије";
@@ -6791,7 +6791,7 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Пренесите налог и поруке";
 
 /* Description for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your backup key is a 64-character code required to recover your account and data.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Кључ за резервне копије је шифра од 64 знака потребна за враћање вашег налога и података.";
 
 /* Title for the screen that allows users to enter their backup key. */
 "REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Унесите кључ за резервне копије";
@@ -6821,7 +6821,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Немате кључ за резервне копије?";
 
 /* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Резервне копије се не могу вратити без њихове шифре за опоравак од 64 знака. Ако сте изгубили кључ за резервне копије, Signal не може да вам помогне да вратите резервну копију.\n\nАко имате свој стари уређај, можете да видите кључ за резервне копије ако одете у Подешавања > Ћаскања > Резервне копије Signal-а. Затим додирните „Прикажи кључ за резервне копије“.";
 
 /* Title for sheet with info for what to do if you don't have a backup key */
 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Немате кључ за резервне копије?";

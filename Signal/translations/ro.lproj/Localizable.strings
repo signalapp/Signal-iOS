@@ -524,7 +524,7 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Nu acum";
 
 /* Toast indicating that the user has copied their backup key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Backup Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Codul de rezervă a fost copiat";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Codul de rezervă";
@@ -623,7 +623,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Se exportă copia de rezervă...";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently managing our backed-up media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "Managing backup media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "Se gestionează fișierele media în copie de rezervă...";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Se încarcă copia de rezervă...";
@@ -6743,7 +6743,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Nu s-a putut termina transferul";
 
 /* Body for a sheet warning users about an incorrect backup key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Asigură-te că ai introdus același număr de telefon și cod de rezervă de 64 de caractere pe care le-ai salvat când ai activat backup-urile Signal. Backup-urile nu pot fi recuperate fără acest cod.";
 
 /* Title for a sheet warning users about an incorrect backup key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Cod de rezervă incorect";
@@ -6791,7 +6791,7 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer conturi și mesaje";
 
 /* Description for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your backup key is a 64-character code required to recover your account and data.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Codul de rezervă este un cod format din 64 de caractere, necesar pentru a-ți recupera contul și datele.";
 
 /* Title for the screen that allows users to enter their backup key. */
 "REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Introdu codul de rezervă";
@@ -6821,7 +6821,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Nu ai cod de rezervă?";
 
 /* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backup-urile nu pot fi recuperate fără codul lor de recuperare de 64 de caractere. Dacă ți-ai pierdut codul de rezervă, Signal nu te poate ajuta să-ți restabilești backup-ul.\n\nDacă ai vechiul dispozitiv, poți vizualiza codul de rezervă în Setări > Conversații > Backup-uri Signal. Apoi, atinge Vezi codul de rezervă.";
 
 /* Title for sheet with info for what to do if you don't have a backup key */
 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Nu ai cod de rezervă?";

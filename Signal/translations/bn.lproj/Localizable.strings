@@ -524,7 +524,7 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "এখন নয়";
 
 /* Toast indicating that the user has copied their backup key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Backup Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "ব্যাকআপ 'কি' কপি করা হয়েছে";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "ব্যাকআপ 'কি'";
@@ -623,7 +623,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "ব্যাকআপ এক্সপোর্ট করা হচ্ছে...";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently managing our backed-up media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "Managing backup media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "ব্যাকআপ মিডিয়া নিয়ন্ত্রণ করা হচ্ছে...";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "ব্যাকআপ আপলোড করা হচ্ছে...";
@@ -6743,7 +6743,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "ট্রান্সফার সম্পন্ন করা যায়নি";
 
 /* Body for a sheet warning users about an incorrect backup key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Signal ব্যাকআপ সক্ষম করার সময় আপনি যে 64-ক্যারেক্টারের ব্যাকআপ 'কি'-টি সংরক্ষণ করেছিলেন সেই একই 'কি'-টি আপনি লিখেছেন কিনা তা নিশ্চিত করুন। এই 'কি' ছাড়া ব্যাকআপ পুনর্বহাল করা যাবে না।";
 
 /* Title for a sheet warning users about an incorrect backup key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "ভুল ব্যাকআপ 'কি'";
@@ -6791,7 +6791,7 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "অ্যাকাউন্ট এবং ম্যাসেজ ট্রান্সফার করুন";
 
 /* Description for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your backup key is a 64-character code required to recover your account and data.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "আপনার ব্যাকআপ 'কি' একটি 64-ক্যারেক্টারের কোড যা আপনার অ্যাকাউন্ট ও ডেটা পুনর্বহাল করার সময় প্রয়োজন হবে।";
 
 /* Title for the screen that allows users to enter their backup key. */
 "REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "আপনার ব্যাকআপ 'কি' লিখুন";
@@ -6821,7 +6821,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "কোনো ব্যাকআপ 'কি' নেই?";
 
 /* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "ব্যাকআপগুলো তাদের 64-ক্যারেক্টারের পুনর্বহাল কোড ছাড়া পুনর্বহাল করা যাবে না। আপনি যদি আপনার ব্যাকআপ 'কি' হারিয়ে ফেলেন তবে Signal আপনার ব্যাকআপ পুনর্বহাল করতে সাহায্য করতে সক্ষম হবে না।\n\nআপনার পুরানো ডিভাইসটি আপনার কাছে থাকলে আপনি সেটিংস > চ্যাট > Signal ব্যাকআপে আপনার ব্যাকআপ 'কি' দেখতে পারবেন। তারপর আপনার \"ব্যাকআপ 'কি' দেখান\" ট্যাপ করুন।";
 
 /* Title for sheet with info for what to do if you don't have a backup key */
 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "কোনো ব্যাকআপ 'কি' নেই?";

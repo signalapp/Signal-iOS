@@ -524,7 +524,7 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "ليس الآن";
 
 /* Toast indicating that the user has copied their backup key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Backup Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "تمَّ نسخ مفتاح النسخ الاحتياطي";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "مفتاح النسخة الاحتياطية";
@@ -623,7 +623,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "جارٍ تصدير النسخة الاحتياطية…";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently managing our backed-up media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "Managing backup media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "إدارة وسائط النسخ الاحتياطي…";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "جارٍ تحميل النسخة الاحتياطية…";
@@ -6743,7 +6743,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "تعذَّر إنهاء عملية النقل";
 
 /* Body for a sheet warning users about an incorrect backup key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "تأكَّد من أنك أدخلتَ نفس مفتاح النسخ الاحتياطي المُكوَّن من 64 رمزًا الذي حفظته عند تفعيل خاصية النسخ الاحتياطي في تطبيق سيجنال. لا يمكن استرجاع النُسخ الاحتياطية دون هذا المفتاح.";
 
 /* Title for a sheet warning users about an incorrect backup key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "مفتاح النسخة الاحتياطية غير صحيح.";
@@ -6791,7 +6791,7 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "نَقل الحساب والرسائل";
 
 /* Description for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your backup key is a 64-character code required to recover your account and data.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "مفتاح النسخة الاحتياطية الخاص بك هو كود مُكوَّن من 64 رمزًا، وهو مطلوب لاستعادة حسابك وبياناتك.";
 
 /* Title for the screen that allows users to enter their backup key. */
 "REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "أدخِل مفتاح النسخة الاحتياطية الخاص بك";
@@ -6821,7 +6821,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "ليس بمتناولك مفتاح النسخة الاحتياطية؟";
 
 /* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "لا يُمكن استعادة النُسخ الاحتياطية دون كود الاستعادة المُكوَّن من 64 رمزًا. إذا فقدت مفتاح النسخ الاحتياطي الخاص بك، فلا يُمكن لسيجنال مُساعدتك في استعادة نسختك الاحتياطية.\n\nإذا كُنتَ تستعمل جهازك القديم، يُمكنك عرض مفتاح النسخ الاحتياطي الخاص بك في \"الإعدادات\" > \"الدردشات\" > \"النسخ الاحتياطية على سيجنال\". ثم انقر على \"عرض مفتاح النسخ الاحتياطي\".";
 
 /* Title for sheet with info for what to do if you don't have a backup key */
 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "ليس بمتناولك مفتاح النسخة الاحتياطية؟";

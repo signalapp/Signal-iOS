@@ -524,7 +524,7 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Lain Kali";
 
 /* Toast indicating that the user has copied their backup key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Backup Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Kunci Cadangan telah disalin";
 
 /* Text used as placeholder in backup key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Kunci Cadangan";
@@ -623,7 +623,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Mengekspor cadangan …";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently managing our backed-up media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "Managing backup media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "Mengelola media cadangan …";
 
 /* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Mengunggah cadangan …";
@@ -914,7 +914,7 @@
 "BADGE_THANKS_TITLE" = "Terima kasih atas dukungan Anda!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "Jika Anda punya beberapa badge, Anda dapat memilih salah satunya untuk ditampilkan di profil.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "Jika Anda punya beberapa lencana, silakan pilih salah satu untuk ditampilkan di profil.";
 
 /* On the bank donation screen, show a link below the input form to show help about finding account info. */
 "BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "Temukan informasi rekening";
@@ -1787,10 +1787,10 @@
 "CONTACT_SUPPORT" = "Dapatkan bantuan";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donasi & Badge";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donasi dan Lencana";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donasi & Badge";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donasi dan Lencana";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Saya ingin meminta fitur baru";
@@ -1961,7 +1961,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Pilih siapa yang dapat mengedit nama grup, foto, deskripsi, dan timer penghilangan pesan.";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Dapatkan badge khusus pada profil Anda dengan mendukung Signal. Ketuk badge untuk informasi selengkapnya.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Dapatkan lencana khusus di profil Anda dengan mendukung Signal. Ketuk lencana untuk informasi selengkapnya.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Lencana";
@@ -2714,10 +2714,10 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Donasi tertunda";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Donasi satu kali Anda tertunda. Anda dapat menampilkan badge %1$@ di profil saat donasi telah diterima.\n\nProses transfer bank biasanya perlu waktu 1 sampai 14 hari kerja.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Donasi satu kali Anda tertunda. Anda dapat menampilkan lencana %1$@ di profil saat donasi telah diterima.\n\nProses transfer bank biasanya perlu waktu 1 sampai 14 hari kerja.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Donasi bulanan Anda tertunda. Anda dapat menampilkan badge %1$@ di profil saat donasi telah diterima.\n\nProses transfer bank biasanya perlu waktu 1 sampai 14 hari kerja.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Donasi bulanan Anda tertunda. Anda dapat menampilkan lencana %1$@ di profil saat donasi telah diterima.\n\nProses transfer bank biasanya perlu waktu 1 sampai 14 hari kerja.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Renew Subscription";
@@ -6743,7 +6743,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Tidak Dapat Menyelesaikan Transfer";
 
 /* Body for a sheet warning users about an incorrect backup key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Pastikan kunci cadangan 64 karakter yang dimasukkan sama dengan kunci yang disimpan saat mengaktifkan Signal Backups. Cadangan tidak bisa dipulihkan tanpa kunci tersebut.";
 
 /* Title for a sheet warning users about an incorrect backup key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Kunci Cadangan Salah";
@@ -6791,7 +6791,7 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Akun & Pesan";
 
 /* Description for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your backup key is a 64-character code required to recover your account and data.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Kunci cadangan adalah kode 64 karakter yang diperlukan untuk memulihkan akun dan data Anda.";
 
 /* Title for the screen that allows users to enter their backup key. */
 "REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Masukkan Kunci Cadangan Anda";
@@ -6821,7 +6821,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Tidak Punya Kunci Cadangan?";
 
 /* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Cadangan tidak dapat dipulihkan tanpa kode pemulihan 64 karakter. Jika kunci cadangan hilang, Signal tidak dapat membantu pemulihan cadangan Anda.\n\nJika perangkat lama masih ada, Anda bisa melihat kunci cadangan di Pengaturan > Chat > Signal Backups. Lalu ketuk \"Lihat kunci cadangan\".";
 
 /* Title for sheet with info for what to do if you don't have a backup key */
 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Tidak Punya Kunci Cadangan?";
