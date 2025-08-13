@@ -88,8 +88,9 @@ public class _AttachmentUploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
 class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager {
     func updateCanOpenWebSocket() {}
     var hasEmptiedInitialQueue: Bool { true }
-    var identifiedConnectionState: OWSChatConnectionState { .open }
-    func waitForIdentifiedConnectionToOpen() async throws { }
+    var unidentifiedConnectionState: OWSChatConnectionState { .open }
+    func waitForIdentifiedConnectionToOpen() async throws(CancellationError) { }
+    func waitForUnidentifiedConnectionToOpen() async throws(CancellationError) { }
     func waitUntilIdentifiedConnectionShouldBeClosed() async throws(CancellationError) { fatalError() }
     func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool { true }
     func shouldSocketBeOpen_restOnly(connectionType: OWSChatConnectionType) -> Bool { fatalError() }

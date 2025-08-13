@@ -83,7 +83,7 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
 
                         let presentingVC = self?.presentingViewController
                         _ = Task(priority: .userInitiated) {
-                            if await ProxyConnectionChecker.checkConnectionAndNotify() {
+                            if await ProxyConnectionChecker(chatConnectionManager: DependenciesBridge.shared.chatConnectionManager).checkConnection() {
                                 presentingVC?.presentToast(text: OWSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
                             } else {
                                 presentingVC?.presentToast(text: OWSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))

@@ -6,18 +6,13 @@
 import Foundation
 
 public extension Notification.Name {
-    static let isSignalProxyReadyDidChange = Self(SignalProxy.isSignalProxyReadyDidChangeNotificationName)
+    static let isSignalProxyReadyDidChange = Notification.Name("isSignalProxyReadyDidChange")
+    static let signalProxyConfigDidChange = Notification.Name("signalProxyConfigDidChange")
 }
 
-@objc
 public class SignalProxy: NSObject {
-    @objc
-    public static let isSignalProxyReadyDidChangeNotificationName = "isSignalProxyReadyDidChange"
-
-    @objc
     public static var isEnabled: Bool { useProxy && host != nil }
 
-    @objc
     public static var isEnabledAndReady: Bool { isEnabled && relayServer.isReady }
 
     public static var connectionProxyDictionary: [AnyHashable: Any]? { relayServer.connectionProxyDictionary }
@@ -45,6 +40,8 @@ public class SignalProxy: NSObject {
             self.useProxy = useProxyToStore
             self.ensureProxyState(restartIfNeeded: true)
             self.updateLibSignalProxy()
+            // Not always on the main thread because it makes ordering easier to reason about
+            NotificationCenter.default.post(name: .signalProxyConfigDidChange, object: nil)
         }
     }
 

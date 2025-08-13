@@ -5,23 +5,21 @@
 
 import SignalServiceKit
 
-enum ProxyConnectionChecker {
-    static func checkConnectionAndNotify() async -> Bool {
-        var hasTransitionedToConnecting = false
-        for await _ in NotificationCenter.default.notifications(named: OWSChatConnection.chatConnectionStateDidChange) {
-            switch await DependenciesBridge.shared.chatConnectionManager.identifiedConnectionState {
-            case .closed:
-                // Ignore closed state until we start connecting, it's expected that old sockets will close
-                guard hasTransitionedToConnecting else { continue }
-                return false
-            case .connecting:
-                hasTransitionedToConnecting = true
-            case .open:
-                return true
-            }
-        }
+struct ProxyConnectionChecker {
+    private let chatConnectionManager: any ChatConnectionManager
 
-        // If we get here, the task was cancelled before we got a successful connection.
-        return false
+    init(chatConnectionManager: any ChatConnectionManager) {
+        self.chatConnectionManager = chatConnectionManager
+    }
+
+    func checkConnection() async -> Bool {
+        do {
+            try await withCooperativeTimeout(seconds: OWSRequestFactory.textSecureHTTPTimeOut) {
+                try await chatConnectionManager.waitForUnidentifiedConnectionToOpen()
+            }
+            return true
+        } catch {
+            return false
+        }
     }
 }

@@ -103,18 +103,6 @@ public class OWSChatConnection {
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(isSignalProxyReadyDidChange),
-            name: .isSignalProxyReadyDidChange,
-            object: nil,
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(registrationStateDidChange),
-            name: .registrationStateDidChange,
-            object: nil,
-        )
-        NotificationCenter.default.addObserver(
-            self,
             selector: #selector(appExpiryDidChange),
             name: AppExpiry.AppExpiryDidChange,
             object: nil,
@@ -248,25 +236,24 @@ public class OWSChatConnection {
 
     private func _updateCanOpenWebSocket() {
         assertOnQueue(serialQueue)
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         let oldValue = (canOpenWebSocketError == nil)
-        canOpenWebSocketError = {
-            guard !appExpiry.isExpired(now: Date()) else {
-                return AppExpiredError()
-            }
-            guard Self.canAppUseSocketsToMakeRequests else {
-                return OWSHTTPError.networkFailure(.genericFailure)
-            }
-            guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-                return NotRegisteredError()
-            }
-            return nil
-        }()
+        canOpenWebSocketError = _canOpenWebSocketError()
         let newValue = (canOpenWebSocketError == nil)
         if newValue != oldValue {
             _applyDesiredSocketState()
         }
+    }
+
+    /// May be overridden.
+    fileprivate func _canOpenWebSocketError() -> (any Error)? {
+        guard !appExpiry.isExpired(now: Date()) else {
+            return AppExpiredError()
+        }
+        guard Self.canAppUseSocketsToMakeRequests else {
+            return OWSHTTPError.networkFailure(.genericFailure)
+        }
+        return nil
     }
 
     public final class ConnectionToken {
@@ -397,28 +384,9 @@ public class OWSChatConnection {
     // MARK: - Notifications
 
     @objc
-    fileprivate func registrationStateDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        updateCanOpenWebSocket()
-    }
-
-    @objc
     fileprivate func isCensorshipCircumventionActiveDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        cycleSocket()
-    }
-
-    @objc
-    fileprivate func isSignalProxyReadyDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        guard SignalProxy.isEnabledAndReady else {
-            // When we tear down the relay, everything gets canceled.
-            return
-        }
-        // When we start the relay, we need to reconnect.
         cycleSocket()
     }
 
@@ -575,12 +543,23 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
         super.init(type: type, appExpiry: appExpiry, appReadiness: appReadiness, db: db)
     }
 
+    fileprivate override func appDidBecomeReady() {
+        super.appDidBecomeReady()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(signalProxyConfigDidChange),
+            name: .signalProxyConfigDidChange,
+            object: nil,
+        )
+    }
+
     fileprivate func connectChatService(token: NSObject) async throws -> Connection {
         fatalError("must be overridden by subclass")
     }
 
-    fileprivate override func isSignalProxyReadyDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
+    @objc
+    private func signalProxyConfigDidChange(_ notification: NSNotification) {
         // The libsignal connection needs to be recreated whether the proxy is going up,
         // changing, or going down.
         cycleSocket()
@@ -940,9 +919,15 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         self.connectionLock.close()
     }
 
-    override func appDidBecomeReady() {
+    fileprivate override func appDidBecomeReady() {
         super.appDidBecomeReady()
 
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(registrationStateDidChange),
+            name: .registrationStateDidChange,
+            object: nil,
+        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(storiesEnabledStateDidChange),
@@ -952,10 +937,27 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
     }
 
     @objc
+    private func registrationStateDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        updateCanOpenWebSocket()
+    }
+
+    @objc
     private func storiesEnabledStateDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
         cycleSocket()
+    }
+
+    override func _canOpenWebSocketError() -> (any Error)? {
+        if let error = super._canOpenWebSocketError() {
+            return error
+        }
+        guard accountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+            return NotRegisteredError()
+        }
+        return nil
     }
 
     fileprivate override func connectChatService(token: NSObject) async throws -> AuthenticatedChatConnection {

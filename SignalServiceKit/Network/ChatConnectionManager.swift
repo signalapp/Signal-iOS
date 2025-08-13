@@ -8,7 +8,8 @@ public import LibSignalClient
 
 public protocol ChatConnectionManager {
     func updateCanOpenWebSocket()
-    func waitForIdentifiedConnectionToOpen() async throws
+    func waitForIdentifiedConnectionToOpen() async throws(CancellationError)
+    func waitForUnidentifiedConnectionToOpen() async throws(CancellationError)
     /// Waits until we're no longer trying to open a web socket.
     ///
     /// - Note: If an existing socket gets interrupted but we'll try to
@@ -17,7 +18,7 @@ public protocol ChatConnectionManager {
     /// all connection tokens are released).
     func waitUntilIdentifiedConnectionShouldBeClosed() async throws(CancellationError)
     @MainActor
-    var identifiedConnectionState: OWSChatConnectionState { get }
+    var unidentifiedConnectionState: OWSChatConnectionState { get }
     var hasEmptiedInitialQueue: Bool { get async }
 
     func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool
@@ -96,9 +97,14 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         return connection(ofType: connectionType).shouldSocketBeOpen_restOnly
     }
 
-    public func waitForIdentifiedConnectionToOpen() async throws {
+    public func waitForIdentifiedConnectionToOpen() async throws(CancellationError) {
         owsAssertBeta(OWSChatConnection.canAppUseSocketsToMakeRequests)
         try await self.connectionIdentified.waitForOpen()
+    }
+
+    public func waitForUnidentifiedConnectionToOpen() async throws(CancellationError) {
+        owsAssertBeta(OWSChatConnection.canAppUseSocketsToMakeRequests)
+        try await self.connectionUnidentified.waitForOpen()
     }
 
     public func waitUntilIdentifiedConnectionShouldBeClosed() async throws(CancellationError) {
@@ -131,8 +137,8 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     }
 
     @MainActor
-    public var identifiedConnectionState: OWSChatConnectionState {
-        connectionIdentified.currentState
+    public var unidentifiedConnectionState: OWSChatConnectionState {
+        return connectionUnidentified.currentState
     }
 
     public var hasEmptiedInitialQueue: Bool {
@@ -153,13 +159,16 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
 
     public var hasEmptiedInitialQueue: Bool = false
 
-    public func waitForIdentifiedConnectionToOpen() async throws {
+    public func waitForIdentifiedConnectionToOpen() async throws(CancellationError) {
+    }
+
+    public func waitForUnidentifiedConnectionToOpen() async throws(CancellationError) {
     }
 
     public func waitUntilIdentifiedConnectionShouldBeClosed() async throws(CancellationError) {
     }
 
-    public var identifiedConnectionState: OWSChatConnectionState = .closed
+    public var unidentifiedConnectionState: OWSChatConnectionState = .closed
 
     public var shouldWaitForSocketToMakeRequestPerType = [OWSChatConnectionType: Bool]()
 

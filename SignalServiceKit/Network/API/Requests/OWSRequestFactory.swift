@@ -19,7 +19,7 @@ public enum OWSRequestFactory {
     static let textSecureRegistrationLockV2API  = "v1/accounts/registration_lock"
     static let textSecureGiftBadgePricesAPI = "v1/subscription/boost/amounts/gift"
 
-    static let textSecureHTTPTimeOut: TimeInterval = 10
+    public static let textSecureHTTPTimeOut: TimeInterval = 10
 
     // MARK: - Other
 
