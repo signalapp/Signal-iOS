@@ -1220,20 +1220,23 @@ class ImageEditorCanvasView: UIView {
             return owsFailDebug("Could not load src image.")
         }
 
-        // we use a very strong blur radius to ensure adequate coverage of large and small faces
-        srcImage.cgImageWithGaussianBlurPromise(
-            radius: 25,
-            resizeToMaxPixelDimension: 300
-        ).done(on: DispatchQueue.main) { [weak self] blurredImage in
-            guard let self = self else { return }
-            self.model.blurredSourceImage = blurredImage
+        Task { @MainActor [weak self] in
+            do {
+                // we use a very strong blur radius to ensure adequate coverage of large and small faces
+                let blurredImage = try await srcImage.cgImageWithGaussianBlurAsync(
+                    radius: 25,
+                    resizeToMaxPixelDimension: 300,
+                )
+                guard let self = self else { return }
+                self.model.blurredSourceImage = blurredImage
 
-            // Once the blur is ready, update any content in case the user already blurred
-            if self.window != nil {
-                self.updateAllContent()
+                // Once the blur is ready, update any content in case the user already blurred
+                if self.window != nil {
+                    self.updateAllContent()
+                }
+            } catch {
+                owsFailDebug("Failed to blur src image")
             }
-        }.catch { _ in
-            owsFailDebug("Failed to blur src image")
         }
     }
 

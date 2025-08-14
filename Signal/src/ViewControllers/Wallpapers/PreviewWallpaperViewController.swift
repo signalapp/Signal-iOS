@@ -421,14 +421,17 @@ private class WallpaperPage: UIViewController {
 
     private var blurredPhoto: UIImage?
     private func prepareBlurredPhoto() {
-        photo?.withGaussianBlurPromise(
-            radius: 10,
-            resizeToMaxPixelDimension: 1024
-        ).done(on: DispatchQueue.main) { [weak self] blurredPhoto in
-            self?.blurredPhoto = blurredPhoto
-            self?.updatePhoto()
-        }.catch { error in
-            owsFailDebug("Failed to blur image \(error)")
+        Task { [weak self, photo] in
+            do {
+                let blurredPhoto = try await photo?.withGaussianBlurAsync(
+                    radius: 10,
+                    resizeToMaxPixelDimension: 1024
+                )
+                self?.blurredPhoto = blurredPhoto
+                self?.updatePhoto()
+            } catch {
+                owsFailDebug("Failed to blur image \(error)")
+            }
         }
     }
 
