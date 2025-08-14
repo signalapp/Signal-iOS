@@ -689,15 +689,14 @@ public class FullTextSearcher: NSObject {
         FullTextSearchIndexer.search(
             for: searchText,
             maxResults: maxResults,
+            threadUniqueId: threadUniqueId,
             tx: transaction
         ) { message, _, stop in
             guard messages.count < maxResults else {
                 stop = true
                 return
             }
-            if message.uniqueThreadId == threadUniqueId {
-                appendMessage(message)
-            }
+            appendMessage(message)
         }
 
         let canSearchForMentions: Bool = isGroupThread
