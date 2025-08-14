@@ -30,7 +30,7 @@ extension HomeTabViewController {
 
         let sizeClass: ConversationAvatarView.Configuration.SizeClass
         if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
-            sizeClass = .thirtySix
+            sizeClass = .forty
         } else {
             sizeClass = .twentyEight
         }
@@ -63,6 +63,11 @@ extension HomeTabViewController {
 
         let barButtonItem = UIBarButtonItem(customView: barButtonView)
         barButtonItem.accessibilityLabel = CommonStrings.openAppSettingsButton
+#if compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            barButtonItem.hidesSharedBackground = true
+        }
+#endif
         return barButtonItem
     }
 }
