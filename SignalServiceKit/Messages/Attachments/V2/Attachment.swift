@@ -79,6 +79,18 @@ public class Attachment {
     public struct IncrementalMacInfo: Equatable {
         public let mac: Data
         public let chunkSize: UInt32
+
+        // NOTE: Incremental mac is unsupported on iOS, the columns are
+        // vestigial. When we add video streaming support, we can make
+        // this init public and start setting it, but we must also
+        // validate the incremental mac on every download (streamed or not)
+        // and reject the download if it is invalid, thus ensuring the
+        // invariant that the incremental mac is valid if set
+        // for all downloaded attachments, same as the digest.
+        private init(mac: Data, chunkSize: UInt32) {
+            self.mac = mac
+            self.chunkSize = chunkSize
+        }
     }
 
     /// Information for the "stream" (the attachment downloaded and locally available).

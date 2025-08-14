@@ -583,11 +583,6 @@ extension ReferencedAttachment {
 
         proto.locatorInfo = self.asBackupFilePointerLocatorInfo(currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra)
 
-        if let incrementalMacInfo = attachment.mediaTierInfo?.incrementalMacInfo ?? attachment.transitTierInfo?.incrementalMacInfo {
-            proto.incrementalMac = incrementalMacInfo.mac
-            proto.incrementalMacChunkSize = incrementalMacInfo.chunkSize
-        }
-
         if attachment.mediaName != nil {
             guard
                 let unencryptedByteCount =

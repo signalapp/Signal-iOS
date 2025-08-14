@@ -467,10 +467,10 @@ public class AttachmentManagerImpl: AttachmentManager {
             proto.hasIncrementalMac,
             proto.hasIncrementalMacChunkSize
         {
-            incrementalMacInfo = Attachment.IncrementalMacInfo(
-                mac: proto.incrementalMac,
-                chunkSize: proto.incrementalMacChunkSize
-            )
+            // Incremental mac is unsupported on iOS;
+            // when we add support and can validate at
+            // download time, we should pull it off the proto.
+            incrementalMacInfo = nil
         } else {
             incrementalMacInfo = nil
         }

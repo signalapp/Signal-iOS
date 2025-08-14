@@ -9,18 +9,6 @@ import Foundation
 
 // MARK: - Infos
 
-extension Attachment.IncrementalMacInfo {
-    public static func mock(
-        mac: Data? = nil,
-        chunkSize: UInt32? = nil
-    ) -> Attachment.IncrementalMacInfo {
-        return Attachment.IncrementalMacInfo(
-            mac: mac ?? Data(),
-            chunkSize: chunkSize ?? 0
-        )
-    }
-}
-
 extension Attachment.StreamInfo {
     public static func mock(
         sha256ContentHash: Data? = nil,

@@ -338,6 +338,7 @@ public class GRDBSchemaMigrator {
         case addRetriesToBackupAttachmentUploadQueue
         case replaceOWSDeviceTable
         case reindexBackupAttachmentUploadQueue
+        case dropAllIncrementalMacs
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -401,7 +402,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 123
+    public static let grdbSchemaVersionLatest: UInt = 124
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4219,6 +4220,18 @@ public class GRDBSchemaMigrator {
                 on: "BackupAttachmentUploadQueue",
                 columns: ["isFullsize", "maxOwnerTimestamp"]
             )
+            return .success(())
+        }
+
+        migrator.registerMigration(.dropAllIncrementalMacs) { tx in
+            try tx.database.execute(sql: """
+                UPDATE Attachment
+                SET
+                    mediaTierIncrementalMac = NULL,
+                    mediaTierIncrementalMacChunkSize = NULL,
+                    transitTierIncrementalMac = NULL,
+                    transitTierIncrementalMacChunkSize = NULL;
+            """)
             return .success(())
         }
 
