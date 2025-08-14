@@ -21,19 +21,8 @@ public protocol BackupAttachmentUploadQueueRunner {
     ///
     /// Throws an error IFF something would prevent all attachments from backing up (e.g. network issue).
     func backUpAllAttachments() async throws
-}
 
-extension BackupAttachmentUploadQueueRunner where Self: Sendable {
-
-    public func backUpAllAttachmentsAfterTxCommits(
-        tx: DBWriteTransaction
-    ) {
-        tx.addSyncCompletion { [self] in
-            Task {
-                try await self.backUpAllAttachments()
-            }
-        }
-    }
+    func backUpAllAttachmentsAfterTxCommits(tx: DBWriteTransaction)
 }
 
 class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
@@ -125,6 +114,26 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             self?.startObservingQueueStatus()
             Task { [weak self] in
                 try await self?.backUpAllAttachments()
+            }
+        }
+    }
+
+    public func backUpAllAttachmentsAfterTxCommits(tx: DBWriteTransaction) {
+        tx.addSyncCompletion { [self] in
+            Task {
+                // Note the race: the queue could stop running between
+                // this check and the call below, but at this point
+                // the tx has committed; if the queue is running at all
+                // after the commit then whatever was in the commit
+                // will get picked up before it finishes running,
+                // so if it stops after this check then it necessarily
+                // did so after processing whatever got committed.
+                let thumbnailRunning = await self.thumbnailTaskQueue.isRunning
+                let fullsizeRunning = await self.fullsizeTaskQueue.isRunning
+                if fullsizeRunning && thumbnailRunning {
+                    return
+                }
+                try await self.backUpAllAttachments()
             }
         }
     }
@@ -700,6 +709,10 @@ open class BackupAttachmentUploadQueueRunnerMock: BackupAttachmentUploadQueueRun
     public init() {}
 
     public func backUpAllAttachments() async throws {
+        // Do nothing
+    }
+
+    public func backUpAllAttachmentsAfterTxCommits(tx: DBWriteTransaction) {
         // Do nothing
     }
 }

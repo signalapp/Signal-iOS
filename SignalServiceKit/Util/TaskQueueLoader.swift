@@ -155,6 +155,15 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
 
     public let maxConcurrentTasks: UInt
 
+    public var isRunning: Bool {
+        switch state {
+        case .notRunning, .cleaningUp, .cancelled:
+            return false
+        case .running:
+            return true
+        }
+    }
+
     private nonisolated let dateProvider: DateProvider
     private let db: any DB
     private let runner: Runner
