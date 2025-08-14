@@ -196,7 +196,40 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
         )
     }
 
-    private var runningTask: Task<Void, Error>?
+    private enum State {
+        case notRunning
+        case running(UUID, Task<Void, Error>)
+        case cleaningUp(UUID, Task<Void, Error>)
+        case cancelled(UUID, Task<Void, Error>)
+
+        func isUnchanged(from oldState: State) -> Bool {
+            switch (oldState, self) {
+            case (.notRunning, .notRunning):
+                return true
+            case (.notRunning, _):
+                return false
+
+            case (.running(let oldId, _), .running(let newId, _)):
+                return oldId == newId
+            case (.running, _):
+                return false
+
+            case (.cleaningUp(let oldId, _), .cleaningUp(let newId, _)):
+                return oldId == newId
+            case (.cleaningUp, _):
+                return false
+
+            case (.cancelled(let oldId, _), .cancelled(let newId, _)):
+                return oldId == newId
+            case (.cancelled, _):
+                return false
+            }
+        }
+    }
+
+    private var state = State.notRunning
+    /// Random IDs of un-cancelled observers of the currently running task.
+    private var runningTaskObservers = Set<UUID>()
     /// Error provided when the task was stopped; if not nil, throw it on callers of loadAndRunTasks.
     private var stoppedReason: Error?
 
@@ -204,54 +237,116 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
 
     /// Load tasks, N at a time, and begin running any that are not already running.
     /// (N = max concurrent tasks)
-    /// Runs until cooperative parent Task cancellation, some task throws an error, or
-    /// all tasks are finished (finished = table peek returns empty).
+    /// Runs until all tasks are finished (finished = table peek returns empty).
     ///
     /// Throws an error IFF some database operation relating to the queue or post-task cleanup fails;
     /// within-task failures are handled by the runner and do NOT interrupt processing of subsequent tasks.
+    ///
+    /// Cancellation causes code execution to be returned to the caller but does not _necessarily_ cancel
+    /// the execution of subsequent tasks. All callers of `loadAndRunTasks()` await a single runner.
+    /// As long as some uncancelled task context is awaiting the result, the runner will continue to execute
+    /// subsequent tasks. A single caller cancelling simply releases that caller from waiting on the runner
+    /// to finish; the runner isn't cancelled until _all_ callers cancel.
+    /// If some caller wishes to _force_ the runner to stop, call `stop()` instead of cancelling the task.
     public func loadAndRunTasks() async throws {
-        if let runningTask {
+        let task: Task<Void, Error>
+        let state = self.state
+        switch state {
+        case .notRunning:
+            // Start a new task.
+            let taskId = UUID()
+            task = Task {
+                try await self._loadAndRunTasks(taskId: taskId)
+            }
+            self.state = .running(taskId, task)
+            self.runningTaskObservers = Set()
+        case .running(_, let _task):
+            task = _task
+        case .cancelled(_, let cancelledTask):
+            // We want to wait for cancellation to finish
+            // applying, and then try again.
+            try? await cancelledTask.value
+            // We expect that state will have been cleaned
+            // up by the time runningTask finishes, but
+            // just in case do cleanup here.
+            if self.state.isUnchanged(from: state) {
+                self.state = .notRunning
+            }
+            return try await loadAndRunTasks()
+        case .cleaningUp(_, let runningTask):
+            // We want to wait for cleanup to finish
+            // applying, and then try again.
+            try? await runningTask.value
+            // We expect that state will have been cleaned
+            // up by the time runningTask finishes, but
+            // just in case do cleanup here.
+            if self.state.isUnchanged(from: state) {
+                self.state = .notRunning
+            }
+            return try await loadAndRunTasks()
+        }
+
+        let observerId = UUID()
+        runningTaskObservers.insert(observerId)
+        // The cancellable continuation means if the calling context cancels
+        // it will immediately resume while the inner task keeps running.
+        // In addition, we use `withTaskCancellationHandler` to get the
+        // onCancel callback so that we can track when _all_ observers
+        // have cancelled and then we pass along the cancellation to
+        // the actual running task.
+        let continuation = CancellableContinuation<Void>()
+        Task {
             do {
-                return try await runningTask.value
+                try await task.value
+                continuation.resume(with: .success(()))
             } catch let cancellationError as CancellationError {
-                throw stoppedReason ?? cancellationError
+                let error = self.stoppedReason ?? cancellationError
+                continuation.resume(with: .failure(error))
             } catch let error {
-                throw error
+                continuation.resume(with: .failure(error))
             }
         }
-        let task = Task {
-            defer {
-                self.runningTask = nil
-            }
-            try await self._loadAndRunTasks()
-        }
-        self.runningTask = task
+
         try await withTaskCancellationHandler(
             operation: {
-                do {
-                    return try await task.value
-                } catch let cancellationError as CancellationError {
-                    throw stoppedReason ?? cancellationError
-                } catch let error {
-                    throw error
-                }
+                try await continuation.wait()
             },
             onCancel: {
-                task.cancel()
+                continuation.cancel()
+                Task {
+                    try await observerDidCancel(observerId)
+                }
             }
         )
     }
 
-    public func stop(reason: Error? = nil) async throws {
-        guard let runningTask, !runningTask.isCancelled else {
+    private func observerDidCancel(_ id: UUID) throws {
+        guard runningTaskObservers.contains(id) else {
             return
         }
-        self.stoppedReason = reason
-        runningTask.cancel()
-        self.runningTask = nil
+        self.runningTaskObservers.remove(id)
+        if runningTaskObservers.isEmpty {
+            // We can stop and cancel the running task.
+            try self.stop()
+        }
     }
 
-    private func _loadAndRunTasks() async throws {
+    public func stop(reason: Error? = nil) throws {
+        switch state {
+        case .notRunning:
+            break
+        case .cancelled:
+            // Already cancelled; prefer the initial
+            // reason (if any) and let it finish cancelling.
+            return
+        case .running(let taskId, let runningTask), .cleaningUp(let taskId, let runningTask):
+            self.stoppedReason = reason
+            runningTask.cancel()
+            self.state = .cancelled(taskId, runningTask)
+        }
+    }
+
+    private func _loadAndRunTasks(taskId: UUID) async throws {
         // Check cancellation at the start of each attempt.
         // This method is called recursively, so now is a good time to check.
         try Task.checkCancellation()
@@ -272,7 +367,36 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
         }
         guard !records.isEmpty else {
             if currentTaskIds.isEmpty {
-                await self.runner.didDrainQueue()
+                switch self.state {
+                case .notRunning:
+                    return
+                case .cancelled:
+                    owsFailDebug("Cancel should have applied to the task context")
+                    return
+                case .cleaningUp:
+                    return
+                case .running(let stateTaskId, let runningTask):
+                    if stateTaskId == taskId {
+                        state = .cleaningUp(taskId, runningTask)
+                        await self.runner.didDrainQueue()
+                        switch self.state {
+                        case .notRunning:
+                            owsFailDebug("State is not running but we are, in fact, running")
+                            return
+                        case .running(let stateTaskId, _):
+                            owsFailDebug("Not cleaning up? How?")
+                            fallthrough
+                        case .cancelled(let stateTaskId, _):
+                            // Cancellation might've applied while running didDrainQueue;
+                            // We're done now so just finish.
+                            fallthrough
+                        case .cleaningUp(let stateTaskId, _):
+                            if stateTaskId == taskId {
+                                state = .notRunning
+                            }
+                        }
+                    }
+                }
             }
             return
         }
@@ -301,7 +425,7 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
                         try await self.didCancel(record: record)
                     }
                     // As soon as we finish any task, start loading more tasks to run.
-                    try await self._loadAndRunTasks()
+                    try await self._loadAndRunTasks(taskId: taskId)
                 }
             }
             try await taskGroup.waitForAll()
