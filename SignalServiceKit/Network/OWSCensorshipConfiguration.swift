@@ -170,6 +170,8 @@ struct OWSCensorshipConfiguration {
         "+998": "UZ",
         // Pakistan
         "+92": "PK",
+        // Russia
+        "+7": "RU",
     ]
 
     /// Returns nil if the phone number is not known to be censored
