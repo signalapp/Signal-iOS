@@ -478,7 +478,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
                     if
                         uploadResult.localUploadMetadata.isReusedTransitTierUpload,
-                        let transitTierInfo = attachmentStream.attachment.transitTierInfo
+                        let transitTierInfo = attachmentStream.attachment.latestTransitTierInfo
                     {
                         // We reused a transit tier upload but the source couldn't be found.
                         // That transit tier upload is now invalid.
@@ -528,7 +528,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             // To upload to media tier, we also upload to transit tier and then perform a copy.
             // We can save the transit tier info from that upload to the attachment, in some cases.
             let shouldUpdateTransitTierInfo: Bool = {
-                guard let oldTransitTierInfo = attachmentStream.attachment.transitTierInfo else {
+                guard let oldTransitTierInfo = attachmentStream.attachment.latestTransitTierInfo else {
                     // First case: we had no transit tier info; something is better than nothing.
                     return true
                 }
@@ -994,7 +994,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             if
                 !Upload.disableTransitTierUploadReuse,
                 // We have an existing upload
-                let transitTierInfo = attachment.transitTierInfo,
+                let transitTierInfo = attachment.latestTransitTierInfo,
                 // It uses the same primary key (it isn't a reupload with a rotated key)
                 transitTierInfo.encryptionKey == attachment.encryptionKey,
                 // We expect it isn't expired

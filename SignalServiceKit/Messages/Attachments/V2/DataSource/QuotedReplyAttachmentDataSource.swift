@@ -89,7 +89,7 @@ public struct QuotedReplyAttachmentDataSource {
         public let mimeType: String
         /// We copy the transit tier info for downloading purposes, as a fallback
         /// if the original is undownloaded.
-        public let transitTierInfo: Attachment.TransitTierInfo?
+        public let latestTransitTierInfo: Attachment.TransitTierInfo?
         /// Note: these come from the original's AttachmentReference.
         public let renderingFlag: AttachmentReference.RenderingFlag
         public let sourceFilename: String?
@@ -160,7 +160,7 @@ public struct QuotedReplyAttachmentDataSource {
             source: .originalAttachment(.init(
                 id: originalAttachment.id,
                 mimeType: originalAttachment.mimeType,
-                transitTierInfo: originalAttachment.transitTierInfo,
+                latestTransitTierInfo: originalAttachment.latestTransitTierInfo,
                 renderingFlag: originalReference.renderingFlag,
                 sourceFilename: originalReference.sourceFilename,
                 sourceUnencryptedByteCount: originalReference.sourceUnencryptedByteCount,

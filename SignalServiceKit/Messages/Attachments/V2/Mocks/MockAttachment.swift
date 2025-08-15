@@ -103,7 +103,7 @@ extension Attachment.ConstructionParams {
             blurHash: blurHash,
             mimeType: mimeType,
             encryptionKey: encryptionKey,
-            transitTierInfo: transitTierInfo
+            latestTransitTierInfo: transitTierInfo
         )
     }
 
@@ -153,7 +153,7 @@ public class MockAttachment: Attachment {
            mediaName: mediaName ?? streamInfo?.mediaName ?? UUID().uuidString,
            localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,
            streamInfo: streamInfo,
-           transitTierInfo: transitTierInfo,
+           latestTransitTierInfo: transitTierInfo,
            mediaTierInfo: mediaTierInfo,
            thumbnailMediaTierInfo: thumbnailInfo,
            originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply,

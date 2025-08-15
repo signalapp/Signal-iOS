@@ -38,7 +38,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         // info is obsolete.
         guard
             let refetchedAttachment = attachmentStore.fetch(id: attachment.id, tx: tx),
-            refetchedAttachment.transitTierInfo?.cdnKey == info.cdnKey
+            refetchedAttachment.latestTransitTierInfo?.cdnKey == info.cdnKey
         else {
             return
         }

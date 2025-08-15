@@ -310,7 +310,7 @@ public class BackupListMediaManagerTests {
                 blurHash: nil,
                 mimeType: "image/jpeg",
                 encryptionKey: UUID().data,
-                transitTierInfo: nil,
+                latestTransitTierInfo: nil,
                 sha256ContentHash: UUID().data,
                 mediaName: mediaName,
                 mediaTierInfo: mediaTierInfo,

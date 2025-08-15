@@ -719,7 +719,7 @@ class AttachmentStoreTests: XCTestCase {
             XCTFail("Expected attachment stream!")
             return
         }
-        XCTAssertNil(attachment.transitTierInfo)
+        XCTAssertNil(attachment.latestTransitTierInfo)
 
         let transitTierInfo = Attachment.TransitTierInfo(
             cdnNumber: 3,
@@ -744,7 +744,7 @@ class AttachmentStoreTests: XCTestCase {
         // Refetch and check that it is appropriately marked.
         attachment = fetchAttachment()
 
-        XCTAssertEqual(attachment.transitTierInfo, transitTierInfo)
+        XCTAssertEqual(attachment.latestTransitTierInfo, transitTierInfo)
     }
 
     // MARK: - Remove Owner
@@ -1193,8 +1193,8 @@ class AttachmentStoreTests: XCTestCase {
         testUInt64FieldPresence(
             sampleInstance: Attachment.Record(params: Attachment.ConstructionParams.mockPointer()),
             keyPathNames: [
-                \.transitUploadTimestamp: "transitUploadTimestamp",
-                \.lastTransitDownloadAttemptTimestamp: "lastTransitDownloadAttemptTimestamp",
+                \.latestTransitUploadTimestamp: "latestTransitUploadTimestamp",
+                \.latestTransitLastDownloadAttemptTimestamp: "latestTransitLastDownloadAttemptTimestamp",
                 \.lastMediaTierDownloadAttemptTimestamp: "lastMediaTierDownloadAttemptTimestamp",
                 \.lastThumbnailDownloadAttemptTimestamp: "lastThumbnailDownloadAttemptTimestamp",
                 \.lastFullscreenViewTimestamp: "lastFullscreenViewTimestamp",

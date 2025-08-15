@@ -31,7 +31,9 @@ public class AttachmentTransitPointer {
 
     public convenience init?(attachment: Attachment) {
         guard
-            let info = attachment.transitTierInfo
+            // Note: we only use the latest transit tier info
+            // for pointers to download.
+            let info = attachment.latestTransitTierInfo
         else {
             return nil
         }

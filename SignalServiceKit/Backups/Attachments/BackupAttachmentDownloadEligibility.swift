@@ -255,7 +255,8 @@ public struct BackupAttachmentDownloadEligibility {
         guard attachment.asStream() == nil else {
             return .done
         }
-        guard let transitTierInfo = attachment.transitTierInfo else {
+        // We only download from the latest transit tier info.
+        guard let transitTierInfo = attachment.latestTransitTierInfo else {
             return nil
         }
 

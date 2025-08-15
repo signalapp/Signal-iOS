@@ -33,8 +33,10 @@ public class Attachment {
 
     public let streamInfo: StreamInfo?
 
-    /// Information for the transit tier upload, if known to be uploaded.
-    public let transitTierInfo: TransitTierInfo?
+    /// Information for the latest transit tier upload, if known to be uploaded.
+    /// The encryption key may not match the tip-level encryption key used for the local file;
+    /// they may differ if the attachment was reuploaded for forwarding.
+    public let latestTransitTierInfo: TransitTierInfo?
 
     /// Used for quoted reply thumbnail attachments.
     /// The id of the quoted reply's target message's attachment that is to be thumbnail'ed.
@@ -238,17 +240,17 @@ public class Attachment {
             digestSHA256Ciphertext: record.digestSHA256Ciphertext,
             localRelativeFilePath: record.localRelativeFilePath
         )
-        self.transitTierInfo = TransitTierInfo(
-            cdnNumber: record.transitCdnNumber,
-            cdnKey: record.transitCdnKey,
-            uploadTimestamp: record.transitUploadTimestamp,
-            encryptionKey: record.transitEncryptionKey,
-            unencryptedByteCount: record.transitUnencryptedByteCount,
-            digestSHA256Ciphertext: record.transitDigestSHA256Ciphertext,
+        self.latestTransitTierInfo = TransitTierInfo(
+            cdnNumber: record.latestTransitCdnNumber,
+            cdnKey: record.latestTransitCdnKey,
+            uploadTimestamp: record.latestTransitUploadTimestamp,
+            encryptionKey: record.latestTransitEncryptionKey,
+            unencryptedByteCount: record.latestTransitUnencryptedByteCount,
+            digestSHA256Ciphertext: record.latestTransitDigestSHA256Ciphertext,
             sha256ContentHash: record.sha256ContentHash,
-            lastDownloadAttemptTimestamp: record.lastTransitDownloadAttemptTimestamp,
-            incrementalMac: record.transitTierIncrementalMac,
-            incrementalMacChunkSize: record.transitTierIncrementalMacChunkSize
+            lastDownloadAttemptTimestamp: record.latestTransitLastDownloadAttemptTimestamp,
+            incrementalMac: record.latestTransitTierIncrementalMac,
+            incrementalMacChunkSize: record.latestTransitTierIncrementalMacChunkSize
         )
         self.mediaTierInfo = MediaTierInfo(
             cdnNumber: record.mediaTierCdnNumber,
@@ -267,7 +269,7 @@ public class Attachment {
     }
 
     public var isUploadedToTransitTier: Bool {
-        return transitTierInfo != nil
+        return latestTransitTierInfo != nil
     }
 
     public var hasMediaTierInfo: Bool {
@@ -310,7 +312,7 @@ public class Attachment {
     /// Still, we shouldn't rely on this for anything critical; assume the value can be spoofed.
     /// Safe to use for size estimation, UI progress display, etc.
     public var anyPointerFullsizeUnencryptedByteCount: UInt32? {
-        return mediaTierInfo?.unencryptedByteCount ?? transitTierInfo?.unencryptedByteCount
+        return mediaTierInfo?.unencryptedByteCount ?? latestTransitTierInfo?.unencryptedByteCount
     }
 
     public enum TransitUploadStrategy {
@@ -336,33 +338,33 @@ public class Attachment {
 
         if
             // We have a prior upload
-            let transitTierInfo,
+            let latestTransitTierInfo,
             // That upload includes a digest (if we restore from a backup
             // with no digest, we can't forward that transit tier info
             // even though we know about it and its maybe recent).
-            case .digestSHA256Ciphertext(let digest) = transitTierInfo.integrityCheck,
+            case .digestSHA256Ciphertext(let digest) = latestTransitTierInfo.integrityCheck,
             // And we are still in the window to reuse it
             dateProvider().timeIntervalSince(
-                Date(millisecondsSince1970: transitTierInfo.uploadTimestamp)
+                Date(millisecondsSince1970: latestTransitTierInfo.uploadTimestamp)
             ) <= Upload.Constants.uploadReuseWindow
         {
             // We have unexpired transit tier info. Reuse that upload.
             return .reuseExistingUpload(
                 .init(
-                    cdnKey: transitTierInfo.cdnKey,
-                    cdnNumber: transitTierInfo.cdnNumber,
-                    key: transitTierInfo.encryptionKey,
+                    cdnKey: latestTransitTierInfo.cdnKey,
+                    cdnNumber: latestTransitTierInfo.cdnNumber,
+                    key: latestTransitTierInfo.encryptionKey,
                     digest: digest,
                     // Okay to fall back to our local data length even if the original sender
                     // didn't include it; we now know it from the local file.
-                    plaintextDataLength: transitTierInfo.unencryptedByteCount ?? metadata.plaintextDataLength,
+                    plaintextDataLength: latestTransitTierInfo.unencryptedByteCount ?? metadata.plaintextDataLength,
                     // Encryped length is the same regardless of the key used.
                     encryptedDataLength: metadata.encryptedDataLength
                 )
             )
         } else if
             // This device has never uploaded
-            transitTierInfo == nil,
+            latestTransitTierInfo == nil,
             // No media tier info either
             mediaTierInfo == nil
         {

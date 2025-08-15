@@ -391,7 +391,7 @@ public extension QueuedBackupAttachmentDownload {
                 canDownloadFromMediaTier,
                 let unencryptedByteCount =
                     attachment.mediaTierInfo?.unencryptedByteCount
-                    ?? attachment.transitTierInfo?.unencryptedByteCount
+                    ?? attachment.latestTransitTierInfo?.unencryptedByteCount
                     ?? reference?.sourceUnencryptedByteCount
             {
                 return Cryptography.estimatedMediaTierCDNSize(
@@ -399,7 +399,7 @@ public extension QueuedBackupAttachmentDownload {
                 )
             } else if
                 let unencryptedByteCount =
-                    attachment.transitTierInfo?.unencryptedByteCount
+                    attachment.latestTransitTierInfo?.unencryptedByteCount
                     ?? attachment.mediaTierInfo?.unencryptedByteCount
                     ?? reference?.sourceUnencryptedByteCount
             {

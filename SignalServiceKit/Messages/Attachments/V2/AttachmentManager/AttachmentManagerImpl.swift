@@ -328,7 +328,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             blurHash: proto.blurHash,
             mimeType: mimeType,
             encryptionKey: transitTierInfo.encryptionKey,
-            transitTierInfo: transitTierInfo
+            latestTransitTierInfo: transitTierInfo
         )
         let sourceMediaSizePixels: CGSize?
         if
@@ -504,7 +504,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                     blurHash: proto.blurHash.nilIfEmpty,
                     mimeType: mimeType,
                     encryptionKey: encryptionKey,
-                    transitTierInfo: transitTierInfo,
+                    latestTransitTierInfo: transitTierInfo,
                     sha256ContentHash: sha256ContentHash,
                     mediaName: Attachment.mediaName(
                         sha256ContentHash: sha256ContentHash,
@@ -533,7 +533,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                         blurHash: proto.blurHash.nilIfEmpty,
                         mimeType: mimeType,
                         encryptionKey: encryptionKey,
-                        transitTierInfo: transitTierInfo,
+                        latestTransitTierInfo: transitTierInfo,
                         sha256ContentHash: nil,
                         mediaName: nil,
                         mediaTierInfo: nil,
@@ -836,7 +836,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                         pendingAttachmentEncryptionKey: pendingAttachment.encryptionKey,
                         pendingAttachmentMimeType: pendingAttachment.mimeType,
                         pendingAttachmentOrphanRecordId: hasOrphanRecord ? pendingAttachment.orphanRecordId : nil,
-                        pendingAttachmentTransitTierInfo: attachmentParams.transitTierInfo,
+                        pendingAttachmentLatestTransitTierInfo: attachmentParams.latestTransitTierInfo,
                         attachmentStore: attachmentStore,
                         orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                         orphanedAttachmentStore: orphanedAttachmentStore,
@@ -967,7 +967,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         pendingAttachmentEncryptionKey: Data,
         pendingAttachmentMimeType: String,
         pendingAttachmentOrphanRecordId: OrphanedAttachmentRecord.IDType?,
-        pendingAttachmentTransitTierInfo: Attachment.TransitTierInfo?,
+        pendingAttachmentLatestTransitTierInfo: Attachment.TransitTierInfo?,
         attachmentStore: AttachmentStore,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
@@ -1035,19 +1035,19 @@ public class AttachmentManagerImpl: AttachmentManager {
 
         // Transit tier info has its own key independent of the local file encryption key;
         // we should just keep whichever upload we think is newer.
-        let transitTierInfo: Attachment.TransitTierInfo?
+        let latestTransitTierInfo: Attachment.TransitTierInfo?
         if
-            let existingTransitTierInfo = existingAttachment.transitTierInfo,
-            let pendingAttachmentTransitTierInfo
+            let existingTransitTierInfo = existingAttachment.latestTransitTierInfo,
+            let pendingAttachmentLatestTransitTierInfo
         {
-            if existingTransitTierInfo.uploadTimestamp > pendingAttachmentTransitTierInfo.uploadTimestamp {
-                transitTierInfo = existingTransitTierInfo
+            if existingTransitTierInfo.uploadTimestamp > pendingAttachmentLatestTransitTierInfo.uploadTimestamp {
+                latestTransitTierInfo = existingTransitTierInfo
             } else {
-                transitTierInfo = pendingAttachmentTransitTierInfo
+                latestTransitTierInfo = pendingAttachmentLatestTransitTierInfo
             }
         } else {
             // Take whichever one we've got.
-            transitTierInfo = existingAttachment.transitTierInfo ?? pendingAttachmentTransitTierInfo
+            latestTransitTierInfo = existingAttachment.latestTransitTierInfo ?? pendingAttachmentLatestTransitTierInfo
         }
 
         // Set the stream info on the existing attachment, if needed.
@@ -1056,7 +1056,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             into: existingAttachment,
             encryptionKey: pendingAttachmentEncryptionKey,
             validatedMimeType: pendingAttachmentMimeType,
-            transitTierInfo: transitTierInfo,
+            latestTransitTierInfo: latestTransitTierInfo,
             mediaTierInfo: mediaTierInfo,
             thumbnailMediaTierInfo: thumbnailMediaTierInfo,
             tx: tx

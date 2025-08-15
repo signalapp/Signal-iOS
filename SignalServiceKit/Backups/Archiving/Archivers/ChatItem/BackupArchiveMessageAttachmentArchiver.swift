@@ -617,7 +617,7 @@ extension ReferencedAttachment {
         // attachment after 3+ days, we rotate to a new encryption key; transit
         // tier info uses this new random key and can't be the fallback here.
         if
-            let transitTierInfo = attachment.transitTierInfo,
+            let transitTierInfo = attachment.latestTransitTierInfo,
             transitTierInfo.encryptionKey == attachment.encryptionKey
         {
             locatorInfo.transitCdnKey = transitTierInfo.cdnKey
@@ -649,7 +649,7 @@ extension ReferencedAttachment {
             if
                 let unencryptedByteCount = attachment.streamInfo?.unencryptedByteCount
                     ?? attachment.mediaTierInfo?.unencryptedByteCount
-                    ?? attachment.transitTierInfo?.unencryptedByteCount
+                    ?? attachment.latestTransitTierInfo?.unencryptedByteCount
             {
                 locatorInfo.size = unencryptedByteCount
             }

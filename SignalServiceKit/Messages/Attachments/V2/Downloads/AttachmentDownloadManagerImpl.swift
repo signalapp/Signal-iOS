@@ -274,7 +274,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         var didEnqueueAnyDownloads = false
         referencedAttachments.forEach { referencedAttachment in
             let sourceToUse: QueuedAttachmentDownloadRecord.SourceType = {
-                let transitTierInfo = referencedAttachment.attachment.transitTierInfo
+                // We only download from the latest transit tier info.
+                let transitTierInfo = referencedAttachment.attachment.latestTransitTierInfo
                 let mediaTierInfo = referencedAttachment.attachment.mediaTierInfo
                 guard
                     let transitTierInfo,
@@ -562,7 +563,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 // a transit tier fallback available, try downloading from that.
                 let shouldReEnqueueAsTransitTier =
                     record.sourceType == .mediaTierFullsize
-                    && attachment?.transitTierInfo != nil
+                    && attachment?.latestTransitTierInfo != nil
                     // Backup restore download queue does its own fallbacks
                     && record.priority != .backupRestore
 
@@ -636,11 +637,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 let refetchedAttachment = db.read(
                     block: { attachmentStore.fetch(id: record.attachmentId, tx: $0) }
                 ),
-                refetchedAttachment.transitTierInfo?.cdnKey
-                    == attachmentBeforeDownloadAttempt.transitTierInfo?.cdnKey,
+                refetchedAttachment.latestTransitTierInfo?.cdnKey
+                    == attachmentBeforeDownloadAttempt.latestTransitTierInfo?.cdnKey,
 
                 // Only proactively expire if the upload is old enough
-                let uploadTimestamp = refetchedAttachment.transitTierInfo?.uploadTimestamp,
+                let uploadTimestamp = refetchedAttachment.latestTransitTierInfo?.uploadTimestamp,
                 uploadTimestamp < now,
                 now - uploadTimestamp >= remoteConfigManager.currentConfig().messageQueueTimeMs
             {
@@ -746,7 +747,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             let downloadMetadata: DownloadMetadata?
             switch record.sourceType {
             case .transitTier:
-                guard let transitTierInfo = attachment.transitTierInfo else {
+                // We only download from the latest transit tier info.
+                guard let transitTierInfo = attachment.latestTransitTierInfo else {
                     downloadMetadata = nil
                     break
                 }
@@ -2090,7 +2092,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             pendingAttachmentEncryptionKey: pendingAttachment.encryptionKey,
                             pendingAttachmentMimeType: pendingAttachment.mimeType,
                             pendingAttachmentOrphanRecordId: pendingAttachment.orphanRecordId,
-                            pendingAttachmentTransitTierInfo: attachmentWeJustDownloaded.transitTierInfo,
+                            pendingAttachmentLatestTransitTierInfo: attachmentWeJustDownloaded.latestTransitTierInfo,
                             attachmentStore: attachmentStore,
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,
@@ -2273,7 +2275,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             pendingAttachmentEncryptionKey: pendingAttachment.encryptionKey,
                             pendingAttachmentMimeType: pendingAttachment.mimeType,
                             pendingAttachmentOrphanRecordId: pendingAttachment.orphanRecordId,
-                            pendingAttachmentTransitTierInfo: nil,
+                            pendingAttachmentLatestTransitTierInfo: nil,
                             attachmentStore: attachmentStore,
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,
@@ -2461,7 +2463,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             pendingAttachmentEncryptionKey: pendingThumbnailAttachment.encryptionKey,
                             pendingAttachmentMimeType: pendingThumbnailAttachment.mimeType,
                             pendingAttachmentOrphanRecordId: pendingThumbnailAttachment.orphanRecordId,
-                            pendingAttachmentTransitTierInfo: nil,
+                            pendingAttachmentLatestTransitTierInfo: nil,
                             attachmentStore: attachmentStore,
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,
