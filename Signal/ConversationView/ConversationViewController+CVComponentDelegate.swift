@@ -1274,3 +1274,13 @@ extension ConversationViewController: CVComponentDelegate {
         GroupCallViewController.presentLobby(for: callLink)
     }
 }
+
+// MARK: - OWSNavigationChildController
+
+extension ConversationViewController: OWSNavigationChildController {
+    public var shouldCancelNavigationBack: Bool {
+        // If presentedViewController is not nil, it means we haven't finished dismissing
+        // and should not allow the back navigation gesture.
+        return presentedViewController != nil
+    }
+}
