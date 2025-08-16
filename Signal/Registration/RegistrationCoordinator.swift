@@ -165,7 +165,7 @@ public protocol RegistrationCoordinator {
 
     /// Additional step to have the user confirm restoring from backup.
     func confirmRestoreFromBackup(
-        progress: @escaping @MainActor (OWSProgress) -> Void
+        progress: OWSSequentialProgressRootSink<BackupRestoreProgressPhase>
     ) -> Guarantee<RegistrationStep>
 
     /// Cancel from the backup entry screen and clear out any key that has been entered.
@@ -184,12 +184,12 @@ public enum AcknowledgeReglockResult {
     case cannotExit
 }
 
-enum BackupRestoreProgressPhase: String {
+public enum BackupRestoreProgressPhase: String, OWSSequentialProgressStep {
     case downloadingBackup
     case importingBackup
     case finishing
 
-    public var percentOfTotalProgress: UInt64 {
+    public var progressUnitCount: UInt64 {
         return switch self {
         case .downloadingBackup: 30
         case .importingBackup: 65

@@ -1127,7 +1127,7 @@ private class BackupSettingsViewModel: ObservableObject {
     @Published var backupPlan: BackupPlan
     @Published var failedToDisableBackupsRemotely: Bool
 
-    @Published var latestBackupExportProgressUpdate: BackupExportJobProgress?
+    @Published var latestBackupExportProgressUpdate: OWSSequentialProgress<BackupExportJobStep>?
     @Published var latestBackupAttachmentDownloadUpdate: BackupSettingsAttachmentDownloadTracker.DownloadUpdate?
     @Published var latestBackupAttachmentUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?
 
@@ -1141,7 +1141,7 @@ private class BackupSettingsViewModel: ObservableObject {
         backupSubscriptionLoadingState: BackupSubscriptionLoadingState,
         backupPlan: BackupPlan,
         failedToDisableBackupsRemotely: Bool,
-        latestBackupExportProgressUpdate: BackupExportJobProgress?,
+        latestBackupExportProgressUpdate: OWSSequentialProgress<BackupExportJobStep>?,
         latestBackupAttachmentDownloadUpdate: BackupSettingsAttachmentDownloadTracker.DownloadUpdate?,
         latestBackupAttachmentUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?,
         lastBackupDate: Date?,
@@ -1578,12 +1578,12 @@ struct BackupSettingsView: View {
 // MARK: -
 
 private struct BackupExportProgressView: View {
-    let latestProgressUpdate: BackupExportJobProgress
+    let latestProgressUpdate: OWSSequentialProgress<BackupExportJobStep>
     let viewModel: BackupSettingsViewModel
 
     var body: some View {
         VStack(alignment: .leading) {
-            let percentComplete = latestProgressUpdate.overallProgress.percentComplete
+            let percentComplete = latestProgressUpdate.percentComplete
 
             ProgressView(value: percentComplete)
                 .progressViewStyle(.linear)
@@ -1600,7 +1600,7 @@ private struct BackupExportProgressView: View {
                     percentComplete.formatted(.percent.precision(.fractionLength(0))),
                 ))
 
-                let stepDescription = switch latestProgressUpdate.step {
+                let stepDescription = switch latestProgressUpdate.currentStep {
                 case .registerBackupId, .backupExport:
                     OWSLocalizedString(
                         "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP",
@@ -2148,7 +2148,7 @@ private extension BackupSettingsViewModel {
     static func forPreview(
         backupPlan: BackupPlan,
         failedToDisableBackupsRemotely: Bool = false,
-        latestBackupExportProgressUpdate: BackupExportJobProgress? = nil,
+        latestBackupExportProgressUpdate: OWSSequentialProgress<BackupExportJobStep>? = nil,
         latestBackupAttachmentDownloadUpdateState: BackupSettingsAttachmentDownloadTracker.DownloadUpdate.State? = nil,
         latestBackupAttachmentUploadUpdateState: BackupSettingsAttachmentUploadTracker.UploadUpdate.State? = nil,
         backupSubscriptionLoadingState: BackupSubscriptionLoadingState,
@@ -2261,6 +2261,26 @@ private extension BackupSettingsViewModel {
         backupPlan: .paid(optimizeLocalStorage: false),
         backupSubscriptionLoadingState: .genericError
     ))
+}
+
+extension OWSSequentialProgress<BackupExportJobStep> {
+    static func forPreview(
+        _ step: BackupExportJobStep,
+        _ progress: Float
+    ) -> OWSSequentialProgress<BackupExportJobStep> {
+        return OWSProgress(
+            completedUnitCount: UInt64(progress * 100),
+            totalUnitCount: 100,
+            childProgresses: [
+                step.rawValue: [OWSProgress.ChildProgress(
+                    completedUnitCount: 1,
+                    totalUnitCount: 2,
+                    label: step.rawValue,
+                    parentLabel: nil
+                )]
+            ]
+        ).sequential(BackupExportJobStep.self)
+    }
 }
 
 #Preview("Manual Backup: Backup Export") {

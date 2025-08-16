@@ -21,7 +21,7 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
     @Published var downloadProgress: (totalByteCount: UInt64, downloadedByteCount: UInt64)?
 
 #if DEBUG
-    @Published var progressSourceLabel: String?
+    @Published var currentProgressStep: SecondaryLinkNSyncProgressPhase?
 #endif
 
     private var waitForBackupTimeoutTimer: Timer?
@@ -31,17 +31,11 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
         didTapCancel ? 0 : taskProgress
     }
 
-    func updateProgress(_ progress: OWSProgress) {
+    func updateProgress(_ progress: OWSSequentialProgress<SecondaryLinkNSyncProgressPhase>) {
         objectWillChange.send()
 
 #if DEBUG
-        progressSourceLabel = progress.sourceProgresses
-            .lazy
-            .filter(\.value.isFinished.negated)
-            .filter({ $0.value.completedUnitCount > 0 })
-            .max(by: { $0.value.percentComplete < $1.value.percentComplete })?
-            .key
-            ?? progressSourceLabel
+        currentProgressStep = progress.currentStep
 #endif
 
         let canBeCancelled: Bool
@@ -51,7 +45,7 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
             canBeCancelled = true
         } else {
             canBeCancelled = progress
-                .sourceProgresses[SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue]?
+                .progress(for: .waitingForBackup)?
                 .isFinished
                 ?? false
         }
@@ -59,12 +53,14 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
         guard !didTapCancel else { return }
 
         self.isIndeterminate = progress
-            .sourceProgresses[SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue]?
+            .progress(for: .waitingForBackup)?
             .isFinished.negated
             ?? true
 
         if
-            let downloadSource = progress.sourceProgresses[AttachmentDownloads.downloadProgressLabel],
+            let downloadSource = progress.progressForChild(
+                label: AttachmentDownloads.downloadProgressLabel
+            ),
             downloadSource.completedUnitCount > 0,
             !downloadSource.isFinished
         {
@@ -73,19 +69,12 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
             self.downloadProgress = nil
         }
 
-        self.isFinalizing = {
-            for phase in SecondaryLinkNSyncProgressPhase.allCases {
-                let progresses = progress.sourceProgresses.values.lazy
-                    .filter({ $0.labels.contains(phase.rawValue) })
-                if progresses.contains(where: \.isFinished.negated) || progresses.isEmpty {
-                    return false
-                }
-            }
-            return true
-        }()
+        self.isFinalizing = progress.isFinished
 
         withAnimation(.smooth) {
-            self.taskProgress = progress.percentComplete
+            // We leave a single % unfinished at the end, so it doesn't look
+            // like we hit 100% and sit there while the UI flows to the next step.
+            self.taskProgress = (progress.percentComplete) * 0.99
         }
 
         self.canBeCancelled = canBeCancelled
@@ -273,10 +262,10 @@ struct LinkAndSyncProvisioningProgressView: View {
             .foregroundStyle(Color.Signal.secondaryLabel)
 
 #if DEBUG
-            Text("DEBUG: " + (viewModel.progressSourceLabel ?? "none") + "\n\(viewModel.taskProgress)")
+            Text("DEBUG: " + (viewModel.currentProgressStep?.rawValue ?? "none") + "\n\(viewModel.taskProgress)")
                 .padding(.top)
                 .foregroundStyle(Color.Signal.quaternaryLabel)
-                .animation(.none, value: viewModel.progressSourceLabel)
+                .animation(.none, value: viewModel.currentProgressStep)
                 .animation(.none, value: viewModel.taskProgress)
 #endif
 
@@ -321,34 +310,19 @@ struct LinkAndSyncProvisioningProgressView: View {
 #Preview {
     let view = LinkAndSyncProvisioningProgressViewController(viewModel: LinkAndSyncSecondaryProgressViewModel())
 
-    let progressSink = OWSProgress.createSink { progress in
-        await MainActor.run {
-            view.viewModel.updateProgress(progress)
-        }
-    }
-
     let task = Task { @MainActor in
+        let progressSink = await OWSSequentialProgress<SecondaryLinkNSyncProgressPhase>.createSink { progress in
+            await MainActor.run {
+                view.viewModel.updateProgress(progress)
+            }
+        }
 
-        let linkNSyncProgress = await progressSink.addChild(
-            withLabel: LocalizationNotNeeded("Link'n'sync"),
-            unitCount: 99
-        )
-
-        let postLinkNSyncProgress = await progressSink.addSource(
-            withLabel: LocalizationNotNeeded("Post-link'n'sync"),
-            unitCount: 1
-        )
-
-        let nonCancellableProgressSource = await linkNSyncProgress.addSource(
+        let nonCancellableProgressSource = await progressSink.child(for: .waitingForBackup).addSource(
             withLabel: SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue,
             unitCount: 10
         )
-        let downloadBackupSink = await linkNSyncProgress.addChild(
-            withLabel: SecondaryLinkNSyncProgressPhase.downloadingBackup.rawValue,
-            unitCount: 90
-        )
-
-        let download = await downloadBackupSink.addSource(withLabel: "download", unitCount: 10_000_000)
+        let download = await progressSink.child(for: .downloadingBackup)
+            .addSource(withLabel: "download", unitCount: 10_000_000)
 
         try? await Task.sleep(for: .seconds(1))
 
@@ -361,8 +335,6 @@ struct LinkAndSyncProvisioningProgressView: View {
             download.incrementCompletedUnitCount(by: 100_000)
             try await Task.sleep(for: .milliseconds(100))
         }
-
-        postLinkNSyncProgress.incrementCompletedUnitCount(by: 1)
     }
 
     view.linkNSyncTask = Task {

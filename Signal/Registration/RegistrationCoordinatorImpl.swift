@@ -568,7 +568,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func confirmRestoreFromBackup(
-        progress: @escaping @MainActor (OWSProgress) -> Void
+        progress: OWSSequentialProgressRootSink<BackupRestoreProgressPhase>
     ) -> Guarantee<RegistrationStep> {
         inMemoryState.restoreFromBackupProgressSink = progress
         return Guarantee.wrapAsync { await self.nextStep() }
@@ -578,20 +578,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         type: PersistedState.RestoreMethod.BackupType,
         accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         identity: AccountIdentity,
-        progress progressBlock: @escaping () async -> OWSProgressSink,
+        progress: OWSSequentialProgressRootSink<BackupRestoreProgressPhase>?,
     ) async {
         Logger.info("")
         return await _doBackupRestoreStep {
-
-            let progress = await progressBlock()
-
-            let downloadProgress = await progress.addChild(
-                withLabel: BackupRestoreProgressPhase.downloadingBackup.rawValue,
-                unitCount: BackupRestoreProgressPhase.downloadingBackup.percentOfTotalProgress
+            let downloadProgress = await progress?.child(for: .downloadingBackup).addChild(
+                withLabel: "",
+                unitCount: 100
             )
-            let importProgress = await progress.addChild(
-                withLabel: BackupRestoreProgressPhase.importingBackup.rawValue,
-                unitCount: BackupRestoreProgressPhase.importingBackup.percentOfTotalProgress
+            let importProgress = await progress?.child(for: .importingBackup).addChild(
+                withLabel: "",
+                unitCount: 100
             )
 
             let backupKey = try MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: identity.aci)
@@ -866,7 +863,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return hasBackedUpToSVR.negated && didSkipSVRBackup.negated
         }
         var backupMetadataHeader: BackupNonce.MetadataHeader?
-        var restoreFromBackupProgressSink: (@MainActor (OWSProgress) -> Void)?
+        var restoreFromBackupProgressSink: OWSSequentialProgressRootSink<BackupRestoreProgressPhase>?
         var hasConfirmedRestoreFromBackup: Bool {
             restoreFromBackupProgressSink != nil
         }
@@ -1365,7 +1362,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     func restoreBackupIfNecessary(
         accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         accountIdentity: AccountIdentity,
-        progress progressBlock: @escaping () async -> OWSProgressSink
+        progress: OWSSequentialProgressRootSink<BackupRestoreProgressPhase>?
     ) async {
         switch inMemoryState.backupRestoreState {
         case .finalized:
@@ -1381,7 +1378,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     type: backupType,
                     accountEntropyPool: accountEntropyPool,
                     identity: accountIdentity,
-                    progress: progressBlock
+                    progress: progress
                 )
             }
         }
@@ -3439,8 +3436,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             accountEntropyPool: accountEntropyPool,
             accountIdentity: accountIdentity
         ) {
-        case .restored(let progress):
-            finalizeProgress = progress
+        case .restored:
+            finalizeProgress = await inMemoryState.restoreFromBackupProgressSink?
+                .child(for: .finishing)
+                .addSource(withLabel: "", unitCount: 100)
             loadProfileState()
         case .stepRequired(let stepGuarantee):
             return stepGuarantee
@@ -3475,7 +3474,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private enum BackupResult {
-        case restored(OWSProgressSource?)
+        case restored
         case stepRequired(RegistrationStep)
         case skipped
     }
@@ -3497,30 +3496,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if needsToRestoreBackup() {
-            // OWSProgress doesn't support resetting to 0, so if
-            // restoreBackupIfNecessary needs to retry,
-            // we need to create a fresh progress sink.
-            var finishingProgressSource: OWSProgressSource?
             await self.restoreBackupIfNecessary(
                 accountEntropyPool: accountEntropyPool,
-                accountIdentity: accountIdentity
-            ) { [restoreFromBackupProgressSink = self.inMemoryState.restoreFromBackupProgressSink] in
-                let progress = OWSProgress.createSink { progress in
-                    await MainActor.run {
-                        restoreFromBackupProgressSink?(progress)
-                    }
-                }
-                let restoreProgressSource = await progress.addChild(
-                    withLabel: "❤️🧡🤍🩷💜",
-                    unitCount: BackupRestoreProgressPhase.downloadingBackup.percentOfTotalProgress + BackupRestoreProgressPhase.importingBackup.percentOfTotalProgress
-                )
-                finishingProgressSource = await progress.addSource(
-                    withLabel: BackupRestoreProgressPhase.finishing.rawValue,
-                    unitCount: BackupRestoreProgressPhase.finishing.percentOfTotalProgress
-                )
-                return restoreProgressSource
-            }
-            return .restored(finishingProgressSource)
+                accountIdentity: accountIdentity,
+                progress: inMemoryState.restoreFromBackupProgressSink,
+            )
+            return .restored
         }
 
         if let step = await performSVRBackupStepsIfNeeded(

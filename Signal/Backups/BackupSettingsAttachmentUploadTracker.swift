@@ -26,7 +26,6 @@ final class BackupSettingsAttachmentUploadTracker {
             self.init(state: state, progress: OWSProgress(
                 completedUnitCount: bytesUploaded,
                 totalUnitCount: totalBytesToUpload,
-                sourceProgresses: [:]
             ))
         }
 

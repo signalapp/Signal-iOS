@@ -167,7 +167,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             try await provisioningCoordinator.completeProvisioning_nonReversibleSteps(
                 authedDevice: authedDevice,
                 didLinkNSync: false,
-                postLinkNSyncProgress: nil
             )
         }
 
@@ -183,9 +182,8 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         undoAllPreviousSteps: @escaping () async throws -> Void
     ) async throws(CompleteProvisioningError) {
         var didLinkNSync = false
-        var postLinkNSyncProgress: OWSProgressSource?
         if let ephemeralBackupKey {
-            postLinkNSyncProgress = try await completeProvisioning_linkAndSync(
+            try await completeProvisioning_linkAndSync(
                 ephemeralBackupKey: ephemeralBackupKey,
                 authedDevice: authedDevice,
                 progressViewModel: progressViewModel,
@@ -197,7 +195,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         try await completeProvisioning_nonReversibleSteps(
             authedDevice: authedDevice,
             didLinkNSync: didLinkNSync,
-            postLinkNSyncProgress: postLinkNSyncProgress
         )
     }
 
@@ -463,21 +460,12 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         authedDevice: AuthedDevice.Explicit,
         progressViewModel: LinkAndSyncSecondaryProgressViewModel,
         undoAllPreviousSteps: @escaping () async throws -> Void
-    ) async throws(CompleteProvisioningError) -> OWSProgressSource? {
-        let progress = OWSProgress.createSink { progress in
+    ) async throws(CompleteProvisioningError) {
+        let linkNSyncProgress = await OWSSequentialProgress<SecondaryLinkNSyncProgressPhase>.createSink { progress in
             await MainActor.run {
                 progressViewModel.updateProgress(progress)
             }
         }
-        let linkNSyncProgress = await progress.addChild(
-            withLabel: LocalizationNotNeeded("Link'n'sync"),
-            unitCount: 99
-        )
-
-        let postLinkNSyncProgress = await progress.addSource(
-            withLabel: LocalizationNotNeeded("Post-link'n'sync"),
-            unitCount: 1
-        )
 
         do {
             try await self.linkAndSyncManager.waitForBackupAndRestore(
@@ -486,7 +474,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 ephemeralBackupKey: ephemeralBackupKey,
                 progress: linkNSyncProgress
             )
-            return postLinkNSyncProgress
         } catch let error {
             Logger.error("Failed link'n'sync \(error)")
             throw .linkAndSyncError(LinkAndSyncError(
@@ -505,7 +492,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private func completeProvisioning_nonReversibleSteps(
         authedDevice: AuthedDevice.Explicit,
         didLinkNSync: Bool,
-        postLinkNSyncProgress: OWSProgressSource?
     ) async throws(CompleteProvisioningError) {
         let hasBackedUpMasterKey = self.db.read { tx in
             self.svr.hasBackedUpMasterKey(transaction: tx)
@@ -533,23 +519,10 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             )
         }
 
-        if let postLinkNSyncProgress {
-            return try await postLinkNSyncProgress.updatePeriodically(
-                timeInterval: 0.1,
-                estimatedTimeToCompletion: 5,
-                work: { () throws(CompleteProvisioningError) -> Void in
-                    return try await self.performNecessarySyncsAndRestores(
-                        authedDevice: authedDevice,
-                        didLinkNSync: didLinkNSync
-                    )
-                }
-            )
-        } else {
-            return try await performNecessarySyncsAndRestores(
-                authedDevice: authedDevice,
-                didLinkNSync: didLinkNSync
-            )
-        }
+        return try await performNecessarySyncsAndRestores(
+            authedDevice: authedDevice,
+            didLinkNSync: didLinkNSync
+        )
     }
 
     private func performNecessarySyncsAndRestores(

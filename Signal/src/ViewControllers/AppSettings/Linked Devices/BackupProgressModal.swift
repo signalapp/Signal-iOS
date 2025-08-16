@@ -41,7 +41,33 @@ class BackupProgressViewModel: ObservableObject {
         self.canBeCancelled = canBeCancelled
     }
 
-    func updateProgress(progress: OWSProgress) {
+    func updateBackupRestoreProgress(progress: OWSSequentialProgress<BackupRestoreProgressPhase>) {
+        // This seems to help with the Lottie bug mentioned below
+        objectWillChange.send()
+
+        self.isIndeterminate = progress.completedUnitCount == 0
+
+        updateProgress(
+            progress: progress.percentComplete,
+            canBeCancelled: false
+        )
+
+#if DEBUG
+        progressSourceLabel = progress.currentStep.rawValue
+#endif
+
+        if
+            let downloadSource = progress.progressForChild(label: AttachmentDownloads.downloadProgressLabel),
+            downloadSource.completedUnitCount > 0,
+            !downloadSource.isFinished
+        {
+            self.downloadProgress = (downloadSource.totalUnitCount, downloadSource.completedUnitCount)
+        } else {
+            self.downloadProgress = nil
+        }
+    }
+
+    func updatePrimaryLinkingProgress(progress: OWSSequentialProgress<PrimaryLinkNSyncProgressPhase>) {
         // This seems to help with the Lottie bug mentioned below
         objectWillChange.send()
 
@@ -52,18 +78,15 @@ class BackupProgressViewModel: ObservableObject {
             canBeCancelled = true
         } else {
             canBeCancelled = progress
-                .sourceProgresses[PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue]?
+                .progress(for: .waitingForLinking)?
                 .isFinished
                 ?? false
         }
 
-        if let waitingForLinking = progress
-            .sourceProgresses[PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue] {
-            // Link'n'Sync
+        if let waitingForLinking = progress.progress(for: .waitingForLinking) {
             self.isIndeterminate = !waitingForLinking.isFinished
         } else {
-            // Backup restore
-            self.isIndeterminate = progress.completedUnitCount == 0
+            self.isIndeterminate = false
         }
 
         updateProgress(
@@ -85,24 +108,10 @@ class BackupProgressViewModel: ObservableObject {
         }
 
 #if DEBUG
-        progressSourceLabel = progress.sourceProgresses
-            .lazy
-            .filter(\.value.isFinished.negated)
-            .filter({ $0.value.completedUnitCount > 0 })
-            .max(by: { $0.value.percentComplete < $1.value.percentComplete })?
-            .key
-            ?? progressSourceLabel
+        progressSourceLabel = progress.currentStep.rawValue
 #endif
 
-        if
-            let downloadSource = progress.sourceProgresses[AttachmentDownloads.downloadProgressLabel],
-            downloadSource.completedUnitCount > 0,
-            !downloadSource.isFinished
-        {
-            self.downloadProgress = (downloadSource.totalUnitCount, downloadSource.completedUnitCount)
-        } else {
-            self.downloadProgress = nil
-        }
+        self.downloadProgress = nil
     }
 
     func cancel() {
@@ -424,29 +433,21 @@ private func setupDemoProgressBackupRestore(
     modal: BackupProgressModal,
     instantComplete: Bool,
 ) async throws {
-    let progress = OWSProgress.createSink { progress in
-        modal.viewModel.updateProgress(progress: progress)
+    let progress = await OWSSequentialProgress<BackupRestoreProgressPhase>.createSink { progress in
+        modal.viewModel.updateBackupRestoreProgress(progress: progress)
     }
 
-    let restoreProgressSource = await progress.addChild(
-        withLabel: "",
-        unitCount: BackupRestoreProgressPhase.downloadingBackup.percentOfTotalProgress + BackupRestoreProgressPhase.importingBackup.percentOfTotalProgress
-    )
+    let download = await progress.child(for: .downloadingBackup)
+        .addSource(withLabel: "download", unitCount: 10_000_000)
 
-    let downloadingBackupProgress = await restoreProgressSource.addChild(
-        withLabel: BackupRestoreProgressPhase.downloadingBackup.rawValue,
-        unitCount: BackupRestoreProgressPhase.downloadingBackup.percentOfTotalProgress
-    )
-    let download = await downloadingBackupProgress.addSource(withLabel: "download", unitCount: 10_000_000)
-
-    let importingBackupProgress = await restoreProgressSource.addSource(
+    let importingBackupProgress = await progress.child(for: .importingBackup).addSource(
         withLabel: BackupRestoreProgressPhase.importingBackup.rawValue,
-        unitCount: BackupRestoreProgressPhase.importingBackup.percentOfTotalProgress
+        unitCount: BackupRestoreProgressPhase.importingBackup.progressUnitCount
     )
 
-    let finishingProgress = await progress.addSource(
+    let finishingProgress = await progress.child(for: .finishing).addSource(
         withLabel: BackupRestoreProgressPhase.finishing.rawValue,
-        unitCount: BackupRestoreProgressPhase.finishing.percentOfTotalProgress
+        unitCount: BackupRestoreProgressPhase.finishing.progressUnitCount
     )
 
     try await Task.sleep(for: .milliseconds(700))
@@ -466,7 +467,7 @@ private func setupDemoProgressBackupRestore(
 
     try await Task.sleep(for: .milliseconds(500))
 
-    finishingProgress.incrementCompletedUnitCount(by: BackupRestoreProgressPhase.finishing.percentOfTotalProgress)
+    finishingProgress.incrementCompletedUnitCount(by: BackupRestoreProgressPhase.finishing.progressUnitCount)
 
     await modal.completeAndDismiss()
 }
@@ -477,25 +478,25 @@ private func setupDemoProgress(
     modal: BackupProgressModal,
     slowLinking: Bool
 ) async throws {
-    let progress = OWSProgress.createSink { progress in
-        modal.viewModel.updateProgress(progress: progress)
+    let progress = await OWSSequentialProgress<PrimaryLinkNSyncProgressPhase>.createSink { progress in
+        modal.viewModel.updatePrimaryLinkingProgress(progress: progress)
     }
 
-    let waitForLinkingProgress = await progress.addSource(
+    let waitForLinkingProgress = await progress.child(for: .waitingForLinking).addSource(
         withLabel: PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue,
-        unitCount: PrimaryLinkNSyncProgressPhase.waitingForLinking.percentOfTotalProgress
+        unitCount: PrimaryLinkNSyncProgressPhase.waitingForLinking.progressUnitCount
     )
-    let exportingBackupProgress = await progress.addSource(
+    let exportingBackupProgress = await progress.child(for: .exportingBackup).addSource(
         withLabel: PrimaryLinkNSyncProgressPhase.exportingBackup.rawValue,
-        unitCount: PrimaryLinkNSyncProgressPhase.exportingBackup.percentOfTotalProgress
+        unitCount: PrimaryLinkNSyncProgressPhase.exportingBackup.progressUnitCount
     )
-    let uploadingBackupProgress = await progress.addSource(
+    let uploadingBackupProgress = await progress.child(for: .uploadingBackup).addSource(
         withLabel: PrimaryLinkNSyncProgressPhase.uploadingBackup.rawValue,
-        unitCount: PrimaryLinkNSyncProgressPhase.uploadingBackup.percentOfTotalProgress
+        unitCount: PrimaryLinkNSyncProgressPhase.uploadingBackup.progressUnitCount
     )
-    let markUploadedProgress = await progress.addSource(
+    let markUploadedProgress = await progress.child(for: .finishing).addSource(
         withLabel: PrimaryLinkNSyncProgressPhase.finishing.rawValue,
-        unitCount: PrimaryLinkNSyncProgressPhase.finishing.percentOfTotalProgress
+        unitCount: PrimaryLinkNSyncProgressPhase.finishing.progressUnitCount
     )
 
     if slowLinking {
@@ -504,7 +505,7 @@ private func setupDemoProgress(
         try await Task.sleep(for: .milliseconds(100))
     }
 
-    waitForLinkingProgress.incrementCompletedUnitCount(by: PrimaryLinkNSyncProgressPhase.waitingForLinking.percentOfTotalProgress)
+    waitForLinkingProgress.incrementCompletedUnitCount(by: PrimaryLinkNSyncProgressPhase.waitingForLinking.progressUnitCount)
 
     if slowLinking {
         try await Task.sleep(for: .milliseconds(700))
@@ -518,7 +519,7 @@ private func setupDemoProgress(
     try await Task.sleep(for: .milliseconds(500))
 
     try Task.checkCancellation()
-    markUploadedProgress.incrementCompletedUnitCount(by: PrimaryLinkNSyncProgressPhase.finishing.percentOfTotalProgress)
+    markUploadedProgress.incrementCompletedUnitCount(by: PrimaryLinkNSyncProgressPhase.finishing.progressUnitCount)
 
     await modal.completeAndDismiss()
 }

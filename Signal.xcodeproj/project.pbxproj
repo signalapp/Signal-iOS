@@ -778,6 +778,7 @@
 		6605D5012A86D2B6004DC345 /* indeterminate_spinner_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 6605D5002A86D2B6004DC345 /* indeterminate_spinner_blue.json */; };
 		6605D5032A86D305004DC345 /* indeterminate_spinner_white.json in Resources */ = {isa = PBXBuildFile; fileRef = 6605D5022A86D305004DC345 /* indeterminate_spinner_white.json */; };
 		6605D5052A86EE50004DC345 /* MessageRecipientStatusUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605D5042A86EE50004DC345 /* MessageRecipientStatusUtils.swift */; };
+		66062E712E43F83600D5F8C1 /* OWSSequentialProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66062E702E43F83200D5F8C1 /* OWSSequentialProgress.swift */; };
 		66076B4C2BC053290043D547 /* LinkPreviewBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B4B2BC053290043D547 /* LinkPreviewBuilder.swift */; };
 		66076B4E2BC056980043D547 /* LinkPreviewBuilderImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B4D2BC056980043D547 /* LinkPreviewBuilderImpl.swift */; };
 		66076B5C2BC06CA70043D547 /* EditManagerAttachmentsShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B582BC06CA70043D547 /* EditManagerAttachmentsShims.swift */; };
@@ -4706,6 +4707,7 @@
 		6605D5002A86D2B6004DC345 /* indeterminate_spinner_blue.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = indeterminate_spinner_blue.json; sourceTree = "<group>"; };
 		6605D5022A86D305004DC345 /* indeterminate_spinner_white.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = indeterminate_spinner_white.json; sourceTree = "<group>"; };
 		6605D5042A86EE50004DC345 /* MessageRecipientStatusUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRecipientStatusUtils.swift; sourceTree = "<group>"; };
+		66062E702E43F83200D5F8C1 /* OWSSequentialProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSequentialProgress.swift; sourceTree = "<group>"; };
 		66076B4B2BC053290043D547 /* LinkPreviewBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewBuilder.swift; sourceTree = "<group>"; };
 		66076B4D2BC056980043D547 /* LinkPreviewBuilderImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewBuilderImpl.swift; sourceTree = "<group>"; };
 		66076B582BC06CA70043D547 /* EditManagerAttachmentsShims.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditManagerAttachmentsShims.swift; sourceTree = "<group>"; };
@@ -14448,6 +14450,7 @@
 				F9C5CB0A289453B200548EEE /* OWSOperation.swift */,
 				501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */,
 				66A830432CEBFC6800A7656D /* OWSProgress.swift */,
+				66062E702E43F83200D5F8C1 /* OWSSequentialProgress.swift */,
 				F9C5CAFE289453B200548EEE /* OWSUserProfile.swift */,
 				F9C5CAFB289453B200548EEE /* ParamParser.swift */,
 				F9C5CB4E289453B200548EEE /* PendingTasks.swift */,
@@ -18232,6 +18235,7 @@
 				D95C39E8296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift in Sources */,
 				F9C5CDB5289453B400548EEE /* OWSRequestFactory.swift in Sources */,
 				F9C5CC52289453B300548EEE /* OWSRequestMaker.swift in Sources */,
+				66062E712E43F83600D5F8C1 /* OWSSequentialProgress.swift in Sources */,
 				669E8FEF28B417D500043D28 /* OWSSignalService.swift in Sources */,
 				6600F368298DA57200B1EDB7 /* OWSSignalServiceMock.swift in Sources */,
 				F9C5CD8C289453B300548EEE /* OWSSignalServiceProtocol.swift in Sources */,

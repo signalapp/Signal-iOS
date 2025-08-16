@@ -165,7 +165,7 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
     func waitForLinkingAndUploadBackup(
         ephemeralBackupKey: MessageRootBackupKey,
         tokenId: DeviceProvisioningTokenId,
-        progress: OWSProgressSink
+        progress: OWSSequentialProgressRootSink<PrimaryLinkNSyncProgressPhase>
     ) async throws(PrimaryLinkNSyncError) {
         return
     }
@@ -174,7 +174,7 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
         ephemeralBackupKey: MessageRootBackupKey,
-        progress: OWSProgressSink
+        progress: OWSSequentialProgressRootSink<SecondaryLinkNSyncProgressPhase>
     ) async throws(SecondaryLinkNSyncError) {
         return
     }

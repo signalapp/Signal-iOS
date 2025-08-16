@@ -271,13 +271,12 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
             self?.present.send(.activityIndicator(linkAndSyncProgressModal))
         }
 
-        let progress = OWSProgress.createSink { progress in
-            await MainActor.run {
-                linkAndSyncProgressModal.viewModel.updateProgress(progress: progress)
-            }
-        }
-
         let linkNSyncTask = Task { @MainActor in
+            let progress = await OWSSequentialProgress<PrimaryLinkNSyncProgressPhase>.createSink { progress in
+                await MainActor.run {
+                    linkAndSyncProgressModal.viewModel.updatePrimaryLinkingProgress(progress: progress)
+                }
+            }
             do {
                 try await DependenciesBridge.shared.linkAndSyncManager.waitForLinkingAndUploadBackup(
                     ephemeralBackupKey: linkNSyncData.ephemeralBackupKey,

@@ -30,13 +30,13 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 0, total: 4),
                 nextSteps: {
-                    downloadProgress.progressMock = OWSProgress(completed: 1, total: 4)
+                    downloadProgress.progressMock = OWSProgress(completedUnitCount: 1, totalUnitCount: 4)
                 }
             ),
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 1, total: 4),
                 nextSteps: {
-                    downloadProgress.progressMock = OWSProgress(completed: 4, total: 4)
+                    downloadProgress.progressMock = OWSProgress(completedUnitCount: 4, totalUnitCount: 4)
                 }
             ),
             ExpectedUpdate(
@@ -73,13 +73,13 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 0, total: 4),
                 nextSteps: {
-                    downloadProgress.progressMock = OWSProgress(completed: 1, total: 4)
+                    downloadProgress.progressMock = OWSProgress(completedUnitCount: 1, totalUnitCount: 4)
                 }
             ),
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 1, total: 4),
                 nextSteps: {
-                    downloadProgress.progressMock = OWSProgress(completed: 4, total: 4)
+                    downloadProgress.progressMock = OWSProgress(completedUnitCount: 4, totalUnitCount: 4)
                 }
             ),
             ExpectedUpdate(
@@ -184,7 +184,7 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 0, total: 1),
                 nextSteps: {
-                    downloadProgress.progressMock = OWSProgress(completed: 1, total: 1)
+                    downloadProgress.progressMock = OWSProgress(completedUnitCount: 1, totalUnitCount: 1)
                 }
             ),
             ExpectedUpdate(
@@ -221,7 +221,7 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 0, total: 1),
                 nextSteps: {
-                    downloadProgress.progressMock = OWSProgress(completed: 1, total: 1)
+                    downloadProgress.progressMock = OWSProgress(completedUnitCount: 1, totalUnitCount: 1)
                 }
             ),
             ExpectedUpdate(
@@ -253,14 +253,6 @@ private extension BackupSettingsAttachmentDownloadTracker.DownloadUpdate {
 
 // MARK: -
 
-private extension OWSProgress {
-    init(completed: UInt64, total: UInt64) {
-        self.init(completedUnitCount: completed, totalUnitCount: total, sourceProgresses: [:])
-    }
-}
-
-// MARK: -
-
 private class MockAttachmentDownloadProgress: BackupAttachmentDownloadProgressMock {
     var progressMock: OWSProgress {
         didSet {
@@ -272,7 +264,7 @@ private class MockAttachmentDownloadProgress: BackupAttachmentDownloadProgressMo
 
     init(precompleted: UInt64 = 0, total: UInt64) {
         self.mockObserverBlocks = AtomicValue([], lock: .init())
-        self.progressMock = OWSProgress(completed: precompleted, total: total)
+        self.progressMock = OWSProgress(completedUnitCount: precompleted, totalUnitCount: total)
     }
 
     override func addObserver(_ block: @escaping (OWSProgress) -> Void) async -> BackupAttachmentDownloadProgressObserver {

@@ -12,7 +12,7 @@ public protocol BackupExportJobRunner {
     /// An update will be yielded once with the current progress, and again any
     /// time the current progress is updated. A `nil` progress value indicates
     /// that no export job is running.
-    func updates() -> AsyncStream<BackupExportJobProgress?>
+    func updates() -> AsyncStream<OWSSequentialProgress<BackupExportJobStep>?>
 
     /// Cooperatively cancel the running export job, if one exists.
     func cancelIfRunning()
@@ -37,11 +37,11 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
     private struct State {
         struct ProgressObserver {
             let id = UUID()
-            let block: (BackupExportJobProgress?) -> Void
+            let block: (OWSSequentialProgress<BackupExportJobStep>?) -> Void
         }
 
         var currentExportJobTask: Task<Result<Void, BackupExportJobError>, Never>?
-        var latestProgress: BackupExportJobProgress? {
+        var latestProgress: OWSSequentialProgress<BackupExportJobStep>? {
             didSet {
                 for observer in progressObservers {
                     observer.block(latestProgress)
@@ -61,7 +61,7 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
 
     // MARK: -
 
-    func updates() -> AsyncStream<BackupExportJobProgress?> {
+    func updates() -> AsyncStream<OWSSequentialProgress<BackupExportJobStep>?> {
         return AsyncStream { continuation in
             let observer = addProgressObserver { exportJobProgress in
                 continuation.yield(exportJobProgress)
@@ -75,7 +75,7 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
     }
 
     private func addProgressObserver(
-        block: @escaping (BackupExportJobProgress?) -> Void
+        block: @escaping (OWSSequentialProgress<BackupExportJobStep>?) -> Void
     ) -> State.ProgressObserver {
         let observer = State.ProgressObserver(block: block)
 
@@ -128,9 +128,13 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
                 }
 
                 do throws(BackupExportJobError) {
-                    try await backupExportJob.exportAndUploadBackup(mode: .manual(onProgressUpdate: { [self] exportJobProgress in
-                        exportJobDidUpdateProgress(exportJobProgress)
-                    }))
+                    try await backupExportJob.exportAndUploadBackup(
+                        mode: .manual(OWSSequentialProgress<BackupExportJobStep>
+                            .createSink { [weak self] exportJobProgress in
+                                self?.exportJobDidUpdateProgress(exportJobProgress)
+                            }
+                        )
+                    )
                     return .success(())
                 } catch {
                     return .failure(error)
@@ -142,7 +146,7 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
         }
     }
 
-    private func exportJobDidUpdateProgress(_ exportJobProgress: BackupExportJobProgress) {
+    private func exportJobDidUpdateProgress(_ exportJobProgress: OWSSequentialProgress<BackupExportJobStep>) {
         self.state.enqueueUpdate { _state in
             _state.latestProgress = exportJobProgress
         }

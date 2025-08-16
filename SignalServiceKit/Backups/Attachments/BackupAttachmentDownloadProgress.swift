@@ -105,7 +105,6 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
             updateObservers(OWSProgress(
                 completedUnitCount: totalByteCount,
                 totalUnitCount: totalByteCount,
-                sourceProgresses: [:]
             ))
             return
         }
@@ -226,7 +225,6 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
             updateObservers(OWSProgress(
                 completedUnitCount: finishedByteCount,
                 totalUnitCount: totalByteCount,
-                sourceProgresses: [:]
             ))
         }
     }

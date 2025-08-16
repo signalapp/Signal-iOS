@@ -35,13 +35,13 @@ public enum PrimaryLinkNSyncError: Error {
 }
 
 /// Used as the label for OWSProgress.
-public enum PrimaryLinkNSyncProgressPhase: String {
+public enum PrimaryLinkNSyncProgressPhase: String, OWSSequentialProgressStep {
     case waitingForLinking
     case exportingBackup
     case uploadingBackup
     case finishing
 
-    public var percentOfTotalProgress: UInt64 {
+    public var progressUnitCount: UInt64 {
         return switch self {
         case .waitingForLinking: 5
         case .exportingBackup: 50
@@ -63,12 +63,12 @@ public enum SecondaryLinkNSyncError: Error, Equatable {
 }
 
 /// Used as the label for OWSProgress.
-public enum SecondaryLinkNSyncProgressPhase: String, CaseIterable {
+public enum SecondaryLinkNSyncProgressPhase: String, OWSSequentialProgressStep {
     case waitingForBackup
     case downloadingBackup
     case importingBackup
 
-    public var percentOfTotalProgress: UInt64 {
+    public var progressUnitCount: UInt64 {
         return switch self {
         case .waitingForBackup: 5
         case .downloadingBackup: 30
@@ -97,7 +97,7 @@ public protocol LinkAndSyncManager {
     func waitForLinkingAndUploadBackup(
         ephemeralBackupKey: MessageRootBackupKey,
         tokenId: DeviceProvisioningTokenId,
-        progress: OWSProgressSink
+        progress: OWSSequentialProgressRootSink<PrimaryLinkNSyncProgressPhase>
     ) async throws(PrimaryLinkNSyncError)
 
     /// **Call this on the secondary/linked device!**
@@ -110,7 +110,7 @@ public protocol LinkAndSyncManager {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
         ephemeralBackupKey: MessageRootBackupKey,
-        progress: OWSProgressSink
+        progress: OWSSequentialProgressRootSink<SecondaryLinkNSyncProgressPhase>
     ) async throws(SecondaryLinkNSyncError)
 }
 
@@ -164,7 +164,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     public func waitForLinkingAndUploadBackup(
         ephemeralBackupKey: MessageRootBackupKey,
         tokenId: DeviceProvisioningTokenId,
-        progress: OWSProgressSink
+        progress: OWSSequentialProgressRootSink<PrimaryLinkNSyncProgressPhase>
     ) async throws(PrimaryLinkNSyncError) {
         let (localIdentifiers, registrationState) = db.read { tx in
             return (
@@ -196,29 +196,11 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             throw .cancelled(linkedDeviceId: nil)
         }
 
-        // Proportion progress percentages up front.
-        let waitForLinkingProgress = await progress.addChild(
-            withLabel: PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue,
-            unitCount: PrimaryLinkNSyncProgressPhase.waitingForLinking.percentOfTotalProgress
-        )
-        let exportingBackupProgress = await progress.addChild(
-            withLabel: PrimaryLinkNSyncProgressPhase.exportingBackup.rawValue,
-            unitCount: PrimaryLinkNSyncProgressPhase.exportingBackup.percentOfTotalProgress
-        )
-        let uploadingBackupProgress = await progress.addChild(
-            withLabel: PrimaryLinkNSyncProgressPhase.uploadingBackup.rawValue,
-            unitCount: PrimaryLinkNSyncProgressPhase.uploadingBackup.percentOfTotalProgress
-        )
-        let markUploadedProgress = await progress.addChild(
-            withLabel: PrimaryLinkNSyncProgressPhase.finishing.rawValue,
-            unitCount: PrimaryLinkNSyncProgressPhase.finishing.percentOfTotalProgress
-        )
-
         Logger.info("Beginning link'n'sync")
 
         let waitForLinkResponse = try await waitForDeviceToLink(
             tokenId: tokenId,
-            progress: waitForLinkingProgress
+            progress: progress.child(for: .waitingForLinking)
         )
 
         func handleCancellation() async {
@@ -227,7 +209,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             try? await self.reportLinkNSyncBackupResultToServer(
                 waitForDeviceToLinkResponse: waitForLinkResponse,
                 result: .error(.relinkRequested),
-                progress: markUploadedProgress
+                progress: progress.child(for: .finishing)
             )
         }
 
@@ -254,7 +236,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 waitForDeviceToLinkResponse: waitForLinkResponse,
                 ephemeralBackupKey: ephemeralBackupKey,
                 localIdentifiers: localIdentifiers,
-                progress: exportingBackupProgress
+                progress: progress.child(for: .exportingBackup)
             )
         } catch let error {
             switch error {
@@ -267,7 +249,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 try? await reportLinkNSyncBackupResultToServer(
                     waitForDeviceToLinkResponse: waitForLinkResponse,
                     result: .error(.continueWithoutUpload),
-                    progress: markUploadedProgress
+                    progress: progress.child(for: .finishing)
                 )
             }
             throw error
@@ -278,7 +260,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             uploadResult = try await uploadEphemeralBackup(
                 waitForDeviceToLinkResponse: waitForLinkResponse,
                 metadata: backupMetadata,
-                progress: uploadingBackupProgress
+                progress: progress.child(for: .uploadingBackup)
             )
         } catch let error {
             switch error {
@@ -293,7 +275,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         try await reportLinkNSyncBackupResultToServer(
             waitForDeviceToLinkResponse: waitForLinkResponse,
             result: .success(cdnNumber: uploadResult.cdnNumber, cdnKey: uploadResult.cdnKey),
-            progress: markUploadedProgress
+            progress: progress.child(for: .finishing)
         )
     }
 
@@ -301,7 +283,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
         ephemeralBackupKey: MessageRootBackupKey,
-        progress: OWSProgressSink
+        progress: OWSSequentialProgressRootSink<SecondaryLinkNSyncProgressPhase>
     ) async throws(SecondaryLinkNSyncError) {
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice != true)
 
@@ -315,8 +297,15 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             Logger.info("Finalizing unfinished link'n'sync")
             let blockObject = DeviceSleepBlockObject(blockReason: Constants.sleepBlockingDescription)
             await deviceSleepManager?.addBlock(blockObject: blockObject)
+
+            // Immediately finish the first two progresses.
+            _ = await progress.child(for: .waitingForBackup)
+                .addSource(withLabel: "waitingForBackupSource", unitCount: 0)
+            _ = await progress.child(for: .downloadingBackup)
+                .addSource(withLabel: "downloadingBackupSource", unitCount: 0)
+
             do {
-                try await backupArchiveManager.finalizeBackupImport(progress: progress)
+                try await backupArchiveManager.finalizeBackupImport(progress: progress.child(for: .importingBackup))
                 await deviceSleepManager?.removeBlock(blockObject: blockObject)
             } catch {
                 await deviceSleepManager?.removeBlock(blockObject: blockObject)
@@ -344,23 +333,9 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             throw .cancelled
         }
 
-        // Proportion progress percentages up front.
-        let waitForBackupProgress = await progress.addChild(
-            withLabel: SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue,
-            unitCount: SecondaryLinkNSyncProgressPhase.waitingForBackup.percentOfTotalProgress
-        )
-        let downloadBackupProgress = await progress.addChild(
-            withLabel: SecondaryLinkNSyncProgressPhase.downloadingBackup.rawValue,
-            unitCount: SecondaryLinkNSyncProgressPhase.downloadingBackup.percentOfTotalProgress
-        )
-        let importBackupProgress = await progress.addChild(
-            withLabel: SecondaryLinkNSyncProgressPhase.importingBackup.rawValue,
-            unitCount: SecondaryLinkNSyncProgressPhase.importingBackup.percentOfTotalProgress
-        )
-
         let backupUploadResult = try await waitForPrimaryToUploadBackup(
             auth: auth,
-            progress: waitForBackupProgress
+            progress: progress.child(for: .waitingForBackup)
         )
 
         let cdnNumber: UInt32
@@ -388,7 +363,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             cdnNumber: cdnNumber,
             cdnKey: cdnKey,
             ephemeralBackupKey: ephemeralBackupKey,
-            progress: downloadBackupProgress
+            progress: progress.child(for: .downloadingBackup)
         )
 
         do {
@@ -401,7 +376,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             fileUrl: downloadedFileUrl,
             localIdentifiers: localIdentifiers,
             ephemeralBackupKey: ephemeralBackupKey,
-            progress: importBackupProgress
+            progress: progress.child(for: .importingBackup)
         )
     }
 

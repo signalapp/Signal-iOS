@@ -116,14 +116,13 @@ class BackupArchiveInlinedOversizeTextArchiver {
         if let progress {
             progressSource = await progress.addSource(
                 withLabel: "BackupOversizeTextCache",
-                unitCount: max(1, UInt64(attachmentIds.count))
+                unitCount: UInt64(attachmentIds.count)
             )
         } else {
             progressSource = nil
         }
 
         if attachmentIds.isEmpty {
-            progressSource?.incrementCompletedUnitCount(by: 1)
             return
         }
 
