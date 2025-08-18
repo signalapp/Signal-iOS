@@ -154,6 +154,7 @@ public class MockAttachment: Attachment {
            localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,
            streamInfo: streamInfo,
            latestTransitTierInfo: transitTierInfo,
+           originalTransitTierInfo: transitTierInfo?.encryptionKey == encryptionKey ? transitTierInfo : nil,
            mediaTierInfo: mediaTierInfo,
            thumbnailMediaTierInfo: thumbnailInfo,
            originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply,

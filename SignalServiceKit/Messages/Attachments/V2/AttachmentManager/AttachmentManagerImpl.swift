@@ -837,6 +837,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                         pendingAttachmentMimeType: pendingAttachment.mimeType,
                         pendingAttachmentOrphanRecordId: hasOrphanRecord ? pendingAttachment.orphanRecordId : nil,
                         pendingAttachmentLatestTransitTierInfo: attachmentParams.latestTransitTierInfo,
+                        pendingAttachmentOriginalTransitTierInfo: attachmentParams.originalTransitTierInfo,
                         attachmentStore: attachmentStore,
                         orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                         orphanedAttachmentStore: orphanedAttachmentStore,
@@ -968,6 +969,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         pendingAttachmentMimeType: String,
         pendingAttachmentOrphanRecordId: OrphanedAttachmentRecord.IDType?,
         pendingAttachmentLatestTransitTierInfo: Attachment.TransitTierInfo?,
+        pendingAttachmentOriginalTransitTierInfo: Attachment.TransitTierInfo?,
         attachmentStore: AttachmentStore,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
@@ -1050,6 +1052,36 @@ public class AttachmentManagerImpl: AttachmentManager {
             latestTransitTierInfo = existingAttachment.latestTransitTierInfo ?? pendingAttachmentLatestTransitTierInfo
         }
 
+        // Original transit tier info must match the top level encryption key and digest.
+        // We will take any candidate transit tier info that meets those requirements.
+        var originalTransitTierInfo: Attachment.TransitTierInfo?
+        let candidateOriginalTransitTierInfos = [
+            existingAttachment.latestTransitTierInfo,
+            existingAttachment.originalTransitTierInfo,
+            pendingAttachmentLatestTransitTierInfo,
+            pendingAttachmentOriginalTransitTierInfo,
+        ].compacted()
+        for candidateOriginalTransitTierInfo in candidateOriginalTransitTierInfos {
+            guard candidateOriginalTransitTierInfo.encryptionKey == pendingAttachmentEncryptionKey else {
+                continue
+            }
+            switch candidateOriginalTransitTierInfo.integrityCheck {
+            case .sha256ContentHash:
+                // Can't verify the digest (and iv) match, so we can't use this one.
+                continue
+            case .digestSHA256Ciphertext(let infoDigest):
+                if
+                    infoDigest == pendingAttachmentStreamInfo.digestSHA256Ciphertext,
+                    originalTransitTierInfo == nil
+                        || originalTransitTierInfo!.uploadTimestamp
+                            < candidateOriginalTransitTierInfo.uploadTimestamp
+                {
+                    originalTransitTierInfo = candidateOriginalTransitTierInfo
+                }
+            }
+
+        }
+
         // Set the stream info on the existing attachment, if needed.
         try attachmentStore.merge(
             streamInfo: pendingAttachmentStreamInfo,
@@ -1057,6 +1089,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             encryptionKey: pendingAttachmentEncryptionKey,
             validatedMimeType: pendingAttachmentMimeType,
             latestTransitTierInfo: latestTransitTierInfo,
+            originalTransitTierInfo: originalTransitTierInfo,
             mediaTierInfo: mediaTierInfo,
             thumbnailMediaTierInfo: thumbnailMediaTierInfo,
             tx: tx

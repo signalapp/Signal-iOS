@@ -38,6 +38,10 @@ public class Attachment {
     /// they may differ if the attachment was reuploaded for forwarding.
     public let latestTransitTierInfo: TransitTierInfo?
 
+    /// Information for a transit tier upload using the local encryption key, if known to be uploaded.
+    /// Always uses the local encryption key; will be nil if no upload at the same encryption key is known.
+    public let originalTransitTierInfo: TransitTierInfo?
+
     /// Used for quoted reply thumbnail attachments.
     /// The id of the quoted reply's target message's attachment that is to be thumbnail'ed.
     /// Only relevant for non-streams. At "download" time instead of using the transit tier info
@@ -240,7 +244,7 @@ public class Attachment {
             digestSHA256Ciphertext: record.digestSHA256Ciphertext,
             localRelativeFilePath: record.localRelativeFilePath
         )
-        self.latestTransitTierInfo = TransitTierInfo(
+        let latestTransitTierInfo = TransitTierInfo(
             cdnNumber: record.latestTransitCdnNumber,
             cdnKey: record.latestTransitCdnKey,
             uploadTimestamp: record.latestTransitUploadTimestamp,
@@ -252,6 +256,40 @@ public class Attachment {
             incrementalMac: record.latestTransitTierIncrementalMac,
             incrementalMacChunkSize: record.latestTransitTierIncrementalMacChunkSize
         )
+        self.latestTransitTierInfo = latestTransitTierInfo
+
+        // At read time, we populate "original" transit tier info with _any_ transit
+        // tier info we have in the database row that matches the encryption key.
+        if
+            // If we have a latest transit info on disk
+            let latestTransitTierInfo,
+            // It uses the primary encryption key
+            latestTransitTierInfo.encryptionKey == encryptionKey,
+            // And represents the same file (same iv -> same digest,
+            // or we have no local digest which means we will use the
+            // transit download as the file when its done, or we have
+            // only plaintext integrity check which means it always matches.)
+            (
+                record.latestTransitDigestSHA256Ciphertext == record.digestSHA256Ciphertext
+                || record.digestSHA256Ciphertext == nil
+                || record.latestTransitDigestSHA256Ciphertext == nil
+            )
+        {
+            self.originalTransitTierInfo = latestTransitTierInfo
+        } else {
+            self.originalTransitTierInfo = TransitTierInfo(
+                cdnNumber: record.originalTransitCdnNumber,
+                cdnKey: record.originalTransitCdnKey,
+                uploadTimestamp: record.originalTransitUploadTimestamp,
+                encryptionKey: record.encryptionKey,
+                unencryptedByteCount: record.originalTransitUnencryptedByteCount,
+                digestSHA256Ciphertext: record.originalTransitDigestSHA256Ciphertext,
+                sha256ContentHash: record.sha256ContentHash,
+                lastDownloadAttemptTimestamp: nil,
+                incrementalMac: record.originalTransitTierIncrementalMac,
+                incrementalMacChunkSize: record.originalTransitTierIncrementalMacChunkSize
+            )
+        }
         self.mediaTierInfo = MediaTierInfo(
             cdnNumber: record.mediaTierCdnNumber,
             unencryptedByteCount: record.mediaTierUnencryptedByteCount ?? record.unencryptedByteCount,
@@ -460,7 +498,6 @@ private extension Attachment.TransitTierInfo {
                 cdnNumber == nil
                 && cdnKey == nil
                 && uploadTimestamp == nil
-                && encryptionKey == nil
                 && unencryptedByteCount == nil
                 && digestSHA256Ciphertext == nil,
                 "Have partial transit cdn info!"

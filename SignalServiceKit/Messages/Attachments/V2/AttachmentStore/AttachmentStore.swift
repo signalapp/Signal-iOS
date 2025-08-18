@@ -142,11 +142,6 @@ public protocol AttachmentStore {
         tx: DBWriteTransaction
     ) throws
 
-    func removeTransitTierInfo(
-        forAttachmentId id: Attachment.IDType,
-        tx: DBWriteTransaction
-    ) throws
-
     func removeMediaTierInfo(
         forAttachmentId id: Attachment.IDType,
         tx: DBWriteTransaction
@@ -176,6 +171,7 @@ public protocol AttachmentStore {
         encryptionKey: Data,
         validatedMimeType: String,
         latestTransitTierInfo: Attachment.TransitTierInfo?,
+        originalTransitTierInfo: Attachment.TransitTierInfo?,
         mediaTierInfo: Attachment.MediaTierInfo?,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
         tx: DBWriteTransaction

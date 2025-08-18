@@ -430,6 +430,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         encryptionKey: Data,
         validatedMimeType: String,
         latestTransitTierInfo: Attachment.TransitTierInfo?,
+        originalTransitTierInfo: Attachment.TransitTierInfo?,
         mediaTierInfo: Attachment.MediaTierInfo?,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
         tx: DBWriteTransaction
@@ -444,6 +445,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             encryptionKey: encryptionKey,
             mimeType: validatedMimeType,
             latestTransitTierInfo: latestTransitTierInfo,
+            originalTransitTierInfo: originalTransitTierInfo,
             mediaTierInfo: mediaTierInfo,
             thumbnailMediaTierInfo: thumbnailMediaTierInfo
         ))
@@ -491,23 +493,6 @@ public class AttachmentStoreImpl: AttachmentStore {
                 )
             )
         }
-        newRecord.sqliteId = id
-        try newRecord.checkAllUInt64FieldsFitInInt64()
-        try newRecord.update(tx.database)
-    }
-
-    public func removeTransitTierInfo(
-        forAttachmentId id: Attachment.IDType,
-        tx: DBWriteTransaction
-    ) throws {
-        let existingAttachment = fetch(ids: [id], tx: tx).first
-        guard let existingAttachment else {
-            throw OWSAssertionError("Attachment does not exist")
-        }
-
-        var newRecord = Attachment.Record(
-            params: .forRemovingTransitTierInfo(attachment: existingAttachment)
-        )
         newRecord.sqliteId = id
         try newRecord.checkAllUInt64FieldsFitInInt64()
         try newRecord.update(tx.database)

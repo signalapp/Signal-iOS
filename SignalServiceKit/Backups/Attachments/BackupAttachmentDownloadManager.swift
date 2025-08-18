@@ -73,6 +73,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         appReadiness: AppReadiness,
         attachmentStore: AttachmentStore,
         attachmentDownloadManager: AttachmentDownloadManager,
+        attachmentUploadStore: AttachmentUploadStore,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         backupListMediaManager: BackupListMediaManager,
@@ -107,6 +108,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 forThumbnailDownloads: forThumbnailDownloads,
                 attachmentStore: attachmentStore,
                 attachmentDownloadManager: attachmentDownloadManager,
+                attachmentUploadStore: attachmentUploadStore,
                 backupAttachmentDownloadStore: backupAttachmentDownloadStore,
                 backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
                 backupRequestManager: backupRequestManager,
@@ -457,6 +459,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         private let attachmentStore: AttachmentStore
         private let attachmentDownloadManager: AttachmentDownloadManager
+        private let attachmentUploadStore: AttachmentUploadStore
         private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
         private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
         private let backupRequestManager: BackupRequestManager
@@ -478,6 +481,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             forThumbnailDownloads: Bool,
             attachmentStore: AttachmentStore,
             attachmentDownloadManager: AttachmentDownloadManager,
+            attachmentUploadStore: AttachmentUploadStore,
             backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
             backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
             backupRequestManager: BackupRequestManager,
@@ -494,6 +498,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.forThumbnailDownloads = forThumbnailDownloads
             self.attachmentStore = attachmentStore
             self.attachmentDownloadManager = attachmentDownloadManager
+            self.attachmentUploadStore = attachmentUploadStore
             self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
             self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
             self.backupRequestManager = backupRequestManager
@@ -634,7 +639,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 return .retryableError(NoLongerEligibleError())
             }
 
-            let source: QueuedAttachmentDownloadRecord.SourceType = {
+            let source: DownloadSource = {
                 if record.record.isThumbnail {
                     return .mediaTierThumbnail
                 }
@@ -645,12 +650,13 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 {
                     return .mediaTierFullsize
                 } else if
+                    let transitTierInfo = attachment.latestTransitTierInfo,
                     eligibility.fullsizeMediaTierState != .ready
                         || record.record.numRetries == 1,
                     eligibility.fullsizeTransitTierState == .ready
                 {
                     // Otherwise try transit tier if media tier has failed once before.
-                    return .transitTier
+                    return .transitTier(transitTierInfo)
                 } else {
                     // And then fall back to media tier.
                     return .mediaTierFullsize
@@ -661,7 +667,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 try await self.attachmentDownloadManager.downloadAttachment(
                     id: record.record.attachmentRowId,
                     priority: .backupRestore,
-                    source: source,
+                    source: source.asSourceType,
                     progress: progressSink
                 )
             } catch let error {
@@ -775,8 +781,22 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             let shouldWipeMediaTierInfo: Bool
         }
 
+        private enum DownloadSource: Equatable {
+            case transitTier(Attachment.TransitTierInfo)
+            case mediaTierFullsize
+            case mediaTierThumbnail
+
+            var asSourceType: QueuedAttachmentDownloadRecord.SourceType {
+                return switch self {
+                case .transitTier: .transitTier
+                case .mediaTierFullsize: .mediaTierFullsize
+                case .mediaTierThumbnail: .mediaTierThumbnail
+                }
+            }
+        }
+
         private struct Unretryable404Error: Error {
-            let source: QueuedAttachmentDownloadRecord.SourceType
+            let source: DownloadSource
         }
 
         func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
@@ -853,11 +873,14 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                                 tx: tx
                             )
                         }
-                    case .transitTier:
-                        try attachmentStore.removeTransitTierInfo(
-                            forAttachmentId: record.record.attachmentRowId,
-                            tx: tx
-                        )
+                    case .transitTier(let transitTierInfo):
+                        if let attachment = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx) {
+                            try attachmentUploadStore.markTransitTierUploadExpired(
+                                attachment: attachment,
+                                info: transitTierInfo,
+                                tx: tx
+                            )
+                        }
                     }
                 }
             } else {

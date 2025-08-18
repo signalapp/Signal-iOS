@@ -1234,6 +1234,13 @@ CREATE
                 ,"transitTierIncrementalMac" BLOB
                 ,"transitTierIncrementalMacChunkSize" INTEGER
                 ,"lastFullscreenViewTimestamp" INTEGER
+                ,"originalTransitCdnNumber" INTEGER
+                ,"originalTransitCdnKey" TEXT
+                ,"originalTransitUploadTimestamp" INTEGER
+                ,"originalTransitUnencryptedByteCount" INTEGER
+                ,"originalTransitDigestSHA256Ciphertext" BLOB
+                ,"originalTransitTierIncrementalMac" BLOB
+                ,"originalTransitTierIncrementalMacChunkSize" INTEGER
 )
 ;
 

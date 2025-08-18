@@ -30,6 +30,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         appReadiness: AppReadiness,
         attachmentDownloadStore: AttachmentDownloadStore,
         attachmentStore: AttachmentStore,
+        attachmentUploadStore: AttachmentUploadStore,
         attachmentValidator: AttachmentContentValidator,
         backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
@@ -91,6 +92,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             attachmentDownloadStore: attachmentDownloadStore,
             attachmentStore: attachmentStore,
             attachmentUpdater: attachmentUpdater,
+            attachmentUploadStore: attachmentUploadStore,
             backupRequestManager: backupRequestManager,
             dateProvider: dateProvider,
             db: db,
@@ -476,6 +478,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private let attachmentDownloadStore: AttachmentDownloadStore
         private let attachmentStore: AttachmentStore
         private let attachmentUpdater: AttachmentUpdater
+        private let attachmentUploadStore: AttachmentUploadStore
         private let backupRequestManager: BackupRequestManager
         private let dateProvider: DateProvider
         private let db: any DB
@@ -492,6 +495,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             attachmentDownloadStore: AttachmentDownloadStore,
             attachmentStore: AttachmentStore,
             attachmentUpdater: AttachmentUpdater,
+            attachmentUploadStore: AttachmentUploadStore,
             backupRequestManager: BackupRequestManager,
             dateProvider: @escaping DateProvider,
             db: any DB,
@@ -506,6 +510,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.attachmentDownloadStore = attachmentDownloadStore
             self.attachmentStore = attachmentStore
             self.attachmentUpdater = attachmentUpdater
+            self.attachmentUploadStore = attachmentUploadStore
             self.backupRequestManager = backupRequestManager
             self.dateProvider = dateProvider
             self.db = db
@@ -576,12 +581,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     source: record.sourceType,
                     tx: tx
                 )
-                if error is TransitTierExpiredError {
+                if let error = error as? TransitTierExpiredError {
                     Logger.info("Expiring transit tier due to failed download")
-                    try? self.attachmentStore.removeTransitTierInfo(
-                        forAttachmentId: record.attachmentId,
-                        tx: tx
-                    )
+                    if let attachment = attachmentStore.fetch(id: record.attachmentId, tx: tx) {
+                        try? self.attachmentUploadStore.markTransitTierUploadExpired(
+                            attachment: attachment,
+                            info: error.transitTierInfo,
+                            tx: tx
+                        )
+                    }
                 } else if record.priority != .backupRestore {
                     // Backup restore doenload queue does its own marking of failed state.
                     try? self.attachmentStore.updateAttachmentAsFailedToDownload(
@@ -618,7 +626,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
 
-        private struct TransitTierExpiredError: Error {}
+        private struct TransitTierExpiredError: Error {
+            let transitTierInfo: Attachment.TransitTierInfo
+        }
 
         private func wrapDownloadError(
             error: Error,
@@ -640,15 +650,16 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 let refetchedAttachment = db.read(
                     block: { attachmentStore.fetch(id: record.attachmentId, tx: $0) }
                 ),
+                let transitTierInfoBeforeDownloadAttempt = attachmentBeforeDownloadAttempt.latestTransitTierInfo,
                 refetchedAttachment.latestTransitTierInfo?.cdnKey
-                    == attachmentBeforeDownloadAttempt.latestTransitTierInfo?.cdnKey,
+                    == transitTierInfoBeforeDownloadAttempt.cdnKey,
 
                 // Only proactively expire if the upload is old enough
                 let uploadTimestamp = refetchedAttachment.latestTransitTierInfo?.uploadTimestamp,
                 uploadTimestamp < now,
                 now - uploadTimestamp >= remoteConfigManager.currentConfig().messageQueueTimeMs
             {
-                return .unretryableError(TransitTierExpiredError())
+                return .unretryableError(TransitTierExpiredError(transitTierInfo: transitTierInfoBeforeDownloadAttempt))
             }
 
             // We retry all other network-level errors (with an exponential backoff).
@@ -2114,6 +2125,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             pendingAttachmentMimeType: pendingAttachment.mimeType,
                             pendingAttachmentOrphanRecordId: pendingAttachment.orphanRecordId,
                             pendingAttachmentLatestTransitTierInfo: attachmentWeJustDownloaded.latestTransitTierInfo,
+                            pendingAttachmentOriginalTransitTierInfo: attachmentWeJustDownloaded.originalTransitTierInfo,
                             attachmentStore: attachmentStore,
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,
@@ -2297,6 +2309,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             pendingAttachmentMimeType: pendingAttachment.mimeType,
                             pendingAttachmentOrphanRecordId: pendingAttachment.orphanRecordId,
                             pendingAttachmentLatestTransitTierInfo: nil,
+                            pendingAttachmentOriginalTransitTierInfo: nil,
                             attachmentStore: attachmentStore,
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,
@@ -2485,6 +2498,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             pendingAttachmentMimeType: pendingThumbnailAttachment.mimeType,
                             pendingAttachmentOrphanRecordId: pendingThumbnailAttachment.orphanRecordId,
                             pendingAttachmentLatestTransitTierInfo: nil,
+                            pendingAttachmentOriginalTransitTierInfo: nil,
                             attachmentStore: attachmentStore,
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,

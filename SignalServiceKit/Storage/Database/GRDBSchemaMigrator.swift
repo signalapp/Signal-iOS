@@ -339,6 +339,7 @@ public class GRDBSchemaMigrator {
         case replaceOWSDeviceTable
         case reindexBackupAttachmentUploadQueue
         case dropAllIncrementalMacs
+        case addOriginalTransitTierInfoAttachmentColumns
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -402,7 +403,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 124
+    public static let grdbSchemaVersionLatest: UInt = 125
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4232,6 +4233,19 @@ public class GRDBSchemaMigrator {
                     transitTierIncrementalMac = NULL,
                     transitTierIncrementalMacChunkSize = NULL;
             """)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addOriginalTransitTierInfoAttachmentColumns) { tx in
+            try tx.database.alter(table: "Attachment") { table in
+                table.add(column: "originalTransitCdnNumber", .integer)
+                table.add(column: "originalTransitCdnKey", .text)
+                table.add(column: "originalTransitUploadTimestamp", .integer)
+                table.add(column: "originalTransitUnencryptedByteCount", .integer)
+                table.add(column: "originalTransitDigestSHA256Ciphertext", .blob)
+                table.add(column: "originalTransitTierIncrementalMac", .blob)
+                table.add(column: "originalTransitTierIncrementalMacChunkSize", .integer)
+            }
             return .success(())
         }
 

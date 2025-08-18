@@ -49,6 +49,13 @@ extension Attachment {
         let latestTransitTierIncrementalMac: Data?
         let latestTransitTierIncrementalMacChunkSize: UInt32?
         let lastFullscreenViewTimestamp: UInt64?
+        let originalTransitCdnNumber: UInt32?
+        let originalTransitCdnKey: String?
+        let originalTransitUploadTimestamp: UInt64?
+        let originalTransitUnencryptedByteCount: UInt32?
+        let originalTransitDigestSHA256Ciphertext: Data?
+        let originalTransitTierIncrementalMac: Data?
+        let originalTransitTierIncrementalMacChunkSize: UInt32?
 
         public var allFilesRelativePaths: [String] {
             return [
@@ -100,6 +107,13 @@ extension Attachment {
             case latestTransitTierIncrementalMac = "transitTierIncrementalMac"
             case latestTransitTierIncrementalMacChunkSize = "transitTierIncrementalMacChunkSize"
             case lastFullscreenViewTimestamp
+            case originalTransitCdnNumber
+            case originalTransitCdnKey
+            case originalTransitUploadTimestamp
+            case originalTransitUnencryptedByteCount
+            case originalTransitDigestSHA256Ciphertext
+            case originalTransitTierIncrementalMac
+            case originalTransitTierIncrementalMacChunkSize
         }
 
         // MARK: - UInt64SafeRecord
@@ -113,6 +127,7 @@ extension Attachment {
                 \.lastMediaTierDownloadAttemptTimestamp,
                 \.lastThumbnailDownloadAttemptTimestamp,
                 \.lastFullscreenViewTimestamp,
+                \.originalTransitUploadTimestamp,
             ]
         }
 
@@ -165,6 +180,13 @@ extension Attachment {
             latestTransitTierIncrementalMac: Data?,
             latestTransitTierIncrementalMacChunkSize: UInt32?,
             lastFullscreenViewTimestamp: UInt64?,
+            originalTransitCdnNumber: UInt32?,
+            originalTransitCdnKey: String?,
+            originalTransitUploadTimestamp: UInt64?,
+            originalTransitUnencryptedByteCount: UInt32?,
+            originalTransitDigestSHA256Ciphertext: Data?,
+            originalTransitTierIncrementalMac: Data?,
+            originalTransitTierIncrementalMacChunkSize: UInt32?,
         ) {
             self.sqliteId = sqliteId
             self.blurHash = blurHash
@@ -204,6 +226,13 @@ extension Attachment {
             self.latestTransitTierIncrementalMac = latestTransitTierIncrementalMac
             self.latestTransitTierIncrementalMacChunkSize = latestTransitTierIncrementalMacChunkSize
             self.lastFullscreenViewTimestamp = lastFullscreenViewTimestamp
+            self.originalTransitCdnNumber = originalTransitCdnNumber
+            self.originalTransitCdnKey = originalTransitCdnKey
+            self.originalTransitUploadTimestamp = originalTransitUploadTimestamp
+            self.originalTransitUnencryptedByteCount = originalTransitUnencryptedByteCount
+            self.originalTransitDigestSHA256Ciphertext = originalTransitDigestSHA256Ciphertext
+            self.originalTransitTierIncrementalMac = originalTransitTierIncrementalMac
+            self.originalTransitTierIncrementalMacChunkSize = originalTransitTierIncrementalMacChunkSize
         }
 
         internal init(attachment: Attachment) {
@@ -217,6 +246,7 @@ extension Attachment {
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
                 streamInfo: attachment.streamInfo,
                 latestTransitTierInfo: attachment.latestTransitTierInfo,
+                originalTransitTierInfo: attachment.originalTransitTierInfo,
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
                 originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
@@ -235,6 +265,7 @@ extension Attachment {
                 localRelativeFilePathThumbnail: params.localRelativeFilePathThumbnail,
                 streamInfo: params.streamInfo,
                 latestTransitTierInfo: params.latestTransitTierInfo,
+                originalTransitTierInfo: params.originalTransitTierInfo,
                 mediaTierInfo: params.mediaTierInfo,
                 thumbnailMediaTierInfo: params.thumbnailMediaTierInfo,
                 originalAttachmentIdForQuotedReply: params.originalAttachmentIdForQuotedReply,
@@ -252,6 +283,7 @@ extension Attachment {
             localRelativeFilePathThumbnail: String?,
             streamInfo: Attachment.StreamInfo?,
             latestTransitTierInfo: Attachment.TransitTierInfo?,
+            originalTransitTierInfo: Attachment.TransitTierInfo?,
             mediaTierInfo: Attachment.MediaTierInfo?,
             thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
             originalAttachmentIdForQuotedReply: Int64?,
@@ -267,6 +299,7 @@ extension Attachment {
                 localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,
                 streamInfo: streamInfo,
                 latestTransitTierInfo: latestTransitTierInfo,
+                originalTransitTierInfo: originalTransitTierInfo,
                 mediaTierInfo: mediaTierInfo,
                 thumbnailMediaTierInfo: thumbnailMediaTierInfo,
                 originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply,
@@ -285,6 +318,7 @@ extension Attachment {
             localRelativeFilePathThumbnail: String?,
             streamInfo: Attachment.StreamInfo?,
             latestTransitTierInfo: Attachment.TransitTierInfo?,
+            originalTransitTierInfo: Attachment.TransitTierInfo?,
             mediaTierInfo: Attachment.MediaTierInfo?,
             thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
             originalAttachmentIdForQuotedReply: Int64?,
@@ -313,6 +347,20 @@ extension Attachment {
             self.latestTransitTierIncrementalMac = latestTransitTierInfo?.incrementalMacInfo?.mac
             self.latestTransitTierIncrementalMacChunkSize = latestTransitTierInfo?.incrementalMacInfo?.chunkSize
             self.latestTransitLastDownloadAttemptTimestamp = latestTransitTierInfo?.lastDownloadAttemptTimestamp
+
+            self.originalTransitCdnNumber = originalTransitTierInfo?.cdnNumber
+            self.originalTransitCdnKey = originalTransitTierInfo?.cdnKey
+            self.originalTransitUploadTimestamp = originalTransitTierInfo?.uploadTimestamp
+            self.originalTransitUnencryptedByteCount = originalTransitTierInfo?.unencryptedByteCount
+            switch originalTransitTierInfo?.integrityCheck {
+            case .digestSHA256Ciphertext(let data):
+                self.originalTransitDigestSHA256Ciphertext = data
+            case nil, .sha256ContentHash:
+                self.originalTransitDigestSHA256Ciphertext = nil
+            }
+            self.originalTransitTierIncrementalMac = originalTransitTierInfo?.incrementalMacInfo?.mac
+            self.originalTransitTierIncrementalMacChunkSize = originalTransitTierInfo?.incrementalMacInfo?.chunkSize
+
             self.mediaName = mediaName
             self.mediaTierCdnNumber = mediaTierInfo?.cdnNumber
             self.mediaTierUnencryptedByteCount = mediaTierInfo?.unencryptedByteCount
