@@ -13,7 +13,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         public static let defaultPresentationDelay: TimeInterval = 0.05
     }
 
-    public var wasCancelled: Bool = false
+    private(set) public var wasCancelled: Bool = false
 
     private let canCancel: Bool
     private let isInvisible: Bool
