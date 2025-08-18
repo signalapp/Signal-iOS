@@ -112,14 +112,14 @@ extension BackupArchive {
         override fileprivate func frameBencherDidProcessFrame(
             _ frameBencher: BackupArchive.Bencher.FrameBencher,
             frame: BackupProto_Frame,
-            frameProcessingDurationMs: UInt64,
-            enumerationStepDurationMs: UInt64?
+            frameProcessingDurationNanos: UInt64,
+            enumerationStepDurationNanos: UInt64?
         ) {
             super.frameBencherDidProcessFrame(
                 frameBencher,
                 frame: frame,
-                frameProcessingDurationMs: frameProcessingDurationMs,
-                enumerationStepDurationMs: enumerationStepDurationMs
+                frameProcessingDurationNanos: frameProcessingDurationNanos,
+                enumerationStepDurationNanos: enumerationStepDurationNanos,
             )
 
             dbFileSizeBencher?.logIfNecessary(totalFramesProcessed: totalFramesProcessed)
@@ -157,12 +157,12 @@ extension BackupArchive {
         ) rethrows -> T {
             let startDate = dateProvider()
             let result = try block()
-            let durationMs = (dateProvider() - startDate).milliseconds
+            let durationNanos = (dateProvider() - startDate).nanoseconds
 
             var metrics = self[keyPath: actionMetricsKeyPath][action] ?? Metrics()
             metrics.frameCount += 1
-            metrics.totalDurationMs += durationMs
-            metrics.maxDurationMs = max(durationMs, metrics.maxDurationMs)
+            metrics.totalDurationNanos += durationNanos
+            metrics.maxDurationNanos = max(durationNanos, metrics.maxDurationNanos)
             self[keyPath: actionMetricsKeyPath][action] = metrics
 
             return result
@@ -235,8 +235,8 @@ extension BackupArchive {
         fileprivate func frameBencherDidProcessFrame(
             _ frameBencher: FrameBencher,
             frame: BackupProto_Frame,
-            frameProcessingDurationMs: UInt64,
-            enumerationStepDurationMs: UInt64?
+            frameProcessingDurationNanos: UInt64,
+            enumerationStepDurationNanos: UInt64?
         ) {
             memorySampler.sample()
 
@@ -244,14 +244,13 @@ extension BackupArchive {
                 return
             }
 
-            let durationMs = (dateProvider() - frameBencher.startDate).milliseconds
             totalFramesProcessed += 1
 
             var metrics = frameProcessingMetrics[frameType] ?? Metrics()
             metrics.frameCount += 1
-            metrics.totalDurationMs += durationMs
-            metrics.maxDurationMs = max(durationMs, metrics.maxDurationMs)
-            metrics.totalEnumerationDurationMs += enumerationStepDurationMs ?? 0
+            metrics.totalDurationNanos += frameProcessingDurationNanos
+            metrics.maxDurationNanos = max(frameProcessingDurationNanos, metrics.maxDurationNanos)
+            metrics.totalEnumerationDurationNanos += enumerationStepDurationNanos ?? 0
             frameProcessingMetrics[frameType] = metrics
         }
 
@@ -303,8 +302,8 @@ extension BackupArchive {
                 bencher.frameBencherDidProcessFrame(
                     self,
                     frame: frame,
-                    frameProcessingDurationMs: (dateProvider() - startDate).milliseconds,
-                    enumerationStepDurationMs: enumerationStepStartDate.map { (startDate - $0).milliseconds }
+                    frameProcessingDurationNanos: (dateProvider() - startDate).nanoseconds,
+                    enumerationStepDurationNanos: enumerationStepStartDate.map { (startDate - $0).nanoseconds }
                 )
             }
         }
@@ -353,9 +352,13 @@ extension BackupArchive {
 
         fileprivate struct Metrics {
             var frameCount: UInt64 = 0
-            var totalDurationMs: UInt64 = 0
-            var maxDurationMs: UInt64 = 0
-            var totalEnumerationDurationMs: UInt64 = 0
+            var totalDurationNanos: UInt64 = 0
+            var maxDurationNanos: UInt64 = 0
+            var totalEnumerationDurationNanos: UInt64 = 0
+
+            var totalDurationMs: UInt64 { totalDurationNanos / NSEC_PER_MSEC }
+            var maxDurationMs: UInt64 { maxDurationNanos / NSEC_PER_MSEC }
+            var totalEnumerationDurationMs: UInt64 { totalEnumerationDurationNanos / NSEC_PER_MSEC }
         }
 
         fileprivate enum FrameType: String {
