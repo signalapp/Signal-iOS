@@ -11,17 +11,20 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
     private let exportJob: () -> BackupExportJob
+    private let tsAccountManager: () -> TSAccountManager
 
     init(
         backgroundMessageFetcherFactory: @escaping () -> BackgroundMessageFetcherFactory,
         backupSettingsStore: BackupSettingsStore,
         db: SDSDatabaseStorage,
-        exportJob: @escaping () -> BackupExportJob
+        exportJob: @escaping () -> BackupExportJob,
+        tsAccountManager: @escaping () -> TSAccountManager,
     ) {
         self.backgroundMessageFetcherFactory = backgroundMessageFetcherFactory
         self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.exportJob = exportJob
+        self.tsAccountManager = tsAccountManager
     }
 
     // MARK: - BGProcessingTaskRunner
@@ -45,6 +48,10 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
         }
 
         return db.read { (tx) -> BGProcessingTaskStartCondition in
+            guard tsAccountManager().registrationState(tx: tx).isRegisteredPrimaryDevice else {
+                return .never
+            }
+
             switch backupSettingsStore.backupPlan(tx: tx) {
             case .disabled, .disabling:
                 return .never

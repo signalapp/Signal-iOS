@@ -323,7 +323,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             backgroundMessageFetcherFactory: { DependenciesBridge.shared.backgroundMessageFetcherFactory },
             backupSettingsStore: BackupSettingsStore(),
             db: databaseStorage,
-            exportJob: { DependenciesBridge.shared.backupExportJob }
+            exportJob: { DependenciesBridge.shared.backupExportJob },
+            tsAccountManager: { DependenciesBridge.shared.tsAccountManager },
         )
         backupRunner.registerBGProcessingTask(appReadiness: appReadiness)
 
