@@ -141,6 +141,12 @@ private struct AppAttestManager {
         case notSupported
         case networkError
         case genericError
+
+        /// iOS failed to generate an assertion using a previously-attested key.
+        ///
+        /// Believed to be an iOS issue, indicating that the previously-attested
+        /// key should be discarded.
+        case failedToGenerateAssertionWithPreviouslyAttestedKey
     }
 
     /// Represents a key, stored on this device in the Secure Enclave, which
@@ -204,7 +210,7 @@ private struct AppAttestManager {
     /// request to Signal servers to perform the given action. That assertion
     /// is sent alongside the request to Signal servers, who upon validating the
     /// assertion will perform the action.
-    public func performAttestationAction(
+    func performAttestationAction(
         _ action: AttestationAction,
     ) async throws(AttestationError) {
         guard attestationService.isSupported else {
@@ -215,16 +221,24 @@ private struct AppAttestManager {
         let attestedKey = try await getOrGenerateAttestedKey()
 
         logger.info("Generating assertion.")
-        let requestAssertion = try await generateAssertionForAction(
-            action,
-            attestedKey: attestedKey
-        )
+        do {
+            let requestAssertion = try await generateAssertionForAction(
+                action,
+                attestedKey: attestedKey
+            )
 
-        logger.info("Performing attestation action with assertion.")
-        try await _performAttestationAction(
-            keyId: attestedKey.identifier,
-            requestAssertion: requestAssertion
-        )
+            logger.info("Performing attestation action with assertion.")
+            try await _performAttestationAction(
+                keyId: attestedKey.identifier,
+                requestAssertion: requestAssertion
+            )
+        } catch .failedToGenerateAssertionWithPreviouslyAttestedKey {
+            // If we failed to generate an assertion with a previously-attested
+            // key, throw that key away and try again.
+            logger.warn("Failed to generate assertion with previously-attested key. Wiping key and starting over.")
+            await wipeAttestedKeyId()
+            try await performAttestationAction(action)
+        }
     }
 
     private func _performAttestationAction(
@@ -265,7 +279,7 @@ private struct AppAttestManager {
     /// key if necessary, or returns an existing key if attestation was
     /// performed in the past.
     private func getOrGenerateAttestedKey() async throws(AttestationError) -> AttestedKey {
-        if let attestedKeyId = readAttestedKeyId() {
+        if let attestedKeyId = await readAttestedKeyId() {
             logger.info("Using previously-attested key.")
             return AttestedKey(identifier: attestedKeyId)
         }
@@ -451,7 +465,25 @@ private struct AppAttestManager {
                 clientDataHash: Data(SHA256.hash(data: requestData))
             )
         } catch let dcError as DCError {
-            throw parseDCError(dcError)
+            switch dcError.code {
+            case .invalidInput, .invalidKey:
+                /// There appears to be an issue with AppAttest that can cause
+                /// the `.generateAssertion` API to throw `.invalidInput` when
+                /// using a previously-attested key, some significant percentage
+                /// of the time. Doesn't seem to be a clear pattern, and is
+                /// widely reported:
+                ///
+                /// - https://github.com/firebase/firebase-ios-sdk/issues/12629
+                /// - https://developer.apple.com/forums/thread/788405
+                ///
+                /// If nothing else, we know now that AppAttest considers this
+                /// key invalid, so we should discard it and start over.
+                ///
+                /// For good measure, handle `.invalidKey` too.
+                throw .failedToGenerateAssertionWithPreviouslyAttestedKey
+            default:
+                throw parseDCError(dcError)
+            }
         } catch {
             owsFailDebug("Unexpected error generating assertion! \(error)", logger: logger)
             throw .genericError
@@ -518,7 +550,7 @@ private struct AppAttestManager {
 
     /// Returns the identifier of a key for this device that has previously
     /// passed attestation, if one exists.
-    private func readAttestedKeyId() -> String? {
+    private func readAttestedKeyId() async -> String? {
         return db.read { tx in
             return kvStore.getString(StoreKeys.keyId, transaction: tx)
         }
@@ -529,6 +561,12 @@ private struct AppAttestManager {
     private func saveAttestedKeyId(_ keyIdentifier: String) async {
         await db.awaitableWrite { tx in
             kvStore.setString(keyIdentifier, key: StoreKeys.keyId, transaction: tx)
+        }
+    }
+
+    private func wipeAttestedKeyId() async {
+        await db.awaitableWrite { tx in
+            kvStore.removeValue(forKey: StoreKeys.keyId, transaction: tx)
         }
     }
 }
