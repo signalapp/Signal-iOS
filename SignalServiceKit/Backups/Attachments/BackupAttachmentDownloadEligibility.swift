@@ -121,9 +121,11 @@ public struct BackupAttachmentDownloadEligibility {
         }
 
         return Self(
-            thumbnailMediaTierState: Self.mediaTierThumbnailState(
+            thumbnailMediaTierState: try Self.mediaTierThumbnailState(
                 attachment: attachment,
-                backupPlan: backupPlan
+                backupPlan: backupPlan,
+                attachmentTimestamp: { try cached(getAttachmentTimestamp) }(),
+                currentTimestamp: currentTimestamp,
             ),
             fullsizeTransitTierState: try Self.transitTierFullsizeState(
                 attachment: attachment,
@@ -212,33 +214,65 @@ public struct BackupAttachmentDownloadEligibility {
     static func mediaTierThumbnailState(
         attachment: Attachment,
         backupPlan: BackupPlan,
-    ) -> QueuedBackupAttachmentDownload.State? {
+        attachmentTimestamp getAttachmentTimestamp: @autoclosure () throws -> UInt64?,
+        currentTimestamp: UInt64,
+    ) rethrows -> QueuedBackupAttachmentDownload.State? {
         guard FeatureFlags.Backups.supported else {
             return nil
         }
+        if attachment.mediaName == nil {
+            return nil
+        }
+        guard
+            // If we have the fullsize stream, we don't need the thumbnail at all.
+            attachment.asStream() == nil,
+            // Also check if we already have the thumbnail.
+            attachment.localRelativeFilePathThumbnail == nil
+        else {
+            return .done
+        }
+
+        guard
+            AttachmentBackupThumbnail.canBeThumbnailed(attachment)
+            || attachment.thumbnailMediaTierInfo != nil
+        else {
+            return nil
+        }
+
         switch backupPlan {
-        case .disabled:
+        case .disabled, .disabling:
             return .ineligible
-        case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
-            if attachment.mediaName == nil {
-                return nil
+        case .free:
+            // free tier and optimize off dont download thumbnails by default;
+            // only download if the fullsize download failed.
+            if attachment.mediaTierInfo?.lastDownloadAttemptTimestamp != nil {
+                return .ready
             }
-            guard
-                // If we have the fullsize stream, we don't need the thumbnail at all.
-                attachment.asStream() == nil,
-                // Also check if we already have the thumbnail.
-                attachment.localRelativeFilePathThumbnail == nil
-            else {
-                return .done
-            }
+            return .ineligible
+        case
+                .paid(let optimizeLocalStorage),
+                .paidAsTester(let optimizeLocalStorage),
+                .paidExpiringSoon(let optimizeLocalStorage):
+            // free tier and optimize off dont download thumbnails by default;
+            // only download if the fullsize download failed.
             if
-                AttachmentBackupThumbnail.canBeThumbnailed(attachment)
-                || attachment.thumbnailMediaTierInfo != nil
+                !optimizeLocalStorage,
+                attachment.mediaTierInfo?.lastDownloadAttemptTimestamp != nil
             {
                 return .ready
-            } else {
-                return nil
             }
+
+            // Nil timestamps are used for thread wallpapers, which we consider
+            // infinitely recent.
+            let attachmentTimestamp = try getAttachmentTimestamp() ?? currentTimestamp
+            if
+                optimizeLocalStorage,
+                attachmentTimestamp <= currentTimestamp - Attachment.offloadingThresholdMs
+            {
+                return .ready
+            }
+
+            return .ineligible
         }
     }
 

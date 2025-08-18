@@ -837,9 +837,18 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         // so that we don't overwrite existing transit tier state incorrectly.
         let combinedDownloadState: QueuedBackupAttachmentDownload.State?
         if isThumbnail {
-            mediaTierDownloadState = BackupAttachmentDownloadEligibility.mediaTierThumbnailState(
+            mediaTierDownloadState = try BackupAttachmentDownloadEligibility.mediaTierThumbnailState(
                 attachment: attachment,
-                backupPlan: currentBackupPlan
+                backupPlan: currentBackupPlan,
+                attachmentTimestamp: try {
+                    switch try fetchMostRecentReference().owner {
+                    case .message(let messageSource):
+                        return messageSource.receivedAtTimestamp
+                    case .thread, .storyMessage:
+                        return nil
+                    }
+                }(),
+                currentTimestamp: currentTimestamp,
             )
             combinedDownloadState = mediaTierDownloadState
         } else {
