@@ -54,8 +54,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
         super.viewDidLoad()
 
         view.addSubview(tableView)
-        tableView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        tableView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
+        tableView.autoPinEdgesToSuperviewEdges()
         tableView.delegate = self
         tableView.dataSource = self
 
@@ -337,12 +336,13 @@ extension StoriesViewController: CameraFirstCaptureDelegate {
 extension StoriesViewController: UITableViewDelegate {
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        guard
-            searchController.isActive,
-            searchController.searchBar.text.isEmptyOrNil
-        else { return }
-        tableView.contentOffset.y += 1
-        searchController.isActive = false
+        guard searchController.isActive else { return }
+        if searchController.searchBar.text.isEmptyOrNil {
+            tableView.contentOffset.y += 1
+            searchController.isActive = false
+        } else {
+            searchController.searchBar.resignFirstResponder()
+        }
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
