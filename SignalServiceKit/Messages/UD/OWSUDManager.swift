@@ -338,7 +338,15 @@ public class OWSUDManagerImpl: OWSUDManager {
         }
     }
 
+    private let fetchQueue = ConcurrentTaskQueue(concurrentLimit: 1)
+
     public func fetchSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) async throws -> SenderCertificates {
+        return try await fetchQueue.run {
+            return try await _fetchSenderCertificates(certificateExpirationPolicy: certificateExpirationPolicy)
+        }
+    }
+
+    private func _fetchSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) async throws -> SenderCertificates {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             // We don't want to assert but we should log and fail.
@@ -352,7 +360,7 @@ public class OWSUDManagerImpl: OWSUDManager {
         )
     }
 
-    public func fetchSenderCertificate(aciOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) async throws -> SenderCertificate {
+    private func fetchSenderCertificate(aciOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) async throws -> SenderCertificate {
         // If there is a valid cached sender certificate, use that.
         if let certificate = senderCertificate(aciOnly: aciOnly, certificateExpirationPolicy: certificateExpirationPolicy) {
             return certificate
