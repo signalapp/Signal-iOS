@@ -20,10 +20,6 @@ public struct SystemContact {
     public let emailAddresses: [String]
 
     public init(cnContact: CNContact, didFetchEmailAddresses: Bool = true) {
-        if cnContact.phoneNumbers.count > Constants.maxPhoneNumbers {
-            Logger.warn("Ignoring phone numbers from contact with more than \(Constants.maxPhoneNumbers)")
-        }
-
         var phoneNumbers = [(String, String?)]()
         for phoneNumber in cnContact.phoneNumbers.prefix(Constants.maxPhoneNumbers) {
             phoneNumbers.append((

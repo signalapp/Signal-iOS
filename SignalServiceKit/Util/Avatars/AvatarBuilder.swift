@@ -585,7 +585,6 @@ public class AvatarBuilder {
         // have default abbreviations that are too long. In this case, we will not
         // show an abbreviation. This matches the behavior of iMessage.
         guard formattedAbbreviation.count < 4 else {
-            Logger.warn("Abbreviation too long: \(formattedAbbreviation.count).")
             return nil
         }
         return formattedAbbreviation
