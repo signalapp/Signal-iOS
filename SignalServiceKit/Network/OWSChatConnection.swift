@@ -419,9 +419,6 @@ public class OWSChatConnection {
 
             try await waitForOpen(timeout: 30)
 
-            let backgroundTask = OWSBackgroundTask(label: #function)
-            defer { backgroundTask.end() }
-
             let response = try await self.makeRequestInternal(request, requestId: requestId)
 
             Logger.info("HTTP \(response.responseStatusCode) <- \(requestDescription)")
@@ -1130,15 +1127,12 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
     }
 
     func chatConnection(_ chat: AuthenticatedChatConnection, didReceiveIncomingMessage envelope: Data, serverDeliveryTimestamp: UInt64, sendAck: @escaping () throws -> Void) {
-        let backgroundTask = OWSBackgroundTask(label: "handleIncomingMessage")
         let messageProcessor = SSKEnvironment.shared.messageProcessorRef
         messageProcessor.enqueueReceivedEnvelopeData(
             envelope,
             serverDeliveryTimestamp: serverDeliveryTimestamp,
             envelopeSource: .websocketIdentified
         ) {
-            defer { backgroundTask.end() }
-
             do {
                 // Note that this does not wait for a response.
                 try sendAck()
