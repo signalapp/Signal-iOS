@@ -26,7 +26,6 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
                 return Set(try String.fetchAll(db, sql: "SELECT name FROM sqlite_master WHERE type = 'index'"))
             }
             let lazilyRemovedIndexes = [
-                "index_interactions_on_view_once",
                 "index_interactions_on_uniqueId_and_threadUniqueId",
                 "index_interactions_on_expiresInSeconds_and_expiresAt",
                 "index_model_TSInteraction_on_uniqueThreadId_and_attachmentIds",
@@ -42,7 +41,6 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
                 return .asSoonAsPossible
             }
             let lazilyInsertedIndexes = [
-                "Interaction_incompleteViewOnce_partial",
                 "Interaction_disappearingMessages_partial",
                 "Interaction_timestamp",
                 "Interaction_unendedGroupCall_partial",
@@ -65,12 +63,6 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
     /// `simulatePriorCancellation` to return true and run on a simulator.
     func run() async throws {
         // Must be idempotent.
-
-        try Task.checkCancellation()
-        await databaseStorage.awaitableWrite { tx in
-            Logger.info("Rebuilding incomplete view once index.")
-            try! GRDBSchemaMigrator.rebuildIncompleteViewOnceIndex(tx: tx)
-        }
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in

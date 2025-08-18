@@ -340,6 +340,7 @@ public class GRDBSchemaMigrator {
         case reindexBackupAttachmentUploadQueue
         case dropAllIncrementalMacs
         case addOriginalTransitTierInfoAttachmentColumns
+        case rebuildIncompleteViewOnceIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -4249,6 +4250,11 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.rebuildIncompleteViewOnceIndex) { tx in
+            try self.rebuildIncompleteViewOnceIndex(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -5738,7 +5744,7 @@ public class GRDBSchemaMigrator {
         return Array(((groupIdMap as? [Data: TSBlockedGroupModel]) ?? [:]).keys)
     }
 
-    public static func rebuildIncompleteViewOnceIndex(tx: DBWriteTransaction) throws {
+    private static func rebuildIncompleteViewOnceIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(sql: """
             DROP INDEX IF EXISTS "index_interactions_on_view_once"
             """
