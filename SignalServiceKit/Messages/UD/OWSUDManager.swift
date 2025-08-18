@@ -292,18 +292,14 @@ public class OWSUDManagerImpl: OWSUDManager {
             return nil
         }
 
-        let senderCertificate: SenderCertificate
         do {
-            senderCertificate = try SenderCertificate(dataValue)
+            let senderCertificate = try SenderCertificate(dataValue)
+            try validateCertificate(senderCertificate)
+            return senderCertificate
         } catch {
-            owsFailDebug("Certificate could not be parsed: \(error)")
+            Logger.warn("Ignoring invalid cached sender certificate: \(error)")
             return nil
         }
-        guard isValidCertificate(senderCertificate) else {
-            Logger.warn("Existing sender certificate isn't valid. Ignoring it and fetching a new one...")
-            return nil
-        }
-        return senderCertificate
     }
 
     func setSenderCertificate(aciOnly: Bool, certificateData: Data) async {
@@ -369,7 +365,7 @@ public class OWSUDManagerImpl: OWSUDManager {
             throw error
         } catch {
             Logger.warn("Couldn't fetch Sealed Sender certificate: \(error)")
-            SSKEnvironment.shared.notificationPresenterRef.notifyTestPopulation(ofErrorMessage: "Couldn't parse Sealed Sender certificate.")
+            SSKEnvironment.shared.notificationPresenterRef.notifyTestPopulation(ofErrorMessage: "Couldn't parse Sealed Sender certificate")
             throw error
         }
         await self.setSenderCertificate(aciOnly: aciOnly, certificateData: senderCertificate.serialize())
@@ -393,34 +389,29 @@ public class OWSUDManagerImpl: OWSUDManager {
         }()
 
         let senderCertificate = try SenderCertificate(certificateData)
-        guard self.isValidCertificate(senderCertificate) else {
-            throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
-        }
+        try validateCertificate(senderCertificate)
         return senderCertificate
     }
 
-    private func isValidCertificate(_ certificate: SenderCertificate) -> Bool {
+    private func validateCertificate(_ certificate: SenderCertificate) throws {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         guard
             let deviceId = DeviceId(validating: certificate.deviceId),
             tsAccountManager.storedDeviceIdWithMaybeTransaction.equals(deviceId)
         else {
-            Logger.warn("Sender certificate has incorrect device ID")
-            return false
+            throw OWSUDError.invalidData(description: "Sender certificate has incorrect device ID")
         }
 
         let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
 
         let sender = certificate.sender
         guard sender.e164 == nil || sender.e164 == localIdentifiers?.phoneNumber else {
-            Logger.warn("Sender certificate has incorrect phone number")
-            return false
+            throw OWSUDError.invalidData(description: "Sender certificate has incorrect phone number")
         }
 
         guard sender.senderAci == localIdentifiers!.aci else {
-            Logger.error("Sender certificate has incorrect ACI")
-            return false
+            throw OWSUDError.invalidData(description: "Sender certificate has incorrect ACI")
         }
 
         // Ensure that the certificate will not expire in the next hour.
@@ -429,11 +420,9 @@ public class OWSUDManagerImpl: OWSUDManager {
         let nowMs = NSDate.ows_millisecondTimeStamp()
         let anHourFromNowMs = nowMs + UInt64.hourInMs
 
-        guard case .some(true) = try? certificate.validate(trustRoot: trustRoot, time: anHourFromNowMs) else {
-            return false
+        guard try certificate.validate(trustRoot: trustRoot, time: anHourFromNowMs) else {
+            throw OWSUDError.invalidData(description: "Sender certificate failed validation")
         }
-
-        return true
     }
 
     public class func trustRoot() -> PublicKey {
