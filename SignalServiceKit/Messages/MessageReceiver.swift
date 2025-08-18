@@ -680,13 +680,15 @@ public final class MessageReceiver {
             // In rare cases this means we won't respond to the sync request, but
             // that's acceptable.
             let pendingTask = Self.buildPendingTask()
-            Task {
-                defer { pendingTask.complete() }
-                let syncManager = SSKEnvironment.shared.syncManagerRef
-                do {
-                    try await syncManager.syncAllContacts()
-                } catch {
-                    Logger.warn("\(error)")
+            tx.addSyncCompletion {
+                Task {
+                    defer { pendingTask.complete() }
+                    let syncManager = SSKEnvironment.shared.syncManagerRef
+                    do {
+                        try await syncManager.syncAllContacts()
+                    } catch {
+                        Logger.warn("\(error)")
+                    }
                 }
             }
 
