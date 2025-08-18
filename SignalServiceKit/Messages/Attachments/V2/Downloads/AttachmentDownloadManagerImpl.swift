@@ -140,6 +140,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             return try await self.downloadQueue.enqueueDownload(
                 downloadState: downloadState,
                 maxDownloadSizeBytes: maxDownloadSize,
+                expectedDownloadSize: .useHeadRequest,
                 progress: progress
             )
         }
@@ -190,6 +191,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             let encryptedFileUrl = try await self.downloadQueue.enqueueDownload(
                 downloadState: downloadState,
                 maxDownloadSizeBytes: maxDownloadSize,
+                expectedDownloadSize: metadata.plaintextLength.map({.estimatedSizeBytes(UInt($0))})
+                    ?? .useHeadRequest,
                 progress: progress
             )
             switch metadata.source {
@@ -745,11 +748,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
 
             let downloadMetadata: DownloadMetadata?
+            let downloadSizeSource: DownloadQueue.DownloadSizeSource?
             switch record.sourceType {
             case .transitTier:
                 // We only download from the latest transit tier info.
                 guard let transitTierInfo = attachment.latestTransitTierInfo else {
                     downloadMetadata = nil
+                    downloadSizeSource = nil
                     break
                 }
                 downloadMetadata = .init(
@@ -762,6 +767,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         plaintextLength: transitTierInfo.unencryptedByteCount
                     )
                 )
+                downloadSizeSource = transitTierInfo.unencryptedByteCount.map({
+                    .estimatedSizeBytes(UInt(Cryptography.estimatedTransitTierCDNSize(
+                        unencryptedSize: $0
+                    )))
+                }) ?? .useHeadRequest
             case .mediaTierFullsize:
                 let cdnNumber = attachment.mediaTierInfo?.cdnNumber ?? remoteConfigManager.currentConfig().mediaTierFallbackCdnNumber
                 guard
@@ -772,6 +782,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     let cdnCredential = await fetchBackupCdnReadCredential(for: cdnNumber, backupKey: backupKey)
                 else {
                     downloadMetadata = nil
+                    downloadSizeSource = nil
                     break
                 }
                 let integrityCheck = AttachmentIntegrityCheck.sha256ContentHash(mediaTierInfo.sha256ContentHash)
@@ -786,6 +797,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         plaintextLength: mediaTierInfo.unencryptedByteCount
                     )
                 )
+                downloadSizeSource = .estimatedSizeBytes(UInt(Cryptography.estimatedMediaTierCDNSize(
+                    unencryptedSize: mediaTierInfo.unencryptedByteCount
+                )))
             case .mediaTierThumbnail:
                 let cdnNumber = attachment.thumbnailMediaTierInfo?.cdnNumber ?? remoteConfigManager.currentConfig().mediaTierFallbackCdnNumber
                 guard
@@ -807,6 +821,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     let cdnReadCredential = await fetchBackupCdnReadCredential(for: cdnNumber, backupKey: backupKey)
                 else {
                     downloadMetadata = nil
+                    downloadSizeSource = nil
                     break
                 }
 
@@ -820,9 +835,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         innerEncryptionMetadata: innerEncryptionMetadata
                     )
                 )
+                // We don't know thumbnail sizes and don't want to issue a
+                // request for each one to check. Just estimate as the max size.
+                downloadSizeSource = .estimatedSizeBytes(UInt(Cryptography.estimatedMediaTierCDNSize(
+                    unencryptedSize: UInt32(AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes)
+                )))
             }
 
-            guard let downloadMetadata else {
+            guard let downloadMetadata, let downloadSizeSource else {
                 return .unretryableError(OWSAssertionError("Attempting to download an attachment without cdn info"))
             }
 
@@ -831,6 +851,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 downloadedFileUrl = try await downloadQueue.enqueueDownload(
                     downloadState: .init(type: .attachment(downloadMetadata, id: attachment.id)),
                     maxDownloadSizeBytes: RemoteConfig.current.maxAttachmentDownloadSizeBytes,
+                    expectedDownloadSize: downloadSizeSource,
                     progress: nil
                 )
             } catch let error {
@@ -1546,6 +1567,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         func enqueueDownload(
             downloadState: DownloadState,
             maxDownloadSizeBytes: UInt,
+            expectedDownloadSize: DownloadSizeSource,
             progress: OWSProgressSink?
         ) async throws -> URL {
             let progresses = (
@@ -1574,6 +1596,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 progresses: progresses,
                 progressSources: nil,
                 maxDownloadSizeBytes: maxDownloadSizeBytes,
+                expectedDownloadSize: expectedDownloadSize,
                 resumeData: nil,
                 attemptCount: 0
             )
@@ -1587,9 +1610,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             continuation.resume()
         }
 
-        private struct ResumeData {
-            let expectedDownloadSizeBytes: UInt?
-            let data: Data?
+        enum DownloadSizeSource {
+            case useHeadRequest
+            case estimatedSizeBytes(UInt)
         }
 
         private nonisolated func performDownloadAttempt(
@@ -1597,7 +1620,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             progresses: [OWSProgressSink],
             progressSources inputProgressSources: [OWSProgressSource]?,
             maxDownloadSizeBytes: UInt,
-            resumeData: ResumeData?,
+            expectedDownloadSize: DownloadSizeSource,
+            resumeData: Data?,
             attemptCount: UInt
         ) async throws -> URL {
             guard downloadState.isExpired().negated else {
@@ -1620,7 +1644,16 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 attachmentId = id
             }
 
-            var expectedDownloadSizeBytes: UInt? = resumeData?.expectedDownloadSizeBytes
+            let expectedDownloadSizeBytes: UInt
+            switch expectedDownloadSize {
+            case .estimatedSizeBytes(let size):
+                expectedDownloadSizeBytes = UInt(size)
+            case .useHeadRequest:
+                // Perform a HEAD request just to get the byte length from cdn.
+                let downloadInfo = try await performHeadRequest(downloadState: downloadState)
+                expectedDownloadSizeBytes = downloadInfo.contentLength
+            }
+
             var progressSources: [OWSProgressSource] = []
 
             do {
@@ -1628,21 +1661,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                 if let inputProgressSources {
                     progressSources = inputProgressSources
-                } else if let expectedDownloadSizeBytes {
+                } else {
                     for progress in progresses {
                         progressSources.append(await progress.addSource(
                             withLabel: AttachmentDownloads.downloadProgressLabel,
                             unitCount: UInt64(expectedDownloadSizeBytes)
-                        ))
-                    }
-                } else {
-                    // Perform a HEAD request just to get the byte length from cdn.
-                    let downloadInfo = try await performHeadRequest(downloadState: downloadState)
-                    expectedDownloadSizeBytes = downloadInfo.contentLength
-                    for progress in progresses {
-                        progressSources.append(await progress.addSource(
-                            withLabel: AttachmentDownloads.downloadProgressLabel,
-                            unitCount: UInt64(downloadInfo.contentLength)
                         ))
                     }
                 }
@@ -1663,7 +1686,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                                 downloadState: downloadState,
                                 task: downloadTask,
                                 progress: progressValue,
-                                expectedDownloadSizeBytes: expectedDownloadSizeBytes,
+                                expectedDownloadSizeBytes: UInt(expectedDownloadSizeBytes),
                                 attachmentId: attachmentId
                             )
                             return
@@ -1679,17 +1702,17 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         downloadState: downloadState,
                         task: downloadTask,
                         progress: progressValue,
-                        expectedDownloadSizeBytes: expectedDownloadSizeBytes,
+                        expectedDownloadSizeBytes: UInt(expectedDownloadSizeBytes),
                         attachmentId: attachmentId
                     )
                 }
                 let wrappedProgressSource = await wrappedProgress.addSource(
                     withLabel: "source",
-                    unitCount: UInt64(expectedDownloadSizeBytes ?? maxDownloadSizeBytes)
+                    unitCount: UInt64(expectedDownloadSizeBytes)
                 )
 
                 let downloadResponse: OWSUrlDownloadResponse
-                if let resumeData = resumeData?.data {
+                if let resumeData {
                     let request = try urlSession.endpoint.buildRequest(urlPath, method: .get, headers: headers)
                     guard let requestUrl = request.url else {
                         throw OWSAssertionError("Request missing url.")
@@ -1747,10 +1770,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     progresses: progresses,
                     progressSources: progressSources,
                     maxDownloadSizeBytes: maxDownloadSizeBytes,
-                    resumeData: .init(
-                        expectedDownloadSizeBytes: expectedDownloadSizeBytes,
-                        data: newResumeData
-                    ),
+                    expectedDownloadSize: .estimatedSizeBytes(expectedDownloadSizeBytes),
+                    resumeData: newResumeData,
                     attemptCount: attemptCount + 1
                 )
             }
