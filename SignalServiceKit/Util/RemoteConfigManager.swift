@@ -253,15 +253,7 @@ public class RemoteConfig {
     }
 
     public var isNotificationServiceWebSocketEnabled: Bool {
-        return isEnabled(.notificationServiceWebSocket) && isConnectionLockEnabled
-    }
-
-    public var isShareExtensionWebSocketEnabled: Bool {
-        return isEnabled(.shareExtensionWebSocket) && isConnectionLockEnabled
-    }
-
-    public var isConnectionLockEnabled: Bool {
-        return !isEnabled(.connectionLockKillSwitch)
+        return isEnabled(.notificationServiceWebSocket)
     }
 
     public var usePqRatchet: Bool {
@@ -488,7 +480,6 @@ private enum IsEnabledFlag: String, FlagType {
     case cardGiftDonationKillSwitch = "ios.cardGiftDonationKillSwitch"
     case cardMonthlyDonationKillSwitch = "ios.cardMonthlyDonationKillSwitch"
     case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
-    case connectionLockKillSwitch = "ios.connectionLockKillSwitch"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
     case lazyDatabaseMigratorKillSwitch = "ios.lazyDatabaseMigratorKillSwitch"
@@ -501,7 +492,6 @@ private enum IsEnabledFlag: String, FlagType {
     case paypalOneTimeDonationKillSwitch = "ios.paypalOneTimeDonationKillSwitch"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
-    case shareExtensionWebSocket = "ios.shareExtensionWebSocket"
     case shouldValidatePrimaryPniIdentityKey = "ios.shouldValidatePrimaryPniIdentityKey"
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
     case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
@@ -522,7 +512,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .cardGiftDonationKillSwitch: false
         case .cardMonthlyDonationKillSwitch: false
         case .cardOneTimeDonationKillSwitch: false
-        case .connectionLockKillSwitch: true
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
         case .lazyDatabaseMigratorKillSwitch: true
@@ -535,7 +524,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalOneTimeDonationKillSwitch: false
         case .ringrtcNwPathMonitorTrialKillSwitch: true // cached during launch, so not hot-swapped in practice
         case .serviceExtensionFailureKillSwitch: true
-        case .shareExtensionWebSocket: true
         case .shouldValidatePrimaryPniIdentityKey: true
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true
         case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true

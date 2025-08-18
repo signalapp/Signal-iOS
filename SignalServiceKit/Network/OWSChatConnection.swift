@@ -193,7 +193,7 @@ public class OWSChatConnection {
         case .nse:
             return false // because there is a kill switch
         case .share:
-            return false // because there is a kill switch
+            return true
         }
     }
 
@@ -204,7 +204,7 @@ public class OWSChatConnection {
         case .nse:
             return RemoteConfig.current.isNotificationServiceWebSocketEnabled
         case .share:
-            return RemoteConfig.current.isShareExtensionWebSocketEnabled
+            return true
         }
     }
 
@@ -1029,9 +1029,6 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
     private let heldConnectionLock = AtomicValue<ConnectionLock.HeldLock?>(nil, lock: .init())
 
     private func acquireConnectionLock() async throws {
-        guard RemoteConfig.current.isConnectionLockEnabled else {
-            return
-        }
         owsPrecondition(self.heldConnectionLock.get() == nil)
         let newValue = try await self.connectionLock.lock(onInterrupt: (self.serialQueue, {
             Logger.warn("Cycling the socket because the connection lock was interrupted")
