@@ -172,28 +172,28 @@ struct BackupRecordKeyView: View {
                 DisplayAccountEntropyPoolView(aep: viewModel.aep)
 
                 Spacer().frame(height: 32)
-
-                Button {
-                    viewModel.copyToClipboard()
-                } label: {
-                    Text(OWSLocalizedString(
-                        "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE",
-                        comment: "Title for a button allowing users to copy their 'Backup Key' to the clipboard."
-                    ))
-                    .fontWeight(.medium)
-                }
-                .foregroundStyle(Color.Signal.secondaryLabel)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background {
-                    Capsule().fill(Color.Signal.secondaryFill)
-                }
-
-                Spacer().frame(height: 20)
             }
             .padding(.horizontal, 12)
         } pinnedFooter: {
+            Button {
+                viewModel.copyToClipboard()
+            } label: {
+                Text(OWSLocalizedString(
+                    "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE",
+                    comment: "Title for a button allowing users to copy their 'Backup Key' to the clipboard."
+                ))
+                .fontWeight(.medium)
+            }
+            .foregroundStyle(Color.Signal.secondaryLabel)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background {
+                Capsule().fill(Color.Signal.secondaryFill)
+            }
+
             if viewModel.options.contains(.showCreateNewKeyButton) {
+                Spacer().frame(height: 32)
+
                 Button {
                     viewModel.createNewKey()
                 } label: {
@@ -206,6 +206,8 @@ struct BackupRecordKeyView: View {
             }
 
             if viewModel.options.contains(.showContinueButton) {
+                Spacer().frame(height: 32)
+
                 Button {
                     viewModel.complete()
                 } label: {
