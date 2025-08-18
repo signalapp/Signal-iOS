@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Reachability
 public import LibSignalClient
 
 public protocol NetworkManagerProtocol {
@@ -40,7 +41,9 @@ public class NetworkManager: NetworkManagerProtocol {
         self.libsignalNet = libsignalNet
         if let libsignalNet {
             self.reachabilityDidChangeObserver = Task {
-                for await _ in NotificationCenter.default.notifications(named: .reachabilityChanged) {
+                for await notification in NotificationCenter.default.notifications(named: .reachabilityChanged) {
+                    let reachability = notification.object as! Reachability
+                    Logger.info("New preferred network: \(reachability.currentReachabilityString()!)")
                     do {
                         if !SignalProxy.isEnabled {
                             Self.resetLibsignalNetProxySettings(libsignalNet, appReadiness: appReadiness)
