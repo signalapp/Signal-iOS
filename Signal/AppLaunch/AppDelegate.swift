@@ -329,10 +329,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         backupRunner.registerBGProcessingTask(appReadiness: appReadiness)
 
         let databaseMigratorRunner = LazyDatabaseMigratorRunner(
-            backgroundMessageFetcherFactory: { DependenciesBridge.shared.backgroundMessageFetcherFactory },
             databaseStorage: databaseStorage,
-            remoteConfigManager: { SSKEnvironment.shared.remoteConfigManagerRef },
-            tsAccountManager: { DependenciesBridge.shared.tsAccountManager }
         )
         databaseMigratorRunner.registerBGProcessingTask(appReadiness: appReadiness)
 

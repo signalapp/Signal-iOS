@@ -248,10 +248,6 @@ public class RemoteConfig {
         return !isEnabled(.tsAttachmentMigrationMainAppBackgroundKillSwitch)
     }
 
-    public var isLazyDatabaseMigratorEnabled: Bool {
-        return !isEnabled(.lazyDatabaseMigratorKillSwitch)
-    }
-
     public var isNotificationServiceWebSocketEnabled: Bool {
         return isEnabled(.notificationServiceWebSocket)
     }
@@ -482,7 +478,6 @@ private enum IsEnabledFlag: String, FlagType {
     case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
-    case lazyDatabaseMigratorKillSwitch = "ios.lazyDatabaseMigratorKillSwitch"
     case libsignalEnforceMinTlsVersion = "ios.libsignalEnforceMinTlsVersion"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
     case notificationServiceWebSocket = "ios.notificationServiceWebSocket2"
@@ -514,7 +509,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .cardOneTimeDonationKillSwitch: false
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
-        case .lazyDatabaseMigratorKillSwitch: true
         case .libsignalEnforceMinTlsVersion: true // cached during launch, so not hot-swapped in practice
         case .messageResendKillSwitch: false
         case .notificationServiceWebSocket: true
