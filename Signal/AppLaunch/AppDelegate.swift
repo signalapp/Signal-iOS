@@ -555,6 +555,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         if hasPendingChangeNumber {
             // The registration loader will clear the suspension later on.
             SSKEnvironment.shared.messagePipelineSupervisorRef.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
+            DependenciesBridge.shared.preKeyManager.setIsChangingNumber(true)
         }
 
         let launchInterface = buildLaunchInterface(regLoader: regLoader)

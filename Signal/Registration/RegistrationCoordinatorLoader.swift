@@ -120,6 +120,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
         if mode.hasPendingChangeNumber {
             // This should happen on app startup, but do it here too to be safe.
             deps.messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
+            deps.preKeyManager.setIsChangingNumber(true)
         }
         let delegate = CoordinatorDelegate(loader: self)
         Logger.info("Starting registration, mode: \(mode.logString)")
@@ -168,12 +169,16 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
             var newState = oldState
             newState.pniState = pniState
             try loader.kvStore.setCodable(Mode.changingNumber(newState), key: Constants.modeKey, transaction: transaction)
-            transaction.addSyncCompletion { [messagePipelineSupervisor = loader.deps.messagePipelineSupervisor] in
-                if Mode.changingNumber(newState).hasPendingChangeNumber {
+            let messagePipelineSupervisor = loader.deps.messagePipelineSupervisor
+            let preKeyManager = loader.deps.preKeyManager
+            transaction.addSyncCompletion {
+                let hasPendingChangeNumber = Mode.changingNumber(newState).hasPendingChangeNumber
+                if  hasPendingChangeNumber {
                     messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
                 } else {
                     messagePipelineSupervisor.unsuspendMessageProcessing(for: .pendingChangeNumber)
                 }
+                preKeyManager.setIsChangingNumber(hasPendingChangeNumber)
             }
             return newState
         }

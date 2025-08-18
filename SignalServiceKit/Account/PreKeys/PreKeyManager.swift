@@ -61,4 +61,6 @@ public protocol PreKeyManager {
         forIdentity identity: OWSIdentity,
         alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
     )
+
+    func setIsChangingNumber(_ isChangingNumber: Bool)
 }

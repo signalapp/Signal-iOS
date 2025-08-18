@@ -146,18 +146,34 @@ public class PreKeyManagerImpl: PreKeyManager {
             return true
         }()
 
-        _ = self._checkPreKeys(shouldCheckOneTimePreKeys: shouldCheckOneTimePreKeys, tx: tx)
+        // If we can throttle this check, and if we're changing our number, assume
+        // that the change number will refresh our pre keys. (This check is
+        // optional, so it's fine to skip it.)
+        let shouldSkipPniPreKeyCheck = shouldThrottle && changeNumberState.update(block: { $0.isChangingNumber })
+        if shouldSkipPniPreKeyCheck {
+            Logger.warn("Skipping PNI pre key check due to change number.")
+        }
+
+        _ = self._checkPreKeys(
+            shouldCheckOneTimePreKeys: shouldCheckOneTimePreKeys,
+            shouldCheckPniPreKeys: !shouldSkipPniPreKeyCheck,
+            tx: tx,
+        )
     }
 
-    private func _checkPreKeys(shouldCheckOneTimePreKeys: Bool, tx: DBReadTransaction) -> Task<Void, any Error> {
+    private func _checkPreKeys(
+        shouldCheckOneTimePreKeys: Bool,
+        shouldCheckPniPreKeys: Bool,
+        tx: DBReadTransaction,
+    ) -> Task<Void, any Error> {
         var targets: PreKey.Target = [.signedPreKey, .lastResortPqPreKey]
         if shouldCheckOneTimePreKeys {
             targets.insert(target: .oneTimePreKey)
             targets.insert(target: .oneTimePqPreKey)
         }
-        let shouldPerformPniOp = hasPniIdentityKey(tx: tx)
+        let shouldPerformPniOp = shouldCheckPniPreKeys && hasPniIdentityKey(tx: tx)
 
-        return Self.taskQueue.enqueue { [weak self, chatConnectionManager, taskManager, targets] in
+        return Self.taskQueue.enqueue { [self, chatConnectionManager, taskManager, targets] in
             if OWSChatConnection.mustAppUseSocketsToMakeRequests {
                 try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
             } else {
@@ -170,10 +186,11 @@ public class PreKeyManagerImpl: PreKeyManager {
             try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
             if shouldPerformPniOp {
                 try Task.checkCancellation()
+                try await self.waitUntilNotChangingNumberIfNeeded(targets: targets)
                 try await taskManager.refresh(identity: .pni, targets: targets, auth: .implicit())
             }
-            if shouldCheckOneTimePreKeys {
-                self?.refreshOneTimePreKeysCheckDidSucceed()
+            if shouldCheckOneTimePreKeys && shouldCheckPniPreKeys {
+                self.refreshOneTimePreKeysCheckDidSucceed()
             }
         }
     }
@@ -233,7 +250,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         PreKey.logger.info("Rotating signed prekeys if needed")
 
         return db.read { tx in
-            return _checkPreKeys(shouldCheckOneTimePreKeys: false, tx: tx)
+            return _checkPreKeys(shouldCheckOneTimePreKeys: false, shouldCheckPniPreKeys: true, tx: tx)
         }
     }
 
@@ -265,6 +282,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             targets.insert(.signedPreKey)
             targets.insert(target: .lastResortPqPreKey)
         }
+        try await waitUntilNotChangingNumberIfNeeded(targets: targets)
 
         let task = Self.taskQueue.enqueue { [taskManager, targets] in
             try Task.checkCancellation()
@@ -327,6 +345,40 @@ public class PreKeyManagerImpl: PreKeyManager {
                 transaction: tx
             )
         }
+    }
+
+    // MARK: - Change Number
+
+    private struct ChangeNumberState {
+        var isChangingNumber = false
+        var onNotChangingNumber = [NSObject: Monitor.Continuation]()
+    }
+    private let changeNumberState = AtomicValue(ChangeNumberState(), lock: .init())
+
+    private let notChangingNumberCondition = Monitor.Condition<ChangeNumberState>(
+        isSatisfied: { !$0.isChangingNumber },
+        waiters: \.onNotChangingNumber,
+    )
+
+    /// Waits until the current "Change Number" operation is resolved.
+    ///
+    /// If we're changing our number, the currently-active PNI identity key is
+    /// ambiguous (it's either the old one or the new one, but we don't know
+    /// which). We should therefore defer periodic pre key refreshes until after
+    /// we've finished changing our number.
+    private func waitUntilNotChangingNumberIfNeeded(targets: PreKey.Target) async throws(CancellationError) {
+        guard targets.intersects([.signedPreKey, .lastResortPqPreKey]) else {
+            return
+        }
+        try await Monitor.waitForCondition(notChangingNumberCondition, in: changeNumberState)
+    }
+
+    public func setIsChangingNumber(_ isChangingNumber: Bool) {
+        Monitor.updateAndNotify(
+            in: changeNumberState,
+            block: { $0.isChangingNumber = isChangingNumber },
+            conditions: notChangingNumberCondition,
+        )
     }
 }
 

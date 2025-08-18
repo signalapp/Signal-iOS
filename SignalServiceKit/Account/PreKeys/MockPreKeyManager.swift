@@ -89,6 +89,9 @@ internal class MockPreKeyManager: PreKeyManager {
         )
         return record
     }
+
+    func setIsChangingNumber(_ isChangingNumber: Bool) {
+    }
 }
 
 #endif

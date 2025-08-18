@@ -214,6 +214,9 @@ public class _RegistrationCoordinator_PreKeyManagerMock: _RegistrationCoordinato
         run.addObservedStep(.rotateOneTimePreKeys)
         return try await rotateOneTimePreKeysMocks.removeFirst()(auth).awaitable()
     }
+
+    public func setIsChangingNumber(_ isChangingNumber: Bool) {
+    }
 }
 
 // MARK: - ProfileManager

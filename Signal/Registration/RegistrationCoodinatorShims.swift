@@ -295,6 +295,8 @@ public protocol _RegistrationCoordinator_PreKeyManagerShim {
     ) async throws
 
     func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws
+
+    func setIsChangingNumber(_ isChangingNumber: Bool)
 }
 
 public class _RegistrationCoordinator_PreKeyManagerWrapper: _RegistrationCoordinator_PreKeyManagerShim {
@@ -321,6 +323,10 @@ public class _RegistrationCoordinator_PreKeyManagerWrapper: _RegistrationCoordin
 
     public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws {
         return try await preKeyManager.rotateOneTimePreKeysForRegistration(auth: auth).value
+    }
+
+    public func setIsChangingNumber(_ isChangingNumber: Bool) {
+        preKeyManager.setIsChangingNumber(isChangingNumber)
     }
 }
 
