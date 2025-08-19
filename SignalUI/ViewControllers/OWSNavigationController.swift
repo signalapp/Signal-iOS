@@ -115,6 +115,11 @@ open class OWSNavigationController: UINavigationController {
         super.viewDidLoad()
 
         interactivePopGestureRecognizer?.delegate = self
+#if compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            interactiveContentPopGestureRecognizer?.delegate = self
+        }
+#endif
     }
 
     open override func viewWillAppear(_ animated: Bool) {
@@ -222,7 +227,15 @@ extension OWSNavigationController: UIGestureRecognizerDelegate {
     }
 
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+#if compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            owsAssertDebug(gestureRecognizer === self.interactivePopGestureRecognizer || gestureRecognizer === self.interactiveContentPopGestureRecognizer)
+        } else {
+            owsAssertDebug(gestureRecognizer === self.interactivePopGestureRecognizer)
+        }
+#else
         owsAssertDebug(gestureRecognizer === self.interactivePopGestureRecognizer)
+#endif
 
         guard viewControllers.count > 1 else {
             return false
@@ -245,6 +258,11 @@ extension OWSNavigationController: UINavigationBarDelegate {
     // if a view has unsaved changes.
     public func navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {
         owsAssertDebug(interactivePopGestureRecognizer?.delegate === self)
+#if compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            owsAssertDebug(interactiveContentPopGestureRecognizer?.delegate === self)
+        }
+#endif
 
         // wasBackButtonClicked is true if the back button was pressed but not
         // if a back gesture was performed or if the view is popped programmatically.
