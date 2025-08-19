@@ -132,6 +132,12 @@ extension ConversationViewController {
                         )
                         pill.buttonText = self.isCurrentCallForThread ? returnString : CallStrings.joinCallPillButtonTitle
                         videoCallButton.customView = pill
+#if compiler(>=6.2)
+                        if #available(iOS 26.0, *) {
+                            videoCallButton.tintColor = UIColor.Signal.green
+                            videoCallButton.style = .prominent
+                        }
+#endif
                     } else {
                         videoCallButton.image = Theme.iconImage(.buttonVideoCall)
                         videoCallButton.target = self

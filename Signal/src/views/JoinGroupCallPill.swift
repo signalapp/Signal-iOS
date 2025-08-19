@@ -5,6 +5,7 @@
 
 import SignalUI
 import UIKit
+import SignalServiceKit
 
 class JoinGroupCallPill: UIControl {
 
@@ -56,22 +57,25 @@ class JoinGroupCallPill: UIControl {
         contentStack.axis = .horizontal
         contentStack.spacing = 4
         contentStack.isUserInteractionEnabled = false
+        contentStack.isLayoutMarginsRelativeArrangement = true
+        contentStack.layoutMargins = .init(hMargin: 12, vMargin: 4)
 
-        addSubview(backgroundPill)
-        addSubview(contentStack)
-        addSubview(dimmingView)
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+            addSubview(contentStack)
+            contentStack.autoPinEdgesToSuperviewEdges()
+        } else {
+            addSubview(backgroundPill)
+            addSubview(contentStack)
+            addSubview(dimmingView)
 
-        callImageView.autoSetDimensions(to: CGSize(square: 20))
-        callImageView.setCompressionResistanceHigh()
-        callLabel.setCompressionResistanceHigh()
+            callImageView.autoSetDimensions(to: CGSize(square: 20))
+            callImageView.setCompressionResistanceHigh()
+            callLabel.setCompressionResistanceHigh()
 
-        contentStack.autoPinLeading(toEdgeOf: backgroundPill, offset: 12)
-        contentStack.autoPinTrailing(toEdgeOf: backgroundPill, offset: -12)
-        contentStack.autoPinEdge(.top, to: .top, of: backgroundPill, withOffset: 4)
-        contentStack.autoPinEdge(.bottom, to: .bottom, of: backgroundPill, withOffset: -4)
-
-        backgroundPill.autoPinEdgesToSuperviewEdges()
-        dimmingView.autoPinEdgesToSuperviewEdges()
+            contentStack.autoPinEdgesToSuperviewEdges()
+            backgroundPill.autoPinEdgesToSuperviewEdges()
+            dimmingView.autoPinEdgesToSuperviewEdges()
+        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .themeDidChange, object: nil)
         applyStyle()
@@ -95,8 +99,11 @@ class JoinGroupCallPill: UIControl {
         callLabel.textColor = isEnabled ? enabledColor : .ows_whiteAlpha40
         callImageView.tintColor = isEnabled ? enabledColor : .ows_whiteAlpha40
 
-        // When we're highlighted, we should unhide the dimming view to darken the pill
-        dimmingView.isHidden = !isHighlighted
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        } else {
+            // When we're highlighted, we should unhide the dimming view to darken the pill
+            dimmingView.isHidden = !isHighlighted
+        }
     }
 
     required init?(coder: NSCoder) {
