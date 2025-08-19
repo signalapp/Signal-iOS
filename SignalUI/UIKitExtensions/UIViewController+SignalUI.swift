@@ -86,7 +86,7 @@ public extension UINavigationController {
         completion: @escaping () -> Void
     ) {
         pushViewController(viewController, animated: animated)
-        addCompletion(completion)
+        addCompletion(animated: animated, completion: completion)
     }
 
     func popViewController(
@@ -94,7 +94,7 @@ public extension UINavigationController {
         completion: @escaping () -> Void
     ) {
         popViewController(animated: animated)
-        addCompletion(completion)
+        addCompletion(animated: animated, completion: completion)
     }
 
     func popToViewController(
@@ -103,12 +103,13 @@ public extension UINavigationController {
         completion: @escaping () -> Void
     ) {
         self.popToViewController(viewController, animated: animated)
-        addCompletion(completion)
+        addCompletion(animated: animated, completion: completion)
     }
 
-    private func addCompletion(_ completion: @escaping () -> Void) {
+    private func addCompletion(animated: Bool, completion: @escaping () -> Void) {
+        guard animated else { return completion() }
         guard let transitionCoordinator else {
-            owsFailBeta("Missing transitionCoordinator")
+            owsFailBeta("Missing transitionCoordinator even though transition is animated")
             return completion()
         }
         transitionCoordinator.animate(alongsideTransition: nil) { _ in
