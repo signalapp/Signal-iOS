@@ -404,7 +404,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.beginDownloadingIfNecessary()
             try await downloadWaitingTask.value
         } catch {
-            Logger.error("Error downloading attachment id \(id): \(error)")
+            Logger.error("Error downloading attachment id \(id) from \(source): \(error)")
             await downloadQueue.clearDownloadProgressAndMarkFinished(key: downloadKey)
             throw error
         }
@@ -536,7 +536,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             record: DownloadTaskRecord,
             tx: DBWriteTransaction
         ) throws {
-            Logger.info("Succeeded download of attachment \(record.record.attachmentId)")
+            Logger.info("Succeeded download of attachment \(record.record.attachmentId) from \(record.record.sourceType)")
             let downloadKey = DownloadQueue.downloadKey(record: record.record)
             Task {
                 await downloadQueue.updateObservers(downloadKey: downloadKey, error: nil)
@@ -547,7 +547,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             record: DownloadTaskRecord,
             tx: DBWriteTransaction
         ) throws {
-            Logger.info("Cancelled download of attachment \(record.record.attachmentId)")
+            Logger.info("Cancelled download of attachment \(record.record.attachmentId) from \(record.record.sourceType)")
             let downloadKey = DownloadQueue.downloadKey(record: record.record)
             Task {
                 await downloadQueue.updateObservers(downloadKey: downloadKey, error: nil)
@@ -556,7 +556,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         func didFail(record: DownloadTaskRecord, error: Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
             let record = record.record
-            Logger.error("Failed download of attachment \(record.attachmentId)")
+            Logger.error("Failed download of attachment \(record.attachmentId) from \(record.sourceType)")
             if isRetryable, let retryTime = self.retryTime(for: record) {
                 // Don't update observers; they'll be updated when the retry succeeds.
                 try? self.attachmentDownloadStore.markQueuedDownloadFailed(
@@ -729,7 +729,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return .unretryableError(SkipDownloadError())
             }
 
-            Logger.info("Downloading attachment \(record.attachmentId)")
+            Logger.info("Downloading attachment \(record.attachmentId) from \(record.sourceType)")
 
             if
                 let originalAttachmentIdForQuotedReply = attachment.originalAttachmentIdForQuotedReply,

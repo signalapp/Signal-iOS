@@ -22,10 +22,21 @@ public struct QueuedAttachmentDownloadRecord: Codable, FetchableRecord, MutableP
 
     /// A given ``Attachment`` has metadata enabling downloading from
     /// many possible sources; this differentiates which should be used.
-    public enum SourceType: Int, Codable, CaseIterable {
+    public enum SourceType: Int, Codable, CaseIterable, CustomStringConvertible {
         case transitTier = 0
         case mediaTierFullsize = 1
         case mediaTierThumbnail = 2
+
+        public var description: String {
+            return switch self {
+            case .transitTier:
+                "transit tier"
+            case .mediaTierFullsize:
+                "media tier"
+            case .mediaTierThumbnail:
+                "media tier thumbnail"
+            }
+        }
     }
 
     /// Where we will be downloading the attachment from.

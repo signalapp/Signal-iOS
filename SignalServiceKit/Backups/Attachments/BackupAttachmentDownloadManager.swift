@@ -763,7 +763,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
 
         func didSucceed(record: Store.Record, tx: DBWriteTransaction) throws {
-            logger.info("Finished restoring attachment \(record.record.attachmentRowId), download \(record.id)")
+            logger.info("Finished restoring attachment \(record.record.attachmentRowId), download \(record.id), isThumbnail: \(record.record.isThumbnail)")
             // Mark the record done when we succeed; this will filter it out
             // from future queue pop/peek operations.
             try backupAttachmentDownloadStore.markDone(
@@ -800,7 +800,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
 
         func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
-            logger.warn("Failed restoring attachment \(record.id), isRetryable: \(isRetryable), error: \(error)")
+            logger.warn("Failed restoring attachment \(record.id), isRetryable: \(isRetryable), isThumbnail: \(record.record.isThumbnail), error: \(error)")
 
             if
                 isRetryable,
@@ -889,7 +889,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
 
         func didCancel(record: Store.Record, tx: DBWriteTransaction) throws {
-            logger.warn("Cancelled restoring attachment \(record.record.attachmentRowId), download \(record.id)")
+            logger.warn("Cancelled restoring attachment \(record.record.attachmentRowId), download \(record.id), isThumbnail: \(record.record.isThumbnail)")
             try backupAttachmentDownloadStore.remove(
                 attachmentId: record.record.attachmentRowId,
                 thumbnail: record.record.isThumbnail,
