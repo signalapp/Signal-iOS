@@ -13,7 +13,6 @@ import SignalServiceKit
 private protocol CallCellDelegate: AnyObject {
     func joinCall(from viewModel: CallsListViewController.CallViewModel)
     func returnToCall(from viewModel: CallsListViewController.CallViewModel)
-    func showCallInfo(from viewModel: CallsListViewController.CallViewModel)
 }
 
 // MARK: - CallsListViewController
@@ -1676,7 +1675,7 @@ extension CallsListViewController: UITableViewDelegate {
             guard let viewModel = viewModelWithSneakyTransaction(at: indexPath) else {
                 return
             }
-            startCall(from: viewModel)
+            showCallInfo(from: viewModel)
         }
     }
 
@@ -2463,8 +2462,14 @@ private extension CallsListViewController {
                     joinPill.autoPinWidthToSuperviewMargins()
                 }
             case .inactive:
-                // Info button
-                detailsButton.setImage(imageName: "info")
+                let icon: ThemeIcon = switch viewModel.medium {
+                case .audio:
+                    .buttonVoiceCall
+                case .video, .link:
+                    .buttonVideoCall
+                }
+
+                detailsButton.setImage(imageName: Theme.iconName(icon))
                 detailsButton.tintColor = Theme.primaryIconColor
             }
 
@@ -2493,12 +2498,10 @@ private extension CallsListViewController {
             }
 
             switch viewModel.state {
-            case .active:
+            case .active, .inactive:
                 delegate.joinCall(from: viewModel)
             case .participating:
                 delegate.returnToCall(from: viewModel)
-            case .inactive:
-                delegate.showCallInfo(from: viewModel)
             }
         }
     }
