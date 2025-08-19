@@ -133,7 +133,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             }
 
             Logger.info("Pushing controller for \(step.logSafeString)")
-            self.pushViewController(vc, animated: true, completion: nil)
+            self.pushViewController(vc, animated: true)
         }
     }
 
@@ -510,7 +510,7 @@ extension RegistrationNavigationController: RegistrationSplashPresenter {
     public func switchToDeviceLinkingMode() {
         Logger.info("Pushing device linking")
         let controller = RegistrationConfirmModeSwitchViewController(presenter: self)
-        pushViewController(controller, animated: true, completion: nil)
+        pushViewController(controller, animated: true)
     }
 }
 
@@ -636,7 +636,7 @@ extension RegistrationNavigationController: RegistrationTransferChoicePresenter 
             // back (direct calls to push and pop) and, when they complete, they will have _totally_
             // overwritten our local database, thus wiping any in progress reg coordinator state
             // and putting us into the chat list.
-            pushViewController(RegistrationTransferQRCodeViewController(url: url), animated: true, completion: nil)
+            pushViewController(RegistrationTransferQRCodeViewController(url: url), animated: true)
         } catch {
             // TODO: [Backups] - update this error handling
             Logger.error("Error transferring")

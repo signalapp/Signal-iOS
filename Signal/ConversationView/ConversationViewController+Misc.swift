@@ -291,26 +291,11 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
         self.uiMode = .search
 
         self.popAllConversationSettingsViews {
-            // This delay is unfortunate, but without it, self.searchController.uiSearchController.searchBar
-            // isn't yet ready to become first responder. Presumably we're still mid transition.
-            // A hardcorded constant like this isn't great because it's either too slow, making our users
-            // wait, or too fast, and fails to wait long enough to be ready to become first responder.
-            // Luckily in this case the stakes aren't catastrophic. In the case that we're too aggressive
-            // the user will just have to manually tap into the search field before typing.
-
-            // Leaving this assert in as proof that we're not ready to become first responder yet.
-            // If this assert fails, *great* maybe we can get rid of this delay.
-            owsAssertDebug(!self.searchController.uiSearchController.searchBar.canBecomeFirstResponder)
-
-            // We wait N seconds for it to become ready.
-            let initialDelay: TimeInterval = 0.4
-            DispatchQueue.main.asyncAfter(deadline: .now() + initialDelay) { [weak self] in
-                self?.tryToBecomeFirstResponderForSearch(cumulativeDelay: initialDelay)
-            }
+            self.searchController.uiSearchController.searchBar.becomeFirstResponder()
         }
     }
 
-    private func popAllConversationSettingsViews(completion: (() -> Void)?) {
+    private func popAllConversationSettingsViews(completion: @escaping () -> Void) {
         AssertIsOnMainThread()
 
         guard let presentedViewController = presentedViewController else {
@@ -320,29 +305,6 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
         presentedViewController.dismiss(animated: true) {
             self.navigationController?.popToViewController(self, animated: true, completion: completion)
         }
-    }
-
-    // MARK: - Conversation Search
-
-    private func tryToBecomeFirstResponderForSearch(cumulativeDelay: TimeInterval) {
-        // If this took more than N seconds, assume we're not going
-        // to be able to present search and bail.
-        if cumulativeDelay >= 1.5 {
-            owsFailDebug("Giving up presenting search after excessive retry attempts.")
-            self.uiMode = .normal
-            return
-        }
-
-        // Sometimes it takes longer, so we'll keep retrying..
-        if !searchController.uiSearchController.searchBar.canBecomeFirstResponder {
-            let additionalDelay: TimeInterval = 0.05
-            DispatchQueue.main.asyncAfter(deadline: .now() + additionalDelay) { [weak self] in
-                self?.tryToBecomeFirstResponderForSearch(cumulativeDelay: cumulativeDelay + additionalDelay)
-            }
-            return
-        }
-
-        searchController.uiSearchController.searchBar.becomeFirstResponder()
     }
 }
 

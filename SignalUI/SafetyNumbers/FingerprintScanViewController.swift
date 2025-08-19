@@ -164,7 +164,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
                     )
                 }
                 if let navigationController = viewController.navigationController {
-                    navigationController.popViewController(animated: true, completion: nil)
+                    navigationController.popViewController(animated: true)
                 } else {
                     viewController.dismiss(animated: true)
                 }
@@ -175,7 +175,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
             style: .cancel,
             handler: { _ in
                 if let navigationController = viewController.navigationController {
-                    navigationController.popViewController(animated: true, completion: nil)
+                    navigationController.popViewController(animated: true)
                 } else {
                     viewController.dismiss(animated: true)
                 }

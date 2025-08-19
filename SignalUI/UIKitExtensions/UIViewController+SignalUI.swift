@@ -4,6 +4,7 @@
 //
 
 import UIKit
+import SignalServiceKit
 
 public extension UIViewController {
 
@@ -79,30 +80,40 @@ public extension UIViewController {
 
 public extension UINavigationController {
 
-    func pushViewController(_ viewController: UIViewController,
-                            animated: Bool,
-                            completion: (() -> Void)?) {
-        CATransaction.begin()
-        CATransaction.setCompletionBlock(completion)
+    func pushViewController(
+        _ viewController: UIViewController,
+        animated: Bool,
+        completion: @escaping () -> Void
+    ) {
         pushViewController(viewController, animated: animated)
-        CATransaction.commit()
+        addCompletion(completion)
     }
 
-    func popViewController(animated: Bool,
-                           completion: (() -> Void)?) {
-        CATransaction.begin()
-        CATransaction.setCompletionBlock(completion)
+    func popViewController(
+        animated: Bool,
+        completion: @escaping () -> Void
+    ) {
         popViewController(animated: animated)
-        CATransaction.commit()
+        addCompletion(completion)
     }
 
-    func popToViewController(_ viewController: UIViewController,
-                             animated: Bool,
-                             completion: (() -> Void)?) {
-        CATransaction.begin()
-        CATransaction.setCompletionBlock(completion)
+    func popToViewController(
+        _ viewController: UIViewController,
+        animated: Bool,
+        completion: @escaping () -> Void
+    ) {
         self.popToViewController(viewController, animated: animated)
-        CATransaction.commit()
+        addCompletion(completion)
+    }
+
+    private func addCompletion(_ completion: @escaping () -> Void) {
+        guard let transitionCoordinator else {
+            owsFailBeta("Missing transitionCoordinator")
+            return completion()
+        }
+        transitionCoordinator.animate(alongsideTransition: nil) { _ in
+            completion()
+        }
     }
 }
 
