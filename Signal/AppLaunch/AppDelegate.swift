@@ -1354,13 +1354,19 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             self.activeConnectionTokens = []
             self.backgroundFetchHandle?.interrupt()
             let startDate = MonotonicDate()
+            let isPastRegistration = SignalApp.shared.conversationSplitViewController != nil
             self.backgroundFetchHandle = UIApplication.shared.beginBackgroundTask(
                 backgroundBlock: {
                     do {
                         await backgroundFetcher.start()
                         oldActiveConnectionTokens.forEach { $0.releaseConnection() }
                         // This will usually be limited to 30 seconds rather than 3 minutes.
-                        try await backgroundFetcher.waitUntil(deadline: startDate.adding(180))
+                        let waitDeadline = startDate.adding(180)
+                        if isPastRegistration {
+                            try await backgroundFetcher.waitUntil(deadline: waitDeadline)
+                        } else {
+                            try await Task.sleep(nanoseconds: (waitDeadline - MonotonicDate()).nanoseconds)
+                        }
                     } catch {
                         // We were canceled, either because we entered the foreground or our
                         // background execution time expired.
