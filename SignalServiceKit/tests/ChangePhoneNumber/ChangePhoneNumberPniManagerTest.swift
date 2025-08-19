@@ -55,7 +55,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         let (parameters, pendingState) = await generateIdentity(
             e164: e164,
             linkedDeviceIds: [DeviceId(validating: 2)!, DeviceId(validating: 3)!]
-        ).awaitable().unwrapSuccess
+        ).unwrapSuccess
 
         XCTAssertEqual(e164, pendingState.newE164)
 
@@ -79,7 +79,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         let isFailureResult = await generateIdentity(
             e164: e164,
             linkedDeviceIds: [DeviceId(validating: 2)!, DeviceId(validating: 3)!]
-        ).awaitable().isError
+        ).isError
 
         XCTAssertTrue(isFailureResult)
 
@@ -101,7 +101,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         let (_, pendingState) = await generateIdentity(
             e164: e164,
             linkedDeviceIds: [DeviceId(validating: 2)!, DeviceId(validating: 3)!]
-        ).awaitable().unwrapSuccess
+        ).unwrapSuccess
 
         db.write { transaction in
             try! changeNumberPniManager.finalizePniIdentity(
@@ -134,13 +134,13 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
     private func generateIdentity(
         e164: E164,
         linkedDeviceIds: [DeviceId]
-    ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult> {
+    ) async -> ChangePhoneNumberPni.GeneratePniIdentityResult {
         let aci = Aci.randomForTesting()
         let recipientUniqueId: String = UUID().uuidString
 
         let localDeviceId: DeviceId = .primary
 
-        return changeNumberPniManager.generatePniIdentity(
+        return await changeNumberPniManager.generatePniIdentity(
             forNewE164: e164,
             localAci: aci,
             localRecipientUniqueId: recipientUniqueId,

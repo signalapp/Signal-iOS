@@ -4320,7 +4320,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             localRecipientUniqueId: changeNumberState.localAccountId,
             localDeviceId: changeNumberState.localDeviceId,
             localUserAllDeviceIds: changeNumberState.localUserAllDeviceIds
-        ).awaitable()
+        )
 
         switch pniResult {
         case .failure:
