@@ -27,7 +27,7 @@ public struct RegistrationCoordinatorDependencies {
     let networkManager: any NetworkManagerProtocol
     public let ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager
     public let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
-    public let preKeyManager: RegistrationCoordinatorImpl.Shims.PreKeyManager
+    public let preKeyManager: any PreKeyManager
     public let profileManager: RegistrationCoordinatorImpl.Shims.ProfileManager
     public let pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager
     let quickRestoreManager: RegistrationCoordinatorImpl.Shims.QuickRestoreManager
@@ -67,9 +67,7 @@ public struct RegistrationCoordinatorDependencies {
             networkManager: SSKEnvironment.shared.networkManagerRef,
             ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(SSKEnvironment.shared.ows2FAManagerRef),
             phoneNumberDiscoverabilityManager: DependenciesBridge.shared.phoneNumberDiscoverabilityManager,
-            preKeyManager: RegistrationCoordinatorImpl.Wrappers.PreKeyManager(
-                DependenciesBridge.shared.preKeyManager
-            ),
+            preKeyManager: DependenciesBridge.shared.preKeyManager,
             profileManager: RegistrationCoordinatorImpl.Wrappers.ProfileManager(SSKEnvironment.shared.profileManagerRef),
             pushRegistrationManager: RegistrationCoordinatorImpl.Wrappers.PushRegistrationManager(AppEnvironment.shared.pushRegistrationManagerRef),
             quickRestoreManager: RegistrationCoordinatorImpl.Wrappers.QuickRestoreManager(AppEnvironment.shared.quickRestoreManager),

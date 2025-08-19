@@ -185,34 +185,41 @@ public class _RegistrationCoordinator_OWS2FAManagerMock: _RegistrationCoordinato
 
 // MARK: - PreKeyManager
 
-public class _RegistrationCoordinator_PreKeyManagerMock: _RegistrationCoordinator_PreKeyManagerShim {
+public class _RegistrationCoordinator_PreKeyManagerMock: PreKeyManager {
     var run: RegistrationCoordinatorTest.RegistrationTestRun
     init(run: RegistrationCoordinatorTest.RegistrationTestRun) {
         self.run = run
     }
 
-    public typealias CreatePreKeysMock = (() -> Promise<RegistrationPreKeyUploadBundles>)
+    public func isAppLockedDueToPreKeyUpdateFailures(tx: DBReadTransaction) -> Bool { fatalError() }
+    public func checkPreKeysIfNecessary(tx: DBReadTransaction) { fatalError() }
+    public func rotatePreKeysOnUpgradeIfNecessary(for identity: OWSIdentity) async throws { fatalError() }
+    public func createPreKeysForProvisioning(aciIdentityKeyPair: ECKeyPair, pniIdentityKeyPair: ECKeyPair) -> Task<RegistrationPreKeyUploadBundles, any Error> { fatalError() }
+    public func rotateSignedPreKeysIfNeeded() -> Task<Void, any Error> { fatalError() }
+    public func refreshOneTimePreKeys(forIdentity identity: OWSIdentity, alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool) { fatalError() }
+
+    public typealias CreatePreKeysMock = (() -> Task<RegistrationPreKeyUploadBundles, any Error>)
     private var createPreKeysMocks = [CreatePreKeysMock]()
     public func addCreatePreKeysMock(_ mock: @escaping CreatePreKeysMock) { createPreKeysMocks.append(mock) }
-    public func createPreKeysForRegistration() async throws -> RegistrationPreKeyUploadBundles {
+    public func createPreKeysForRegistration() -> Task<RegistrationPreKeyUploadBundles, any Error> {
         run.addObservedStep(.createPreKeys)
-        return try await createPreKeysMocks.removeFirst()().awaitable()
+        return createPreKeysMocks.removeFirst()()
     }
 
-    public typealias FinalizePreKeysMock = ((Bool) -> Promise<Void>)
+    public typealias FinalizePreKeysMock = ((Bool) -> Task<Void, any Error>)
     private var finalizePreKeysMocks = [FinalizePreKeysMock]()
     public func addFinalizePreKeyMock(_ mock: @escaping FinalizePreKeysMock) { finalizePreKeysMocks.append(mock) }
-    public func finalizeRegistrationPreKeys(_ bundles: RegistrationPreKeyUploadBundles, uploadDidSucceed: Bool) async throws {
+    public func finalizeRegistrationPreKeys(_ bundles: RegistrationPreKeyUploadBundles, uploadDidSucceed: Bool) -> Task<Void, any Error> {
         run.addObservedStep(.finalizePreKeys)
-        return try await finalizePreKeysMocks.removeFirst()(uploadDidSucceed).awaitable()
+        return finalizePreKeysMocks.removeFirst()(uploadDidSucceed)
     }
 
-    public typealias RotateOneTimePreKeysMock = ((ChatServiceAuth) -> Promise<Void>)
+    public typealias RotateOneTimePreKeysMock = ((ChatServiceAuth) -> Task<Void, any Error>)
     private var rotateOneTimePreKeysMocks = [RotateOneTimePreKeysMock]()
     public func addRotateOneTimePreKeyMock(_ mock: @escaping RotateOneTimePreKeysMock) { rotateOneTimePreKeysMocks.append(mock) }
-    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws {
+    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Task<Void, any Error> {
         run.addObservedStep(.rotateOneTimePreKeys)
-        return try await rotateOneTimePreKeysMocks.removeFirst()(auth).awaitable()
+        return rotateOneTimePreKeysMocks.removeFirst()(auth)
     }
 
     public func setIsChangingNumber(_ isChangingNumber: Bool) {

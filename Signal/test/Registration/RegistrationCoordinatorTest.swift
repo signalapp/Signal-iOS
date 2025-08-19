@@ -318,11 +318,11 @@ public class RegistrationCoordinatorTest {
         // It needs an apns token to register.
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
         // It needs prekeys as well.
-        preKeyManagerMock.addCreatePreKeysMock({ return .value(Stubs.prekeyBundles()) })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
         // And will finalize prekeys after success.
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed)
-            return .value(())
+            return Task {}
         }
 
         let identityResponse = Stubs.accountIdentityResponse()
@@ -362,7 +362,7 @@ public class RegistrationCoordinatorTest {
         // When registered, we should create pre-keys.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
             #expect(auth == expectedAuthedAccount().chatServiceAuth)
-            return .value(())
+            return Task {}
         })
 
         if wasReglockEnabled {
@@ -472,11 +472,11 @@ public class RegistrationCoordinatorTest {
         // It needs an apns token to register.
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
         // Every time we register we also ask for prekeys.
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
         // And we finalize them after.
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed)
-            return .value(())
+            return Task {}
         }
 
         let identityResponse = Stubs.accountIdentityResponse()
@@ -509,7 +509,7 @@ public class RegistrationCoordinatorTest {
         // When registered, we should create pre-keys.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
             #expect(auth == expectedAuthedAccount().chatServiceAuth)
-            return .value(())
+            return Task {}
         })
 
         // We haven't done a SVR backup; that should happen now.
@@ -613,18 +613,18 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
         // Every time we register we also ask for prekeys.
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
 
         // And we finalize them after.
         // Set up a list of mocks that should be returned in order
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed.negated)
-            return .value(())
+            return Task {}
         }
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed)
-            return .value(())
+            return Task {}
         }
 
         // Fail the request; the reg recovery pw is invalid.
@@ -718,17 +718,17 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
 
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed.negated)
-            return .value(())
+            return Task {}
         }
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed.negated)
-            return .value(())
+            return Task {}
         }
 
         // Fail the first request; the reglock is invalid.
@@ -817,17 +817,17 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
         // Every time we register we also ask for prekeys.
-        preKeyManagerMock.addCreatePreKeysMock({ return .value(Stubs.prekeyBundles()) })
-        preKeyManagerMock.addCreatePreKeysMock({ return .value(Stubs.prekeyBundles()) })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
 
         // And we finalize them after.
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed.negated)
-            return .value(())
+            return Task {}
         }
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed)
-            return .value(())
+            return Task {}
         }
 
         // Fail the request with a network error.
@@ -877,7 +877,7 @@ public class RegistrationCoordinatorTest {
         // When registered, it should try and sync pre-keys.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
             #expect(auth == expectedAuthedAccount().chatServiceAuth)
-            return .value(())
+            return Task {}
         })
 
         // We haven't done a SVR backup; that should happen.
@@ -1032,11 +1032,11 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
 
-        preKeyManagerMock.addFinalizePreKeyMock({ _ in .value(()) })
-        preKeyManagerMock.addFinalizePreKeyMock({ _ in .value(()) })
+        preKeyManagerMock.addFinalizePreKeyMock({ _ in Task {} })
+        preKeyManagerMock.addFinalizePreKeyMock({ _ in Task {} })
 
         // Fail the first request;
         let expectedRecoveryPwRequest = createAccountWithRecoveryPw(masterKey)
@@ -1184,16 +1184,16 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
 
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed.negated)
-            return .value(())
+            return Task {}
         }
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed)
-            return .value(())
+            return Task {}
         }
 
         // Fail the first request; the reglock is invalid.
@@ -1237,7 +1237,7 @@ public class RegistrationCoordinatorTest {
         // When registered, we should create pre-keys.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
             #expect(auth == expectedAuthedAccount().chatServiceAuth)
-            return .value(())
+            return Task {}
         })
 
         // If we had reglock before registration, it should be re-enabled.
@@ -1394,13 +1394,13 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
 
-        preKeyManagerMock.addFinalizePreKeyMock({ _ in .value(()) })
-        preKeyManagerMock.addFinalizePreKeyMock({ _ in .value(()) })
-        preKeyManagerMock.addFinalizePreKeyMock({ _ in .value(()) })
+        preKeyManagerMock.addFinalizePreKeyMock({ _ in Task {} })
+        preKeyManagerMock.addFinalizePreKeyMock({ _ in Task {} })
+        preKeyManagerMock.addFinalizePreKeyMock({ _ in Task {} })
 
         // Fail the first request; the local key is invalid.
         let expectedRecoveryPwRequest = createAccountWithRecoveryPw(masterKey)
@@ -1523,12 +1523,12 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
         // Every time we register we also ask for prekeys.
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
 
         // And we finalize them after.
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed)
-            return .value(())
+            return Task {}
         }
 
         // Now still at it should make a reg recovery pw request
@@ -1560,7 +1560,7 @@ public class RegistrationCoordinatorTest {
         // When registered, it should try and create pre-keys.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
             #expect(auth == expectedAuthedAccount().chatServiceAuth)
-            return .value(())
+            return Task {}
         })
 
         // Once we create pre-keys, we should back up to svr.
@@ -1834,7 +1834,7 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
         // It should also fetch the prekeys for account creation
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles()) })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
 
         let expectedRequest = createAccountWithSession(newMasterKey)
         mockURLSession.addResponse(
@@ -1861,14 +1861,14 @@ public class RegistrationCoordinatorTest {
         // Once we are registered, we should finalize prekeys.
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed)
-            return .value(())
+            return Task {}
         }
 
         // Then we should try and create one time pre-keys
         // with the credentials we got in the identity response.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
             #expect(auth == expectedAuthedAccount().chatServiceAuth)
-            return .value(())
+            return Task {}
         })
 
         // Finish the validation.
@@ -2863,9 +2863,7 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
         // It should also fetch the prekeys for account creation
-        preKeyManagerMock.addCreatePreKeysMock({
-            return .value(Stubs.prekeyBundles())
-        })
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
 
         let expectedRequest = createAccountWithSession(newMasterKey)
         mockURLSession.addResponse(
@@ -2896,14 +2894,14 @@ public class RegistrationCoordinatorTest {
         // Once we are registered, we should finalize prekeys.
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed)
-            return .value(())
+            return Task {}
         }
 
         // Then we should try and create one time pre-keys
         // with the credentials we got in the identity response.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
             #expect(auth == expectedAuthedAccount().chatServiceAuth)
-            return .value(())
+            return Task {}
         })
 
         // When we skip the pin, it should skip any SVR backups.
@@ -3006,7 +3004,7 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
         // It should also fetch the prekeys for account creation
-        preKeyManagerMock.addCreatePreKeysMock({ .value(Stubs.prekeyBundles())})
+        preKeyManagerMock.addCreatePreKeysMock({ Task { Stubs.prekeyBundles() } })
 
         let expectedRequest = createAccountWithSession(newMasterKey)
         mockURLSession.addResponse(
@@ -3033,14 +3031,14 @@ public class RegistrationCoordinatorTest {
         // Once we are registered, we should finalize prekeys.
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed)
-            return .value(())
+            return Task {}
         }
 
         // Then we should try and create one time pre-keys
         // with the credentials we got in the identity response.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
             #expect(auth == expectedAuthedAccount().chatServiceAuth)
-            return .value(())
+            return Task {}
         })
 
         // When we skip the pin, it should skip any SVR backups.

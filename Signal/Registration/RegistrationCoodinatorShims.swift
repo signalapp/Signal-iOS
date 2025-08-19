@@ -20,7 +20,6 @@ extension RegistrationCoordinatorImpl {
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorShim
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorShim
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerShim
-        public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerShim
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerShim
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerShim
         typealias QuickRestoreManager = _RegistrationCoordinator_QuickRestoreManagerShim
@@ -40,7 +39,6 @@ extension RegistrationCoordinatorImpl {
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorWrapper
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorWrapper
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerWrapper
-        public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerWrapper
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerWrapper
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
         typealias QuickRestoreManager = _RegistrationCoordinator_QuickRestoreManagerWrapper
@@ -279,54 +277,6 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
 
     public func markRegistrationLockEnabled(_ tx: DBWriteTransaction) {
         manager.markRegistrationLockV2Enabled(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-}
-
-// MARK: - PreKeyManager
-
-// TODO: Remove this layer of abstraction; it's no longer necessary.
-public protocol _RegistrationCoordinator_PreKeyManagerShim {
-
-    func createPreKeysForRegistration() async throws -> RegistrationPreKeyUploadBundles
-
-    func finalizeRegistrationPreKeys(
-        _ prekeyBundles: RegistrationPreKeyUploadBundles,
-        uploadDidSucceed: Bool
-    ) async throws
-
-    func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws
-
-    func setIsChangingNumber(_ isChangingNumber: Bool)
-}
-
-public class _RegistrationCoordinator_PreKeyManagerWrapper: _RegistrationCoordinator_PreKeyManagerShim {
-
-    private let preKeyManager: PreKeyManager
-
-    public init(_ preKeyManager: PreKeyManager) {
-        self.preKeyManager = preKeyManager
-    }
-
-    public func createPreKeysForRegistration() async throws -> RegistrationPreKeyUploadBundles {
-        return try await preKeyManager.createPreKeysForRegistration().value
-    }
-
-    public func finalizeRegistrationPreKeys(
-        _ prekeyBundles: RegistrationPreKeyUploadBundles,
-        uploadDidSucceed: Bool
-    ) async throws {
-        return try await preKeyManager.finalizeRegistrationPreKeys(
-            prekeyBundles,
-            uploadDidSucceed: uploadDidSucceed
-        ).value
-    }
-
-    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws {
-        return try await preKeyManager.rotateOneTimePreKeysForRegistration(auth: auth).value
-    }
-
-    public func setIsChangingNumber(_ isChangingNumber: Bool) {
-        preKeyManager.setIsChangingNumber(isChangingNumber)
     }
 }
 
