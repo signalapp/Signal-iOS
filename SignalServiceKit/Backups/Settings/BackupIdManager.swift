@@ -97,7 +97,7 @@ final class BackupIdManagerImpl: BackupIdManager {
         localIdentifiers: LocalIdentifiers?,
         auth: ChatServiceAuth
     ) async throws {
-        guard FeatureFlags.Backups.showSettings else {
+        guard FeatureFlags.Backups.supported else {
             return
         }
 
@@ -151,7 +151,7 @@ final class BackupIdManagerImpl: BackupIdManager {
 
             return RegisteredBackupIDToken()
 
-        } catch SignalError.verificationFailed {
+        } catch SignalError.verificationFailed where retryOnFail {
             // This error is thrown if the backupID was never registered remotely.
             // We *should* set it above in registerBackupIDIfNecessary based on local state,
             // but in case local and remote state ever get out of sync, this will clear

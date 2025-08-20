@@ -240,7 +240,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
                     // key won't be available until after downloading and reading the backup info.
                     return nil
                 } catch {
-                    owsFailDebug("Error creating credential")
+                    owsFailDebug("Error creating credential! \(error)")
                     throw error
                 }
             }
