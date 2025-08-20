@@ -425,7 +425,15 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                         return nil
                     }
 
-                    let thumbnailData = try attachmentThumbnailService.backupThumbnailData(image: thumbnailImage)
+                    let thumbnailData: Data
+                    do {
+                        thumbnailData = try attachmentThumbnailService.backupThumbnailData(image: thumbnailImage)
+                    } catch {
+                        // Unable to generate a small enough thumbnail, abort.
+                        // This attachment will just be offloaded with no local
+                        // thumbnail and can be redownloaded whenever.
+                        return nil
+                    }
 
                     let (encryptedThumbnailData, _) = try Cryptography.encrypt(
                         thumbnailData,
