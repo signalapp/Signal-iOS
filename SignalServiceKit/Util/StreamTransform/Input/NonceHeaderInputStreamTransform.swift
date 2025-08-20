@@ -80,17 +80,7 @@ public class NonceHeaderInputStreamTransform: StreamTransform, BufferedStreamTra
         }
 
         // Return any data past the header, skipping the header portion.
-        // Return a chunk of data from the buffer and advence the buffer.
-        let returnBuffer = buffer.withUnsafeMutableBytes { bufferPtr in
-            if let baseAddress = bufferPtr.baseAddress, bufferPtr.count > 0 {
-                return Data(
-                    bytesNoCopy: baseAddress + endOfHeader,
-                    count: bufferPtr.count - endOfHeader,
-                    deallocator: .none
-                )
-            }
-            return Data()
-        }
+        let returnBuffer = buffer.dropFirst(endOfHeader)
 
         headerLength = endOfHeader
         hasFinishedReadingHeader = true
