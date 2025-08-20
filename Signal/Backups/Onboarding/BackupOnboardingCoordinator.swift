@@ -54,7 +54,7 @@ class BackupOnboardingCoordinator {
         }
 
         if haveBackupsEverBeenEnabled {
-            return BackupSettingsViewController(onLoadAction: nil)
+            return BackupSettingsViewController(onAppearAction: nil)
         } else {
             // Weakly retain the nav controller, so we can use it throughout
             // onboarding.
@@ -189,7 +189,7 @@ class BackupOnboardingCoordinator {
         }
 
         let preOnboardingViewControllers = onboardingNavController.viewControllers[0..<onboardingRootVCIndex]
-        let backupSettingsViewController = BackupSettingsViewController(onLoadAction: .presentWelcomeToBackupsSheet)
+        let backupSettingsViewController = BackupSettingsViewController(onAppearAction: .presentWelcomeToBackupsSheet)
 
         onboardingNavController.setViewControllers(
             preOnboardingViewControllers + [backupSettingsViewController],

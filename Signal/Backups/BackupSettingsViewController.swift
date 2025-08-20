@@ -13,7 +13,7 @@ class BackupSettingsViewController:
     HostingController<BackupSettingsView>,
     BackupSettingsViewModel.ActionsDelegate
 {
-    enum OnLoadAction {
+    enum OnAppearAction {
         case presentWelcomeToBackupsSheet
     }
 
@@ -31,20 +31,20 @@ class BackupSettingsViewController:
     private let svr: SecureValueRecovery
     private let tsAccountManager: TSAccountManager
 
-    private let onLoadAction: OnLoadAction?
+    private var onAppearAction: OnAppearAction?
     private let viewModel: BackupSettingsViewModel
 
     private var externalEventObservationTasks: [Task<Void, Never>] = []
 
     convenience init(
-        onLoadAction: OnLoadAction?,
+        onAppearAction: OnAppearAction?,
     ) {
         guard let deviceSleepManager = DependenciesBridge.shared.deviceSleepManager else {
             owsFail("Unexpectedly missing DeviceSleepManager in main app!")
         }
 
         self.init(
-            onLoadAction: onLoadAction,
+            onAppearAction: onAppearAction,
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             backupAttachmentDownloadProgress: DependenciesBridge.shared.backupAttachmentDownloadProgress,
             backupAttachmentDownloadQueueStatusReporter: DependenciesBridge.shared.backupAttachmentDownloadQueueStatusReporter,
@@ -64,7 +64,7 @@ class BackupSettingsViewController:
     }
 
     init(
-        onLoadAction: OnLoadAction?,
+        onAppearAction: OnAppearAction?,
         accountKeyStore: AccountKeyStore,
         backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress,
         backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter,
@@ -106,7 +106,7 @@ class BackupSettingsViewController:
         self.svr = svr
         self.tsAccountManager = tsAccountManager
 
-        self.onLoadAction = onLoadAction
+        self.onAppearAction = onAppearAction
         self.viewModel = db.read { tx in
             let viewModel = BackupSettingsViewModel(
                 backupSubscriptionLoadingState: .loading,
@@ -138,8 +138,10 @@ class BackupSettingsViewController:
         viewModel.actionsDelegate = self
     }
 
-    override func viewDidLoad() {
-        switch onLoadAction {
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        switch onAppearAction.take() {
         case nil:
             break
         case .presentWelcomeToBackupsSheet:
@@ -148,6 +150,8 @@ class BackupSettingsViewController:
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
         startExternalEventObservation()
 
         // Reload the view model, as state may have changed while we weren't
@@ -156,6 +160,8 @@ class BackupSettingsViewController:
     }
 
     override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
         stopExternalEventObservation()
     }
 
