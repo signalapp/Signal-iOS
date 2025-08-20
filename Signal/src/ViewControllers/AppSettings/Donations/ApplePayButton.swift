@@ -5,17 +5,32 @@
 
 import PassKit
 import SignalUI
+import SignalServiceKit
 
-class ApplePayButton: PKPaymentButton {
+class ApplePayButton: UIButton {
     private let actionBlock: () -> Void
+    private let applePayButton: PKPaymentButton
 
     init(actionBlock: @escaping () -> Void) {
         self.actionBlock = actionBlock
 
-        super.init(paymentButtonType: .plain,
-                   paymentButtonStyle: Theme.isDarkThemeEnabled ? .white : .black)
-        cornerRadius = 12
-        addTarget(self, action: #selector(self.didTouchUpInside), for: .touchUpInside)
+        applePayButton = PKPaymentButton(
+            paymentButtonType: .plain,
+            paymentButtonStyle: Theme.isDarkThemeEnabled ? .white : .black
+        )
+
+        super.init(frame: .zero)
+        applePayButton.addTarget(self, action: #selector(self.didTouchUpInside), for: .touchUpInside)
+
+        self.addSubview(applePayButton)
+        applePayButton.autoPinEdgesToSuperviewEdges()
+
+#if compiler(>=6.2)
+        if #available(iOS 26.0, *){
+            tintColor = Theme.isDarkThemeEnabled ? .white : .black
+            configuration = .prominentGlass()
+        }
+#endif
     }
 
     required init?(coder: NSCoder) {
@@ -25,5 +40,14 @@ class ApplePayButton: PKPaymentButton {
     @objc
     private func didTouchUpInside() {
         actionBlock()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        applePayButton.cornerRadius = if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+            height / 2
+        } else {
+            12
+        }
     }
 }

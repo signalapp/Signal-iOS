@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 import SignalUI
 import UIKit
 
@@ -30,10 +30,15 @@ class PaypalButton: UIButton {
         setImage(UIImage(named: "paypal-logo"), for: .normal)
         ows_adjustsImageWhenDisabled = false
         ows_adjustsImageWhenHighlighted = false
-        layer.cornerRadius = 12
-        layer.borderWidth = 0
-
-        backgroundColor = UIColor(rgbHex: 0xF6C757)
+        if #available(iOS 26.0, *), FeatureFlags.iOS26SDKIsAvailable {
+#if compiler(>=6.2)
+            configuration = .prominentGlass()
+            tintColor = UIColor(rgbHex: 0xF6C757)
+#endif
+        } else {
+            layer.cornerRadius = 12
+            backgroundColor = UIColor(rgbHex: 0xF6C757)
+        }
     }
 
     // MARK: Actions

@@ -177,91 +177,84 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         }
     }
 
-    private func createCreditOrDebitCardButton() -> OWSButton {
-        let title = OWSLocalizedString(
+    private func createPaymentMethodButton(
+        title: String,
+        image: UIImage?,
+        action: @escaping () -> Void
+    ) -> UIButton {
+        var config = UIButton.Configuration.bordered()
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+#if compiler(>=6.2)
+            config = UIButton.Configuration.glass()
+#endif
+        } else {
+            config.background.cornerRadius = 12
+            config.baseForegroundColor = .label
+            config.baseBackgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .white
+        }
+
+        config.title = title
+        config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBodyClamped.semibold())
+        config.image = image
+        config.imagePadding = 8
+
+        let button = UIButton(
+            configuration: config,
+            primaryAction: UIAction { _ in action() }
+        )
+        return button
+    }
+
+    private func createCreditOrDebitCardButton() -> UIButton {
+        var config = UIButton.Configuration.borderedProminent()
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+#if compiler(>=6.2)
+            config = UIButton.Configuration.prominentGlass()
+#endif
+        } else {
+            config.background.cornerRadius = 12
+        }
+
+        config.title = OWSLocalizedString(
             "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD",
             comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card."
         )
+        config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBodyClamped.semibold())
+        config.image = UIImage(named: "payment")
+        config.imagePadding = 8
 
-        let creditOrDebitCardButton = OWSButton(title: title) { [weak self] in
-            guard let self else { return }
-            self.didChoosePaymentMethod(self, .creditOrDebitCard)
-        }
-        guard let image = UIImage(named: "payment")?.withRenderingMode(.alwaysTemplate) else {
-            owsFail("Card asset not found")
-        }
-        creditOrDebitCardButton.setImage(image, for: .normal)
-        creditOrDebitCardButton.imageView?.tintColor = .ows_white
-        creditOrDebitCardButton.setTitleColor(.ows_white, for: .normal)
-        creditOrDebitCardButton.setPaddingBetweenImageAndText(
-            to: 8,
-            isRightToLeft: CurrentAppContext().isRTL
+        let button = UIButton(
+            configuration: config,
+            primaryAction: UIAction { [weak self] _ in
+                guard let self else { return }
+                self.didChoosePaymentMethod(self, .creditOrDebitCard)
+            }
         )
-        creditOrDebitCardButton.layer.cornerRadius = 12
-        creditOrDebitCardButton.backgroundColor = .ows_accentBlue
-        creditOrDebitCardButton.dimsWhenHighlighted = true
-        creditOrDebitCardButton.titleLabel?.font = .dynamicTypeBodyClamped.semibold()
-
-        return creditOrDebitCardButton
+        button.tintColor = UIColor.Signal.accent
+        return button
     }
 
-    private func createSEPAButton() -> OWSButton {
-        let title = OWSLocalizedString(
-            "DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD",
-            comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer."
-        )
-
-        let sepaButton = OWSButton(title: title) { [weak self] in
+    private func createSEPAButton() -> UIButton {
+        createPaymentMethodButton(
+            title: OWSLocalizedString(
+                "DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD",
+                comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer."
+            ),
+            image: UIImage(named: "building")
+        ) { [weak self] in
             guard let self else { return }
             self.didChoosePaymentMethod(self, .sepa)
         }
-
-        guard let image = UIImage(named: "building")?.withRenderingMode(.alwaysTemplate) else {
-            owsFail("Bank asset not found")
-        }
-        sepaButton.setImage(image, for: .normal)
-        sepaButton.setPaddingBetweenImageAndText(
-            to: 8,
-            isRightToLeft: CurrentAppContext().isRTL
-        )
-        sepaButton.layer.cornerRadius = 12
-        sepaButton.dimsWhenHighlighted = true
-        sepaButton.titleLabel?.font = .dynamicTypeBodyClamped.semibold()
-
-        if Theme.isDarkThemeEnabled {
-            sepaButton.imageView?.tintColor = .ows_gray05
-            sepaButton.setTitleColor(.ows_gray05, for: .normal)
-            sepaButton.backgroundColor = .ows_gray80
-        } else {
-            sepaButton.imageView?.tintColor = .ows_gray90
-            sepaButton.setTitleColor(.ows_gray90, for: .normal)
-            sepaButton.backgroundColor = .ows_white
-        }
-
-        return sepaButton
     }
 
-    private func createIDEALButton() -> OWSButton {
-        let idealButton = OWSButton(title: "iDEAL") { [weak self] in
+    private func createIDEALButton() -> UIButton {
+        createPaymentMethodButton(
+            title: LocalizationNotNeeded("iDEAL"),
+            image: UIImage(named: "logo_ideal")
+        ) { [weak self] in
             guard let self else { return }
             self.didChoosePaymentMethod(self, .ideal)
         }
-
-        guard let image = UIImage(named: "logo_ideal") else {
-            owsFail("Bank asset not found")
-        }
-        idealButton.setImage(image, for: .normal)
-        idealButton.setPaddingBetweenImageAndText(
-            to: 8,
-            isRightToLeft: CurrentAppContext().isRTL
-        )
-        idealButton.setTitleColor(.ows_black, for: .normal)
-        idealButton.layer.cornerRadius = 12
-        idealButton.backgroundColor = .ows_white
-        idealButton.dimsWhenHighlighted = true
-        idealButton.titleLabel?.font = .dynamicTypeBody.semibold()
-
-        return idealButton
     }
 
     private func updateBottom() {
