@@ -587,7 +587,7 @@
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Sao chép vào Bảng kẹp";
 
 /* Title for a button allowing users to create a new 'Backup Key'. */
-"BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Create New Key";
+"BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Tạo mã khóa mới";
 
 /* Subtitle for a view allowing users to record their 'Backup Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "Cần có mã khóa này để khôi phục tài khoản và dữ liệu của bạn. Lưu mã này ở nơi an toàn. Nếu để mất, bạn sẽ không thể khôi phục tài khoản của mình.";
@@ -710,16 +710,16 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Thông tin bản sao lưu";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a Beta feature that we will be adding functionality to on an ongoing basis";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Đây là tính năng đang trong giai đoạn Beta và chúng tôi sẽ thường xuyên cập nhật";
 
 /* Toast shown when a new Backup Key has been created successfully. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "New key created!";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "Đã tạo mã khóa mới!";
 
 /* Body for a sheet warning users about creating a new Backup Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key. You will need to re-enable and re-upload your Backup, including media, after creating a new key.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Việc tạo mã khóa mới chỉ cần thiết nếu có người khác biết mã khóa của bạn. Cần tắt sao lưu để tạo mã khóa mới. Sau khi tạo mã khóa mới, bạn sẽ cần bật lại và tải lên lại Bản sao lưu của mình, bao gồm cả tập tin đa phương tiện.";
 
 /* Title for a sheet warning users about creating a new Backup Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Create A New Backup Key";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Tạo mã khóa sao lưu mới";
 
 /* Footer for a menu section allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "Thao tác này sẽ xóa tất cả dữ liệu sao lưu của bạn. Các bản sao lưu mới sẽ không được tạo nữa.";
@@ -2555,40 +2555,40 @@
 "DEVICE_TRANSFER_SCANNING_TITLE" = "Nâng Thiết bị Mới của bạn ngang với camera";
 
 /* Status message on new device when cancelling transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "Cancelling connection to old iPhone…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "Đang hủy kết nối đến iPhone mới…";
 
 /* Status message on new device when connecting to old device. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING" = "Connecting to old iPhone…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING" = "Đang kết nối đến iPhone cũ…";
 
 /* Description message on new device displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "Bring your old device nearby, and make sure Wi-Fi and Bluetooth are enabled.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "Đặt thiết bị cũ của bạn ở gần và đảm bảo Wi-Fi và Bluetooth trên thiết bị này đã được bật.";
 
 /* Status message on new device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Waiting to connect to old iPhone…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Đang chờ để kết nối đến iPhone cũ…";
 
 /* Description in the progress view displayed after failure of device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "Transfer to new device failed. Bring your old device nearby, and please try again.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "Chuyển đến thiết bị mới không thành công. Đặt thiết bị cũ của bạn ở gần và vui lòng thử lại.";
 
 /* Title for a progress view displayed after failure of device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE" = "Transfer Failed";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE" = "Chuyển không thành công";
 
 /* Title for a progress view displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING" = "Transferring";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING" = "Đang chuyển";
 
 /* Description in the progress view displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING_DESCRIPTION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING_DESCRIPTION" = "Giữ cả hai thiết bị ở gần nhau. Không tắt bất kỳ thiết bị nào và không đóng Signal. Quá trình chuyển được mã hóa đầu cuối.";
 
 /* Status message on old device when cancelling transfer. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CANCELLING" = "Cancelling connection to new iPhone…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CANCELLING" = "Đang hủy kết nối đến iPhone mới…";
 
 /* Status message on new device when connecting to new device. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING" = "Connecting to new iPhone…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING" = "Đang kết nối đến iPhone mới…";
 
 /* Description message on old device displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "Bring your new device nearby, and make sure Wi-Fi and Bluetooth are enabled.";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "Đặt thiết bị mới của bạn ở gần và đảm bảo Wi-Fi và Bluetooth trên thiết bị này đã được bật.";
 
 /* Status message on old device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Waiting to connect to new iPhone…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Đang chờ để kết nối đến iPhone…";
 
 /* The explanation on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Để cả hai thiết bị gần nhau. Đừng tắt nguồn thiết bị nào và để mở ứng dụng Signal.";
@@ -5720,10 +5720,10 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Cập nhật Signal để tiếp tục sử dụng các hình thức thanh toán. Số dư tài khoản của bạn có thể không phải là mới nhất.";
 
 /* Body of prompt notifying restore was cancelled. */
-"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_BODY" = "Restore was cancelled. Please try again.";
+"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_BODY" = "Đã hủy khôi phục. Vui lòng thử lại.";
 
 /* Title of prompt notifying restore was cancelled. */
-"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_TITLE" = "Restore cancelled";
+"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_TITLE" = "Đã hủy khôi phục";
 
 /* Body of prompt notifying registration without restore completed on the new device. */
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY" = "Tài khoản Signal của bạn đã được kích hoạt trên thiết bị khác của bạn. Signal hiện không còn hoạt động trên thiết bị này.";
@@ -5732,16 +5732,16 @@
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Hoàn tất đăng ký";
 
 /* Body of prompt notifying restore failed. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "Restore message from other device contained invalid or expired data.  Please try again.";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "Khôi phục từ thiết bị khác có chứa dữ liệu không hợp lệ hoặc đã hết hạn.  Vui lòng thử lại.";
 
 /* Title of prompt notifying restore failed. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE" = "Restore failed";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE" = "Khôi phục không thành công";
 
 /* Body of prompt notifying restore failed for unknown reasons. */
-"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY" = "Unknown error, please try again.";
+"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY" = "Lỗi không xác định, vui lòng thử lại.";
 
 /* Title of prompt notifying restore failed for unknown reasons. */
-"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "Unknown error";
+"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "Lỗi không xác định";
 
 /* Body of prompt notifying device restore started on the new device. */
 "OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Tài khoản và tin nhắn Signal của bạn đã bắt đầu được chuyển đến thiết bị khác của bạn. Signal hiện không còn hoạt động trên thiết bị này.";
@@ -6824,10 +6824,10 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "Không thể khôi phục bản sao lưu";
 
 /* Body for a sheet telling users to try restoring a backup again after a server error. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_BODY" = "Your backup can’t be restored right now. Check your internet connection and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_BODY" = "Hiện không thể khôi phục bản sao lưu của bạn. Kiểm tra kết nối internet của bạn và thử lại.";
 
 /* Title for a sheet telling users to try restoring a backup again after a server error. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_TITLE" = "Can’t Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_TITLE" = "Không thể khôi phục bản sao lưu";
 
 /* Skip restore action label for backup restore error recovery. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "Bỏ qua";
@@ -6836,10 +6836,10 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Hãy thử lại";
 
 /* Body for a sheet telling users restoring a backup unrecoverably failed. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_BODY" = "An error occurred while restoring your backup. Your backup is not recoverable. Please contact support for help.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_BODY" = "Có lỗi xảy ra trong quá trình khôi phục bản sao lưu của bạn. Bản sao lưu của bạn không thể khôi phục được. Vui lòng liên hệ bộ phận hỗ trợ để được trợ giúp.";
 
 /* Title for a sheet telling users restoring a backup unrecoverably failed. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_TITLE" = "Can’t Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_TITLE" = "Không thể khôi phục bản sao lưu";
 
 /* Body for a sheet warning users about an incompatible backup version. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "Để khôi phục bản sao lưu của bạn, đảm bảo bạn đang sử dụng phiên bản mới nhất của Signal và thử lại. Nếu vẫn gặp vấn đề này, hãy liên hệ với bộ phận hỗ trợ.";
@@ -7619,16 +7619,16 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Xóa Tất cả Dữ liệu";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all chat history (messages, media, calls, etc.) from all your devices? This cannot be undone.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Bạn có chắc muốn xóa tất cả lịch sử trò chuyện (tin nhắn, đa phương tiện, cuộc gọi, v.v.) từ tất cả thiết bị? Hành động này không thể hoàn tác.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Xóa Tất cả";
 
 /* Secondary alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE" = "All chat history will be permanently removed. This action cannot be undone.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE" = "Tất cả lịch sử trò chuyện sẽ được xóa vĩnh viễn. Hành động này không thể hoàn tác.";
 
 /* Secondary alert title before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE" = "Are you sure you want to delete all chat history?";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE" = "Bạn có muốn xóa tất cả lịch sử trò chuyện?";
 
 /* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "Tin nhắn tự hủy";

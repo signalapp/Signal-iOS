@@ -587,7 +587,7 @@
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "In Zwischenablage kopieren";
 
 /* Title for a button allowing users to create a new 'Backup Key'. */
-"BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Create New Key";
+"BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Neuen Schlüssel erstellen";
 
 /* Subtitle for a view allowing users to record their 'Backup Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "Dieser Schlüssel wird benötigt, um dein Konto und deine Daten wiederherzustellen. Bewahre diesen Schlüssel sicher auf. Wenn du ihn verlierst, kannst du dein Konto nicht wiederherstellen.";
@@ -710,16 +710,16 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Details zu Backups";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a Beta feature that we will be adding functionality to on an ongoing basis";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Das ist eine Beta-Funktion, die wir nach und nach verbessern werden.";
 
 /* Toast shown when a new Backup Key has been created successfully. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "New key created!";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "Neuer Schlüssel wurde erstellt!";
 
 /* Body for a sheet warning users about creating a new Backup Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key. You will need to re-enable and re-upload your Backup, including media, after creating a new key.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Das Erstellen eines neuen Schlüssels ist nur erforderlich, wenn jemand anderes ihn kennt. Backups müssen zunächst deaktiviert werden, um einen neuen Schlüssel zu erstellen. Du musst dein Backup, einschließlich der Medien, nach dem Erstellen eines neuen Schlüssels erneut aktivieren und hochladen.";
 
 /* Title for a sheet warning users about creating a new Backup Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Create A New Backup Key";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Neuen Backup-Schlüssel erstellen";
 
 /* Footer for a menu section allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "Dadurch wird dein komplettes Backup gelöscht. Es werden keine neuen Backups erstellt.";
@@ -860,7 +860,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Upload angehalten: Warte auf WLAN-Verbindung";
 
 /* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the amount uploaded as a percentage, e.g. 10% }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "%1$@ von %2$@ (%3$@ %%) wird hochgeladen";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "%1$@ von %2$@ (%3$@ ) wird hochgeladen";
 
 /* Message for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Je nach Größe deines Backups könnte dies etwas dauern. Während des Backups kannst du dein Mobiltelefon weiterhin ganz normal nutzen.";
@@ -2555,40 +2555,40 @@
 "DEVICE_TRANSFER_SCANNING_TITLE" = "Halte dein neues Gerät vor die Kamera";
 
 /* Status message on new device when cancelling transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "Cancelling connection to old iPhone…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "Verbindung zu altem iPhone wird getrennt…";
 
 /* Status message on new device when connecting to old device. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING" = "Connecting to old iPhone…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING" = "Verbindung zu altem iPhone wird hergestellt…";
 
 /* Description message on new device displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "Bring your old device nearby, and make sure Wi-Fi and Bluetooth are enabled.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "Positioniere dein altes Gerät in der Nähe und stelle sicher, dass WLAN und Bluetooth aktiviert sind.";
 
 /* Status message on new device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Waiting to connect to old iPhone…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Warten auf Verbindung zu altem iPhone…";
 
 /* Description in the progress view displayed after failure of device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "Transfer to new device failed. Bring your old device nearby, and please try again.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "Die Übertragung auf das neue Gerät ist fehlgeschlagen. Positioniere dein altes Gerät in der Nähe und versuche es erneut.";
 
 /* Title for a progress view displayed after failure of device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE" = "Transfer Failed";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE" = "Übertragung gescheitert";
 
 /* Title for a progress view displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING" = "Transferring";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING" = "Wird übertragen";
 
 /* Description in the progress view displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING_DESCRIPTION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING_DESCRIPTION" = "Positioniere beide Geräte nahe beieinander. Schalte keines davon aus und lass Signal geöffnet. Übertragungen sind Ende-zu-Ende-verschlüsselt.";
 
 /* Status message on old device when cancelling transfer. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CANCELLING" = "Cancelling connection to new iPhone…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CANCELLING" = "Verbindung zu neuem iPhone wird getrennt…";
 
 /* Status message on new device when connecting to new device. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING" = "Connecting to new iPhone…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING" = "Verbindung zu neuem iPhone wird hergestellt…";
 
 /* Description message on old device displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "Bring your new device nearby, and make sure Wi-Fi and Bluetooth are enabled.";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "Positioniere dein neues Gerät in der Nähe und stelle sicher, dass WLAN und Bluetooth aktiviert sind.";
 
 /* Status message on old device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Waiting to connect to new iPhone…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Warten auf Verbindung zu neuem iPhone…";
 
 /* The explanation on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Positioniere beide Geräte nahe beieinander. Schalte keines davon aus und lass Signal geöffnet.";
@@ -5720,10 +5720,10 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Aktualisiere Signal, um Zahlungen weiterhin verwenden zu können. Dein Kontostand ist möglicherweise nicht aktuell.";
 
 /* Body of prompt notifying restore was cancelled. */
-"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_BODY" = "Restore was cancelled. Please try again.";
+"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_BODY" = "Die Wiederherstellung wurde abgebrochen. Bitte versuche es erneut.";
 
 /* Title of prompt notifying restore was cancelled. */
-"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_TITLE" = "Restore cancelled";
+"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_TITLE" = "Wiederherstellung abgebrochen";
 
 /* Body of prompt notifying registration without restore completed on the new device. */
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY" = "Dein Signal-Konto wurde auf deinem anderen Gerät aktiviert. Signal ist jetzt auf diesem Gerät inaktiv.";
@@ -5732,16 +5732,16 @@
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Registrierung komplett";
 
 /* Body of prompt notifying restore failed. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "Restore message from other device contained invalid or expired data.  Please try again.";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "Die Wiederherstellung der Nachrichten von einem anderen Gerät hat nicht funktioniert, weil diese falsche oder abgelaufene Daten enthielt.  Bitte versuche es erneut.";
 
 /* Title of prompt notifying restore failed. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE" = "Restore failed";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE" = "Wiederherstellung fehlgeschlagen";
 
 /* Body of prompt notifying restore failed for unknown reasons. */
-"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY" = "Unknown error, please try again.";
+"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY" = "Unbekannter Fehler, bitte versuche es erneut.";
 
 /* Title of prompt notifying restore failed for unknown reasons. */
-"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "Unknown error";
+"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "Unbekannter Fehler";
 
 /* Body of prompt notifying device restore started on the new device. */
 "OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Die Übertragung deines Signal-Kontos und deiner Nachrichten auf dein anderes Gerät hat begonnen. Signal ist jetzt auf diesem Gerät inaktiv.";
@@ -6824,10 +6824,10 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "Backup kann nicht wiederhergestellt werden";
 
 /* Body for a sheet telling users to try restoring a backup again after a server error. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_BODY" = "Your backup can’t be restored right now. Check your internet connection and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_BODY" = "Dein Backup kann im Moment nicht wiederhergestellt werden. Überprüfe deine Internetverbindung und versuche es erneut.";
 
 /* Title for a sheet telling users to try restoring a backup again after a server error. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_TITLE" = "Can’t Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_TITLE" = "Backup kann nicht wiederhergestellt werden";
 
 /* Skip restore action label for backup restore error recovery. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "Wiederherstellen überspringen";
@@ -6836,10 +6836,10 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Erneut versuchen";
 
 /* Body for a sheet telling users restoring a backup unrecoverably failed. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_BODY" = "An error occurred while restoring your backup. Your backup is not recoverable. Please contact support for help.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_BODY" = "Beim Wiederherstellen deines Backups ist ein Fehler aufgetreten. Dein Backup lässt sich nicht wiederherstellen. Bitte kontaktiere den Support, falls du Hilfe benötigst.";
 
 /* Title for a sheet telling users restoring a backup unrecoverably failed. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_TITLE" = "Can’t Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_TITLE" = "Backup kann nicht wiederhergestellt werden";
 
 /* Body for a sheet warning users about an incompatible backup version. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "Vergewissere dich, dass du die neueste Version von Signal verwendest, um dein Backup wiederherzustellen, und versuche es erneut. Falls das Problem weiterhin besteht, kontaktiere bitte den Support.";
@@ -7619,16 +7619,16 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Alle Daten löschen";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all chat history (messages, media, calls, etc.) from all your devices? This cannot be undone.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Möchtest du den gesamten Chat-Verlauf (Nachrichten, Medien, Anrufe usw.) wirklich löschen? Dies kann nicht rückgängig gemacht werden.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Alles löschen";
 
 /* Secondary alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE" = "All chat history will be permanently removed. This action cannot be undone.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE" = "Der gesamte Chat-Verlauf wird dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.";
 
 /* Secondary alert title before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE" = "Are you sure you want to delete all chat history?";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE" = "Möchtest du wirklich den gesamten Chat-Verlauf löschen?";
 
 /* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "Verschwindende Nachrichten";

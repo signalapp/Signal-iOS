@@ -587,7 +587,7 @@
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "คัดลอกไปคลิปบอร์ด";
 
 /* Title for a button allowing users to create a new 'Backup Key'. */
-"BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Create New Key";
+"BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "สร้างกุญแจใหม่";
 
 /* Subtitle for a view allowing users to record their 'Backup Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "คุณจำเป็นต้องใช้กุญแจนี้ในการกู้คืนบัญชีและข้อมูล โปรดเก็บกุญแจนี้ไว้ในที่ปลอดภัย คุณจะไม่สามารถกู้คืนบัญชีได้หากทำกุญแจหาย";
@@ -710,16 +710,16 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "รายละเอียดการสำรองข้อมูล";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a Beta feature that we will be adding functionality to on an ongoing basis";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "นี่เป็นฟีเจอร์ของรุ่นเบต้าซึ่งจะมีการทยอยเพิ่มฟังก์ชันต่างๆ เข้ามาอย่างต่อเนื่อง";
 
 /* Toast shown when a new Backup Key has been created successfully. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "New key created!";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "สร้างกุญแจใหม่แล้ว!";
 
 /* Body for a sheet warning users about creating a new Backup Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key. You will need to re-enable and re-upload your Backup, including media, after creating a new key.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "คุณมีความจำเป็นที่จะต้องสร้างกุญแจใหม่เฉพาะแค่ในกรณีที่มีบุคคลอื่นทราบกุญแจของคุณเท่านั้น โดยคุณจะต้องปิดใช้งานการสำรองข้อมูลก่อนจึงจะสามารถสร้างกุญแจใหม่ได้ และเมื่อจากสร้างกุญแจใหม่แล้ว คุณจะต้องเปิดใช้งานการสำรองข้อมูลอีกครั้งและอัปโหลดข้อมูลสำรองซึ่งรวมถึงไฟล์สื่อด้วย";
 
 /* Title for a sheet warning users about creating a new Backup Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Create A New Backup Key";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "สร้างกุญแจสำรองใหม่";
 
 /* Footer for a menu section allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "ข้อมูลสำรองทั้งหมดของคุณจะถูกลบ และระบบจะไม่สำรองข้อมูลใหม่ขึ้นอีก";
@@ -953,7 +953,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "ปิดแถบแสดง";
 
 /* Beta label */
-"BETA_LABEL" = "BETA";
+"BETA_LABEL" = "รุ่นเบต้า";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "คุณจะไม่ได้รับข้อความหรือความเคลื่อนไหวจากกลุ่มนี้อีกต่อไป";
@@ -2555,40 +2555,40 @@
 "DEVICE_TRANSFER_SCANNING_TITLE" = "จับอุปกรณ์ใหม่ของคุณให้อยู่ในกล้อง";
 
 /* Status message on new device when cancelling transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "Cancelling connection to old iPhone…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "กำลังยกเลิกการเชื่อมต่อกับ iPhone เครื่องเก่า…";
 
 /* Status message on new device when connecting to old device. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING" = "Connecting to old iPhone…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING" = "กำลังเชื่อมต่อกับ iPhone เครื่องเก่า…";
 
 /* Description message on new device displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "Bring your old device nearby, and make sure Wi-Fi and Bluetooth are enabled.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "นำอุปกรณ์เครื่องเก่าของคุณมาวางไว้ใกล้ๆ พร้อมตรวจสอบว่ามีการเปิดใช้งาน Wi-Fi และบลูทูธ";
 
 /* Status message on new device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Waiting to connect to old iPhone…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "กำลังรอเชื่อมต่อกับ iPhone เครื่องเก่า…";
 
 /* Description in the progress view displayed after failure of device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "Transfer to new device failed. Bring your old device nearby, and please try again.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "การถ่ายโอนไปยังอุปกรณ์เครื่องใหม่ไม่สำเร็จ โปรดนำอุปกรณ์เครื่องเก่าของคุณมาวางไว้ใกล้ๆ แล้วลองอีกครั้ง";
 
 /* Title for a progress view displayed after failure of device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE" = "Transfer Failed";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE" = "การถ่ายโอนล้มเหลว";
 
 /* Title for a progress view displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING" = "Transferring";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING" = "กำลังถ่ายโอน";
 
 /* Description in the progress view displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING_DESCRIPTION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING_DESCRIPTION" = "ทำให้แน่ใจว่าอุปกรณ์ทั้งคู่อยู่ใกล้กัน อย่าปิดเครื่องใด และให้เปิด Signal อยู่ตลอดเวลา การถ่ายโอนนั้นจะถูกเข้ารหัสลับตั้งแต่ต้นทางถึงปลายทาง";
 
 /* Status message on old device when cancelling transfer. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CANCELLING" = "Cancelling connection to new iPhone…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CANCELLING" = "กำลังยกเลิกการเชื่อมต่อกับ iPhone เครื่องใหม่…";
 
 /* Status message on new device when connecting to new device. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING" = "Connecting to new iPhone…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING" = "กำลังเชื่อมต่อกับ iPhone เครื่องใหม่…";
 
 /* Description message on old device displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "Bring your new device nearby, and make sure Wi-Fi and Bluetooth are enabled.";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "นำอุปกรณ์เครื่องใหม่ของคุณมาวางไว้ใกล้ๆ พร้อมตรวจสอบว่ามีการเปิดใช้งาน Wi-Fi และบลูทูธ";
 
 /* Status message on old device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Waiting to connect to new iPhone…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "กำลังรอเชื่อมต่อกับ iPhone เครื่องใหม่…";
 
 /* The explanation on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "ทำให้แน่ใจว่าอุปกรณ์ทั้งคู่อยู่ใกล้กัน อย่าปิดเครื่องใด และให้เปิด Signal อยู่ตลอดเวลา";
@@ -5720,10 +5720,10 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "อัปเดต Signal เพื่อใช้งานการชำระเงินต่อ ยอดเงินของคุณอาจยังไม่ได้รับการอัปเดต";
 
 /* Body of prompt notifying restore was cancelled. */
-"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_BODY" = "Restore was cancelled. Please try again.";
+"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_BODY" = "การกู้คืนถูกยกเลิก โปรดลองอีกครั้ง";
 
 /* Title of prompt notifying restore was cancelled. */
-"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_TITLE" = "Restore cancelled";
+"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_TITLE" = "ยกเลิกการกู้คืนแล้ว";
 
 /* Body of prompt notifying registration without restore completed on the new device. */
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY" = "เปิดใช้งานบัญชี Signal ของคุณบนอุปกรณ์อีกเครื่องเรียบร้อยแล้ว ขณะนี้ Signal บนอุปกรณ์เครื่องนี้จะหยุดทำงาน";
@@ -5732,16 +5732,16 @@
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "การลงทะเบียนเสร็จสมบูรณ์";
 
 /* Body of prompt notifying restore failed. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "Restore message from other device contained invalid or expired data.  Please try again.";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "พบข้อมูลที่ไม่ถูกต้องหรือหมดอายุในการกู้คืนข้อความจากอุปกรณ์อีกเครื่อง  โปรดลองอีกครั้ง";
 
 /* Title of prompt notifying restore failed. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE" = "Restore failed";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE" = "การกู้คืนไม่สำเร็จ";
 
 /* Body of prompt notifying restore failed for unknown reasons. */
-"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY" = "Unknown error, please try again.";
+"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY" = "พบข้อผิดพลาดที่ไม่ทราบสาเหตุ โปรดลองอีกครั้ง";
 
 /* Title of prompt notifying restore failed for unknown reasons. */
-"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "Unknown error";
+"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "พบข้อผิดพลาดที่ไม่ทราบสาเหตุ";
 
 /* Body of prompt notifying device restore started on the new device. */
 "OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "เริ่มการถ่ายโอนบัญชี Signal และข้อความของคุณไปยังอุปกรณ์อีกเครื่องแล้ว ขณะนี้ Signal บนอุปกรณ์เครื่องนี้จะหยุดทำงาน";
@@ -6824,10 +6824,10 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "ไม่สามารถกู้คืนข้อมูลสำรอง";
 
 /* Body for a sheet telling users to try restoring a backup again after a server error. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_BODY" = "Your backup can’t be restored right now. Check your internet connection and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_BODY" = "ไม่สามารถกู้คืนข้อมูลสำรองของคุณได้ในขณะนี้ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง";
 
 /* Title for a sheet telling users to try restoring a backup again after a server error. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_TITLE" = "Can’t Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_TITLE" = "ไม่สามารถกู้คืนข้อมูลสำรอง";
 
 /* Skip restore action label for backup restore error recovery. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "ข้ามการกู้คืน";
@@ -6836,10 +6836,10 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "ลองอีกครั้ง";
 
 /* Body for a sheet telling users restoring a backup unrecoverably failed. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_BODY" = "An error occurred while restoring your backup. Your backup is not recoverable. Please contact support for help.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_BODY" = "เกิดข้อผิดพลาดขณะกู้คืนข้อมูลสำรอง ระบบไม่สามารถกู้ข้อมูลสำรองของคุณได้ โปรดติดต่อฝ่ายสนับสนุน";
 
 /* Title for a sheet telling users restoring a backup unrecoverably failed. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_TITLE" = "Can’t Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_TITLE" = "ไม่สามารถกู้คืนข้อมูลสำรอง";
 
 /* Body for a sheet warning users about an incompatible backup version. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "สำหรับการกู้คืนข้อมูลสำรอง โปรดตรวจสอบให้แน่ใจว่าคุณกำลังใช้งาน Signal เวอร์ชันล่าสุดแล้วลองอีกครั้ง โปรดติดต่อฝ่ายสนับสนุนหากคุณยังพบปัญหาอยู่";
@@ -7619,16 +7619,16 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "ลบข้อมูลทั้งหมด";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all chat history (messages, media, calls, etc.) from all your devices? This cannot be undone.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "คุณแน่ใจหรือไม่ว่าต้องการลบประวัติการแชททั้งหมด (ข้อความ ไฟล์สื่อ การโทร และอื่นๆ) ออกจากอุปกรณ์ทุกเครื่อง การดำเนินการนี้ไม่สามารถยกเลิกได้";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "ลบทั้งหมด";
 
 /* Secondary alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE" = "All chat history will be permanently removed. This action cannot be undone.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE" = "ประวัติการแชททั้งหมดจะถูกลบอย่างถาวร การดำเนินการนี้ไม่สามารถยกเลิกได้";
 
 /* Secondary alert title before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE" = "Are you sure you want to delete all chat history?";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE" = "คุณแน่ใจหรือไม่ว่าต้องการลบประวัติการแชททั้งหมด";
 
 /* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "ข้อความที่ลบตัวเองได้";

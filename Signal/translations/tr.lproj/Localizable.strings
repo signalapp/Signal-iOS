@@ -587,7 +587,7 @@
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Panoya Kopyala";
 
 /* Title for a button allowing users to create a new 'Backup Key'. */
-"BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Create New Key";
+"BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Yeni Anahtar Oluştur";
 
 /* Subtitle for a view allowing users to record their 'Backup Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "Hesabını ve verilerini kurtarmak için bu anahtar gereklidir. Bu anahtarı güvenli bir yerde sakla. Kaybedersen, hesabını kurtarmanız mümkün olmaz.";
@@ -710,16 +710,16 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Yedekleme detayları";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a Beta feature that we will be adding functionality to on an ongoing basis";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Bu, sürekli olarak işlevsellik ekleyeceğimiz bir Beta özelliğidir";
 
 /* Toast shown when a new Backup Key has been created successfully. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "New key created!";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "Yeni anahtar oluşturuldu!";
 
 /* Body for a sheet warning users about creating a new Backup Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key. You will need to re-enable and re-upload your Backup, including media, after creating a new key.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Yeni bir anahtar oluşturmak, yalnızca başka biri anahtarını biliyorsa gereklidir. Yeni bir anahtar oluşturmak için ilk önce yedeklemeler devre dışı bırakılmalıdır. Yeni bir anahtar oluşturduktan sonra, medya dahil olmak üzere Yedeklemeni yeniden etkinleştirmen ve yeniden yüklemen gerekir.";
 
 /* Title for a sheet warning users about creating a new Backup Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Create A New Backup Key";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Yeni Bir Yedekleme Anahtarı Oluştur";
 
 /* Footer for a menu section allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "Bu işlem tüm yedekleme verilerini siler. Yeni yedekleme oluşturulmaz.";
@@ -2555,40 +2555,40 @@
 "DEVICE_TRANSFER_SCANNING_TITLE" = "Yeni Cihazınızı Kameraya Doğrultun";
 
 /* Status message on new device when cancelling transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "Cancelling connection to old iPhone…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "Eski iPhone ile bağlantı iptal ediliyor…";
 
 /* Status message on new device when connecting to old device. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING" = "Connecting to old iPhone…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING" = "Eski iPhone'a bağlanıyor…";
 
 /* Description message on new device displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "Bring your old device nearby, and make sure Wi-Fi and Bluetooth are enabled.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "Eski cihazını yakınına getir ve Wi-Fi ile Bluetooth'un etkinleştirildiğinden emin ol.";
 
 /* Status message on new device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Waiting to connect to old iPhone…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Eski iPhone'a bağlanmak için bekliyor…";
 
 /* Description in the progress view displayed after failure of device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "Transfer to new device failed. Bring your old device nearby, and please try again.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "Yeni cihaza aktarım başarısız oldu. Eski cihazını yakınına getir ve lütfen tekrar dene.";
 
 /* Title for a progress view displayed after failure of device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE" = "Transfer Failed";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE" = "Aktarım Başarısız Oldu";
 
 /* Title for a progress view displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING" = "Transferring";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING" = "Aktarıyor";
 
 /* Description in the progress view displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING_DESCRIPTION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING_DESCRIPTION" = "İki cihazı da yakında bulundur. Her iki cihazı da kapatma ve Signal'ı açık tut. Aktarımlar uçtan uca şifrelidir.";
 
 /* Status message on old device when cancelling transfer. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CANCELLING" = "Cancelling connection to new iPhone…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CANCELLING" = "Yeni iPhone ile bağlantı iptal ediliyor…";
 
 /* Status message on new device when connecting to new device. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING" = "Connecting to new iPhone…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING" = "Yeni iPhone'a bağlanıyor…";
 
 /* Description message on old device displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "Bring your new device nearby, and make sure Wi-Fi and Bluetooth are enabled.";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "Yeni cihazını yakınına getir ve Wi-Fi ile Bluetooth'un etkinleştirildiğinden emin ol.";
 
 /* Status message on old device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Waiting to connect to new iPhone…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Yeni iPhone'a bağlanmak için bekliyor…";
 
 /* The explanation on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "İki cihazı da birbirlerinin yakınında bulundurun. Cihazları veya Signal'i kapatmayın.";
@@ -5720,10 +5720,10 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Ödemeleri kullanmaya devam etmek için Signal'ı güncelle. Bakiyen güncel olmayabilir.";
 
 /* Body of prompt notifying restore was cancelled. */
-"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_BODY" = "Restore was cancelled. Please try again.";
+"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_BODY" = "Geri yükleme iptal edilmiştir. Lütfen tekrar dene.";
 
 /* Title of prompt notifying restore was cancelled. */
-"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_TITLE" = "Restore cancelled";
+"OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_TITLE" = "Geri yükleme iptal edildi";
 
 /* Body of prompt notifying registration without restore completed on the new device. */
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY" = "Signal hesabın, diğer cihazında etkinleştirildi. Signal artık bu cihazda etkin değil.";
@@ -5732,16 +5732,16 @@
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Kayıt tamamlandı";
 
 /* Body of prompt notifying restore failed. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "Restore message from other device contained invalid or expired data.  Please try again.";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "Başka bir cihazdan gelen geri yükleme mesajı geçersiz veya süresi dolmuş veriler içeriyordu.  Lütfen tekrar dene.";
 
 /* Title of prompt notifying restore failed. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE" = "Restore failed";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE" = "Geri yükleme başarısız oldu";
 
 /* Body of prompt notifying restore failed for unknown reasons. */
-"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY" = "Unknown error, please try again.";
+"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY" = "Bilinmeyen hata, lütfen tekrar dene.";
 
 /* Title of prompt notifying restore failed for unknown reasons. */
-"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "Unknown error";
+"OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "Bilinmeyen hata";
 
 /* Body of prompt notifying device restore started on the new device. */
 "OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Signal hesabın ve mesajların diğer cihazına aktarılmaya başlandı. Signal artık bu cihazda etkin değil.";
@@ -6824,10 +6824,10 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "Yedekleme geri yüklenemiyor";
 
 /* Body for a sheet telling users to try restoring a backup again after a server error. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_BODY" = "Your backup can’t be restored right now. Check your internet connection and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_BODY" = "Yedeklemen şu anda geri yüklenemiyor. İnternet bağlantını kontrol et ve tekrar dene.";
 
 /* Title for a sheet telling users to try restoring a backup again after a server error. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_TITLE" = "Can’t Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_TITLE" = "Yedekleme Geri Yüklenemiyor";
 
 /* Skip restore action label for backup restore error recovery. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "Geri yüklemeyi atla";
@@ -6836,10 +6836,10 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Yeniden Dene";
 
 /* Body for a sheet telling users restoring a backup unrecoverably failed. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_BODY" = "An error occurred while restoring your backup. Your backup is not recoverable. Please contact support for help.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_BODY" = "Yedeklemen geri yüklenirken bir hata oluştu. Yedeklemen kurtarılamaz. Lütfen yardım için destek ekibiyle iletişime geç.";
 
 /* Title for a sheet telling users restoring a backup unrecoverably failed. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_TITLE" = "Can’t Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_TITLE" = "Yedekleme Geri Yüklenemiyor";
 
 /* Body for a sheet warning users about an incompatible backup version. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "Yedeklemeni geri yüklemek için Signal'ın en son sürümünü kullandığından emin ol ve tekrar dene. Sorun devam ederse, destekle iletişime geç.";
@@ -7619,16 +7619,16 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Tüm Verileri Sil";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all chat history (messages, media, calls, etc.) from all your devices? This cannot be undone.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Tüm sohbet geçmişini (mesajlar, medya, aramalar vb.) cihazlarının tamamından silmek istediğine emin misin? Bu işlem geri alınamaz.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Her Şeyi Sil";
 
 /* Secondary alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE" = "All chat history will be permanently removed. This action cannot be undone.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE" = "Tüm sohbet geçmişi kalıcı olarak kaldırılacaktır. Bu eylem geri alınamaz.";
 
 /* Secondary alert title before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE" = "Are you sure you want to delete all chat history?";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE" = "Tüm sohbet geçmişini silmek istediğinden emin misin?";
 
 /* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "Kaybolan İletiler";
