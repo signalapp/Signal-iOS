@@ -66,7 +66,7 @@ extension DonationPaymentDetailsViewController {
                 Logger.info("[Donations] One-time donation finished")
                 self.onFinished(nil)
             } catch {
-                Logger.warn("[Donations] One-time donation UX dismissing w/error (might not be fatal)")
+                Logger.warn("[Donations] One-time donation UX dismissing with error. \(error)")
                 self.onFinished(error)
             }
         }

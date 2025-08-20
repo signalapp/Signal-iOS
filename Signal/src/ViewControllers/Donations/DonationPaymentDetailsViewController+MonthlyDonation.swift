@@ -92,7 +92,7 @@ extension DonationPaymentDetailsViewController {
                 Logger.info("[Donations] Monthly donation finished")
                 self.onFinished(nil)
             } catch {
-                Logger.info("[Donations] Monthly donation UX dismissing w/error (might not be fatal)")
+                Logger.info("[Donations] Monthly donation UX dismissing with error. \(error)")
                 self.onFinished(error)
             }
         }
