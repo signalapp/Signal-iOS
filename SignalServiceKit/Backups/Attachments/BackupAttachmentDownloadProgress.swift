@@ -63,7 +63,7 @@ public protocol BackupAttachmentDownloadProgress: AnyObject {
     /// Called when there are no more enqueued downloads.
     /// As a final stopgap, in case we missed some bytes and counting got out of sync,
     /// this should fully advance the downloaded byte count to the total byte count.
-    func didEmptyDownloadQueue() async
+    func didEmptyDownloadQueue(isThumbnail: Bool) async
 }
 
 public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgress {
@@ -113,6 +113,9 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
             return
         }
 
+        didEmptyThumbnailQueue = false
+        didEmptyFullQueue = false
+
         let sink = OWSProgress.createSink({ [weak self] progress in
             await self?.updateObservers(progress)
         })
@@ -154,7 +157,17 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
         )
     }
 
-    public func didEmptyDownloadQueue() async {
+    public func didEmptyDownloadQueue(isThumbnail: Bool) async {
+        if isThumbnail {
+            didEmptyThumbnailQueue = true
+        } else {
+            didEmptyFullQueue = true
+        }
+
+        guard didEmptyThumbnailQueue, didEmptyFullQueue else {
+            return
+        }
+
         activeDownloadByteCounts = [:]
         if let source {
             if source.totalUnitCount > 0, source.totalUnitCount > source.completedUnitCount {
@@ -171,6 +184,8 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
     private nonisolated let dateProvider: DateProvider
     private nonisolated let db: DB
     private nonisolated let remoteConfigProvider: RemoteConfigProvider
+    private var didEmptyThumbnailQueue: Bool = false
+    private var didEmptyFullQueue: Bool = false
 
     init(
         appContext: AppContext,
@@ -324,7 +339,7 @@ open class BackupAttachmentDownloadProgressMock: BackupAttachmentDownloadProgres
         // Do nothing
     }
 
-    open func didEmptyDownloadQueue() async {
+    open func didEmptyDownloadQueue(isThumbnail: Bool) async {
         // Do nothing
     }
 }

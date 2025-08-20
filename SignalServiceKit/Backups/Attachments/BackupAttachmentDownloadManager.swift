@@ -898,7 +898,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
 
         func didDrainQueue() async {
-            await progress.didEmptyDownloadQueue()
+            await progress.didEmptyDownloadQueue(isThumbnail: forThumbnailDownloads)
             await statusManager.didEmptyQueue(isThumbnail: forThumbnailDownloads)
             await db.awaitableWrite { tx in
                 // Go ahead and delete all done rows to reset the byte count.
