@@ -14,11 +14,8 @@ class SyncPushTokensJob: NSObject {
 
     private let mode: Mode
 
-    public let auth: ChatServiceAuth
-
-    init(mode: Mode, auth: ChatServiceAuth = .implicit()) {
+    init(mode: Mode) {
         self.mode = mode
-        self.auth = auth
     }
 
     private static let hasUploadedTokensOnce = AtomicBool(false, lock: .sharedGlobal)
@@ -70,7 +67,7 @@ class SyncPushTokensJob: NSObject {
         }
 
         Logger.warn("Uploading push token; reason: \(reason), pushToken: \(redact(pushToken))")
-        try await self.updatePushTokens(pushToken: pushToken, auth: auth)
+        try await self.updatePushTokens(pushToken: pushToken)
 
         await recordPushTokensLocally(pushToken: pushToken)
 
@@ -102,11 +99,10 @@ class SyncPushTokensJob: NSObject {
 
     // MARK: - Requests
 
-    func updatePushTokens(pushToken: String, auth: ChatServiceAuth) async throws {
+    private func updatePushTokens(pushToken: String) async throws {
         return try await Retry.performWithBackoff(maxAttempts: 3) {
-            var request = OWSRequestFactory.registerForPushRequest(apnsToken: pushToken)
-            request.auth = .identified(auth)
-            _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
+            let request = OWSRequestFactory.registerForPushRequest(apnsToken: pushToken)
+            _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
         }
     }
 }
