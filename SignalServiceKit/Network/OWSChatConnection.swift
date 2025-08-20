@@ -162,11 +162,12 @@ public class OWSChatConnection {
     }
 
     /// Only throws on cancellation or after timeout.
-    private func waitForOpen(timeout: TimeInterval) async throws {
+    private func waitUntilReadyToResolveRequest(timeout: TimeInterval) async throws {
         do {
-            _ = try await withCooperativeTimeout(
-                seconds: timeout,
-                operation: { try await self.waitForOpen() }
+            try await withCooperativeRace(
+                { try await self.waitForOpen() },
+                { try await self.waitUntilSocketShouldBeClosed() },
+                { try await Task.sleep(nanoseconds: timeout.clampedNanoseconds); throw CooperativeTimeoutError() },
             )
         } catch is CooperativeTimeoutError {
             throw OWSHTTPError.networkFailure(.genericFailure)
@@ -407,6 +408,8 @@ public class OWSChatConnection {
         do {
             Logger.info("Sending… -> \(requestDescription)")
 
+            try await waitUntilReadyToResolveRequest(timeout: 30)
+
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
                 self.serialQueue.async {
                     if let canOpenWebSocketError = self.canOpenWebSocketError {
@@ -416,8 +419,6 @@ public class OWSChatConnection {
                     }
                 }
             }
-
-            try await waitForOpen(timeout: 30)
 
             let response = try await self.makeRequestInternal(request, requestId: requestId)
 
