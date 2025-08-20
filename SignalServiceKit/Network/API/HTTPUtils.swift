@@ -159,7 +159,7 @@ public class HTTPUtils {
         } else {
             retryAfter = defaultRetryTime
         }
-        return UInt64(retryAfter * 1000) * NSEC_PER_MSEC
+        return retryAfter.clampedNanoseconds
     }
 }
 
