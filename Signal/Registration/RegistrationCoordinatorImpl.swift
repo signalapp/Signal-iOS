@@ -2536,6 +2536,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 updatePersistedState(tx) {
                     $0.accountIdentity = identityResponse
                     $0.sessionState = nil
+                    // If PIN entry was skipped before registering,
+                    // reset this to false so the user is asked to create a
+                    // PIN, or disable PINs entirely
+                    $0.hasSkippedPinEntry = false
                 }
             }
             // Should take us to the profile setup flow since
