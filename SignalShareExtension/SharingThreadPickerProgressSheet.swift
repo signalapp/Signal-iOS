@@ -18,7 +18,7 @@ public class SharingThreadPickerProgressSheet: ActionSheetController {
         delegate: ShareViewDelegate?
     ) {
         self.attachmentIds = attachmentIds
-        super.init(theme: .default)
+        super.init()
 
         setupSubviews()
 
@@ -54,7 +54,6 @@ public class SharingThreadPickerProgressSheet: ActionSheetController {
 
     private lazy var headerWithProgress: UIView = {
         let headerWithProgress = UIView()
-        headerWithProgress.backgroundColor = Theme.actionSheetBackgroundColor
         headerWithProgress.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         return headerWithProgress
     }()

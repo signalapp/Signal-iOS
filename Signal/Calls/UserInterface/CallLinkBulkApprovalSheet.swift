@@ -301,8 +301,8 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
         let actionSheet = ActionSheetController(
             title: title,
             message: message,
-            theme: .translucentDark
         )
+        actionSheet.overrideUserInterfaceStyle = .dark
         actionSheet.addAction(.init(title: confirmButtonTitle) { _ in action() })
         actionSheet.addAction(.cancel)
 

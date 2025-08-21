@@ -6,9 +6,6 @@
 import SignalServiceKit
 public import SignalUI
 
-class CustomActionSheet: ActionSheetController {
-}
-
 public class GroupLinkPromotionActionSheet: UIView {
 
     private weak var conversationViewController: ConversationViewController?
@@ -34,7 +31,7 @@ public class GroupLinkPromotionActionSheet: UIView {
     }
 
     public func present(fromViewController: UIViewController) {
-        let actionSheetController = CustomActionSheet()
+        let actionSheetController = ActionSheetController()
         actionSheetController.customHeader = self
         actionSheetController.isCancelable = true
         fromViewController.presentActionSheet(actionSheetController)
@@ -49,7 +46,6 @@ public class GroupLinkPromotionActionSheet: UIView {
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: 24, leading: 24, bottom: 8, trailing: 24)
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
 
         layoutMargins = .zero
         addSubview(stackView)

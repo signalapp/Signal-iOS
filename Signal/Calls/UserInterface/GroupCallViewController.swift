@@ -1685,7 +1685,6 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             addressesToConfirm: addressesToAlert,
             confirmationText: approveText,
             cancelText: denyText,
-            theme: .translucentDark
         ) { [weak self] didApprove in
             if let self, didApprove {
                 self.presentSafetyNumberChangeSheetIfNecessary(untrustedThreshold: newUntrustedThreshold, completion: completion)
@@ -1693,6 +1692,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
                 completion(false)
             }
         }
+        sheet.overrideUserInterfaceStyle = .dark
         sheet.allowsDismissal = localDeviceHasNotJoined
         presenter.present(sheet, animated: true, completion: nil)
     }
@@ -2064,7 +2064,8 @@ extension GroupCallViewController: CallControlsDelegate {
 
 extension GroupCallViewController: CallMemberErrorPresenter {
     func presentErrorSheet(title: String, message: String) {
-        let actionSheet = ActionSheetController(title: title, message: message, theme: .translucentDark)
+        let actionSheet = ActionSheetController(title: title, message: message)
+        actionSheet.overrideUserInterfaceStyle = .dark
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton))
         presentActionSheet(actionSheet)
     }

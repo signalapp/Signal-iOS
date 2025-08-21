@@ -82,8 +82,10 @@ public extension TSInteraction {
         let actionSheet = ActionSheetController(
             title: title,
             message: message,
-            theme: forceDarkTheme ? .translucentDark : .default
         )
+        if forceDarkTheme {
+            actionSheet.overrideUserInterfaceStyle = .dark
+        }
         actionSheet.addAction(deleteForMeAction(
             title: deleteActionTitle,
             thread: thread,
@@ -105,8 +107,10 @@ public extension TSInteraction {
                 "MESSAGE_ACTION_DELETE_FOR_TITLE",
                 comment: "The title for the action sheet asking who the user wants to delete the message for."
             ),
-            theme: forceDarkTheme ? .translucentDark : .default
         )
+        if forceDarkTheme {
+            actionSheetController.overrideUserInterfaceStyle = .dark
+        }
 
         actionSheetController.addAction(deleteForMeAction(
             title: CommonStrings.deleteForMeButton,

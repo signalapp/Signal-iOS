@@ -312,6 +312,10 @@ final public class Theme: NSObject {
         UIColor.Signal.secondaryBackground.resolvedColor(with: darkTraitCollection)
     }
 
+    public static var actionSheetBackgroundColor: UIColor {
+        isDarkThemeEnabled ? .ows_gray75 : .ows_white
+    }
+
     public class var washColor: UIColor {
         isDarkThemeEnabled ? darkThemeWashColor : .ows_gray05
     }

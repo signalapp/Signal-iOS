@@ -49,6 +49,7 @@ extension StoryReplySheet {
         guard !SafetyNumberConfirmationSheet.presentIfNecessary(
             addresses: thread.recipientAddressesWithSneakyTransaction,
             confirmationText: SafetyNumberStrings.confirmSendButton,
+            forceDarkTheme: true,
             completion: { [weak self] didConfirmIdentity in
                 guard didConfirmIdentity else { return }
                 self?.tryToSendMessage(builder, messageBody: messageBody)

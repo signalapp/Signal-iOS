@@ -9,7 +9,6 @@ public import SignalServiceKit
 public class SafetyNumberConfirmationSheet: UIViewController {
     let stackView = UIStackView()
     let contentView = UIView()
-    let handle = UIView()
     let backdropView = UIView()
     let tableView = UITableView()
 
@@ -27,13 +26,10 @@ public class SafetyNumberConfirmationSheet: UIViewController {
     let completionHandler: (Bool) -> Void
     public var allowsDismissal: Bool = true
 
-    public let theme: Theme.ActionSheet
-
     public init(
         addressesToConfirm: [SignalServiceAddress],
         confirmationText: String,
         cancelText: String = CommonStrings.cancelButton,
-        theme: Theme.ActionSheet = .translucentDark,
         completionHandler: @escaping (Bool) -> Void
     ) {
         assert(!addressesToConfirm.isEmpty)
@@ -48,7 +44,6 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         self.confirmAction = ActionSheetAction(title: confirmationText, style: .default)
         self.cancelAction = ActionSheetAction(title: cancelText, style: .cancel)
         self.completionHandler = completionHandler
-        self.theme = theme
 
         super.init(nibName: nil, bundle: nil)
 
@@ -108,8 +103,18 @@ public class SafetyNumberConfirmationSheet: UIViewController {
 
     // MARK: - Present if necessary
 
-    public class func presentIfNecessary(address: SignalServiceAddress, confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
-        return presentIfNecessary(addresses: [address], confirmationText: confirmationText, completion: completion)
+    public class func presentIfNecessary(
+        address: SignalServiceAddress,
+        confirmationText: String,
+        forceDarkTheme: Bool = false,
+        completion: @escaping (Bool) -> Void
+    ) -> Bool {
+        return presentIfNecessary(
+            addresses: [address],
+            confirmationText: confirmationText,
+            forceDarkTheme: forceDarkTheme,
+            completion: completion
+        )
     }
 
     /**
@@ -122,6 +127,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         addresses: [SignalServiceAddress],
         confirmationText: String,
         untrustedThreshold: Date? = nil,
+        forceDarkTheme: Bool = false,
         completion: @escaping (Bool) -> Void
     ) -> Bool {
         return presentIfNecessary(
@@ -129,6 +135,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
             from: CurrentAppContext().frontmostViewController(),
             confirmationText: confirmationText,
             untrustedThreshold: untrustedThreshold,
+            forceDarkTheme: forceDarkTheme,
             completion: completion
         )
     }
@@ -148,6 +155,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         from viewController: UIViewController,
         confirmationText: String,
         untrustedThreshold: Date? = nil,
+        forceDarkTheme: Bool = false,
         didPresent didPresentBlock: @MainActor () -> Void = {},
     ) async -> Bool {
         while true {
@@ -161,6 +169,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
                     from: viewController,
                     confirmationText: confirmationText,
                     untrustedThreshold: untrustedThreshold,
+                    forceDarkTheme: forceDarkTheme,
                     completion: { didConfirmIdentity in
                         if didConfirmIdentity {
                             // The user said it's fine -- loop and check for more mismatches.
@@ -187,6 +196,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         from viewController: UIViewController?,
         confirmationText: String,
         untrustedThreshold: Date?,
+        forceDarkTheme: Bool = false,
         completion: @escaping (Bool) -> Void
     ) -> Bool {
         let identityManager = DependenciesBridge.shared.identityManager
@@ -206,6 +216,9 @@ public class SafetyNumberConfirmationSheet: UIViewController {
             confirmationText: confirmationText,
             completionHandler: completion
         )
+        if forceDarkTheme {
+            sheet.overrideUserInterfaceStyle = .dark
+        }
 
         viewController?.present(sheet, animated: true)
         return true
@@ -215,7 +228,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
 
     override public func loadView() {
         view = UIView()
-        let backgroundView = theme.createBackgroundView()
+        let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .prominent))
 
         view.addSubview(backgroundView)
         view.addSubview(contentView)
@@ -231,12 +244,13 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         }
 
         [backgroundView, contentView].forEach { subview in
-            subview.layer.cornerRadius = 16
+            subview.layer.cornerRadius = 24
             subview.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
             subview.layer.masksToBounds = true
         }
 
         stackView.axis = .vertical
+        stackView.alignment = .center
         contentView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewSafeArea()
 
@@ -248,20 +262,20 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         // Setup header
 
         let titleLabel = UILabel()
-        titleLabel.textAlignment = .center
+        titleLabel.textAlignment = .natural
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.font = UIFont.dynamicTypeBody2.semibold()
-        titleLabel.textColor = theme.headerTitleColor
+        titleLabel.textColor = UIColor.Signal.label
         titleLabel.text = OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_TITLE",
                                              comment: "Title for the 'safety number confirmation' view")
 
         let messageLabel = UILabel()
-        messageLabel.textAlignment = .center
+        messageLabel.textAlignment = .natural
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.font = .dynamicTypeBody2
-        messageLabel.textColor = theme.headerMessageColor
+        messageLabel.textColor = UIColor.Signal.label
         messageLabel.text = OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_MESSAGE",
                                                comment: "Message for the 'safety number confirmation' view")
 
@@ -270,14 +284,14 @@ public class SafetyNumberConfirmationSheet: UIViewController {
             messageLabel
         ])
         headerStack.axis = .vertical
-        headerStack.spacing = 2
+        headerStack.spacing = 4
         headerStack.isLayoutMarginsRelativeArrangement = true
-        headerStack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        headerStack.layoutMargins = UIEdgeInsets(top: 24, left: 28, bottom: 16, right: 28)
         stackView.addArrangedSubview(headerStack)
-        stackView.addHairline(with: theme.hairlineColor)
+        headerStack.autoPinWidthToSuperview()
 
         stackView.addArrangedSubview(tableView)
-        stackView.addHairline(with: theme.hairlineColor)
+        tableView.autoPinWidthToSuperview()
         tableView.alwaysBounceVertical = false
         tableView.delegate = self
         tableView.dataSource = self
@@ -287,9 +301,9 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         tableView.setContentHuggingHigh()
         tableView.setCompressionResistanceLow()
 
-        confirmAction.button.applyActionSheetTheme(theme)
         stackView.addArrangedSubview(confirmAction.button)
-        stackView.addHairline(with: theme.hairlineColor)
+        stackView.setCustomSpacing(10, after: confirmAction.button)
+        confirmAction.button.autoPinWidthToSuperview(withMargin: 16)
         confirmAction.button.releaseAction = { [weak self] in
             guard let self = self else { return }
             SSKEnvironment.shared.databaseStorageRef.asyncWrite(block: { tx in
@@ -319,8 +333,8 @@ public class SafetyNumberConfirmationSheet: UIViewController {
             }
         }
 
-        cancelAction.button.applyActionSheetTheme(theme)
         stackView.addArrangedSubview(cancelAction.button)
+        cancelAction.button.autoPinWidthToSuperview(withMargin: 16)
         cancelAction.button.releaseAction = { [weak self] in
             guard let self else { return }
             self.dismiss(animated: true) { self.completionHandler(false) }
@@ -451,13 +465,6 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         // so we can transfer any initial scrolling into maximizing
         // the view.
         tableView.panGestureRecognizer.addTarget(self, action: #selector(handlePan))
-
-        handle.backgroundColor = .ows_whiteAlpha80
-        handle.autoSetDimensions(to: CGSize(width: 56, height: 5))
-        handle.layer.cornerRadius = 5 / 2
-        view.addSubview(handle)
-        handle.autoHCenterInSuperview()
-        handle.autoPinEdge(.bottom, to: .top, of: contentView, withOffset: -8)
     }
 
     @objc
@@ -624,7 +631,7 @@ extension SafetyNumberConfirmationSheet: UITableViewDelegate, UITableViewDataSou
         }
 
         UIView.performWithoutAnimation {
-            contactCell.configure(item: item, theme: theme, viewController: self)
+            contactCell.configure(item: item, viewController: self)
         }
 
         return contactCell
@@ -637,29 +644,32 @@ private class SafetyNumberCell: ContactTableViewCell {
 
     open override class var reuseIdentifier: String { "SafetyNumberCell" }
 
-    let button = OWSFlatButton()
+    let button = UIButton()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         selectionStyle = .none
 
-        button.setTitle(
-            title: OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION",
-                                      comment: "View safety number action for the 'safety number confirmation' view"),
-            font: UIFont.dynamicTypeBody2.semibold(),
-            titleColor: Theme.ActionSheet.default.safetyNumberChangeButtonTextColor
+        var config = UIButton.Configuration.gray()
+        config.cornerStyle = .capsule
+        config.baseBackgroundColor = UIColor.Signal.secondaryFill
+        config.contentInsets = .init(hMargin: 16, vMargin: 6)
+        config.title = OWSLocalizedString(
+            "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION",
+            comment: "View safety number action for the 'safety number confirmation' view"
         )
-        button.useDefaultCornerRadius()
-        button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
+        config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBody2.semibold())
+        button.configuration = config
+        button.addTarget(self, action: #selector(performButtonActon), for: .touchUpInside)
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(item: SafetyNumberConfirmationSheet.Item, theme: Theme.ActionSheet, viewController: UIViewController) {
-        button.setPressedBlock {
+    func configure(item: SafetyNumberConfirmationSheet.Item, viewController: UIViewController) {
+        self.buttonAction = {
             FingerprintViewController.present(for: item.address.aci, from: viewController)
         }
 
@@ -667,7 +677,7 @@ private class SafetyNumberCell: ContactTableViewCell {
             let configuration = ContactCellConfiguration(address: item.address, localUserDisplayMode: .asUser)
             configuration.allowUserInteraction = true
 
-            configuration.forceDarkAppearance = (theme == .translucentDark)
+            configuration.forceDarkAppearance = traitCollection.userInterfaceStyle == .dark
 
             let buttonSize = button.intrinsicContentSize
             button.removeFromSuperview()
@@ -702,11 +712,14 @@ private class SafetyNumberCell: ContactTableViewCell {
 
     override func configure(configuration: ContactCellConfiguration, transaction: DBReadTransaction) {
         super.configure(configuration: configuration, transaction: transaction)
-        let theme: Theme.ActionSheet = (configuration.forceDarkAppearance) ? .translucentDark : .default
+        backgroundColor = nil
+    }
 
-        backgroundColor = theme.backgroundColor
-        button.setBackgroundColors(upColor: theme.safetyNumberChangeButtonBackgroundColor)
-        button.setTitleColor(theme.safetyNumberChangeButtonTextColor)
+    private var buttonAction: (() -> Void)?
+
+    @objc
+    private func performButtonActon() {
+        buttonAction?()
     }
 }
 

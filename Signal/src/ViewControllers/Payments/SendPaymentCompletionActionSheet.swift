@@ -59,8 +59,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
     private let balanceLabel = SendPaymentHelper.buildBottomLabel()
 
-    private var outerBackgroundView: UIView?
-
     private var helper: SendPaymentHelper?
 
     private var currentCurrencyConversion: CurrencyConversionInfo? { helper?.currentCurrencyConversion }
@@ -75,7 +73,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             currentStep = .confirmPay(paymentInfo: paymentInfo)
         }
 
-        super.init(theme: .grouped)
+        super.init()
 
         helper = SendPaymentHelper(delegate: self)
     }
@@ -130,7 +128,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
         outerStack.axis = .vertical
         outerStack.alignment = .fill
-        outerBackgroundView = outerStack.addBackgroundView(withBackgroundColor: self.theme.backgroundColor)
 
         innerStack.axis = .vertical
         innerStack.alignment = .fill
@@ -148,9 +145,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
     }
 
     private func updateContentsForMode() {
-
-        outerBackgroundView?.backgroundColor = self.theme.backgroundColor
-
         switch currentStep {
         case .confirmPay(let paymentInfo):
             updateContentsForConfirmPay(paymentInfo: paymentInfo)

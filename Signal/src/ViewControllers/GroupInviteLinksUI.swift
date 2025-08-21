@@ -77,7 +77,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         self.groupInviteLinkInfo = groupInviteLinkInfo
         self.groupV2ContextInfo = groupV2ContextInfo
 
-        super.init(theme: .default)
+        super.init()
 
         isCancelable = true
 
@@ -101,7 +101,6 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
         let header = UIView()
         header.layoutMargins = UIEdgeInsets(hMargin: 32, vMargin: 32)
-        header.backgroundColor = Theme.actionSheetBackgroundColor
         self.customHeader = header
 
         avatarView.image = databaseStorage.read { tx in
@@ -149,7 +148,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         messageLabel.textAlignment = .center
         messageLabel.setContentHuggingVerticalHigh()
 
-        let buttonColor: UIColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray05
+        let buttonColor = ActionSheetAction.buttonBackgroundColor
         let cancelButton = OWSFlatButton.button(title: CommonStrings.cancelButton,
                                                 font: UIFont.dynamicTypeBody.semibold(),
                                                 titleColor: Theme.secondaryTextAndIconColor,
@@ -197,7 +196,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
         let divider = UIView()
         divider.autoSetDimension(.height, toSize: .hairlineWidth)
-        divider.backgroundColor = buttonColor
+        divider.backgroundColor = UIColor.Signal.opaqueSeparator
 
         let stackView = UIStackView(arrangedSubviews: [
             headerStack,

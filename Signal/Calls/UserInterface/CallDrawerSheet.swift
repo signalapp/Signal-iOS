@@ -737,8 +737,8 @@ extension CallDrawerSheet: GroupCallMemberCellDelegate {
                 ),
                 name
             ),
-            theme: .translucentDark
         )
+        actionSheet.overrideUserInterfaceStyle = .dark
         actionSheet.addAction(.init(
             title: OWSLocalizedString(
                 "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_REMOVE_ACTION",
@@ -1190,8 +1190,8 @@ private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
                     "GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET",
                     comment: "Message on an action sheet when tapping an info button next to unknown members in the group call member list."
                 ),
-                theme: .translucentDark
             )
+            actionSheet.overrideUserInterfaceStyle = .dark
             actionSheet.addAction(.acknowledge)
             self?.parentViewController?.presentActionSheet(actionSheet)
         }

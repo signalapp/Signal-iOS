@@ -993,7 +993,8 @@ extension ImageEditorCropViewController {
 
     @objc
     private func didTapChooseAspectRatio() {
-        let actionSheet = ActionSheetController(theme: .translucentDark)
+        let actionSheet = ActionSheetController()
+        actionSheet.overrideUserInterfaceStyle = .dark
         for aspectRatio in AspectRatio.allCases {
             guard isCurrentImageCompatibleWith(aspectRatio: aspectRatio) else { continue }
             actionSheet.addAction(

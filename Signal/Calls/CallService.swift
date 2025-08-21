@@ -746,7 +746,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             for: { [thread.contactAddress] },
             from: frontmostViewController,
             confirmationText: CallStrings.confirmAndCallButtonTitle,
-            untrustedThreshold: untrustedThreshold
+            untrustedThreshold: untrustedThreshold,
+            forceDarkTheme: true
         ) else {
             return
         }

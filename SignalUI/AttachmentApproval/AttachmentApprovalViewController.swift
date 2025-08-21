@@ -890,7 +890,8 @@ extension AttachmentApprovalViewController {
                             message: OWSLocalizedString(
                                 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT",
                                 comment: "Error that outgoing attachments could not be exported."),
-                            theme: .translucentDark)
+                        )
+                        actionSheet.overrideUserInterfaceStyle = .dark
                         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton, style: .default))
 
                         self.present(actionSheet, animated: true)
@@ -1050,7 +1051,8 @@ extension AttachmentApprovalViewController {
     private func didTapMediaQuality() {
         AssertIsOnMainThread()
 
-        let actionSheet = ActionSheetController(theme: .translucentDark)
+        let actionSheet = ActionSheetController()
+        actionSheet.overrideUserInterfaceStyle = .dark
         actionSheet.isCancelable = true
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
