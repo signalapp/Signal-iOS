@@ -212,6 +212,7 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchiveTSMessageEditHist
 
         var wasAnySendSealedSender = false
         var outgoingDetails = BackupProto_ChatItem.OutgoingMessageDetails()
+        outgoingDetails.dateReceived = message.receivedAtTimestamp
 
         for (address, sendState) in message.recipientAddressStates ?? [:] {
             guard let recipientAddress = address.asSingleServiceIdBackupAddress()?.asArchivingAddress() else {
@@ -513,10 +514,12 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchiveTSMessageEditHist
             let outgoingMessageBuilder = TSOutgoingMessageBuilder(
                 thread: chatThread.tsThread,
                 timestamp: chatItem.dateSent,
-                // If we pass `nil` this will default to "now", which is a much
-                // worse approximation than the "sent" timestamp. For outgoing
-                // messages, "sent" and "received" are the same, anyway.
-                receivedAtTimestamp: chatItem.dateSent,
+                receivedAtTimestamp: outgoingDetails.dateReceived > 0
+                    ? outgoingDetails.dateReceived
+                    // If we pass `nil` this will default to "now", which is a much
+                    // worse approximation than the "sent" timestamp. For outgoing
+                    // messages, "sent" and "received" are the same, anyway.
+                    : chatItem.dateSent,
                 messageBody: nil,
                 editState: editState,
                 expiresInSeconds: expiresInSeconds,

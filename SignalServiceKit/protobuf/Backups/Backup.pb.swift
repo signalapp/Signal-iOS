@@ -1989,6 +1989,9 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
 
     public var sendStatus: [BackupProto_SendStatus] = []
 
+    /// may be different from dateSent for sync messages
+    public var dateReceived: UInt64 = 0
+
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     public init() {}
@@ -8621,6 +8624,7 @@ extension BackupProto_ChatItem.OutgoingMessageDetails: SwiftProtobuf.Message, Sw
   public static let protoMessageName: String = BackupProto_ChatItem.protoMessageName + ".OutgoingMessageDetails"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "sendStatus"),
+    2: .same(proto: "dateReceived"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8630,6 +8634,7 @@ extension BackupProto_ChatItem.OutgoingMessageDetails: SwiftProtobuf.Message, Sw
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeRepeatedMessageField(value: &self.sendStatus) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.dateReceived) }()
       default: break
       }
     }
@@ -8639,11 +8644,15 @@ extension BackupProto_ChatItem.OutgoingMessageDetails: SwiftProtobuf.Message, Sw
     if !self.sendStatus.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.sendStatus, fieldNumber: 1)
     }
+    if self.dateReceived != 0 {
+      try visitor.visitSingularUInt64Field(value: self.dateReceived, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: BackupProto_ChatItem.OutgoingMessageDetails, rhs: BackupProto_ChatItem.OutgoingMessageDetails) -> Bool {
     if lhs.sendStatus != rhs.sendStatus {return false}
+    if lhs.dateReceived != rhs.dateReceived {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

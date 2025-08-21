@@ -131,6 +131,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchiveTSMessageEditHist
 
         func buildSwizzledOutgoingNoteToSelfMessage() -> (BackupProto_ChatItem.OneOf_DirectionalDetails, Details.AuthorAddress) {
             var outgoingDetails = BackupProto_ChatItem.OutgoingMessageDetails()
+            outgoingDetails.dateReceived = incomingMessage.receivedAtTimestamp
             var sendStatus = BackupProto_SendStatus()
             sendStatus.recipientID = context.recipientContext.localRecipientId.value
             sendStatus.timestamp = incomingMessage.receivedAtTimestamp
