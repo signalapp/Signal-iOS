@@ -132,7 +132,7 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
             stream,
             currentUploadEra: currentUploadEra
         )
-        guard eligibility.needsUploadFullsize || eligibility.needsUploadFullsize else {
+        guard eligibility.needsUploadFullsize || eligibility.needsUploadThumbnail else {
             return
         }
 

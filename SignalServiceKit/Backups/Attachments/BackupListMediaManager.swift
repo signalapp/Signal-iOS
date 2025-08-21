@@ -220,21 +220,36 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                     }
 
                     // Check for matches for both the fullsize and the
-                    // thumbnail mediaId.
-                    for isThumbnail in [false, true] {
-                        try self.updateAttachmentIfNeeded(
-                            attachment: attachment,
-                            fullsizeMediaName: fullsizeMediaName,
-                            isThumbnail: isThumbnail,
-                            backupKey: backupKey,
-                            uploadEraAtStartOfListMedia: uploadEraAtStartOfListMedia,
-                            currentBackupPlan: currentBackupPlan,
-                            remoteConfig: remoteConfig,
-                            isPrimaryDevice: isPrimaryDevice,
-                            hasEverRunListMedia: hasEverRunListMedia,
-                            tx: tx
-                        )
+                    // thumbnail mediaId. Fullsize first.
+                    try self.updateAttachmentIfNeeded(
+                        attachment: attachment,
+                        fullsizeMediaName: fullsizeMediaName,
+                        isThumbnail: false,
+                        backupKey: backupKey,
+                        uploadEraAtStartOfListMedia: uploadEraAtStartOfListMedia,
+                        currentBackupPlan: currentBackupPlan,
+                        remoteConfig: remoteConfig,
+                        isPrimaryDevice: isPrimaryDevice,
+                        hasEverRunListMedia: hasEverRunListMedia,
+                        tx: tx
+                    )
+                    // Refetch the attachment to reload any mutations applied
+                    // by the fullsize matching.
+                    guard let attachment = attachmentStore.fetch(id: attachment.id, tx: tx) else {
+                        continue
                     }
+                    try self.updateAttachmentIfNeeded(
+                        attachment: attachment,
+                        fullsizeMediaName: fullsizeMediaName,
+                        isThumbnail: true,
+                        backupKey: backupKey,
+                        uploadEraAtStartOfListMedia: uploadEraAtStartOfListMedia,
+                        currentBackupPlan: currentBackupPlan,
+                        remoteConfig: remoteConfig,
+                        isPrimaryDevice: isPrimaryDevice,
+                        hasEverRunListMedia: hasEverRunListMedia,
+                        tx: tx
+                    )
                 }
                 let lastAttachmentId = attachments.last?.sqliteId
                 if let lastAttachmentId {
@@ -578,12 +593,14 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             return
         }
         if isThumbnail, attachment.thumbnailMediaTierInfo != nil {
+            Logger.warn("Unexpectedly missing thumbnail we thought was on media tier cdn \(attachment.id)")
             try self.attachmentUploadStore.markThumbnailMediaTierUploadExpired(
                 attachment: attachment,
                 tx: tx
             )
         }
         if !isThumbnail, attachment.mediaTierInfo != nil {
+            Logger.warn("Unexpectedly missing fullsize we thought was on media tier cdn \(attachment.id)")
             try self.attachmentUploadStore.markMediaTierUploadExpired(
                 attachment: attachment,
                 tx: tx
