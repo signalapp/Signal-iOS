@@ -357,9 +357,17 @@ public class AppSetup {
 
         let backupCDNCredentialStore = BackupCDNCredentialStore()
 
+        let backupIdService = BackupIdServiceImpl(
+            accountKeyStore: accountKeyStore,
+            backupSettingsStore: backupSettingsStore,
+            db: db,
+            networkManager: networkManager
+        )
+
         let backupRequestManager = BackupRequestManagerImpl(
             backupAuthCredentialManager: BackupAuthCredentialManagerImpl(
                 authCredentialStore: authCredentialStore,
+                backupIdService: backupIdService,
                 dateProvider: dateProvider,
                 db: db,
                 networkManager: networkManager
@@ -367,6 +375,14 @@ public class AppSetup {
             backupCDNCredentialStore: backupCDNCredentialStore,
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
+            db: db,
+            networkManager: networkManager
+        )
+
+        let backupKeyService = BackupKeyServiceImpl(
+            accountKeyStore: accountKeyStore,
+            backupRequestManager: backupRequestManager,
+            backupSettingsStore: backupSettingsStore,
             db: db,
             networkManager: networkManager
         )
@@ -914,13 +930,6 @@ public class AppSetup {
             storyRecipientStore: storyRecipientStore
         )
 
-        let backupIdManager = BackupIdManagerImpl(
-            accountKeyStore: accountKeyStore,
-            backupRequestManager: backupRequestManager,
-            db: db,
-            networkManager: networkManager,
-        )
-
         let backupRefreshManager = BackupRefreshManager(
             accountKeyStore: accountKeyStore,
             backupRequestManager: backupRequestManager,
@@ -934,7 +943,7 @@ public class AppSetup {
             authCredentialStore: authCredentialStore,
             backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
             backupCDNCredentialStore: backupCDNCredentialStore,
-            backupIdManager: backupIdManager,
+            backupKeyService: backupKeyService,
             backupListMediaManager: backupListMediaManager,
             backupPlanManager: backupPlanManager,
             backupSettingsStore: backupSettingsStore,
@@ -948,7 +957,7 @@ public class AppSetup {
             authCredentialStore: authCredentialStore,
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupCDNCredentialStore: backupCDNCredentialStore,
-            backupIdManager: backupIdManager,
+            backupKeyService: backupKeyService,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             db: db,
@@ -1427,7 +1436,7 @@ public class AppSetup {
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupAttachmentUploadQueueStatusManager: backupAttachmentUploadQueueStatusManager,
-            backupIdManager: backupIdManager,
+            backupKeyService: backupKeyService,
             backupListMediaManager: backupListMediaManager,
             backupSettingsStore: backupSettingsStore,
             db: db,
@@ -1470,7 +1479,8 @@ public class AppSetup {
             backupDisablingManager: backupDisablingManager,
             backupExportJob: backupExportJob,
             backupExportJobRunner: backupExportJobRunner,
-            backupIdManager: backupIdManager,
+            backupIdService: backupIdService,
+            backupKeyService: backupKeyService,
             backupRefreshManager: backupRefreshManager,
             backupRequestManager: backupRequestManager,
             backupPlanManager: backupPlanManager,

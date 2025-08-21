@@ -21,7 +21,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         case paid
     }
 
-    private let backupIdManager: BackupIdManager
+    private let backupKeyService: BackupKeyService
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
     private let tsAccountManager: TSAccountManager
@@ -32,13 +32,13 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
     init(
         initialPlanSelection: PlanSelection?,
         storeKitAvailability: StoreKitAvailability,
-        backupIdManager: BackupIdManager,
+        backupKeyService: BackupKeyService,
         backupSettingsStore: BackupSettingsStore,
         db: DB,
         tsAccountManager: TSAccountManager,
         onConfirmPlanSelectionBlock: @escaping OnConfirmPlanSelectionBlock,
     ) {
-        self.backupIdManager = backupIdManager
+        self.backupKeyService = backupKeyService
         self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.tsAccountManager = tsAccountManager
@@ -81,7 +81,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         return ChooseBackupPlanViewController(
             initialPlanSelection: initialPlanSelection,
             storeKitAvailability: storeKitAvailability,
-            backupIdManager: DependenciesBridge.shared.backupIdManager,
+            backupKeyService: DependenciesBridge.shared.backupKeyService,
             backupSettingsStore: BackupSettingsStore(),
             db: DependenciesBridge.shared.db,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,

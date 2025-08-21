@@ -44,6 +44,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
     }
 
     private let authCredentialStore: AuthCredentialStore
+    private let backupIdService: BackupIdService
     private let dateProvider: DateProvider
     private let db: any DB
     private let kvStore: KeyValueStore
@@ -51,11 +52,13 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
     init(
         authCredentialStore: AuthCredentialStore,
+        backupIdService: BackupIdService,
         dateProvider: @escaping DateProvider,
         db: any DB,
         networkManager: NetworkManager
     ) {
         self.authCredentialStore = authCredentialStore
+        self.backupIdService = backupIdService
         self.dateProvider = dateProvider
         self.db = db
         self.kvStore = KeyValueStore(collection: Constants.keyValueStoreCollectionName)
@@ -68,6 +71,15 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         chatServiceAuth auth: ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> BackupAuthCredential {
+
+        // Before we fetch Backup auth credentials, we must have registered our
+        // Backup ID.  This will normally have been done already, but if it
+        // hasn't then it's important we do so now.
+        try await backupIdService.registerBackupIDIfNecessary(
+            localAci: localAci,
+            auth: auth
+        )
+
         let redemptionTime = self.dateProvider().startOfTodayUTCTimestamp()
         let futureRedemptionTime = redemptionTime + UInt64(Constants.numberOfDaysRemainingFutureCredentialsInSeconds)
 

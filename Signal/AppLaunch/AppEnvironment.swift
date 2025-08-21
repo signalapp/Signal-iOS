@@ -71,7 +71,7 @@ public class AppEnvironment: NSObject {
         self.backupEnablingManager = BackupEnablingManager(
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupDisablingManager: DependenciesBridge.shared.backupDisablingManager,
-            backupIdManager: DependenciesBridge.shared.backupIdManager,
+            backupKeyService: DependenciesBridge.shared.backupKeyService,
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             backupTestFlightEntitlementManager: DependenciesBridge.shared.backupTestFlightEntitlementManager,
@@ -122,6 +122,8 @@ public class AppEnvironment: NSObject {
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             let backupDisablingManager = DependenciesBridge.shared.backupDisablingManager
+            let backupIdService = DependenciesBridge.shared.backupIdService
+            let backupRefreshManager = DependenciesBridge.shared.backupRefreshManager
             let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
             let backupTestFlightEntitlementManager = DependenciesBridge.shared.backupTestFlightEntitlementManager
             let callRecordStore = DependenciesBridge.shared.callRecordStore
@@ -138,8 +140,6 @@ public class AppEnvironment: NSObject {
             let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
             let threadStore = DependenciesBridge.shared.threadStore
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            let backupIdManager = DependenciesBridge.shared.backupIdManager
-            let backupRefreshManager = DependenciesBridge.shared.backupRefreshManager
             let storageServiceRecordIkmMigrator = DependenciesBridge.shared.storageServiceRecordIkmMigrator
 
             let avatarDefaultColorStorageServiceMigrator = AvatarDefaultColorStorageServiceMigrator(
@@ -171,7 +171,7 @@ public class AppEnvironment: NSObject {
             }
 
             // Things that should run on only the primary *or* linked devices.
-            if isRegisteredPrimaryDevice {
+            if isRegisteredPrimaryDevice, let localIdentifiers {
                 Task {
                     do {
                         try await avatarDefaultColorStorageServiceMigrator.performMigrationIfNecessary()
@@ -186,8 +186,8 @@ public class AppEnvironment: NSObject {
 
                 Task {
                     do {
-                        try await backupIdManager.registerBackupIDIfNecessary(
-                            localIdentifiers: localIdentifiers,
+                        try await backupIdService.registerBackupIDIfNecessary(
+                            localAci: localIdentifiers.aci,
                             auth: .implicit()
                         )
                     } catch {

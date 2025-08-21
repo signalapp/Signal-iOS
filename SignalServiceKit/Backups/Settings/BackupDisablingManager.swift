@@ -13,7 +13,7 @@ public final class BackupDisablingManager {
     private let authCredentialStore: AuthCredentialStore
     private let backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager
     private let backupCDNCredentialStore: BackupCDNCredentialStore
-    private let backupIdManager: BackupIdManager
+    private let backupKeyService: BackupKeyService
     private let backupListMediaManager: BackupListMediaManager
     private let backupPlanManager: BackupPlanManager
     private let backupSettingsStore: BackupSettingsStore
@@ -27,7 +27,7 @@ public final class BackupDisablingManager {
         authCredentialStore: AuthCredentialStore,
         backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager,
         backupCDNCredentialStore: BackupCDNCredentialStore,
-        backupIdManager: BackupIdManager,
+        backupKeyService: BackupKeyService,
         backupListMediaManager: BackupListMediaManager,
         backupPlanManager: BackupPlanManager,
         backupSettingsStore: BackupSettingsStore,
@@ -37,7 +37,7 @@ public final class BackupDisablingManager {
         self.authCredentialStore = authCredentialStore
         self.backupAttachmentDownloadQueueStatusManager = backupAttachmentDownloadQueueStatusManager
         self.backupCDNCredentialStore = backupCDNCredentialStore
-        self.backupIdManager = backupIdManager
+        self.backupKeyService = backupKeyService
         self.backupListMediaManager = backupListMediaManager
         self.backupPlanManager = backupPlanManager
         self.backupSettingsStore = backupSettingsStore
@@ -150,7 +150,7 @@ public final class BackupDisablingManager {
         do {
             logger.info("Disabling Backups remotely...")
             try await Retry.performWithIndefiniteNetworkRetries {
-                try await backupIdManager.deleteBackupId(
+                try await backupKeyService.deleteBackupKey(
                     localIdentifiers: localIdentifiers,
                     auth: .implicit()
                 )

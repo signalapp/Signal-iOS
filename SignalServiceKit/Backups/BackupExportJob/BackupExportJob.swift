@@ -74,7 +74,7 @@ class BackupExportJobImpl: BackupExportJob {
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
     private let backupAttachmentUploadQueueStatusManager: BackupAttachmentUploadQueueStatusManager
-    private let backupIdManager: BackupIdManager
+    private let backupKeyService: BackupKeyService
     private let backupListMediaManager: BackupListMediaManager
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
@@ -93,7 +93,7 @@ class BackupExportJobImpl: BackupExportJob {
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
         backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupAttachmentUploadQueueStatusManager: BackupAttachmentUploadQueueStatusManager,
-        backupIdManager: BackupIdManager,
+        backupKeyService: BackupKeyService,
         backupListMediaManager: BackupListMediaManager,
         backupSettingsStore: BackupSettingsStore,
         db: DB,
@@ -110,7 +110,7 @@ class BackupExportJobImpl: BackupExportJob {
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
         self.backupAttachmentUploadQueueStatusManager = backupAttachmentUploadQueueStatusManager
-        self.backupIdManager = backupIdManager
+        self.backupKeyService = backupKeyService
         self.backupListMediaManager = backupListMediaManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
@@ -216,11 +216,11 @@ class BackupExportJobImpl: BackupExportJob {
         do {
             logger.info("Starting...")
 
-            let registeredBackupIDToken = try await withEstimatedProgressUpdates(
+            let registeredBackupKeyToken = try await withEstimatedProgressUpdates(
                 estimatedTimeToCompletion: 0.5,
                 progress: progress?.child(for: .registerBackupId).addSource(withLabel: "", unitCount: 1),
-            ) { [backupIdManager] in
-                try await backupIdManager.registerBackupIdAndKey(
+            ) { [backupKeyService] in
+                try await backupKeyService.registerBackupKey(
                     localIdentifiers: localIdentifiers,
                     auth: .implicit()
                 )
@@ -243,7 +243,7 @@ class BackupExportJobImpl: BackupExportJob {
                 _ = try await backupArchiveManager.uploadEncryptedBackup(
                     backupKey: backupKey,
                     metadata: uploadMetadata,
-                    registeredBackupIDToken: registeredBackupIDToken,
+                    registeredBackupKeyToken: registeredBackupKeyToken,
                     auth: .implicit(),
                     progress: progress?.child(for: .backupUpload),
                 )

@@ -15,7 +15,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let authCredentialStore: AuthCredentialStore
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupCDNCredentialStore: BackupCDNCredentialStore
-    private let backupIdManager: BackupIdManager
+    private let backupKeyService: BackupKeyService
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
@@ -40,7 +40,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         authCredentialStore: AuthCredentialStore,
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupCDNCredentialStore: BackupCDNCredentialStore,
-        backupIdManager: BackupIdManager,
+        backupKeyService: BackupKeyService,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
         db: DB,
@@ -64,7 +64,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         self.authCredentialStore = authCredentialStore
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupCDNCredentialStore = backupCDNCredentialStore
-        self.backupIdManager = backupIdManager
+        self.backupKeyService = backupKeyService
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
@@ -349,7 +349,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
                     maxAttempts: 3,
                     isRetryable: { $0.isNetworkFailureOrTimeout || ($0 as? OWSHTTPError)?.isRetryable == true },
                     block: {
-                        try await backupIdManager.deleteBackupId(
+                        try await backupKeyService.deleteBackupKey(
                             localIdentifiers: localIdentifiers,
                             backupAuth: backupAuth
                         )

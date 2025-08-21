@@ -459,7 +459,7 @@ private extension InternalSettingsViewController {
     func exportMessageBackupProtoRemotely() async throws {
         let accountKeyStore = DependenciesBridge.shared.accountKeyStore
         let backupArchiveManager = DependenciesBridge.shared.backupArchiveManager
-        let backupIdManager = DependenciesBridge.shared.backupIdManager
+        let backupKeyService = DependenciesBridge.shared.backupKeyService
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         let (messageBackupKey, localIdentifiers) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
@@ -480,7 +480,7 @@ private extension InternalSettingsViewController {
             progress: nil
         )
 
-        let registeredBackupIDToken = try await backupIdManager.registerBackupIdAndKey(
+        let registeredBackupKeyToken = try await backupKeyService.registerBackupKey(
             localIdentifiers: localIdentifiers,
             auth: .implicit()
         )
@@ -488,7 +488,7 @@ private extension InternalSettingsViewController {
         _ = try await backupArchiveManager.uploadEncryptedBackup(
             backupKey: messageBackupKey,
             metadata: metadata,
-            registeredBackupIDToken: registeredBackupIDToken,
+            registeredBackupKeyToken: registeredBackupKeyToken,
             auth: .implicit(),
             progress: nil,
         )

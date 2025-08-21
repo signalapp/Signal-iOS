@@ -29,7 +29,7 @@ final class BackupEnablingManager {
 
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupDisablingManager: BackupDisablingManager
-    private let backupIdManager: BackupIdManager
+    private let backupKeyService: BackupKeyService
     private let backupPlanManager: BackupPlanManager
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager
@@ -39,7 +39,7 @@ final class BackupEnablingManager {
     init(
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupDisablingManager: BackupDisablingManager,
-        backupIdManager: BackupIdManager,
+        backupKeyService: BackupKeyService,
         backupPlanManager: BackupPlanManager,
         backupSubscriptionManager: BackupSubscriptionManager,
         backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager,
@@ -48,7 +48,7 @@ final class BackupEnablingManager {
     ) {
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupDisablingManager = backupDisablingManager
-        self.backupIdManager = backupIdManager
+        self.backupKeyService = backupKeyService
         self.backupPlanManager = backupPlanManager
         self.backupSubscriptionManager = backupSubscriptionManager
         self.backupTestFlightEntitlementManager = backupTestFlightEntitlementManager
@@ -101,7 +101,7 @@ final class BackupEnablingManager {
             // it to finish.
             await self.backupDisablingManager.disableRemotelyIfNecessary()
 
-            _ = try await self.backupIdManager.registerBackupIdAndKey(
+            _ = try await self.backupKeyService.registerBackupKey(
                 localIdentifiers: localIdentifiers,
                 auth: .implicit()
             )
