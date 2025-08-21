@@ -74,7 +74,6 @@ class ResendMessagePromptBuilder {
         ))
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString("SEND_AGAIN_BUTTON", comment: ""),
-            accessibilityIdentifier: "send_again",
             style: .default,
             handler: { _ in sendAgain() }
         ))

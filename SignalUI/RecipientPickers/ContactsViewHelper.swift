@@ -211,7 +211,6 @@ public extension ContactsViewHelper {
                 "AB_PERMISSION_MISSING_ACTION_NOT_NOW",
                 comment: "Button text to dismiss missing contacts permission alert"
             ),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "ContactAccess", name: "not_now"),
             style: .cancel
         ))
 

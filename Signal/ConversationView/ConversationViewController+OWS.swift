@@ -209,7 +209,6 @@ extension ConversationViewController {
         actionSheet.addAction(
             ActionSheetAction(
                 title: CommonStrings.learnMore,
-                accessibilityIdentifier: "learn_more",
                 style: .default
             ) { _ in
                 UIApplication.shared.open(URL(string: "https://support.signal.org/hc/articles/4404859745690")!)

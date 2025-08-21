@@ -427,7 +427,6 @@ extension ContactSupportViewController {
                 self?.updateRightBarButton()
                 self?.rebuildTableContents()
             }
-            if selectedFilter == filter { action.trailingIcon = .checkCircle }
             actionSheet.addAction(action)
         }
 

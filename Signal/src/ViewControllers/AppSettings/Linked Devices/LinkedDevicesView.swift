@@ -716,7 +716,6 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
                     "UNLINK_ACTION",
                     comment: "button title for unlinking a device"
                 ),
-                accessibilityIdentifier: "confirm_unlink_device",
                 style: .destructive,
                 handler: { [weak viewModel] _ in
                     viewModel?.unlinkDevice(displayableDevice.device)

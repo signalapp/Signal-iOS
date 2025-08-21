@@ -103,10 +103,13 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
                                                 message: OWSLocalizedString("SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION",
                                                                            comment: "Description for the 'record payments passphrase to disable pin' UI in the app settings."))
 
-        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE",
-                                                                         comment: "Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings."),
-                                                accessibilityIdentifier: "payments.settings.disable-pin.record-passphrase",
-                                                style: .default) { [weak self] _ in
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE",
+                comment: "Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings."
+            ),
+            style: .default
+        ) { [weak self] _ in
             self?.showRecordPaymentsPassphraseUI()
         })
         actionSheet.addAction(OWSActionSheets.cancelAction)

@@ -180,9 +180,10 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
                                                 message: OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE",
                                                                            comment: "Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings."))
 
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.copyButton,
-                                                accessibilityIdentifier: "payments.settings.copy_passphrase_to_clipboard",
-                                                style: .default) { [weak self] _ in
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.copyButton,
+            style: .default
+        ) { [weak self] _ in
             self?.didTapCopyToClipboard()
         })
 

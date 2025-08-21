@@ -211,10 +211,9 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         actionSheet.addAction(
             ActionSheetAction(
                 title: CommonStrings.skipButton,
-                accessibilityIdentifier: "OWSActionSheets.skip",
                 style: .destructive
             ) { [weak self] _ in
-                Logger.debug("User is explicity skipping the double reminder, so dismniss the 'payments lock prompt' view entirely.")
+                Logger.debug("User is explicitly skipping the double reminder, so dismiss the 'payments lock prompt' view entirely.")
                 self?.dismiss(animated: true, completion: nil)
             }
         )
@@ -222,7 +221,6 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         actionSheet.addAction(
             ActionSheetAction(
                 title: CommonStrings.cancelButton,
-                accessibilityIdentifier: "OWSActionSheets.cancel",
                 style: .cancel
             ) { _ in
                 Logger.debug("User cancelled the payments lock dismissal, dismiss the action sheet so user can reconsider payments lock decision")

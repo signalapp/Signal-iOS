@@ -186,20 +186,30 @@ extension GroupAttributesViewController {
         saveBlock: @escaping () -> Void,
         discardBlock: @escaping () -> Void
     ) {
-        let actionSheet = ActionSheetController(title: OWSLocalizedString("EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
-                                                                         comment: "The alert title if user tries to exit update group view without saving changes."),
-                                                message: OWSLocalizedString("EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
-                                                                          comment: "The alert message if user tries to exit update group view without saving changes."))
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.saveButton,
-                                                accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromViewController, name: "save"),
-                                                style: .default) { _ in
-                                                    saveBlock()
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
+                comment: "The alert title if user tries to exit update group view without saving changes."
+            ),
+            message: OWSLocalizedString(
+                "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
+                comment: "The alert message if user tries to exit update group view without saving changes."
+            )
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.saveButton,
+            style: .default
+        ) { _ in
+            saveBlock()
         })
-        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("ALERT_DONT_SAVE",
-                                                                         comment: "The label for the 'don't save' button in action sheets."),
-                                                accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromViewController, name: "dont_save"),
-                                                style: .destructive) { _ in
-                                                    discardBlock()
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "ALERT_DONT_SAVE",
+                comment: "The label for the 'don't save' button in action sheets."
+            ),
+            style: .destructive
+        ) { _ in
+            discardBlock()
         })
         fromViewController.presentActionSheet(actionSheet)
     }

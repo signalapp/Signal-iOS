@@ -528,7 +528,6 @@ class ProvisioningController: NSObject {
                     "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE",
                     comment: "Label for the 'reset device' action in the 're-linking failed because the account did not match' alert."
                 ),
-                accessibilityIdentifier: "alert.reset_device",
                 style: .default,
                 handler: { _ in
                     self.resetBackToQrCodeController(
@@ -566,7 +565,6 @@ class ProvisioningController: NSObject {
             )
             let updateAction = ActionSheetAction(
                 title: updateButtonText,
-                accessibilityIdentifier: "alert.update",
                 style: .default
             ) { _ in
                 let url = TSConstants.appStoreUrl
@@ -579,7 +577,6 @@ class ProvisioningController: NSObject {
             alert = ActionSheetController(title: title, message: message)
             alert.addAction(ActionSheetAction(
                 title: CommonStrings.retryButton,
-                accessibilityIdentifier: "alert.retry",
                 style: .default,
                 handler: { _ in
                     let isProvisioned = DependenciesBridge.shared.db.read { tx in

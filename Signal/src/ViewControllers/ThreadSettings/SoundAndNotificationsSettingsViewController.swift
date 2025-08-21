@@ -164,7 +164,6 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
             let action =
                 ActionSheetAction(
                     title: nameForMentionMode(mode),
-                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: String(describing: mode))
                 ) { [weak self] _ in
                     self?.setMentionNotificationMode(mode)
                 }

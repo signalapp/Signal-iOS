@@ -76,7 +76,6 @@ class ProvisioningModeSwitchConfirmationViewController: ProvisioningBaseViewCont
 
         let continueAction = ActionSheetAction(
             title: CommonStrings.continueButton,
-            accessibilityIdentifier: "onboarding.modeSwitch.continue",
             handler: { [weak self] _ in
                 guard let self else { return }
                 self.provisioningController.switchToPrimaryRegistration(viewController: self)

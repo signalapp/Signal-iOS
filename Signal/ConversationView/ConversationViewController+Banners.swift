@@ -698,9 +698,10 @@ extension ConversationViewController {
             self?.showNoLongerVerifiedUI(noLongerVerifiedIdentityKeys: noLongerVerifiedIdentityKeys)
         })
 
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.dismissButton,
-                                                accessibilityIdentifier: "dismiss",
-                                                style: .cancel) { [weak self] _ in
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.dismissButton,
+            style: .cancel
+        ) { [weak self] _ in
             self?.resetVerificationStateToDefault(noLongerVerifiedIdentityKeys: noLongerVerifiedIdentityKeys)
         })
 

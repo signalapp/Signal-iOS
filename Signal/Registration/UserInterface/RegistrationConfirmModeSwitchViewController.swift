@@ -77,7 +77,6 @@ class RegistrationConfirmModeSwitchViewController: OWSViewController {
 
         let continueAction = ActionSheetAction(
             title: CommonStrings.continueButton,
-            accessibilityIdentifier: "onboarding.modeSwitch.continue",
             handler: { [weak self] _ in
                 self?.presenter?.confirmSwitchToDeviceLinkingMode()
             }

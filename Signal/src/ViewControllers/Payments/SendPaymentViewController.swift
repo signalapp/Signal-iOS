@@ -208,7 +208,6 @@ public class SendPaymentViewController: OWSViewController {
                 case .fromPaymentSettings:
                     actionSheet.addAction(ActionSheetAction(
                         title: CommonStrings.sendMessage,
-                        accessibilityIdentifier: "payments.settings.send_message",
                         style: .default,
                         handler: { [weak fromViewController] _ in
                             guard let fromViewController = fromViewController else { return }
@@ -331,7 +330,6 @@ public class SendPaymentViewController: OWSViewController {
                 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON",
                 comment: "The label for the 'send request' button in alerts and action sheets."
             ),
-            accessibilityIdentifier: "OWSActionSheets.sendPaymentAuthorizationRequest",
             style: .default
         ) { _ in
             sendActivationRequest(recipientAddress: recipientAddress)
@@ -1033,10 +1031,13 @@ public class SendPaymentViewController: OWSViewController {
         // There's no point doing a "transfer in" transaction in order to
         // enable a "transfer out".
         if mode != .fromTransferOutFlow {
-            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY",
-                                                                             comment: "Label for the 'add money' button in the 'send payment' UI."),
-                                                    accessibilityIdentifier: "payments.settings.add_money",
-                                                    style: .default) { [weak self] _ in
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString(
+                    "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY",
+                    comment: "Label for the 'add money' button in the 'send payment' UI."
+                ),
+                style: .default
+            ) { [weak self] _ in
                 self?.didTapAddMoneyButton()
             })
         }
@@ -1109,10 +1110,13 @@ public class SendPaymentViewController: OWSViewController {
         let actionSheet = ActionSheetController(title: title,
                                                 message: message)
 
-        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("SETTINGS_PAYMENTS_ENABLE_ACTION",
-                                                                         comment: "Label for the 'enable payments' button in the 'payments not enabled' alert."),
-                                                accessibilityIdentifier: "payments.send.enable",
-                                                style: .default) { _ in
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_ENABLE_ACTION",
+                comment: "Label for the 'enable payments' button in the 'payments not enabled' alert."
+            ),
+            style: .default
+        ) { _ in
             Self.didTapEnablePaymentsButton()
         })
 

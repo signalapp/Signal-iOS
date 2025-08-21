@@ -69,16 +69,16 @@ public class PaymentOnboarding {
                                                                          comment: "First time payments suggest payments lock title"),
                                                 message: ftPaymentsLockActionSheetMessage())
 
-        actionSheet.addAction(ActionSheetAction(title: ftPaymentsLockAffirmativeActionTitle(),
-                                                accessibilityIdentifier: "payments.lock.first_time.affirmative_action",
-                                                style: .default) { _ in
+        actionSheet.addAction(ActionSheetAction(
+            title: ftPaymentsLockAffirmativeActionTitle(),
+            style: .default
+        ) { _ in
             SSKEnvironment.shared.owsPaymentsLockRef.setIsPaymentsLockEnabledAndSnooze(true)
             completion()
         })
 
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.notNowButton,
-            accessibilityIdentifier: "OWSActionSheets.notNow",
             style: .cancel
         ) { _ in
             Logger.debug("Not Now")

@@ -736,10 +736,13 @@ extension ConversationViewController: CVComponentDelegate {
 
         alert.addAction(OWSActionSheets.cancelAction)
 
-        alert.addAction(ActionSheetAction(title: OWSLocalizedString("FINGERPRINT_SHRED_KEYMATERIAL_BUTTON",
-                                                                   comment: ""),
-                                          accessibilityIdentifier: "reset_session",
-                                          style: .default) { [weak self] _ in
+        alert.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON",
+                comment: ""
+            ),
+            style: .default
+        ) { [weak self] _ in
             guard let self = self else { return }
             guard let contactThread = self.thread as? TSContactThread else {
                 // Corrupt Message errors only appear in contact threads.
@@ -836,9 +839,10 @@ extension ConversationViewController: CVComponentDelegate {
                                           message: String(format: CallStrings.callBackAlertMessageFormat,
                                                           displayName))
 
-        alert.addAction(ActionSheetAction(title: CallStrings.callBackAlertCallButton,
-                                          accessibilityIdentifier: "call_back",
-                                          style: .default) { [weak self] _ in
+        alert.addAction(ActionSheetAction(
+            title: CallStrings.callBackAlertCallButton,
+            style: .default
+        ) { [weak self] _ in
             guard let self = self else { return }
             switch call.offerType {
             case .audio:
@@ -883,7 +887,6 @@ extension ConversationViewController: CVComponentDelegate {
                     "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION",
                     comment: "Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings."
                 ),
-                accessibilityIdentifier: "block_contact",
                 style: .destructive
             ) { [weak self] _ in
                 guard self != nil else { return }

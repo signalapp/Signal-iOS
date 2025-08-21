@@ -60,7 +60,6 @@ public enum OWSActionSheets {
         let actionTitle = proceedTitle ?? CommonStrings.okButton
         let okAction = ActionSheetAction(
             title: actionTitle,
-            accessibilityIdentifier: "OWSActionSheets.ok",
             style: proceedStyle,
             handler: proceedAction
         )
@@ -85,7 +84,6 @@ public enum OWSActionSheets {
         let actionTitle = proceedTitle ?? CommonStrings.okButton
         let okAction = ActionSheetAction(
             title: actionTitle,
-            accessibilityIdentifier: "OWSActionSheets.ok",
             style: proceedStyle,
             handler: proceedAction
         )
@@ -126,7 +124,6 @@ public enum OWSActionSheets {
     public static var notNowAction: ActionSheetAction {
         let action = ActionSheetAction(
             title: CommonStrings.notNowButton,
-            accessibilityIdentifier: "OWSActionSheets.notNow",
             style: .cancel
         ) { _ in
             Logger.debug("Not now item")
@@ -138,7 +135,6 @@ public enum OWSActionSheets {
     public static var dismissAction: ActionSheetAction {
         let action = ActionSheetAction(
             title: CommonStrings.dismissButton,
-            accessibilityIdentifier: "OWSActionSheets.dismiss",
             style: .cancel
         ) { _ in
             Logger.debug("Dismiss item")
@@ -157,7 +153,6 @@ public enum OWSActionSheets {
 
         let discardAction = ActionSheetAction(
             title: CommonStrings.discardButton,
-            accessibilityIdentifier: "OWSActionSheets.discard",
             style: .destructive
         ) { _ in discardAction() }
         actionSheet.addAction(discardAction)
@@ -171,7 +166,6 @@ fileprivate extension ActionSheetController {
     func addOkayAction(title: String? = nil, action: ActionSheetAction.Handler? = nil) {
         let actionTitle = title ?? CommonStrings.okButton
         let okAction = ActionSheetAction(title: actionTitle, style: .default, handler: action)
-        okAction.accessibilityIdentifier = "OWSActionSheets.\("ok")"
         addAction(okAction)
     }
 }

@@ -76,13 +76,6 @@ open class ActionSheetController: OWSViewController {
         }
     }
 
-    public var contentAlignment: ContentAlignment = .center {
-        didSet {
-            guard oldValue != contentAlignment else { return }
-            actions.forEach { $0.button.contentAlignment = contentAlignment }
-        }
-    }
-
     public enum ContentAlignment: Int {
         case center
         case leading
@@ -177,7 +170,6 @@ open class ActionSheetController: OWSViewController {
             stackView.addHairline(with: theme.hairlineColor)
             stackView.addArrangedSubview(action.button)
         }
-        action.button.contentAlignment = contentAlignment
         action.button.releaseAction = { [weak self, weak action] in
             guard let self = self, let action = action else { return }
             self.dismiss(animated: true) { action.handler?(action) }
@@ -189,10 +181,6 @@ open class ActionSheetController: OWSViewController {
 
     public override var canBecomeFirstResponder: Bool {
         return true
-    }
-
-    override public var preferredStatusBarStyle: UIStatusBarStyle {
-        return Theme.isDarkThemeEnabled ? .lightContent : .default
     }
 
     override public func loadView() {
@@ -390,12 +378,6 @@ public class ActionSheetAction: NSObject {
 
     public let title: String
 
-    public var accessibilityIdentifier: String? {
-        didSet {
-            button.accessibilityIdentifier = accessibilityIdentifier
-        }
-    }
-
     public let style: Style
 
     @objc(ActionSheetActionStyle)
@@ -408,34 +390,10 @@ public class ActionSheetAction: NSObject {
     fileprivate let handler: Handler?
     public typealias Handler = @MainActor (ActionSheetAction) -> Void
 
-    public var trailingIcon: ThemeIcon? {
-        get {
-            return button.trailingIcon
-        }
-        set {
-            button.trailingIcon = newValue
-        }
-    }
-
-    public var leadingIcon: ThemeIcon? {
-        get {
-            return button.leadingIcon
-        }
-        set {
-            button.leadingIcon = newValue
-        }
-    }
-
     fileprivate(set) public lazy var button = Button(action: self)
 
-    @objc
-    public convenience init(title: String, style: Style = .default, handler: Handler? = nil) {
-        self.init(title: title, accessibilityIdentifier: nil, style: style, handler: handler)
-    }
-
-    public init(title: String, accessibilityIdentifier: String?, style: Style = .default, handler: Handler? = nil) {
+    public init(title: String, style: Style = .default, handler: Handler? = nil) {
         self.title = title
-        self.accessibilityIdentifier = accessibilityIdentifier
         self.style = style
         self.handler = handler
     }
@@ -446,59 +404,11 @@ public class ActionSheetAction: NSObject {
 
         var theme: Theme.ActionSheet = .default
 
-        var trailingIcon: ThemeIcon? {
-            didSet {
-                trailingIconView.isHidden = trailingIcon == nil
-
-                if let trailingIcon = trailingIcon {
-                    trailingIconView.setTemplateImage(
-                        Theme.iconImage(trailingIcon),
-                        tintColor: theme.buttonTextColor
-                    )
-                }
-
-                updateEdgeInsets()
-            }
-        }
-
-        var leadingIcon: ThemeIcon? {
-            didSet {
-                leadingIconView.isHidden = leadingIcon == nil
-
-                if let leadingIcon = leadingIcon {
-                    leadingIconView.setTemplateImage(
-                        Theme.iconImage(leadingIcon),
-                        tintColor: theme.buttonTextColor
-                    )
-                }
-
-                updateEdgeInsets()
-            }
-        }
-
         // Indicates that this button is the only button in an action sheet
         // and may update its display accordingly.
         fileprivate var isSingletonButton = false {
             didSet {
                 updateTitleStyle()
-            }
-        }
-
-        private let leadingIconView = UIImageView()
-        private let trailingIconView = UIImageView()
-
-        var contentAlignment: ActionSheetController.ContentAlignment = .center {
-            didSet {
-                switch contentAlignment {
-                case .center:
-                    contentHorizontalAlignment = .center
-                case .leading:
-                    contentHorizontalAlignment = CurrentAppContext().isRTL ? .right : .left
-                case .trailing:
-                    contentHorizontalAlignment = CurrentAppContext().isRTL ? .left : .right
-                }
-
-                updateEdgeInsets()
             }
         }
 
@@ -508,18 +418,8 @@ public class ActionSheetAction: NSObject {
 
             setBackgroundImage(UIImage.image(color: theme.buttonHighlightColor), for: .highlighted)
 
-            [leadingIconView, trailingIconView].forEach { iconView in
-                addSubview(iconView)
-                iconView.isHidden = true
-                iconView.autoSetDimensions(to: CGSize(square: 24))
-                iconView.autoVCenterInSuperview()
-                iconView.autoPinEdge(
-                    toSuperviewEdge: iconView == leadingIconView ? .leading : .trailing,
-                    withInset: 16
-                )
-            }
-
-            updateEdgeInsets()
+            contentHorizontalAlignment = .center
+            ows_contentEdgeInsets = .init(margin: 16)
 
             setTitle(action.title, for: .init())
             updateTitleStyle()
@@ -527,8 +427,6 @@ public class ActionSheetAction: NSObject {
             autoSetDimension(.height, toSize: ActionSheetController.minimumRowHeight, relation: .greaterThanOrEqual)
 
             addTarget(self, action: #selector(didTouchUpInside), for: .touchUpInside)
-
-            accessibilityIdentifier = action.accessibilityIdentifier
         }
 
         required init?(coder aDecoder: NSCoder) {
@@ -555,22 +453,11 @@ public class ActionSheetAction: NSObject {
             // Recolor everything based on the requested theme
             setBackgroundImage(UIImage.image(color: theme.buttonHighlightColor), for: .highlighted)
 
-            leadingIconView.tintColor = theme.buttonTextColor
-            trailingIconView.tintColor = theme.buttonTextColor
-
             switch style {
             case .default, .cancel:
                 setTitleColor(theme.buttonTextColor, for: .normal)
             case .destructive:
                 setTitleColor(theme.destructiveButtonTextColor, for: .normal)
-            }
-        }
-
-        private func updateEdgeInsets() {
-            if !leadingIconView.isHidden || !trailingIconView.isHidden || contentAlignment != .center {
-                ows_contentEdgeInsets = UIEdgeInsets(top: 16, leading: 56, bottom: 16, trailing: 56)
-            } else {
-                ows_contentEdgeInsets = UIEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
             }
         }
 
@@ -587,7 +474,6 @@ extension ActionSheetAction {
     public static var acknowledge: ActionSheetAction {
         ActionSheetAction(
             title: CommonStrings.acknowledgeButton,
-            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "alert", name: "acknowledge"),
             style: .default
         )
     }
@@ -595,7 +481,6 @@ extension ActionSheetAction {
     public static var okay: ActionSheetAction {
         ActionSheetAction(
             title: CommonStrings.okayButton,
-            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "alert", name: "okay"),
             style: .default
         )
     }
@@ -603,7 +488,6 @@ extension ActionSheetAction {
     public static var cancel: ActionSheetAction {
         ActionSheetAction(
             title: CommonStrings.cancelButton,
-            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "alert", name: "cancel"),
             style: .cancel
         )
     }

@@ -81,7 +81,6 @@ public class BlockListUIUtils {
         )
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "Button label for the 'block' button"),
-            accessibilityIdentifier: "BlockListUIUtils.block",
             style: .destructive,
             handler: { _ in
                 blockAddress(address, displayName: displayName, from: viewController) { _ in
@@ -91,7 +90,6 @@ public class BlockListUIUtils {
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
-            accessibilityIdentifier: "BlockListUIUtils.dismiss",
             style: .cancel,
             handler: { _ in
                 completion?(false)
@@ -121,7 +119,6 @@ public class BlockListUIUtils {
         )
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "Button label for the 'block' button"),
-            accessibilityIdentifier: "BlockListUIUtils.block",
             style: .destructive,
             handler: { _ in
                 blockGroup(groupThread, from: viewController) { _ in
@@ -131,7 +128,6 @@ public class BlockListUIUtils {
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
-            accessibilityIdentifier: "BlockListUIUtils.dismiss",
             style: .cancel,
             handler: { _ in
                 completion?(false)
@@ -259,7 +255,6 @@ public class BlockListUIUtils {
         let actionSheet = ActionSheetController(title: actionSheetTitle)
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "Button label for the 'unblock' button"),
-            accessibilityIdentifier: "BlockListUIUtils.unblock",
             style: .destructive,
             handler: { _ in
                 unblockAddress(address, displayName: displayName, from: viewController) { _ in
@@ -269,7 +264,6 @@ public class BlockListUIUtils {
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
-            accessibilityIdentifier: "BlockListUIUtils.dismiss",
             style: .cancel,
             handler: { _ in
                 completion?(true)
@@ -295,7 +289,6 @@ public class BlockListUIUtils {
         let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "Button label for the 'unblock' button"),
-            accessibilityIdentifier: "BlockListUIUtils.unblock",
             style: .destructive,
             handler: { _ in
                 unblockGroup(groupId: groupId, groupNameOrDefault: groupNameOrDefault, from: viewController) { _ in
@@ -305,7 +298,6 @@ public class BlockListUIUtils {
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
-            accessibilityIdentifier: "BlockListUIUtils.dismiss",
             style: .cancel,
             handler: { _ in
                 completion?(true)
@@ -368,7 +360,6 @@ public class BlockListUIUtils {
         let actionSheet = ActionSheetController(title: title, message: message)
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.okButton,
-            accessibilityIdentifier: "BlockListUIUtils.ok",
             style: .default,
             handler: completion
         ))

@@ -493,7 +493,6 @@ class RegistrationVerificationViewController: OWSViewController {
             let actionSheet = ActionSheetController(title: nil, message: errorMessage)
             actionSheet.addAction(.init(
                 title: alternativeTransportButtonText,
-                accessibilityIdentifier: nil,
                 handler: { [weak self] _ in
                     switch alternativeTransport {
                     case .sms:
@@ -503,10 +502,7 @@ class RegistrationVerificationViewController: OWSViewController {
                     }
                 }
             ))
-            actionSheet.addAction(.init(
-                title: CommonStrings.cancelButton,
-                accessibilityIdentifier: nil
-            ))
+            actionSheet.addAction(.cancel)
             self.present(actionSheet, animated: true)
             return
 

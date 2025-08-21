@@ -85,7 +85,6 @@ enum DebugLogs {
                         "DEBUG_LOG_ALERT_OPTION_EMAIL",
                         comment: "Label for the 'email debug log' option of the debug log alert."
                     ),
-                    accessibilityIdentifier: "DebugLogs.send_email",
                     style: .default,
                     handler: { _ in
                         Task {
@@ -103,7 +102,6 @@ enum DebugLogs {
                     "DEBUG_LOG_ALERT_OPTION_COPY_LINK",
                     comment: "Label for the 'copy link' option of the debug log alert."
                 ),
-                accessibilityIdentifier: "DebugLogs.copy_link",
                 style: .default,
                 handler: { _ in
                     UIPasteboard.general.string = url.absoluteString
@@ -115,7 +113,6 @@ enum DebugLogs {
                     "DEBUG_LOG_ALERT_OPTION_SHARE",
                     comment: "Label for the 'Share' option of the debug log alert."
                 ),
-                accessibilityIdentifier: "DebugLogs.share",
                 style: .default,
                 handler: { _ in
                     AttachmentSharing.showShareUI(
@@ -127,7 +124,6 @@ enum DebugLogs {
             ))
             alert.addAction(ActionSheetAction(
                 title: CommonStrings.cancelButton,
-                accessibilityIdentifier: "OWSActionSheets.cancel",
                 style: .cancel,
                 handler: { _ in submitLogsCompletion() }
             ))
@@ -301,7 +297,6 @@ enum DebugLogs {
                     "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE",
                     comment: "Label for the 'Export Logs' fallback option for the alert when debug log uploading fails."
                 ),
-                accessibilityIdentifier: "export_log_archive"
             ) { _ in
                 AttachmentSharing.showShareUI(
                     for: URL(fileURLWithPath: logArchiveOrDirectoryPath),
@@ -313,7 +308,7 @@ enum DebugLogs {
             })
         }
 
-        alert.addAction(.init(title: CommonStrings.okButton, accessibilityIdentifier: "ok") { _ in
+        alert.addAction(.init(title: CommonStrings.okButton) { _ in
             if let logArchiveOrDirectoryPath {
                 deleteArchive(logArchiveOrDirectoryPath)
             }

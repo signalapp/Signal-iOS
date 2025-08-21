@@ -199,15 +199,24 @@ public class PaymentsDeactivateViewController: OWSViewController {
 
     @objc
     private func didTapDeactivateImmediatelyButton() {
-        let actionSheet = ActionSheetController(title: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE",
-                                                                         comment: "Title for the 'deactivate payments confirmation' UI in the payment settings."),
-                                                message: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION",
-                                                                           comment: "Description for the 'deactivate payments confirmation' UI in the payment settings."))
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE",
+                comment: "Title for the 'deactivate payments confirmation' UI in the payment settings."
+            ),
+            message: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION",
+                comment: "Description for the 'deactivate payments confirmation' UI in the payment settings."
+            )
+        )
 
-        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_BUTTON",
-                                                                         comment: "Label for the 'deactivate payments' button in the payment settings."),
-                                                accessibilityIdentifier: "payments.settings.deactivate.continue",
-                                                style: .destructive) { [weak self] _ in
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_DEACTIVATE_BUTTON",
+                comment: "Label for the 'deactivate payments' button in the payment settings."
+            ),
+            style: .destructive
+        ) { [weak self] _ in
             self?.deactivateImmediately()
         })
 
