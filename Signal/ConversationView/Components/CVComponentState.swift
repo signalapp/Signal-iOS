@@ -335,6 +335,10 @@ public class CVComponentState: Equatable {
     }
     let giftBadge: GiftBadge?
 
+    struct Poll: Equatable {
+        let state: CVPollView.State
+    }
+
     struct SystemMessage: Equatable {
         typealias ReferencedUser = CVTextLabel.ReferencedUserItem
 
@@ -488,7 +492,6 @@ public class CVComponentState: Equatable {
         messageHasBodyAttachments: Bool,
         hasRenderableContent: Bool
     ) {
-
         self.messageCellType = messageCellType
         self.senderName = senderName
         self.senderAvatar = senderAvatar
@@ -1817,6 +1820,8 @@ public extension CVComponentState {
                 break
             case .paymentAttachment, .archivedPaymentAttachment:
                 // Payments can't be forwarded.
+                break
+            case .poll:
                 break
             case .undownloadableAttachment:
                 break

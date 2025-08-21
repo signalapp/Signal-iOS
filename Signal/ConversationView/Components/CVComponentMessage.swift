@@ -67,6 +67,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private var bottomButtons: CVComponent?
 
+    private var poll: CVComponent?
+
     private var swipeActionProgress: CVMessageSwipeActionState.Progress?
 
     private var hasSendFailureBadge = false
@@ -143,6 +145,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return self.contactShare
         case .bottomButtons:
             return self.bottomButtons
+        case .poll:
+            return self.poll
 
         // We don't render sender avatars with a subcomponent.
         case .senderAvatar:
@@ -1197,6 +1201,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return false
             case .bottomButtons:
                 return true
+            case .poll:
+                return true
             }
         }
 
@@ -2000,6 +2006,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         var archivedPaymentView: CVComponentView?
         var contactShareView: CVComponentView?
         var bottomButtonsView: CVComponentView?
+        var pollView: CVComponentView?
 
         private var allSubcomponentViews: [CVComponentView] {
             [
@@ -2059,6 +2066,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return contactShareView
             case .bottomButtons:
                 return bottomButtonsView
+            case .poll:
+                return pollView
 
             // We don't render sender avatars with a subcomponent.
             case .senderAvatar:
@@ -2106,6 +2115,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 contactShareView = subcomponentView
             case .bottomButtons:
                 bottomButtonsView = subcomponentView
+            case .poll:
+                pollView = subcomponentView
 
             // We don't render sender avatars with a subcomponent.
             case .senderAvatar:

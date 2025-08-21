@@ -11,6 +11,9 @@
 		041C24ED2DF782AF0065B685 /* OutgoingGroupUpdateMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */; };
 		043CC30E2E1EF79C00D9002E /* ThreadFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */; };
 		047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */; };
+		04A573662E4CEE5D0019651F /* CVComponentPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A573652E4CEE560019651F /* CVComponentPoll.swift */; };
+		04A5736B2E4CF1BF0019651F /* CVPollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A5736A2E4CF1BD0019651F /* CVPollView.swift */; };
+		04A573702E4D4BD50019651F /* OWSPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A5736F2E4D4BD30019651F /* OWSPoll.swift */; };
 		04AA85BC2E0EFC5C0051C0A7 /* BackupEnablementReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */; };
 		04B975462E43A4AF00E20364 /* BackupRefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B975452E43A4AA00E20364 /* BackupRefreshManager.swift */; };
 		04B975482E43BFE600E20364 /* BackupRefreshManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B975472E43BFE000E20364 /* BackupRefreshManagerTest.swift */; };
@@ -3820,6 +3823,9 @@
 		041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupEnablementReminderMegaphoneTests.swift; sourceTree = "<group>"; };
 		043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadFinderTests.swift; sourceTree = "<group>"; };
 		047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphoneTests.swift; sourceTree = "<group>"; };
+		04A573652E4CEE560019651F /* CVComponentPoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentPoll.swift; sourceTree = "<group>"; };
+		04A5736A2E4CF1BD0019651F /* CVPollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVPollView.swift; sourceTree = "<group>"; };
+		04A5736F2E4D4BD30019651F /* OWSPoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPoll.swift; sourceTree = "<group>"; };
 		04B975452E43A4AA00E20364 /* BackupRefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRefreshManager.swift; sourceTree = "<group>"; };
 		04B975472E43BFE000E20364 /* BackupRefreshManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRefreshManagerTest.swift; sourceTree = "<group>"; };
 		04BBBE8F2E259A5F00E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactivePrimaryDeviceReminderMegaphone.swift; sourceTree = "<group>"; };
@@ -7776,6 +7782,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		04A5736E2E4D4BCB0019651F /* Polls */ = {
+			isa = PBXGroup;
+			children = (
+				04A5736F2E4D4BD30019651F /* OWSPoll.swift */,
+			);
+			path = Polls;
+			sourceTree = "<group>";
+		};
 		05EA61412CC9437300B16D4E /* Config */ = {
 			isa = PBXGroup;
 			children = (
@@ -8133,6 +8147,7 @@
 				3426A36F25631C220036407F /* CVComponentLinkPreview.swift */,
 				347C383B252CE6C900F3D941 /* CVComponentMessage.swift */,
 				6605D4FE2A86B3FF004DC345 /* CVComponentPaymentAttachment.swift */,
+				04A573652E4CEE560019651F /* CVComponentPoll.swift */,
 				347C383E252CE6C900F3D941 /* CVComponentQuotedReply.swift */,
 				343417F02530A7480034FE0C /* CVComponentReactions.swift */,
 				347C383F252CE6C900F3D941 /* CVComponentSenderName.swift */,
@@ -8698,6 +8713,7 @@
 				3470C87F2555F25200F5847C /* CVContactShareView.swift */,
 				34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */,
 				3488F9352191CC4000E524CC /* CVMediaView.swift */,
+				04A5736A2E4CF1BD0019651F /* CVPollView.swift */,
 				34635331257549F1003C5428 /* CVReactionCountsView.swift */,
 				347C381C252CE69400F3D941 /* CVStackView.swift */,
 				3420CF6E2638A01A00E7DCB0 /* CVWallpaperBlurView.swift */,
@@ -13727,6 +13743,7 @@
 			children = (
 				664BA8482BB5DF44005638E0 /* ContactShare */,
 				669FAE162B7A8DA4009EE2FE /* LinkPreview */,
+				04A5736E2E4D4BCB0019651F /* Polls */,
 				669FAE0C2B744BA4009EE2FE /* Quotes */,
 				667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */,
 				D9247EA92BFD424800DFEF6F /* InteractionDeleteManager.swift */,
@@ -16930,6 +16947,7 @@
 				3426A37025631C250036407F /* CVComponentLinkPreview.swift in Sources */,
 				347C3842252CE6C900F3D941 /* CVComponentMessage.swift in Sources */,
 				6605D4FF2A86B3FF004DC345 /* CVComponentPaymentAttachment.swift in Sources */,
+				04A573662E4CEE5D0019651F /* CVComponentPoll.swift in Sources */,
 				347C3845252CE6C900F3D941 /* CVComponentQuotedReply.swift in Sources */,
 				343417F12530A7480034FE0C /* CVComponentReactions.swift in Sources */,
 				347C3846252CE6C900F3D941 /* CVComponentSenderName.swift in Sources */,
@@ -16954,6 +16972,7 @@
 				348EE28E25B897BF00814FC2 /* CVMediaCache.swift in Sources */,
 				3488F9362191CC4000E524CC /* CVMediaView.swift in Sources */,
 				348815C8255346A500D4F4C4 /* CVNode.swift in Sources */,
+				04A5736B2E4CF1BF0019651F /* CVPollView.swift in Sources */,
 				34635332257549F2003C5428 /* CVReactionCountsView.swift in Sources */,
 				348815CA255346A500D4F4C4 /* CVRenderItem.swift in Sources */,
 				3470518C254B320700A19468 /* CVRenderState.swift in Sources */,
@@ -18218,6 +18237,7 @@
 				6642A8792A8D85F500E591C2 /* OWSPaymentActivationRequestMessage+SDS.swift in Sources */,
 				6642A8762A8D80F400E591C2 /* OWSPaymentActivationRequestMessage.m in Sources */,
 				72C9058D2B9AC81B00E586B8 /* OWSPaymentsLock.swift in Sources */,
+				04A573702E4D4BD50019651F /* OWSPoll.swift in Sources */,
 				F9C5CC32289453B300548EEE /* OWSProfileKeyMessage.m in Sources */,
 				724D47B82B97C301001BE973 /* OWSProfileManager.swift in Sources */,
 				66A830442CEBFCC700A7656D /* OWSProgress.swift in Sources */,
