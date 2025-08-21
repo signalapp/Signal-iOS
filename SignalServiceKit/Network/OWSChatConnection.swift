@@ -192,7 +192,7 @@ public class OWSChatConnection {
         case .main:
             return true
         case .nse:
-            return false // because there is a kill switch
+            return true
         case .share:
             return true
         }
@@ -203,7 +203,7 @@ public class OWSChatConnection {
         case .main:
             return true
         case .nse:
-            return RemoteConfig.current.isNotificationServiceWebSocketEnabled
+            return true
         case .share:
             return true
         }

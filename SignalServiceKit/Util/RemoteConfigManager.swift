@@ -248,10 +248,6 @@ public class RemoteConfig {
         return !isEnabled(.tsAttachmentMigrationMainAppBackgroundKillSwitch)
     }
 
-    public var isNotificationServiceWebSocketEnabled: Bool {
-        return isEnabled(.notificationServiceWebSocket)
-    }
-
     public var usePqRatchet: Bool {
         return isEnabled(.usePqRatchet)
     }
@@ -480,7 +476,6 @@ private enum IsEnabledFlag: String, FlagType {
     case enableGifSearch = "global.gifSearch"
     case libsignalEnforceMinTlsVersion = "ios.libsignalEnforceMinTlsVersion"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
-    case notificationServiceWebSocket = "ios.notificationServiceWebSocket2"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
     case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
     case paypalMonthlyDonationKillSwitch = "ios.paypalMonthlyDonationKillSwitch"
@@ -511,7 +506,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableGifSearch: false
         case .libsignalEnforceMinTlsVersion: true // cached during launch, so not hot-swapped in practice
         case .messageResendKillSwitch: false
-        case .notificationServiceWebSocket: true
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
         case .paypalMonthlyDonationKillSwitch: false
