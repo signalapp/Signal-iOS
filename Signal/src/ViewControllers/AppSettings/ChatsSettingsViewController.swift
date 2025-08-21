@@ -97,8 +97,8 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         contents.add(keepMutedChatsArchived)
 
         let clearHistorySection = OWSTableSection()
-        clearHistorySection.add(.actionItem(
-            withText: OWSLocalizedString("SETTINGS_CLEAR_HISTORY", comment: ""),
+        clearHistorySection.add(.item(
+            name: OWSLocalizedString("SETTINGS_CLEAR_HISTORY", comment: ""),
             textColor: .ows_accentRed,
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "clear_chat_history"),
             actionBlock: { [weak self] in

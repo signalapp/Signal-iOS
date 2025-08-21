@@ -177,8 +177,8 @@ class AccountSettingsViewController: OWSTableViewController2 {
                     self?.requestAccountDataReport()
                 }
             ))
-            accountSection.add(.actionItem(
-                withText: OWSLocalizedString("SETTINGS_DELETE_ACCOUNT_BUTTON", comment: ""),
+            accountSection.add(.item(
+                name: OWSLocalizedString("SETTINGS_DELETE_ACCOUNT_BUTTON", comment: ""),
                 textColor: .ows_accentRed,
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "delete_account"),
                 actionBlock: { [weak self] in

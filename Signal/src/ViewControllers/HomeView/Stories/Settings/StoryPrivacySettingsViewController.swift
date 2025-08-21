@@ -135,8 +135,8 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
             comment: "Footer for the 'turn off' section of the stories settings"
         )
         contents.add(turnOffStoriesSection)
-        turnOffStoriesSection.add(.actionItem(
-            withText: OWSLocalizedString(
+        turnOffStoriesSection.add(.item(
+            name: OWSLocalizedString(
                 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON",
                 comment: "Button to turn off stories on the story privacy settings view"
             ),

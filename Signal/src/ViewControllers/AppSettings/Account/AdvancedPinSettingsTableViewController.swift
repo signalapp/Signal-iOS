@@ -36,8 +36,8 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
             )
         }
 
-        pinsSection.add(OWSTableItem.actionItem(
-            withText: (hasMasterKey && !hasBackedUpMasterKey)
+        pinsSection.add(OWSTableItem.item(
+            name: (hasMasterKey && !hasBackedUpMasterKey)
                 ? OWSLocalizedString("SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION",
                                     comment: "")
                 : OWSLocalizedString("SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION",

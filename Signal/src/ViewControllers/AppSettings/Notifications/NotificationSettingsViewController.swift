@@ -29,8 +29,8 @@ class NotificationSettingsViewController: OWSTableViewController2 {
             "SETTINGS_SECTION_SOUNDS",
             comment: "Header Label for the sounds section of settings views."
         )
-        soundsSection.add(.disclosureItem(
-            withText: OWSLocalizedString(
+        soundsSection.add(.item(
+            name: OWSLocalizedString(
                 "SETTINGS_ITEM_NOTIFICATION_SOUND",
                 comment: "Label for settings view that allows user to change the notification sound."
             ),
@@ -109,8 +109,8 @@ class NotificationSettingsViewController: OWSTableViewController2 {
         contents.add(notifyWhenSection)
 
         let reregisterPushSection = OWSTableSection()
-        reregisterPushSection.add(.actionItem(
-            withText: OWSLocalizedString("REREGISTER_FOR_PUSH", comment: ""),
+        reregisterPushSection.add(.item(
+            name: OWSLocalizedString("REREGISTER_FOR_PUSH", comment: ""),
             actionBlock: { [weak self] in
                 self?.syncPushTokens()
             }
