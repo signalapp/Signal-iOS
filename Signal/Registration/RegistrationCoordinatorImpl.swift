@@ -686,7 +686,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             let errorType = self.deps.registrationBackupErrorPresenter.mapToRegistrationError(error: error)
             let result = await self.deps.registrationBackupErrorPresenter.presentError(
                 error: errorType,
-                isQuickRestore: self.persistedState.restoreMode == .quickRestore
+                isQuickRestore: false
             )
 
             switch result {
@@ -697,6 +697,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // By this point, it's really too late to do anything but skip the backup and continue
                 await db.awaitableWrite { tx in
                     updatePersistedState(tx) {
+                        $0.restoreMethod = .declined
                         $0.backupKeyAccountEntropyPool = nil
                     }
                 }
