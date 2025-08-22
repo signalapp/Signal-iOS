@@ -550,7 +550,11 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                         // treat this like a network error that retries with
                         // backoff.
                         return .retryableError(NetworkRetryError())
-                    } else if error.isNetworkFailureOrTimeout {
+                    } else if
+                        error.isNetworkFailureOrTimeout
+                        // Retry 500s per-item with the same backoff as network errors
+                        || error.is5xxServiceResponse
+                    {
                         switch await statusManager.currentStatus() {
                         case .running:
                             // If we _think_ we are connected and should be running,

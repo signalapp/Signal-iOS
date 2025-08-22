@@ -567,23 +567,38 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                     canRetryMediaTier404(),
                     let nextRetryTimestamp = { () -> UInt64? in
                         guard record.record.numRetries < 32 else {
-                            owsFailDebug("risk of integer overflow")
+                            owsFailDebug("Too many retries!")
                             return nil
                         }
-                        // Exponential backoff, starting at 1 day for the first two retries.
-                        let initialDelay = UInt64.dayInMs
-                        let delay = UInt64(pow(2.0, max(0, Double(record.record.numRetries) - 1))) * initialDelay
-                        if delay > UInt64.dayInMs * 30 {
-                            // Don't go more than 30 days; stop retrying.
-                            logger.info("Giving up retrying attachment download")
-                            return nil
-                        }
-                        return delay
+                        // Exponential backoff, starting at 1 day.
+                        let delay = OWSOperation.retryIntervalForExponentialBackoff(
+                            failureCount: record.record.numRetries,
+                            minAverageBackoff: .day,
+                            maxAverageBackoff: .day * 30,
+                        )
+                        return dateProvider().addingTimeInterval(delay).ows_millisecondsSince1970
                     }()
                 {
                     return .retryableError(RetryMediaTierError(nextRetryTimestamp: nextRetryTimestamp))
                 } else if error.httpStatusCode == 404 {
                     return .unretryableError(Unretryable404Error(source: source))
+                } else if
+                    error.is5xxServiceResponse,
+                    let nextRetryTimestamp = { () -> UInt64? in
+                        guard record.record.numRetries < 5 else {
+                            owsFailDebug("Too many retries!")
+                            return nil
+                        }
+                        let delay = OWSOperation.retryIntervalForExponentialBackoff(
+                            failureCount: record.record.numRetries,
+                            minAverageBackoff: 2,
+                            maxAverageBackoff: 60 * 60,
+                        )
+                        return dateProvider().addingTimeInterval(delay).ows_millisecondsSince1970
+                    }()
+                {
+                    // Retry 500s per-item.
+                    return .retryableError(Retry5xxError(nextRetryTimestamp: nextRetryTimestamp))
                 } else {
                     return .unretryableError(error)
                 }
@@ -610,6 +625,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
 
         private struct RetryMediaTierError: Error {
+            let nextRetryTimestamp: UInt64
+        }
+
+        private struct Retry5xxError: Error {
             let nextRetryTimestamp: UInt64
         }
 
@@ -640,10 +659,12 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
             if
                 isRetryable,
-                let error = error as? RetryMediaTierError
+                let nextRetryTimestamp =
+                    (error as? RetryMediaTierError)?.nextRetryTimestamp
+                    ?? (error as? Retry5xxError)?.nextRetryTimestamp
             {
                 var downloadRecord = record.record
-                downloadRecord.minRetryTimestamp = error.nextRetryTimestamp
+                downloadRecord.minRetryTimestamp = nextRetryTimestamp
                 downloadRecord.numRetries += 1
                 try downloadRecord.update(tx.database)
             } else if
