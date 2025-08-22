@@ -78,13 +78,8 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> BackupAuthCredential {
 
-        do {
-            // Wait for steps whose side-effects affect Backup auth credentials.
-            try await waitForAuthCredentialDependencies(localAci: localAci, auth: auth)
-        } catch {
-            Logger.warn("Backup auth credential dependency(ies) failed! \(error)")
-            throw error
-        }
+        // Wait for steps whose side-effects affect Backup auth credentials.
+        try await waitForAuthCredentialDependencies(localAci: localAci, auth: auth)
 
         let redemptionTime = self.dateProvider().startOfTodayUTCTimestamp()
         let futureRedemptionTime = redemptionTime + UInt64(Constants.numberOfDaysRemainingFutureCredentialsInSeconds)
@@ -202,44 +197,34 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         localAci: Aci,
         auth: ChatServiceAuth,
     ) async throws {
-        var dependencyStepErrors = [String: Error]()
-
-        let steps: [String: Task<Void, Error>] = [
-            "registerBackupId": Task {
+        let steps: [String: () async throws -> Void] = [
+            "registerBackupId": {
                 // We can't fetch Backup auth credentials without having registered
                 // our Backup ID. Normally this will have already happened, making
                 // this call a no-op; however, it's possible it never succeeded or
                 // we need to run it again.
                 try await backupIdService.registerBackupIDIfNecessary(localAci: localAci, auth: auth)
             },
-            "redeemBackupSubscription": Task {
+            "redeemBackupSubscription": {
                 // Redeem our subscription if necessary, to ensure we have our
                 // server-side Backup entitlement in place so we correctly fetch
                 // paid-ter credentials.
                 try await backupSubscriptionManager.redeemSubscriptionIfNecessary()
             },
-            "testFlightEntitlement": Task {
+            "testFlightEntitlement": {
                 // Same motivation as redeeming our subscription above, but for
                 // TestFlight builds.
                 try await backupTestFlightEntitlementManager.renewEntitlementIfNecessary()
             },
         ]
 
-        for (label, task) in steps {
+        for (label, block) in steps {
             do {
-                try await task.value
+                try await block()
             } catch {
-                Logger.warn("Failed auth credential dependency step: \(label)")
-                dependencyStepErrors[label] = error
+                Logger.warn("Failed auth credential dependency step: \(label)! \(error)")
+                throw error
             }
-        }
-
-        if !dependencyStepErrors.isEmpty {
-            struct BackupAuthCredentialDependencyError: Error {
-                let underlyingErrors: [String: Error]
-            }
-
-            throw BackupAuthCredentialDependencyError(underlyingErrors: dependencyStepErrors)
         }
     }
 
