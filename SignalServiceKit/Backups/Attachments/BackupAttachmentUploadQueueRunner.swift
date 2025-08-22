@@ -226,14 +226,14 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 }
             }
             defer { backgroundTask.end() }
-            let fullsizeTask = Task { [fullsizeTaskQueue] in
+            async let fullsizeResult = Result.init { [fullsizeTaskQueue] in
                 try await fullsizeTaskQueue.loadAndRunTasks()
             }
-            let thumbnailTask = Task { [thumbnailTaskQueue] in
+            async let thumbnailResult = Result.init { [thumbnailTaskQueue] in
                 try await thumbnailTaskQueue.loadAndRunTasks()
             }
-            try await thumbnailTask.value
-            try await fullsizeTask.value
+            try await thumbnailResult.get()
+            try await fullsizeResult.get()
         case .empty:
             logger.info("Skipping Backup uploads: queue is empty.")
             return

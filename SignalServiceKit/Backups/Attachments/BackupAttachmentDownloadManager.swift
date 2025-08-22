@@ -250,14 +250,14 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
         defer { backgroundTask.end() }
 
-        let fullsizeTask = Task { [fullsizeTaskQueue] in
+        async let fullsizeResult = Result.init { [fullsizeTaskQueue] in
             try await fullsizeTaskQueue.loadAndRunTasks()
         }
-        let thumbnailTask = Task { [thumbnailTaskQueue] in
+        async let thumbnailResult = Result.init { [thumbnailTaskQueue] in
             try await thumbnailTaskQueue.loadAndRunTasks()
         }
-        try await fullsizeTask.value
-        try await thumbnailTask.value
+        try await fullsizeResult.get()
+        try await thumbnailResult.get()
     }
 
     // MARK: - Queue status observation
