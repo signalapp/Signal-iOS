@@ -126,11 +126,6 @@ public protocol SecureValueRecovery {
     /// The pin type used (e.g. numeric, alphanumeric)
     func currentPinType(transaction: DBReadTransaction) -> SVR.PinType?
 
-    /// Indicates whether your pin is valid when compared to your stored keys.
-    /// This is a local verification and does not make any requests to the SVR.
-    /// Callback will happen on the main thread.
-    func verifyPin(_ pin: String, resultHandler: @escaping (Bool) -> Void)
-
     /// Loads the users key, if any, from the SVR into the database.
     func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>
 

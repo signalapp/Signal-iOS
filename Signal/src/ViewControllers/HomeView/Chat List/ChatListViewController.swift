@@ -1053,7 +1053,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             return
         }
 
-        let actionSheet = ActionSheetController(
+        OWSActionSheets.showContactSupportActionSheet(
             title: OWSLocalizedString(
                 "NOTIFICATIONS_ERROR_TITLE",
                 comment: "Shown as the title of an alert when notifications can't be shown due to an error."
@@ -1064,24 +1064,12 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     comment: "Shown as the body of an alert when notifications can't be shown due to an error."
                 ),
                 UIDevice.current.localizedModel
-            )
+            ),
+            emailFilter: .custom("NotLaunchingNSE"),
+            fromViewController: self
         )
-        actionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.contactSupport,
-            handler: { [weak self] _ in
-                guard let self else { return }
-                ContactSupportActionSheet.present(
-                    emailFilter: .custom("NotLaunchingNSE"),
-                    logDumper: .fromGlobals(),
-                    fromViewController: self,
-                )
-            }
-        ))
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton))
 
         let promptDate = Date()
-        self.present(actionSheet, animated: true)
-
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             keyValueStore.setDate(promptDate, key: mostRecentDateKey, transaction: tx)
             keyValueStore.setInt(

@@ -235,22 +235,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
-        // Record if the existing master key has been backed up.
-        let hasBackedUpMasterKey = localStorage.getIsMasterKeyBackedUp(transaction)
-
         // clearInProgressBackup will clear any in progress backup state.
         // This will prevent us continuing any in progress backups/exposes.
         clearInProgressBackup(transaction)
 
-        // If the master key has ever been backed up to SVR, persist that in
-        // local SVR state. For better or worse, there are other parts of the
-        // code that uses the presence of this value as an indicator of
-        // running against modern endpoints (e.g. OWS2FAManager uses this to
-        // as part of the check to determine if the v1 pin has been update to v1)
         updateLocalSVRState(
-            isMasterKeyBackedUp: hasBackedUpMasterKey,
+            isMasterKeyBackedUp: localStorage.getIsMasterKeyBackedUp(transaction),
             pinType: .alphanumeric,
-            encodedPINVerificationString: nil,
             mrEnclaveStringValue: nil,
             transaction: transaction
         )
@@ -287,26 +278,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     public func currentPinType(transaction: DBReadTransaction) -> SVR.PinType? {
         return localStorage.getPinType(transaction)
-    }
-
-    public func verifyPin(_ pin: String, resultHandler: @escaping (Bool) -> Void) {
-        Logger.info("")
-        // Kick off to a background thread to do expensive cryptography operations.
-        DispatchQueue.global().async { [localStorage, db] in
-            var isValid = false
-            defer {
-                DispatchQueue.main.async { resultHandler(isValid) }
-            }
-
-            guard let encodedVerificationString = db.read(block: { tx in
-                localStorage.getEncodedPINVerificationString(tx)
-            }) else {
-                owsFailDebug("Attempted to verify pin locally when we don't have a verification string")
-                return
-            }
-
-            isValid = SVRUtil.verifyPIN(pin: pin, againstEncodedPINVerificationString: encodedVerificationString)
-        }
     }
 
     // MARK: - Key Management
@@ -774,7 +745,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                             self.updateLocalSVRState(
                                 isMasterKeyBackedUp: true,
                                 pinType: backup.pinType,
-                                encodedPINVerificationString: backup.encodedPINVerificationString,
                                 mrEnclaveStringValue: backup.mrEnclaveStringValue,
                                 transaction: tx
                             )
@@ -926,10 +896,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         authedAccount: AuthedAccount
     ) -> Guarantee<RestoreResult> {
         let pinHash: SVR2PinHash
-        let encodedPINVerificationString: String
         do {
             pinHash = try connection.hashPin(pin: pin, wrapper: clientWrapper)
-            encodedPINVerificationString = try SVRUtil.deriveEncodedPINVerificationString(pin: pin)
         } catch {
             return .value(.decryptionError)
         }
@@ -969,7 +937,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                             self.updateLocalSVRState(
                                 isMasterKeyBackedUp: true,
                                 pinType: .init(forPin: pin),
-                                encodedPINVerificationString: encodedPINVerificationString,
                                 mrEnclaveStringValue: mrEnclave.stringValue,
                                 transaction: tx
                             )
@@ -1559,7 +1526,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private func updateLocalSVRState(
         isMasterKeyBackedUp: Bool,
         pinType: SVR.PinType,
-        encodedPINVerificationString: String?,
         mrEnclaveStringValue: String?,
         transaction: DBWriteTransaction
     ) {
@@ -1569,9 +1535,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
         if pinType != localStorage.getPinType(transaction) {
             localStorage.setPinType(pinType, transaction)
-        }
-        if encodedPINVerificationString != localStorage.getEncodedPINVerificationString(transaction) {
-            localStorage.setEncodedPINVerificationString(encodedPINVerificationString, transaction)
         }
         if mrEnclaveStringValue != localStorage.getSVR2MrEnclaveStringValue(transaction) {
             localStorage.setSVR2MrEnclaveStringValue(mrEnclaveStringValue, transaction)

@@ -34,12 +34,6 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         return currentPinType
     }
 
-    public var verifyPinHandler: (String) -> Bool = { _ in return true }
-
-    public func verifyPin(_ pin: String, resultHandler: @escaping (Bool) -> Void) {
-        resultHandler(verifyPinHandler(pin))
-    }
-
     public var reglockToken: String?
 
     public var backupMasterKeyMock: ((_ pin: String, _ masterKey: MasterKey, _ authMethod: SVR.AuthMethod) -> Promise<MasterKey>)?

@@ -6328,21 +6328,6 @@
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
 
-/* Action of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Turn Off";
-
-/* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
-
-/* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Turn Off Registration Lock?";
-
-/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
-
-/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
-
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Disable PIN";
 
@@ -6354,12 +6339,6 @@
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "PINs keep your information stored with Signal encrypted so only you can access it. Choose a stronger PIN to protect your account.";
-
-/* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled.";
-
-/* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
 "PIN_ENTER_EXISTING_SKIP" = "Skip PIN";
@@ -7468,6 +7447,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
 
+/* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "You must disable Backups before disabling your PIN.";
+
+/* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "You must disable registration lock before disabling your PIN.";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
 
@@ -8272,11 +8257,26 @@
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Turn Off";
 
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Failed to disable registration lock. Please contact support.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Failed to disable registration lock. Check your internet connection and try again.";
+
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
 
 /* Action to turn on registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Failed to enable registration lock. Please contact support.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Failed to enable registration lock. Check your internet connection and try again.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "You must create a PIN to use registration lock.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";

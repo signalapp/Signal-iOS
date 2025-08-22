@@ -31,10 +31,6 @@ public class OWS2FAManager {
 
     // MARK: -
 
-    public var is2FAEnabled: Bool {
-        return db.read { svr.hasBackedUpMasterKey(transaction: $0) }
-    }
-
     public var isRegistrationLockV2Enabled: Bool {
         return db.read { isRegistrationLockV2Enabled(transaction: $0) }
     }
@@ -48,7 +44,14 @@ public class OWS2FAManager {
 
     // MARK: -
 
-    public var pinCode: String? {
+    public var isPinEnabledWithSneakyTransaction: Bool {
+        return db.read { isPinEnabled(tx: $0) }
+    }
+    public func isPinEnabled(tx: DBReadTransaction) -> Bool {
+        return pinCode(transaction: tx) != nil
+    }
+
+    public var pinCodeWithSneakyTransaction: String? {
         return db.read { pinCode(transaction: $0) }
     }
     public func pinCode(transaction: DBReadTransaction) -> String? {
@@ -99,13 +102,13 @@ public class OWS2FAManager {
     }
 
     public func isDueForV2Reminder(transaction: DBReadTransaction) -> Bool {
-        guard tsAccountManager.registrationState(tx: transaction).isRegistered else { return false }
-        guard svr.hasBackedUpMasterKey(transaction: transaction) else { return false }
-        if pinCode(transaction: transaction).isEmptyOrNil {
-            Logger.info("Missing 2FA pin, prompting for reminder so we can backfill it.")
-            return true
+        guard
+            tsAccountManager.registrationState(tx: transaction).isRegistered,
+            isPinEnabled(tx: transaction),
+            areRemindersEnabled(transaction: transaction)
+        else {
+            return false
         }
-        guard areRemindersEnabled(transaction: transaction) else { return false }
 
         return nextReminderDate(transaction: transaction) < Date()
     }
@@ -140,21 +143,8 @@ public class OWS2FAManager {
     // MARK: -
 
     public func verifyPin(_ pin: String, result: @escaping (Bool) -> Void) {
-        let pinToMatch = pinCode
-
-        if is2FAEnabled {
-            if let pinToMatch, !pinToMatch.isEmpty {
-                result(pinToMatch == SVRUtil.normalizePin(pin))
-            } else {
-                svr.verifyPin(pin) { isValid in
-                    result(isValid)
-
-                    if isValid {
-                        Logger.info("Verified PIN code")
-                        self.db.write { self.setPinCode(pin, transaction: $0) }
-                    }
-                }
-            }
+        if let pinToMatch = pinCodeWithSneakyTransaction {
+            result(pinToMatch == SVRUtil.normalizePin(pin))
         } else {
             owsFailDebug("unexpectedly attempting to verify pin when 2fa is disabled")
             result(false)
@@ -175,8 +165,12 @@ public class OWS2FAManager {
         keyValueStore.removeValue(forKey: kOWS2FAManager_PinCode, transaction: transaction)
     }
 
+    /// Marks the given PIN as enabled locally.
+    /// - SeeAlso ``enablePin(_:)``
     public func markEnabled(pin: String, transaction: DBWriteTransaction) {
-        setPinCode(pin, transaction: transaction)
+        owsPrecondition(!pin.isEmpty)
+
+        setNormalizedPin(pin, tx: transaction)
 
         // Reset the reminder repetition interval for the new pin.
         setDefaultRepetitionInterval(transaction: transaction)
@@ -190,23 +184,23 @@ public class OWS2FAManager {
     }
 
     public func restorePinFromBackup(_ pin: String, transaction: DBWriteTransaction) {
-        keyValueStore.setString(pin, key: kOWS2FAManager_PinCode, transaction: transaction)
+        setNormalizedPin(pin, tx: transaction)
     }
 
-    private func setPinCode(_ pin: String, transaction: DBWriteTransaction) {
-        if pin.isEmpty {
-            clearLocalPinCode(transaction: transaction)
-            return
-        }
+    private func setNormalizedPin(_ pin: String, tx: DBWriteTransaction) {
+        owsPrecondition(!pin.isEmpty)
 
-        let pin = SVRUtil.normalizePin(pin)
-        keyValueStore.setString(pin, key: kOWS2FAManager_PinCode, transaction: transaction)
+        keyValueStore.setString(pin, key: kOWS2FAManager_PinCode, transaction: tx)
     }
 
     // MARK: -
 
-    @MainActor
-    public func requestEnable2FA(withPin pin: String) async throws {
+    /// "Enables" the PIN by using it to back up the master key, then setting
+    /// local state as appropriate.
+    ///
+    /// - Important
+    /// This does not enable reglock. See ``enableRegistrationLockV2()``.
+    public func enablePin(_ pin: String) async throws {
         owsAssertDebug(!pin.isEmpty)
 
         // Enabling V2 2FA doesn't inherently enable registration lock,
@@ -225,21 +219,6 @@ public class OWS2FAManager {
 
         await db.awaitableWrite { tx in
             markEnabled(pin: pin, transaction: tx)
-        }
-    }
-
-    public func disable2FA() {
-        if is2FAEnabled {
-            Task {
-                do {
-                    try await self.svr.deleteKeys().awaitable()
-                    try await self.disableRegistrationLockV2()
-                } catch {
-                }
-                await db.awaitableWrite { self.markDisabled(transaction: $0) }
-            }
-        } else {
-            owsFailDebug("Unexpectedly attempting to disable 2fa for disabled mode")
         }
     }
 

@@ -6,21 +6,6 @@
 import SignalServiceKit
 import SignalUI
 
-extension ActionSheetAction {
-    static func contactSupport(
-        emailFilter: ContactSupportActionSheet.EmailFilter,
-        fromViewController: UIViewController,
-    ) -> ActionSheetAction {
-        ActionSheetAction(title: CommonStrings.contactSupport) { _ in
-            ContactSupportActionSheet.present(
-                emailFilter: emailFilter,
-                logDumper: .fromGlobals(),
-                fromViewController: fromViewController,
-            )
-        }
-    }
-}
-
 enum ContactSupportActionSheet {
     enum EmailFilter: Equatable {
         enum RegistrationPINMode: String {
@@ -150,5 +135,44 @@ enum ContactSupportActionSheet {
         ))
 
         fromViewController.present(actionSheet, animated: true)
+    }
+}
+
+// MARK: -
+
+extension ActionSheetAction {
+    static func contactSupport(
+        emailFilter: ContactSupportActionSheet.EmailFilter,
+        fromViewController: UIViewController,
+    ) -> ActionSheetAction {
+        ActionSheetAction(title: CommonStrings.contactSupport) { _ in
+            ContactSupportActionSheet.present(
+                emailFilter: emailFilter,
+                logDumper: .fromGlobals(),
+                fromViewController: fromViewController,
+            )
+        }
+    }
+}
+
+extension OWSActionSheets {
+    static func showContactSupportActionSheet(
+        title: String? = nil,
+        message: String,
+        emailFilter: ContactSupportActionSheet.EmailFilter,
+        fromViewController: UIViewController,
+    ) {
+        let actionSheet = ActionSheetController(title: title, message: message)
+
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.contactSupport) { _ in
+            ContactSupportActionSheet.present(
+                emailFilter: emailFilter,
+                logDumper: .fromGlobals(),
+                fromViewController: fromViewController,
+            )
+        })
+
+        actionSheet.addAction(.okay)
+        showActionSheet(actionSheet, fromViewController: fromViewController)
     }
 }

@@ -538,7 +538,7 @@ class BackupSettingsViewController:
     }
 
     private func showDisablingBackupsFailedSheet() {
-        let actionSheet = ActionSheetController(
+        OWSActionSheets.showContactSupportActionSheet(
             title: OWSLocalizedString(
                 "BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE",
                 comment: "Title shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error."
@@ -547,14 +547,9 @@ class BackupSettingsViewController:
                 "BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE",
                 comment: "Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error."
             ),
-        )
-        actionSheet.addAction(.contactSupport(
             emailFilter: .backupDisableFailed,
             fromViewController: self
-        ))
-        actionSheet.addAction(.okay)
-
-        presentActionSheet(actionSheet)
+        )
     }
 
     // MARK: -

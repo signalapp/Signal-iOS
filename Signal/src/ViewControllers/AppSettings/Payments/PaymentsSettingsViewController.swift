@@ -191,10 +191,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             }
 
             let hasShortOrMissingPin: Bool = {
-                guard SSKEnvironment.shared.ows2FAManagerRef.is2FAEnabled else {
-                    return true
-                }
-                guard let pinCode = SSKEnvironment.shared.ows2FAManagerRef.pinCode else {
+                guard let pinCode = SSKEnvironment.shared.ows2FAManagerRef.pinCodeWithSneakyTransaction else {
                     return true
                 }
                 let shortPinLength: UInt = 4
@@ -1280,12 +1277,10 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             navigationController.popViewController(animated: true) { [appReadiness] in
                 let accountSettingsView = AccountSettingsViewController(appReadiness: appReadiness)
                 navigationController.pushViewController(accountSettingsView, animated: true)
-                accountSettingsView.showCreateOrChangePin()
             }
         case .standalone:
             let accountSettingsView = AccountSettingsViewController(appReadiness: appReadiness)
             navigationController.pushViewController(accountSettingsView, animated: true)
-            accountSettingsView.showCreateOrChangePin()
         }
     }
 

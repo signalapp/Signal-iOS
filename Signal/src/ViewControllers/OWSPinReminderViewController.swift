@@ -10,7 +10,7 @@ public class PinReminderViewController: OWSViewController {
 
     enum PinReminderResult {
         case canceled(didGuessWrong: Bool)
-        case changedOrRemovedPin
+        case changedPin
         case succeeded
     }
 
@@ -261,8 +261,7 @@ public class PinReminderViewController: OWSViewController {
         let viewController = PinSetupViewController(
             mode: .creating,
             showCancelButton: true,
-            showDisablePinButton: true,
-            completionHandler: { [weak self] _, _ in self?.completionHandler?(.changedOrRemovedPin) }
+            completionHandler: { [weak self] _, _ in self?.completionHandler?(.changedPin) }
         )
         present(OWSNavigationController(rootViewController: viewController), animated: true)
     }

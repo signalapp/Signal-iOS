@@ -762,17 +762,7 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapSessionRefreshMessage(_ message: TSErrorMessage) {
         dismissKeyBoard()
 
-        let headerImageView = UIImageView(image: UIImage(named: "chat-session-refresh"))
-
-        let headerView = UIView()
-        headerView.addSubview(headerImageView)
-        headerImageView.autoPinEdge(toSuperviewEdge: .top, withInset: 22)
-        headerImageView.autoPinEdge(toSuperviewEdge: .bottom)
-        headerImageView.autoHCenterInSuperview()
-        headerImageView.autoSetDimension(.width, toSize: 200)
-        headerImageView.autoSetDimension(.height, toSize: 110)
-
-        let sessionRefreshedActionSheet = ActionSheetController(
+        OWSActionSheets.showContactSupportActionSheet(
             title: OWSLocalizedString(
                 "SESSION_REFRESH_ALERT_TITLE",
                 comment: "Title for the session refresh alert"
@@ -780,19 +770,10 @@ extension ConversationViewController: CVComponentDelegate {
             message: OWSLocalizedString(
                 "SESSION_REFRESH_ALERT_MESSAGE",
                 comment: "Description for the session refresh alert"
-            )
+            ),
+            emailFilter: .custom("Signal iOS Session Refresh"),
+            fromViewController: self
         )
-        sessionRefreshedActionSheet.addAction(ActionSheetAction(title: CommonStrings.contactSupport) { _ in
-            ContactSupportActionSheet.present(
-                emailFilter: .custom("Signal iOS Session Refresh"),
-                logDumper: .fromGlobals(),
-                fromViewController: self
-            )
-        })
-        sessionRefreshedActionSheet.addAction(OWSActionSheets.okayAction)
-        sessionRefreshedActionSheet.customHeader = headerView
-
-        presentActionSheet(sessionRefreshedActionSheet)
     }
 
     // See: resendGroupUpdate

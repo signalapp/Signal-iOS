@@ -16,8 +16,6 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
 
     func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType?
 
-    func getEncodedPINVerificationString(_ transaction: DBReadTransaction) -> String?
-
     func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String?
 
     // MARK: - Setters
@@ -27,8 +25,6 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
     func setIsMasterKeyBackedUp(_ value: Bool, _ transaction: DBWriteTransaction)
 
     func setPinType(_ value: SVR.PinType, _ transaction: DBWriteTransaction)
-
-    func setEncodedPINVerificationString(_ value: String?, _ transaction: DBWriteTransaction)
 
     func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction)
 
@@ -68,10 +64,6 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         return SVR.PinType(rawValue: raw)
     }
 
-    public func getEncodedPINVerificationString(_ transaction: DBReadTransaction) -> String? {
-        return svrKvStore.getString(Keys.encodedPINVerificationString, transaction: transaction)
-    }
-
     public func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String? {
         return svrKvStore.getString(Keys.svr2MrEnclaveStringValue, transaction: transaction)
     }
@@ -90,10 +82,6 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         svrKvStore.setInt(value.rawValue, key: Keys.pinType, transaction: transaction)
     }
 
-    public func setEncodedPINVerificationString(_ value: String?, _ transaction: DBWriteTransaction) {
-        svrKvStore.setString(value, key: Keys.encodedPINVerificationString, transaction: transaction)
-    }
-
     public func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction) {
         svrKvStore.setString(value, key: Keys.svr2MrEnclaveStringValue, transaction: transaction)
     }
@@ -104,7 +92,6 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         svrKvStore.removeValues(
             forKeys: [
                 Keys.pinType,
-                Keys.encodedPINVerificationString,
                 Keys.isMasterKeyBackedUp,
                 Keys.syncedStorageServiceKey,
                 Keys.legacy_svr1EnclaveName,
@@ -135,7 +122,6 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
     private enum Keys {
         // These must not change, they match what was historically in KeyBackupServiceImpl.
         static let pinType = "pinType"
-        static let encodedPINVerificationString = "encodedVerificationString"
         static let isMasterKeyBackedUp = "isMasterKeyBackedUp"
         static let needsMasterKeyBackup = "needsMasterKeyBackup"
         static let syncedStorageServiceKey = "Storage Service Encryption"

@@ -35,7 +35,7 @@ class PinReminderMegaphone: MegaphoneView {
                         wasSuccessful: false,
                         fromViewController: fromViewController
                     )
-                case .changedOrRemovedPin:
+                case .changedPin:
                     self.dismiss(animated: false)
                 case .canceled(didGuessWrong: false):
                     break
