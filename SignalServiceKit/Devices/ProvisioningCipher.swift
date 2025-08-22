@@ -14,6 +14,7 @@ public enum ProvisioningError: Error {
 public class ProvisioningCipher {
 
     private enum Constants {
+        static let version: UInt8 = 1
         static let cipherKeyLength: Int = 32
         static let macKeyLength: Int = 32
         static let info: String = "TextSecure Provisioning Message"
@@ -104,7 +105,7 @@ public class ProvisioningCipher {
 
         let messageToAuthenticate = bytes
 
-        let version = bytes.prefix(versionLength)
+        let version = bytes.first
         bytes = bytes.dropFirst(versionLength)
 
         let initializationVector = bytes.prefix(ivLength)
@@ -112,12 +113,12 @@ public class ProvisioningCipher {
 
         let ciphertext = bytes
 
-        guard version.count == versionLength, initializationVector.count == ivLength, theirMac.count == macLength, !ciphertext.isEmpty else {
+        guard let version, initializationVector.count == ivLength, theirMac.count == macLength, !ciphertext.isEmpty else {
             throw ProvisioningError.invalidProvisionMessage("provisioning message too short.")
         }
 
-        guard version == Data([1]) else {
-            throw ProvisioningError.invalidProvisionMessage("Unexpected version on provisioning message: \(bytes[0])")
+        guard version == Constants.version else {
+            throw ProvisioningError.invalidProvisionMessage("Unexpected version on provisioning message: \(version)")
         }
 
         let agreement = ourKeyPair.privateKey.keyAgreement(with: theirPublicKey)
