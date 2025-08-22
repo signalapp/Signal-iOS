@@ -93,13 +93,7 @@ public class OWSProgress: Equatable, SomeOWSProgress {
         }
 
         public var percentComplete: Float {
-            if totalUnitCount > 0 {
-                return Float(completedUnitCount) / Float(totalUnitCount)
-            } else {
-                // The unit count assigned to the child is 0 so it
-                // is instantly complete.
-                return 1
-            }
+            roundProgressPercent(completedUnitCount: completedUnitCount, totalUnitCount: totalUnitCount)
         }
 
         public var isFinished: Bool {
@@ -142,7 +136,10 @@ public class OWSProgress: Equatable, SomeOWSProgress {
 
     public var percentComplete: Float {
         if totalUnitCount > 0 {
-            return Float(completedUnitCount) / Float(totalUnitCount)
+            return roundProgressPercent(
+                completedUnitCount: completedUnitCount,
+                totalUnitCount: totalUnitCount
+            )
         } else if
             (childProgresses?.isEmpty != false)
             && (rootChildProgresses?.isEmpty != false)
@@ -600,10 +597,11 @@ private actor OWSProgressRootNode: OWSProgressSink {
             if totalUnitCountOfChildren == 0 {
                 newParentCompletedUnitCount = newParentTotalUnitCount
             } else {
-                newParentCompletedUnitCount = UInt64(ceil(
-                    (Double(completedUnitCountOfChildren[parentIdentifier]!) / Double(totalUnitCountOfChildren))
-                    * Double(newParentTotalUnitCount)
-                ))
+                newParentCompletedUnitCount = renormalizeCompletedUnitCount(
+                    childrensCompletedUnitCount: completedUnitCountOfChildren[parentIdentifier]!,
+                    childrensTotalUnitCount: totalUnitCountOfChildren,
+                    parentTotalUnitCount: newParentTotalUnitCount
+                )
             }
 
             // Now update the progress values all the way up the tree.
@@ -681,10 +679,11 @@ private actor OWSProgressRootNode: OWSProgressSink {
             if totalUnitCountOfChildren == 0 {
                 newParentCompletedUnitCount = newParentTotalUnitCount
             } else {
-                newParentCompletedUnitCount = UInt64(ceil(
-                    (Double(completedUnitCountOfChildren) / Double(totalUnitCountOfChildren))
-                    * Double(newParentTotalUnitCount)
-                ))
+                newParentCompletedUnitCount = renormalizeCompletedUnitCount(
+                    childrensCompletedUnitCount: completedUnitCountOfChildren,
+                    childrensTotalUnitCount: totalUnitCountOfChildren,
+                    parentTotalUnitCount: newParentTotalUnitCount
+                )
             }
 
             // Now update the progress values all the way up the tree.
@@ -740,10 +739,11 @@ private actor OWSProgressRootNode: OWSProgressSink {
 
             let totalUnitCountOfChildren = self.totalUnitCountOfChildren[parentIdentifier]!
             let totalUnitCount = self.childProgresses[parentIdentifier.label]![parentIdentifier]!.totalUnitCount
-            let newParentCompletedUnitCount = UInt64(ceil(
-                (Double(completedUnitCountOfChildren) / Double(totalUnitCountOfChildren))
-                * Double(totalUnitCount)
-            ))
+            let newParentCompletedUnitCount = renormalizeCompletedUnitCount(
+                childrensCompletedUnitCount: completedUnitCountOfChildren,
+                childrensTotalUnitCount: totalUnitCountOfChildren,
+                parentTotalUnitCount: totalUnitCount
+            )
             return self.recursiveUpdateCompletedUnitCounts(
                 forNodeWithIdentifier: parentIdentifier,
                 newCompletedUnitCount: newParentCompletedUnitCount
@@ -887,5 +887,47 @@ private class OWSProgressSourceNode: OWSProgressSource, OWSProgressChildNode {
             self.dirtyBit = false
             await rootNode.progressDidUpdate(updatedNode: self)
         }
+    }
+}
+
+private func roundProgressPercent(
+    completedUnitCount: UInt64,
+    totalUnitCount: UInt64,
+) -> Float {
+    if totalUnitCount == 0 {
+        // The unit count assigned to the node is 0 so it
+        // is instantly complete.
+        return 1
+    }
+    if completedUnitCount >= totalUnitCount {
+        return 1
+    }
+    let rawPercent = Float(completedUnitCount) / Float(totalUnitCount)
+    if rawPercent >= 0.99 {
+        // Never round 99% and above to 100%. Cap at 0.99.
+        return 0.99
+    }
+    return rawPercent
+}
+
+private func renormalizeCompletedUnitCount(
+    childrensCompletedUnitCount: UInt64,
+    childrensTotalUnitCount: UInt64,
+    parentTotalUnitCount: UInt64
+) -> UInt64 {
+    if parentTotalUnitCount == 0 {
+        return 0
+    }
+    if childrensCompletedUnitCount >= childrensTotalUnitCount {
+        return parentTotalUnitCount
+    }
+    let rawPercent = Double(childrensCompletedUnitCount) / Double(childrensTotalUnitCount)
+    let rawUnitCount = UInt64(ceil(Double(parentTotalUnitCount) * rawPercent))
+    if rawUnitCount == parentTotalUnitCount {
+        // Never round up to 100%; 100% is caught by the >= check above
+        // and the most we should return is 99%.
+        return rawUnitCount - 1
+    } else {
+        return rawUnitCount
     }
 }
