@@ -112,29 +112,41 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
             self?.startObservingQueueStatus()
-            Task { [weak self] in
-                try await self?.backUpAllAttachments()
+            self?.backUpAllAttachmentsIfNecessary()
+        }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(backUpAllAttachmentsIfNecessary),
+            name: .backupPlanChanged,
+            object: nil,
+        )
+    }
+
+    @objc
+    private func backUpAllAttachmentsIfNecessary() {
+        Task {
+            // Note the race: the queue could stop running between
+            // this check and the call below, but at this point
+            // the tx has committed; if the queue is running at all
+            // after the commit then whatever was in the commit
+            // will get picked up before it finishes running,
+            // so if it stops after this check then it necessarily
+            // did so after processing whatever got committed.
+            let thumbnailRunning = await self.thumbnailTaskQueue.isRunning
+            let fullsizeRunning = await self.fullsizeTaskQueue.isRunning
+            if fullsizeRunning && thumbnailRunning {
+                return
             }
+            try await self.backUpAllAttachments()
         }
     }
 
+    // MARK: -
+
     public func backUpAllAttachmentsAfterTxCommits(tx: DBWriteTransaction) {
         tx.addSyncCompletion { [self] in
-            Task {
-                // Note the race: the queue could stop running between
-                // this check and the call below, but at this point
-                // the tx has committed; if the queue is running at all
-                // after the commit then whatever was in the commit
-                // will get picked up before it finishes running,
-                // so if it stops after this check then it necessarily
-                // did so after processing whatever got committed.
-                let thumbnailRunning = await self.thumbnailTaskQueue.isRunning
-                let fullsizeRunning = await self.fullsizeTaskQueue.isRunning
-                if fullsizeRunning && thumbnailRunning {
-                    return
-                }
-                try await self.backUpAllAttachments()
-            }
+            backUpAllAttachmentsIfNecessary()
         }
     }
 
@@ -268,9 +280,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
     @objc
     private func queueStatusDidChange() {
-        Task {
-            try await self.backUpAllAttachments()
-        }
+        backUpAllAttachmentsIfNecessary()
     }
 
     // MARK: - TaskRecordRunner

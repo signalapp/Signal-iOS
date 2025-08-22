@@ -18,6 +18,8 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let backupKeyService: BackupKeyService
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
+    private let backupSubscriptionManager: BackupSubscriptionManager
+    private let backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager
     private let db: DB
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
@@ -43,6 +45,8 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         backupKeyService: BackupKeyService,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
+        backupSubscriptionManager: BackupSubscriptionManager,
+        backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager,
         db: DB,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         groupsV2: GroupsV2,
@@ -67,6 +71,8 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         self.backupKeyService = backupKeyService
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
+        self.backupSubscriptionManager = backupSubscriptionManager
+        self.backupTestFlightEntitlementManager = backupTestFlightEntitlementManager
         self.db = db
         self.dmConfigurationStore = dmConfigurationStore
         self.groupsV2 = groupsV2
@@ -173,6 +179,13 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             // eventually re-register.
             authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
             backupCDNCredentialStore.wipe(tx: tx)
+
+            // A registration event that caused us to become deregistered will
+            // have wiped our server-side Backup entitlement, so we should make
+            // sure that if we ever become registered again we attempt to get
+            // said entitlement again immediately.
+            backupSubscriptionManager.setRedemptionAttemptIsNecessary(tx: tx)
+            backupTestFlightEntitlementManager.setRenewEntitlementIsNecessary(tx: tx)
 
             // On linked devices, reset all DM timer versions. If the user
             // relinks a new primary and resets all its DM timer versions,

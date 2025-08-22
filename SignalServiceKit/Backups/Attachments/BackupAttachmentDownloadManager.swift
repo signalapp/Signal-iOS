@@ -37,15 +37,6 @@ public protocol BackupAttachmentDownloadManager {
     ///
     /// Throws an error IFF something would prevent all attachments from restoring (e.g. network issue).
     func restoreAttachmentsIfNeeded() async throws
-
-    /// Respond to a change in backup plan by modifying the download queue as appropriate.
-    /// Depending on the state change, may wipe the queue, add things to it, remove only some
-    /// things, etc.
-    func backupPlanDidChange(
-        from oldPlan: BackupPlan,
-        to newPlan: BackupPlan,
-        tx: DBWriteTransaction
-    ) throws
 }
 
 public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManager {
@@ -77,7 +68,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         backupListMediaManager: BackupListMediaManager,
-        backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
@@ -111,7 +101,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 attachmentUploadStore: attachmentUploadStore,
                 backupAttachmentDownloadStore: backupAttachmentDownloadStore,
                 backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
-                backupRequestManager: backupRequestManager,
                 backupSettingsStore: backupSettingsStore,
                 dateProvider: dateProvider,
                 db: db,
@@ -136,7 +125,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.thumbnailTaskQueue = taskQueue(forThumbnailDownloads: true)
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
-            self?.startObservingQueueStatus()
+            self?.startObservingExternalEvents()
             Task { [weak self] in
                 try await self?.restoreAttachmentsIfNeeded()
             }
@@ -271,183 +260,33 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         try await thumbnailTask.value
     }
 
-    public func backupPlanDidChange(
-        from oldPlan: BackupPlan,
-        to newPlan: BackupPlan,
-        tx: DBWriteTransaction
-    ) throws {
-        // Linked devices don't care about state changes; they keep downloading
-        // whatever got enqueued at link'n'sync time.
-        // (They also don't support storage optimization so that's moot.)
-        guard tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice else {
-            return
-        }
-
-        // Stop the queue; we dont _have_ to do this, but we're about to
-        // make changes so may as well stop in progress stuff.
-        let stopQueueTask = Task {
-            try await fullsizeTaskQueue.stop()
-            try await thumbnailTaskQueue.stop()
-        }
-        tx.addSyncCompletion {
-            // Restart the queue when we're done
-            Task {
-                try? await stopQueueTask.value
-                try await self.restoreAttachmentsIfNeeded()
-            }
-        }
-
-        switch (oldPlan, newPlan) {
-        case
-                (.disabling, .disabling),
-                (.disabled, .disabled),
-                (.free, .free):
-            // No change.
-            return
-        case
-                (.disabling, .free),
-                (.disabling, .paid),
-                (.disabling, .paidExpiringSoon),
-                (.disabling, .paidAsTester),
-                (.disabled, .disabling):
-            throw OWSAssertionError("Unexpected BackupPlan transition: \(oldPlan) -> \(newPlan)")
-        case (.free, .disabling):
-            // While in free tier, we may have been continuing downloads
-            // from when you were previously paid tier. But that was nice
-            // to have; now that we're disabling backups cancel them all.
-            try backupAttachmentDownloadStore.markAllReadyIneligible(tx: tx)
-            try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
-        case
-                let (.paid(optimizeLocalStorage), .disabling),
-                let (.paidExpiringSoon(optimizeLocalStorage), .disabling),
-                let (.paidAsTester(optimizeLocalStorage), .disabling):
-            try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
-            // Unsuspend; this is the user opt-in to trigger downloads.
-            backupSettingsStore.setIsBackupDownloadQueueSuspended(false, tx: tx)
-            if optimizeLocalStorage {
-                // If we had optimize enabled, make anything ineligible (offloaded
-                // attachments) now eligible.
-                try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
-            }
-        case (_, .disabled):
-            // When we disable, we mark everything ineligible and delete all
-            // done rows. If we ever re-enable, we will mark those rows
-            // ready again.
-            try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
-            try backupAttachmentDownloadStore.markAllReadyIneligible(tx: tx)
-            // This doesn't _really_ do anything, since we don't run the queue
-            // when disabled anyway, but may as well suspend.
-            backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
-
-        case (.disabled, .free):
-            try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
-            // Suspend the queue so the user has to explicitly opt-in to download.
-            backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
-
-        case
-                let (.disabled, .paid(optimizeStorage)),
-                let (.disabled, .paidExpiringSoon(optimizeStorage)),
-                let (.disabled, .paidAsTester(optimizeStorage)):
-            try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
-            // Suspend the queue so the user has to explicitly opt-in to download.
-            backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
-            if optimizeStorage {
-                // Unclear how you would go straight from disabled to optimize
-                // enabled, but just go through the motions of both state changes
-                // as if they'd happened independently.
-                try didEnableOptimizeStorage(tx: tx)
-            }
-
-        case
-                let (.paid(wasOptimizeLocalStorageEnabled), .free),
-                let (.paidExpiringSoon(wasOptimizeLocalStorageEnabled), .free),
-                let (.paidAsTester(wasOptimizeLocalStorageEnabled), .free):
-            // We explicitly do nothing going from paid to free; we want to continue
-            // any downloads that were already running (so we take advantage of the
-            // media tier cdn TTL being longer than paid subscription lifetime) but
-            // also not schedule (or un-suspend) if we weren't already downloading.
-            // But if optimization was on, its now implicitly off, so handle that.
-            if wasOptimizeLocalStorageEnabled {
-                try didDisableOptimizeStorage(backupPlan: newPlan, tx: tx)
-            }
-
-        case
-                let (.free, .paid(optimizeStorage)),
-                let (.free, .paidExpiringSoon(optimizeStorage)),
-                let (.free, .paidAsTester(optimizeStorage)):
-            // We explicitly do nothing when going from free to paid; any state
-            // changes that will happen will be triggered by list media request
-            // handling which will always run at the start of a new upload era.
-            // But if we somehow went straight from free to optimize enabled,
-            // handle that state transition.
-            if optimizeStorage {
-                owsFailDebug("Going from free or disabled directly to optimize enabled shouldn't be allowed?")
-                try didEnableOptimizeStorage(tx: tx)
-            }
-
-        case
-                // Downloads don't care if expiring soon or not
-                let (.paid(oldOptimize), .paid(newOptimize)),
-                let (.paid(oldOptimize), .paidExpiringSoon(newOptimize)),
-                let (.paid(oldOptimize), .paidAsTester(newOptimize)),
-                let (.paidExpiringSoon(oldOptimize), .paid(newOptimize)),
-                let (.paidExpiringSoon(oldOptimize), .paidExpiringSoon(newOptimize)),
-                let (.paidExpiringSoon(oldOptimize), .paidAsTester(newOptimize)),
-                let (.paidAsTester(oldOptimize), .paid(newOptimize)),
-                let (.paidAsTester(oldOptimize), .paidExpiringSoon(newOptimize)),
-                let (.paidAsTester(oldOptimize), .paidAsTester(newOptimize)):
-            if oldOptimize == newOptimize {
-                // Nothing changed.
-                break
-            } else if newOptimize {
-                try didEnableOptimizeStorage(tx: tx)
-            } else {
-                try didDisableOptimizeStorage(backupPlan: newPlan, tx: tx)
-            }
-        }
-    }
-
-    private func didEnableOptimizeStorage(tx: DBWriteTransaction) throws {
-        // When we turn on optimization, make all media tier fullsize downloads
-        // from the queue that are past the optimization threshold ineligible.
-        // If we downloaded them we'd offload them immediately anyway.
-        // This isn't 100% necessary; after all something 29 days old today will be
-        // 30 days old tomorrow, so the queue runner will gracefully handle old
-        // downloads at run-time anyway. But its more efficient to do in bulk.
-        let threshold = dateProvider().ows_millisecondsSince1970 - Attachment.offloadingThresholdMs
-        try backupAttachmentDownloadStore.markAllMediaTierFullsizeDownloadsIneligible(
-            olderThan: threshold,
-            tx: tx
-        )
-        // Un-suspend; when optimization is enabled we always auto-download
-        // the stuff that is eligible (newer attachments).
-        backupSettingsStore.setIsBackupDownloadQueueSuspended(false, tx: tx)
-        // Reset the progress counter.
-        try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
-    }
-
-    private func didDisableOptimizeStorage(backupPlan: BackupPlan, tx: DBWriteTransaction) throws {
-        // When we turn _off_ optimization, we want to make ready all the media tier downloads,
-        // but suspend the queue so we don't immediately start downloading.
-        try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
-        // Suspend the queue; the user has to explicitly opt in to downloads
-        // after optimization is disabled.
-        backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
-    }
-
     // MARK: - Queue status observation
 
-    private func startObservingQueueStatus() {
+    private func startObservingExternalEvents() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(queueStatusDidChange),
             name: .backupAttachmentDownloadQueueStatusDidChange,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(backupPlanDidChange),
+            name: .backupPlanChanged,
+            object: nil
+        )
     }
 
     @objc
     private func queueStatusDidChange() {
+        Task {
+            try await self.restoreAttachmentsIfNeeded()
+        }
+    }
+
+    @objc
+    private func backupPlanDidChange() {
         Task {
             try await self.restoreAttachmentsIfNeeded()
         }
@@ -462,7 +301,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         private let attachmentUploadStore: AttachmentUploadStore
         private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
         private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
-        private let backupRequestManager: BackupRequestManager
         private let backupSettingsStore: BackupSettingsStore
         private let dateProvider: DateProvider
         private let db: any DB
@@ -484,7 +322,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             attachmentUploadStore: AttachmentUploadStore,
             backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
             backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
-            backupRequestManager: BackupRequestManager,
             backupSettingsStore: BackupSettingsStore,
             dateProvider: @escaping DateProvider,
             db: any DB,
@@ -501,7 +338,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.attachmentUploadStore = attachmentUploadStore
             self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
             self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
-            self.backupRequestManager = backupRequestManager
             self.backupSettingsStore = backupSettingsStore
             self.dateProvider = dateProvider
             self.db = db

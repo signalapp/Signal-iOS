@@ -355,6 +355,9 @@ public class AppSetup {
             twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager)
         )
 
+        let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
+        let backupAttachmentUploadEraStore = BackupAttachmentUploadEraStore()
+        let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
         let backupCDNCredentialStore = BackupCDNCredentialStore()
 
         let backupIdService = BackupIdServiceImpl(
@@ -364,10 +367,44 @@ public class AppSetup {
             networkManager: networkManager
         )
 
+        let backupPlanManager = BackupPlanManagerImpl(
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupSettingsStore: backupSettingsStore,
+            dateProvider: dateProvider,
+            storageServiceManager: storageServiceManager,
+            tsAccountManager: tsAccountManager
+        )
+
+        let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(
+            authCredentialStore: authCredentialStore,
+            backupPlanManager: backupPlanManager,
+            db: db,
+            networkManager: networkManager,
+            reachabilityManager: reachabilityManager
+        )
+        let backupSubscriptionManager = BackupSubscriptionManagerImpl(
+            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
+            backupPlanManager: backupPlanManager,
+            dateProvider: dateProvider,
+            db: db,
+            networkManager: networkManager,
+            receiptCredentialRedemptionJobQueue: backupReceiptCredentialRedemptionJobQueue,
+            storageServiceManager: storageServiceManager,
+            tsAccountManager: tsAccountManager
+        )
+        let backupTestFlightEntitlementManager = BackupTestFlightEntitlementManagerImpl(
+            backupPlanManager: backupPlanManager,
+            dateProvider: dateProvider,
+            db: db,
+            networkManager: networkManager
+        )
+
         let backupRequestManager = BackupRequestManagerImpl(
             backupAuthCredentialManager: BackupAuthCredentialManagerImpl(
                 authCredentialStore: authCredentialStore,
                 backupIdService: backupIdService,
+                backupSubscriptionManager: backupSubscriptionManager,
+                backupTestFlightEntitlementManager: backupTestFlightEntitlementManager,
                 dateProvider: dateProvider,
                 db: db,
                 networkManager: networkManager
@@ -421,10 +458,6 @@ public class AppSetup {
             sleepTimer: Upload.Wrappers.SleepTimer(),
             storyStore: storyStore
         )
-
-        let backupAttachmentUploadEraStore = BackupAttachmentUploadEraStore()
-        let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
-        let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
 
         let backupAttachmentDownloadQueueStatusManager = BackupAttachmentDownloadQueueStatusManagerImpl(
             appContext: appContext,
@@ -544,7 +577,6 @@ public class AppSetup {
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupListMediaManager: backupListMediaManager,
-            backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             db: db,
@@ -553,38 +585,6 @@ public class AppSetup {
             remoteConfigProvider: remoteConfigManager,
             statusManager: backupAttachmentDownloadQueueStatusManager,
             tsAccountManager: tsAccountManager
-        )
-
-        let backupPlanManager = BackupPlanManagerImpl(
-            backupAttachmentDownloadManager: backupAttachmentDownloadManager,
-            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
-            backupSettingsStore: backupSettingsStore,
-            storageServiceManager: storageServiceManager
-        )
-
-        let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(
-            authCredentialStore: authCredentialStore,
-            backupPlanManager: backupPlanManager,
-            db: db,
-            networkManager: networkManager,
-            reachabilityManager: reachabilityManager
-        )
-        let backupSubscriptionManager = BackupSubscriptionManager(
-            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
-            backupPlanManager: backupPlanManager,
-            dateProvider: dateProvider,
-            db: db,
-            networkManager: networkManager,
-            receiptCredentialRedemptionJobQueue: backupReceiptCredentialRedemptionJobQueue,
-            storageServiceManager: storageServiceManager,
-            tsAccountManager: tsAccountManager
-        )
-
-        let backupTestFlightEntitlementManager = BackupTestFlightEntitlementManager(
-            backupPlanManager: backupPlanManager,
-            dateProvider: dateProvider,
-            db: db,
-            networkManager: networkManager
         )
 
         let attachmentManager = AttachmentManagerImpl(
@@ -960,6 +960,8 @@ public class AppSetup {
             backupKeyService: backupKeyService,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
+            backupSubscriptionManager: backupSubscriptionManager,
+            backupTestFlightEntitlementManager: backupTestFlightEntitlementManager,
             db: db,
             dmConfigurationStore: disappearingMessagesConfigurationStore,
             groupsV2: groupsV2,

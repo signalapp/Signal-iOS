@@ -7,6 +7,80 @@ import CryptoKit
 import StoreKit
 import LibSignalClient
 
+/// Responsible for In-App Purchases (IAP) that grant access to paid-tier Backups.
+///
+/// - Note
+/// Backup payments are done via IAP using Apple as the payment processor, and
+/// consequently payments management is done via Apple ID management in the iOS
+/// Settings app rather than in-app UI.
+///
+/// - Note
+/// An IAP subscription may only be started on a primary. However, that primary
+/// may or may not be the same device as our current primary; that primary may
+/// or may not even be an iOS device if the user migrated from Android to iOS.
+///
+/// - Important
+/// Not to be confused with ``DonationSubscriptionManager``, which does many
+/// similar things but designed around donations and profile badges.
+public protocol BackupSubscriptionManager {
+    typealias PurchaseResult = BackupSubscription.PurchaseResult
+    typealias IAPSubscriberData = BackupSubscription.IAPSubscriberData
+
+    /// Fetch the user's Backups subscription, if it exists. May downgrade the
+    /// local `BackupPlan`, depending on the remote state of the subscription.
+    func fetchAndMaybeDowngradeSubscription() async throws -> Subscription?
+
+    // MARK: IAPSubscriberData
+
+    /// Get the user's current IAP subscriber data, if present.
+    func getIAPSubscriberData(tx: DBReadTransaction) -> IAPSubscriberData?
+
+    /// Persist the given IAP subscriber data.
+    ///
+    /// - Important
+    /// Generally, this type generates and manages the `iapSubscriberData`
+    /// internally. The exception is "restoring" `iapSubscriberData` preserved
+    /// in external storage and considered authoritative, such as one in Storage
+    /// Service or a Backup.
+    func restoreIAPSubscriberData(_ iapSubscriberData: IAPSubscriberData, tx: DBWriteTransaction)
+
+    // MARK: Purchasing
+
+    /// Returns the price for a Backups subscription, formatted for display.
+    func subscriptionDisplayPrice() async throws -> String
+
+    /// Attempts to purchase a Backups subscription for the first time, via
+    /// StoreKit IAP.
+    ///
+    /// - Important
+    /// If this method returns successfully, callers must subsequently call
+    /// ``redeemSubscriptionIfNecessary()`` to redeem the newly-purchased IAP
+    /// subscription.
+    ///
+    /// - Note
+    /// While this should be called only for users who do not currently have a
+    /// Backups subscription, StoreKit handles already-subscribed users
+    /// gracefully by showing explanatory UI.
+    func purchaseNewSubscription() async throws -> PurchaseResult
+
+    // MARK: Redeeming
+
+    /// Record, in response to an external state change, that we should attempt
+    /// to redeem our Backups subscription.
+    func setRedemptionAttemptIsNecessary(tx: DBWriteTransaction)
+
+    /// Redeems a StoreKit Backups subscription with Signal servers for access
+    /// to paid-tier Backup credentials, if there exists a StoreKit transaction
+    /// we have not yet redeemed.
+    ///
+    /// - Note
+    /// This method serializes callers, is safe to call repeatedly, and returns
+    /// quickly if there is not a transaction we have yet to redeem.
+    func redeemSubscriptionIfNecessary() async throws
+}
+
+// MARK: -
+
 public enum BackupSubscription {
 
     /// Bundles data associated with a user's IAP subscription.
@@ -65,24 +139,7 @@ public enum BackupSubscription {
 
 // MARK: -
 
-/// Responsible for In-App Purchases (IAP) that grant access to paid-tier Backups.
-///
-/// - Note
-/// Backup payments are done via IAP using Apple as the payment processor, and
-/// consequently payments management is done via Apple ID management in the iOS
-/// Settings app rather than in-app UI.
-///
-/// - Note
-/// An IAP subscription may only be started on a primary. However, that primary
-/// may or may not be the same device as our current primary; that primary may
-/// or may not even be an iOS device if the user migrated from Android to iOS.
-///
-/// - Important
-/// Not to be confused with ``DonationSubscriptionManager``, which does many
-/// similar things but designed around donations and profile badges.
-public final class BackupSubscriptionManager {
-    public typealias PurchaseResult = BackupSubscription.PurchaseResult
-    public typealias IAPSubscriberData = BackupSubscription.IAPSubscriberData
+final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
     private enum Constants {
         /// This value corresponds to our IAP config set up in App Store
@@ -211,7 +268,9 @@ public final class BackupSubscriptionManager {
                         /// This transaction entitles us to a subscription, so
                         /// let's attempt to do so. Because we know we have a
                         /// novel transaction, we know redemption is necessary.
-                        await setRedemptionAttemptIsNecessary()
+                        await db.awaitableWrite { tx in
+                            self.setRedemptionAttemptIsNecessary(tx: tx)
+                        }
                         try await redeemSubscriptionIfNecessary()
                     } catch {
                         owsFailDebug(
@@ -228,25 +287,17 @@ public final class BackupSubscriptionManager {
 
     // MARK: -
 
-    /// Get the user's current IAP subscriber data, if present.
-    public func getIAPSubscriberData(tx: DBReadTransaction) -> IAPSubscriberData? {
+    func getIAPSubscriberData(tx: DBReadTransaction) -> IAPSubscriberData? {
         store.getIAPSubscriberData(tx: tx)
     }
 
-    /// Persist the given IAP subscriber data.
-    ///
-    /// - Important
-    /// Generally, this type generates and manages the `iapSubscriberData`
-    /// internally. The exception is "restoring" `iapSubscriberData` preserved
-    /// in external storage and considered authoritative, such as one in Storage
-    /// Service or a Backup.
-    public func restoreIAPSubscriberData(_ iapSubscriberData: IAPSubscriberData, tx: DBWriteTransaction) {
+    func restoreIAPSubscriberData(_ iapSubscriberData: IAPSubscriberData, tx: DBWriteTransaction) {
         store.setIAPSubscriberData(iapSubscriberData, tx: tx)
     }
 
     // MARK: - Fetch current subscription
 
-    public func fetchAndMaybeDowngradeSubscription() async throws -> Subscription? {
+    func fetchAndMaybeDowngradeSubscription() async throws -> Subscription? {
         guard let subscriberID = db.read(block: { store.getIAPSubscriberData(tx: $0)?.subscriberId }) else {
             return nil
         }
@@ -319,26 +370,13 @@ public final class BackupSubscriptionManager {
 
     // MARK: - Purchase new subscription
 
-    /// Returns the price for a Backups subscription, formatted for display.
-    public func subscriptionDisplayPrice() async throws -> String {
+    func subscriptionDisplayPrice() async throws -> String {
         owsPrecondition(!FeatureFlags.Backups.avoidStoreKitForTesters)
 
         return try await getPaidTierProduct().displayPrice
     }
 
-    /// Attempts to purchase a Backups subscription for the first time, via
-    /// StoreKit IAP.
-    ///
-    /// - Important
-    /// If this method returns successfully, callers must subsequently call
-    /// ``redeemSubscriptionIfNecessary()`` to redeem the newly-purchased IAP
-    /// subscription.
-    ///
-    /// - Note
-    /// While this should be called only for users who do not currently have a
-    /// Backups subscription, StoreKit handles already-subscribed users
-    /// gracefully by showing explanatory UI.
-    public func purchaseNewSubscription() async throws -> PurchaseResult {
+    func purchaseNewSubscription() async throws -> PurchaseResult {
         owsPrecondition(!FeatureFlags.Backups.avoidStoreKitForTesters)
 
         switch try await getPaidTierProduct().purchase() {
@@ -347,7 +385,9 @@ public final class BackupSubscriptionManager {
             case .verified:
                 // We've successfully purchased, which means a redemption
                 // attempt is necessary.
-                await setRedemptionAttemptIsNecessary()
+                await db.awaitableWrite { tx in
+                    setRedemptionAttemptIsNecessary(tx: tx)
+                }
                 return .success
             case .unverified:
                 throw OWSAssertionError(
@@ -373,10 +413,8 @@ public final class BackupSubscriptionManager {
 
     /// We generally only attempt redemptions 1x/3d, but on occasion we know
     /// that a redemption is necessary and we should bypass that debounce.
-    private func setRedemptionAttemptIsNecessary() async {
-        await db.awaitableWrite { tx in
-            store.wipeLastRedemptionNecessaryCheck(tx: tx)
-        }
+    func setRedemptionAttemptIsNecessary(tx: DBWriteTransaction) {
+        store.wipeLastRedemptionNecessaryCheck(tx: tx)
     }
 
     // MARK: - Redeem subscription
@@ -387,14 +425,7 @@ public final class BackupSubscriptionManager {
     /// earlier caller.
     private let redemptionTaskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
-    /// Redeems a StoreKit Backups subscription with Signal servers for access
-    /// to paid-tier Backup credentials, if there exists a StoreKit transaction
-    /// we have not yet redeemed.
-    ///
-    /// - Note
-    /// This method serializes callers, is safe to call repeatedly, and returns
-    /// quickly if there is not a transaction we have yet to redeem.
-    public func redeemSubscriptionIfNecessary() async throws {
+    func redeemSubscriptionIfNecessary() async throws {
         return try await redemptionTaskQueue.run {
             try await self._redeemSubscriptionIfNecessary()
         }

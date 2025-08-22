@@ -111,7 +111,6 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
 
         guard registrationState.isRegisteredPrimaryDevice else {
             /// Only primaries manage subscriptions!
-            logger.info("Not redeeming, not a registered primary!")
             return
         }
 
@@ -120,7 +119,6 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
             dateProvider().timeIntervalSince(lastRedemptionNecessaryCheck) < Constants.intervalBetweenChecks
         {
             /// Not necessary to check, we did so recently!
-            logger.info("Not redeeming, we did so recently!")
             return
         }
 
@@ -131,7 +129,7 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
                 retryPolicy: .hopefullyRecoverable
             )
         ) else {
-            logger.info("Not redeeming, subscription missing!")
+            logger.warn("Not redeeming, subscription missing!")
 
             /// If there's no subscription there's nothing for us to redeem, so
             /// we can bail out.

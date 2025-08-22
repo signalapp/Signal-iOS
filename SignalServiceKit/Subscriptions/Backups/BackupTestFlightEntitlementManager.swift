@@ -8,7 +8,16 @@ import DeviceCheck
 
 /// Responsible for managing paid-tier Backup entitlements for TestFlight users,
 /// who aren't able to use StoreKit or perform real-money transactions.
-public final class BackupTestFlightEntitlementManager {
+public protocol BackupTestFlightEntitlementManager {
+    func acquireEntitlement() async throws
+
+    func setRenewEntitlementIsNecessary(tx: DBWriteTransaction)
+    func renewEntitlementIfNecessary() async throws
+}
+
+// MARK: -
+
+final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementManager {
     private enum StoreKeys {
         static let lastEntitlementRenewalDate = "lastEntitlementRenewalDate"
     }
@@ -42,7 +51,7 @@ public final class BackupTestFlightEntitlementManager {
 
     // MARK: -
 
-    public func acquireEntitlement() async throws {
+    func acquireEntitlement() async throws {
         owsPrecondition(FeatureFlags.Backups.avoidStoreKitForTesters)
 
         guard TSConstants.isUsingProductionService else {
@@ -59,7 +68,11 @@ public final class BackupTestFlightEntitlementManager {
 
     // MARK: -
 
-    public func renewEntitlementIfNecessary() async throws {
+    func setRenewEntitlementIsNecessary(tx: DBWriteTransaction) {
+        kvStore.removeValue(forKey: StoreKeys.lastEntitlementRenewalDate, transaction: tx)
+    }
+
+    func renewEntitlementIfNecessary() async throws {
         let isCurrentlyTesterBuild = FeatureFlags.Backups.avoidStoreKitForTesters
         let (
             currentBackupPlan,
@@ -96,7 +109,6 @@ public final class BackupTestFlightEntitlementManager {
             let lastEntitlementRenewalDate,
             lastEntitlementRenewalDate.addingTimeInterval(3 * .day) > dateProvider()
         {
-            logger.info("Not renewing; we did so recently.")
             return
         }
 
