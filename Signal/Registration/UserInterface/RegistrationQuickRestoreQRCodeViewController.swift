@@ -61,8 +61,30 @@ class RegistrationQuickRestoreQRCodeViewController:
                 let message: RegistrationProvisioningMessage = try await provisioningSocketManager.waitForMessage()
                 presenter?.didReceiveRegistrationMessage(message)
             } catch {
-                // TODO: [Backups]: Prompt the user with the error
-                Logger.error("Encountered error waiting for qick restore message")
+                let title = OWSLocalizedString(
+                    "REGISTRATION_SCAN_QR_CODE_FAILED_TITLE",
+                    comment: "Title of error notifying restore failed."
+                )
+                let body = OWSLocalizedString(
+                    "REGISTRATION_SCAN_QR_CODE_FAILED_BODY",
+                    comment: "Body of error notifying restore failed."
+                )
+                let sheet = HeroSheetViewController(
+                    hero: .circleIcon(
+                                icon: UIImage(named: "alert")!,
+                                iconSize: 36,
+                                tintColor: UIColor.Signal.label,
+                                backgroundColor: UIColor.Signal.background
+                            ),
+                    title: title,
+                    body: body,
+                    primaryButton: .init(title: CommonStrings.okayButton, action: { [weak self] _ in
+                        self?.provisioningSocketManager.reset()
+                        self?.presentedViewController?.dismiss(animated: true)
+                    })
+                )
+                sheet.modalPresentationStyle = .formSheet
+                present(sheet, animated: true)
             }
         }
     }

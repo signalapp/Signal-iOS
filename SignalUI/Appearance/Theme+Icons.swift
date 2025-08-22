@@ -134,6 +134,8 @@ public enum ThemeIcon: UInt {
     case composeFindByPhoneNumberLarge
     case composeInviteLarge
 
+    case errorCircle
+
     case check16
     case compose16
     case error16
@@ -461,6 +463,10 @@ public extension Theme {
             return "number-resizable"
         case .composeInviteLarge:
             return "invite-resizable"
+
+            // Error icon
+        case .errorCircle:
+            return "error-circle"
 
             // Compact 16 dp icons
         case .check16:
