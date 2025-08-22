@@ -61,6 +61,15 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
             return
         }
 
+        guard !FeatureFlags.Backups.avoidAppAttestForDevs else {
+            // If we're on a dev build, we can't use AppAttest. If you're a dev
+            // who needs the entitlement (i.e., paid-tier Backup auth
+            // credentials), make sure you've gotten it for your account via
+            // another path.
+            logger.warn("WARNING! Skipping acquiring Backup entitlement: AppAttest not supported. Make sure your account has the entitlement via other means, if necessary.")
+            return
+        }
+
         try await appAttestManager.performAttestationAction(.acquireBackupEntitlement)
 
         logger.info("Successfully acquired Backup entitlement!")
@@ -73,15 +82,17 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
     }
 
     func renewEntitlementIfNecessary() async throws {
-        let isCurrentlyTesterBuild = FeatureFlags.Backups.avoidStoreKitForTesters
         let (
+            isCurrentlyTesterBuild,
             currentBackupPlan,
             lastEntitlementRenewalDate
         ): (
+            Bool,
             BackupPlan,
             Date?
         ) = db.read { tx in
             (
+                FeatureFlags.Backups.avoidStoreKitForTesters,
                 backupPlanManager.backupPlan(tx: tx),
                 kvStore.getDate(StoreKeys.lastEntitlementRenewalDate, transaction: tx)
             )

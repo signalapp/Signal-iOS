@@ -50,6 +50,7 @@ public enum FeatureFlags {
         public static let detailedBenchLogging = build.includes(.internal)
         public static let errorDisplay = build.includes(.internal)
 
+        public static let avoidAppAttestForDevs = build.includes(.dev)
         public static let avoidStoreKitForTesters = build.includes(.beta)
     }
 
