@@ -151,8 +151,6 @@ public class AppSetup {
             signalRecipientStore: recipientDatabaseTable,
             usernameLookupRecordStore: usernameLookupRecordStore,
             nicknameRecordStore: nicknameRecordStore,
-            dbForReadTx: { SDSDB.shimOnlyBridge($0).database },
-            dbForWriteTx: { SDSDB.shimOnlyBridge($0).database }
         )
         let recipientFetcher = RecipientFetcherImpl(
             recipientDatabaseTable: recipientDatabaseTable,

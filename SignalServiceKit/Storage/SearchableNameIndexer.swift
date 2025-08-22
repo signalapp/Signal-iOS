@@ -4,7 +4,7 @@
 //
 
 import Foundation
-public import GRDB
+import GRDB
 public import LibSignalClient
 
 public protocol SearchableNameIndexer {
@@ -59,9 +59,6 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
     private let usernameLookupRecordStore: any UsernameLookupRecordStore
     private let nicknameRecordStore: any NicknameRecordStore
 
-    private let dbForReadTx: (DBReadTransaction) -> Database
-    private let dbForWriteTx: (DBWriteTransaction) -> Database
-
     public enum Constants {
         public static let databaseTableName = "SearchableName"
         public static let databaseTableNameFTS = "SearchableNameFTS"
@@ -74,8 +71,6 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         signalRecipientStore: RecipientDatabaseTable,
         usernameLookupRecordStore: any UsernameLookupRecordStore,
         nicknameRecordStore: any NicknameRecordStore,
-        dbForReadTx: @escaping (DBReadTransaction) -> Database,
-        dbForWriteTx: @escaping (DBWriteTransaction) -> Database
     ) {
         self.threadStore = threadStore
         self.signalAccountStore = signalAccountStore
@@ -83,8 +78,6 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         self.signalRecipientStore = signalRecipientStore
         self.usernameLookupRecordStore = usernameLookupRecordStore
         self.nicknameRecordStore = nicknameRecordStore
-        self.dbForReadTx = dbForReadTx
-        self.dbForWriteTx = dbForWriteTx
     }
 
     // MARK: - Search
@@ -102,7 +95,7 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         let cursor: RowCursor
         do {
             cursor = try Row.fetchCursor(
-                dbForReadTx(tx),
+                tx.database,
                 sql: """
                 SELECT
                     "\(Constants.databaseTableName)"."\(IdentifierColumnName.threadId.rawValue)",
@@ -184,7 +177,7 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         let normalizedValue = FullTextSearchIndexer.normalizeText(value)
         do {
             let (identifierColumn, identifierValue) = indexableName.indexableNameIdentifier().columnNameAndValue()
-            try dbForWriteTx(tx).execute(
+            try tx.database.execute(
                 sql: """
                 INSERT INTO "\(Constants.databaseTableName)" ("\(identifierColumn.rawValue)", "value") VALUES (?, ?)
                 """,
@@ -203,7 +196,7 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
     public func delete(_ indexableName: IndexableName, tx: DBWriteTransaction) {
         do {
             let (identifierColumn, identifierValue) = indexableName.indexableNameIdentifier().columnNameAndValue()
-            try dbForWriteTx(tx).execute(
+            try tx.database.execute(
                 sql: """
                 DELETE FROM "\(Constants.databaseTableName)" WHERE "\(identifierColumn.rawValue)"=?
                 """,
