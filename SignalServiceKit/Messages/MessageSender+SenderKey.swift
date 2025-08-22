@@ -8,14 +8,14 @@ import LibSignalClient
 extension MessageSender {
     private struct Recipient {
         let serviceId: ServiceId
-        let devices: [DeviceId]
+        let deviceIds: [DeviceId]
         var protocolAddresses: [ProtocolAddress] {
-            return devices.map { ProtocolAddress(serviceId, deviceId: $0) }
+            return deviceIds.map { ProtocolAddress(serviceId, deviceId: $0) }
         }
 
         init(serviceId: ServiceId, transaction tx: DBReadTransaction) {
             self.serviceId = serviceId
-            self.devices = {
+            self.deviceIds = {
                 let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
                 return recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx)?.deviceIds ?? []
             }()
@@ -227,7 +227,7 @@ extension MessageSender {
                 else {
                     return
                 }
-                recipient.devices.forEach { deviceId in
+                recipient.deviceIds.forEach { deviceId in
                     let messageSendLog = SSKEnvironment.shared.messageSendLogRef
                     messageSendLog.recordPendingDelivery(
                         payloadId: payloadId,
@@ -682,7 +682,7 @@ private extension MessageSender {
     /// SenderKeyStore already said this address has previous Sender Key sends). We should
     /// investigate how this ever happened, but for now fall back to sending another SKDM.
     static func registrationIdStatus(for serviceId: ServiceId, transaction tx: DBReadTransaction) -> RegistrationIdStatus {
-        let candidateDevices = MessageSender.Recipient(serviceId: serviceId, transaction: tx).devices
+        let candidateDevices = MessageSender.Recipient(serviceId: serviceId, transaction: tx).deviceIds
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         for deviceId in candidateDevices {
             do {
