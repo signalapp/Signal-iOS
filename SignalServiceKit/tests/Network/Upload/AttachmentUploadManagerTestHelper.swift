@@ -127,6 +127,9 @@ class AttachmentUploadManagerMockHelper {
         mockServiceManager.mockUrlSessionBuilder = { (info: SignalServiceInfo, endpoint: OWSURLSessionEndpoint, config: URLSessionConfiguration? ) in
             return self.mockURLSession
         }
+        mockServiceManager.mockCDNUrlSessionBuilder = { _ in
+            return self.mockURLSession
+        }
 
         mockNetworkManager.performRequestBlock = { request, canUseWebSocket in
             let item = self.authFormRequestBlock.removeFirst()

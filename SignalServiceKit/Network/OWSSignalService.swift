@@ -80,33 +80,74 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         }
     }
 
-    private func buildCensorshipConfiguration() -> OWSCensorshipConfiguration {
-        owsAssertDebug(self.isCensorshipCircumventionActive)
+    private struct CensorshipConfigurationParams: Hashable {
+        enum CountryId: Hashable {
+            case manualCountryCode(String)
+            case localE164(String)
+        }
 
+        // Nil means use default configuration
+        let countryId: CountryId?
+
+        static var `default`: Self {
+            .init(countryId: nil)
+        }
+
+        func build() -> OWSCensorshipConfiguration {
+            switch countryId {
+            case nil:
+                return .defaultConfiguration
+            case .manualCountryCode(let countryCode):
+                return OWSCensorshipConfiguration.censorshipConfiguration(countryCode: countryCode)
+            case .localE164(let localNumber):
+                return OWSCensorshipConfiguration.censorshipConfiguration(e164: localNumber)
+                    ?? .defaultConfiguration
+            }
+        }
+    }
+
+    // Returns nil if CC not active
+    private func censorshipConfigurationParamsWithMaybeSneakyTransaction(
+        censorshipCircumventionSupportedForService: Bool,
+    ) -> CensorshipConfigurationParams? {
+        guard self.isCensorshipCircumventionActive, censorshipCircumventionSupportedForService else {
+            return nil
+        }
         if self.isCensorshipCircumventionManuallyActivated {
             guard
                 let countryCode = self.manualCensorshipCircumventionCountryCode,
                 !countryCode.isEmpty
             else {
                 owsFailDebug("manualCensorshipCircumventionCountryCode was unexpectedly 0")
-                return .defaultConfiguration
+                return .default
             }
-
-            let configuration = OWSCensorshipConfiguration.censorshipConfiguration(countryCode: countryCode)
-
-            return configuration
+            return CensorshipConfigurationParams(countryId: .manualCountryCode(countryCode))
         }
-
         guard
-            let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
-            let configuration = OWSCensorshipConfiguration.censorshipConfiguration(e164: localNumber)
+            let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
         else {
-            return .defaultConfiguration
+            return .default
         }
-        return configuration
+        return CensorshipConfigurationParams(countryId: .localE164(localNumber))
     }
 
     public func buildUrlEndpoint(for signalServiceInfo: SignalServiceInfo) -> OWSURLSessionEndpoint {
+        return buildUrlEndpoint(
+            censorshipConfigurationParams: self.censorshipConfigurationParamsWithMaybeSneakyTransaction(
+                censorshipCircumventionSupportedForService: signalServiceInfo.censorshipCircumventionSupported
+            ),
+            baseUrl: signalServiceInfo.baseUrl,
+            censorshipCircumventionPathPrefix: signalServiceInfo.censorshipCircumventionPathPrefix,
+            shouldUseSignalCertificate: signalServiceInfo.shouldUseSignalCertificate,
+        )
+    }
+
+    private func buildUrlEndpoint(
+        censorshipConfigurationParams: CensorshipConfigurationParams?,
+        baseUrl: URL,
+        censorshipCircumventionPathPrefix: String,
+        shouldUseSignalCertificate: Bool,
+    ) -> OWSURLSessionEndpoint {
         // If there's an open transaction when this is called, and if censorship
         // circumvention is enabled, `buildCensorshipConfiguration()` will crash.
         // Add a database read here so that we crash in both `if` branches.
@@ -115,12 +156,11 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             return true
         }(), "Must not have open transaction.")
 
-        let isCensorshipCircumventionActive = self.isCensorshipCircumventionActive
-        if isCensorshipCircumventionActive && signalServiceInfo.censorshipCircumventionSupported {
-            let censorshipConfiguration = buildCensorshipConfiguration()
+        if let censorshipConfigurationParams {
+            let censorshipConfiguration = censorshipConfigurationParams.build()
             let frontingURLWithoutPathPrefix = censorshipConfiguration.domainFrontBaseUrl
-            let frontingURLWithPathPrefix = frontingURLWithoutPathPrefix.appendingPathComponent(signalServiceInfo.censorshipCircumventionPathPrefix)
-            let unfrontedBaseUrl = signalServiceInfo.baseUrl
+            let frontingURLWithPathPrefix = frontingURLWithoutPathPrefix.appendingPathComponent(censorshipCircumventionPathPrefix)
+            let unfrontedBaseUrl = baseUrl
             let frontingInfo = OWSUrlFrontingInfo(
                 frontingURLWithoutPathPrefix: frontingURLWithoutPathPrefix,
                 frontingURLWithPathPrefix: frontingURLWithPathPrefix,
@@ -136,9 +176,9 @@ public class OWSSignalService: OWSSignalServiceProtocol {
                 extraHeaders: extraHeaders
             )
         } else {
-            let baseUrl = signalServiceInfo.baseUrl
+            let baseUrl = baseUrl
             let securityPolicy: HttpSecurityPolicy
-            if signalServiceInfo.shouldUseSignalCertificate {
+            if shouldUseSignalCertificate {
                 securityPolicy = OWSURLSession.signalServiceSecurityPolicy
             } else {
                 securityPolicy = OWSURLSession.defaultSecurityPolicy
@@ -158,14 +198,123 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         configuration: URLSessionConfiguration?,
         maxResponseSize: Int?
     ) -> OWSURLSessionProtocol {
+        return buildUrlSession(
+            endpoint: endpoint,
+            configuration: configuration,
+            maxResponseSize: maxResponseSize,
+            shouldHandleRemoteDeprecation: signalServiceInfo.shouldHandleRemoteDeprecation,
+            onFailureCallback: nil,
+        )
+    }
+
+    private func buildUrlSession(
+        endpoint: OWSURLSessionEndpoint,
+        configuration: URLSessionConfiguration?,
+        maxResponseSize: Int?,
+        shouldHandleRemoteDeprecation: Bool,
+        onFailureCallback: ((any Error) -> Void)?,
+    ) -> OWSURLSessionProtocol {
         let urlSession = OWSURLSession(
             endpoint: endpoint,
             configuration: configuration ?? OWSURLSession.defaultConfigurationWithoutCaching,
             maxResponseSize: maxResponseSize,
-            canUseSignalProxy: endpoint.frontingInfo == nil
+            canUseSignalProxy: endpoint.frontingInfo == nil,
+            onFailureCallback: onFailureCallback,
         )
-        urlSession.shouldHandleRemoteDeprecation = signalServiceInfo.shouldHandleRemoteDeprecation
+        urlSession.shouldHandleRemoteDeprecation = shouldHandleRemoteDeprecation
         return urlSession
+    }
+
+    // MARK: - CDN
+
+    private actor CDNSessionCache {
+        struct Key: Hashable {
+            let cdnNumber: UInt32
+            let maxResponseSize: UInt?
+            let ccParams: CensorshipConfigurationParams?
+        }
+
+        private var cache = [Key: OWSURLSessionProtocol]()
+
+        func getOrBuildSession(
+            key: Key,
+            buildFn: () -> OWSURLSessionProtocol
+        ) -> OWSURLSessionProtocol {
+            if let cached = cache[key] {
+                return cached
+            }
+            let session = buildFn()
+            cache[key] = session
+            return session
+        }
+
+        func invalidate(key: Key) {
+            cache[key] = nil
+        }
+    }
+
+    private let cdnSessionCache = CDNSessionCache()
+
+    public func sharedUrlSessionForCdn(
+        cdnNumber: UInt32,
+        maxResponseSize: UInt?
+    ) async -> OWSURLSessionProtocol {
+        let ccParams = self.censorshipConfigurationParamsWithMaybeSneakyTransaction(
+            censorshipCircumventionSupportedForService: true
+        )
+        let cacheKey = CDNSessionCache.Key(
+            cdnNumber: cdnNumber,
+            maxResponseSize: maxResponseSize,
+            ccParams: ccParams,
+        )
+        return await cdnSessionCache.getOrBuildSession(
+            key: cacheKey,
+            buildFn: {
+                let urlSessionConfiguration = OWSURLSession.defaultConfigurationWithoutCaching
+                urlSessionConfiguration.timeoutIntervalForRequest = 600
+
+                let baseUrl: URL
+                let censorshipCircumventionPathPrefix: String
+                switch cdnNumber {
+                case 0:
+                    baseUrl = URL(string: TSConstants.textSecureCDN0ServerURL)!
+                    censorshipCircumventionPathPrefix = TSConstants.cdn0CensorshipPrefix
+                case 2:
+                    baseUrl = URL(string: TSConstants.textSecureCDN2ServerURL)!
+                    censorshipCircumventionPathPrefix = TSConstants.cdn2CensorshipPrefix
+                case 3:
+                    baseUrl = URL(string: TSConstants.textSecureCDN3ServerURL)!
+                    censorshipCircumventionPathPrefix = TSConstants.cdn3CensorshipPrefix
+                default:
+                    owsFailDebug("Unrecognized CDN number configuration requested: \(cdnNumber)")
+                    // Fallback to cdn2
+                    baseUrl = URL(string: TSConstants.textSecureCDN2ServerURL)!
+                    censorshipCircumventionPathPrefix = TSConstants.cdn2CensorshipPrefix
+                }
+
+                return self.buildUrlSession(
+                    endpoint: self.buildUrlEndpoint(
+                        censorshipConfigurationParams: ccParams,
+                        baseUrl: baseUrl,
+                        censorshipCircumventionPathPrefix: censorshipCircumventionPathPrefix,
+                        shouldUseSignalCertificate: true
+                    ),
+                    configuration: urlSessionConfiguration,
+                    maxResponseSize: maxResponseSize.map(Int.init(clamping:)),
+                    shouldHandleRemoteDeprecation: false,
+                    onFailureCallback: { [weak self] error in
+                        Task {
+                            if error.isNetworkFailure {
+                                // Invalidate the cache on any network failure so
+                                // that next time we create a new session which will
+                                // re-randomize SNI headers.
+                                await self?.cdnSessionCache.invalidate(key: cacheKey)
+                            }
+                        }
+                    }
+                )
+            }
+        )
     }
 
     // MARK: - Internal Implementation

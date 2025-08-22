@@ -1137,12 +1137,6 @@ extension OWSProfileManager: ProfileManager {
 
     // MARK: -
 
-    private class var avatarUrlSession: OWSURLSessionProtocol {
-        return SSKEnvironment.shared.signalServiceRef.urlSessionForCdn(cdnNumber: 0, maxResponseSize: nil)
-    }
-
-    // MARK: -
-
     @MainActor
     private func updateProfileOnServiceIfNecessary(authedAccount: AuthedAccount) {
         switch _updateProfileOnServiceIfNecessary() {
@@ -1916,7 +1910,7 @@ extension OWSProfileManager {
         assert(!avatarUrlPath.isEmpty)
         return try await Retry.performWithBackoff(maxAttempts: 4, isRetryable: { $0.isNetworkFailureOrTimeout }) {
             Logger.info("")
-            let urlSession = Self.avatarUrlSession
+            let urlSession = await SSKEnvironment.shared.signalServiceRef.sharedUrlSessionForCdn(cdnNumber: 0, maxResponseSize: nil)
             let response = try await urlSession.performDownload(avatarUrlPath, method: .get)
             let decryptedFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             try Self.decryptAvatar(at: response.downloadUrl, to: decryptedFileUrl, profileKey: profileKey)

@@ -46,11 +46,16 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration,
         maxResponseSize: Int?,
-        canUseSignalProxy: Bool
+        canUseSignalProxy: Bool,
+        onFailureCallback: ((any Error) -> Void)?,
     ) {
         self.endpoint = endpoint
         self.configuration = configuration
         self.maxResponseSize = maxResponseSize
+
+        if onFailureCallback != nil {
+            fatalError("Unsupported in tests")
+        }
     }
 
     public convenience init() {

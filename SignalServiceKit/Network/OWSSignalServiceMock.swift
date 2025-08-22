@@ -48,6 +48,34 @@ public class OWSSignalServiceMock: OWSSignalServiceProtocol {
             maxResponseSize: maxResponseSize
         )
     }
+
+    public var mockCDNUrlSessionBuilder: ((_ cdnNumber: UInt32) -> BaseOWSURLSessionMock)?
+
+    public func sharedUrlSessionForCdn(
+        cdnNumber: UInt32,
+        maxResponseSize: UInt?
+    ) async -> OWSURLSessionProtocol {
+        let baseUrl: URL
+        switch cdnNumber {
+        case 0:
+            baseUrl = URL(string: TSConstants.textSecureCDN0ServerURL)!
+        case 3:
+            baseUrl = URL(string: TSConstants.textSecureCDN3ServerURL)!
+        default:
+            baseUrl = URL(string: TSConstants.textSecureCDN2ServerURL)!
+        }
+
+        return mockCDNUrlSessionBuilder?(cdnNumber) ?? BaseOWSURLSessionMock(
+            endpoint: OWSURLSessionEndpoint(
+                baseUrl: baseUrl,
+                frontingInfo: nil,
+                securityPolicy: .systemDefault,
+                extraHeaders: [:]
+            ),
+            configuration: .default,
+            maxResponseSize: maxResponseSize.map(Int.init(clamping:))
+        )
+    }
 }
 
 #endif

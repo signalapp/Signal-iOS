@@ -1498,7 +1498,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         fileprivate func performHeadRequest(
             downloadState: DownloadState
         ) async throws -> AttachmentDownloads.CdnInfo {
-            let urlSession = self.signalService.urlSessionForCdn(
+            let urlSession = await self.signalService.sharedUrlSessionForCdn(
                 cdnNumber: downloadState.cdnNumber(),
                 maxResponseSize: BackupArchive.Constants.maxDownloadSizeBytes
             )
@@ -1541,7 +1541,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             downloadState: DownloadState,
             length: UInt16
         ) async throws -> (AttachmentDownloads.CdnInfo, Data?) {
-            let urlSession = self.signalService.urlSessionForCdn(
+            let urlSession = await self.signalService.sharedUrlSessionForCdn(
                 cdnNumber: downloadState.cdnNumber(),
                 maxResponseSize: BackupArchive.Constants.maxDownloadSizeBytes
             )
@@ -1639,7 +1639,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 throw AttachmentDownloads.Error.expiredCredentials
             }
 
-            let urlSession = self.signalService.urlSessionForCdn(
+            let urlSession = await self.signalService.sharedUrlSessionForCdn(
                 cdnNumber: downloadState.cdnNumber(),
                 maxResponseSize: maxDownloadSizeBytes
             )

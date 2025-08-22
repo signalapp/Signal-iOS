@@ -26,32 +26,20 @@ public protocol OWSSignalServiceProtocol: AnyObject {
         configuration: URLSessionConfiguration?,
         maxResponseSize: Int?
     ) -> OWSURLSessionProtocol
+
+    func sharedUrlSessionForCdn(
+        cdnNumber: UInt32,
+        maxResponseSize: UInt?
+    ) async -> OWSURLSessionProtocol
 }
 
 public enum SignalServiceType {
     case mainSignalServiceIdentified
     case mainSignalServiceUnidentified
     case storageService
-    case cdn0
-    case cdn2
-    case cdn3
     case updates
     case updates2
     case svr2
-
-    static func type(forCdnNumber cdnNumber: UInt32) -> SignalServiceType {
-        switch cdnNumber {
-        case 0:
-            return cdn0
-        case 2:
-            return cdn2
-        case 3:
-            return cdn3
-        default:
-            owsFailDebug("Unrecognized CDN number configuration requested: \(cdnNumber)")
-            return cdn2
-        }
-    }
 }
 
 // MARK: -
@@ -78,21 +66,6 @@ public extension OWSSignalServiceProtocol {
 
     func urlSessionForStorageService() -> OWSURLSessionProtocol {
         buildUrlSession(for: .storageService)
-    }
-
-    func urlSessionForCdn(
-        cdnNumber: UInt32,
-        maxResponseSize: UInt?
-    ) -> OWSURLSessionProtocol {
-
-        let urlSessionConfiguration = OWSURLSession.defaultConfigurationWithoutCaching
-        urlSessionConfiguration.timeoutIntervalForRequest = 600
-
-        return buildUrlSession(
-            for: SignalServiceType.type(forCdnNumber: cdnNumber),
-            configuration: urlSessionConfiguration,
-            maxResponseSize: maxResponseSize.map(Int.init(clamping:))
-        )
     }
 
     func urlSessionForUpdates() -> OWSURLSessionProtocol {
@@ -144,33 +117,6 @@ extension SignalServiceType {
                 censorshipCircumventionPathPrefix: TSConstants.storageServiceCensorshipPrefix,
                 shouldUseSignalCertificate: true,
                 shouldHandleRemoteDeprecation: true,
-                type: self
-            )
-        case .cdn0:
-            return SignalServiceInfo(
-                baseUrl: URL(string: TSConstants.textSecureCDN0ServerURL)!,
-                censorshipCircumventionSupported: true,
-                censorshipCircumventionPathPrefix: TSConstants.cdn0CensorshipPrefix,
-                shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: false,
-                type: self
-            )
-        case .cdn2:
-            return SignalServiceInfo(
-                baseUrl: URL(string: TSConstants.textSecureCDN2ServerURL)!,
-                censorshipCircumventionSupported: true,
-                censorshipCircumventionPathPrefix: TSConstants.cdn2CensorshipPrefix,
-                shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: false,
-                type: self
-            )
-        case .cdn3:
-            return SignalServiceInfo(
-                baseUrl: URL(string: TSConstants.textSecureCDN3ServerURL)!,
-                censorshipCircumventionSupported: true,
-                censorshipCircumventionPathPrefix: TSConstants.cdn3CensorshipPrefix,
-                shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: false,
                 type: self
             )
         case .updates:

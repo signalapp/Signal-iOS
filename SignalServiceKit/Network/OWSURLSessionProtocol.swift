@@ -112,11 +112,13 @@ public protocol OWSURLSessionProtocol: AnyObject {
 
     // MARK: Initializer
 
+    /// - parameter onFailureCallback: called for any failure on any request made using this session.
     init(
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration,
         maxResponseSize: Int?,
-        canUseSignalProxy: Bool
+        canUseSignalProxy: Bool,
+        onFailureCallback: ((any Error) -> Void)?
     )
 
     // MARK: Tasks
@@ -170,13 +172,14 @@ extension OWSURLSessionProtocol {
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration,
         maxResponseSize: Int? = nil,
-        canUseSignalProxy: Bool = false
+        canUseSignalProxy: Bool = false,
     ) {
         self.init(
             endpoint: endpoint,
             configuration: configuration,
             maxResponseSize: maxResponseSize,
-            canUseSignalProxy: canUseSignalProxy
+            canUseSignalProxy: canUseSignalProxy,
+            onFailureCallback: nil,
         )
     }
 }
