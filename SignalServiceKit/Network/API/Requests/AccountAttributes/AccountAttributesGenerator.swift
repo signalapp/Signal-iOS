@@ -47,20 +47,14 @@ public struct AccountAttributesGenerator {
         let allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(transaction: sdsTx)
         let hasSVRBackups = svrLocalStorage.getIsMasterKeyBackedUp(tx)
 
-        let twoFaMode: AccountAttributes.TwoFactorAuthMode
+        let reglockToken: String?
         if
-            let reglockToken = accountKeyStore.getMasterKey(tx: tx)?.data(for: .registrationLock),
+            let _reglockToken = accountKeyStore.getMasterKey(tx: tx)?.data(for: .registrationLock),
             ows2FAManager.isRegistrationLockV2Enabled(transaction: sdsTx)
         {
-            twoFaMode = .v2(reglockToken: reglockToken.canonicalStringRepresentation)
-        } else if
-            let pinCode = ows2FAManager.pinCode(transaction: sdsTx),
-            pinCode.isEmpty.negated,
-            hasSVRBackups.negated
-        {
-            twoFaMode = .v1(pinCode: pinCode)
+            reglockToken = _reglockToken.canonicalStringRepresentation
         } else {
-            twoFaMode = .none
+            reglockToken = nil
         }
 
         let registrationRecoveryPassword = accountKeyStore.getMasterKey(tx: tx)?.data(
@@ -75,7 +69,7 @@ public struct AccountAttributesGenerator {
             pniRegistrationId: pniRegistrationId,
             unidentifiedAccessKey: udAccessKey,
             unrestrictedUnidentifiedAccess: allowUnrestrictedUD,
-            twofaMode: twoFaMode,
+            reglockToken: reglockToken,
             registrationRecoveryPassword: registrationRecoveryPassword,
             encryptedDeviceName: nil,
             discoverableByPhoneNumber: phoneNumberDiscoverability,

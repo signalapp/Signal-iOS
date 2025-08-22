@@ -698,10 +698,10 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         let udAccessKey = SMKUDAccessKey(profileKey: profileKey).keyData.base64EncodedString()
         let allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(tx: tx)
 
-        // Historical note: secondary device registration uses the same AccountAttributes object,
-        // but some fields, like reglock and pin, are ignored by the server.
-        // Don't bother with this field at all; just put explicit none.
-        let twoFaMode: AccountAttributes.TwoFactorAuthMode = .none
+        // Linked-device provisioning uses the same AccountAttributes object as
+        // primary-device registration; however, the reglock token is ignored by
+        // the server.
+        let reglockToken: String? = nil
 
         let registrationRecoveryPassword = accountKeyStore.getMasterKey(tx: tx)?.data(
             for: .registrationRecoveryPassword
@@ -719,7 +719,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             pniRegistrationId: pniRegistrationId,
             unidentifiedAccessKey: udAccessKey,
             unrestrictedUnidentifiedAccess: allowUnrestrictedUD,
-            twofaMode: twoFaMode,
+            reglockToken: reglockToken,
             registrationRecoveryPassword: registrationRecoveryPassword,
             encryptedDeviceName: encryptedDeviceName,
             discoverableByPhoneNumber: phoneNumberDiscoverability,

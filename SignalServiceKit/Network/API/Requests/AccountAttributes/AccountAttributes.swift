@@ -42,9 +42,6 @@ public struct AccountAttributes: Codable {
     /// v2-compliant clients, so that is ignored.
     public let registrationLockToken: String?
 
-    // The user's pin code. For backwards compatibility from before reglock v2.
-    public let pin: String?
-
     /// Password derived from the KBS master key that the user may be able to use to
     /// (re)register without needing to verify an code sent to their phone number.
     ///
@@ -72,17 +69,10 @@ public struct AccountAttributes: Codable {
         case unidentifiedAccessKey
         case unrestrictedUnidentifiedAccess
         case registrationLockToken = "registrationLock"
-        case pin
         case registrationRecoveryPassword = "recoveryPassword"
         case encryptedDeviceName = "name"
         case discoverableByPhoneNumber
         case capabilities
-    }
-
-    public enum TwoFactorAuthMode {
-        case none
-        case v1(pinCode: String)
-        case v2(reglockToken: String)
     }
 
     public init(
@@ -91,7 +81,7 @@ public struct AccountAttributes: Codable {
         pniRegistrationId: UInt32,
         unidentifiedAccessKey: String?,
         unrestrictedUnidentifiedAccess: Bool,
-        twofaMode: TwoFactorAuthMode,
+        reglockToken: String?,
         registrationRecoveryPassword: String?,
         encryptedDeviceName: String?,
         discoverableByPhoneNumber: PhoneNumberDiscoverability?,
@@ -102,17 +92,7 @@ public struct AccountAttributes: Codable {
         self.pniRegistrationId = pniRegistrationId
         self.unidentifiedAccessKey = unidentifiedAccessKey
         self.unrestrictedUnidentifiedAccess = unrestrictedUnidentifiedAccess
-        switch twofaMode {
-        case .none:
-            self.registrationLockToken = nil
-            self.pin = nil
-        case .v1(let pinCode):
-            self.registrationLockToken = nil
-            self.pin = pinCode
-        case .v2(let reglockToken):
-            self.registrationLockToken = reglockToken
-            self.pin = nil
-        }
+        self.registrationLockToken = reglockToken
         self.registrationRecoveryPassword = registrationRecoveryPassword
         self.encryptedDeviceName = encryptedDeviceName
         self.discoverableByPhoneNumber = discoverableByPhoneNumber.orAccountAttributeDefault.isDiscoverable

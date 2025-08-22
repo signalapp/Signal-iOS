@@ -248,18 +248,11 @@ public class PinConfirmationViewController: OWSViewController {
         }
 
         SSKEnvironment.shared.ows2FAManagerRef.verifyPin(pin) { success in
-            guard success else {
-                guard SSKEnvironment.shared.ows2FAManagerRef.needsLegacyPinMigration, pin.count > kLegacyTruncated2FAv1PinLength else {
-                    self.validationState = .mismatch
-                    return
-                }
-                // We have a legacy pin that may have been truncated to 16 characters.
-                let truncatedPinCode = String(pin.prefix(Int(kLegacyTruncated2FAv1PinLength)))
-                self.verifyAndDismissOnSuccess(truncatedPinCode)
-                return
+            if success {
+                self.dismiss(animated: true) { self.completionHandler(true) }
+            } else {
+                self.validationState = .mismatch
             }
-
-            self.dismiss(animated: true) { self.completionHandler(true) }
         }
     }
 

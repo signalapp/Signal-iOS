@@ -216,7 +216,7 @@ public class AppSetup {
         let modelReadCaches = testDependencies.modelReadCaches ?? ModelReadCaches(
             factory: ModelReadCacheFactory(appReadiness: appReadiness)
         )
-        let ows2FAManager = OWS2FAManager(appReadiness: appReadiness)
+        let ows2FAManager = OWS2FAManager()
         let paymentsHelper = testDependencies.paymentsHelper ?? PaymentsHelperImpl()
         let archivedPaymentStore = ArchivedPaymentStoreImpl()
         let pniSignalProtocolStore = SignalProtocolStoreImpl(

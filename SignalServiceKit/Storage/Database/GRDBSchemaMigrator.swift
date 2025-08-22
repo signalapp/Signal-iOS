@@ -4278,11 +4278,11 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.dataMigration_enableV2RegistrationLockIfNecessary) { transaction in
-            guard DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction) else {
-                return .success(())
+            if DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction) {
+                KeyValueStore(collection: "kOWS2FAManager_Collection")
+                    .setBool(true, key: "isRegistrationLockV2Enabled", transaction: transaction)
             }
 
-            OWS2FAManager.keyValueStore.setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction)
             return .success(())
         }
 

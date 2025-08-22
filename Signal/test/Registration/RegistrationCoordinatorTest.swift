@@ -3400,7 +3400,7 @@ public class RegistrationCoordinatorTest {
                 pniRegistrationId: 0,
                 unidentifiedAccessKey: "",
                 unrestrictedUnidentifiedAccess: false,
-                twofaMode: .none,
+                reglockToken: nil,
                 registrationRecoveryPassword: masterKey?.regRecoveryPw,
                 encryptedDeviceName: nil,
                 discoverableByPhoneNumber: .nobody,

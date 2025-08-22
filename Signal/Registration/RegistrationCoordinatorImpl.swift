@@ -830,10 +830,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // This is a way to double check they know the PIN.
         var pinFromUser: String?
         var pinFromDisk: String?
-        // A really old user might be on v1 2fa; they have a PIN,
-        // but no SVR backups. We will encourage backing up
-        // to SVR but the user may skip it.
-        var isV12faUser: Bool = false
         var unconfirmedPinBlob: RegistrationPinConfirmationBlob?
 
         // State to track if we should prompt the user to enter their PIN
@@ -1241,13 +1237,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 inMemoryState.pinFromUser = quickRestorePin
             } else {
                 inMemoryState.pinFromDisk = deps.ows2FAManager.pinCode(tx)
-                if
-                    inMemoryState.pinFromDisk != nil,
-                    deps.svr.hasBackedUpMasterKey(transaction: tx).negated
-                {
-                    // If we had a pin but no SVR backups, we must be a v1 2fa user.
-                    inMemoryState.isV12faUser = true
-                }
             }
 
             loadSVRAuthCredentialCandidates(tx)
@@ -1862,17 +1851,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         e164: E164,
         retriesLeft: Int = Constants.networkErrorRetries
     ) async -> RegistrationStep {
-        let twoFAMode = self.attributes2FAMode(e164: e164)
+        let reglockToken = self.reglockToken(for: e164)
         return await makeRegisterOrChangeNumberRequest(
             .recoveryPassword(regRecoveryPw),
             e164: e164,
-            twoFAMode: twoFAMode,
+            reglockToken: reglockToken,
             responseHandler: { accountResponse in
                 return await self.handleCreateAccountResponseFromRegRecoveryPassword(
                     accountResponse,
                     regRecoveryPw: regRecoveryPw,
                     e164: e164,
-                    twoFaModeUsedInRequest: twoFAMode,
+                    reglockToken: reglockToken,
                     retriesLeft: retriesLeft
                 )
             }
@@ -1884,7 +1873,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         _ response: AccountResponse,
         regRecoveryPw: String,
         e164: E164,
-        twoFaModeUsedInRequest: AccountAttributes.TwoFactorAuthMode,
+        reglockToken: String?,
         retriesLeft: Int
     ) async -> RegistrationStep {
         // NOTE: it is not possible for our e164 to be rejected here; the entire request
@@ -1905,8 +1894,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return await nextStep()
 
         case .reglockFailure:
-            switch twoFaModeUsedInRequest {
-            case .none, .v1:
+            if reglockToken == nil {
                 // We failed reglock because we didn't even try it!
                 // Try again with reglock included this time.
                 db.write { tx in
@@ -1915,7 +1903,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                 }
                 return await nextStep()
-            case .v2:
+            } else {
                 // We tried our reglock token and it failed.
                 switch mode {
                 case .registering, .reRegistering:
@@ -2504,16 +2492,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 ))
             ))
         }
-        let twoFAMode = attributes2FAMode(e164: session.e164)
+        let reglockToken = reglockToken(for: session.e164)
         return await makeRegisterOrChangeNumberRequest(
             .sessionId(session.id),
             e164: session.e164,
-            twoFAMode: twoFAMode,
+            reglockToken: reglockToken,
             responseHandler: { accountResponse in
                 return await self.handleCreateAccountResponseFromSession(
                     accountResponse,
                     sessionFromBeforeRequest: session,
-                    twoFAModeUsedInRequest: twoFAMode,
+                    reglockTokenUsedInRequest: reglockToken,
                     retriesLeft: retriesLeft
                 )
             }
@@ -2524,7 +2512,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func handleCreateAccountResponseFromSession(
         _ response: AccountResponse,
         sessionFromBeforeRequest: RegistrationSession,
-        twoFAModeUsedInRequest: AccountAttributes.TwoFactorAuthMode,
+        reglockTokenUsedInRequest: String?,
         retriesLeft: Int
     ) async -> RegistrationStep {
         switch response {
@@ -2567,8 +2555,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // We need the user to enter their PIN so we can get through reglock.
             // So we set up the state we need (the SVR credential)
             // and go to the next step which should look at the state and take us to the right place.
-            switch twoFAModeUsedInRequest {
-            case .v2:
+            if reglockTokenUsedInRequest != nil {
                 // We were already trying reglock, and the token was wrong.
                 // that means the whole thing is stuck. wait out the reglock.
                 db.write { tx in
@@ -2585,8 +2572,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                 }
                 return await nextStep()
-
-            case .none, .v1:
+            } else {
                 let persistedCredential = PersistedState.SessionState.ReglockState.SVRAuthCredential(
                     svr2: reglockFailure.svr2AuthCredential
                 )
@@ -3623,14 +3609,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 )
             }
 
-            switch attributes2FAMode(e164: accountIdentity.e164) {
-            case .none, .v1:
-                Logger.info("Not enabling reglock because it wasn't enabled to begin with")
-            case .v2(let reglockToken):
-                guard inMemoryState.hasSetReglock.negated else {
-                    break
+            if let reglockToken = self.reglockToken(for: accountIdentity.e164) {
+                if inMemoryState.hasSetReglock.negated {
+                    return await self.enableReglock(accountIdentity: accountIdentity, reglockToken: reglockToken)
                 }
-                return await self.enableReglock(accountIdentity: accountIdentity, reglockToken: reglockToken)
+            } else {
+                Logger.info("Not enabling reglock because it wasn't enabled to begin with")
             }
         }
         return nil
@@ -3972,7 +3956,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             try await Service.makeUpdateAccountAttributesRequest(
                 makeAccountAttributes(
                     isManualMessageFetchEnabled: inMemoryState.isManualMessageFetchEnabled,
-                    twoFAMode: self.attributes2FAMode(e164: accountIdentity.e164)
+                    reglockToken: self.reglockToken(for: accountIdentity.e164),
                 ),
                 auth: accountIdentity.chatServiceAuth,
                 networkManager: deps.networkManager,
@@ -4079,7 +4063,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func makeRegisterOrChangeNumberRequest(
         _ method: RegistrationRequestFactory.VerificationMethod,
         e164: E164,
-        twoFAMode: AccountAttributes.TwoFactorAuthMode,
+        reglockToken: String?,
         responseHandler: @escaping @MainActor (AccountResponse) async -> RegistrationStep
     ) async -> RegistrationStep {
         Logger.info("")
@@ -4138,7 +4122,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
             let accountAttributes = makeAccountAttributes(
                 isManualMessageFetchEnabled: isManualMessageFetchEnabled,
-                twoFAMode: twoFAMode
+                reglockToken: reglockToken,
             )
 
             do {
@@ -4167,7 +4151,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             let changeNumberResult = await generatePniStateAndMakeChangeNumberRequest(
                 e164: e164,
                 verificationMethod: method,
-                twoFAMode: twoFAMode,
+                reglockToken: reglockToken,
                 changeNumberState: changeNumberState
             )
             switch changeNumberResult {
@@ -4313,7 +4297,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func generatePniStateAndMakeChangeNumberRequest(
         e164: E164,
         verificationMethod: RegistrationRequestFactory.VerificationMethod,
-        twoFAMode: AccountAttributes.TwoFactorAuthMode,
+        reglockToken: String?,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState
     ) async -> ChangeNumberResult {
         Logger.info("")
@@ -4333,7 +4317,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return await makeChangeNumberRequest(
                 e164: e164,
                 verificationMethod: verificationMethod,
-                twoFAMode: twoFAMode,
+                reglockToken: reglockToken,
                 changeNumberState: changeNumberState,
                 pniPendingState: pniPendingState,
                 pniParams: pniParams
@@ -4345,7 +4329,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func makeChangeNumberRequest(
         e164: E164,
         verificationMethod: RegistrationRequestFactory.VerificationMethod,
-        twoFAMode: AccountAttributes.TwoFactorAuthMode,
+        reglockToken: String?,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
         pniPendingState: ChangePhoneNumberPni.PendingState,
         pniParams: PniDistribution.Parameters
@@ -4369,13 +4353,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .pniStateError
         }
 
-        let reglockToken: String?
-        switch twoFAMode {
-        case .v2(let token):
-            reglockToken = token
-        case .v1, .none:
-            reglockToken = nil
-        }
         return .serviceResponse(await Service.makeChangeNumberRequest(
             verificationMethod,
             e164: e164,
@@ -4485,7 +4462,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Account objects
 
-    private func attributes2FAMode(e164: E164) -> AccountAttributes.TwoFactorAuthMode {
+    private func reglockToken(for e164: E164) -> String? {
         if
             (
                 inMemoryState.wasReglockEnabledBeforeStarting
@@ -4493,20 +4470,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             ),
             let reglockToken = inMemoryState.reglockToken
         {
-            return .v2(reglockToken: reglockToken)
-        } else if
-            let pinCode = inMemoryState.pinFromDisk,
-            inMemoryState.isV12faUser
-        {
-            return .v1(pinCode: pinCode)
-        } else {
-            return .none
+            return reglockToken
         }
+
+        return nil
     }
 
     private func makeAccountAttributes(
         isManualMessageFetchEnabled: Bool,
-        twoFAMode: AccountAttributes.TwoFactorAuthMode
+        reglockToken: String?,
     ) -> AccountAttributes {
         let hasSVRBackups: Bool
         switch getPathway() {
@@ -4536,7 +4508,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             pniRegistrationId: inMemoryState.pniRegistrationId,
             unidentifiedAccessKey: inMemoryState.udAccessKey.keyData.base64EncodedString(),
             unrestrictedUnidentifiedAccess: inMemoryState.allowUnrestrictedUD,
-            twofaMode: twoFAMode,
+            reglockToken: reglockToken,
             registrationRecoveryPassword: inMemoryState.regRecoveryPw,
             encryptedDeviceName: nil, // This class only deals in primary devices, which have no name
             discoverableByPhoneNumber: inMemoryState.phoneNumberDiscoverability,
@@ -4755,13 +4727,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .session:
             return .v2WithReglock
         case .profileSetup:
-            if inMemoryState.isV12faUser {
-                return .v1
-            } else {
-                // If they are in profile setup that means they
-                // would have gotten past reglock already.
-                return .v2NoReglock
-            }
+            // If they are in profile setup that means they
+            // would have gotten past reglock already.
+            return .v2NoReglock
         }
     }
 

@@ -205,8 +205,6 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         }
     }
 
-    private let hideNavigationBar: Bool
-
     private let showCancelButton: Bool
 
     private let showDisablePinButton: Bool
@@ -220,17 +218,18 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
 
     convenience init(
         mode: Mode,
-        hideNavigationBar: Bool,
         showCancelButton: Bool = false,
         showDisablePinButton: Bool = false,
-        enableRegistrationLock: Bool = SSKEnvironment.shared.ows2FAManagerRef.isRegistrationLockEnabled,
+        enableRegistrationLock: Bool = {
+            let ows2FAManager = SSKEnvironment.shared.ows2FAManagerRef
+            return ows2FAManager.is2FAEnabled && ows2FAManager.isRegistrationLockV2Enabled
+        }(),
         completionHandler: @escaping (PinSetupViewController, Error?) -> Void
     ) {
         self.init(
             mode: mode,
             initialMode: mode,
             pinType: .numeric,
-            hideNavigationBar: hideNavigationBar,
             showCancelButton: showCancelButton,
             showDisablePinButton: showDisablePinButton,
             enableRegistrationLock: enableRegistrationLock,
@@ -242,7 +241,6 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         mode: Mode,
         initialMode: Mode,
         pinType: SVR.PinType,
-        hideNavigationBar: Bool,
         showCancelButton: Bool,
         showDisablePinButton: Bool,
         enableRegistrationLock: Bool,
@@ -252,7 +250,6 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         self.mode = mode
         self.initialMode = initialMode
         self.pinType = pinType
-        self.hideNavigationBar = hideNavigationBar
         self.showCancelButton = showCancelButton
         self.showDisablePinButton = showDisablePinButton
         self.enableRegistrationLock = enableRegistrationLock
@@ -276,7 +273,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         return backgroundColor
     }
 
-    public var prefersNavigationBarHidden: Bool { hideNavigationBar }
+    public var prefersNavigationBarHidden: Bool { false }
 
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -511,7 +508,6 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
                 mode: .confirming(pinToMatch: pin),
                 initialMode: initialMode,
                 pinType: pinType,
-                hideNavigationBar: hideNavigationBar,
                 showCancelButton: false, // we're pushing, so we never need a cancel button
                 showDisablePinButton: false, // we never show this button on the second screen
                 enableRegistrationLock: enableRegistrationLock,

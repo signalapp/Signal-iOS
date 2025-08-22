@@ -20,7 +20,6 @@ class IntroducingPinsMegaphone: MegaphoneView {
         let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
             let viewController = PinSetupViewController(
                 mode: .creating,
-                hideNavigationBar: false,
                 showCancelButton: true,
                 completionHandler: { [weak self, weak fromViewController] _, error in
                     guard let self, let fromViewController else { return }

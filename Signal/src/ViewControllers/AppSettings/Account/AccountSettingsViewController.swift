@@ -424,7 +424,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     }
 
     private func showChangePin() {
-        let vc = PinSetupViewController(mode: .changing, hideNavigationBar: false) { [weak self] _, _ in
+        let vc = PinSetupViewController(mode: .changing) { [weak self] _, _ in
             guard let self = self else { return }
             self.navigationController?.popToViewController(self, animated: true)
         }
@@ -434,7 +434,6 @@ class AccountSettingsViewController: OWSTableViewController2 {
     private func showCreatePin(enableRegistrationLock: Bool = false) {
         let vc = PinSetupViewController(
             mode: .creating,
-            hideNavigationBar: false,
             enableRegistrationLock: enableRegistrationLock
         ) { [weak self] _, _ in
             guard let self = self else { return }

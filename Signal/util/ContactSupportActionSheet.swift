@@ -24,7 +24,6 @@ extension ActionSheetAction {
 enum ContactSupportActionSheet {
     enum EmailFilter: Equatable {
         enum RegistrationPINMode: String {
-            case v1
             case v2NoReglock
             case v2WithReglock
             case v2WithUnknownReglockState
@@ -39,7 +38,6 @@ enum ContactSupportActionSheet {
 
         fileprivate var asString: String {
             return switch self {
-            case .registrationPINMode(.v1): "Signal PIN - iOS (V1 PIN)"
             case .registrationPINMode(.v2NoReglock): "Signal PIN - iOS (V2 PIN without RegLock)"
             case .registrationPINMode(.v2WithReglock): "Signal PIN - iOS (V2 PIN)"
             case .registrationPINMode(.v2WithUnknownReglockState): "Signal PIN - iOS (V2 PIN with unknown reglock)"

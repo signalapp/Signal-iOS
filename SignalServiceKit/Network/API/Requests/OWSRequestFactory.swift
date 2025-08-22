@@ -181,10 +181,6 @@ public enum OWSRequestFactory {
 
     // MARK: - Registration
 
-    static func disable2FARequest() -> TSRequest {
-        return TSRequest(url: URL(string: self.textSecure2FAAPI)!, method: "DELETE", parameters: [:])
-    }
-
     public static func enableRegistrationLockV2Request(token: String) -> TSRequest {
         owsAssertDebug(nil != token.nilIfEmpty)
 
