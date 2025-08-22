@@ -216,7 +216,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
             // paid-ter credentials.
             try await backupSubscriptionManager.redeemSubscriptionIfNecessary()
         } catch {
-            Logger.warn("Failed to register Backup-ID! \(error)")
+            Logger.warn("Failed to redeem IAP Backup subscription! \(error)")
             dependencyStepFailed = true
         }
 
@@ -225,7 +225,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
             // TestFlight builds.
             try await backupTestFlightEntitlementManager.renewEntitlementIfNecessary()
         } catch {
-            Logger.warn("Failed to register Backup-ID! \(error)")
+            Logger.warn("Failed to renew entitlement for TestFlight! \(error)")
             dependencyStepFailed = true
         }
 

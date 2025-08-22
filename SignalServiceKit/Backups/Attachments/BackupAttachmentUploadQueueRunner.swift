@@ -126,13 +126,6 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
     @objc
     private func backUpAllAttachmentsIfNecessary() {
         Task {
-            // Note the race: the queue could stop running between
-            // this check and the call below, but at this point
-            // the tx has committed; if the queue is running at all
-            // after the commit then whatever was in the commit
-            // will get picked up before it finishes running,
-            // so if it stops after this check then it necessarily
-            // did so after processing whatever got committed.
             let thumbnailRunning = await self.thumbnailTaskQueue.isRunning
             let fullsizeRunning = await self.fullsizeTaskQueue.isRunning
             if fullsizeRunning && thumbnailRunning {
