@@ -11,7 +11,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
     private let chatConnectionManager: ChatConnectionManager
     private let db: any DB
-    private let deviceService: OWSDeviceService
     private let identityManager: OWSIdentityManager
     private let linkAndSyncManager: LinkAndSyncManager
     private let accountKeyStore: AccountKeyStore
@@ -34,7 +33,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     init(
         chatConnectionManager: ChatConnectionManager,
         db: any DB,
-        deviceService: OWSDeviceService,
         identityManager: OWSIdentityManager,
         linkAndSyncManager: LinkAndSyncManager,
         accountKeyStore: AccountKeyStore,
@@ -56,7 +54,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     ) {
         self.chatConnectionManager = chatConnectionManager
         self.db = db
-        self.deviceService = deviceService
         self.identityManager = identityManager
         self.linkAndSyncManager = linkAndSyncManager
         self.accountKeyStore = accountKeyStore
@@ -656,7 +653,10 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
     private func undoVerifyAndLinkOnServer(authedDevice: AuthedDevice.Explicit) async throws(CompleteProvisioningError) {
         do {
-            try await deviceService.unlinkDevice(deviceId: authedDevice.deviceId, auth: authedDevice.authedAccount.chatServiceAuth)
+            try await registrationStateChangeManager.unlinkLocalDevice(
+                localDeviceId: .valid(authedDevice.deviceId),
+                auth: authedDevice.authedAccount.chatServiceAuth,
+            )
         } catch {
             throw .genericError(error)
         }

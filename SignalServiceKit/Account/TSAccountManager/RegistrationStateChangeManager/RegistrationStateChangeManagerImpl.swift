@@ -20,6 +20,10 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager
+    private var chatConnectionManager: any ChatConnectionManager {
+        // TODO: Fix circular dependency.
+        return DependenciesBridge.shared.chatConnectionManager
+    }
     private let db: DB
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
@@ -329,30 +333,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             backupAuths = nil
         }
 
-        self.isUnregisteringFromService.set(true)
-        defer { self.isUnregisteringFromService.set(false) }
-
-        let request = OWSRequestFactory.unregisterAccountRequest()
-        do {
-            _ = try await networkManager.asyncRequest(request)
-        } catch OWSHTTPError.networkFailure(.wrappedFailure(SignalError.connectionInvalidated)) {
-            Logger.warn("Connection was invalidated -- we probably deleted our account.")
-            // We should try to reconnect and should learn that we're no longer
-            // registered. This should happen immediately, but if it doesn't, the
-            // account *might* still exist, and we should inform the user that
-            // something may have gone wrong.
-            try await withCooperativeTimeout(seconds: 30, operation: { [tsAccountManager] in
-                try await Preconditions([
-                    NotificationPrecondition(notificationName: .registrationStateDidChange, isSatisfied: {
-                        return !tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
-                    }),
-                ]).waitUntilSatisfied()
-            })
-            // If we get past this point, the account is gone.
-        } catch {
-            owsFailDebugUnlessNetworkFailure(error)
-            throw error
-        }
+        try await deleteLocalDevice(OWSRequestFactory.unregisterAccountRequest(), canUseWebSocket: true)
 
         // Now that we've successfully unregistered, make a best effort to wipe
         // our Backups. This is safe to try even if Backups were disabled.
@@ -370,9 +351,51 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
                 )
             }
         }
-
         // No need to set any state, as we wipe the whole app anyway.
+
         await appContext.resetAppDataAndExit()
+    }
+
+    public func unlinkLocalDevice(localDeviceId: LocalDeviceId, auth: ChatServiceAuth) async throws {
+        owsPrecondition(!localDeviceId.equals(.primary))
+        if let localDeviceId = localDeviceId.ifValid {
+            var request = TSRequest.deleteDevice(deviceId: localDeviceId)
+            request.auth = .identified(auth)
+            try await deleteLocalDevice(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
+        } else {
+            // If localDeviceId isn't valid, we've already been unlinked.
+        }
+    }
+
+    private func deleteLocalDevice(_ request: TSRequest, canUseWebSocket: Bool) async throws {
+        self.isUnregisteringFromService.set(true)
+        defer { self.isUnregisteringFromService.set(false) }
+
+        do {
+            _ = try await networkManager.asyncRequest(request, canUseWebSocket: canUseWebSocket)
+        } catch OWSHTTPError.networkFailure(.wrappedFailure(SignalError.connectionInvalidated)) {
+            Logger.warn("Connection was invalidated -- we this device (or account) was probably deleted.")
+            // The server closed the connection before we got a response. This almost
+            // certainly happened because this device is no longer registered, but
+            // `connectionInvalidated` may happen for other reasons. This is (sort of)
+            // a "flaky" failure, so we retry the request. We expect to receive a
+            // NotRegisteredError (via a 403 when reopening the socket), but if we
+            // don't, we throw whatever error happens on the second attempt.
+            do {
+                _ = try await networkManager.asyncRequest(request, canUseWebSocket: canUseWebSocket)
+            } catch is NotRegisteredError {
+                // This is expected when the `connectionInvalidated` error races the
+                // response to the INITIAL request.
+            }
+        } catch {
+            owsFailDebugUnlessNetworkFailure(error)
+            throw error
+        }
+
+        // If we successfully delete this device, the connection will close and
+        // stop trying to reopen. Wait until that happens to ensure we don't post a
+        // notification about being deregistered.
+        try await chatConnectionManager.waitUntilIdentifiedConnectionShouldBeClosed()
     }
 
     // MARK: - Helpers

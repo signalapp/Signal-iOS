@@ -71,7 +71,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         self.provisioningCoordinator = ProvisioningCoordinatorImpl(
             chatConnectionManager: chatConnectionManagerMock,
             db: mockDb,
-            deviceService: MockOWSDeviceService(),
             identityManager: identityManagerMock,
             linkAndSyncManager: MockLinkAndSyncManager(),
             accountKeyStore: accountKeyStore,
@@ -235,23 +234,6 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
         progress: OWSSequentialProgressRootSink<SecondaryLinkNSyncProgressPhase>
     ) async throws(SecondaryLinkNSyncError) {
         return
-    }
-}
-
-private class MockOWSDeviceService: OWSDeviceService {
-
-    init() {}
-
-    func refreshDevices() async throws -> Bool {
-        return true
-    }
-
-    func renameDevice(device: OWSDevice, newName: String) async throws(OWSDeviceRenameError) {
-        // do nothing
-    }
-
-    func unlinkDevice(deviceId: DeviceId, auth: SignalServiceKit.ChatServiceAuth) async throws {
-        // do nothing
     }
 }
 

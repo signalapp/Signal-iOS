@@ -31,6 +31,7 @@ public class NetworkManager: NetworkManagerProtocol {
     private let appReadiness: AppReadiness
     private let reachabilityDidChangeObserver: Task<Void, Never>?
     private var chatConnectionManager: ChatConnectionManager {
+        // TODO: Fix circular dependencies.
         DependenciesBridge.shared.chatConnectionManager
     }
 

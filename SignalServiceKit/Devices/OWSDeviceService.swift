@@ -12,7 +12,7 @@ public protocol OWSDeviceService {
     func refreshDevices() async throws -> Bool
 
     /// Unlink the given device.
-    func unlinkDevice(deviceId: DeviceId, auth: ChatServiceAuth) async throws
+    func unlinkDevice(deviceId: DeviceId) async throws
 
     /// Renames a device with the given encrypted name.
     func renameDevice(
@@ -22,17 +22,12 @@ public protocol OWSDeviceService {
 }
 
 extension OWSDeviceService {
-
-    public func unlinkDevice(deviceId: DeviceId) async throws {
-        try await self.unlinkDevice(deviceId: deviceId, auth: .implicit())
-    }
-
-    public func unlinkDevice(_ device: OWSDevice, auth: ChatServiceAuth = .implicit()) async throws {
+    public func unlinkDevice(_ device: OWSDevice) async throws {
         guard let deviceId = DeviceId(validating: device.deviceId) else {
             // If it's not valid, the device can't exist on the server.
             return
         }
-        try await unlinkDevice(deviceId: deviceId, auth: auth)
+        try await unlinkDevice(deviceId: deviceId)
     }
 }
 
@@ -210,10 +205,8 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
     // MARK: -
 
-    func unlinkDevice(deviceId: DeviceId, auth: ChatServiceAuth) async throws {
-        var request = TSRequest.deleteDevice(deviceId: deviceId)
-        request.auth = .identified(auth)
-        _ = try await networkManager.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
+    func unlinkDevice(deviceId: DeviceId) async throws {
+        _ = try await networkManager.asyncRequest(TSRequest.deleteDevice(deviceId: deviceId))
     }
 
     func renameDevice(
@@ -304,8 +297,8 @@ private struct DeviceNameChangeSyncMessageSender {
 
 // MARK: -
 
-private extension TSRequest {
-    static func getDevices() -> TSRequest {
+extension TSRequest {
+    fileprivate static func getDevices() -> TSRequest {
         return TSRequest(
             url: URL(string: "v1/devices")!,
             method: "GET",
@@ -313,7 +306,7 @@ private extension TSRequest {
         )
     }
 
-    static func deleteDevice(
+    public static func deleteDevice(
         deviceId: DeviceId
     ) -> TSRequest {
         return TSRequest(
@@ -323,7 +316,7 @@ private extension TSRequest {
         )
     }
 
-    static func renameDevice(
+    fileprivate static func renameDevice(
         device: OWSDevice,
         encryptedName: String
     ) -> TSRequest {

@@ -162,4 +162,7 @@ public protocol RegistrationStateChangeManager {
      * Unregisters with the server, resetting all app data after completion (if successful).
      */
     func unregisterFromService() async throws -> Never
+
+    /// Unlinks the local device (must not be the primary device).
+    func unlinkLocalDevice(localDeviceId: LocalDeviceId, auth: ChatServiceAuth) async throws
 }

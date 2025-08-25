@@ -31,7 +31,6 @@ class ProvisioningController: NSObject {
         return ProvisioningCoordinatorImpl(
             chatConnectionManager: DependenciesBridge.shared.chatConnectionManager,
             db: DependenciesBridge.shared.db,
-            deviceService: DependenciesBridge.shared.deviceService,
             identityManager: DependenciesBridge.shared.identityManager,
             linkAndSyncManager: DependenciesBridge.shared.linkAndSyncManager,
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,

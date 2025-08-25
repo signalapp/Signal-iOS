@@ -287,13 +287,10 @@ extension SignalApp {
             fromViewController: fromVC,
             canCancel: false,
             asyncBlock: { _ in
-                if let localDeviceId = localDeviceId.ifValid {
-                    // Best effort to unlink ourselves from the server.
-                    try? await DependenciesBridge.shared.deviceService.unlinkDevice(deviceId: localDeviceId)
-                } else {
-                    // If localDeviceId isn't valid, we've already been unlinked.
-                }
-                SignalApp.resetAppDataAndExit(keyFetcher: keyFetcher)
+                let registrationStateChangeManager = DependenciesBridge.shared.registrationStateChangeManager
+                // Best effort to unlink ourselves from the server.
+                try? await registrationStateChangeManager.unlinkLocalDevice(localDeviceId: localDeviceId, auth: .implicit())
+                resetAppDataAndExit(keyFetcher: keyFetcher)
             }
         )
     }
