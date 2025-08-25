@@ -213,14 +213,25 @@ private class MockAttachmentUploadProgress: BackupAttachmentUploadProgressMock {
 
 private class MockUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter {
     var currentStatusMock: BackupAttachmentUploadQueueStatus {
-        didSet { notifyStatusDidChange() }
+        didSet {
+            NotificationCenter.default.postOnMainThread(
+                name: .backupAttachmentUploadQueueStatusDidChange(for: .fullsize),
+                object: nil,
+            )
+        }
     }
 
     init(_ initialStatus: BackupAttachmentUploadQueueStatus) {
         self.currentStatusMock = initialStatus
     }
 
-    func currentStatus() -> BackupAttachmentUploadQueueStatus {
+    func currentStatus(for mode: BackupAttachmentUploadQueueMode) -> BackupAttachmentUploadQueueStatus {
+        switch mode {
+        case .fullsize:
+            break
+        case .thumbnail:
+            fatalError("Only use fullsize in these tests")
+        }
         return currentStatusMock
     }
 }

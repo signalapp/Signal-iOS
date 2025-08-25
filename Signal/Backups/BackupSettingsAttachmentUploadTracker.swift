@@ -131,20 +131,21 @@ private class Tracker {
 
     @MainActor
     private func observeUploadQueueStatus() -> NotificationCenter.Observer {
+        // We only care about fullsize uploads, ignore thumbnails
         let uploadQueueStatusObserver = NotificationCenter.default.addObserver(
-            name: .backupAttachmentUploadQueueStatusDidChange
+            name: .backupAttachmentUploadQueueStatusDidChange(for: .fullsize)
         ) { [weak self] notification in
             guard let self else { return }
 
             handleQueueStatusUpdate(
-                backupAttachmentUploadQueueStatusReporter.currentStatus()
+                backupAttachmentUploadQueueStatusReporter.currentStatus(for: .fullsize)
             )
         }
 
         // Now that we're observing updates, handle the initial value as if we'd
         // just gotten it in an update.
         handleQueueStatusUpdate(
-            backupAttachmentUploadQueueStatusReporter.currentStatus()
+            backupAttachmentUploadQueueStatusReporter.currentStatus(for: .fullsize)
         )
 
         return uploadQueueStatusObserver

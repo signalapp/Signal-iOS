@@ -3,6 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public enum BackupAttachmentUploadQueueMode {
+    case fullsize
+    case thumbnail
+}
+
 public enum BackupAttachmentUploadQueueStatus {
     /// The queue is running, and attachment are uploading.
     case running
@@ -23,7 +28,14 @@ public enum BackupAttachmentUploadQueueStatus {
 }
 
 public extension Notification.Name {
-    static let backupAttachmentUploadQueueStatusDidChange = Notification.Name(rawValue: "BackupAttachmentUploadQueueStatusDidChange")
+    static func backupAttachmentUploadQueueStatusDidChange(for mode: BackupAttachmentUploadQueueMode) -> Notification.Name {
+        switch mode {
+        case .fullsize:
+            return Notification.Name(rawValue: "BackupAttachmentUploadQueueStatusDidChange_fullsize")
+        case .thumbnail:
+            return Notification.Name(rawValue: "BackupAttachmentUploadQueueStatusDidChange_thumbnail")
+        }
+    }
 }
 
 // MARK: -
@@ -34,13 +46,13 @@ public extension Notification.Name {
 /// `@MainActor`-isolated because most of the inputs are themselves isolated.
 @MainActor
 public protocol BackupAttachmentUploadQueueStatusReporter {
-    func currentStatus() -> BackupAttachmentUploadQueueStatus
+    func currentStatus(for mode: BackupAttachmentUploadQueueMode) -> BackupAttachmentUploadQueueStatus
 }
 
 extension BackupAttachmentUploadQueueStatusReporter {
-    func notifyStatusDidChange() {
+    fileprivate func notifyStatusDidChange(for mode: BackupAttachmentUploadQueueMode) {
         NotificationCenter.default.postOnMainThread(
-            name: .backupAttachmentUploadQueueStatusDidChange,
+            name: .backupAttachmentUploadQueueStatusDidChange(for: mode),
             object: nil,
         )
     }
@@ -54,10 +66,10 @@ extension BackupAttachmentUploadQueueStatusReporter {
 protocol BackupAttachmentUploadQueueStatusManager: BackupAttachmentUploadQueueStatusReporter {
 
     /// Begin observing status updates, if necessary.
-    func beginObservingIfNecessary() -> BackupAttachmentUploadQueueStatus
+    func beginObservingIfNecessary(for mode: BackupAttachmentUploadQueueMode) -> BackupAttachmentUploadQueueStatus
 
     /// Notifies the status manager that the upload queue was emptied.
-    func didEmptyQueue(forFullsizeUploads: Bool)
+    func didEmptyQueue(for mode: BackupAttachmentUploadQueueMode)
 
     func setIsMainAppAndActiveOverride(_ newValue: Bool)
 }
@@ -69,24 +81,25 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
 
     // MARK: - BackupAttachmentUploadQueueStatusReporter
 
-    public func currentStatus() -> BackupAttachmentUploadQueueStatus {
-        return state.asQueueStatus
+    public func currentStatus(for mode: BackupAttachmentUploadQueueMode) -> BackupAttachmentUploadQueueStatus {
+        return state.asQueueStatus(for: mode)
     }
 
     // MARK: - BackupAttachmentUploadQueueStatusManager
 
-    public func beginObservingIfNecessary() -> BackupAttachmentUploadQueueStatus {
+    public func beginObservingIfNecessary(for mode: BackupAttachmentUploadQueueMode) -> BackupAttachmentUploadQueueStatus {
         observeDeviceAndLocalStatesIfNecessary()
-        return currentStatus()
+        return currentStatus(for: mode)
     }
 
-    public func didEmptyQueue(forFullsizeUploads: Bool) {
-        if forFullsizeUploads {
+    public func didEmptyQueue(for mode: BackupAttachmentUploadQueueMode) {
+        switch mode {
+        case .fullsize:
             state.isFullsizeQueueEmpty = true
-        } else {
+        case .thumbnail:
             state.isThumbnailQueueEmpty = true
         }
-        if state.isQueueEmpty == true {
+        if state.isFullsizeQueueEmpty == true && state.isThumbnailQueueEmpty == true {
             stopObservingDeviceAndLocalStates()
         }
     }
@@ -158,13 +171,6 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
         var isFullsizeQueueEmpty: Bool?
         var isThumbnailQueueEmpty: Bool?
 
-        var isQueueEmpty: Bool? {
-            guard let isFullsizeQueueEmpty, let isThumbnailQueueEmpty else {
-                return nil
-            }
-            return isFullsizeQueueEmpty && isThumbnailQueueEmpty
-        }
-
         var isMainApp: Bool
         var isAppReady: Bool
         var isRegistered: Bool?
@@ -210,9 +216,16 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             self.isMainAppAndActive = isMainAppAndActive
         }
 
-        var asQueueStatus: BackupAttachmentUploadQueueStatus {
-            if isQueueEmpty == true {
-                return .empty
+        func asQueueStatus(for mode: BackupAttachmentUploadQueueMode) -> BackupAttachmentUploadQueueStatus {
+            switch mode {
+            case .fullsize:
+                if isFullsizeQueueEmpty == true {
+                    return .empty
+                }
+            case .thumbnail:
+                if isThumbnailQueueEmpty == true {
+                    return .empty
+                }
             }
 
             switch backupPlan {
@@ -259,8 +272,11 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
 
     private var state: State {
         didSet {
-            if oldValue.asQueueStatus != state.asQueueStatus {
-                notifyStatusDidChange()
+            if oldValue.asQueueStatus(for: .fullsize) != state.asQueueStatus(for: .fullsize) {
+                notifyStatusDidChange(for: .fullsize)
+            }
+            if oldValue.asQueueStatus(for: .thumbnail) != state.asQueueStatus(for: .thumbnail) {
+                notifyStatusDidChange(for: .thumbnail)
             }
         }
     }
@@ -269,7 +285,15 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
 
     private func observeDeviceAndLocalStatesIfNecessary() {
         // For change logic, treat nil as empty (if nil, observation is unstarted)
-        let wasQueueEmpty = state.isQueueEmpty ?? true
+        let wasQueueEmpty: Bool
+        if
+            let wasFullsizeQueueEmpty = state.isFullsizeQueueEmpty,
+            let wasThumbnailQueueEmpty = state.isThumbnailQueueEmpty
+        {
+            wasQueueEmpty = wasFullsizeQueueEmpty && wasThumbnailQueueEmpty
+        } else {
+            wasQueueEmpty = true
+        }
 
         let (isFullsizeQueueEmpty, isThumbnailQueueEmpty) = db.read { tx in
             return (

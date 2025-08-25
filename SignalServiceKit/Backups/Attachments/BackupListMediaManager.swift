@@ -741,10 +741,12 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 tx: tx
             )
         {
-            Task {
-                await backupAttachmentUploadProgress.didFinishUploadOfAttachment(
-                    uploadRecord: removedRecord
-                )
+            if removedRecord.isFullsize {
+                Task {
+                    await backupAttachmentUploadProgress.didFinishUploadOfFullsizeAttachment(
+                        uploadRecord: removedRecord
+                    )
+                }
             }
         }
 
