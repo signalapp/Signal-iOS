@@ -29,6 +29,7 @@ class AttachmentValidationBackfillRunner: BGProcessingTaskRunner {
     public static let taskIdentifier = "AttachmentValidationBackfillMigrator"
 
     public static let requiresNetworkConnectivity = false
+    public static let requiresExternalPower = false
 
     func run() async throws {
         try await self.runInBatches(

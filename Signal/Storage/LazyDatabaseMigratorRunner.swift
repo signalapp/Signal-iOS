@@ -18,6 +18,7 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
     static var taskIdentifier: String = "LazyDatabaseMigratorTask"
 
     static var requiresNetworkConnectivity: Bool = false
+    public static let requiresExternalPower = false
 
     func startCondition() -> BGProcessingTaskStartCondition {
         do {

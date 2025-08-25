@@ -26,6 +26,11 @@ public protocol BGProcessingTaskRunner {
     /// If true, informs iOS that we require a network connection to perform the task.
     static var requiresNetworkConnectivity: Bool { get }
 
+    /// If true, informs iOS that we require external power to perform the task; typically
+    /// you want this if CPU utilization will be very high, as without power iOS is much
+    /// more aggressive at terminating the process at high CPU utilization.
+    static var requiresExternalPower: Bool { get }
+
     /// See ``BGProcessingTaskStartCondition`` documentation.
     func startCondition() -> BGProcessingTaskStartCondition
 
@@ -112,6 +117,7 @@ extension BGProcessingTaskRunner where Self: Sendable {
             request.earliestBeginDate = date
         }
         request.requiresNetworkConnectivity = Self.requiresNetworkConnectivity
+        request.requiresExternalPower = Self.requiresExternalPower
 
         do {
             try BGTaskScheduler.shared.submit(request)
