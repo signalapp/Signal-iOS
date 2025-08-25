@@ -364,7 +364,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
             await statusManager.quickCheckDiskSpaceForDownloads()
 
-            switch await statusManager.currentStatus() {
+            let (status, statusToken) = await statusManager.currentStatusAndToken()
+
+            switch status {
             case .running:
                 break
             case .empty:
@@ -507,7 +509,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                     progress: progressSink
                 )
             } catch let error {
-                switch await statusManager.jobDidExperienceError(error) {
+                switch await statusManager.jobDidExperienceError(error, token: statusToken) {
                 case nil:
                     // No state change, keep going.
                     break
@@ -582,27 +584,15 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                     return .retryableError(RetryMediaTierError(nextRetryTimestamp: nextRetryTimestamp))
                 } else if error.httpStatusCode == 404 {
                     return .unretryableError(Unretryable404Error(source: source))
-                } else if
-                    error.is5xxServiceResponse,
-                    let nextRetryTimestamp = { () -> UInt64? in
-                        guard record.record.numRetries < 5 else {
-                            owsFailDebug("Too many retries!")
-                            return nil
-                        }
-                        let delay = OWSOperation.retryIntervalForExponentialBackoff(
-                            failureCount: record.record.numRetries,
-                            minAverageBackoff: 2,
-                            maxAverageBackoff: 60 * 60,
-                        )
-                        return dateProvider().addingTimeInterval(delay).ows_millisecondsSince1970
-                    }()
-                {
-                    // Retry 500s per-item.
-                    return .retryableError(Retry5xxError(nextRetryTimestamp: nextRetryTimestamp))
+                } else if error.is5xxServiceResponse || error.isNetworkFailureOrTimeout {
+                    // These suspend the queue status so just treat the row as retryable
+                    return .retryableError(error)
                 } else {
                     return .unretryableError(error)
                 }
             }
+
+            await statusManager.jobDidSucceed(token: statusToken)
 
             await progress.didFinishDownloadOfAttachment(
                 withId: record.record.attachmentRowId,

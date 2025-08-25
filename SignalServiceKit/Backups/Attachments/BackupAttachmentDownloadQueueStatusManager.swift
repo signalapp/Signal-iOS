@@ -47,6 +47,8 @@ public extension Notification.Name {
 public protocol BackupAttachmentDownloadQueueStatusReporter {
     func currentStatus() -> BackupAttachmentDownloadQueueStatus
 
+    func currentStatusAndToken() -> (BackupAttachmentDownloadQueueStatus, BackupAttachmentDownloadQueueStatusToken)
+
     /// Synchronously returns the minimum required disk space for downloads.
     nonisolated func minimumRequiredDiskSpaceToCompleteDownloads() -> UInt64
 
@@ -63,6 +65,12 @@ extension BackupAttachmentDownloadQueueStatusReporter {
         )
     }
 }
+
+/// Grab one of these when starting a job; use it to mark success or failure
+/// This takes a (black box) snapshot of state when the download began so that
+/// when we respond to success or errors we apply them appropriately based
+/// on state at start of the job, not at the end.
+public protocol BackupAttachmentDownloadQueueStatusToken {}
 
 // MARK: -
 
@@ -82,7 +90,9 @@ public protocol BackupAttachmentDownloadQueueStatusManager: BackupAttachmentDown
     /// Checks if the error should change the status (e.g. out of disk space errors should stop subsequent downloads)
     /// Returns nil if the error has no effect on the status (though note the status may be changed for any other concurrent
     /// reason unrelated to the error).
-    nonisolated func jobDidExperienceError(_ error: Error) async -> BackupAttachmentDownloadQueueStatus?
+    nonisolated func jobDidExperienceError(_ error: Error, token: BackupAttachmentDownloadQueueStatusToken) async -> BackupAttachmentDownloadQueueStatus?
+
+    nonisolated func jobDidSucceed(token: BackupAttachmentDownloadQueueStatusToken) async
 
     /// Call when the download queue is emptied.
     func didEmptyQueue(isThumbnail: Bool)
@@ -98,7 +108,14 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
     // MARK: - BackupAttachmentDownloadQueueStatusReporter
 
     public func currentStatus() -> BackupAttachmentDownloadQueueStatus {
-        return state.asQueueStatus
+        return state.asQueueStatus(dateProvider: dateProvider)
+    }
+
+    public func currentStatusAndToken() -> (BackupAttachmentDownloadQueueStatus, BackupAttachmentDownloadQueueStatusToken) {
+        return (
+            state.asQueueStatus(dateProvider: dateProvider),
+            BackupAttachmentDownloadQueueStatusTokenImpl(lastNetworkOr5xxErrorTime: state.lastNetworkOr5xxErrorTime)
+        )
     }
 
     public nonisolated func minimumRequiredDiskSpaceToCompleteDownloads() -> UInt64 {
@@ -123,16 +140,29 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         return currentStatus()
     }
 
-    public nonisolated func jobDidExperienceError(_ error: Error) async -> BackupAttachmentDownloadQueueStatus? {
-        // We only care about out of disk space errors for downloads.
-        guard (error as NSError).code == NSFileWriteOutOfSpaceError else {
+    public nonisolated func jobDidExperienceError(_ error: Error, token: BackupAttachmentDownloadQueueStatusToken) async -> BackupAttachmentDownloadQueueStatus? {
+        // We care about out of disk space errors for downloads.
+        if (error as NSError).code == NSFileWriteOutOfSpaceError {
             // Return nil to avoid having to thread-hop to the main thread just to get
             // the current status when we know it won't change due to this error.
+            return await MainActor.run {
+                return downloadDidExperienceOutOfSpaceError()
+            }
+        } else if error.isNetworkFailureOrTimeout {
+            return await MainActor.run {
+                return downloadDidExperienceNetworkOr5xxError(token: token)
+            }
+        } else {
             return nil
         }
+    }
 
-        return await MainActor.run {
-            return downloadDidExperienceOutOfSpaceError()
+    public nonisolated func jobDidSucceed(token: BackupAttachmentDownloadQueueStatusToken) async {
+        guard (token as? BackupAttachmentDownloadQueueStatusTokenImpl)?.lastNetworkOr5xxErrorTime != nil else {
+            return
+        }
+        await MainActor.run {
+            self.resetNetworkErrorRetriesAfterSuccess(token: token)
         }
     }
 
@@ -213,6 +243,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             downloadDidExperienceOutOfSpaceError: false,
             isMainAppAndActive: appContext.isMainAppAndActive,
         )
+        self.queueStatus = state.asQueueStatus(dateProvider: dateProvider)
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
             self?.appReadinessDidChange()
@@ -254,6 +285,9 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         var isMainAppAndActive: Bool
         var isMainAppAndActiveOverride: Bool = false
 
+        var networkOr5xxErrorCount = 0
+        var lastNetworkOr5xxErrorTime: Date?
+
         init(
             isFullsizeQueueEmpty: Bool?,
             isThumbnailQueueEmpty: Bool?,
@@ -288,7 +322,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             self.isMainAppAndActive = isMainAppAndActive
         }
 
-        var asQueueStatus: BackupAttachmentDownloadQueueStatus {
+        func asQueueStatus(dateProvider: DateProvider) -> BackupAttachmentDownloadQueueStatus {
             if isQueueEmpty == true {
                 return .empty
             }
@@ -340,13 +374,29 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
                 return .appBackgrounded
             }
 
+            if let lastNetworkOr5xxErrorTime {
+                let restartTime = BackupAttachmentDownloadQueueStatusManagerImpl.queueRestartTimeAfterNetworkError(
+                    at: lastNetworkOr5xxErrorTime,
+                    failureCount: networkOr5xxErrorCount
+                )
+                if dateProvider() <= restartTime {
+                    return .noReachability
+                }
+            }
+
             return .running
         }
     }
 
     private var state: State {
         didSet {
-            if oldValue.asQueueStatus != state.asQueueStatus {
+            queueStatus = state.asQueueStatus(dateProvider: dateProvider)
+        }
+    }
+
+    private var queueStatus: BackupAttachmentDownloadQueueStatus {
+        didSet {
+            if oldValue != queueStatus {
                 notifyStatusDidChange()
             }
         }
@@ -523,12 +573,80 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
     private func downloadDidExperienceOutOfSpaceError() -> BackupAttachmentDownloadQueueStatus {
         state.downloadDidExperienceOutOfSpaceError = true
-        return state.asQueueStatus
+        return state.asQueueStatus(dateProvider: dateProvider)
+    }
+
+    private class BackupAttachmentDownloadQueueStatusTokenImpl: BackupAttachmentDownloadQueueStatusToken {
+        let lastNetworkOr5xxErrorTime: Date?
+
+        init(lastNetworkOr5xxErrorTime: Date?) {
+            self.lastNetworkOr5xxErrorTime = lastNetworkOr5xxErrorTime
+        }
     }
 
     @objc
     private func isMainAppAndActiveDidChange() {
         self.state.isMainAppAndActive = appContext.isMainAppAndActive
+    }
+
+    private nonisolated static func queueRestartTimeAfterNetworkError(
+        at errorDate: Date,
+        failureCount: Int
+    ) -> Date {
+        let delay = OWSOperation.retryIntervalForExponentialBackoff(
+            failureCount: failureCount,
+            minAverageBackoff: 1,
+            maxAverageBackoff: .day * 5,
+        )
+        return errorDate.addingTimeInterval(delay)
+    }
+
+    private func downloadDidExperienceNetworkOr5xxError(token: BackupAttachmentDownloadQueueStatusToken) -> BackupAttachmentDownloadQueueStatus {
+        guard
+            let token = token as? BackupAttachmentDownloadQueueStatusTokenImpl,
+            state.lastNetworkOr5xxErrorTime == token.lastNetworkOr5xxErrorTime
+        else {
+            return state.asQueueStatus(dateProvider: dateProvider)
+        }
+        let failureCount = state.networkOr5xxErrorCount
+        let errorDate = dateProvider()
+        let restartDate = Self.queueRestartTimeAfterNetworkError(
+            at: errorDate,
+            failureCount: failureCount
+        )
+        state.networkOr5xxErrorCount = failureCount + 1
+        state.lastNetworkOr5xxErrorTime = errorDate
+        if restartDate > dateProvider() {
+            Task { [weak self, dateProvider] in
+                let now = dateProvider()
+                if restartDate > now {
+                    try await Task.sleep(nanoseconds: NSEC_PER_SEC * UInt64(restartDate.timeIntervalSince(now)))
+                }
+                self?.didReachNetworkErrorRetryTime(token: BackupAttachmentDownloadQueueStatusTokenImpl(lastNetworkOr5xxErrorTime: errorDate))
+            }
+        }
+        return state.asQueueStatus(dateProvider: dateProvider)
+    }
+
+    private func didReachNetworkErrorRetryTime(token: BackupAttachmentDownloadQueueStatusToken) {
+        guard
+            let token = token as? BackupAttachmentDownloadQueueStatusTokenImpl,
+            state.lastNetworkOr5xxErrorTime == token.lastNetworkOr5xxErrorTime
+        else {
+            return
+        }
+        state.lastNetworkOr5xxErrorTime = nil
+    }
+
+    private func resetNetworkErrorRetriesAfterSuccess(token: BackupAttachmentDownloadQueueStatusToken) {
+        guard
+            let token = token as? BackupAttachmentDownloadQueueStatusTokenImpl,
+            state.lastNetworkOr5xxErrorTime == token.lastNetworkOr5xxErrorTime
+        else {
+            return
+        }
+        state.lastNetworkOr5xxErrorTime = nil
+        state.networkOr5xxErrorCount = 0
     }
 }
 
@@ -537,9 +655,15 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 #if TESTABLE_BUILD
 
 class MockBackupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager {
+    struct BackupAttachmentDownloadQueueStatusTokenMock: BackupAttachmentDownloadQueueStatusToken {}
+
     var currentStatusMock: BackupAttachmentDownloadQueueStatus?
     func currentStatus() -> BackupAttachmentDownloadQueueStatus {
         currentStatusMock ?? .empty
+    }
+
+    func currentStatusAndToken() -> (BackupAttachmentDownloadQueueStatus, BackupAttachmentDownloadQueueStatusToken) {
+        (currentStatusMock ?? .empty, BackupAttachmentDownloadQueueStatusTokenMock())
     }
 
     func minimumRequiredDiskSpaceToCompleteDownloads() -> UInt64 {
@@ -558,8 +682,12 @@ class MockBackupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQu
         // Nothing
     }
 
-    func jobDidExperienceError(_ error: any Error) async -> BackupAttachmentDownloadQueueStatus? {
+    func jobDidExperienceError(_ error: any Error, token: BackupAttachmentDownloadQueueStatusToken) async -> BackupAttachmentDownloadQueueStatus? {
         return nil
+    }
+
+    func jobDidSucceed(token: BackupAttachmentDownloadQueueStatusToken) async {
+        // Nothing
     }
 
     func didEmptyQueue(isThumbnail: Bool) {

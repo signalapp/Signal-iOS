@@ -292,6 +292,10 @@ private class MockDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStat
         return currentStatusMock
     }
 
+    func currentStatusAndToken() -> (SignalServiceKit.BackupAttachmentDownloadQueueStatus, any SignalServiceKit.BackupAttachmentDownloadQueueStatusToken) {
+        return (currentStatusMock, MockBackupAttachmentDownloadQueueStatusManager.BackupAttachmentDownloadQueueStatusTokenMock())
+    }
+
     nonisolated let minimumRequiredDiskSpaceMock: UInt64
     func minimumRequiredDiskSpaceToCompleteDownloads() -> UInt64 {
         minimumRequiredDiskSpaceMock
