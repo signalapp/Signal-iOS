@@ -98,6 +98,8 @@ class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager 
     func requestUnidentifiedConnection() -> OWSChatConnection.ConnectionToken { fatalError() }
     func makeRequest(_ request: TSRequest) async throws -> HTTPResponse { fatalError() }
     func waitForDisconnectIfClosed() async {}
+    func setRegistrationOverride(_ chatServiceAuth: ChatServiceAuth) async {}
+    func clearRegistrationOverride() async {}
 }
 
 class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {

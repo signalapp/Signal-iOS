@@ -63,7 +63,7 @@ public enum FeatureFlags {
 
     public static let moveDraftsUpChatList = true
 
-    public static let postRegWebSocket = false
+    public static let postRegWebSocket = true
 
     /// We are still making Xcode 16 builds as of writing this, and some iOS 26
     /// changes must only be applied if the SDK is also iOS 26.

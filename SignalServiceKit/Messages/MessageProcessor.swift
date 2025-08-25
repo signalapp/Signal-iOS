@@ -165,6 +165,15 @@ public class MessageProcessor {
 
     private let isDrainingPendingEnvelopes = AtomicBool(false, lock: .init())
 
+    public func dropEnqueuedEnvelopes(completion: @escaping () -> Void) {
+        // Run this on queueForProcessing to ensure we're not going to drop
+        // envelopes that are currently being processed.
+        self.queueForProcessing.async {
+            self.pendingEnvelopes.removeAll()
+            completion()
+        }
+    }
+
     private func drainPendingEnvelopes() {
         guard CurrentAppContext().shouldProcessIncomingMessages else { return }
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
@@ -669,6 +678,12 @@ private class PendingEnvelopes {
     func removeProcessedEnvelopes(_ processedEnvelopesCount: Int) {
         unfairLock.withLock {
             pendingEnvelopes.removeFirst(processedEnvelopesCount)
+        }
+    }
+
+    func removeAll() {
+        unfairLock.withLock {
+            pendingEnvelopes.removeAll()
         }
     }
 

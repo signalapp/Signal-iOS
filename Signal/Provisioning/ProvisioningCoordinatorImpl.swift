@@ -21,6 +21,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let pushRegistrationManager: Shims.PushRegistrationManager
     private let receiptManager: Shims.ReceiptManager
     private let registrationStateChangeManager: RegistrationStateChangeManager
+    private let registrationWebSocketManager: any RegistrationWebSocketManager
     private let signalProtocolStoreManager: SignalProtocolStoreManager
     private let signalService: OWSSignalServiceProtocol
     private let storageServiceManager: StorageServiceManager
@@ -43,6 +44,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         pushRegistrationManager: Shims.PushRegistrationManager,
         receiptManager: Shims.ReceiptManager,
         registrationStateChangeManager: RegistrationStateChangeManager,
+        registrationWebSocketManager: any RegistrationWebSocketManager,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManager,
@@ -64,6 +66,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         self.pushRegistrationManager = pushRegistrationManager
         self.receiptManager = receiptManager
         self.registrationStateChangeManager = registrationStateChangeManager
+        self.registrationWebSocketManager = registrationWebSocketManager
         self.signalProtocolStoreManager = signalProtocolStoreManager
         self.signalService = signalService
         self.storageServiceManager = storageServiceManager
@@ -336,6 +339,10 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             prekeyBundles: prekeyBundles
         )
 
+        await registrationWebSocketManager.acquireRestrictedWebSocket(
+            chatServiceAuth: authedDevice.authedAccount.chatServiceAuth,
+        )
+
         return try await completeProvisioning_setLocalKeys(
             provisionMessage: provisionMessage,
             prekeyBundles: prekeyBundles,
@@ -515,6 +522,8 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 tx: tx
             )
         }
+
+        await registrationWebSocketManager.releaseRestrictedWebSocket(isRegistered: true)
 
         return try await performNecessarySyncsAndRestores(
             authedDevice: authedDevice,

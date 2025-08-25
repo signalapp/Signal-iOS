@@ -911,6 +911,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case reclamationAttempted
         }
         var usernameReclamationState: UsernameReclamationState = .localUsernameStateNotLoaded
+
+        var hasOpenedConnection = false
     }
 
     private var inMemoryState = InMemoryState()
@@ -1410,6 +1412,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
             deps.tsAccountManager.setIsManualMessageFetchEnabled(inMemoryState.isManualMessageFetchEnabled, tx: tx)
         }
+
+        await deps.registrationWebSocketManager.releaseRestrictedWebSocket(isRegistered: true)
+
         // Start syncing system contacts now that we have set up tsAccountManager.
         deps.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
@@ -3256,7 +3261,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) async -> RegistrationStep {
         switch mode {
         case .registering, .reRegistering:
-            break
+            if !inMemoryState.hasOpenedConnection {
+                await deps.registrationWebSocketManager.acquireRestrictedWebSocket(chatServiceAuth: accountIdentity.chatServiceAuth)
+                inMemoryState.hasOpenedConnection = true
+            }
+
         case .changingNumber:
             // Change number is different; we do a limited number of operations and then finalize.
             if let restoreStepNextStep = await performSVRRestoreStepsIfNeeded(accountIdentity: accountIdentity) {
@@ -4455,6 +4464,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         db.write { tx in
             wipePersistedState(tx)
         }
+
+        // We just registered but couldn't finish setting up our profile. The web
+        // socket should already be closed, but we need to clean up its state.
+        await deps.registrationWebSocketManager.releaseRestrictedWebSocket(isRegistered: false)
+        inMemoryState.hasOpenedConnection = false
+
         return .showErrorSheet(.becameDeregistered(reregParams: .init(
             e164: accountIdentity.e164,
             aci: accountIdentity.aci
@@ -4889,11 +4904,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 extension Error {
 
     fileprivate var isPostRegDeregisteredError: Bool {
-        guard let statusCode = (self as? OWSHTTPError)?.responseStatusCode else {
+        switch self {
+        case is NotRegisteredError:
+            return true
+        case let error as OWSHTTPError where error.responseStatusCode == 401:
+            return true
+        default:
             return false
         }
-        // We only use REST during registration;
-        // Websocket deregisters with a 403 but that doesn't matter.
-        return statusCode == 401
     }
 }

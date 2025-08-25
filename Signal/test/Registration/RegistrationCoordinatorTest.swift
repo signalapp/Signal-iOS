@@ -131,6 +131,7 @@ public class RegistrationCoordinatorTest {
             receiptManager: receiptManagerMock,
             registrationBackupErrorPresenter: RegistrationCoordinatorBackupErrorPresenterMock(),
             registrationStateChangeManager: registrationStateChangeManagerMock,
+            registrationWebSocketManager: MockRegistrationWebSocketManager(),
             sessionManager: sessionManager,
             signalService: mockSignalService,
             storageServiceManager: storageServiceManagerMock,
@@ -3739,7 +3740,7 @@ private extension Usernames.UsernameLink {
 private extension TSRequest {
     var authPassword: String {
         var httpHeaders = HttpHeaders()
-        applyAuth(to: &httpHeaders, willSendViaWebSocket: false)
+        try! applyAuth(to: &httpHeaders, socketAuth: nil)
         let authHeader = httpHeaders.value(forHeader: "Authorization")!
         owsPrecondition(authHeader.hasPrefix("Basic "))
         let authValue = String(data: Data(base64Encoded: String(authHeader.dropFirst(6)))!, encoding: .utf8)!

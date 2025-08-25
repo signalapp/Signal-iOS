@@ -405,7 +405,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
         }
 
         var httpHeaders = rawRequest.headers
-        rawRequest.applyAuth(to: &httpHeaders, willSendViaWebSocket: false)
+        try rawRequest.applyAuth(to: &httpHeaders, socketAuth: nil)
 
         let method: HTTPMethod
         do {

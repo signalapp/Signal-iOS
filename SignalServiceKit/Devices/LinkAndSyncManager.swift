@@ -671,7 +671,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             } catch is CancellationError {
                 throw SecondaryLinkNSyncError.cancelled
             } catch {
-                if error .isNetworkFailureOrTimeout {
+                if error.isNetworkFailureOrTimeout {
                     numNetworkErrors += 1
                     if numNetworkErrors <= 3 {
                         // retry

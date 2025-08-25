@@ -27,6 +27,9 @@ public protocol ChatConnectionManager {
     func requestUnidentifiedConnection() -> OWSChatConnection.ConnectionToken
     func waitForDisconnectIfClosed() async
     func makeRequest(_ request: TSRequest) async throws -> HTTPResponse
+
+    func setRegistrationOverride(_ chatServiceAuth: ChatServiceAuth) async
+    func clearRegistrationOverride() async
 }
 
 extension ChatConnectionManager {
@@ -39,8 +42,8 @@ extension ChatConnectionManager {
 }
 
 public class ChatConnectionManagerImpl: ChatConnectionManager {
-    private let connectionIdentified: OWSChatConnection
-    private let connectionUnidentified: OWSChatConnection
+    private let connectionIdentified: OWSAuthConnectionUsingLibSignal
+    private let connectionUnidentified: OWSUnauthConnectionUsingLibSignal
     private var connections: [OWSChatConnection] { [ connectionIdentified, connectionUnidentified ]}
 
     @MainActor
@@ -146,6 +149,14 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
             return await connectionIdentified.hasEmptiedInitialQueue
         }
     }
+
+    public func setRegistrationOverride(_ chatServiceAuth: ChatServiceAuth) async {
+        await connectionIdentified.setRegistrationOverride(chatServiceAuth)
+    }
+
+    public func clearRegistrationOverride() async {
+        await connectionIdentified.clearRegistrationOverride()
+    }
 }
 
 #if TESTABLE_BUILD
@@ -197,6 +208,12 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
 
     public func makeRequest(_ request: TSRequest) async throws -> HTTPResponse {
         return try await requestHandler(request)
+    }
+
+    public func setRegistrationOverride(_ chatServiceAuth: ChatServiceAuth) async {
+    }
+
+    public func clearRegistrationOverride() async {
     }
 }
 

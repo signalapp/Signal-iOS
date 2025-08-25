@@ -81,6 +81,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             pushRegistrationManager: pushRegistrationManagerMock,
             receiptManager: receiptManagerMock,
             registrationStateChangeManager: registrationStateChangeManagerMock,
+            registrationWebSocketManager: MockRegistrationWebSocketManager(),
             signalProtocolStoreManager: MockSignalProtocolStoreManager(),
             signalService: signalServiceMock,
             storageServiceManager: storageServiceManagerMock,

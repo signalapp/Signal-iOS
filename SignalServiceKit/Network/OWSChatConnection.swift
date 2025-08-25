@@ -235,7 +235,7 @@ public class OWSChatConnection {
         serialQueue.async(_updateCanOpenWebSocket)
     }
 
-    private func _updateCanOpenWebSocket() {
+    fileprivate func _updateCanOpenWebSocket() {
         assertOnQueue(serialQueue)
 
         let oldValue = (canOpenWebSocketError == nil)
@@ -677,9 +677,11 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
         "[\(type): libsignal]"
     }
 
+    fileprivate let authOverride = AtomicValue<ChatServiceAuth>(.implicit(), lock: .init())
+
     fileprivate override func makeRequestInternal(_ request: TSRequest, requestId: UInt64) async throws -> any HTTPResponse {
         var httpHeaders = request.headers
-        request.applyAuth(to: &httpHeaders, willSendViaWebSocket: true)
+        try request.applyAuth(to: &httpHeaders, socketAuth: authOverride.get())
 
         let body: Data
         switch request.body {
@@ -952,17 +954,65 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         if let error = super._canOpenWebSocketError() {
             return error
         }
-        guard accountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+        guard accountManager.registrationStateWithMaybeSneakyTransaction.isRegistered || registrationOverride else {
             return NotRegisteredError()
         }
         return nil
     }
 
+    private var registrationOverride = false
+
+    func setRegistrationOverride(_ chatServiceAuth: ChatServiceAuth) async {
+        await withCheckedContinuation { continuation in
+            serialQueue.async {
+                // Set the chatServiceAuth first to ensure it's accessible when
+                // setRegistrationOverride initiates a connection.
+                self.authOverride.set(chatServiceAuth)
+                self._setRegistrationOverride(true)
+                continuation.resume()
+            }
+        }
+    }
+
+    fileprivate func _setRegistrationOverride(_ value: Bool) {
+        assertOnQueue(serialQueue)
+        self.registrationOverride = value
+        self._updateCanOpenWebSocket()
+    }
+
+    func clearRegistrationOverride() async {
+        await withCheckedContinuation { continuation in
+            serialQueue.async {
+                self._setRegistrationOverride(false)
+                continuation.resume()
+            }
+        }
+
+        // Most of the time, this will be a no-op because the connection will
+        // remain open, but if we are closing it (likely due to an error), we want
+        // to wait until it's closed before continuing...
+        await waitForDisconnectIfClosed()
+
+        // ...to ensure that we don't clear authOverride in the middle of a
+        // connection attempt.
+        self.authOverride.set(.implicit())
+    }
+
     fileprivate override func connectChatService(token: NSObject) async throws -> AuthenticatedChatConnection {
         try await self.acquireConnectionLock()
-        let (username, password) = db.read { tx in
-            (accountManager.storedServerUsername(tx: tx), accountManager.storedServerAuthToken(tx: tx))
+
+        let username: String?
+        let password: String?
+        switch self.authOverride.get().credentials {
+        case .implicit:
+            (username, password) = db.read { tx in
+                (accountManager.storedServerUsername(tx: tx), accountManager.storedServerAuthToken(tx: tx))
+            }
+        case .explicit(let _username, let _password):
+            username = _username
+            password = _password
         }
+
         // Note that we still try to connect for an unregistered user, so that we get a consistent error thrown.
         do {
             return try await libsignalNet.connectAuthenticatedChat(
@@ -976,6 +1026,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
             case SignalError.deviceDeregistered(_):
                 serialQueue.async {
                     if self.connection.isCurrentlyConnecting(token) {
+                        self._setRegistrationOverride(false)
                         self.db.write { tx in
                             self.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
                         }

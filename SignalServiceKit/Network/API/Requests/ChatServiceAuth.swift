@@ -64,4 +64,11 @@ public class ChatServiceAuth: Equatable, Hashable {
             return other
         }
     }
+
+    public var logString: String {
+        switch self.credentials {
+        case .implicit: "implicit"
+        case .explicit: "explicit"
+        }
+    }
 }
