@@ -27,27 +27,31 @@ public class SenderKeyStore {
         distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
     }
 
-    /// Returns a list of addresses that may not have the current device's sender key for the thread.
-    public func recipientsInNeedOfSenderKey(
+    /// Returns a list of devices that already have the current device's sender
+    /// key for the thread.
+    public func readyRecipients(
         for thread: TSThread,
-        serviceIds: [ServiceId],
-        readTx: DBReadTransaction
-    ) -> Set<ServiceId> {
-        var serviceIdsNeedingSenderKey = Set(serviceIds)
-
-        // If we haven't saved a distributionId yet, then there's no way we have any keyMetadata cached
-        // All intended recipients will certainly need an SKDM (if they even support sender key)
+        limitedTo intendedRecipients: Set<ServiceId>,
+        tx: DBReadTransaction,
+    ) -> [ServiceId: [DeviceId]] {
+        // If we haven't saved a distributionId yet, then there's no way we have
+        // any ready recipients. All intended recipients will certainly need a
+        // Sender Key Distribution Message.
         guard
-            let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: readTx),
-            let keyMetadata = getKeyMetadata(for: keyId, readTx: readTx)
+            let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: tx),
+            let keyMetadata = getKeyMetadata(for: keyId, readTx: tx)
         else {
-            return serviceIdsNeedingSenderKey
+            return [:]
         }
 
-        // Iterate over each cached recipient. If no new devices or reregistrations have occurred since
-        // we last recorded an SKDM send, we can skip sending to them.
+        // Iterate over each recipient. If no new devices or reregistrations have
+        // occurred since the last SKDM, we can skip sending to them.
+        var result = [ServiceId: [DeviceId]]()
         for (address, sendInfo) in keyMetadata.sentKeyInfo {
             guard let serviceId = address.serviceId else {
+                continue
+            }
+            guard intendedRecipients.contains(serviceId) else {
                 continue
             }
             do {
@@ -55,9 +59,9 @@ public class SenderKeyStore {
 
                 // Only remove the recipient in question from our send targets if the cached state contains
                 // every device from the current state. Any new devices mean we need to re-send.
-                let currentRecipientState = try KeyRecipient.currentState(for: serviceId, transaction: readTx)
-                if priorSendRecipientState.containsEveryDevice(from: currentRecipientState), !currentRecipientState.devices.isEmpty {
-                    serviceIdsNeedingSenderKey.remove(serviceId)
+                let currentRecipientState = try KeyRecipient.currentState(for: serviceId, transaction: tx)
+                if priorSendRecipientState.containsEveryDevice(from: currentRecipientState) {
+                    result[serviceId] = currentRecipientState.devices.map(\.deviceId)
                 }
             } catch {
                 // It's likely there's no session for the current recipient. Maybe it was cleared?
@@ -70,7 +74,7 @@ public class SenderKeyStore {
             }
         }
 
-        return serviceIdsNeedingSenderKey
+        return result
     }
 
     /// Records that the current sender key for the `thread` has been sent to `participant`
@@ -409,11 +413,11 @@ private struct SKDMSendInfo: Codable {
 private struct KeyRecipient: Codable {
 
     struct Device: Codable, Hashable {
-        let deviceId: UInt32
+        let deviceId: DeviceId
         let registrationId: UInt32?
 
         init(deviceId: DeviceId, registrationId: UInt32?) {
-            self.deviceId = deviceId.uint32Value
+            self.deviceId = deviceId
             self.registrationId = registrationId
         }
 

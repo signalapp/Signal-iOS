@@ -286,9 +286,11 @@ extension SSKSessionStore: LibSignalClient.SessionStore {
         for addresses: [ProtocolAddress],
         context: StoreContext
     ) throws -> [SessionRecord] {
-
-        try addresses.compactMap {
-            try loadSession(for: $0, context: context)
+        return try addresses.map { address in
+            guard let session = try loadSession(for: address, context: context) else {
+                throw SignalError.sessionNotFound("\(address)")
+            }
+            return session
         }
     }
 

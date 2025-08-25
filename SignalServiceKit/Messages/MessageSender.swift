@@ -625,7 +625,7 @@ public class MessageSender {
         struct PreparedState {
             let serializedMessage: SerializedMessage
             let thread: TSThread
-            let fanoutRecipients: [ServiceId]
+            let fanoutRecipients: Set<ServiceId>
             let sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?
             let senderCertificate: SenderCertificate
             let udAccess: [ServiceId: OWSUDAccess]
@@ -769,7 +769,7 @@ public class MessageSender {
                 endorsements = nil
             }
 
-            let senderKeyRecipients: [ServiceId]
+            let senderKeyRecipients: Set<ServiceId>
             let sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?
             if recoveryState.canUseMultiRecipientSealedSender, thread.usesSenderKey {
                 (senderKeyRecipients, sendViaSenderKey) = self.prepareSenderKeyMessageSend(
@@ -799,7 +799,7 @@ public class MessageSender {
             return .sendPreparedMessage(SendMessageNextAction.PreparedState(
                 serializedMessage: serializedMessage,
                 thread: thread,
-                fanoutRecipients: Array(Set(serviceIds).subtracting(senderKeyRecipients)),
+                fanoutRecipients: Set(serviceIds).subtracting(senderKeyRecipients),
                 sendViaSenderKey: sendViaSenderKey,
                 senderCertificate: senderCertificate,
                 udAccess: udAccessMap,
@@ -873,7 +873,7 @@ public class MessageSender {
         message: TSOutgoingMessage,
         serializedMessage: SerializedMessage,
         in thread: TSThread,
-        viaFanoutTo fanoutRecipients: [ServiceId],
+        viaFanoutTo fanoutRecipients: Set<ServiceId>,
         viaSenderKey sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?,
         senderCertificate: SenderCertificate,
         udAccess sendingAccessMap: [ServiceId: OWSUDAccess],
